@@ -26,8 +26,8 @@ const CINEMATIC_SCRIPT = {
     ],
     // Волна 2: Маги атакуют снова
     wizardsAttack2: [
-        { wizard: 0, spell: 'firebolt' },
-        { wizard: 1, spell: 'frost_arrow' },
+        { wizard: 0, spell: 'pebble' },
+        { wizard: 1, spell: 'wolf' },
         { wizard: 2, spell: 'wind_blade' }
     ],
     // Контратака дракона

@@ -192,13 +192,17 @@ console.log('✅ pixi-dragon.js загружен');
         const areaWidth = bottomRightCell.x + bottomRightCell.width - topLeftCell.x;
         const areaHeight = bottomRightCell.y + bottomRightCell.height - topLeftCell.y;
 
+        let fixedScale;
         if (isPlaceholder) {
             // Для placeholder масштабируем по-другому (он уже в пикселях)
             const placeholderScale = Math.min(areaWidth / 300, areaHeight / 200);
             sprite.scale.set(placeholderScale);
+            fixedScale = placeholderScale;
         } else {
             const scaleToFit = Math.min(areaWidth / DRAGON_CONFIG.frameWidth, areaHeight / DRAGON_CONFIG.frameHeight);
-            sprite.scale.set(scaleToFit * DRAGON_CONFIG.scale);
+            const finalScale = scaleToFit * DRAGON_CONFIG.scale;
+            sprite.scale.set(finalScale);
+            fixedScale = finalScale;
         }
 
         // Создаем контейнер для дракона
@@ -208,6 +212,7 @@ console.log('✅ pixi-dragon.js загружен');
             castFrames: textures?.cast || null,
             deathFrames: textures?.death || null,
             isPlaceholder: isPlaceholder,
+            fixedScale: fixedScale, // СОХРАНЯЕМ фиксированный scale
             hp: 500,
             maxHp: 500,
             position: { col: 0, row: 0, width: 3, height: 3 }
@@ -275,18 +280,20 @@ console.log('✅ pixi-dragon.js загружен');
             console.log('🎬 Анимация атаки дракона');
 
             const originalSpeed = sprite.animationSpeed;
-            const originalScaleX = sprite.scale.x;
-            const originalScaleY = sprite.scale.y;
+            const fixedScale = dragonContainer.fixedScale; // Используем сохраненный фиксированный scale
 
             sprite.stop();
             sprite.textures = dragonContainer.castFrames;
             sprite.animationSpeed = 0.15;
             sprite.loop = false;
             sprite.gotoAndPlay(0);
+            sprite.scale.set(fixedScale, fixedScale); // Применяем сразу
 
-            // Принудительно устанавливаем scale через requestAnimationFrame
+            // Дополнительно устанавливаем через requestAnimationFrame
             requestAnimationFrame(() => {
-                sprite.scale.set(originalScaleX, originalScaleY);
+                if (sprite && !sprite.destroyed) {
+                    sprite.scale.set(fixedScale, fixedScale);
+                }
             });
 
             sprite.onComplete = () => {
@@ -296,10 +303,13 @@ console.log('✅ pixi-dragon.js загружен');
                 sprite.animationSpeed = originalSpeed;
                 sprite.loop = true;
                 sprite.gotoAndPlay(0);
+                sprite.scale.set(fixedScale, fixedScale); // Применяем сразу
 
-                // Принудительно устанавливаем scale через requestAnimationFrame
+                // Дополнительно устанавливаем через requestAnimationFrame
                 requestAnimationFrame(() => {
-                    sprite.scale.set(originalScaleX, originalScaleY);
+                    if (sprite && !sprite.destroyed) {
+                        sprite.scale.set(fixedScale, fixedScale);
+                    }
                 });
 
                 sprite.onComplete = null;
