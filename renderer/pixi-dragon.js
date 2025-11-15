@@ -201,13 +201,18 @@ console.log('✅ pixi-dragon.js загружен');
             castSprite.animationSpeed = 0.15;
             castSprite.anchor.set(0.5);
             castSprite.loop = false;
-            castSprite.visible = false; // Изначально скрыт
 
             const scaleToFit = Math.min(areaWidth / DRAGON_CONFIG.frameWidth, areaHeight / DRAGON_CONFIG.frameHeight);
             const finalScale = scaleToFit * DRAGON_CONFIG.scale;
 
+            // ВАЖНО: Устанавливаем scale ДО запуска анимации
             idleSprite.scale.set(finalScale);
             castSprite.scale.set(finalScale);
+
+            // Запускаем castSprite СРАЗУ, чтобы зафиксировать размер
+            castSprite.play();
+            castSprite.stop(); // Останавливаем на первом кадре
+            castSprite.visible = false; // Скрываем
 
             console.log(`🐉 Scale для обоих спрайтов: ${finalScale}`);
         }
@@ -299,14 +304,22 @@ console.log('✅ pixi-dragon.js загружен');
 
             // Скрываем idle, показываем cast
             idleSprite.visible = false;
+
+            // НЕ используем gotoAndPlay(0) - просто показываем и играем
+            castSprite.currentFrame = 0; // Сбрасываем на первый кадр
             castSprite.visible = true;
-            castSprite.gotoAndPlay(0);
+            castSprite.play();
+
+            console.log(`🎬 Cast sprite scale: ${castSprite.scale.x}, size: ${castSprite.width}×${castSprite.height}`);
 
             // Когда cast анимация закончится
             castSprite.onComplete = () => {
-                // Возвращаем idle, скрываем cast
+                // Останавливаем и скрываем cast
+                castSprite.stop();
                 castSprite.visible = false;
                 castSprite.onComplete = null;
+
+                // Показываем idle
                 idleSprite.visible = true;
 
                 console.log('🎬 Возврат к idle');
