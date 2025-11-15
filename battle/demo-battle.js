@@ -171,10 +171,10 @@ async function playWizardsAttackWave(attacks) {
             window.pixiWizards.playCastAnimation(wizard.sprite);
         }
 
-        // Анимация заклинания
-        await playSpellAnimation(attack.spell, wizard, 'dragon');
+        // Запускаем анимацию заклинания БЕЗ ожидания её завершения
+        playSpellAnimation(attack.spell, wizard, 'dragon');
 
-        // Задержка только если это НЕ последнее заклинание
+        // Фиксированная задержка перед следующей атакой
         if (i < attacks.length - 1) {
             await delay(CINEMATIC_CONFIG.spellDelay);
         }
@@ -188,23 +188,21 @@ async function playDragonCounterattack() {
     for (let i = 0; i < attacks.length; i++) {
         const attack = attacks[i];
 
-        // Анимация атаки дракона
-        await new Promise(resolve => {
-            window.pixiDragon.playAttack(() => resolve());
-        });
+        // Запускаем анимацию атаки дракона БЕЗ ожидания
+        window.pixiDragon.playAttack(() => {});
 
-        // Обработка одиночной или множественной цели
+        // Обработка одиночной или множественной цели - запускаем БЕЗ ожидания
         if (attack.targets) {
             // Для заклинаний с несколькими целями (ice_rain)
-            await playSpellAnimation(attack.spell, null, { positions: attack.targets });
+            playSpellAnimation(attack.spell, null, { positions: attack.targets });
         } else {
             // Для заклинаний с одной целью
             const target = cinematicData.wizards[attack.target];
             if (!target) continue;
-            await playSpellAnimation(attack.spell, null, target);
+            playSpellAnimation(attack.spell, null, target);
         }
 
-        // Задержка только если это НЕ последнее заклинание
+        // Фиксированная задержка перед следующей атакой
         if (i < attacks.length - 1) {
             await delay(CINEMATIC_CONFIG.spellDelay);
         }

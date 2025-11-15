@@ -20,9 +20,11 @@ console.log('✅ pixi-dragon.js загружен');
         console.log('🐉 Загрузка текстур дракона...');
 
         try {
-            const idleTexture = await PIXI.Assets.load('images/dragon/idle.png');
-            const castTexture = await PIXI.Assets.load('images/dragon/cast.png');
-            const deathTexture = await PIXI.Assets.load('images/dragon/death.png');
+            // Добавляем timestamp для сброса кеша
+            const cacheBuster = `?v=${Date.now()}`;
+            const idleTexture = await PIXI.Assets.load('images/dragon/idle.png' + cacheBuster);
+            const castTexture = await PIXI.Assets.load('images/dragon/cast.png' + cacheBuster);
+            const deathTexture = await PIXI.Assets.load('images/dragon/death.png' + cacheBuster);
 
             console.log(`📐 Idle текстура: ${idleTexture.width}×${idleTexture.height}`);
             console.log(`📐 Cast текстура: ${castTexture.width}×${castTexture.height}`);
