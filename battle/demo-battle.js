@@ -507,4 +507,11 @@ window.startDemoBattle = startDemoBattle;
 window.skipDemoBattle = skipDemoBattle;
 window.closeDemoBattle = closeDemoBattle;
 
+// Удобная консольная команда для тестирования
+window.demo = function(faction = 'fire') {
+    console.log('🐉 Запуск демо-боя с фракцией:', faction);
+    window.startDemoBattle(faction);
+};
+
 console.log('✅ Демо-бой готов к запуску!');
+console.log('💡 Используй команду: demo() или demo("water") для запуска');
