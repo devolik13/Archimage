@@ -249,14 +249,16 @@ console.log('✅ absolute_zero.js загружен');
                 // Анимация падения
                 const speedY = 0.3 + layer * 0.2;
                 const animate = () => {
+                    if (!window.pixiAnimUtils.isValid(snowflake)) return;
+
                     snowflake.y += speedY;
                     snowflake.rotation += 0.02;
-                    
+
                     if (snowflake.y > top + height) {
                         snowflake.y = top - 20;
                         snowflake.x = left + Math.random() * width;
                     }
-                    
+
                     if (snowflake.parent) {
                         requestAnimationFrame(animate);
                     }

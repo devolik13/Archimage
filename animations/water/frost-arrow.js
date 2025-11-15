@@ -99,10 +99,7 @@ console.log('✅ frost-arrow.js загружен');
             const particleDuration = 500;
             
             const animateShard = () => {
-                // ВАЖНО: проверяем что объект ещё существует
-                if (!shard || !shard.parent || !shard.transform) {
-                    return;
-                }
+                if (!window.pixiAnimUtils.isValid(shard)) return;
                 
                 const elapsed = Date.now() - particleStartTime;
                 const progress = Math.min(elapsed / particleDuration, 1);
@@ -140,10 +137,7 @@ console.log('✅ frost-arrow.js загружен');
         const flashDuration = 250;
         
         const animateFlash = () => {
-            // ВАЖНО: проверяем что объект ещё существует
-            if (!flash || !flash.parent || !flash.transform) {
-                return;
-            }
+            if (!window.pixiAnimUtils.isValid(flash)) return;
             
             const elapsed = Date.now() - flashStartTime;
             const progress = Math.min(elapsed / flashDuration, 1);
@@ -260,9 +254,9 @@ console.log('✅ frost-arrow.js загружен');
             // Функция анимации полета
             const animate = () => {
                 // Проверка что объекты еще существуют
-                if (isDestroyed || !arrow.parent || !effectsContainer) {
+                if (isDestroyed || !window.pixiAnimUtils.isValid(arrow) || !effectsContainer) {
                     if (animationFrame) cancelAnimationFrame(animationFrame);
-                    if (arrow.parent) {
+                    if (arrow && arrow.parent) {
                         try {
                             effectsContainer.removeChild(arrow);
                             arrow.destroy();
