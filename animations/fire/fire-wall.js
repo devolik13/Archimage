@@ -79,14 +79,14 @@ console.log('✅ fire-wall.js загружен');
 
                 fireSprite.scale.set(scaleFactor * 0.4, scaleFactor); // Ширина меньше, высота больше для вертикальной стены
                 
-                fireSprite.animationSpeed = 0.2; // Скорость анимации (4 кадра)
+                fireSprite.animationSpeed = 0.1; // Скорость анимации (4 кадра)
                 fireSprite.loop = true; // Зацикливаем анимацию
                 fireSprite.play();
                 
                 // Эффекты свечения для огня
                 fireSprite.blendMode = PIXI.BLEND_MODES.ADD; // Режим наложения для свечения
                 fireSprite.tint = 0xFF6600; // Оранжевый оттенок
-                fireSprite.alpha = 0.9; // Небольшая прозрачность
+                fireSprite.alpha = 1; // Полная непрозрачность
                 
                 effectsContainer.addChild(fireSprite);
                 
