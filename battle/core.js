@@ -745,6 +745,19 @@ function checkBattleEnd() {
 
     if (!playerAlive || !enemyAlive) {
         window.battleState = 'finished';
+
+        // КРИТИЧНО: Останавливаем боевой цикл сразу после окончания боя
+        if (window.battleInterval) {
+            clearInterval(window.battleInterval);
+            window.battleInterval = null;
+            console.log('⏹️ Боевой интервал остановлен (бой завершён)');
+        }
+
+        // Останавливаем через battle-timer-manager если используется
+        if (window.battleTimerManager && window.battleTimerManager.stopBattleLoop) {
+            window.battleTimerManager.stopBattleLoop();
+        }
+
         let resultLog = '';
         if (!playerAlive && !enemyAlive) {
             resultLog = '💀 Все маги погибли! Ничья!';
