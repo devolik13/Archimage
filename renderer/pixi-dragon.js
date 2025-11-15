@@ -281,8 +281,8 @@ console.log('✅ pixi-dragon.js загружен');
             sprite.textures = dragonContainer.castFrames;
             sprite.animationSpeed = 0.15;
             sprite.loop = false;
-            sprite.scale.set(originalScale.x, originalScale.y); // Восстанавливаем масштаб
             sprite.gotoAndPlay(0);
+            sprite.scale.set(originalScale.x, originalScale.y); // Восстанавливаем масштаб ПОСЛЕ gotoAndPlay
 
             sprite.onComplete = () => {
                 // Возврат к idle
@@ -290,8 +290,8 @@ console.log('✅ pixi-dragon.js загружен');
                 sprite.textures = dragonContainer.idleFrames;
                 sprite.animationSpeed = originalSpeed;
                 sprite.loop = true;
-                sprite.scale.set(originalScale.x, originalScale.y); // Восстанавливаем масштаб
                 sprite.gotoAndPlay(0);
+                sprite.scale.set(originalScale.x, originalScale.y); // Восстанавливаем масштаб ПОСЛЕ gotoAndPlay
                 sprite.onComplete = null;
 
                 if (callback) callback();
