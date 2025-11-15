@@ -1,46 +1,54 @@
-// battle/demo-battle.js - Демонстрационный бой с драконом (PIXI.js)
+// battle/demo-battle.js - Кинематографическая сцена с драконом
 console.log('🐉 demo-battle.js загружен');
 
-// Конфигурация демо-боя
-const DEMO_CONFIG = {
-    dragonHP: 500,
-    dragonMaxHP: 500,
-    wizardHP: 120,
-    wizardMaxHP: 120,
-    turnDelay: 1600, // Задержка между заклинаниями (ускорено на 20%)
-    fadeOutDuration: 2000 // Длительность затемнения при победе
+// Конфигурация кинематографической сцены
+const CINEMATIC_CONFIG = {
+    spellDelay: 1200, // Задержка между заклинаниями (быстрее для динамики)
+    waveDelay: 2000,  // Задержка между волнами атак
+    deathDelay: 1500, // Задержка между смертями магов
+    fadeOutDuration: 2000 // Длительность затемнения
 };
 
-// Данные демо-боя
-let demoBattleData = {
+// Данные сцены
+let cinematicData = {
     dragon: null,
     wizards: [],
-    isRunning: false,
-    currentTurn: 0,
-    wizardPositions: [1, 2, 3], // Ряды для 3 магов
-    dragonSpells: ['fireball', 'blizzard', 'fire_wall'], // Tier 5, 4, 3
-    wizardSpells: [
-        ['spark', 'firebolt'],      // Маг 1: Огонь
-        ['icicle', 'frost_arrow'],  // Маг 2: Вода
-        ['gust', 'wind_blade']      // Маг 3: Ветер
-    ]
+    isPlaying: false
 };
 
-// Запуск демо-боя
+// Сценарий кинематографической сцены
+const CINEMATIC_SCRIPT = {
+    // Волна 1: Маги атакуют дракона
+    wizardsAttack1: [
+        { wizard: 0, spell: 'spark' },
+        { wizard: 1, spell: 'icicle' },
+        { wizard: 2, spell: 'gust' }
+    ],
+    // Волна 2: Маги атакуют снова
+    wizardsAttack2: [
+        { wizard: 0, spell: 'firebolt' },
+        { wizard: 1, spell: 'frost_arrow' },
+        { wizard: 2, spell: 'wind_blade' }
+    ],
+    // Контратака дракона
+    dragonCounterattack: [
+        { spell: 'fireball', target: 1 },      // По центральному магу
+        { spell: 'blizzard', target: 0 },      // По первому магу
+        { spell: 'fire_wall', target: 2 }      // Огненная стена
+    ],
+    // Порядок смерти магов
+    wizardDeaths: [1, 0, 2] // Сначала маг воды, потом огня, потом ветра
+};
+
+// Запуск кинематографической сцены
 async function startDemoBattle(faction) {
-    console.log('🐉 Запуск демо-боя для фракции:', faction);
+    console.log('🎬 Запуск кинематографической сцены');
 
-    // Показываем overlay
-    showDemoBattleOverlay();
-
-    // Инициализируем PIXI поле боя 6×5
-    await initDemoPixiBattle();
-
-    // Небольшая задержка для инициализации контейнеров
+    showCinematicOverlay();
+    await initCinematicBattle();
     await new Promise(resolve => setTimeout(resolve, 300));
 
-    // Создаём дракона (3×3 клетки)
-    console.log('🐉 Создаём дракона...');
+    // Создаём дракона
     const dragon = await window.pixiDragon.create();
     if (!dragon) {
         console.error('❌ Не удалось создать дракона');
@@ -48,402 +56,258 @@ async function startDemoBattle(faction) {
         return;
     }
 
-    demoBattleData.dragon = dragon;
-    console.log('✅ Дракон создан:', dragon);
+    cinematicData.dragon = dragon;
 
-    // Создаём 3 магов
-    await createDemoWizards(faction);
+    // Скрываем HP бар дракона
+    if (dragon.hpBar) {
+        dragon.hpBar.visible = false;
+    }
 
-    // Запускаем боевой цикл
-    demoBattleData.isRunning = true;
-    demoBattleData.currentTurn = 0;
+    console.log('✅ Дракон создан');
 
+    // Создаём магов
+    await createCinematicWizards();
+
+    // Запускаем сценарий
+    cinematicData.isPlaying = true;
     setTimeout(() => {
-        executeDemoBattle();
+        playCinematicScript();
     }, 1000);
 }
 
-// Инициализация PIXI поля боя
-async function initDemoPixiBattle() {
+// Инициализация поля боя
+async function initCinematicBattle() {
     if (!window.pixiCore) {
         console.error('❌ PIXI Core не загружен');
         return;
     }
 
-    // Очищаем предыдущее поле если было
     if (window.pixiCore.destroy) {
         window.pixiCore.destroy();
     }
 
-    // Создаём временные формации для PIXI Core (пустые массивы)
     window.enemyFormation = [];
     window.playerFormation = [];
 
-    // Инициализируем новое поле 6×5
     await window.pixiCore.init();
     console.log('✅ PIXI поле боя инициализировано');
 }
 
-// Создание демо-магов
-async function createDemoWizards(faction) {
-    const factions = ['fire', 'water', 'wind']; // 3 разные фракции
+// Создание магов
+async function createCinematicWizards() {
+    const factions = ['fire', 'water', 'wind'];
     const names = ['Маг Огня', 'Маг Воды', 'Маг Ветра'];
+    const positions = [1, 2, 3];
 
     for (let i = 0; i < 3; i++) {
         const wizardData = {
-            id: `demo_wizard_${i}`,
+            id: `cinematic_wizard_${i}`,
             name: names[i],
             faction: factions[i],
-            hp: DEMO_CONFIG.wizardHP,
-            max_hp: DEMO_CONFIG.wizardMaxHP,
+            hp: 120,
+            max_hp: 120,
             level: 1
         };
 
-        // Создаём спрайт мага в правой колонке (col=5)
-        const position = demoBattleData.wizardPositions[i];
         const wizard = await window.pixiWizards.createWizard(
             wizardData,
             5, // колонка
-            position, // ряд
+            positions[i], // ряд
             'player'
         );
 
         if (wizard) {
             wizard.data = wizardData;
-            wizard.spells = demoBattleData.wizardSpells[i];
-            demoBattleData.wizards.push(wizard);
-            console.log(`✅ Маг ${i + 1} создан:`, wizardData.name);
+            wizard.position = positions[i];
+
+            // Скрываем HP бар
+            if (wizard.hpBar) {
+                wizard.hpBar.visible = false;
+            }
+
+            cinematicData.wizards.push(wizard);
+            console.log(`✅ ${names[i]} создан`);
         }
     }
 }
 
-// Основной цикл боя
-function executeDemoBattle() {
-    if (!demoBattleData.isRunning) return;
+// Проигрывание кинематографического сценария
+async function playCinematicScript() {
+    if (!cinematicData.isPlaying) return;
 
-    const turn = demoBattleData.currentTurn;
+    console.log('🎬 Акт 1: Маги атакуют дракона (волна 1)');
+    await playWizardsAttackWave(CINEMATIC_SCRIPT.wizardsAttack1);
 
-    // Проверка условий победы
-    if (demoBattleData.dragon.hp <= 0) {
-        endDemoBattle('wizards');
-        return;
-    }
+    await delay(CINEMATIC_CONFIG.waveDelay);
 
-    const aliveWizards = demoBattleData.wizards.filter(w => w.data.hp > 0);
-    if (aliveWizards.length === 0) {
-        endDemoBattle('dragon');
-        return;
-    }
+    console.log('🎬 Акт 2: Маги атакуют дракона (волна 2)');
+    await playWizardsAttackWave(CINEMATIC_SCRIPT.wizardsAttack2);
 
-    // Макс 15 ходов для демо
-    if (turn >= 15) {
-        endDemoBattle('draw');
-        return;
-    }
+    await delay(CINEMATIC_CONFIG.waveDelay);
 
-    logMessage(`🎭 Ход ${turn + 1}`);
+    console.log('🎬 Акт 3: Дракон контратакует!');
+    await playDragonCounterattack();
 
-    // Сначала ходят маги (каждый кастует 2 заклинания)
-    executeWizardsTurn(() => {
-        // Потом ходит дракон (3 заклинания)
-        setTimeout(() => {
-            executeDragonTurn(() => {
-                // Следующий ход
-                demoBattleData.currentTurn++;
-                setTimeout(() => {
-                    executeDemoBattle();
-                }, DEMO_CONFIG.turnDelay);
-            });
-        }, DEMO_CONFIG.turnDelay);
-    });
+    await delay(CINEMATIC_CONFIG.waveDelay);
+
+    console.log('🎬 Финал: Падение героев');
+    await playWizardsDeathSequence();
+
+    await delay(1000);
+
+    console.log('🎬 Затемнение...');
+    endCinematic();
 }
 
-// Ход магов
-function executeWizardsTurn(callback) {
-    const aliveWizards = demoBattleData.wizards.filter(w => w.data.hp > 0);
+// Волна атак магов
+async function playWizardsAttackWave(attacks) {
+    for (const attack of attacks) {
+        const wizard = cinematicData.wizards[attack.wizard];
+        if (!wizard) continue;
 
-    if (aliveWizards.length === 0) {
-        if (callback) callback();
-        return;
-    }
-
-    let wizardIndex = 0;
-
-    function castNextWizard() {
-        if (wizardIndex >= aliveWizards.length) {
-            if (callback) callback();
-            return;
-        }
-
-        const wizard = aliveWizards[wizardIndex];
-        const spells = wizard.spells;
-
-        // Каждый маг кастует 2 заклинания
-        castWizardSpell(wizard, spells[0], () => {
-            setTimeout(() => {
-                castWizardSpell(wizard, spells[1], () => {
-                    wizardIndex++;
-                    setTimeout(castNextWizard, DEMO_CONFIG.turnDelay);
-                });
-            }, DEMO_CONFIG.turnDelay);
-        });
-    }
-
-    castNextWizard();
-}
-
-// Каст заклинания магом
-function castWizardSpell(wizard, spellId, callback) {
-    if (!wizard || wizard.data.hp <= 0) {
-        if (callback) callback();
-        return;
-    }
-
-    try {
-        // Анимация каста мага
+        // Анимация каста
         if (window.pixiWizards.playCastAnimation) {
             window.pixiWizards.playCastAnimation(wizard.sprite);
         }
 
-        // Урон дракону
-        const damage = Math.floor(8 + Math.random() * 12); // 8-20 урона
-        demoBattleData.dragon.hp = Math.max(0, demoBattleData.dragon.hp - damage);
-
-        logMessage(`🧙‍♂️ ${wizard.data.name} кастует ${getSpellName(spellId)} (${damage} урона) | Дракон: ${demoBattleData.dragon.hp}/${DEMO_CONFIG.dragonMaxHP} HP`);
-
-        // Обновляем HP дракона
-        window.pixiDragon.updateHP(demoBattleData.dragon.hp, DEMO_CONFIG.dragonMaxHP);
-
-        // Таймаут для безопасности - если анимация не завершится, продолжаем бой
-        let callbackCalled = false;
-        const safeCallback = () => {
-            if (!callbackCalled) {
-                callbackCalled = true;
-                if (callback) callback();
-            }
-        };
-
-        setTimeout(safeCallback, 3000); // Максимум 3 секунды на анимацию
-
-        // Анимация заклинания на дракона
-        playSpellAnimation(spellId, wizard, 'dragon', safeCallback);
-    } catch (error) {
-        console.error(`❌ Ошибка при касте ${spellId}:`, error);
-        if (callback) callback();
+        // Анимация заклинания
+        await playSpellAnimation(attack.spell, wizard, 'dragon');
+        await delay(CINEMATIC_CONFIG.spellDelay);
     }
 }
 
-// Ход дракона
-function executeDragonTurn(callback) {
-    if (demoBattleData.dragon.hp <= 0) {
-        if (callback) callback();
-        return;
-    }
-
-    const spells = demoBattleData.dragonSpells;
-    let spellIndex = 0;
-
-    function castNextSpell() {
-        if (spellIndex >= spells.length) {
-            if (callback) callback();
-            return;
-        }
-
-        const spellId = spells[spellIndex];
-        castDragonSpell(spellId, () => {
-            spellIndex++;
-            setTimeout(castNextSpell, DEMO_CONFIG.turnDelay);
-        });
-    }
-
-    castNextSpell();
-}
-
-// Каст заклинания драконом
-function castDragonSpell(spellId, callback) {
-    try {
-        // Таймаут для безопасности
-        let callbackCalled = false;
-        const safeCallback = () => {
-            if (!callbackCalled) {
-                callbackCalled = true;
-                if (callback) callback();
-            }
-        };
-
-        setTimeout(safeCallback, 3000);
-
+// Контратака дракона
+async function playDragonCounterattack() {
+    for (const attack of CINEMATIC_SCRIPT.dragonCounterattack) {
         // Анимация атаки дракона
-        window.pixiDragon.playAttack(() => {
-            // Выбираем случайного живого мага
-            const aliveWizards = demoBattleData.wizards.filter(w => w.data.hp > 0);
-
-            if (aliveWizards.length === 0) {
-                safeCallback();
-                return;
-            }
-
-            const target = aliveWizards[Math.floor(Math.random() * aliveWizards.length)];
-            const damage = Math.floor(15 + Math.random() * 20); // 15-35 урона
-
-            target.data.hp = Math.max(0, target.data.hp - damage);
-
-            logMessage(`🐉 Дракон использует ${getSpellName(spellId)} на ${target.data.name} (${damage} урона) | ${target.data.name}: ${target.data.hp}/${target.data.max_hp} HP`);
-
-            // Обновляем HP мага
-            if (window.pixiWizards.updateWizardHP) {
-                window.pixiWizards.updateWizardHP(target, target.data.hp, target.data.max_hp);
-            }
-
-            // Проверяем смерть мага
-            if (target.data.hp <= 0) {
-                logMessage(`💀 ${target.data.name} повержен!`);
-                if (window.pixiWizards.playDeathAnimation) {
-                    window.pixiWizards.playDeathAnimation(target.sprite);
-                }
-            }
-
-            // Анимация заклинания
-            playSpellAnimation(spellId, null, target, safeCallback);
+        await new Promise(resolve => {
+            window.pixiDragon.playAttack(() => resolve());
         });
-    } catch (error) {
-        console.error(`❌ Ошибка при касте дракона ${spellId}:`, error);
-        if (callback) callback();
+
+        const target = cinematicData.wizards[attack.target];
+        if (!target) continue;
+
+        // Анимация заклинания дракона
+        await playSpellAnimation(attack.spell, null, target);
+        await delay(CINEMATIC_CONFIG.spellDelay);
+    }
+}
+
+// Последовательность смерти магов
+async function playWizardsDeathSequence() {
+    for (const wizardIndex of CINEMATIC_SCRIPT.wizardDeaths) {
+        const wizard = cinematicData.wizards[wizardIndex];
+        if (!wizard) continue;
+
+        console.log(`💀 ${wizard.data.name} падает...`);
+
+        // Анимация смерти
+        await new Promise(resolve => {
+            if (window.pixiWizards.playDeathAnimation) {
+                window.pixiWizards.playDeathAnimation(wizard.sprite, () => resolve());
+            } else {
+                resolve();
+            }
+        });
+
+        await delay(CINEMATIC_CONFIG.deathDelay);
     }
 }
 
 // Проигрывание анимации заклинания
-function playSpellAnimation(spellId, caster, target, callback) {
-    try {
-        if (!window.spellAnimations || !window.spellAnimations[spellId]) {
-            console.warn(`⚠️ Анимация для ${spellId} не найдена`);
-            if (callback) callback();
-            return;
-        }
-
-        const animation = window.spellAnimations[spellId];
-
-        // Преобразуем параметры в формат анимаций (casterCol, casterRow, targetCol, targetRow)
-        let casterCol, casterRow, targetCol, targetRow;
-
-        if (target === 'dragon') {
-            // Маг кастует на дракона
-            const wizardIndex = demoBattleData.wizards.indexOf(caster);
-            if (wizardIndex === -1) {
-                console.error('⚠️ Маг-кастер не найден');
-                if (callback) callback();
+function playSpellAnimation(spellId, caster, target) {
+    return new Promise((resolve) => {
+        try {
+            if (!window.spellAnimations || !window.spellAnimations[spellId]) {
+                console.warn(`⚠️ Анимация для ${spellId} не найдена`);
+                resolve();
                 return;
             }
 
-            casterCol = 5; // Маги в правой колонке
-            casterRow = demoBattleData.wizardPositions[wizardIndex]; // row: 1, 2 или 3
-            targetCol = 1; // Дракон в центре (условно col 1)
-            targetRow = 1; // Центральная позиция
-        } else if (target) {
-            // Дракон кастует на мага
-            const wizardIndex = demoBattleData.wizards.indexOf(target);
-            if (wizardIndex === -1) {
-                console.error('⚠️ Маг-цель не найден');
-                if (callback) callback();
-                return;
+            const animation = window.spellAnimations[spellId];
+
+            // Определяем координаты
+            let casterCol, casterRow, targetCol, targetRow;
+
+            if (target === 'dragon') {
+                // Маг → Дракон
+                const wizardIndex = cinematicData.wizards.indexOf(caster);
+                casterCol = 5;
+                casterRow = caster.position;
+                targetCol = 1;
+                targetRow = 1;
+            } else if (target) {
+                // Дракон → Маг
+                casterCol = 1;
+                casterRow = 1;
+                targetCol = 5;
+                targetRow = target.position;
             }
 
-            casterCol = 1; // Дракон в центре
-            casterRow = 1; // Центральная позиция
-            targetCol = 5; // Маг в правой колонке
-            targetRow = demoBattleData.wizardPositions[wizardIndex]; // row: 1, 2 или 3
-        } else {
-            console.error('⚠️ Нет цели для анимации');
-            if (callback) callback();
-            return;
-        }
+            const casterTypeParam = (target === 'dragon') ? 'player' : 'enemy';
+            const extraParams = {};
 
-        console.log(`🎬 Анимация ${spellId}: [${casterCol},${casterRow}] → [${targetCol},${targetRow}]`);
+            // Параметры для wall заклинаний
+            if (spellId === 'fire_wall' || spellId === 'wind_wall') {
+                extraParams.positions = [0, 1, 2, 3, 4];
+                extraParams.casterId = caster ? `wizard_${cinematicData.wizards.indexOf(caster)}` : 'dragon';
+                extraParams.damage = 10;
+            }
 
-        // Определяем casterType для обратной совместимости
-        const casterTypeParam = (target === 'dragon') ? 'player' : 'enemy';
+            // Таймаут на случай если анимация не вызовет callback
+            const timeout = setTimeout(() => resolve(), 3000);
 
-        // Дополнительные параметры для некоторых заклинаний
-        const extraParams = {};
-
-        // fire_wall и wind_wall требуют массив позиций
-        if (spellId === 'fire_wall' || spellId === 'wind_wall') {
-            extraParams.positions = [0, 1, 2, 3, 4]; // Все ряды
-            extraParams.casterId = caster ? `wizard_${demoBattleData.wizards.indexOf(caster)}` : 'dragon';
-            extraParams.damage = 10;
-        }
-
-        animation.play({
-            // Новый API (для spark, icicle, etc)
-            casterCol: casterCol,
-            casterRow: casterRow,
-            targetCol: targetCol,
-            targetRow: targetRow,
-            // Старый API для совместимости (firebolt, wind-blade)
-            casterType: casterTypeParam,
-            casterPosition: casterRow,
-            targetColumn: targetCol,
-            initialPosition: casterRow,
-            level: 1,
-            // Дополнительные параметры
-            ...extraParams,
-            onComplete: () => {
-                try {
-                    if (callback) callback();
-                } catch (e) {
-                    console.error('Ошибка в callback анимации:', e);
+            animation.play({
+                casterCol: casterCol,
+                casterRow: casterRow,
+                targetCol: targetCol,
+                targetRow: targetRow,
+                casterType: casterTypeParam,
+                casterPosition: casterRow,
+                targetColumn: targetCol,
+                initialPosition: casterRow,
+                level: 1,
+                ...extraParams,
+                onComplete: () => {
+                    clearTimeout(timeout);
+                    resolve();
                 }
-            }
-        });
-    } catch (error) {
-        console.error(`❌ Ошибка при проигрывании анимации ${spellId}:`, error);
-        if (callback) callback();
-    }
+            });
+        } catch (error) {
+            console.error(`❌ Ошибка анимации ${spellId}:`, error);
+            resolve();
+        }
+    });
 }
 
-// Конец демо-боя
-function endDemoBattle(winner) {
-    demoBattleData.isRunning = false;
-
-    if (winner === 'wizards') {
-        logMessage('🎉 НЕВЕРОЯТНО! Маги одолели дракона!', '#66ff66');
-
-        // Анимация смерти дракона
-        window.pixiDragon.playDeath(() => {
-            fadeToBlackAndClose();
-        });
-    } else if (winner === 'dragon') {
-        logMessage('🐉 Дракон победил! Но вы сражались храбро...', '#ff6666');
-        fadeToBlackAndClose();
-    } else {
-        logMessage('⚔️ Битва окончена!', '#ffaa00');
-        fadeToBlackAndClose();
-    }
+// Вспомогательная функция задержки
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Затемнение и закрытие
-function fadeToBlackAndClose() {
+// Конец кинематографической сцены
+function endCinematic() {
+    cinematicData.isPlaying = false;
+
     const overlay = document.getElementById('demo-battle-overlay');
     if (!overlay) return;
 
+    // Плавное затемнение
+    overlay.style.transition = `background ${CINEMATIC_CONFIG.fadeOutDuration}ms`;
+    overlay.style.background = 'rgba(0, 0, 0, 1)';
+
     setTimeout(() => {
-        // Плавное затемнение
-        overlay.style.transition = `background ${DEMO_CONFIG.fadeOutDuration}ms`;
-        overlay.style.background = 'rgba(0, 0, 0, 1)';
+        closeDemoBattle();
 
-        setTimeout(() => {
-            closeDemoBattle();
-
-            // Показываем город
-            if (typeof window.showGameArea === 'function') {
-                window.showGameArea();
-            }
-        }, DEMO_CONFIG.fadeOutDuration);
-    }, 2000);
+        // Показываем город
+        if (typeof window.showGameArea === 'function') {
+            window.showGameArea();
+        }
+    }, CINEMATIC_CONFIG.fadeOutDuration);
 }
 
-// Показать overlay демо-боя
-function showDemoBattleOverlay() {
+// Показать overlay
+function showCinematicOverlay() {
     const overlayHTML = `
         <div id="demo-battle-overlay" style="
             position: fixed;
@@ -456,58 +320,36 @@ function showDemoBattleOverlay() {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            padding-top: 20px;
+            justify-content: center;
         ">
             <div style="
-                background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
-                border-radius: 20px;
-                padding: 20px;
                 max-width: 900px;
                 width: 90%;
-                box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-                border: 2px solid #4a4a6a;
             ">
-                <h2 style="color: #ff6b6b; text-align: center; margin: 0 0 15px 0; font-size: 24px;">
+                <h2 style="color: #ff6b6b; text-align: center; margin: 0 0 20px 0; font-size: 28px; text-shadow: 0 0 10px rgba(255,107,107,0.5);">
                     ⚔️ Испытание Дракона ⚔️
                 </h2>
 
-                <!-- PIXI Canvas будет здесь -->
+                <!-- PIXI Canvas -->
                 <div id="pixi-container" style="
                     display: flex;
                     justify-content: center;
-                    margin-bottom: 15px;
                 "></div>
 
-                <!-- Лог боя -->
-                <div id="demo-battle-log" style="
-                    background: rgba(0,0,0,0.4);
-                    padding: 15px;
-                    border-radius: 10px;
-                    height: 120px;
-                    overflow-y: auto;
-                    margin-bottom: 15px;
-                    font-size: 13px;
-                    color: #ddd;
-                ">
-                    <div>🎭 Древний дракон пробудился!</div>
-                    <div>🧙‍♂️ Маги вступают в бой!</div>
-                </div>
-
-                <!-- Кнопки -->
-                <div style="text-align: center;">
+                <!-- Кнопка пропустить -->
+                <div style="text-align: center; margin-top: 20px;">
                     <button onclick="skipDemoBattle()" style="
-                        padding: 10px 25px;
+                        padding: 12px 30px;
                         background: linear-gradient(145deg, #7289da, #5e7bc7);
                         border: none;
                         border-radius: 8px;
                         color: white;
-                        font-size: 14px;
+                        font-size: 16px;
                         cursor: pointer;
-                        margin: 0 8px;
-                        transition: transform 0.2s;
-                    " onmouseover="this.style.transform='scale(1.05)'"
-                       onmouseout="this.style.transform='scale(1)'">
+                        transition: transform 0.2s, box-shadow 0.2s;
+                        box-shadow: 0 4px 15px rgba(114, 137, 218, 0.4);
+                    " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(114, 137, 218, 0.6)';"
+                       onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(114, 137, 218, 0.4)';">
                         ⏩ Пропустить
                     </button>
                 </div>
@@ -518,45 +360,13 @@ function showDemoBattleOverlay() {
     document.body.insertAdjacentHTML('beforeend', overlayHTML);
 }
 
-// Добавить сообщение в лог
-function logMessage(text, color = '#ddd') {
-    const log = document.getElementById('demo-battle-log');
-    if (!log) return;
-
-    const message = document.createElement('div');
-    message.textContent = text;
-    message.style.color = color;
-    message.style.marginBottom = '3px';
-
-    log.appendChild(message);
-    log.scrollTop = log.scrollHeight;
-}
-
-// Получить название заклинания
-function getSpellName(spellId) {
-    const names = {
-        'spark': 'Искра',
-        'firebolt': 'Огненный снаряд',
-        'icicle': 'Ледышка',
-        'frost_arrow': 'Морозная стрела',
-        'gust': 'Порыв ветра',
-        'wind_blade': 'Клинок ветра',
-        'fireball': 'Огненный шар',
-        'blizzard': 'Метель',
-        'fire_wall': 'Огненная стена',
-        'wind_wall': 'Стена ветра'
-    };
-
-    return names[spellId] || spellId;
-}
-
-// Пропустить демо
+// Пропустить сцену
 function skipDemoBattle() {
-    demoBattleData.isRunning = false;
-    closeDemoBattle();
+    cinematicData.isPlaying = false;
+    endCinematic();
 }
 
-// Закрыть демо
+// Закрыть сцену
 function closeDemoBattle() {
     const overlay = document.getElementById('demo-battle-overlay');
     if (overlay) {
@@ -577,21 +387,13 @@ function closeDemoBattle() {
     window.playerFormation = null;
 
     // Сброс данных
-    demoBattleData = {
+    cinematicData = {
         dragon: null,
         wizards: [],
-        isRunning: false,
-        currentTurn: 0,
-        wizardPositions: [1, 2, 3],
-        dragonSpells: ['fireball', 'blizzard', 'fire_wall'],
-        wizardSpells: [
-            ['spark', 'firebolt'],
-            ['icicle', 'frost_arrow'],
-            ['gust', 'wind_blade']
-        ]
+        isPlaying: false
     };
 
-    console.log('🧹 Демо-бой очищен');
+    console.log('🧹 Кинематографическая сцена завершена');
 }
 
 // Экспорт функций
@@ -599,11 +401,11 @@ window.startDemoBattle = startDemoBattle;
 window.skipDemoBattle = skipDemoBattle;
 window.closeDemoBattle = closeDemoBattle;
 
-// Удобная консольная команда для тестирования
+// Удобная консольная команда
 window.demo = function(faction = 'fire') {
-    console.log('🐉 Запуск демо-боя с фракцией:', faction);
+    console.log('🎬 Запуск кинематографической сцены');
     window.startDemoBattle(faction);
 };
 
-console.log('✅ Демо-бой готов к запуску!');
-console.log('💡 Используй команду: demo() или demo("water") для запуска');
+console.log('✅ Кинематографическая сцена готова!');
+console.log('💡 Используй команду: demo()');
