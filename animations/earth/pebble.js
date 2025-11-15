@@ -68,13 +68,7 @@ console.log('✅ pebble.js загружен');
             let animationActive = true;
             
             const animate = () => {
-                // ЗАЩИТА: Проверяем существование объекта
-                if (!animationActive || !pebbleSprite || !pebbleSprite.transform || pebbleSprite.destroyed) {
-                    animationActive = false;
-                    return;
-                }
-                
-                if (!pebbleSprite.parent) {
+                if (!animationActive || !window.pixiAnimUtils.isValid(pebbleSprite)) {
                     animationActive = false;
                     return;
                 }
@@ -161,13 +155,7 @@ console.log('✅ pebble.js загружен');
             let animationActive = true;
             
             const animate = () => {
-                // ЗАЩИТА: Проверяем существование объекта
-                if (!animationActive || !pebble || !pebble.transform || pebble.destroyed) {
-                    animationActive = false;
-                    return;
-                }
-                
-                if (!pebble.parent) {
+                if (!animationActive || !window.pixiAnimUtils.isValid(pebble)) {
                     animationActive = false;
                     return;
                 }
@@ -235,7 +223,7 @@ console.log('✅ pebble.js загружен');
         
         const animateDust = () => {
             // ЗАЩИТА: Проверяем существование объекта
-            if (!dustAnimationActive || !dust || !dust.transform || dust.destroyed) {
+            if (!dustAnimationActive || !window.pixiAnimUtils.isValid(dust)) {
                 dustAnimationActive = false;
                 return;
             }
@@ -293,7 +281,7 @@ console.log('✅ pebble.js загружен');
             
             const animateShard = () => {
                 // ЗАЩИТА: Проверяем существование объекта
-                if (!shardAnimationActive || !shard || !shard.transform || shard.destroyed) {
+                if (!shardAnimationActive || !window.pixiAnimUtils.isValid(shard)) {
                     shardAnimationActive = false;
                     return;
                 }
