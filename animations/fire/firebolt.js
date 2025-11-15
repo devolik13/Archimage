@@ -23,10 +23,22 @@ console.log('✅ firebolt.js загружен');
         }
         
         // НОВАЯ ЛОГИКА: используем данные из массива arrows
-        if (!arrows || arrows.length === 0) {
-            console.warn('⚠️ Нет данных о стрелах, используем старую логику');
-            playOldFireboltAnimation(params);
-            return;
+        let arrowsToUse = arrows;
+
+        // Если arrows не передан, создаем его из targetCol/targetRow
+        if (!arrowsToUse || arrowsToUse.length === 0) {
+            const { targetCol, targetRow } = params;
+            if (targetCol !== undefined && targetRow !== undefined) {
+                console.log('🔧 Создаем arrows из targetCol/targetRow');
+                arrowsToUse = [{
+                    targetCol: targetCol,
+                    targetRow: targetRow
+                }];
+            } else {
+                console.warn('⚠️ Нет данных о стрелах, используем старую логику');
+                playOldFireboltAnimation(params);
+                return;
+            }
         }
         
         // Позиция кастера
@@ -38,9 +50,9 @@ console.log('✅ firebolt.js загружен');
             return;
         }
         
-        const arrowCount = arrows.length;
+        const arrowCount = arrowsToUse.length;
         let completedArrows = 0;
-        
+
         console.log(`🏹 Запуск ${arrowCount} огненных стрел с точными координатами`);
         
         // Загружаем спрайт-лист
@@ -74,7 +86,7 @@ console.log('✅ firebolt.js загружен');
             }
             
             // Запускаем стрелы с задержкой
-            arrows.forEach((arrowData, i) => {
+            arrowsToUse.forEach((arrowData, i) => {
                 setTimeout(() => {
                     createAnimatedArrow(frames, arrowData, i);
                 }, i * 200);
@@ -160,7 +172,7 @@ console.log('✅ firebolt.js загружен');
         }
         
         function createFallbackArrows() {
-            arrows.forEach((arrowData, i) => {
+            arrowsToUse.forEach((arrowData, i) => {
                 setTimeout(() => {
                     const targetCol = arrowData.impactCol;
                     const targetRow = arrowData.impactRow;

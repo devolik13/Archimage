@@ -275,14 +275,19 @@ console.log('✅ pixi-dragon.js загружен');
             console.log('🎬 Анимация атаки дракона');
 
             const originalSpeed = sprite.animationSpeed;
-            const originalScale = { x: sprite.scale.x, y: sprite.scale.y }; // Сохраняем масштаб
+            const originalScaleX = sprite.scale.x;
+            const originalScaleY = sprite.scale.y;
 
             sprite.stop();
             sprite.textures = dragonContainer.castFrames;
             sprite.animationSpeed = 0.15;
             sprite.loop = false;
             sprite.gotoAndPlay(0);
-            sprite.scale.set(originalScale.x, originalScale.y); // Восстанавливаем масштаб ПОСЛЕ gotoAndPlay
+
+            // Принудительно устанавливаем scale через requestAnimationFrame
+            requestAnimationFrame(() => {
+                sprite.scale.set(originalScaleX, originalScaleY);
+            });
 
             sprite.onComplete = () => {
                 // Возврат к idle
@@ -291,7 +296,12 @@ console.log('✅ pixi-dragon.js загружен');
                 sprite.animationSpeed = originalSpeed;
                 sprite.loop = true;
                 sprite.gotoAndPlay(0);
-                sprite.scale.set(originalScale.x, originalScale.y); // Восстанавливаем масштаб ПОСЛЕ gotoAndPlay
+
+                // Принудительно устанавливаем scale через requestAnimationFrame
+                requestAnimationFrame(() => {
+                    sprite.scale.set(originalScaleX, originalScaleY);
+                });
+
                 sprite.onComplete = null;
 
                 if (callback) callback();
