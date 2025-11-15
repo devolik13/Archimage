@@ -199,22 +199,38 @@ function castWizardSpell(wizard, spellId, callback) {
         return;
     }
 
-    // Анимация каста мага
-    if (window.pixiWizards.playCastAnimation) {
-        window.pixiWizards.playCastAnimation(wizard.sprite);
+    try {
+        // Анимация каста мага
+        if (window.pixiWizards.playCastAnimation) {
+            window.pixiWizards.playCastAnimation(wizard.sprite);
+        }
+
+        // Урон дракону
+        const damage = Math.floor(8 + Math.random() * 12); // 8-20 урона
+        demoBattleData.dragon.hp = Math.max(0, demoBattleData.dragon.hp - damage);
+
+        logMessage(`🧙‍♂️ ${wizard.data.name} кастует ${getSpellName(spellId)} (${damage} урона)`);
+
+        // Обновляем HP дракона
+        window.pixiDragon.updateHP(demoBattleData.dragon.hp, DEMO_CONFIG.dragonMaxHP);
+
+        // Таймаут для безопасности - если анимация не завершится, продолжаем бой
+        let callbackCalled = false;
+        const safeCallback = () => {
+            if (!callbackCalled) {
+                callbackCalled = true;
+                if (callback) callback();
+            }
+        };
+
+        setTimeout(safeCallback, 3000); // Максимум 3 секунды на анимацию
+
+        // Анимация заклинания на дракона
+        playSpellAnimation(spellId, wizard, 'dragon', safeCallback);
+    } catch (error) {
+        console.error(`❌ Ошибка при касте ${spellId}:`, error);
+        if (callback) callback();
     }
-
-    // Урон дракону
-    const damage = Math.floor(8 + Math.random() * 12); // 8-20 урона
-    demoBattleData.dragon.hp = Math.max(0, demoBattleData.dragon.hp - damage);
-
-    logMessage(`🧙‍♂️ ${wizard.data.name} кастует ${getSpellName(spellId)} (${damage} урона)`);
-
-    // Обновляем HP дракона
-    window.pixiDragon.updateHP(demoBattleData.dragon.hp, DEMO_CONFIG.dragonMaxHP);
-
-    // Анимация заклинания на дракона
-    playSpellAnimation(spellId, wizard, 'dragon', callback);
 }
 
 // Ход дракона
@@ -245,71 +261,103 @@ function executeDragonTurn(callback) {
 
 // Каст заклинания драконом
 function castDragonSpell(spellId, callback) {
-    // Анимация атаки дракона
-    window.pixiDragon.playAttack(() => {
-        // Выбираем случайного живого мага
-        const aliveWizards = demoBattleData.wizards.filter(w => w.data.hp > 0);
-
-        if (aliveWizards.length === 0) {
-            if (callback) callback();
-            return;
-        }
-
-        const target = aliveWizards[Math.floor(Math.random() * aliveWizards.length)];
-        const damage = Math.floor(15 + Math.random() * 20); // 15-35 урона
-
-        target.data.hp = Math.max(0, target.data.hp - damage);
-
-        logMessage(`🐉 Дракон использует ${getSpellName(spellId)} на ${target.data.name} (${damage} урона)`);
-
-        // Обновляем HP мага
-        if (window.pixiWizards.updateWizardHP) {
-            window.pixiWizards.updateWizardHP(target, target.data.hp, target.data.max_hp);
-        }
-
-        // Проверяем смерть мага
-        if (target.data.hp <= 0) {
-            logMessage(`💀 ${target.data.name} повержен!`);
-            if (window.pixiWizards.playDeathAnimation) {
-                window.pixiWizards.playDeathAnimation(target.sprite);
+    try {
+        // Таймаут для безопасности
+        let callbackCalled = false;
+        const safeCallback = () => {
+            if (!callbackCalled) {
+                callbackCalled = true;
+                if (callback) callback();
             }
-        }
+        };
 
-        // Анимация заклинания
-        playSpellAnimation(spellId, null, target, callback);
-    });
+        setTimeout(safeCallback, 3000);
+
+        // Анимация атаки дракона
+        window.pixiDragon.playAttack(() => {
+            // Выбираем случайного живого мага
+            const aliveWizards = demoBattleData.wizards.filter(w => w.data.hp > 0);
+
+            if (aliveWizards.length === 0) {
+                safeCallback();
+                return;
+            }
+
+            const target = aliveWizards[Math.floor(Math.random() * aliveWizards.length)];
+            const damage = Math.floor(15 + Math.random() * 20); // 15-35 урона
+
+            target.data.hp = Math.max(0, target.data.hp - damage);
+
+            logMessage(`🐉 Дракон использует ${getSpellName(spellId)} на ${target.data.name} (${damage} урона)`);
+
+            // Обновляем HP мага
+            if (window.pixiWizards.updateWizardHP) {
+                window.pixiWizards.updateWizardHP(target, target.data.hp, target.data.max_hp);
+            }
+
+            // Проверяем смерть мага
+            if (target.data.hp <= 0) {
+                logMessage(`💀 ${target.data.name} повержен!`);
+                if (window.pixiWizards.playDeathAnimation) {
+                    window.pixiWizards.playDeathAnimation(target.sprite);
+                }
+            }
+
+            // Анимация заклинания
+            playSpellAnimation(spellId, null, target, safeCallback);
+        });
+    } catch (error) {
+        console.error(`❌ Ошибка при касте дракона ${spellId}:`, error);
+        if (callback) callback();
+    }
 }
 
 // Проигрывание анимации заклинания
 function playSpellAnimation(spellId, caster, target, callback) {
-    if (!window.spellAnimations || !window.spellAnimations[spellId]) {
-        console.warn(`⚠️ Анимация для ${spellId} не найдена`);
+    try {
+        if (!window.spellAnimations || !window.spellAnimations[spellId]) {
+            console.warn(`⚠️ Анимация для ${spellId} не найдена`);
+            if (callback) callback();
+            return;
+        }
+
+        const animation = window.spellAnimations[spellId];
+
+        // Определяем параметры
+        let targetPositions = [];
+        let casterType = 'enemy';
+
+        if (target === 'dragon') {
+            // Магия по дракону - центральная позиция
+            targetPositions = [1]; // Центр 3×3
+            casterType = 'player';
+        } else if (target) {
+            // Магия дракона по магу - нужна row позиция, а не индекс
+            const wizardIndex = demoBattleData.wizards.indexOf(target);
+            if (wizardIndex !== -1) {
+                targetPositions = [demoBattleData.wizardPositions[wizardIndex]]; // row: 1, 2 или 3
+            }
+            casterType = 'enemy';
+        }
+
+        console.log(`🎬 Анимация ${spellId}: тип=${casterType}, позиции=${targetPositions}`);
+
+        animation.play({
+            casterType: casterType,
+            targetPositions: targetPositions,
+            level: 1,
+            onComplete: () => {
+                try {
+                    if (callback) callback();
+                } catch (e) {
+                    console.error('Ошибка в callback анимации:', e);
+                }
+            }
+        });
+    } catch (error) {
+        console.error(`❌ Ошибка при проигрывании анимации ${spellId}:`, error);
         if (callback) callback();
-        return;
     }
-
-    const animation = window.spellAnimations[spellId];
-
-    // Определяем параметры
-    let targetPositions = [];
-    let casterType = 'enemy';
-
-    if (target === 'dragon') {
-        // Магия по дракону - центральная позиция
-        targetPositions = [1]; // Центр 3×3
-        casterType = 'player';
-    } else if (target) {
-        // Магия дракона по магу
-        targetPositions = [demoBattleData.wizards.indexOf(target)];
-        casterType = 'enemy';
-    }
-
-    animation.play({
-        casterType: casterType,
-        targetPositions: targetPositions,
-        level: 1,
-        onComplete: callback
-    });
 }
 
 // Конец демо-боя
