@@ -164,9 +164,11 @@ console.log('✅ epidemic.js загружен');
             const totalDuration = inflateDuration + holdDuration + explodeDuration;
             
             const animate = () => {
+                if (!window.pixiAnimUtils.isValid(bubbleSprite)) return;
+
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / totalDuration, 1);
-                
+
                 if (elapsed < inflateDuration) {
                     // Фаза надувания (0 → 1)
                     const inflateProgress = elapsed / inflateDuration;

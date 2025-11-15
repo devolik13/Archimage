@@ -261,11 +261,13 @@ console.log('✅ leaf-canopy.js загружен');
                     const startY = particle.y;
                     let progress = 0;
                     const animateParticle = () => {
+                        if (!window.pixiAnimUtils.isValid(particle)) return;
+
                         progress += 0.02;
                         particle.y = startY - progress * 30;
                         particle.alpha = 1 - progress;
                         particle.scale.set(1 - progress * 0.5);
-                        
+
                         if (progress < 1) {
                             requestAnimationFrame(animateParticle);
                         } else {

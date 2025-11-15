@@ -132,9 +132,11 @@ console.log('✅ poisoned_glade.js загружен');
             const duration = 600;
             
             const animate = () => {
+                if (!window.pixiAnimUtils.isValid(toxicCloud)) return;
+
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                
+
                 // Появление → удержание → исчезновение
                 if (progress < 0.3) {
                     glade.alpha = progress / 0.3;
