@@ -454,7 +454,8 @@ function createBottomControlPanel() {
         if (window.showPvPArenaModal) {
             window.showPvPArenaModal();
         } else if (window.startDemoBattle) {
-            window.startDemoBattle();
+            const faction = window.userData?.faction || 'fire';
+            window.startDemoBattle(faction);
         } else {
             showNotification('Арена пока недоступна');
         }
@@ -870,7 +871,8 @@ function onBuildingClick(buildingId) {
             if (window.showPvPArenaModal) {
                 window.showPvPArenaModal();
             } else if (window.startDemoBattle) {
-                window.startDemoBattle();
+                const faction = window.userData?.faction || 'fire';
+                window.startDemoBattle(faction);
             } else {
                 showBuildingInfo(buildingId, 'Арена', 'Место для PvP сражений');
             }
