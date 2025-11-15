@@ -7,7 +7,7 @@ const DEMO_CONFIG = {
     dragonMaxHP: 500,
     wizardHP: 120,
     wizardMaxHP: 120,
-    turnDelay: 2000, // Задержка между заклинаниями
+    turnDelay: 1600, // Задержка между заклинаниями (ускорено на 20%)
     fadeOutDuration: 2000 // Длительность затемнения при победе
 };
 
@@ -209,7 +209,7 @@ function castWizardSpell(wizard, spellId, callback) {
         const damage = Math.floor(8 + Math.random() * 12); // 8-20 урона
         demoBattleData.dragon.hp = Math.max(0, demoBattleData.dragon.hp - damage);
 
-        logMessage(`🧙‍♂️ ${wizard.data.name} кастует ${getSpellName(spellId)} (${damage} урона)`);
+        logMessage(`🧙‍♂️ ${wizard.data.name} кастует ${getSpellName(spellId)} (${damage} урона) | Дракон: ${demoBattleData.dragon.hp}/${DEMO_CONFIG.dragonMaxHP} HP`);
 
         // Обновляем HP дракона
         window.pixiDragon.updateHP(demoBattleData.dragon.hp, DEMO_CONFIG.dragonMaxHP);
@@ -288,7 +288,7 @@ function castDragonSpell(spellId, callback) {
 
             target.data.hp = Math.max(0, target.data.hp - damage);
 
-            logMessage(`🐉 Дракон использует ${getSpellName(spellId)} на ${target.data.name} (${damage} урона)`);
+            logMessage(`🐉 Дракон использует ${getSpellName(spellId)} на ${target.data.name} (${damage} урона) | ${target.data.name}: ${target.data.hp}/${target.data.max_hp} HP`);
 
             // Обновляем HP мага
             if (window.pixiWizards.updateWizardHP) {
@@ -360,11 +360,21 @@ function playSpellAnimation(spellId, caster, target, callback) {
 
         console.log(`🎬 Анимация ${spellId}: [${casterCol},${casterRow}] → [${targetCol},${targetRow}]`);
 
+        // Определяем casterType для обратной совместимости
+        const casterTypeParam = (target === 'dragon') ? 'player' : 'enemy';
+
         animation.play({
+            // Новый API (для spark, icicle, etc)
             casterCol: casterCol,
             casterRow: casterRow,
             targetCol: targetCol,
             targetRow: targetRow,
+            // Старый API для совместимости (firebolt, wind-blade)
+            casterType: casterTypeParam,
+            casterPosition: casterRow,
+            targetColumn: targetCol,
+            initialPosition: casterRow,
+            level: 1,
             onComplete: () => {
                 try {
                     if (callback) callback();

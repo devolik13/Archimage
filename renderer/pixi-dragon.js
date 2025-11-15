@@ -262,16 +262,13 @@ console.log('✅ pixi-dragon.js загружен');
         const sprite = dragonContainer.sprite;
 
         if (dragonContainer.isPlaceholder || !dragonContainer.castFrames || dragonContainer.castFrames.length === 0) {
-            // Fallback для placeholder - простое мигание и масштаб
+            // Fallback для placeholder - простое мигание (БЕЗ изменения масштаба)
             const originalAlpha = sprite.alpha;
-            const originalScale = sprite.scale.x;
 
             sprite.alpha = 1;
-            sprite.scale.set(originalScale * 1.2);
 
             setTimeout(() => {
                 sprite.alpha = originalAlpha;
-                sprite.scale.set(originalScale);
                 if (callback) callback();
             }, 300);
         } else {
