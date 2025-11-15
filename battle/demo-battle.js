@@ -363,6 +363,16 @@ function playSpellAnimation(spellId, caster, target, callback) {
         // Определяем casterType для обратной совместимости
         const casterTypeParam = (target === 'dragon') ? 'player' : 'enemy';
 
+        // Дополнительные параметры для некоторых заклинаний
+        const extraParams = {};
+
+        // fire_wall и wind_wall требуют массив позиций
+        if (spellId === 'fire_wall' || spellId === 'wind_wall') {
+            extraParams.positions = [0, 1, 2, 3, 4]; // Все ряды
+            extraParams.casterId = caster ? `wizard_${demoBattleData.wizards.indexOf(caster)}` : 'dragon';
+            extraParams.damage = 10;
+        }
+
         animation.play({
             // Новый API (для spark, icicle, etc)
             casterCol: casterCol,
@@ -375,6 +385,8 @@ function playSpellAnimation(spellId, caster, target, callback) {
             targetColumn: targetCol,
             initialPosition: casterRow,
             level: 1,
+            // Дополнительные параметры
+            ...extraParams,
             onComplete: () => {
                 try {
                     if (callback) callback();
