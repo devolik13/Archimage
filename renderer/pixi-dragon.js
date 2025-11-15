@@ -23,6 +23,13 @@ console.log('✅ pixi-dragon.js загружен');
             const castTexture = await PIXI.Assets.load('images/dragon/cast.png');
             const deathTexture = await PIXI.Assets.load('images/dragon/death.png');
 
+            // Проверяем размер текстур
+            const expectedHeight = DRAGON_CONFIG.frameCount * DRAGON_CONFIG.frameHeight;
+            if (idleTexture.height < expectedHeight) {
+                console.warn(`⚠️ Текстура дракона имеет неправильный размер: ${idleTexture.width}×${idleTexture.height}, ожидалось ${DRAGON_CONFIG.frameWidth}×${expectedHeight}`);
+                return null;
+            }
+
             // Разбиваем спрайт-листы на кадры
             const idleFrames = [];
             const castFrames = [];
@@ -61,9 +68,57 @@ console.log('✅ pixi-dragon.js загружен');
             return { idle: idleFrames, cast: castFrames, death: deathFrames };
 
         } catch (error) {
-            console.error('❌ Ошибка загрузки текстур дракона:', error);
+            console.warn('⚠️ Текстуры дракона не найдены:', error.message);
             return null;
         }
+    }
+
+    // Создание placeholder дракона (заглушка)
+    function createPlaceholderDragonGraphics() {
+        console.log('🎨 Создание placeholder дракона...');
+
+        const graphics = new PIXI.Graphics();
+
+        // Тело дракона (большой овал)
+        graphics.beginFill(0xff4444, 0.8);
+        graphics.drawEllipse(0, 0, 100, 80);
+        graphics.endFill();
+
+        // Голова
+        graphics.beginFill(0xff6666, 0.9);
+        graphics.drawCircle(-70, -40, 40);
+        graphics.endFill();
+
+        // Глаза
+        graphics.beginFill(0xffff00, 1);
+        graphics.drawCircle(-80, -45, 8);
+        graphics.drawCircle(-60, -45, 8);
+        graphics.endFill();
+
+        // Крылья
+        graphics.beginFill(0xcc3333, 0.6);
+        graphics.drawEllipse(50, -30, 60, 40);
+        graphics.drawEllipse(50, 30, 60, 40);
+        graphics.endFill();
+
+        // Хвост
+        graphics.beginFill(0xff3333, 0.7);
+        graphics.moveTo(90, 0);
+        graphics.lineTo(150, -20);
+        graphics.lineTo(140, 0);
+        graphics.lineTo(150, 20);
+        graphics.lineTo(90, 0);
+        graphics.endFill();
+
+        // Текст "DRAGON"
+        const text = new PIXI.Text('🐉', {
+            fontSize: 80,
+            fill: 0xffffff
+        });
+        text.anchor.set(0.5);
+        graphics.addChild(text);
+
+        return graphics;
     }
 
     // Создание спрайта дракона на поле 6×5
@@ -80,17 +135,22 @@ console.log('✅ pixi-dragon.js загружен');
 
         // Загружаем текстуры
         const textures = await loadDragonTextures();
-        if (!textures || !textures.idle || textures.idle.length === 0) {
-            console.error('❌ Не удалось загрузить текстуры дракона');
-            return null;
-        }
 
-        // Создаем анимированный спрайт
-        const sprite = new PIXI.AnimatedSprite(textures.idle);
-        sprite.animationSpeed = DRAGON_CONFIG.animationSpeed;
-        sprite.anchor.set(0.5);
-        sprite.loop = true;
-        sprite.play();
+        let sprite;
+        let isPlaceholder = false;
+
+        if (!textures || !textures.idle || textures.idle.length === 0) {
+            console.warn('⚠️ Используем placeholder для дракона (добавьте PNG в images/dragon/)');
+            sprite = createPlaceholderDragonGraphics();
+            isPlaceholder = true;
+        } else {
+            // Создаем анимированный спрайт
+            sprite = new PIXI.AnimatedSprite(textures.idle);
+            sprite.animationSpeed = DRAGON_CONFIG.animationSpeed;
+            sprite.anchor.set(0.5);
+            sprite.loop = true;
+            sprite.play();
+        }
 
         // Дракон занимает 3×3 клетки (col 0-2, row 0-2)
         // Позиционируем в центре этой области
@@ -112,15 +172,23 @@ console.log('✅ pixi-dragon.js загружен');
         // Масштабируем дракона чтобы занимал 3×3 клетки
         const areaWidth = bottomRightCell.x + bottomRightCell.width - topLeftCell.x;
         const areaHeight = bottomRightCell.y + bottomRightCell.height - topLeftCell.y;
-        const scaleToFit = Math.min(areaWidth / DRAGON_CONFIG.frameWidth, areaHeight / DRAGON_CONFIG.frameHeight);
-        sprite.scale.set(scaleToFit * DRAGON_CONFIG.scale);
+
+        if (isPlaceholder) {
+            // Для placeholder масштабируем по-другому (он уже в пикселях)
+            const placeholderScale = Math.min(areaWidth / 300, areaHeight / 200);
+            sprite.scale.set(placeholderScale);
+        } else {
+            const scaleToFit = Math.min(areaWidth / DRAGON_CONFIG.frameWidth, areaHeight / DRAGON_CONFIG.frameHeight);
+            sprite.scale.set(scaleToFit * DRAGON_CONFIG.scale);
+        }
 
         // Создаем контейнер для дракона
         dragonContainer = {
             sprite: sprite,
-            idleFrames: textures.idle,
-            castFrames: textures.cast,
-            deathFrames: textures.death,
+            idleFrames: textures?.idle || null,
+            castFrames: textures?.cast || null,
+            deathFrames: textures?.death || null,
+            isPlaceholder: isPlaceholder,
             hp: 500,
             maxHp: 500,
             position: { col: 0, row: 0, width: 3, height: 3 }
@@ -174,7 +242,20 @@ console.log('✅ pixi-dragon.js загружен');
 
         const sprite = dragonContainer.sprite;
 
-        if (dragonContainer.castFrames && dragonContainer.castFrames.length > 0) {
+        if (dragonContainer.isPlaceholder || !dragonContainer.castFrames || dragonContainer.castFrames.length === 0) {
+            // Fallback для placeholder - простое мигание и масштаб
+            const originalAlpha = sprite.alpha;
+            const originalScale = sprite.scale.x;
+
+            sprite.alpha = 1;
+            sprite.scale.set(originalScale * 1.2);
+
+            setTimeout(() => {
+                sprite.alpha = originalAlpha;
+                sprite.scale.set(originalScale);
+                if (callback) callback();
+            }, 300);
+        } else {
             console.log('🎬 Анимация атаки дракона');
 
             const originalSpeed = sprite.animationSpeed;
@@ -196,14 +277,6 @@ console.log('✅ pixi-dragon.js загружен');
 
                 if (callback) callback();
             };
-        } else {
-            // Fallback - простое мигание
-            const originalAlpha = sprite.alpha;
-            sprite.alpha = 0.5;
-            setTimeout(() => {
-                sprite.alpha = originalAlpha;
-                if (callback) callback();
-            }, 300);
         }
     }
 
@@ -216,7 +289,27 @@ console.log('✅ pixi-dragon.js загружен');
 
         const sprite = dragonContainer.sprite;
 
-        if (dragonContainer.deathFrames && dragonContainer.deathFrames.length > 0) {
+        if (dragonContainer.isPlaceholder || !dragonContainer.deathFrames || dragonContainer.deathFrames.length === 0) {
+            // Fallback для placeholder - затемнение
+            console.log('💀 Анимация смерти дракона (placeholder)');
+            let alpha = 1;
+            const fadeInterval = setInterval(() => {
+                if (!window.pixiAnimUtils.isValid(sprite)) {
+                    clearInterval(fadeInterval);
+                    if (callback) callback();
+                    return;
+                }
+
+                alpha -= 0.05;
+                sprite.alpha = Math.max(0.3, alpha);
+
+                if (alpha <= 0.3) {
+                    clearInterval(fadeInterval);
+                    if (dragonContainer.hpBar) dragonContainer.hpBar.visible = false;
+                    if (callback) callback();
+                }
+            }, 50);
+        } else {
             console.log('💀 Анимация смерти дракона');
 
             sprite.stop();
@@ -236,19 +329,6 @@ console.log('✅ pixi-dragon.js загружен');
 
                 if (callback) callback();
             };
-        } else {
-            // Fallback - затемнение
-            let alpha = 1;
-            const fadeInterval = setInterval(() => {
-                alpha -= 0.05;
-                sprite.alpha = Math.max(0.3, alpha);
-
-                if (alpha <= 0.3) {
-                    clearInterval(fadeInterval);
-                    if (dragonContainer.hpBar) dragonContainer.hpBar.visible = false;
-                    if (callback) callback();
-                }
-            }, 50);
         }
     }
 
