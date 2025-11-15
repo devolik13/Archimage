@@ -23,10 +23,14 @@ console.log('✅ pixi-dragon.js загружен');
             const castTexture = await PIXI.Assets.load('images/dragon/cast.png');
             const deathTexture = await PIXI.Assets.load('images/dragon/death.png');
 
+            console.log(`📐 Idle текстура: ${idleTexture.width}×${idleTexture.height}`);
+            console.log(`📐 Cast текстура: ${castTexture.width}×${castTexture.height}`);
+            console.log(`📐 Death текстура: ${deathTexture.width}×${deathTexture.height}`);
+
             // Определяем ориентацию спрайт-листа
             const isHorizontal = idleTexture.width > idleTexture.height;
 
-            console.log(`📐 Размер текстуры: ${idleTexture.width}×${idleTexture.height}, ориентация: ${isHorizontal ? 'горизонтальная' : 'вертикальная'}`);
+            console.log(`📐 Ориентация: ${isHorizontal ? 'горизонтальная' : 'вертикальная'}`);
 
             // Разбиваем спрайт-листы на кадры
             const idleFrames = [];
@@ -193,17 +197,25 @@ console.log('✅ pixi-dragon.js загружен');
         const areaHeight = bottomRightCell.y + bottomRightCell.height - topLeftCell.y;
 
         let fixedScale;
+        let fixedWidth, fixedHeight;
+
         if (isPlaceholder) {
             // Для placeholder масштабируем по-другому (он уже в пикселях)
             const placeholderScale = Math.min(areaWidth / 300, areaHeight / 200);
             sprite.scale.set(placeholderScale);
             fixedScale = placeholderScale;
+            fixedWidth = sprite.width;
+            fixedHeight = sprite.height;
         } else {
             const scaleToFit = Math.min(areaWidth / DRAGON_CONFIG.frameWidth, areaHeight / DRAGON_CONFIG.frameHeight);
             const finalScale = scaleToFit * DRAGON_CONFIG.scale;
             sprite.scale.set(finalScale);
             fixedScale = finalScale;
+            fixedWidth = sprite.width;  // Сохраняем фактические размеры после масштабирования
+            fixedHeight = sprite.height;
         }
+
+        console.log(`🐉 Фиксированные размеры дракона: ${fixedWidth}×${fixedHeight}, scale: ${fixedScale}`);
 
         // Создаем контейнер для дракона
         dragonContainer = {
@@ -213,6 +225,8 @@ console.log('✅ pixi-dragon.js загружен');
             deathFrames: textures?.death || null,
             isPlaceholder: isPlaceholder,
             fixedScale: fixedScale, // СОХРАНЯЕМ фиксированный scale
+            fixedWidth: fixedWidth,   // СОХРАНЯЕМ фиксированные размеры
+            fixedHeight: fixedHeight,
             hp: 500,
             maxHp: 500,
             position: { col: 0, row: 0, width: 3, height: 3 }
@@ -280,19 +294,24 @@ console.log('✅ pixi-dragon.js загружен');
             console.log('🎬 Анимация атаки дракона');
 
             const originalSpeed = sprite.animationSpeed;
-            const fixedScale = dragonContainer.fixedScale; // Используем сохраненный фиксированный scale
 
             sprite.stop();
             sprite.textures = dragonContainer.castFrames;
             sprite.animationSpeed = 0.15;
             sprite.loop = false;
             sprite.gotoAndPlay(0);
-            sprite.scale.set(fixedScale, fixedScale); // Применяем сразу
 
-            // Дополнительно устанавливаем через requestAnimationFrame
+            // Используем фиксированные размеры вместо scale
+            sprite.width = dragonContainer.fixedWidth;
+            sprite.height = dragonContainer.fixedHeight;
+
+            console.log(`🎬 Cast: установлены размеры ${sprite.width}×${sprite.height}`);
+
+            // Дополнительно через requestAnimationFrame
             requestAnimationFrame(() => {
                 if (sprite && !sprite.destroyed) {
-                    sprite.scale.set(fixedScale, fixedScale);
+                    sprite.width = dragonContainer.fixedWidth;
+                    sprite.height = dragonContainer.fixedHeight;
                 }
             });
 
@@ -303,12 +322,18 @@ console.log('✅ pixi-dragon.js загружен');
                 sprite.animationSpeed = originalSpeed;
                 sprite.loop = true;
                 sprite.gotoAndPlay(0);
-                sprite.scale.set(fixedScale, fixedScale); // Применяем сразу
 
-                // Дополнительно устанавливаем через requestAnimationFrame
+                // Используем фиксированные размеры вместо scale
+                sprite.width = dragonContainer.fixedWidth;
+                sprite.height = dragonContainer.fixedHeight;
+
+                console.log(`🎬 Idle: установлены размеры ${sprite.width}×${sprite.height}`);
+
+                // Дополнительно через requestAnimationFrame
                 requestAnimationFrame(() => {
                     if (sprite && !sprite.destroyed) {
-                        sprite.scale.set(fixedScale, fixedScale);
+                        sprite.width = dragonContainer.fixedWidth;
+                        sprite.height = dragonContainer.fixedHeight;
                     }
                 });
 
