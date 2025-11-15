@@ -67,12 +67,12 @@ async function initDemoPixiBattle() {
     }
 
     // Очищаем предыдущее поле если было
-    if (window.pixiCore.clear) {
-        window.pixiCore.clear();
+    if (window.pixiCore.destroy) {
+        window.pixiCore.destroy();
     }
 
     // Инициализируем новое поле 6×5
-    await window.pixiCore.initPixiBattle();
+    await window.pixiCore.init();
     console.log('✅ PIXI поле боя инициализировано');
 }
 
@@ -480,8 +480,8 @@ function closeDemoBattle() {
         window.pixiDragon.clear();
     }
 
-    if (window.pixiCore && window.pixiCore.clear) {
-        window.pixiCore.clear();
+    if (window.pixiCore && window.pixiCore.destroy) {
+        window.pixiCore.destroy();
     }
 
     // Сброс данных
