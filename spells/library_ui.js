@@ -1,0 +1,404 @@
+// spells/library_ui.js - Полноэкранная библиотека v6.0 (с таймерами)
+console.log('✅ library_ui.js v6.0 - с таймерами изучения');
+
+let currentLibrarySchool = null;
+
+// ========== ГЛАВНЫЙ ЭКРАН: 6 ШКОЛ ==========
+function showLibrary() {
+    console.log('📚 Открытие библиотеки');
+    
+    const cityView = document.getElementById('city-view');
+    if (cityView) cityView.style.display = 'none';
+    
+    let libraryContainer = document.getElementById('library-fullscreen');
+    if (!libraryContainer) {
+        libraryContainer = document.createElement('div');
+        libraryContainer.id = 'library-fullscreen';
+        libraryContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a1a2e;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        `;
+        document.body.appendChild(libraryContainer);
+    }
+    
+    showLibraryMainScreen();
+}
+
+function showLibraryMainScreen() {
+    currentLibrarySchool = null;
+    const libraryContainer = document.getElementById('library-fullscreen');
+    if (!libraryContainer) return;
+    
+    libraryContainer.innerHTML = `
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <img id="library-image" src="assets/ui/modals/library_template.png" style="max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="Библиотека">
+            <div id="library-clickable-zones" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+        </div>
+    `;
+    
+    const img = document.getElementById('library-image');
+    img.onload = () => setupLibraryClickableZones();
+    if (img.complete) setupLibraryClickableZones();
+}
+
+function setupLibraryClickableZones() {
+    const img = document.getElementById('library-image');
+    const zonesContainer = document.getElementById('library-clickable-zones');
+    if (!img || !zonesContainer) return;
+    
+    const originalWidth = 768, originalHeight = 512;
+    const currentWidth = img.offsetWidth, currentHeight = img.offsetHeight;
+    const scaleX = currentWidth / originalWidth, scaleY = currentHeight / originalHeight;
+    
+    zonesContainer.style.width = currentWidth + 'px';
+    zonesContainer.style.height = currentHeight + 'px';
+    zonesContainer.innerHTML = '';
+    
+    const zones = [
+        { id: 'fire', coords: [55, 130, 220, 260], faction: 'fire' },
+        { id: 'water', coords: [290, 130, 460, 255], faction: 'water' },
+        { id: 'wind', coords: [535, 130, 700, 255], faction: 'wind' },
+        { id: 'earth', coords: [55, 300, 220, 430], faction: 'earth' },
+        { id: 'nature', coords: [290, 300, 460, 430], faction: 'nature' },
+        { id: 'poison', coords: [535, 300, 700, 430], faction: 'poison' },
+        { id: 'back', coords: [290, 440, 460, 500], faction: null }
+    ];
+    
+    zones.forEach(zone => {
+        const [x1, y1, x2, y2] = zone.coords;
+        const zoneDiv = document.createElement('div');
+        zoneDiv.style.cssText = `
+            position: absolute;
+            left: ${x1 * scaleX}px;
+            top: ${y1 * scaleY}px;
+            width: ${(x2 - x1) * scaleX}px;
+            height: ${(y2 - y1) * scaleY}px;
+            cursor: pointer;
+            transition: background 0.2s;
+        `;
+        
+        zoneDiv.addEventListener('mouseenter', () => zoneDiv.style.background = 'rgba(114, 137, 218, 0.3)');
+        zoneDiv.addEventListener('mouseleave', () => zoneDiv.style.background = 'transparent');
+        
+        const clickHandler = () => {
+            if (zone.faction) {
+                openSchoolSpells(zone.faction);
+            } else {
+                closeLibrary();
+            }
+        };
+        
+        zoneDiv.addEventListener('click', clickHandler);
+        zoneDiv.addEventListener('touchend', (e) => { e.preventDefault(); clickHandler(); });
+        zonesContainer.appendChild(zoneDiv);
+    });
+}
+
+// ========== ЭКРАН ШКОЛЫ: С ТАЙМЕРАМИ ==========
+function openSchoolSpells(faction) {
+    console.log('📖 Открытие школы:', faction);
+    currentLibrarySchool = faction;
+    
+    const libraryContainer = document.getElementById('library-fullscreen');
+    if (!libraryContainer) return;
+    
+    const factionName = window.getFactionName ? window.getFactionName(faction) : faction;
+    
+    libraryContainer.innerHTML = `
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #1a1a2e;">
+            <img id="spells-image" src="assets/ui/modals/spells_template.png" style="max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="${factionName}">
+            <div id="faction-name-overlay" style="position: absolute; top: 0; left: 0; right: 0;"></div>
+            <div id="spells-overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+        </div>
+    `;
+    
+    const img = document.getElementById('spells-image');
+    img.onload = () => setupSpellsScreen(faction);
+    if (img.complete) setupSpellsScreen(faction);
+}
+
+function setupSpellsScreen(faction) {
+    const img = document.getElementById('spells-image');
+    const overlay = document.getElementById('spells-overlay');
+    const nameOverlay = document.getElementById('faction-name-overlay');
+    if (!img || !overlay) return;
+    
+    const originalWidth = 768, originalHeight = 512;
+    const currentWidth = img.offsetWidth, currentHeight = img.offsetHeight;
+    const scaleX = currentWidth / originalWidth, scaleY = currentHeight / originalHeight;
+    
+    overlay.style.width = currentWidth + 'px';
+    overlay.style.height = currentHeight + 'px';
+    overlay.innerHTML = '';
+    
+    // Название школы
+    const factionName = window.getFactionName ? window.getFactionName(faction) : faction;
+    const factionColor = window.getFactionColor ? window.getFactionColor(faction) : '#7289da';
+    nameOverlay.style.cssText = `
+        position: absolute;
+        top: ${30 * scaleY}px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: ${32 * Math.min(scaleX, scaleY)}px;
+        font-weight: bold;
+        color: ${factionColor};
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    `;
+    nameOverlay.textContent = factionName;
+    
+    // Получаем данные
+    const factionSpells = (window.userData?.spells || {})[faction] || {};
+    const spellIds = window.SPELL_TIERS ? window.SPELL_TIERS[faction] || [] : [];
+    const constructions = window.userData?.constructions || [];
+    
+    // Находим активное изучение этой школы
+    const activeSpellLearning = constructions.find(c => 
+        c.type === 'spell' && 
+        c.faction === faction && 
+        c.time_remaining > 0
+    );
+    
+    if (spellIds.length === 0) {
+        overlay.innerHTML = '<div style="color: white; text-align: center;">Нет данных о заклинаниях</div>';
+        return;
+    }
+    
+    // === ЛОГИКА ПОСЛЕДОВАТЕЛЬНОСТИ (из старой версии) ===
+    // Находим последнее изученное заклинание (с level > 0)
+    let lastLearnedIndex = -1;
+    for (let i = 0; i < spellIds.length; i++) {
+        const spell = factionSpells[spellIds[i]];
+        if (spell && spell.level > 0) {
+            lastLearnedIndex = i;
+        }
+    }
+    
+    // Если ничего не изучено - начинаем с первого
+    if (lastLearnedIndex === -1) {
+        lastLearnedIndex = 0;
+    }
+    
+    // Определяем активное заклинание
+    const lastSpell = factionSpells[spellIds[lastLearnedIndex]];
+    const isLastMaxLevel = lastSpell && lastSpell.level === 5;
+    
+    let activeIndex = lastLearnedIndex;
+    if (isLastMaxLevel && lastLearnedIndex < spellIds.length - 1) {
+        // Если текущее на макс уровне, следующее становится активным
+        activeIndex = lastLearnedIndex + 1;
+    }
+    
+    const nextIndex = activeIndex < spellIds.length - 1 ? activeIndex + 1 : -1;
+    // === КОНЕЦ ЛОГИКИ ПОСЛЕДОВАТЕЛЬНОСТИ ===
+    
+    // Координаты 5 слотов
+    const spellZones = [
+        [30, 310, 145, 430],
+        [178, 310, 290, 428],
+        [325, 310, 440, 425],
+        [480, 310, 590, 425],
+        [625, 310, 740, 425]
+    ];
+    
+    // Выводим все 5 заклинаний
+    spellIds.forEach((spellId, tierIndex) => {
+        if (tierIndex >= 5) return;
+        
+        const spell = factionSpells[spellId] || {
+            name: window.getSpellNameById ? window.getSpellNameById(spellId) : spellId,
+            level: 0,
+            tier: tierIndex + 1
+        };
+        
+        const [x1, y1, x2, y2] = spellZones[tierIndex];
+        const fontSize = Math.max(8, 10 * Math.min(scaleX, scaleY));
+        
+        // Проверяем доступность:
+        // - Активное (activeIndex) - всегда доступно
+        // - Следующее (nextIndex) - показываем но недоступно
+        // - Остальные - заблокированы
+        const isActive = tierIndex === activeIndex;
+        const isNext = tierIndex === nextIndex;
+        const isAccessible = isActive || (isNext && spell.level > 0);
+        const isLearning = activeSpellLearning && activeSpellLearning.spell_id === spellId;
+        
+        let status = '';
+        let buttonHTML = '';
+        
+        if (isLearning) {
+            // ИЗУЧАЕТСЯ
+            status = '📖 Изучается...';
+            const constructionIndex = constructions.indexOf(activeSpellLearning);
+            buttonHTML = `
+                <button 
+                    style="
+                        margin-top: 3px;
+                        padding: ${3 * Math.min(scaleX, scaleY)}px ${6 * Math.min(scaleX, scaleY)}px;
+                        border: none;
+                        border-radius: 3px;
+                        background: #555577;
+                        color: white;
+                        font-size: ${fontSize * 0.8}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        width: 85%;
+                    "
+                    onclick="showConstructionModal(${constructionIndex})"
+                >⏱️ ${window.formatTimeCurrency ? window.formatTimeCurrency(activeSpellLearning.time_remaining) : activeSpellLearning.time_remaining}</button>
+            `;
+        } else if (tierIndex > activeIndex && !isLastMaxLevel) {
+            // ЗАБЛОКИРОВАНО - не достигнут 5 уровень предыдущего
+            status = '🔒 Заблокировано';
+            buttonHTML = '<div style="font-size: ' + (fontSize * 0.7) + 'px; color: #777; margin-top: 3px;">Треб. Ур.5 предыдущего</div>';
+        } else if (spell.level === 0 && isActive) {
+            // НЕ ИЗУЧЕНО (активное)
+            status = '🔒 Не изучено';
+            const learnTime = window.SPELL_LEARNING_TIME?.getLearnTime ? 
+                window.SPELL_LEARNING_TIME.getLearnTime(tierIndex + 1, 0) : 144;
+            buttonHTML = `
+                <button 
+                    style="
+                        margin-top: 3px;
+                        padding: ${3 * Math.min(scaleX, scaleY)}px ${6 * Math.min(scaleX, scaleY)}px;
+                        border: none;
+                        border-radius: 3px;
+                        background: #7289da;
+                        color: white;
+                        font-size: ${fontSize * 0.75}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        width: 85%;
+                    "
+                    onclick="console.log('🔵 Клик Изучить:', '${spellId}', '${faction}'); learnSpell('${spellId}', '${faction}')"
+                >Изучить (${window.formatTimeCurrency ? window.formatTimeCurrency(learnTime) : learnTime})</button>
+            `;
+        } else if (spell.level > 0 && spell.level < 5 && isActive) {
+            // УЛУЧШИТЬ (активное)
+            status = `Ур.${spell.level}/5`;
+            const upgradeTime = window.SPELL_LEARNING_TIME?.getLearnTime ? 
+                window.SPELL_LEARNING_TIME.getLearnTime(tierIndex + 1, spell.level) : 144;
+            buttonHTML = `
+                <button 
+                    style="
+                        margin-top: 3px;
+                        padding: ${3 * Math.min(scaleX, scaleY)}px ${6 * Math.min(scaleX, scaleY)}px;
+                        border: none;
+                        border-radius: 3px;
+                        background: #ffa500;
+                        color: white;
+                        font-size: ${fontSize * 0.75}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        width: 85%;
+                    "
+                    onclick="console.log('🟠 Клик Улучшить:', '${spellId}', ${spell.level + 1}, '${faction}'); upgradeSpell('${spellId}', ${spell.level + 1}, '${faction}')"
+                >Улучшить (${window.formatTimeCurrency ? window.formatTimeCurrency(upgradeTime) : upgradeTime})</button>
+            `;
+        } else if (spell.level === 5) {
+            // МАКСИМАЛЬНЫЙ УРОВЕНЬ
+            status = '✅ Макс. Ур.5';
+            buttonHTML = '';
+        } else if (spell.level > 0) {
+            // ИЗУЧЕНО но неактивное
+            status = `Ур.${spell.level}/5`;
+            buttonHTML = '';
+        } else {
+            // НЕДОСТУПНО
+            status = '🔒 Недоступно';
+            buttonHTML = '';
+        }
+        
+        const spellDiv = document.createElement('div');
+        spellDiv.style.cssText = `
+            position: absolute;
+            left: ${x1 * scaleX}px;
+            top: ${y1 * scaleY}px;
+            width: ${(x2 - x1) * scaleX}px;
+            height: ${(y2 - y1) * scaleY}px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3px;
+            box-sizing: border-box;
+            opacity: ${(isActive || isLearning || spell.level === 5) ? '1' : '0.5'};
+        `;
+        
+        spellDiv.innerHTML = `
+            <div style="text-align: center; color: white; font-size: ${fontSize}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); line-height: 1.1; width: 100%;">
+                <div style="font-weight: bold; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${spell.name}</div>
+                <div style="font-size: ${fontSize * 0.85}px; color: #aaa; margin-bottom: 2px;">${status}</div>
+                ${buttonHTML}
+            </div>
+        `;
+        
+        overlay.appendChild(spellDiv);
+    });
+    
+    // Кнопка "Назад"
+    const backZone = [290, 445, 480, 500];
+    const [bx1, by1, bx2, by2] = backZone;
+    const backDiv = document.createElement('div');
+    backDiv.style.cssText = `
+        position: absolute;
+        left: ${bx1 * scaleX}px;
+        top: ${by1 * scaleY}px;
+        width: ${(bx2 - bx1) * scaleX}px;
+        height: ${(by2 - by1) * scaleY}px;
+        cursor: pointer;
+        transition: background 0.2s;
+    `;
+    
+    backDiv.addEventListener('mouseenter', () => backDiv.style.background = 'rgba(114, 137, 218, 0.3)');
+    backDiv.addEventListener('mouseleave', () => backDiv.style.background = 'transparent');
+    backDiv.addEventListener('click', showLibraryMainScreen);
+    overlay.appendChild(backDiv);
+}
+
+function closeLibrary() {
+    const libraryContainer = document.getElementById('library-fullscreen');
+    if (libraryContainer) libraryContainer.remove();
+    
+    const cityView = document.getElementById('city-view');
+    if (cityView) cityView.style.display = 'block';
+}
+
+// Обновление контента библиотеки после изучения/улучшения
+function updateLibraryContent() {
+    console.log('🔄 Обновление библиотеки');
+    
+    // Если открыта школа - перерисовываем экран школы
+    if (currentLibrarySchool) {
+        openSchoolSpells(currentLibrarySchool);
+    } else {
+        // Если главный экран - перерисовываем его
+        showLibraryMainScreen();
+    }
+}
+
+function renderLibrary() {
+    // Для совместимости со старым кодом
+    if (currentLibrarySchool) {
+        openSchoolSpells(currentLibrarySchool);
+    } else {
+        showLibrary();
+    }
+}
+
+// Экспорт
+window.showLibrary = showLibrary;
+window.closeLibrary = closeLibrary;
+window.openSchoolSpells = openSchoolSpells;
+window.updateLibraryContent = updateLibraryContent;
+window.renderLibrary = renderLibrary;
+
+console.log('📚 Библиотека с таймерами готова!');

@@ -1,0 +1,120 @@
+/* web/script_battle/script_battle.css - Стили для боевой системы (горизонтальные) */...
+
+.formation-grid {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 10px 0;
+    flex-wrap: wrap;
+}
+
+.formation-slot {
+    width: 70px;
+    height: 70px;
+    background: #3d3d5c;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px dashed #555;
+}
+
+.formation-slot:hover {
+    background: #444466;
+    border-color: #7289da;
+}
+
+.wizard-in-slot {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.wizard-in-slot:hover {
+    opacity: 0.8;
+}
+
+.empty-slot {
+    text-align: center;
+    font-size: 10px;
+}
+
+.available-wizards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.wizard-card {
+    background: #3d3d5c;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid #555;
+}
+
+.wizard-card:hover {
+    background: #444466;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.wizard-card.assigned {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.wizard-card.assigned:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Горизонтальная адаптация для боевой системы */
+@media screen and (orientation: landscape) and (max-width: 896px) {
+    .formation-slot {
+        width: 60px;
+        height: 60px;
+        font-size: 16px;
+    }
+    
+    .wizard-in-slot {
+        font-size: 18px;
+    }
+    
+    .wizard-card {
+        padding: 8px;
+        font-size: 12px;
+    }
+    
+    .available-wizards-list {
+        max-height: 150px;
+    }
+    
+    .formation-grid {
+        gap: 6px;
+        margin: 8px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .formation-slot {
+        width: 50px;
+        height: 50px;
+        font-size: 14px;
+    }
+    
+    .wizard-in-slot {
+        font-size: 16px;
+    }
+}

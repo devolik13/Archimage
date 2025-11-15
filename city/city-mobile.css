@@ -1,0 +1,198 @@
+/* city-mobile.css - Полноэкранная адаптация для мобильных */
+
+/* Сброс стилей для полноэкранного режима */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Основной контейнер */
+.container {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* МОБИЛЬНЫЕ УСТРОЙСТВА (по размеру экрана, НЕ по ориентации!) */
+@media (max-width: 768px) {
+    /* Скрываем header полностью */
+    header {
+        display: none !important;
+    }
+    
+    /* Скрываем панель магов */
+    .wizards-panel {
+        display: none !important;
+    }
+    
+    /* Скрываем аватар игрока */
+    #player-avatar-container {
+        display: none !important;
+    }
+    
+    /* Игровая зона на весь экран */
+    #game-area {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    #city-view {
+        width: 100vw !important;
+        height: 100vh !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .game-container {
+        width: 100vw !important;
+        height: 100vh !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: none !important;
+        max-width: none !important;
+    }
+    
+    /* Контейнер города на весь экран */
+    .city-view-container {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    #city-background-container {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+    }
+    
+    /* ВСЕ изображения в контейнере города */
+    #city-background-container img {
+        position: absolute !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+        display: block !important;
+    }
+}
+
+/* Минимальный UI overlay */
+.mobile-ui-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 10px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 100%);
+    pointer-events: none;
+}
+
+.mobile-ui-overlay .faction-info {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+}
+
+/* DESKTOP режим (широкие экраны) */
+@media (min-width: 769px) {
+    .city-view-container {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    
+    #city-background-container {
+        position: relative;
+        width: 768px;
+        height: 512px;
+        margin: 0 auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    #city-background-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+}
+
+/* Telegram Web App специфичные стили */
+.tgWebApp {
+    height: 100vh !important;
+}
+
+.tgWebApp #city-background-container {
+    height: 100vh !important;
+}
+
+/* Отключение жестов на мобильных */
+* {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+/* iOS Safari фиксы */
+@supports (-webkit-touch-callout: none) {
+    @media (max-width: 768px) {
+        body {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #city-background-container {
+            width: 100vw !important;
+            height: 100vh !important;
+            -webkit-transform: translateZ(0);
+        }
+    }
+}
+
+/* Анимации для модальных окон */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+}

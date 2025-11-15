@@ -1,0 +1,321 @@
+/* wizard-detail.css - Полноэкранное окно мага (по паттерну города) */
+
+/* Базовый контейнер - на весь экран */
+#wizard-detail-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(145deg, #1a1a2e, #16213e);
+    z-index: 900;
+    display: none;
+    overflow: hidden;
+}
+
+#wizard-detail-screen.active {
+    display: block;
+}
+
+/* Обертка контента */
+.wizard-compact-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Шапка */
+.wizard-compact-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: rgba(44, 44, 61, 0.8);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+}
+
+.back-button {
+    background: transparent;
+    border: 2px solid #7289da;
+    color: #7289da;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.back-button:hover {
+    background: #7289da;
+    color: white;
+}
+
+/* Основной контент - 2 колонки */
+.wizard-compact-content {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 12px;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.wizard-compact-left,
+.wizard-compact-right {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+}
+
+/* Портрет */
+.compact-portrait {
+    background: linear-gradient(145deg, #3d3d5c, #2a2a3e);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    border: 2px solid #7289da;
+    flex-shrink: 0;
+}
+
+.compact-avatar {
+    font-size: 40px;
+    margin-bottom: 6px;
+}
+
+.compact-level {
+    display: inline-block;
+    background: #7289da;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Опыт */
+.compact-exp-bar {
+    background: #2a2a3a;
+    border-radius: 8px;
+    padding: 8px;
+    flex-shrink: 0;
+}
+
+.compact-progress-bar {
+    background: #1a1a2a;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.compact-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7289da, #5b6eae);
+    transition: width 0.3s;
+}
+
+/* Статы */
+.compact-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.compact-stat-box {
+    background: #3d3d5c;
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+/* Заклинания */
+.compact-spell-slot {
+    background: #3d3d5c;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.compact-spell-slot:hover {
+    border-color: #7289da;
+    transform: translateY(-2px);
+}
+
+.compact-spell-slot.empty {
+    border: 2px dashed #555;
+}
+
+.compact-spell-slot.locked {
+    background: #2a2a3a;
+    cursor: not-allowed;
+}
+
+/* Кнопки */
+.compact-button {
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.compact-button.primary {
+    background: #7289da;
+    color: white;
+}
+
+.compact-button.secondary {
+    background: transparent;
+    border: 2px solid #7289da;
+    color: #7289da;
+}
+
+.compact-button:hover {
+    transform: translateY(-2px);
+}
+
+.section-compact-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 6px;
+    padding-left: 5px;
+    border-left: 3px solid #7289da;
+}
+
+/* === АДАПТАЦИЯ (по паттерну города) === */
+
+/* Мобильные устройства */
+@media (max-width: 768px) {
+    .wizard-compact-wrapper {
+        padding: 10px;
+    }
+    
+    .wizard-compact-header {
+        padding: 8px 10px;
+        margin-bottom: 10px;
+    }
+    
+    .wizard-compact-content {
+        grid-template-columns: 200px 1fr;
+        gap: 10px;
+    }
+    
+    .compact-portrait {
+        padding: 10px;
+    }
+    
+    .compact-avatar {
+        font-size: 36px;
+    }
+    
+    .compact-button {
+        padding: 8px;
+        font-size: 12px;
+    }
+}
+
+/* Маленькие экраны */
+@media (max-width: 650px) {
+    .wizard-compact-wrapper {
+        padding: 8px;
+    }
+    
+    .wizard-compact-content {
+        grid-template-columns: 170px 1fr;
+        gap: 8px;
+    }
+    
+    .compact-portrait {
+        padding: 8px;
+    }
+    
+    .compact-avatar {
+        font-size: 32px;
+    }
+    
+    .compact-stat-box {
+        padding: 6px;
+    }
+    
+    .compact-spell-slot {
+        padding: 8px;
+    }
+}
+
+/* Низкая высота экрана */
+@media (max-height: 500px) {
+    .wizard-compact-wrapper {
+        padding: 6px;
+    }
+    
+    .wizard-compact-header {
+        padding: 6px 8px;
+        margin-bottom: 6px;
+    }
+    
+    .wizard-compact-content {
+        gap: 6px;
+    }
+    
+    .wizard-compact-left,
+    .wizard-compact-right {
+        gap: 6px;
+    }
+}
+
+/* Десктоп */
+@media (min-width: 769px) {
+    .wizard-compact-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+}
+
+/* iOS фиксы */
+@supports (-webkit-touch-callout: none) {
+    #wizard-detail-screen {
+        height: -webkit-fill-available;
+    }
+    
+    .wizard-compact-wrapper {
+        height: -webkit-fill-available;
+    }
+}
+
+/* Отключение жестов */
+#wizard-detail-screen * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+/* Анимации */
+@keyframes slideInFromBottom {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+#wizard-detail-screen.active {
+    animation: slideInFromBottom 0.3s ease-out;
+}

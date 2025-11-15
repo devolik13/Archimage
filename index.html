@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Archimage: Arcane Secrets</title>
+
+    <script>
+        // JavaScript rotation теперь обрабатывается в telegram-init.js
+        console.log('🎮 Инициализация игры...');
+    </script>
+
+    <!-- СТИЛИ -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="city/city-mobile.css">
+    <link rel="stylesheet" href="wizards/wizard-detail.css">
+    <link rel="stylesheet" href="battle/script_battle.css">
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Блокировка portrait режима -->
+    <script src="portrait-blocker.js"></script>
+    
+
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🏰 Archimage: Arcane Secrets</h1>
+            <p>Фракция: <span id="faction">Загрузка...</span></p>
+        </header>
+
+        <!-- Форма выбора фракции -->
+        <div id="faction-selection" style="display: none; text-align: center; margin-top: 30px;">
+            <h2>🧙‍♂️ Выбор фракции</h2>
+            <p style="color: #aaa; margin-bottom: 30px;">Выбери свою стихию и начни строить свою академию магов</p>
+
+            <div class="faction-buttons" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 400px; margin: 0 auto;">
+                <button class="faction-btn fire" onclick="selectFaction('fire')" style="padding: 20px; font-size: 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; background: linear-gradient(145deg, #ff6b6b, #ff5252); color: white;">
+                    🔥 Огонь
+                </button>
+                <button class="faction-btn water" onclick="selectFaction('water')" style="padding: 20px; font-size: 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; background: linear-gradient(145deg, #4d96ff, #3a85f0); color: white;">
+                    💧 Вода
+                </button>
+                <button class="faction-btn wind" onclick="selectFaction('wind')" style="padding: 20px; font-size: 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; background: linear-gradient(145deg, #95ffc4, #7ae5b0); color: #333;">
+                    🌪 Ветер
+                </button>
+                <button class="faction-btn earth" onclick="selectFaction('earth')" style="padding: 20px; font-size: 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; background: linear-gradient(145deg, #96ceb4, #82b8a0); color: #333;">
+                    🌍 Земля
+                </button>
+                <button class="faction-btn nature" onclick="selectFaction('nature')" style="padding: 20px; font-size: 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; background: linear-gradient(145deg, #4ade80, #22c55e); color: #333;">
+                    🌱 Природа
+                </button>
+                <button class="faction-btn poison" onclick="selectFaction('poison')" style="padding: 20px; font-size: 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; background: linear-gradient(145deg, #84cc16, #4ade80); color: #333;">
+                    ☣️ Яд
+                </button>
+            </div>
+        </div>
+
+        <!-- Игровая зона -->
+        <main id="game-area" style="display: none;">
+            <div id="city-view">
+                <div class="game-container">
+                    <!-- Панель магов -->
+                    <div class="wizards-panel">
+                        <h3>🧙‍♂️ Маги</h3>
+                        <div id="wizards-list">
+                            <!-- Маги будут добавлены динамически -->
+                        </div>
+                    </div>
+
+                    <!-- Сетка города -->
+                    <div id="city-grid" class="grid grid-3x3">
+                        <!-- Ячейки будут добавлены динамически -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========================================
+         СТРУКТУРА ЗАГРУЗКИ СКРИПТОВ
+         ======================================== -->
+
+    <!-- 1. ЯДРО СИСТЕМЫ (Core) -->
+    <script src="core/utilities.js"></script>
+    <script src="core/modal-system.js"></script>
+    <script src="core/constants.js"></script>
+    <script src="core/helpers.js"></script>
+    <script src="core/state-manager.js"></script>
+    <script src="core/ui_manager.js"></script>
+    <script src="core/supabase-client.js"></script>
+
+    <!-- 2. БАЗА ДАННЫХ (Database) -->
+    <script src="database/db-manager.js"></script>
+    <script src="database/game-db-integration.js"></script>
+    <script src="database/constructions-init.js"></script>
+    <script src="database/onboarding.js"></script>
+    <script src="faction-selection-system.js"></script>
+
+
+    <!-- 3. КОНФИГУРАЦИЯ ЗАКЛИНАНИЙ (Spells Data) -->
+    <script src="spells/data/spell-tiers.js"></script>
+    <script src="spells/data/school-config.js"></script>
+    <script src="spells/data/spell-basic-data.js"></script>
+    <script src="spells/data/spell-full-data.js"></script>
+    <script src="spells/data/spell-functions.js"></script>
+    <script src="spells/data/spell-types.js"></script>
+    <script src="spells/data/index.js"></script>
+    <script src="spells/data/spell-registry.js"></script>
+
+    <!-- 4. ГОРОД (City) -->
+    <script src="city/buildings-config.js"></script>
+    <script src="city/city-view-system.js"></script>
+    <script src="city/city-clickable-system.js"></script>
+    <script src="city/time-currency-system.js"></script>
+    <script src="city/time-construction-system.js"></script>
+    <script src="city/script_buildings.js"></script>
+    <script src="construction-visual-clean.js"></script>
+    
+
+    <!-- 5. МАГИ (Wizards) -->
+    <script src="wizards/experience-system.js"></script>
+    <script src="wizards/player-level-system.js"></script>
+    <script src="wizards/blessing-tower-system.js"></script>
+    <script src="wizards/wizard-detail-screen.js"></script>
+    <script src="wizards/script_wizards.js"></script>
+    <script src="wizards/adventure/adventure-system.js"></script>
+    <script src="wizards/adventure/adventure-ui.js"></script>
+
+    <!-- 6. БИБЛИОТЕКА ЗАКЛИНАНИЙ (Spells UI) -->
+    <script src="spells/library_ui.js"></script>
+    <script src="spells/script_spells_standard.js"></script>
+
+    <!-- 7. БОЕВАЯ СИСТЕМА - ЯДРО (Battle Core) -->
+    <script src="battle/weather.js"></script>
+    <script src="battle/damage-system.js"></script>
+    <script src="battle/effects-system.js"></script>
+    <script src="battle/logger.js"></script>
+    <script src="battle/targeting-utils.js"></script>
+    <script src="battle/single-target-visual-system.js"></script>
+    <script src="battle/multi-layer-protection.js"></script>
+    <script src="battle/magic-resistance.js"></script>
+
+    <!-- 8. БОЕВАЯ СИСТЕМА - МЕХАНИКИ (Battle Mechanics) -->
+    <script src="battle/projectiles.js"></script>
+    <script src="battle/summons-manager.js"></script>
+    <script src="battle/walls.js"></script>
+    <script src="battle/wall-blocking.js"></script>
+
+    <!-- 9. БОЕВАЯ СИСТЕМА - ГЛАВНАЯ ЛОГИКА (Battle Main) -->
+    <script src="battle/targeting.js"></script>
+    <script src="battle/spells.js"></script>
+    <script src="battle/core.js"></script>
+    <script src="battle/ui.js"></script>
+    <script src="battle/battle-timer-manager.js"></script>
+    <script src="battle/demo-battle.js"></script>
+    <script src="battle/script_battle_setup.js"></script>
+
+    <!-- 10. ЛОГИКА ЗАКЛИНАНИЙ ПО ШКОЛАМ (Spells Logic) -->
+    <script src="spells/logic/spells-fire.js"></script>
+    <script src="spells/logic/spells-water.js"></script>
+    <script src="spells/logic/spells-wind.js"></script>
+    <script src="spells/logic/spells-earth.js"></script>
+    <script src="spells/logic/spells-nature.js"></script>
+    <script src="spells/logic/spells-poison.js"></script>
+
+    <!-- 11. PIXI.JS РЕНДЕРИНГ (Renderer) -->
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.x/dist/pixi.min.js"></script>
+    <script src="renderer/pixi-core.js"></script>
+    <script src="renderer/pixi-wizards.js"></script>
+    <script src="renderer/animation-manager.js"></script>
+    <script src="renderer/animations-config.js"></script>
+    <script src="renderer/impact-detection.js"></script>
+
+    <!-- 12. АНИМАЦИИ ЗАКЛИНАНИЙ - ОГОНЬ (Fire Animations) -->
+    <script src="animations/fire/spark.js"></script>
+    <script src="animations/fire/firebolt.js"></script>
+    <script src="animations/fire/fire-wall.js"></script>
+    <script src="animations/fire/fireball.js"></script>
+    <script src="animations/fire/fire-tsunami.js"></script>
+    <script src="animations/fire/burning-effect.js"></script>
+    <script src="animations/fire/burning-ground.js"></script>
+
+    <!-- 13. АНИМАЦИИ ЗАКЛИНАНИЙ - ВОДА (Water Animations) -->
+    <script src="animations/water/icicle.js"></script>
+    <script src="animations/water/frost-arrow.js"></script>
+    <script src="animations/water/ice-rain.js"></script>
+    <script src="animations/water/blizzard.js"></script>
+    <script src="animations/water/absolute_zero.js"></script>
+
+    <!-- 14. АНИМАЦИИ ЗАКЛИНАНИЙ - ВЕТЕР (Wind Animations) -->
+    <script src="animations/wind/gust.js"></script>
+    <script src="animations/wind/wind-blade.js"></script>
+    <script src="animations/wind/wind-wall.js"></script>
+    <script src="animations/wind/storm-cloud.js"></script>
+    <script src="animations/wind/chain-lightning.js"></script>
+
+    <!-- 15. АНИМАЦИИ ЗАКЛИНАНИЙ - ЗЕМЛЯ (Earth Animations) -->
+    <script src="animations/earth/pebble.js"></script>
+    <script src="animations/earth/stone-spike.js"></script>
+    <script src="animations/earth/earth-wall.js"></script>
+    <script src="animations/earth/stone-grotto.js"></script>
+    <script src="animations/earth/meteor.js"></script>
+
+    <!-- 16. АНИМАЦИИ ЗАКЛИНАНИЙ - ПРИРОДА (Nature Animations) -->
+    <script src="animations/nature/call-wolf.js"></script>
+    <script src="animations/nature/bark-armor.js"></script>
+    <script src="animations/nature/leaf-canopy.js"></script>
+    <script src="animations/nature/ent-visual.js"></script>
+    <script src="animations/nature/meteorokinesis.js"></script>
+
+    <!-- 17. АНИМАЦИИ ЗАКЛИНАНИЙ - ЯД (Poison Animations) -->
+    <script src="animations/poison/poisoned_blade.js"></script>
+    <script src="animations/poison/poisoned_glade.js"></script>
+    <script src="animations/poison/foul-cloud.js"></script>
+    <script src="animations/poison/plague.js"></script>
+    <script src="animations/poison/epidemic.js"></script>
+
+    <!-- ИНИЦИАЛИЗАЦИЯ -->
+    <script>
+        console.log("📄 Инициализация приложения...");
+
+        // Получаем userId из Telegram WebApp
+        let userId = "test_user";
+        if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
+            userId = window.Telegram.WebApp.initDataUnsafe.user.id.toString();
+            console.log("✅ Telegram user ID:", userId);
+            console.log("👤 Telegram username:", window.Telegram.WebApp.initDataUnsafe.user.username);
+        } else {
+            console.warn("⚠️ Telegram WebApp не найден, используется тестовый ID");
+        }
+
+        window.userId = userId;
+        window.API_BASE_URL = window.API_BASE_URL || "http://localhost:3000";
+        window.userData = window.userData || null;
+        window.currentModal = window.currentModal || null;
+
+        console.log(`🆔 UserID: ${window.userId}`);
+        console.log(`🌐 API Base URL: ${window.API_BASE_URL}`);
+
+        // Используем window.onload вместо DOMContentLoaded
+        window.addEventListener('load', function () {
+            console.log("📄 Все скрипты загружены, запуск loadUserData...");
+            if (typeof window.loadUserData === 'function') {
+                window.loadUserData();
+            } else {
+                console.error("❌ Функция loadUserData не найдена.");
+                if (typeof window.showFactionSelection === 'function') {
+                    console.log("ℹ️ Показ формы выбора фракции (резервный вариант).");
+                    window.showFactionSelection();
+                }
+            }
+        });
+    </script>
+
+    <script>
+        // Принудительная инициализация валюты времени
+        window.addEventListener('load', function () {
+            setTimeout(() => {
+                if (window.userData && typeof window.initTimeCurrency === 'function') {
+                    window.initTimeCurrency();
+                    console.log('⏲️ Валюта времени инициализирована');
+                }
+            }, 1000);
+        });
+    </script>
+
+    <!-- Telegram WebApp НЕ нужен здесь — уже инициализирован в telegram-init.js -->
+</body>
+</html>

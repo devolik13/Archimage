@@ -1,0 +1,45 @@
+.battle-field-seamless {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    height: 60vh;
+    min-height: 400px;
+    max-height: 600px;
+    background: url('assets/battle-field.jpg') center/cover;
+    margin: 0 auto;
+}
+
+/* Мобильная адаптация... */
+@media (max-width: 768px) {
+    .battle-field-seamless {
+        height: 50vh;
+        min-height: 300px;
+    }
+    
+    .battle-position {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 24px !important;
+    }
+}
+
+/* Позиции в процентах для адаптивности */
+.wizard-position {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+}
+
+/* Игрок справа */
+.player-0 { right: 5%; bottom: 10%; }
+.player-1 { right: 3%; bottom: 30%; }
+.player-2 { right: 5%; bottom: 50%; }
+.player-3 { right: 3%; bottom: 70%; }
+.player-4 { right: 5%; bottom: 90%; }
+
+/* Враг слева */
+.enemy-0 { left: 5%; bottom: 10%; }
+.enemy-1 { left: 3%; bottom: 30%; }
+.enemy-2 { left: 5%; bottom: 50%; }
+.enemy-3 { left: 3%; bottom: 70%; }
+.enemy-4 { left: 5%; bottom: 90%; }
