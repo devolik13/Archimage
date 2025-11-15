@@ -3,9 +3,9 @@ console.log('🐉 demo-battle.js загружен');
 
 // Конфигурация кинематографической сцены
 const CINEMATIC_CONFIG = {
-    spellDelay: 1200, // Задержка между заклинаниями (быстрее для динамики)
-    waveDelay: 2000,  // Задержка между волнами атак
-    deathDelay: 1500, // Задержка между смертями магов
+    spellDelay: 600,  // Задержка между заклинаниями (ускорено на 50%)
+    waveDelay: 1000,  // Задержка между волнами атак (ускорено на 50%)
+    deathDelay: 750,  // Задержка между смертями магов (ускорено на 50%)
     fadeOutDuration: 2000 // Длительность затемнения
 };
 
@@ -32,9 +32,9 @@ const CINEMATIC_SCRIPT = {
     ],
     // Контратака дракона
     dragonCounterattack: [
-        { spell: 'fireball', target: 1 },      // По центральному магу
-        { spell: 'blizzard', target: 0 },      // По первому магу
-        { spell: 'fire_wall', target: 2 }      // Огненная стена
+        { spell: 'fireball', target: 1 },      // Огненный шар по центральному магу
+        { spell: 'ice_rain', target: 0 },      // Ледяной дождь на первого мага
+        { spell: 'meteor', target: 2 }         // Метеор на третьего мага
     ],
     // Порядок смерти магов
     wizardDeaths: [1, 0, 2] // Сначала маг воды, потом огня, потом ветра
@@ -245,14 +245,6 @@ function playSpellAnimation(spellId, caster, target) {
             }
 
             const casterTypeParam = (target === 'dragon') ? 'player' : 'enemy';
-            const extraParams = {};
-
-            // Параметры для wall заклинаний
-            if (spellId === 'fire_wall' || spellId === 'wind_wall') {
-                extraParams.positions = [0, 1, 2, 3, 4];
-                extraParams.casterId = caster ? `wizard_${cinematicData.wizards.indexOf(caster)}` : 'dragon';
-                extraParams.damage = 10;
-            }
 
             // Таймаут на случай если анимация не вызовет callback
             const timeout = setTimeout(() => resolve(), 3000);
@@ -267,7 +259,6 @@ function playSpellAnimation(spellId, caster, target) {
                 targetColumn: targetCol,
                 initialPosition: casterRow,
                 level: 1,
-                ...extraParams,
                 onComplete: () => {
                     clearTimeout(timeout);
                     resolve();
