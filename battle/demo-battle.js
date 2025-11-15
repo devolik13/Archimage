@@ -71,6 +71,10 @@ async function initDemoPixiBattle() {
         window.pixiCore.destroy();
     }
 
+    // Создаём временные формации для PIXI Core
+    window.enemyFormation = { units: [] };
+    window.playerFormation = { units: [] };
+
     // Инициализируем новое поле 6×5
     await window.pixiCore.init();
     console.log('✅ PIXI поле боя инициализировано');
@@ -376,7 +380,7 @@ function showDemoBattleOverlay() {
                 </h2>
 
                 <!-- PIXI Canvas будет здесь -->
-                <div id="demo-pixi-container" style="
+                <div id="pixi-container" style="
                     display: flex;
                     justify-content: center;
                     margin-bottom: 15px;
@@ -419,15 +423,6 @@ function showDemoBattleOverlay() {
     `;
 
     document.body.insertAdjacentHTML('beforeend', overlayHTML);
-
-    // Перемещаем PIXI canvas в наш контейнер
-    setTimeout(() => {
-        const pixiCanvas = document.getElementById('pixi-battle-canvas');
-        const container = document.getElementById('demo-pixi-container');
-        if (pixiCanvas && container) {
-            container.appendChild(pixiCanvas);
-        }
-    }, 100);
 }
 
 // Добавить сообщение в лог
@@ -483,6 +478,10 @@ function closeDemoBattle() {
     if (window.pixiCore && window.pixiCore.destroy) {
         window.pixiCore.destroy();
     }
+
+    // Очищаем временные формации
+    window.enemyFormation = null;
+    window.playerFormation = null;
 
     // Сброс данных
     demoBattleData = {
