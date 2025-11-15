@@ -73,27 +73,11 @@ console.log('✅ fire-wall.js загружен');
                 fireSprite.anchor.set(0.5);
                 
                 // Масштабируем спрайт под размер ячейки
-                // Спрайт 768x192, нужно подогнать под ячейку ~60px
-                console.log('🔍 DEBUG cellData:', {
-                    width: cellData.width,
-                    height: cellData.height,
-                    cellScale: cellData.cellScale,
-                    x: cellData.x,
-                    y: cellData.y
-                });
-                console.log('🔍 DEBUG frameHeight:', frameHeight);
+                // Используем cellScale вместо height, так как height может быть 0
+                const baseScale = cellData.cellScale || 1.0;
+                const scaleFactor = baseScale * 0.5; // Масштабируем относительно размера ячейки
 
-                const targetHeight = cellData.height * 1.8; // Немного выше ячейки для эффектности
-                const scale = targetHeight / frameHeight;
-
-                console.log('🔍 DEBUG scale calculation:', {
-                    targetHeight: targetHeight,
-                    scale: scale,
-                    finalScaleX: scale * 0.2,
-                    finalScaleY: scale * 0.4
-                });
-
-                fireSprite.scale.set(scale * 0.2, scale * 0.4); // Уменьшаем ширину для одной ячейки
+                fireSprite.scale.set(scaleFactor * 0.4, scaleFactor); // Ширина меньше, высота больше для вертикальной стены
                 
                 fireSprite.animationSpeed = 0.2; // Скорость анимации (4 кадра)
                 fireSprite.loop = true; // Зацикливаем анимацию
