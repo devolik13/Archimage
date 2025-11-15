@@ -245,8 +245,7 @@ function handleBuildingClick(buildingId, buildingData) {
                 if (window.showPvPArenaModal) {
                     window.showPvPArenaModal();
                 } else if (window.startDemoBattle) {
-                    const faction = window.userData?.faction || 'fire';
-                    window.startDemoBattle(faction);
+                    window.startDemoBattle();
                 } else {
                     showBuildingInfoModal(buildingId, buildingData);
                 }

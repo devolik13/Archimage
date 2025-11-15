@@ -935,8 +935,15 @@ function closeDemoBattle() {
     }
 }
 
+// Простая функция для вызова из консоли
+function demo() {
+    const faction = window.userData?.faction || 'fire';
+    startDemoBattle(faction);
+}
+
 // Экспорт
 window.startDemoBattle = startDemoBattle;
 window.skipDemoBattle = skipDemoBattle;
 window.speedUpDemo = speedUpDemo;
 window.closeDemoBattle = closeDemoBattle;
+window.demo = demo;
