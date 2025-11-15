@@ -1,303 +1,471 @@
-// demo-battle.js - Демонстрационный бой с драконом после выбора фракции
-
+// battle/demo-battle.js - Демонстрационный бой с драконом (PIXI.js)
 console.log('🐉 demo-battle.js загружен');
 
 // Конфигурация демо-боя
 const DEMO_CONFIG = {
     dragonHP: 500,
-    dragonDamage: { min: 15, max: 35 },
-    wizardCount: 4,
-    battleSpeed: 1500,
-    maxTurns: 20
+    dragonMaxHP: 500,
+    wizardHP: 120,
+    wizardMaxHP: 120,
+    turnDelay: 2000, // Задержка между заклинаниями
+    fadeOutDuration: 2000 // Длительность затемнения при победе
 };
 
-// Инициализация демо-боя
-function startDemoBattle(faction) {
+// Данные демо-боя
+let demoBattleData = {
+    dragon: null,
+    wizards: [],
+    isRunning: false,
+    currentTurn: 0,
+    wizardPositions: [1, 2, 3], // Ряды для 3 магов
+    dragonSpells: ['fireball', 'blizzard', 'fire_wall'], // Tier 5, 4, 3
+    wizardSpells: [
+        ['spark', 'firebolt'],      // Маг 1: Огонь
+        ['icicle', 'frost_arrow'],  // Маг 2: Вода
+        ['gust', 'wind_blade']      // Маг 3: Ветер
+    ]
+};
+
+// Запуск демо-боя
+async function startDemoBattle(faction) {
     console.log('🐉 Запуск демо-боя для фракции:', faction);
-    
-    // Создаем дракона
-    const dragon = {
-        id: 'dragon_boss',
-        name: '🐉 Древний Дракон',
-        hp: DEMO_CONFIG.dragonHP,
-        max_hp: DEMO_CONFIG.dragonHP,
-        position: { row: 1, col: 1 }, // Центр 3x3
-        size: 3
-    };
-    
-    // Создаем магов
-    const demoWizards = [];
-    for (let i = 0; i < DEMO_CONFIG.wizardCount; i++) {
-        demoWizards.push({
-            id: `demo_wizard_${i}`,
-            name: `Маг ${i + 1}`,
-            hp: 80 + Math.random() * 40,
-            max_hp: 120,
-            faction: faction,
-            position: i,
-            damage: { min: 8, max: 20 }
-        });
+
+    // Показываем overlay
+    showDemoBattleOverlay();
+
+    // Инициализируем PIXI поле боя 6×5
+    await initDemoPixiBattle();
+
+    // Создаём дракона (3×3 клетки)
+    const dragon = await window.pixiDragon.create();
+    if (!dragon) {
+        console.error('❌ Не удалось создать дракона');
+        closeDemoBattle();
+        return;
     }
-    
-    // Показываем демо-окно
-    showDemoBattleWindow(dragon, demoWizards, faction);
-    
-    // Запускаем бой
-    let turnCount = 0;
-    let battleInterval = setInterval(() => {
-        if (turnCount >= DEMO_CONFIG.maxTurns || dragon.hp <= 0) {
-            clearInterval(battleInterval);
-            endDemoBattle(dragon.hp > 0 ? 'dragon' : 'wizards');
-            return;
-        }
-        
-        executeDemoTurn(dragon, demoWizards, turnCount);
-        turnCount++;
-        updateDemoBattleUI(dragon, demoWizards);
-        
-    }, DEMO_CONFIG.battleSpeed);
-    
-    // Сохраняем интервал для возможности пропуска
-    window.demoBattleInterval = battleInterval;
+
+    demoBattleData.dragon = dragon;
+    console.log('✅ Дракон создан:', dragon);
+
+    // Создаём 3 магов
+    await createDemoWizards(faction);
+
+    // Запускаем боевой цикл
+    demoBattleData.isRunning = true;
+    demoBattleData.currentTurn = 0;
+
+    setTimeout(() => {
+        executeDemoBattle();
+    }, 1000);
 }
 
-// Показать окно демо-боя
-function showDemoBattleWindow(dragon, wizards, faction) {
-    const demoHTML = `
+// Инициализация PIXI поля боя
+async function initDemoPixiBattle() {
+    if (!window.pixiCore) {
+        console.error('❌ PIXI Core не загружен');
+        return;
+    }
+
+    // Очищаем предыдущее поле если было
+    if (window.pixiCore.clear) {
+        window.pixiCore.clear();
+    }
+
+    // Инициализируем новое поле 6×5
+    await window.pixiCore.initPixiBattle();
+    console.log('✅ PIXI поле боя инициализировано');
+}
+
+// Создание демо-магов
+async function createDemoWizards(faction) {
+    const factions = ['fire', 'water', 'wind']; // 3 разные фракции
+    const names = ['Маг Огня', 'Маг Воды', 'Маг Ветра'];
+
+    for (let i = 0; i < 3; i++) {
+        const wizardData = {
+            id: `demo_wizard_${i}`,
+            name: names[i],
+            faction: factions[i],
+            hp: DEMO_CONFIG.wizardHP,
+            max_hp: DEMO_CONFIG.wizardMaxHP,
+            level: 1
+        };
+
+        // Создаём спрайт мага в правой колонке (col=5)
+        const position = demoBattleData.wizardPositions[i];
+        const wizard = await window.pixiWizards.createWizard(
+            wizardData,
+            5, // колонка
+            position, // ряд
+            'player'
+        );
+
+        if (wizard) {
+            wizard.data = wizardData;
+            wizard.spells = demoBattleData.wizardSpells[i];
+            demoBattleData.wizards.push(wizard);
+            console.log(`✅ Маг ${i + 1} создан:`, wizardData.name);
+        }
+    }
+}
+
+// Основной цикл боя
+function executeDemoBattle() {
+    if (!demoBattleData.isRunning) return;
+
+    const turn = demoBattleData.currentTurn;
+
+    // Проверка условий победы
+    if (demoBattleData.dragon.hp <= 0) {
+        endDemoBattle('wizards');
+        return;
+    }
+
+    const aliveWizards = demoBattleData.wizards.filter(w => w.data.hp > 0);
+    if (aliveWizards.length === 0) {
+        endDemoBattle('dragon');
+        return;
+    }
+
+    // Макс 15 ходов для демо
+    if (turn >= 15) {
+        endDemoBattle('draw');
+        return;
+    }
+
+    logMessage(`🎭 Ход ${turn + 1}`);
+
+    // Сначала ходят маги (каждый кастует 2 заклинания)
+    executeWizardsTurn(() => {
+        // Потом ходит дракон (3 заклинания)
+        setTimeout(() => {
+            executeDragonTurn(() => {
+                // Следующий ход
+                demoBattleData.currentTurn++;
+                setTimeout(() => {
+                    executeDemoBattle();
+                }, DEMO_CONFIG.turnDelay);
+            });
+        }, DEMO_CONFIG.turnDelay);
+    });
+}
+
+// Ход магов
+function executeWizardsTurn(callback) {
+    const aliveWizards = demoBattleData.wizards.filter(w => w.data.hp > 0);
+
+    if (aliveWizards.length === 0) {
+        if (callback) callback();
+        return;
+    }
+
+    let wizardIndex = 0;
+
+    function castNextWizard() {
+        if (wizardIndex >= aliveWizards.length) {
+            if (callback) callback();
+            return;
+        }
+
+        const wizard = aliveWizards[wizardIndex];
+        const spells = wizard.spells;
+
+        // Каждый маг кастует 2 заклинания
+        castWizardSpell(wizard, spells[0], () => {
+            setTimeout(() => {
+                castWizardSpell(wizard, spells[1], () => {
+                    wizardIndex++;
+                    setTimeout(castNextWizard, DEMO_CONFIG.turnDelay);
+                });
+            }, DEMO_CONFIG.turnDelay);
+        });
+    }
+
+    castNextWizard();
+}
+
+// Каст заклинания магом
+function castWizardSpell(wizard, spellId, callback) {
+    if (!wizard || wizard.data.hp <= 0) {
+        if (callback) callback();
+        return;
+    }
+
+    // Анимация каста мага
+    if (window.pixiWizards.playCastAnimation) {
+        window.pixiWizards.playCastAnimation(wizard.sprite);
+    }
+
+    // Урон дракону
+    const damage = Math.floor(8 + Math.random() * 12); // 8-20 урона
+    demoBattleData.dragon.hp = Math.max(0, demoBattleData.dragon.hp - damage);
+
+    logMessage(`🧙‍♂️ ${wizard.data.name} кастует ${getSpellName(spellId)} (${damage} урона)`);
+
+    // Обновляем HP дракона
+    window.pixiDragon.updateHP(demoBattleData.dragon.hp, DEMO_CONFIG.dragonMaxHP);
+
+    // Анимация заклинания на дракона
+    playSpellAnimation(spellId, wizard, 'dragon', callback);
+}
+
+// Ход дракона
+function executeDragonTurn(callback) {
+    if (demoBattleData.dragon.hp <= 0) {
+        if (callback) callback();
+        return;
+    }
+
+    const spells = demoBattleData.dragonSpells;
+    let spellIndex = 0;
+
+    function castNextSpell() {
+        if (spellIndex >= spells.length) {
+            if (callback) callback();
+            return;
+        }
+
+        const spellId = spells[spellIndex];
+        castDragonSpell(spellId, () => {
+            spellIndex++;
+            setTimeout(castNextSpell, DEMO_CONFIG.turnDelay);
+        });
+    }
+
+    castNextSpell();
+}
+
+// Каст заклинания драконом
+function castDragonSpell(spellId, callback) {
+    // Анимация атаки дракона
+    window.pixiDragon.playAttack(() => {
+        // Выбираем случайного живого мага
+        const aliveWizards = demoBattleData.wizards.filter(w => w.data.hp > 0);
+
+        if (aliveWizards.length === 0) {
+            if (callback) callback();
+            return;
+        }
+
+        const target = aliveWizards[Math.floor(Math.random() * aliveWizards.length)];
+        const damage = Math.floor(15 + Math.random() * 20); // 15-35 урона
+
+        target.data.hp = Math.max(0, target.data.hp - damage);
+
+        logMessage(`🐉 Дракон использует ${getSpellName(spellId)} на ${target.data.name} (${damage} урона)`);
+
+        // Обновляем HP мага
+        if (window.pixiWizards.updateWizardHP) {
+            window.pixiWizards.updateWizardHP(target.sprite, target.data.hp, target.data.max_hp);
+        }
+
+        // Проверяем смерть мага
+        if (target.data.hp <= 0) {
+            logMessage(`💀 ${target.data.name} повержен!`);
+            if (window.pixiWizards.playDeathAnimation) {
+                window.pixiWizards.playDeathAnimation(target.sprite);
+            }
+        }
+
+        // Анимация заклинания
+        playSpellAnimation(spellId, null, target, callback);
+    });
+}
+
+// Проигрывание анимации заклинания
+function playSpellAnimation(spellId, caster, target, callback) {
+    if (!window.spellAnimations || !window.spellAnimations[spellId]) {
+        console.warn(`⚠️ Анимация для ${spellId} не найдена`);
+        if (callback) callback();
+        return;
+    }
+
+    const animation = window.spellAnimations[spellId];
+
+    // Определяем параметры
+    let targetPositions = [];
+    let casterType = 'enemy';
+
+    if (target === 'dragon') {
+        // Магия по дракону - центральная позиция
+        targetPositions = [1]; // Центр 3×3
+        casterType = 'player';
+    } else if (target) {
+        // Магия дракона по магу
+        targetPositions = [demoBattleData.wizards.indexOf(target)];
+        casterType = 'enemy';
+    }
+
+    animation.play({
+        casterType: casterType,
+        targetPositions: targetPositions,
+        level: 1,
+        onComplete: callback
+    });
+}
+
+// Конец демо-боя
+function endDemoBattle(winner) {
+    demoBattleData.isRunning = false;
+
+    if (winner === 'wizards') {
+        logMessage('🎉 НЕВЕРОЯТНО! Маги одолели дракона!', '#66ff66');
+
+        // Анимация смерти дракона
+        window.pixiDragon.playDeath(() => {
+            fadeToBlackAndClose();
+        });
+    } else if (winner === 'dragon') {
+        logMessage('🐉 Дракон победил! Но вы сражались храбро...', '#ff6666');
+        fadeToBlackAndClose();
+    } else {
+        logMessage('⚔️ Битва окончена!', '#ffaa00');
+        fadeToBlackAndClose();
+    }
+}
+
+// Затемнение и закрытие
+function fadeToBlackAndClose() {
+    const overlay = document.getElementById('demo-battle-overlay');
+    if (!overlay) return;
+
+    setTimeout(() => {
+        // Плавное затемнение
+        overlay.style.transition = `background ${DEMO_CONFIG.fadeOutDuration}ms`;
+        overlay.style.background = 'rgba(0, 0, 0, 1)';
+
+        setTimeout(() => {
+            closeDemoBattle();
+
+            // Показываем город
+            if (typeof window.showGameArea === 'function') {
+                window.showGameArea();
+            }
+        }, DEMO_CONFIG.fadeOutDuration);
+    }, 2000);
+}
+
+// Показать overlay демо-боя
+function showDemoBattleOverlay() {
+    const overlayHTML = `
         <div id="demo-battle-overlay" style="
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 9999;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            padding-top: 20px;
         ">
-            <div id="demo-battle-container" style="
+            <div style="
                 background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
                 border-radius: 20px;
-                padding: 30px;
-                max-width: 800px;
+                padding: 20px;
+                max-width: 900px;
                 width: 90%;
                 box-shadow: 0 20px 60px rgba(0,0,0,0.8);
                 border: 2px solid #4a4a6a;
             ">
-                <h2 style="color: #ff6b6b; text-align: center; margin-bottom: 20px; font-size: 28px;">
+                <h2 style="color: #ff6b6b; text-align: center; margin: 0 0 15px 0; font-size: 24px;">
                     ⚔️ Испытание Дракона ⚔️
                 </h2>
-                
-                <div id="demo-battle-field" style="
-                    display: grid;
-                    grid-template-columns: repeat(6, 1fr);
-                    gap: 5px;
-                    margin: 20px 0;
-                    padding: 20px;
-                    background: rgba(0,0,0,0.3);
-                    border-radius: 10px;
-                ">
-                    <!-- Поле боя 6x5 будет здесь -->
-                </div>
-                
-                <div id="demo-dragon-health" style="
-                    margin: 20px 0;
-                    text-align: center;
-                ">
-                    <div style="color: #ff6b6b; font-size: 20px; margin-bottom: 10px;">
-                        ${dragon.name}
-                    </div>
-                    <div style="
-                        background: #333;
-                        height: 30px;
-                        border-radius: 15px;
-                        overflow: hidden;
-                        position: relative;
-                    ">
-                        <div id="dragon-hp-bar" style="
-                            background: linear-gradient(90deg, #ff4444, #ff6666);
-                            height: 100%;
-                            width: 100%;
-                            transition: width 0.5s;
-                        "></div>
-                        <span style="
-                            position: absolute;
-                            top: 50%;
-                            left: 50%;
-                            transform: translate(-50%, -50%);
-                            color: white;
-                            font-weight: bold;
-                        ">${dragon.hp}/${dragon.max_hp}</span>
-                    </div>
-                </div>
-                
+
+                <!-- PIXI Canvas будет здесь -->
+                <div id="demo-pixi-container" style="
+                    display: flex;
+                    justify-content: center;
+                    margin-bottom: 15px;
+                "></div>
+
+                <!-- Лог боя -->
                 <div id="demo-battle-log" style="
                     background: rgba(0,0,0,0.4);
                     padding: 15px;
                     border-radius: 10px;
-                    height: 150px;
+                    height: 120px;
                     overflow-y: auto;
-                    margin-bottom: 20px;
-                    font-size: 14px;
+                    margin-bottom: 15px;
+                    font-size: 13px;
                     color: #ddd;
                 ">
                     <div>🎭 Древний дракон пробудился!</div>
-                    <div>🧙‍♂️ Маги ${faction} вступают в бой!</div>
+                    <div>🧙‍♂️ Маги вступают в бой!</div>
                 </div>
-                
+
+                <!-- Кнопки -->
                 <div style="text-align: center;">
                     <button onclick="skipDemoBattle()" style="
-                        padding: 12px 30px;
+                        padding: 10px 25px;
                         background: linear-gradient(145deg, #7289da, #5e7bc7);
                         border: none;
                         border-radius: 8px;
                         color: white;
-                        font-size: 16px;
+                        font-size: 14px;
                         cursor: pointer;
-                        margin: 0 10px;
+                        margin: 0 8px;
                         transition: transform 0.2s;
-                    " onmouseover="this.style.transform='scale(1.05)'" 
+                    " onmouseover="this.style.transform='scale(1.05)'"
                        onmouseout="this.style.transform='scale(1)'">
                         ⏩ Пропустить
-                    </button>
-                    <button onclick="speedUpDemo()" style="
-                        padding: 12px 30px;
-                        background: linear-gradient(145deg, #ffa500, #ff8c00);
-                        border: none;
-                        border-radius: 8px;
-                        color: white;
-                        font-size: 16px;
-                        cursor: pointer;
-                        margin: 0 10px;
-                        transition: transform 0.2s;
-                    " onmouseover="this.style.transform='scale(1.05)'" 
-                       onmouseout="this.style.transform='scale(1)'">
-                        ⚡ Ускорить
                     </button>
                 </div>
             </div>
         </div>
     `;
-    
-    document.body.insertAdjacentHTML('beforeend', demoHTML);
-    renderDemoBattleField(dragon, wizards);
-}
 
-// Отрисовка поля боя
-function renderDemoBattleField(dragon, wizards) {
-    const field = document.getElementById('demo-battle-field');
-    if (!field) return;
-    
-    let fieldHTML = '';
-    
-    for (let col = 0; col < 6; col++) {
-        for (let row = 0; row < 5; row++) {
-            let cellContent = '';
-            let cellStyle = 'width: 60px; height: 60px; background: #2a2a3a; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 24px;';
-            
-            // Дракон занимает 3x3 в центре левой части
-            if (col >= 0 && col <= 2 && row >= 1 && row <= 3) {
-                if (col === 1 && row === 2) {
-                    cellContent = '🐉';
-                    cellStyle += ' background: radial-gradient(circle, #ff6666, #cc3333);';
-                } else {
-                    cellStyle += ' background: radial-gradient(circle, #ff9999, #ff6666);';
-                }
-            }
-            // Маги в правой части
-            else if (col === 5) {
-                const wizard = wizards.find(w => w.position === row && w.hp > 0);
-                if (wizard) {
-                    cellContent = '🧙‍♂️';
-                    cellStyle += ' background: #3a5a8a;';
-                }
-            }
-            
-            fieldHTML += `<div style="${cellStyle}">${cellContent}</div>`;
+    document.body.insertAdjacentHTML('beforeend', overlayHTML);
+
+    // Перемещаем PIXI canvas в наш контейнер
+    setTimeout(() => {
+        const pixiCanvas = document.getElementById('pixi-battle-canvas');
+        const container = document.getElementById('demo-pixi-container');
+        if (pixiCanvas && container) {
+            container.appendChild(pixiCanvas);
         }
-    }
-    
-    field.innerHTML = fieldHTML;
+    }, 100);
 }
 
-// Выполнение хода
-function executeDemoTurn(dragon, wizards, turnNum) {
+// Добавить сообщение в лог
+function logMessage(text, color = '#ddd') {
     const log = document.getElementById('demo-battle-log');
-    
-    // Ход магов
-    const aliveWizards = wizards.filter(w => w.hp > 0);
-    aliveWizards.forEach(wizard => {
-        const damage = Math.floor(wizard.damage.min + Math.random() * (wizard.damage.max - wizard.damage.min));
-        dragon.hp = Math.max(0, dragon.hp - damage);
-        
-        const spellName = ['Огненный шар', 'Ледяная стрела', 'Молния', 'Каменный шип'][Math.floor(Math.random() * 4)];
-        log.innerHTML += `<div>🧙‍♂️ ${wizard.name} использует ${spellName} (${damage} урона)</div>`;
-    });
-    
-    // Ход дракона
-    if (dragon.hp > 0 && aliveWizards.length > 0) {
-        const target = aliveWizards[Math.floor(Math.random() * aliveWizards.length)];
-        const damage = Math.floor(DEMO_CONFIG.dragonDamage.min + Math.random() * (DEMO_CONFIG.dragonDamage.max - DEMO_CONFIG.dragonDamage.min));
-        target.hp = Math.max(0, target.hp - damage);
-        
-        const attackName = ['Огненное дыхание', 'Удар хвостом', 'Укус', 'Удар крылом'][Math.floor(Math.random() * 4)];
-        log.innerHTML += `<div style="color: #ff6666;">🐉 Дракон использует ${attackName} на ${target.name} (${damage} урона)</div>`;
-        
-        if (target.hp <= 0) {
-            log.innerHTML += `<div style="color: #ff4444;">💀 ${target.name} повержен!</div>`;
-        }
-    }
-    
+    if (!log) return;
+
+    const message = document.createElement('div');
+    message.textContent = text;
+    message.style.color = color;
+    message.style.marginBottom = '3px';
+
+    log.appendChild(message);
     log.scrollTop = log.scrollHeight;
 }
 
-// Обновление UI
-function updateDemoBattleUI(dragon, wizards) {
-    // Обновляем HP дракона
-    const hpBar = document.getElementById('dragon-hp-bar');
-    if (hpBar) {
-        const hpPercent = (dragon.hp / dragon.max_hp) * 100;
-        hpBar.style.width = `${hpPercent}%`;
-        hpBar.parentElement.querySelector('span').textContent = `${dragon.hp}/${dragon.max_hp}`;
-    }
-    
-    // Перерисовываем поле
-    renderDemoBattleField(dragon, wizards);
-}
+// Получить название заклинания
+function getSpellName(spellId) {
+    const names = {
+        'spark': 'Искра',
+        'firebolt': 'Огненный снаряд',
+        'icicle': 'Ледышка',
+        'frost_arrow': 'Морозная стрела',
+        'gust': 'Порыв ветра',
+        'wind_blade': 'Клинок ветра',
+        'fireball': 'Огненный шар',
+        'blizzard': 'Метель',
+        'fire_wall': 'Огненная стена',
+        'wind_wall': 'Стена ветра'
+    };
 
-// Конец демо-боя
-function endDemoBattle(winner) {
-    const log = document.getElementById('demo-battle-log');
-    if (winner === 'dragon') {
-        log.innerHTML += `<div style="color: #ff6666; font-size: 18px; margin-top: 10px;">🐉 ДРАКОН ПОБЕДИЛ! Маги пали в битве...</div>`;
-    } else {
-        log.innerHTML += `<div style="color: #66ff66; font-size: 18px; margin-top: 10px;">🎉 НЕВЕРОЯТНО! Маги одолели дракона!</div>`;
-    }
-    
-    setTimeout(() => {
-        closeDemoBattle();
-    }, 3000);
+    return names[spellId] || spellId;
 }
 
 // Пропустить демо
 function skipDemoBattle() {
-    if (window.demoBattleInterval) {
-        clearInterval(window.demoBattleInterval);
-    }
+    demoBattleData.isRunning = false;
     closeDemoBattle();
-}
-
-// Ускорить демо
-function speedUpDemo() {
-    if (window.demoBattleInterval) {
-        clearInterval(window.demoBattleInterval);
-        DEMO_CONFIG.battleSpeed = 500;
-        // Перезапуск с новой скоростью
-        window.demoBattleInterval = setInterval(() => {
-            // ... логика хода
-        }, DEMO_CONFIG.battleSpeed);
-    }
 }
 
 // Закрыть демо
@@ -306,19 +474,37 @@ function closeDemoBattle() {
     if (overlay) {
         overlay.remove();
     }
-    if (window.demoBattleInterval) {
-        clearInterval(window.demoBattleInterval);
-        window.demoBattleInterval = null;
+
+    // Очищаем PIXI
+    if (window.pixiDragon && window.pixiDragon.clear) {
+        window.pixiDragon.clear();
     }
-    
-    // Показываем основную игру
-    if (typeof window.showGameArea === 'function') {
-        window.showGameArea();
+
+    if (window.pixiCore && window.pixiCore.clear) {
+        window.pixiCore.clear();
     }
+
+    // Сброс данных
+    demoBattleData = {
+        dragon: null,
+        wizards: [],
+        isRunning: false,
+        currentTurn: 0,
+        wizardPositions: [1, 2, 3],
+        dragonSpells: ['fireball', 'blizzard', 'fire_wall'],
+        wizardSpells: [
+            ['spark', 'firebolt'],
+            ['icicle', 'frost_arrow'],
+            ['gust', 'wind_blade']
+        ]
+    };
+
+    console.log('🧹 Демо-бой очищен');
 }
 
-// Экспорт
+// Экспорт функций
 window.startDemoBattle = startDemoBattle;
 window.skipDemoBattle = skipDemoBattle;
-window.speedUpDemo = speedUpDemo;
 window.closeDemoBattle = closeDemoBattle;
+
+console.log('✅ Демо-бой готов к запуску!');
