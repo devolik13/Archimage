@@ -139,9 +139,14 @@ function startBattle() {
     window.enemyMageIndex = 0;
     window.globalTurnCounter = 0;
     window.isVeryFirstTurn = true;
-    window.currentTurn = 'player';  
+    window.currentTurn = 'player';
     window.isPaused = false;
     window.battleSpeed = 2000;
+
+    // Инициализация логгера боя
+    if (window.battleLogger) {
+        window.battleLogger.init();
+    }
 
     // Очистка менеджера призванных существ
     if (window.summonsManager) {
@@ -462,15 +467,32 @@ function executeBattlePhase() {
 }
 
 function executeSingleMageAttack(wizard, position, casterType) {
+    // Логирование начала хода
+    if (window.battleLogger) {
+        window.battleLogger.logTurnStart(casterType, wizard, position);
+    }
+
     // ☠️ ОБРАБОТКА УРОНА ОТ ЯДА В НАЧАЛЕ ХОДА МАГА
     if (wizard.effects && wizard.effects.poison && wizard.effects.poison.stacks > 0) {
         const poisonDamage = wizard.effects.poison.stacks * (wizard.effects.poison.damagePerStack || 5);
         wizard.hp -= poisonDamage;
         if (wizard.hp < 0) wizard.hp = 0;
+
+        // Логирование DoT урона
+        if (window.battleLogger) {
+            window.battleLogger.logDotDamage(wizard, 'poison', poisonDamage, wizard.effects.poison.stacks);
+        }
+
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`☠️ ${wizard.name} получает ${poisonDamage} урона от яда (${wizard.effects.poison.stacks} стаков) (${wizard.hp}/${wizard.max_hp})`);
         }
-        if (wizard.hp <= 0) return false;
+
+        if (wizard.hp <= 0) {
+            if (window.battleLogger) {
+                window.battleLogger.logDeath(wizard, casterType, 'poison');
+            }
+            return false;
+        }
     }
 
     // 🌃 ОБРАБОТКА РЕГЕНЕРАЦИИ (включая благословения)
@@ -528,6 +550,13 @@ function executeSingleMageAttack(wizard, position, casterType) {
     // Огненные стены
     if (typeof window.processFireWallsForWizard === 'function') {
         window.processFireWallsForWizard(wizard, casterType);
+        // Проверка на смерть от огненной стены
+        if (wizard.hp <= 0) {
+            if (window.battleLogger) {
+                window.battleLogger.logDeath(wizard, casterType, 'fire_wall');
+            }
+            return false;
+        }
     }
 
     // ИСПОЛЬЗОВАНИЕ ЗАКЛИНАНИЙ
@@ -698,6 +727,22 @@ function checkBattleEnd() {
 
     const enemyAlive = window.enemyFormation.some(wizard => wizard && wizard.hp > 0);
 
+    // Подсчет живых магов
+    const playerAliveCount = window.playerFormation.filter((wizardId) => {
+        if (wizardId) {
+            const wizard = window.playerWizards.find(w => w.id === wizardId);
+            return wizard && wizard.hp > 0;
+        }
+        return false;
+    }).length;
+
+    const enemyAliveCount = window.enemyFormation.filter(wizard => wizard && wizard.hp > 0).length;
+
+    // Логирование проверки конца боя
+    if (window.battleLogger) {
+        window.battleLogger.logBattleEndCheck(playerAlive, enemyAlive, playerAliveCount, enemyAliveCount);
+    }
+
     if (!playerAlive || !enemyAlive) {
         window.battleState = 'finished';
         let resultLog = '';
@@ -707,6 +752,11 @@ function checkBattleEnd() {
             resultLog = '💀 Все маги игрока погибли! Поражение.';
         } else {
             resultLog = '🏆 Все маги противника погибли! Победа!';
+        }
+
+        // Логирование конца боя
+        if (window.battleLogger) {
+            window.battleLogger.logBattleEnd(resultLog, playerAlive, enemyAlive);
         }
 
         if (typeof window.addToBattleLog === 'function') {
