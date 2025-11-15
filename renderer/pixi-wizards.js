@@ -284,6 +284,7 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 sprite.animationSpeed = config.animationSpeed || 0.15;
                 sprite.anchor.set(0.5);
                 sprite.scale.set(scale * (config.scale || 0.5));
+                sprite.loop = true; // Зацикливаем idle анимацию
                 sprite.play();
                 
                 // Зеркалим для игрока (смотрит влево)
@@ -321,8 +322,9 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 sprite.animationSpeed = 0.1;
                 sprite.anchor.set(0.5);
                 sprite.scale.set(scale * (config?.scale || 0.15));
+                sprite.loop = true; // Зацикливаем idle анимацию
                 sprite.play();
-                
+
                 if (type === 'player') {
                     sprite.scale.x *= -1;
                 }
@@ -465,19 +467,17 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                     try {
                         sprite.stop();
                         sprite.onComplete = null;
-                        
+
                         // Возвращаем idle анимацию
                         if (container.idleFrames && container.idleFrames.length > 0) {
                             sprite.textures = container.idleFrames;
                             sprite.animationSpeed = originalSpeed;
                             sprite.loop = true;
-                            sprite.gotoAndStop(0);
-                            
-                            safeSetTimeout(() => {
-                                if (isSpriteValid(sprite)) {
-                                    sprite.play();
-                                }
-                            }, 50);
+
+                            // ИСПРАВЛЕНО: Сразу запускаем анимацию без задержки
+                            sprite.gotoAndPlay(0);
+
+                            console.log('✅ Маг вернулся к idle анимации');
                         }
                     } catch (err) {
                         console.error('Ошибка при возврате к idle:', err);
