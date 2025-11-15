@@ -323,29 +323,48 @@ function playSpellAnimation(spellId, caster, target, callback) {
 
         const animation = window.spellAnimations[spellId];
 
-        // Определяем параметры
-        let targetPositions = [];
-        let casterType = 'enemy';
+        // Преобразуем параметры в формат анимаций (casterCol, casterRow, targetCol, targetRow)
+        let casterCol, casterRow, targetCol, targetRow;
 
         if (target === 'dragon') {
-            // Магия по дракону - центральная позиция
-            targetPositions = [1]; // Центр 3×3
-            casterType = 'player';
-        } else if (target) {
-            // Магия дракона по магу - нужна row позиция, а не индекс
-            const wizardIndex = demoBattleData.wizards.indexOf(target);
-            if (wizardIndex !== -1) {
-                targetPositions = [demoBattleData.wizardPositions[wizardIndex]]; // row: 1, 2 или 3
+            // Маг кастует на дракона
+            const wizardIndex = demoBattleData.wizards.indexOf(caster);
+            if (wizardIndex === -1) {
+                console.error('⚠️ Маг-кастер не найден');
+                if (callback) callback();
+                return;
             }
-            casterType = 'enemy';
+
+            casterCol = 5; // Маги в правой колонке
+            casterRow = demoBattleData.wizardPositions[wizardIndex]; // row: 1, 2 или 3
+            targetCol = 1; // Дракон в центре (условно col 1)
+            targetRow = 1; // Центральная позиция
+        } else if (target) {
+            // Дракон кастует на мага
+            const wizardIndex = demoBattleData.wizards.indexOf(target);
+            if (wizardIndex === -1) {
+                console.error('⚠️ Маг-цель не найден');
+                if (callback) callback();
+                return;
+            }
+
+            casterCol = 1; // Дракон в центре
+            casterRow = 1; // Центральная позиция
+            targetCol = 5; // Маг в правой колонке
+            targetRow = demoBattleData.wizardPositions[wizardIndex]; // row: 1, 2 или 3
+        } else {
+            console.error('⚠️ Нет цели для анимации');
+            if (callback) callback();
+            return;
         }
 
-        console.log(`🎬 Анимация ${spellId}: тип=${casterType}, позиции=${targetPositions}`);
+        console.log(`🎬 Анимация ${spellId}: [${casterCol},${casterRow}] → [${targetCol},${targetRow}]`);
 
         animation.play({
-            casterType: casterType,
-            targetPositions: targetPositions,
-            level: 1,
+            casterCol: casterCol,
+            casterRow: casterRow,
+            targetCol: targetCol,
+            targetRow: targetRow,
             onComplete: () => {
                 try {
                     if (callback) callback();
