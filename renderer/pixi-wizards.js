@@ -790,6 +790,76 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         console.log('✅ Очистка магов завершена');
     }
     
+    // Функция создания мага для демо-боя (упрощённая)
+    async function createDemoWizard(wizardData, col, row, type) {
+        // Инициализируем если нужно
+        if (!gridCells || !unitsContainer) {
+            init();
+        }
+
+        if (!gridCells || !unitsContainer) {
+            console.error('❌ Не могу создать мага - контейнеры не готовы');
+            return null;
+        }
+
+        const cellData = gridCells?.[col]?.[row];
+        if (!cellData) {
+            console.error(`❌ Ячейка ${col}_${row} не найдена`);
+            return null;
+        }
+
+        const faction = wizardData.faction || 'fire';
+        const config = FACTION_SPRITES_CONFIG[faction];
+
+        console.log(`🧙 Создаём демо-мага фракции ${faction} на ${col}_${row}`);
+
+        const container = new PIXI.Container();
+        const scale = cellData.cellScale || 1;
+
+        let sprite;
+
+        // Загружаем текстуры фракции
+        const textures = await loadFactionTextures(faction);
+
+        if (textures && textures.idle && textures.idle.length > 0) {
+            sprite = new PIXI.AnimatedSprite(textures.idle);
+            sprite.animationSpeed = config?.animationSpeed || 0.15;
+            sprite.anchor.set(0.5);
+            sprite.scale.set(scale * (config?.scale || 0.5));
+            sprite.loop = true;
+            sprite.play();
+
+            // Зеркалим для игрока (смотрит влево)
+            if (type === 'player') {
+                sprite.scale.x *= -1;
+            }
+
+            // Дополнительное отражение для фракции fire
+            if (faction === 'fire') {
+                sprite.scale.x *= -1;
+            }
+
+            sprite.x = cellData.x + cellData.width / 2;
+            sprite.y = cellData.y + cellData.height / 2;
+
+            // Сохраняем текстуры для анимаций
+            sprite.userData = {
+                idleFrames: textures.idle,
+                castFrames: textures.cast,
+                deathFrames: textures.death,
+                faction: faction
+            };
+
+            container.addChild(sprite);
+            unitsContainer.addChild(container);
+
+            return { sprite, container, data: wizardData };
+        } else {
+            console.error(`❌ Не удалось загрузить текстуры для ${faction}`);
+            return null;
+        }
+    }
+
     // Экспорт с поддержкой старого API
     window.pixiWizards = {
         init: init,
@@ -799,8 +869,12 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         clearAll: () => clearWizards(true), // Полная очистка
         clearPartial: () => clearWizards(false), // Частичная очистка
         playAttack: playWizardAttackAnimation,
-        playDeath: playWizardDeathAnimation
+        playDeath: playWizardDeathAnimation,
+        createWizard: createDemoWizard, // Для демо-боя
+        playCastAnimation: playCastAnimation,
+        updateWizardHP: updateWizardHP,
+        playDeathAnimation: playDeathAnimation
     };
-    
+
     console.log('✅ pixi-wizards готов (поддержка фракций)');
 })();
