@@ -33,8 +33,13 @@ const CINEMATIC_SCRIPT = {
     // Контратака дракона
     dragonCounterattack: [
         { spell: 'fireball', target: 1 },      // Огненный шар по центральному магу
-        { spell: 'ice_rain', target: 0 },      // Ледяной дождь на первого мага
-        { spell: 'meteor', target: 2 }         // Метеор на третьего мага
+        { spell: 'ice_rain', targets: [1, 2, 3] }, // Ледяной дождь по всей линии магов
+        // 5 метеоритов по разным позициям
+        { spell: 'meteor', target: 1 },
+        { spell: 'meteor', target: 2 },
+        { spell: 'meteor', target: 3 },
+        { spell: 'meteor', target: 1 },
+        { spell: 'meteor', target: 2 }
     ],
     // Порядок смерти магов
     wizardDeaths: [1, 0, 2] // Сначала маг воды, потом огня, потом ветра
@@ -184,11 +189,17 @@ async function playDragonCounterattack() {
             window.pixiDragon.playAttack(() => resolve());
         });
 
-        const target = cinematicData.wizards[attack.target];
-        if (!target) continue;
+        // Обработка одиночной или множественной цели
+        if (attack.targets) {
+            // Для заклинаний с несколькими целями (ice_rain)
+            await playSpellAnimation(attack.spell, null, { positions: attack.targets });
+        } else {
+            // Для заклинаний с одной целью
+            const target = cinematicData.wizards[attack.target];
+            if (!target) continue;
+            await playSpellAnimation(attack.spell, null, target);
+        }
 
-        // Анимация заклинания дракона
-        await playSpellAnimation(attack.spell, null, target);
         await delay(CINEMATIC_CONFIG.spellDelay);
     }
 }
@@ -230,16 +241,22 @@ function playSpellAnimation(spellId, caster, target) {
             let casterCol, casterRow, targetCol, targetRow;
 
             if (target === 'dragon') {
-                // Маг → Дракон
+                // Маг → Дракон (центр дракона на ряду 2)
                 const wizardIndex = cinematicData.wizards.indexOf(caster);
                 casterCol = 5;
                 casterRow = caster.position;
                 targetCol = 1;
-                targetRow = 1;
-            } else if (target) {
-                // Дракон → Маг
+                targetRow = 2;
+            } else if (target && target.positions) {
+                // Дракон → Несколько магов (для ice_rain)
                 casterCol = 1;
-                casterRow = 1;
+                casterRow = 2;
+                targetCol = 5;
+                targetRow = target.positions[0]; // Первая позиция для базовых параметров
+            } else if (target) {
+                // Дракон → Один маг
+                casterCol = 1;
+                casterRow = 2;
                 targetCol = 5;
                 targetRow = target.position;
             }
@@ -268,7 +285,16 @@ function playSpellAnimation(spellId, caster, target) {
 
             // Для ice_rain добавляем targetPositions (массив позиций)
             if (spellId === 'ice_rain') {
-                animationParams.targetPositions = target ? [target.position] : [1];
+                if (target && target.positions) {
+                    // Несколько целей
+                    animationParams.targetPositions = target.positions;
+                } else if (target && target.position !== undefined) {
+                    // Одна цель
+                    animationParams.targetPositions = [target.position];
+                } else {
+                    // Fallback
+                    animationParams.targetPositions = [1];
+                }
             }
 
             animation.play(animationParams);

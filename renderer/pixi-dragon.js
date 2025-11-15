@@ -171,10 +171,10 @@ console.log('✅ pixi-dragon.js загружен');
             sprite.play();
         }
 
-        // Дракон занимает 3×3 клетки (col 0-2, row 0-2)
+        // Дракон занимает 3×3 клетки (col 0-2, row 1-3)
         // Позиционируем в центре этой области
-        const topLeftCell = gridCells[0]?.[0];  // Левая верхняя клетка
-        const bottomRightCell = gridCells[2]?.[2];  // Правая нижняя клетка
+        const topLeftCell = gridCells[0]?.[1];  // Левая верхняя клетка
+        const bottomRightCell = gridCells[2]?.[3];  // Правая нижняя клетка
 
         if (!topLeftCell || !bottomRightCell) {
             console.error('❌ Не удалось определить позицию дракона');
