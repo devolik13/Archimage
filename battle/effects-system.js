@@ -152,16 +152,36 @@ function applyFreezeEffect(targetWizard) {
 
 function processBurningForWizard(wizard) {
     if (!wizard.effects || !wizard.effects.burning || wizard.hp <= 0) return;
-    
+
     const burningEffect = wizard.effects.burning;
     wizard.hp -= burningEffect.damage;
     if (wizard.hp < 0) wizard.hp = 0;
-    
+
     const logEntry = `🔥 ${wizard.name} горит! Получает ${burningEffect.damage} урона (${wizard.hp}/${wizard.max_hp})`;
     if (typeof window.addToBattleLog === 'function') {
         window.addToBattleLog(logEntry);
     } else if (Array.isArray(window.battleLog)) {
         window.battleLog.push(logEntry);
+    }
+
+    // Логирование смерти от горения
+    if (wizard.hp <= 0) {
+        // Определяем тип кастера
+        let casterType = '';
+        const playerPos = window.playerFormation?.findIndex(id => id === wizard.id);
+        if (playerPos !== -1) {
+            casterType = 'player';
+        } else {
+            const enemyPos = window.enemyFormation?.findIndex(w => w && w.id === wizard.id);
+            if (enemyPos !== -1) {
+                casterType = 'enemy';
+            }
+        }
+
+        if (casterType && window.battleLogger) {
+            window.battleLogger.logDeath(wizard, casterType, 'burning');
+        }
+        return; // Маг мёртв, не продолжаем обработку
     }
     
     burningEffect.duration--;
@@ -248,15 +268,15 @@ function processRegenerationForWizard(wizard) {
 // --- Обработка яда для мага ---
 function processPoisonForWizard(wizard) {
     if (!wizard.effects || !wizard.effects.poison || wizard.hp <= 0) return;
-    
+
     const poisonEffect = wizard.effects.poison;
     const damage = poisonEffect.stacks * (poisonEffect.damagePerStack || 5);
-    
+
     // Наносим урон от яда
     const oldHP = wizard.hp;
     wizard.hp -= damage;
     if (wizard.hp < 0) wizard.hp = 0;
-    
+
     if (wizard.hp < oldHP) {
         const actualDamage = oldHP - wizard.hp;
         const logEntry = `☠️ ${wizard.name} страдает от яда (${actualDamage} урона, ${poisonEffect.stacks} стаков) (${wizard.hp}/${wizard.max_hp})`;
@@ -264,6 +284,25 @@ function processPoisonForWizard(wizard) {
             window.addToBattleLog(logEntry);
         } else if (Array.isArray(window.battleLog)) {
             window.battleLog.push(logEntry);
+        }
+    }
+
+    // Логирование смерти от яда
+    if (wizard.hp <= 0) {
+        // Определяем тип кастера
+        let casterType = '';
+        const playerPos = window.playerFormation?.findIndex(id => id === wizard.id);
+        if (playerPos !== -1) {
+            casterType = 'player';
+        } else {
+            const enemyPos = window.enemyFormation?.findIndex(w => w && w.id === wizard.id);
+            if (enemyPos !== -1) {
+                casterType = 'enemy';
+            }
+        }
+
+        if (casterType && window.battleLogger) {
+            window.battleLogger.logDeath(wizard, casterType, 'poison');
         }
     }
 }

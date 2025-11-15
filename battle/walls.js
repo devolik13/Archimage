@@ -257,27 +257,33 @@ function processFireWallsForWizard(wizard, wizardType) {
                 
                 if (shouldTakeDamage) {
                     const caster = findCaster(zone.casterId, zone.casterType);
-                    const finalDamage = typeof window.applyFinalDamage === 'function' ? 
+                    const finalDamage = typeof window.applyFinalDamage === 'function' ?
                         window.applyFinalDamage(caster, wizard, zone.damage, 'fire_wall', 0, true) : zone.damage;
-                        
+
                     wizard.hp -= finalDamage;
                     if (wizard.hp < 0) wizard.hp = 0;
-                    
+
                     if (caster && caster.faction === 'fire' && typeof window.tryApplyEffect === 'function') {
                         window.tryApplyEffect('burning', wizard, false);
                     }
-                    
+
                     if (typeof window.addToBattleLog === 'function') {
                         window.addToBattleLog(`🔥 ${wizard.name} получает ${finalDamage} урона от огненной стены в свой ход (${wizard.hp}/${wizard.max_hp})`);
                     }
+
+                    // Логирование смерти от огненной стены
+                    if (wizard.hp <= 0 && window.battleLogger) {
+                        window.battleLogger.logDeath(wizard, wizardType, 'fire_wall');
+                    }
+
 		    if (typeof window.createFireWallDamageEffect === 'function') {
         		// Находим спрайт мага
         		const wizardCol = wizardType === 'player' ? 5 : 0;
         		const wizardSprite = window.wizardSprites?.[`${wizardCol}_${wizardPosition}`];
         		if (wizardSprite) {
         		    window.createFireWallDamageEffect(
-        		        wizardSprite.x, 
-        		        wizardSprite.y, 
+        		        wizardSprite.x,
+        		        wizardSprite.y,
         		        wizardSprite.hpBarScale || 1
         		    );
         		}
@@ -359,16 +365,21 @@ function processFireGroundZones() {
             
             if (targetWizard && targetWizard.hp > 0) {
                 const caster = findCaster(zone.casterId, zone.casterType);
-                const finalDamage = typeof window.applyFinalDamage === 'function' ? 
+                const finalDamage = typeof window.applyFinalDamage === 'function' ?
                     window.applyFinalDamage(caster, targetWizard, zone.damage, 'fire_ground', 0, true) : zone.damage;
-                    
+
                 targetWizard.hp -= finalDamage;
                 if (targetWizard.hp < 0) targetWizard.hp = 0;
-                
+
                 if (typeof window.addToBattleLog === 'function') {
                     window.addToBattleLog(`🔥 ${targetWizard.name} получает ${finalDamage} урона от Горящей земли (${targetWizard.hp}/${targetWizard.max_hp})`);
                 }
-                
+
+                // Логирование смерти от горящей земли
+                if (targetWizard.hp <= 0 && window.battleLogger) {
+                    window.battleLogger.logDeath(targetWizard, targetType, 'fire_ground');
+                }
+
                 // Эффект горения от фракции Огонь
                 if (caster && caster.faction === 'fire' && typeof window.tryApplyEffect === 'function') {
                     window.tryApplyEffect('burning', targetWizard, false);
@@ -464,18 +475,25 @@ function applyTsunamiDamage(tsunami) {
         // Стены/эффекты — пока не цели
         
         if (targetWizard && targetWizard.hp > 0) {
-            const finalDamage = typeof window.applyFinalDamage === 'function' ? 
+            const finalDamage = typeof window.applyFinalDamage === 'function' ?
                 window.applyFinalDamage(caster, targetWizard, tsunami.damage, 'fire_tsunami', 0, true) : tsunami.damage;
-                
+
             targetWizard.hp -= finalDamage;
             if (targetWizard.hp < 0) targetWizard.hp = 0;
-            
+
             if (typeof window.logSpellHit === 'function') {
                 window.logSpellHit(caster, targetWizard, finalDamage, 'Огненное цунами');
             } else if (typeof window.addToBattleLog === 'function') {
                 window.addToBattleLog(`🌊 ${targetWizard.name} получает ${finalDamage} урона от Цунами (${targetWizard.hp}/${targetWizard.max_hp})`);
             }
-            
+
+            // Логирование смерти от цунами
+            if (targetWizard.hp <= 0 && window.battleLogger) {
+                // Определяем тип для логирования
+                const targetType = isSummoned ? 'summoned' : (column === 0 || column === 1 ? 'enemy' : 'player');
+                window.battleLogger.logDeath(targetWizard, targetType, 'fire_tsunami');
+            }
+
             // Эффект горения для фракции Огонь
             if (caster.faction === 'fire' && typeof window.tryApplyEffect === 'function') {
                 window.tryApplyEffect('burning', targetWizard, false);
@@ -509,25 +527,30 @@ function createFireGroundForTsunami(tsunami) {
 
 function processFireGroundForWizard(wizard, wizardPosition, wizardType) {
     if (!window.activeEffectZones) return;
-    
+
     const wizardColumn = wizardType === 'player' ? 5 : 0;
-    
-    const fireGround = window.activeEffectZones.find(zone => 
-        zone.type === 'fire_ground' && 
-        zone.column === wizardColumn && 
+
+    const fireGround = window.activeEffectZones.find(zone =>
+        zone.type === 'fire_ground' &&
+        zone.column === wizardColumn &&
         zone.row === wizardPosition
     );
-    
+
     if (fireGround) {
         const caster = findCaster(fireGround.casterId, fireGround.casterType);
-        const finalDamage = typeof window.applyFinalDamage === 'function' ? 
+        const finalDamage = typeof window.applyFinalDamage === 'function' ?
             window.applyFinalDamage(caster, wizard, fireGround.damage, 'fire_ground', 0, true) : fireGround.damage;
-            
+
         wizard.hp -= finalDamage;
         if (wizard.hp < 0) wizard.hp = 0;
-        
+
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`🔥 ${wizard.name} получает ${finalDamage} урона от Горящей земли в начале хода (${wizard.hp}/${wizard.max_hp})`);
+        }
+
+        // Логирование смерти от горящей земли
+        if (wizard.hp <= 0 && window.battleLogger) {
+            window.battleLogger.logDeath(wizard, wizardType, 'fire_ground');
         }
     }
 }
@@ -738,16 +761,21 @@ function applyAbsoluteZeroDamage() {
 
 // --- Применение эффекта Абсолютного Ноля к цели ---
 function applyAbsoluteZeroEffect(caster, target, zone, targetType, row) {
-    const finalDamage = typeof window.applyFinalDamage === 'function' ? 
+    const finalDamage = typeof window.applyFinalDamage === 'function' ?
         window.applyFinalDamage(caster, target, zone.damage, 'absolute_zero', 0, true) : zone.damage;
-        
+
     target.hp -= finalDamage;
     if (target.hp < 0) target.hp = 0;
-    
+
     if (typeof window.addToBattleLog === 'function') {
         window.addToBattleLog(`❄️ ${target.name} получает ${finalDamage} урона от Абсолютного Ноля (${target.hp}/${target.max_hp})`);
     }
-    
+
+    // Логирование смерти от абсолютного ноля
+    if (target.hp <= 0 && window.battleLogger) {
+        window.battleLogger.logDeath(target, targetType, 'absolute_zero');
+    }
+
     // Сохраняем зону в цели для последующей проверки перед кастом
     if (!target.affectedBy) target.affectedBy = [];
     if (!target.affectedBy.includes('absolute_zero')) {
