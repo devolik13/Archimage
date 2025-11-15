@@ -99,7 +99,7 @@ console.log('✅ gust.js загружен');
             const startTime = Date.now();
             
             const animate = () => {
-                if (!gustSprite.parent) return;
+                if (!window.pixiAnimUtils.isValid(gustSprite)) return;
                 
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
@@ -167,7 +167,7 @@ console.log('✅ gust.js загружен');
         const startTime = Date.now();
         
         const animate = () => {
-            if (!projectile.parent) return;
+            if (!window.pixiAnimUtils.isValid(projectile)) return;
             
             const elapsed = Date.now() - startTime;
             const progress = Math.min(elapsed / duration, 1);
@@ -212,13 +212,15 @@ console.log('✅ gust.js загружен');
         const duration = 400;
         
         const animateWave = () => {
+            if (!window.pixiAnimUtils.isValid(impactWave)) return;
+
             const elapsed = Date.now() - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            
+
             impactWave.clear();
             impactWave.lineStyle(3 * (1 - progress), 0xCCFFFF, 0.8 * (1 - progress));
             impactWave.drawCircle(0, 0, (5 + progress * 30) * scale);
-            
+
             if (progress < 1 && impactWave.parent) {
                 requestAnimationFrame(animateWave);
             } else {
@@ -254,13 +256,15 @@ console.log('✅ gust.js загружен');
             const duration = 500;
             
             const animateParticle = () => {
+                if (!window.pixiAnimUtils.isValid(particle)) return;
+
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                
+
                 particle.x += vx;
                 particle.y += vy;
                 particle.alpha = 1 - progress;
-                
+
                 if (progress < 1 && particle.parent) {
                     requestAnimationFrame(animateParticle);
                 } else {

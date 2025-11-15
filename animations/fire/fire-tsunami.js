@@ -166,6 +166,8 @@ console.log('✅ fire-tsunami.js загружен');
                 // Анимация покачивания
                 const baseY = wave.y;
                 const animate = () => {
+                    if (!window.pixiAnimUtils.isValid(wave)) return;
+
                     wave.rotation += 0.02;
                     wave.y = baseY + Math.sin(Date.now() * 0.002) * 5;
                     if (wave.parent) requestAnimationFrame(animate);
@@ -218,13 +220,15 @@ console.log('✅ fire-tsunami.js загружен');
             // Задержка для волнового эффекта
             setTimeout(() => {
                 const animate = () => {
+                    if (!window.pixiAnimUtils.isValid(sprite)) return;
+
                     const elapsed = Date.now() - startTime;
                     const progress = Math.min(elapsed / duration, 1);
-                    
+
                     // Easing функция для плавности
                     const easeProgress = 1 - Math.pow(1 - progress, 3);
                     sprite.x = startX + (targetX - startX) * easeProgress;
-                    
+
                     // Усиливаем альфу во время движения
                     sprite.alpha = Math.min(0.9, sprite.alpha + 0.01);
                     
@@ -288,13 +292,15 @@ console.log('✅ fire-tsunami.js загружен');
         const duration = 800;
         
         const animate = () => {
+            if (!window.pixiAnimUtils.isValid(particle)) return;
+
             const progress = Math.min((Date.now() - startTime) / duration, 1);
-            
+
             particle.y += vy;
             particle.x += vx;
             particle.alpha = 0.8 * (1 - progress);
             particle.scale.set(1 - progress * 0.5);
-            
+
             if (progress < 1 && particle.parent) {
                 requestAnimationFrame(animate);
             } else {

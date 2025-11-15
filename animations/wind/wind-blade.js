@@ -167,7 +167,7 @@ console.log('✅ wind-blade.js загружен');
         const startTime = Date.now();
         
         const animate = () => {
-            if (!blade.sprite || !blade.sprite.parent) return;
+            if (!blade.sprite || !window.pixiAnimUtils.isValid(blade.sprite)) return;
             
             const elapsed = Date.now() - startTime;
             const progress = Math.min(elapsed / duration, 1);
@@ -214,13 +214,15 @@ console.log('✅ wind-blade.js загружен');
             const duration = 300;
             
             const animateSpark = () => {
+                if (!window.pixiAnimUtils.isValid(spark)) return;
+
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                
+
                 spark.x += vx;
                 spark.y += vy;
                 spark.alpha = 1 - progress;
-                
+
                 if (progress < 1 && spark.parent) {
                     requestAnimationFrame(animateSpark);
                 } else {

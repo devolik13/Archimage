@@ -79,13 +79,13 @@ console.log('✅ burning-effect.js загружен');
         
         // Анимация колыхания пламени
         const animateFlames = () => {
-            if (!fireContainer.parent) return;
-            
+            if (!window.pixiAnimUtils.isValid(fireContainer)) return;
+
             const time = Date.now() * 0.001;
-            
+
             flames.forEach((flameData, index) => {
                 const { sprite, phase, speed, baseScale, drawFlame, color } = flameData;
-                
+
                 // Колыхание
                 const wave = Math.sin(time * 3 + phase) * 0.3 + 1;
                 const scale = baseScale * wave;
@@ -128,11 +128,13 @@ console.log('✅ burning-effect.js загружен');
             const startY = spark.y;
             let progress = 0;
             const animateSpark = () => {
+                if (!window.pixiAnimUtils.isValid(spark)) return;
+
                 progress += 0.02;
                 spark.y = startY - progress * 40;
                 spark.alpha = 1 - progress;
                 spark.scale.set((1 - progress) * 0.5);
-                
+
                 if (progress < 1 && spark.parent) {
                     requestAnimationFrame(animateSpark);
                 } else if (spark.parent) {
