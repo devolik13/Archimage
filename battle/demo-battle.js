@@ -36,7 +36,11 @@ async function startDemoBattle(faction) {
     // Инициализируем PIXI поле боя 6×5
     await initDemoPixiBattle();
 
+    // Небольшая задержка для инициализации контейнеров
+    await new Promise(resolve => setTimeout(resolve, 300));
+
     // Создаём дракона (3×3 клетки)
+    console.log('🐉 Создаём дракона...');
     const dragon = await window.pixiDragon.create();
     if (!dragon) {
         console.error('❌ Не удалось создать дракона');
@@ -71,9 +75,9 @@ async function initDemoPixiBattle() {
         window.pixiCore.destroy();
     }
 
-    // Создаём временные формации для PIXI Core
-    window.enemyFormation = { units: [] };
-    window.playerFormation = { units: [] };
+    // Создаём временные формации для PIXI Core (пустые массивы)
+    window.enemyFormation = [];
+    window.playerFormation = [];
 
     // Инициализируем новое поле 6×5
     await window.pixiCore.init();
