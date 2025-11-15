@@ -1,4 +1,4 @@
-// renderer/pixi-dragon.js - Система рендеринга дракона для демо-боя
+// renderer/pixi-dragon.js - Система рендеринга дракона для демо-боя (ИСПРАВЛЕННАЯ ВЕРСИЯ)
 console.log('✅ pixi-dragon.js загружен');
 
 (function() {
@@ -27,7 +27,7 @@ console.log('✅ pixi-dragon.js загружен');
             console.log(`📐 Cast текстура: ${castTexture.width}×${castTexture.height}`);
             console.log(`📐 Death текстура: ${deathTexture.width}×${deathTexture.height}`);
 
-            // Определяем ориентацию спрайт-листа
+            // Определяем ориентацию спрайт-листа (2048×256 = горизонтальная)
             const isHorizontal = idleTexture.width > idleTexture.height;
 
             console.log(`📐 Ориентация: ${isHorizontal ? 'горизонтальная' : 'вертикальная'}`);
@@ -197,68 +197,57 @@ console.log('✅ pixi-dragon.js загружен');
             idleSprite.loop = true;
             idleSprite.play();
 
+            // Вычисляем финальный масштаб
             const scaleToFit = Math.min(areaWidth / DRAGON_CONFIG.frameWidth, areaHeight / DRAGON_CONFIG.frameHeight);
             const finalScale = scaleToFit * DRAGON_CONFIG.scale;
 
-            // Устанавливаем scale для idle и запоминаем размеры
+            // ВАЖНО: Устанавливаем scale для idle
             idleSprite.scale.set(finalScale);
-            const targetWidth = idleSprite.width;
-            const targetHeight = idleSprite.height;
 
-            console.log(`🐉 Idle sprite: scale=${finalScale}, size=${targetWidth}×${targetHeight}`);
+            console.log(`🐉 Idle sprite: scale=${finalScale}`);
 
-            // Создаем cast спрайт
+            // Создаем cast спрайт С ТЕМ ЖЕ МАСШТАБОМ
             castSprite = new PIXI.AnimatedSprite(textures.cast);
             castSprite.animationSpeed = 0.15;
             castSprite.anchor.set(0.5);
             castSprite.loop = false;
 
-            // Принудительно устанавливаем ТОЧНЫЕ размеры как у idle
-            castSprite.width = targetWidth;
-            castSprite.height = targetHeight;
+            // КРИТИЧЕСКИ ВАЖНО: Устанавливаем тот же scale что и у idle
+            castSprite.scale.set(finalScale);
 
-            // Запускаем castSprite СРАЗУ
-            castSprite.play();
-            castSprite.stop(); // Останавливаем на первом кадре
-            castSprite.visible = false; // Скрываем
+            // Скрываем cast спрайт изначально
+            castSprite.visible = false;
 
-            console.log(`🐉 Cast sprite: size=${castSprite.width}×${castSprite.height}, scale=${castSprite.scale.x}`);
+            console.log(`🐉 Cast sprite: scale=${finalScale}`);
         }
 
-        // Позиционируем оба спрайта
+        // Создаем контейнер дракона
+        dragonContainer = {
+            idleSprite: idleSprite,
+            castSprite: castSprite,
+            sprite: idleSprite,  // Основная ссылка на текущий активный спрайт
+            isPlaceholder: isPlaceholder,
+            deathFrames: textures?.death || [],
+            hp: 500,
+            maxHp: 500,
+            // СОХРАНЯЕМ ФИНАЛЬНЫЙ МАСШТАБ
+            targetScale: idleSprite.scale.x
+        };
+
+        // Устанавливаем позицию для обоих спрайтов
         idleSprite.x = centerX;
         idleSprite.y = centerY;
         castSprite.x = centerX;
         castSprite.y = centerY;
 
-        // Добавляем оба спрайта в контейнер
-        unitsContainer.addChild(idleSprite);
-        unitsContainer.addChild(castSprite);
-
-        // Сохраняем фиксированные размеры
-        const fixedWidth = idleSprite.width;
-        const fixedHeight = idleSprite.height;
-
-        // Создаем контейнер для дракона
-        dragonContainer = {
-            idleSprite: idleSprite,   // Спрайт для idle
-            castSprite: castSprite,   // Спрайт для cast
-            sprite: idleSprite,       // Для обратной совместимости
-            idleFrames: textures?.idle || null,
-            castFrames: textures?.cast || null,
-            deathFrames: textures?.death || null,
-            isPlaceholder: isPlaceholder,
-            fixedWidth: fixedWidth,   // Фиксированные размеры
-            fixedHeight: fixedHeight,
-            hp: 500,
-            maxHp: 500,
-            position: { col: 0, row: 0, width: 3, height: 3 }
-        };
-
-        // HP бар для дракона
-        const hpBar = createDragonHPBar(idleSprite, centerX, centerY - areaHeight / 2 - 20);
+        // Создаем HP бар
+        const hpBar = createDragonHPBar(idleSprite, centerX, centerY - 120);
         dragonContainer.hpBar = hpBar.container;
         dragonContainer.hpBarFill = hpBar.fill;
+
+        // Добавляем в контейнер ОБА спрайта
+        unitsContainer.addChild(idleSprite);
+        unitsContainer.addChild(castSprite);
 
         // Спрайты уже добавлены выше, добавляем только HP бар
         unitsContainer.addChild(hpBar.container);
@@ -293,7 +282,7 @@ console.log('✅ pixi-dragon.js загружен');
         return { container: hpBarContainer, fill: hpBarFill };
     }
 
-    // Анимация атаки дракона
+    // ИСПРАВЛЕННАЯ анимация атаки дракона
     function playDragonAttackAnimation(callback) {
         if (!dragonContainer || !dragonContainer.idleSprite || !dragonContainer.castSprite) {
             console.warn('⚠️ Дракон не найден');
@@ -315,31 +304,20 @@ console.log('✅ pixi-dragon.js загружен');
             }, 300);
         } else {
             console.log('🎬 Анимация атаки дракона - переключение спрайтов');
+            console.log(`🎬 Target scale: ${dragonContainer.targetScale}`);
+
+            // ПЕРЕД ПОКАЗОМ cast спрайта - убеждаемся что масштаб правильный
+            castSprite.scale.set(dragonContainer.targetScale);
 
             // Скрываем idle
             idleSprite.visible = false;
 
-            // ПРИНУДИТЕЛЬНО устанавливаем размеры перед показом
-            castSprite.width = dragonContainer.fixedWidth;
-            castSprite.height = dragonContainer.fixedHeight;
-
-            // Показываем и запускаем cast
+            // Сбрасываем и запускаем cast анимацию
             castSprite.currentFrame = 0;
             castSprite.visible = true;
             castSprite.play();
 
-            console.log(`🎬 BEFORE cast: target=${dragonContainer.fixedWidth}×${dragonContainer.fixedHeight}, actual=${castSprite.width}×${castSprite.height}`);
-
-            // Проверяем размер через requestAnimationFrame (после рендера)
-            requestAnimationFrame(() => {
-                console.log(`🎬 AFTER render: cast size=${castSprite.width}×${castSprite.height}`);
-                // Если размер все равно изменился - принудительно восстанавливаем
-                if (Math.abs(castSprite.width - dragonContainer.fixedWidth) > 1) {
-                    console.warn(`⚠️ Cast sprite size changed! Forcing back to ${dragonContainer.fixedWidth}×${dragonContainer.fixedHeight}`);
-                    castSprite.width = dragonContainer.fixedWidth;
-                    castSprite.height = dragonContainer.fixedHeight;
-                }
-            });
+            console.log(`🎬 Cast sprite scale после показа: ${castSprite.scale.x}`);
 
             // Когда cast анимация закончится
             castSprite.onComplete = () => {
@@ -348,10 +326,14 @@ console.log('✅ pixi-dragon.js загружен');
                 castSprite.visible = false;
                 castSprite.onComplete = null;
 
+                // ПЕРЕД ПОКАЗОМ idle - убеждаемся что масштаб правильный
+                idleSprite.scale.set(dragonContainer.targetScale);
+
                 // Показываем idle
                 idleSprite.visible = true;
 
                 console.log('🎬 Возврат к idle');
+                console.log(`🎬 Idle sprite scale после возврата: ${idleSprite.scale.x}`);
 
                 if (callback) callback();
             };
