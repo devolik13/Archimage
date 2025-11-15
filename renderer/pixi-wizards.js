@@ -585,16 +585,20 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         } else {
             // Простая анимация исчезновения для fallback
             console.log('⚠️ Используем fade out для смерти');
-            
+
             // Делаем полупрозрачным вместо полного исчезновения
             let alpha = 1;
             const fadeInterval = setInterval(() => {
-                alpha -= 0.05;
-                
-                if (isSpriteValid(sprite)) {
-                    sprite.alpha = Math.max(0.3, alpha); // Минимум 0.3 вместо 0
+                // ИСПРАВЛЕНО: Останавливаем интервал если спрайт уничтожен
+                if (!isSpriteValid(sprite)) {
+                    clearInterval(fadeInterval);
+                    if (callback) callback();
+                    return;
                 }
-                
+
+                alpha -= 0.05;
+                sprite.alpha = Math.max(0.3, alpha); // Минимум 0.3 вместо 0
+
                 if (alpha <= 0.3) {
                     clearInterval(fadeInterval);
                     // НЕ скрываем спрайт
@@ -698,22 +702,27 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
     // Обновление HP бара
     function updateWizardHP(key, hp, maxHp) {
         const container = wizardSprites[key];
-        
+
         if (!container || !container.hpBarFill) {
             return;
         }
-        
+
+        // ИСПРАВЛЕНО: Проверяем что HP бар не уничтожен
+        if (!window.pixiAnimUtils || !window.pixiAnimUtils.isValid(container.hpBarFill)) {
+            return;
+        }
+
         const hpPercent = Math.max(0, Math.min(1, hp / maxHp));
         container.hpBarFill.clear();
-        
+
         if (hp > 0) {
             const color = hpPercent > 0.5 ? 0x4ade80 : hpPercent > 0.25 ? 0xfbbf24 : 0xef4444;
             container.hpBarFill.beginFill(color);
             container.hpBarFill.drawRect(-20, 0, 40 * hpPercent, 5);
             container.hpBarFill.endFill();
         }
-        
-        if (container.hpBar) {
+
+        if (container.hpBar && window.pixiAnimUtils.isValid(container.hpBar)) {
             container.hpBar.visible = hp > 0;
         }
     }
