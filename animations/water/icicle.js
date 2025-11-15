@@ -64,9 +64,10 @@ console.log('✅ icicle.js загружен');
         
         // Функция анимации
         const animate = () => {
-            if (isDestroyed || !projectile.parent || !effectsContainer) {
+            // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+            if (isDestroyed || !projectile || projectile.destroyed || !projectile.transform || !projectile.parent || !effectsContainer) {
                 if (animationFrame) cancelAnimationFrame(animationFrame);
-                if (projectile.parent) {
+                if (projectile && projectile.parent) {
                     try {
                         effectsContainer.removeChild(projectile);
                     } catch (e) {}
@@ -122,12 +123,17 @@ console.log('✅ icicle.js загружен');
             const fadeDuration = 400;
             
             const fadeAnimate = () => {
+                // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+                if (!trail || trail.destroyed || !trail.transform) {
+                    return;
+                }
+
                 const elapsed = Date.now() - fadeStartTime;
                 const progress = Math.min(elapsed / fadeDuration, 1);
-                
+
                 trail.alpha = 0.4 * (1 - progress);
                 trail.scale.set(1 - progress * 0.5);
-                
+
                 if (progress < 1 && trail.parent) {
                     requestAnimationFrame(fadeAnimate);
                 } else {
