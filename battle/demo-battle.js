@@ -249,7 +249,8 @@ function playSpellAnimation(spellId, caster, target) {
             // Таймаут на случай если анимация не вызовет callback
             const timeout = setTimeout(() => resolve(), 3000);
 
-            animation.play({
+            // Параметры для разных типов заклинаний
+            const animationParams = {
                 casterCol: casterCol,
                 casterRow: casterRow,
                 targetCol: targetCol,
@@ -263,7 +264,14 @@ function playSpellAnimation(spellId, caster, target) {
                     clearTimeout(timeout);
                     resolve();
                 }
-            });
+            };
+
+            // Для ice_rain добавляем targetPositions (массив позиций)
+            if (spellId === 'ice_rain') {
+                animationParams.targetPositions = target ? [target.position] : [1];
+            }
+
+            animation.play(animationParams);
         } catch (error) {
             console.error(`❌ Ошибка анимации ${spellId}:`, error);
             resolve();
