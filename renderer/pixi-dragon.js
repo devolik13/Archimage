@@ -23,12 +23,10 @@ console.log('✅ pixi-dragon.js загружен');
             const castTexture = await PIXI.Assets.load('images/dragon/cast.png');
             const deathTexture = await PIXI.Assets.load('images/dragon/death.png');
 
-            // Проверяем размер текстур
-            const expectedHeight = DRAGON_CONFIG.frameCount * DRAGON_CONFIG.frameHeight;
-            if (idleTexture.height < expectedHeight) {
-                console.warn(`⚠️ Текстура дракона имеет неправильный размер: ${idleTexture.width}×${idleTexture.height}, ожидалось ${DRAGON_CONFIG.frameWidth}×${expectedHeight}`);
-                return null;
-            }
+            // Определяем ориентацию спрайт-листа
+            const isHorizontal = idleTexture.width > idleTexture.height;
+
+            console.log(`📐 Размер текстуры: ${idleTexture.width}×${idleTexture.height}, ориентация: ${isHorizontal ? 'горизонтальная' : 'вертикальная'}`);
 
             // Разбиваем спрайт-листы на кадры
             const idleFrames = [];
@@ -36,31 +34,52 @@ console.log('✅ pixi-dragon.js загружен');
             const deathFrames = [];
 
             for (let i = 0; i < DRAGON_CONFIG.frameCount; i++) {
-                // Idle кадры
-                const idleRect = new PIXI.Rectangle(
-                    0,
-                    i * DRAGON_CONFIG.frameHeight,
-                    DRAGON_CONFIG.frameWidth,
-                    DRAGON_CONFIG.frameHeight
-                );
+                let idleRect, castRect, deathRect;
+
+                if (isHorizontal) {
+                    // Горизонтальный спрайт-лист (2048×256 = 8 кадров по 256×256)
+                    idleRect = new PIXI.Rectangle(
+                        i * DRAGON_CONFIG.frameWidth,
+                        0,
+                        DRAGON_CONFIG.frameWidth,
+                        DRAGON_CONFIG.frameHeight
+                    );
+                    castRect = new PIXI.Rectangle(
+                        i * DRAGON_CONFIG.frameWidth,
+                        0,
+                        DRAGON_CONFIG.frameWidth,
+                        DRAGON_CONFIG.frameHeight
+                    );
+                    deathRect = new PIXI.Rectangle(
+                        i * DRAGON_CONFIG.frameWidth,
+                        0,
+                        DRAGON_CONFIG.frameWidth,
+                        DRAGON_CONFIG.frameHeight
+                    );
+                } else {
+                    // Вертикальный спрайт-лист (256×2048 = 8 кадров по 256×256)
+                    idleRect = new PIXI.Rectangle(
+                        0,
+                        i * DRAGON_CONFIG.frameHeight,
+                        DRAGON_CONFIG.frameWidth,
+                        DRAGON_CONFIG.frameHeight
+                    );
+                    castRect = new PIXI.Rectangle(
+                        0,
+                        i * DRAGON_CONFIG.frameHeight,
+                        DRAGON_CONFIG.frameWidth,
+                        DRAGON_CONFIG.frameHeight
+                    );
+                    deathRect = new PIXI.Rectangle(
+                        0,
+                        i * DRAGON_CONFIG.frameHeight,
+                        DRAGON_CONFIG.frameWidth,
+                        DRAGON_CONFIG.frameHeight
+                    );
+                }
+
                 idleFrames.push(new PIXI.Texture(idleTexture.baseTexture, idleRect));
-
-                // Cast кадры
-                const castRect = new PIXI.Rectangle(
-                    0,
-                    i * DRAGON_CONFIG.frameHeight,
-                    DRAGON_CONFIG.frameWidth,
-                    DRAGON_CONFIG.frameHeight
-                );
                 castFrames.push(new PIXI.Texture(castTexture.baseTexture, castRect));
-
-                // Death кадры
-                const deathRect = new PIXI.Rectangle(
-                    0,
-                    i * DRAGON_CONFIG.frameHeight,
-                    DRAGON_CONFIG.frameWidth,
-                    DRAGON_CONFIG.frameHeight
-                );
                 deathFrames.push(new PIXI.Texture(deathTexture.baseTexture, deathRect));
             }
 

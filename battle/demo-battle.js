@@ -264,7 +264,7 @@ function castDragonSpell(spellId, callback) {
 
         // Обновляем HP мага
         if (window.pixiWizards.updateWizardHP) {
-            window.pixiWizards.updateWizardHP(target.sprite, target.data.hp, target.data.max_hp);
+            window.pixiWizards.updateWizardHP(target, target.data.hp, target.data.max_hp);
         }
 
         // Проверяем смерть мага

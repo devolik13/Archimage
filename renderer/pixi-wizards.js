@@ -867,10 +867,25 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
     }
 
     // Обновление HP для отдельного спрайта (для демо-боя)
-    function updateSpriteHP(sprite, hp, maxHp) {
-        // Для демо-боя HP бары создаются отдельно в demo-battle.js
-        // Эта функция - заглушка для совместимости
-        console.log(`📊 HP обновлено: ${hp}/${maxHp}`);
+    function updateSpriteHP(wizard, hp, maxHp) {
+        if (!wizard || !wizard.hpBarFill) {
+            console.warn('⚠️ Нет HP бара для обновления');
+            return;
+        }
+
+        const hpPercent = Math.max(0, Math.min(1, hp / maxHp));
+        wizard.hpBarFill.clear();
+
+        if (hp > 0) {
+            const color = hpPercent > 0.5 ? 0x44ff44 : (hpPercent > 0.25 ? 0xffaa00 : 0xff4444);
+            wizard.hpBarFill.beginFill(color);
+            wizard.hpBarFill.drawRect(-25, 0, 50 * hpPercent, 5);
+            wizard.hpBarFill.endFill();
+        }
+
+        if (wizard.hpBar) {
+            wizard.hpBar.visible = hp > 0;
+        }
     }
 
     // Функция создания мага для демо-боя (упрощённая)
@@ -933,10 +948,37 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 faction: faction
             };
 
+            // Создаём HP бар для мага
+            const hpBarContainer = new PIXI.Container();
+
+            // Фон HP бара
+            const hpBarBg = new PIXI.Graphics();
+            hpBarBg.beginFill(0x000000, 0.7);
+            hpBarBg.drawRect(-25, 0, 50, 5);
+            hpBarBg.endFill();
+
+            // Заполнение HP бара
+            const hpBarFill = new PIXI.Graphics();
+            hpBarFill.beginFill(0x44ff44);
+            hpBarFill.drawRect(-25, 0, 50, 5);
+            hpBarFill.endFill();
+
+            hpBarContainer.addChild(hpBarBg);
+            hpBarContainer.addChild(hpBarFill);
+            hpBarContainer.x = cellData.x + cellData.width / 2;
+            hpBarContainer.y = cellData.y + cellData.height * 0.2; // Над головой
+
             container.addChild(sprite);
             unitsContainer.addChild(container);
+            unitsContainer.addChild(hpBarContainer); // HP бар отдельно
 
-            return { sprite, container, data: wizardData };
+            return {
+                sprite,
+                container,
+                data: wizardData,
+                hpBar: hpBarContainer,
+                hpBarFill: hpBarFill
+            };
         } else {
             console.error(`❌ Не удалось загрузить текстуры для ${faction}`);
             return null;
