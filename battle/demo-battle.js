@@ -161,7 +161,8 @@ async function playCinematicScript() {
 
 // Волна атак магов
 async function playWizardsAttackWave(attacks) {
-    for (const attack of attacks) {
+    for (let i = 0; i < attacks.length; i++) {
+        const attack = attacks[i];
         const wizard = cinematicData.wizards[attack.wizard];
         if (!wizard) continue;
 
@@ -172,13 +173,21 @@ async function playWizardsAttackWave(attacks) {
 
         // Анимация заклинания
         await playSpellAnimation(attack.spell, wizard, 'dragon');
-        await delay(CINEMATIC_CONFIG.spellDelay);
+
+        // Задержка только если это НЕ последнее заклинание
+        if (i < attacks.length - 1) {
+            await delay(CINEMATIC_CONFIG.spellDelay);
+        }
     }
 }
 
 // Контратака дракона
 async function playDragonCounterattack() {
-    for (const attack of CINEMATIC_SCRIPT.dragonCounterattack) {
+    const attacks = CINEMATIC_SCRIPT.dragonCounterattack;
+
+    for (let i = 0; i < attacks.length; i++) {
+        const attack = attacks[i];
+
         // Анимация атаки дракона
         await new Promise(resolve => {
             window.pixiDragon.playAttack(() => resolve());
@@ -195,13 +204,19 @@ async function playDragonCounterattack() {
             await playSpellAnimation(attack.spell, null, target);
         }
 
-        await delay(CINEMATIC_CONFIG.spellDelay);
+        // Задержка только если это НЕ последнее заклинание
+        if (i < attacks.length - 1) {
+            await delay(CINEMATIC_CONFIG.spellDelay);
+        }
     }
 }
 
 // Последовательность смерти магов
 async function playWizardsDeathSequence() {
-    for (const wizardIndex of CINEMATIC_SCRIPT.wizardDeaths) {
+    const deaths = CINEMATIC_SCRIPT.wizardDeaths;
+
+    for (let i = 0; i < deaths.length; i++) {
+        const wizardIndex = deaths[i];
         const wizard = cinematicData.wizards[wizardIndex];
         if (!wizard) continue;
 
@@ -216,7 +231,10 @@ async function playWizardsDeathSequence() {
             }
         });
 
-        await delay(CINEMATIC_CONFIG.deathDelay);
+        // Задержка только если это НЕ последний маг
+        if (i < deaths.length - 1) {
+            await delay(CINEMATIC_CONFIG.deathDelay);
+        }
     }
 }
 
