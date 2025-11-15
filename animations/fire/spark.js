@@ -56,9 +56,9 @@ console.log('✅ spark.js загружен');
         // Функция анимации
         const animate = () => {
             // Проверка что объекты еще существуют
-            if (isDestroyed || !projectile.parent || !effectsContainer) {
+            if (isDestroyed || !window.pixiAnimUtils.isValid(projectile) || !effectsContainer) {
                 if (animationFrame) cancelAnimationFrame(animationFrame);
-                if (projectile.parent) {
+                if (projectile && projectile.parent) {
                     try {
                         effectsContainer.removeChild(projectile);
                     } catch (e) {
@@ -218,12 +218,14 @@ console.log('✅ spark.js загружен');
             const flashDuration = 200;
             
             const animateFlash = () => {
+                if (!window.pixiAnimUtils.isValid(flash)) return;
+
                 const elapsed = Date.now() - flashStartTime;
                 const progress = Math.min(elapsed / flashDuration, 1);
-                
+
                 flash.scale.set(1 + progress);
                 flash.alpha = 0.6 * (1 - progress);
-                
+
                 if (progress < 1) {
                     requestAnimationFrame(animateFlash);
                 } else {
@@ -259,13 +261,15 @@ console.log('✅ spark.js загружен');
                 const particleDuration = 400;
                 
                 const animateParticle = () => {
+                    if (!window.pixiAnimUtils.isValid(particle)) return;
+
                     const elapsed = Date.now() - particleStartTime;
                     const progress = Math.min(elapsed / particleDuration, 1);
-                    
+
                     particle.x += vx * (1 - progress);
                     particle.y += vy * (1 - progress) + progress * 2;
                     particle.alpha = 0.8 * (1 - progress);
-                    
+
                     if (progress < 1 && particle.parent) {
                         requestAnimationFrame(animateParticle);
                     } else {

@@ -148,23 +148,23 @@ console.log('✅ meteor.js загружен');
             const rotationSpeed = 0.1;
             
             const animate = () => {
-                if (!meteor.parent) return;
-                
+                if (!window.pixiAnimUtils.isValid(meteor)) return;
+
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                
+
                 // Прямая траектория с ускорением
                 const easeProgress = progress * progress;
                 meteor.x = startX + (endX - startX) * easeProgress;
                 meteor.y = startY + (endY - startY) * easeProgress;
-                
+
                 // Вращение
                 meteor.rotation += rotationSpeed;
-                
+
                 // Увеличение
                 const scaleFactor = 0.5 + progress * 0.5;
                 meteor.scale.set(scaleFactor);
-                
+
                 if (progress < 1) {
                     requestAnimationFrame(animate);
                 } else {
