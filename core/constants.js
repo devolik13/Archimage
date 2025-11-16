@@ -26,7 +26,7 @@ window.CONSTRUCTION_TIME = {
 
 // ============ ВРЕМЯ ИЗУЧЕНИЯ ЗАКЛИНАНИЙ ============
 window.SPELL_LEARNING_TIME = {
-    getLearnTime: function(tier, currentLevel) {
+    getLearnTime: function(tier, currentLevel, faction = null) {
         const tierTimes = {
             1: 144,  // 2.4 часа
             2: 288,  // 4.8 часов
@@ -36,13 +36,13 @@ window.SPELL_LEARNING_TIME = {
         };
         let baseTime = (tierTimes[tier] || 144) * window.TIME_MULTIPLIER;
         baseTime = Math.floor(baseTime * (currentLevel + 1) * 0.5);
-        
+
         // Применяем бонус от Арканской лаборатории
         if (typeof window.getResearchSpeedMultiplier === 'function') {
             const multiplier = window.getResearchSpeedMultiplier();
             const originalTime = baseTime;
             baseTime = Math.floor(baseTime * multiplier);
-            
+
             // Логирование для отладки
             const labLevel = window.getBuildingLevel ? window.getBuildingLevel('arcane_lab') : 0;
             if (labLevel > 0) {
@@ -50,7 +50,14 @@ window.SPELL_LEARNING_TIME = {
                 console.log(`🧪 Арканская лаборатория ур.${labLevel}: -${reduction}% времени изучения (${originalTime} → ${baseTime} минут)`);
             }
         }
-        
+
+        // Бонус фракции: -15% если учим заклинание своей фракции
+        if (faction && window.userData?.faction === faction) {
+            const timeBeforeFactionBonus = baseTime;
+            baseTime = Math.floor(baseTime * 0.85); // -15%
+            console.log(`✨ Бонус фракции ${faction}: -15% времени изучения (${timeBeforeFactionBonus} → ${baseTime} минут)`);
+        }
+
         return Math.max(1, baseTime); // Минимум 1 минута
     }
 };

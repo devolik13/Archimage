@@ -93,8 +93,8 @@ async function startSpellLearning(spellId, faction, tier, currentLevel) {
         alert('⚠️ Можно изучать только одно заклинание одновременно!');
         return false;
     }
-    
-    const timeRequired = SPELL_LEARNING_TIME.getLearnTime(tier, currentLevel);
+
+    const timeRequired = SPELL_LEARNING_TIME.getLearnTime(tier, currentLevel, faction);
     
     const construction = {
         type: 'spell',
