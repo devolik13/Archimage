@@ -107,6 +107,16 @@ function applyChillEffect(targetWizard, isHybrid = false, casterInfo = null) {
         } else if (Array.isArray(window.battleLog)) {
             window.battleLog.push(logEntry);
         }
+
+        // Речевой пузырь для бонуса воды (охлаждение - это бонус фракции!)
+        if (typeof window.showFactionSpeechBubble === 'function') {
+            const info = casterInfo || window.currentSpellCaster;
+            if (info && info.faction === 'water') {
+                const col = info.casterType === 'player' ? 5 : 0;
+                window.showFactionSpeechBubble('water', col, info.position);
+                console.log('💧 БОНУС ВОДЫ СРАБОТАЛ! Охлаждение');
+            }
+        }
     }
 }
 
