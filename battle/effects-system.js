@@ -386,11 +386,20 @@ function checkCriticalHit(chancePercent = 5) {
     return isCritical;
 }
 
-function checkFactionDoubleDamage(wizardFaction, spellFaction) {
+function checkFactionDoubleDamage(wizardFaction, spellFaction, casterInfo = null) {
     if (wizardFaction !== spellFaction) return false;
     if (wizardFaction === 'wind') {
         const isDouble = Math.random() < 0.05;
-        if (isDouble) effectCounters.doubleDamage++;
+        if (isDouble) {
+            effectCounters.doubleDamage++;
+
+            // Речевой пузырь для бонуса ветра
+            if (casterInfo && typeof window.showFactionSpeechBubble === 'function') {
+                const col = casterInfo.casterType === 'player' ? 5 : 0;
+                window.showFactionSpeechBubble('wind', col, casterInfo.position);
+                console.log('💨 БОНУС ВЕТРА СРАБОТАЛ! Двойной урон');
+            }
+        }
         return isDouble;
     }
     return false;
@@ -403,10 +412,19 @@ function checkDoubleDamage(isHybrid = false) {
     return isDouble;
 }
 
-function checkArmorIgnore(isHybrid = false) {
+function checkArmorIgnore(isHybrid = false, casterInfo = null) {
     const chance = isHybrid ? 0.05 : 0.10;
     const ignore = Math.random() < chance;
-    if (ignore) effectCounters.armorIgnored++;
+    if (ignore) {
+        effectCounters.armorIgnored++;
+
+        // Речевой пузырь для бонуса земли
+        if (casterInfo && casterInfo.faction === 'earth' && typeof window.showFactionSpeechBubble === 'function') {
+            const col = casterInfo.casterType === 'player' ? 5 : 0;
+            window.showFactionSpeechBubble('earth', col, casterInfo.position);
+            console.log('🪨 БОНУС ЗЕМЛИ СРАБОТАЛ! Пробивание брони');
+        }
+    }
     return ignore ? 20 : 0;
 }
 

@@ -89,9 +89,9 @@ function castPoisonedBlade(wizard, spellData, position, casterType) {
                     window.applyPoisonEffect(targetWizard, 1);
                     console.log(`☠️ Применён эффект яда к ${targetWizard.name}`);
                 }
-                
+
                 if (window.applyPoisonFactionBonus) {
-                    window.applyPoisonFactionBonus(targetWizard);
+                    window.applyPoisonFactionBonus(targetWizard, wizard, casterType);
                     console.log(`☠️ Применён фракционный бонус яда к ${targetWizard.name}`);
                 }
             } else {
@@ -755,14 +755,31 @@ function applyPoisonEffect(targetWizard, stacks = 1) {
 }
 
 // --- Бонус фракции: Токсичный след ---
-function applyPoisonFactionBonus(targetWizard) {
+function applyPoisonFactionBonus(targetWizard, caster = null, casterType = null) {
     const chance = 0.05; // 5% шанс
     const roll = Math.random();
-    
+
     if (roll < chance) {
         applyPoisonEffect(targetWizard, 1); // Дополнительный стак
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`☠️ Токсичный след СРАБОТАЛ (выпало ${Math.round(roll * 100)}% < 5%) — дополнительный стак яда на ${targetWizard.name}`);
+        }
+
+        // Речевой пузырь для бонуса яда
+        if (caster && caster.faction === 'poison' && casterType && typeof window.showFactionSpeechBubble === 'function') {
+            // Находим позицию кастера
+            let position = -1;
+            if (casterType === 'player') {
+                position = window.playerFormation?.findIndex(id => id === caster.id);
+            } else {
+                position = window.enemyFormation?.findIndex(w => w && w.id === caster.id);
+            }
+
+            if (position !== -1) {
+                const col = casterType === 'player' ? 5 : 0;
+                window.showFactionSpeechBubble('poison', col, position);
+                console.log('☠️ БОНУС ЯДА СРАБОТАЛ! Дополнительный стак');
+            }
         }
     }
 }
