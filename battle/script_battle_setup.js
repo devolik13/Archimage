@@ -678,9 +678,13 @@ async function saveBattleFormation() {
 
             const success = await window.dbManager.saveFormation(currentBattleFormation);
 
-            
+
 
             if (success) {
+                // Триггер для event-driven системы
+                if (typeof window.onFormationChanged === 'function') {
+                    window.onFormationChanged(currentBattleFormation);
+                }
 
                 alert('✅ Расстановка сохранена!');
 

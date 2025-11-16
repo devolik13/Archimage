@@ -823,13 +823,25 @@ function checkBattleEnd() {
         // ИСПРАВЛЕНО: Сохраняем опыт магов через Supabase вместо localhost
         if (window.userData && window.playerWizards) {
             window.userData.wizards = window.playerWizards;
-            
-            // Сохраняем в Supabase
-            if (window.dbManager && window.dbManager.savePlayer) {
-                window.dbManager.savePlayer(window.userData)
-                    .then(() => console.log('💾 Опыт магов сохранен в Supabase'))
-                    .catch(err => console.error('Ошибка сохранения опыта:', err));
-            }
+        }
+
+        // Определяем результат и награды для сохранения
+        let battleResult = 'draw';
+        let rewards = { exp: 0 };
+        let opponentLevel = 1; // TODO: получить уровень противника
+
+        if (!playerAlive && !enemyAlive) {
+            battleResult = 'draw';
+        } else if (!playerAlive) {
+            battleResult = 'loss';
+        } else if (!enemyAlive) {
+            battleResult = 'win';
+            // TODO: посчитать полученный опыт и другие награды
+        }
+
+        // Триггер события завершения боя (вызовет немедленное сохранение)
+        if (typeof window.onBattleCompleted === 'function') {
+            window.onBattleCompleted(battleResult, rewards, opponentLevel);
         }
 
         if (window.animationManager) {
