@@ -77,9 +77,15 @@ class EventSaveManager {
                 wizards: window.userData.wizards,
                 formation: window.userData.formation,
                 spells: window.userData.spells,
-                available_spells: window.userData.available_spells,
                 constructions: window.userData.constructions,
-                buildings: window.userData.buildings
+                buildings: window.userData.buildings,
+                total_battles: window.userData.total_battles,
+                wins: window.userData.wins,
+                losses: window.userData.losses,
+                rating: window.userData.rating,
+                pve_progress: window.userData.pve_progress,
+                settings: window.userData.settings,
+                tutorial_completed: window.userData.tutorial_completed
             };
 
             const success = await window.dbManager.savePlayer(playerData);
@@ -140,12 +146,12 @@ window.onBuildingUpgraded = function(buildingId, newLevel) {
     window.eventSaveManager.saveImmediate(`building_upgraded:${buildingId}:${newLevel}`);
 };
 
-window.onBattleCompleted = async function(result, rewards, opponentLevel) {
-    console.log('⚔️ Бой завершён:', result);
+window.onBattleCompleted = async function(result, rewards, opponentLevel, ratingChange) {
+    console.log('⚔️ Бой завершён:', result, `(рейтинг: ${ratingChange > 0 ? '+' : ''}${ratingChange})`);
 
-    // Сначала сохраняем результат боя в историю
+    // Сначала сохраняем результат боя и обновляем статистику
     if (window.dbManager) {
-        await window.dbManager.saveBattleResult(result, rewards, opponentLevel);
+        await window.dbManager.saveBattleResult(result, rewards, opponentLevel, ratingChange);
     }
 
     // Затем сохраняем текущее состояние игрока (опыт, маги и т.д.)

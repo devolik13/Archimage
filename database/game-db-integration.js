@@ -37,8 +37,18 @@ async function initGameWithDatabase() {
     window.userData.wizards = player.wizards || [];
     window.userData.formation = player.formation || [null, null, null, null, null];
     window.userData.spells = player.spells || {};
-    window.userData.available_spells = player.available_spells || [];
     window.userData.buildings = player.buildings || {};
+
+    // Статистика боев
+    window.userData.total_battles = player.total_battles || 0;
+    window.userData.wins = player.wins || 0;
+    window.userData.losses = player.losses || 0;
+    window.userData.rating = player.rating || 1000;
+
+    // Прогресс и настройки
+    window.userData.pve_progress = player.pve_progress || {};
+    window.userData.settings = player.settings || { sound: true, language: 'ru', battle_speed: 'normal' };
+    window.userData.tutorial_completed = player.tutorial_completed || false;
     
     // КРИТИЧНО: Извлекаем constructions из buildings._active_constructions
     if (player.buildings && player.buildings._active_constructions) {

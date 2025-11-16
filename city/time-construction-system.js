@@ -508,15 +508,7 @@ async function completeConstruction(constructionIndex) {
             window.userData.spells[faction][spell_id].level = target_level;
             window.userData.spells[faction][spell_id].name = spellName; // Обновляем название на случай если было на английском
         }
-        
-        // Добавляем в доступные заклинания если ещё нет
-        if (!window.userData.available_spells) {
-            window.userData.available_spells = [];
-        }
-        if (!window.userData.available_spells.includes(spell_id)) {
-            window.userData.available_spells.push(spell_id);
-        }
-        
+
         // Разблокировка следующего заклинания при достижении 5 уровня
         if (target_level === 5) {
             const spellTiers = window.SPELL_TIERS?.[faction] || [];
@@ -535,11 +527,7 @@ async function completeConstruction(constructionIndex) {
                         level: 0,
                         tier: nextTier
                     };
-                    
-                    if (!window.userData.available_spells.includes(nextSpellId)) {
-                        window.userData.available_spells.push(nextSpellId);
-                    }
-                    
+
                     console.log(`🔓 Разблокировано новое заклинание: ${nextSpellName} (Tier ${nextTier})`);
                 }
             }

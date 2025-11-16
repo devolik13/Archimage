@@ -828,7 +828,8 @@ function checkBattleEnd() {
         // Определяем результат и награды для сохранения
         let battleResult = 'draw';
         let rewards = { exp: 0 };
-        let opponentLevel = 1; // TODO: получить уровень противника
+        let opponentLevel = 1; // TODO: получить реальный уровень противника
+        let ratingChange = 0;
 
         if (!playerAlive && !enemyAlive) {
             battleResult = 'draw';
@@ -839,9 +840,20 @@ function checkBattleEnd() {
             // TODO: посчитать полученный опыт и другие награды
         }
 
+        // Рассчитываем изменение рейтинга
+        if (typeof window.calculateRatingChange === 'function') {
+            const playerRating = window.userData?.rating || 1000;
+            // TODO: получить реальный рейтинг противника из данных боя
+            // Пока используем случайный AI рейтинг близкий к игроку
+            const opponentRating = playerRating + Math.floor(Math.random() * 200) - 100;
+
+            ratingChange = window.calculateRatingChange(playerRating, opponentRating, battleResult);
+            console.log(`📊 Изменение рейтинга: ${playerRating} → ${playerRating + ratingChange} (${ratingChange > 0 ? '+' : ''}${ratingChange})`);
+        }
+
         // Триггер события завершения боя (вызовет немедленное сохранение)
         if (typeof window.onBattleCompleted === 'function') {
-            window.onBattleCompleted(battleResult, rewards, opponentLevel);
+            window.onBattleCompleted(battleResult, rewards, opponentLevel, ratingChange);
         }
 
         if (window.animationManager) {
