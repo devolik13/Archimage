@@ -173,16 +173,18 @@ function applySparkDamageOld(wizard, target, baseDamage, spellData, position, ca
     if (result) {
         window.logProtectionResult?.(wizard, target, result, 'Искра');
         if (result.finalDamage > 0 && wizard.faction === 'fire') {
-            window.tryApplyEffect?.('burning', target.wizard, false);
+            const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
+            window.tryApplyEffect?.('burning', target.wizard, false, casterInfo);
         }
     } else {
         const finalDamage = window.applyFinalDamage?.(wizard, target.wizard, baseDamage, 'spark', 0, false) || baseDamage;
         target.wizard.hp -= finalDamage;
         if (target.wizard.hp < 0) target.wizard.hp = 0;
-        
+
         window.logSpellHit?.(wizard, target.wizard, finalDamage, 'Искра');
         if (wizard.faction === 'fire') {
-            window.tryApplyEffect?.('burning', target.wizard, false);
+            const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
+            window.tryApplyEffect?.('burning', target.wizard, false, casterInfo);
         }
     }
     
