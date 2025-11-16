@@ -9,28 +9,28 @@ let effectCounters = {
 };
 
 // --- Универсальный хелпер для применения эффектов ---
-function tryApplyEffect(effectName, target, isHybrid = false) {
+function tryApplyEffect(effectName, target, isHybrid = false, casterInfo = null) {
     const effectMap = {
         'burning': applyBurningEffect,
         'chill': applyChillEffect,
         'hoarFrost': applyHoarFrostEffect,
         'freeze': applyFreezeEffect
     };
-    
+
     const effectFn = effectMap[effectName];
     if (typeof effectFn === 'function') {
-        effectFn(target, isHybrid);
+        effectFn(target, isHybrid, casterInfo);
         return true;
     }
     return false;
 }
 
 // --- Эффект поджигания ---
-function applyBurningEffect(targetWizard, isHybrid = false) {
+function applyBurningEffect(targetWizard, isHybrid = false, casterInfo = null) {
     const chance = isHybrid ? 0.05 : 0.10;
     if (Math.random() < chance) {
         const maxDamage = Math.min(Math.floor(targetWizard.max_hp * 0.10), 100);
-        
+
         if (targetWizard.effects && targetWizard.effects.burning) {
             targetWizard.effects.burning.duration = 3;
             targetWizard.effects.burning.damage = maxDamage;
@@ -46,7 +46,7 @@ function applyBurningEffect(targetWizard, isHybrid = false) {
         if (window.spellAnimations?.burning?.show) {
             let position = -1;
             let casterType = '';
-            
+
             position = window.playerFormation.findIndex(id => id === targetWizard.id);
             if (position !== -1) {
                 casterType = 'player';
@@ -56,7 +56,7 @@ function applyBurningEffect(targetWizard, isHybrid = false) {
                     casterType = 'enemy';
                 }
             }
-            
+
             if (position !== -1 && casterType) {
                 window.spellAnimations.burning.show(targetWizard, position, casterType);
             }
@@ -67,11 +67,17 @@ function applyBurningEffect(targetWizard, isHybrid = false) {
         } else if (Array.isArray(window.battleLog)) {
             window.battleLog.push(logEntry);
         }
+
+        // Речевой пузырь для фракционного бонуса (если кастер фракции Огонь)
+        if (casterInfo && casterInfo.faction === 'fire' && typeof window.showFactionSpeechBubble === 'function') {
+            const col = casterInfo.casterType === 'player' ? 5 : 0;
+            window.showFactionSpeechBubble('fire', col, casterInfo.position);
+        }
     }
 }
 
 // --- Эффект охлаждения ---
-function applyChillEffect(targetWizard, isHybrid = false) {
+function applyChillEffect(targetWizard, isHybrid = false, casterInfo = null) {
     const chance = isHybrid ? 0.10 : 0.20;
     if (Math.random() < chance) {
         if (targetWizard.effects && targetWizard.effects.chilled_caster) {
@@ -79,12 +85,12 @@ function applyChillEffect(targetWizard, isHybrid = false) {
         } else {
             if (!targetWizard.effects) targetWizard.effects = {};
             targetWizard.effects.chilled_caster = {
-                spellsLeft: 2, 
+                spellsLeft: 2,
                 damageReduction: 0.20
             };
             effectCounters.chilled++;
         }
-        
+
         const logEntry = `❄️ ${targetWizard.name} охлажден! Его следующие заклинания будут слабее.`;
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(logEntry);
@@ -95,11 +101,11 @@ function applyChillEffect(targetWizard, isHybrid = false) {
 }
 
 // --- Эффект инея ---
-function applyHoarFrostEffect(targetWizard) {
+function applyHoarFrostEffect(targetWizard, isHybrid = false, casterInfo = null) {
     const chance = 0.30;
     if (Math.random() < chance) {
         if (!targetWizard.effects) targetWizard.effects = {};
-        
+
         if (targetWizard.effects.chilled_caster) {
             if (targetWizard.effects.chilled_caster.damageReduction <= 0.10) {
                 targetWizard.effects.chilled_caster.spellsLeft = 2;
@@ -112,7 +118,7 @@ function applyHoarFrostEffect(targetWizard) {
             };
             effectCounters.chilled++;
         }
-        
+
         const logEntry = `🧊 ${targetWizard.name} покрыт инеем! Его следующие заклинания будут слабее.`;
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(logEntry);
@@ -123,11 +129,11 @@ function applyHoarFrostEffect(targetWizard) {
 }
 
 // --- Эффект заморозки ---
-function applyFreezeEffect(targetWizard) {
+function applyFreezeEffect(targetWizard, isHybrid = false, casterInfo = null) {
     const chance = 0.50;
     if (Math.random() < chance) {
         if (!targetWizard.effects) targetWizard.effects = {};
-        
+
         if (targetWizard.effects.chilled_caster) {
             if (targetWizard.effects.chilled_caster.damageReduction <= 0.30) {
                 targetWizard.effects.chilled_caster.spellsLeft = 2;
@@ -140,12 +146,18 @@ function applyFreezeEffect(targetWizard) {
             };
             effectCounters.chilled++;
         }
-        
+
         const logEntry = `🧊 ${targetWizard.name} заморожен! Его следующие заклинания будут слабее.`;
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(logEntry);
         } else if (Array.isArray(window.battleLog)) {
             window.battleLog.push(logEntry);
+        }
+
+        // Речевой пузырь для фракционного бонуса (если кастер фракции Вода)
+        if (casterInfo && casterInfo.faction === 'water' && typeof window.showFactionSpeechBubble === 'function') {
+            const col = casterInfo.casterType === 'player' ? 5 : 0;
+            window.showFactionSpeechBubble('water', col, casterInfo.position);
         }
     }
 }
