@@ -166,21 +166,46 @@ function processBurningForWizard(wizard) {
 
     // Логирование смерти от горения
     if (wizard.hp <= 0) {
-        // Определяем тип кастера
+        // Определяем тип кастера и позицию
         let casterType = '';
+        let col = -1;
+        let row = -1;
+
         const playerPos = window.playerFormation?.findIndex(id => id === wizard.id);
         if (playerPos !== -1) {
             casterType = 'player';
+            col = 5;
+            row = playerPos;
         } else {
             const enemyPos = window.enemyFormation?.findIndex(w => w && w.id === wizard.id);
             if (enemyPos !== -1) {
                 casterType = 'enemy';
+                col = 0;
+                row = enemyPos;
             }
         }
 
         if (casterType && window.battleLogger) {
             window.battleLogger.logDeath(wizard, casterType, 'burning');
         }
+
+        // Обновляем HP бар (скрываем)
+        if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function' && col !== -1 && row !== -1) {
+            const key = `${col}_${row}`;
+            window.pixiWizards.updateHP(key, 0, wizard.max_hp);
+        }
+
+        // Запускаем анимацию смерти
+        if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function' && col !== -1 && row !== -1) {
+            const key = `${col}_${row}`;
+            const container = window.wizardSprites?.[key];
+            if (container && !container.deathAnimationStarted) {
+                container.deathAnimationStarted = true;
+                window.pixiWizards.playDeath(col, row);
+                console.log(`🎬 Анимация смерти от горения для ${wizard.name} на ${key}`);
+            }
+        }
+
         return; // Маг мёртв, не продолжаем обработку
     }
     
@@ -289,20 +314,44 @@ function processPoisonForWizard(wizard) {
 
     // Логирование смерти от яда
     if (wizard.hp <= 0) {
-        // Определяем тип кастера
+        // Определяем тип кастера и позицию
         let casterType = '';
+        let col = -1;
+        let row = -1;
+
         const playerPos = window.playerFormation?.findIndex(id => id === wizard.id);
         if (playerPos !== -1) {
             casterType = 'player';
+            col = 5;
+            row = playerPos;
         } else {
             const enemyPos = window.enemyFormation?.findIndex(w => w && w.id === wizard.id);
             if (enemyPos !== -1) {
                 casterType = 'enemy';
+                col = 0;
+                row = enemyPos;
             }
         }
 
         if (casterType && window.battleLogger) {
             window.battleLogger.logDeath(wizard, casterType, 'poison');
+        }
+
+        // Обновляем HP бар (скрываем)
+        if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function' && col !== -1 && row !== -1) {
+            const key = `${col}_${row}`;
+            window.pixiWizards.updateHP(key, 0, wizard.max_hp);
+        }
+
+        // Запускаем анимацию смерти
+        if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function' && col !== -1 && row !== -1) {
+            const key = `${col}_${row}`;
+            const container = window.wizardSprites?.[key];
+            if (container && !container.deathAnimationStarted) {
+                container.deathAnimationStarted = true;
+                window.pixiWizards.playDeath(col, row);
+                console.log(`🎬 Анимация смерти от яда для ${wizard.name} на ${key}`);
+            }
         }
     }
 }

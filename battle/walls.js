@@ -274,6 +274,25 @@ function processFireWallsForWizard(wizard, wizardType) {
                     // Логирование смерти от огненной стены
                     if (wizard.hp <= 0 && window.battleLogger) {
                         window.battleLogger.logDeath(wizard, wizardType, 'fire_wall');
+
+                        // Обновляем HP бар и анимация смерти
+                        const col = wizardType === 'player' ? 5 : 0;
+                        const row = wizardPosition;
+
+                        if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
+                            const key = `${col}_${row}`;
+                            window.pixiWizards.updateHP(key, 0, wizard.max_hp);
+                        }
+
+                        if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
+                            const key = `${col}_${row}`;
+                            const container = window.wizardSprites?.[key];
+                            if (container && !container.deathAnimationStarted) {
+                                container.deathAnimationStarted = true;
+                                window.pixiWizards.playDeath(col, row);
+                                console.log(`🎬 Анимация смерти от огненной стены для ${wizard.name} на ${key}`);
+                            }
+                        }
                     }
 
 		    if (typeof window.createFireWallDamageEffect === 'function') {
@@ -378,6 +397,25 @@ function processFireGroundZones() {
                 // Логирование смерти от горящей земли
                 if (targetWizard.hp <= 0 && window.battleLogger) {
                     window.battleLogger.logDeath(targetWizard, targetType, 'fire_ground');
+
+                    // Обновляем HP бар и анимация смерти
+                    const col = zone.column;
+                    const row = zone.row;
+
+                    if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
+                        const key = `${col}_${row}`;
+                        window.pixiWizards.updateHP(key, 0, targetWizard.max_hp);
+                    }
+
+                    if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
+                        const key = `${col}_${row}`;
+                        const container = window.wizardSprites?.[key];
+                        if (container && !container.deathAnimationStarted) {
+                            container.deathAnimationStarted = true;
+                            window.pixiWizards.playDeath(col, row);
+                            console.log(`🎬 Анимация смерти от горящей земли для ${targetWizard.name} на ${key}`);
+                        }
+                    }
                 }
 
                 // Эффект горения от фракции Огонь
@@ -492,6 +530,27 @@ function applyTsunamiDamage(tsunami) {
                 // Определяем тип для логирования
                 const targetType = isSummoned ? 'summoned' : (column === 0 || column === 1 ? 'enemy' : 'player');
                 window.battleLogger.logDeath(targetWizard, targetType, 'fire_tsunami');
+
+                // Анимация смерти только для обычных магов (не призванных)
+                if (!isSummoned) {
+                    const col = column;
+                    const wizardRow = row;
+
+                    if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
+                        const key = `${col}_${wizardRow}`;
+                        window.pixiWizards.updateHP(key, 0, targetWizard.max_hp);
+                    }
+
+                    if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
+                        const key = `${col}_${wizardRow}`;
+                        const container = window.wizardSprites?.[key];
+                        if (container && !container.deathAnimationStarted) {
+                            container.deathAnimationStarted = true;
+                            window.pixiWizards.playDeath(col, wizardRow);
+                            console.log(`🎬 Анимация смерти от цунами для ${targetWizard.name} на ${key}`);
+                        }
+                    }
+                }
             }
 
             // Эффект горения для фракции Огонь
@@ -551,6 +610,25 @@ function processFireGroundForWizard(wizard, wizardPosition, wizardType) {
         // Логирование смерти от горящей земли
         if (wizard.hp <= 0 && window.battleLogger) {
             window.battleLogger.logDeath(wizard, wizardType, 'fire_ground');
+
+            // Обновляем HP бар и анимация смерти
+            const col = wizardColumn;
+            const row = wizardPosition;
+
+            if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
+                const key = `${col}_${row}`;
+                window.pixiWizards.updateHP(key, 0, wizard.max_hp);
+            }
+
+            if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
+                const key = `${col}_${row}`;
+                const container = window.wizardSprites?.[key];
+                if (container && !container.deathAnimationStarted) {
+                    container.deathAnimationStarted = true;
+                    window.pixiWizards.playDeath(col, row);
+                    console.log(`🎬 Анимация смерти от горящей земли для ${wizard.name} на ${key}`);
+                }
+            }
         }
     }
 }
@@ -774,6 +852,26 @@ function applyAbsoluteZeroEffect(caster, target, zone, targetType, row) {
     // Логирование смерти от абсолютного ноля
     if (target.hp <= 0 && window.battleLogger) {
         window.battleLogger.logDeath(target, targetType, 'absolute_zero');
+
+        // Анимация смерти только для обычных магов (не призванных)
+        if (targetType === 'player' || targetType === 'enemy') {
+            const col = targetType === 'player' ? 5 : 0;
+
+            if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
+                const key = `${col}_${row}`;
+                window.pixiWizards.updateHP(key, 0, target.max_hp);
+            }
+
+            if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
+                const key = `${col}_${row}`;
+                const container = window.wizardSprites?.[key];
+                if (container && !container.deathAnimationStarted) {
+                    container.deathAnimationStarted = true;
+                    window.pixiWizards.playDeath(col, row);
+                    console.log(`🎬 Анимация смерти от абсолютного ноля для ${target.name} на ${key}`);
+                }
+            }
+        }
     }
 
     // Сохраняем зону в цели для последующей проверки перед кастом
