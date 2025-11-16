@@ -52,6 +52,7 @@
     font-size: 14px;
     cursor: pointer;
     transition: all 0.3s;
+    margin-left: 60px; /* Отступ от левого края для Telegram кнопки */
 }
 
 .back-button:hover {
