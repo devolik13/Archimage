@@ -2,6 +2,31 @@
 console.log('✅ faction-speech-bubble.js загружен');
 
 (function() {
+    // Глобальная переменная для хранения информации о текущем кастере
+    window.currentSpellCaster = null;
+
+    /**
+     * Установить текущего кастера заклинания
+     * @param {object} wizard - Объект мага
+     * @param {string} casterType - Тип кастера ('player' или 'enemy')
+     * @param {number} position - Позиция в формации (0-4)
+     */
+    window.setCurrentSpellCaster = function(wizard, casterType, position) {
+        window.currentSpellCaster = {
+            wizard: wizard,
+            faction: wizard.faction,
+            casterType: casterType,
+            position: position
+        };
+    };
+
+    /**
+     * Очистить информацию о текущем кастере
+     */
+    window.clearCurrentSpellCaster = function() {
+        window.currentSpellCaster = null;
+    };
+
     // Тексты для каждой фракции
     const FACTION_TEXTS = {
         fire: "Гори",

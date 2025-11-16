@@ -394,10 +394,13 @@ function checkFactionDoubleDamage(wizardFaction, spellFaction, casterInfo = null
             effectCounters.doubleDamage++;
 
             // Речевой пузырь для бонуса ветра
-            if (casterInfo && typeof window.showFactionSpeechBubble === 'function') {
-                const col = casterInfo.casterType === 'player' ? 5 : 0;
-                window.showFactionSpeechBubble('wind', col, casterInfo.position);
-                console.log('💨 БОНУС ВЕТРА СРАБОТАЛ! Двойной урон');
+            if (typeof window.showFactionSpeechBubble === 'function') {
+                const info = casterInfo || window.currentSpellCaster;
+                if (info) {
+                    const col = info.casterType === 'player' ? 5 : 0;
+                    window.showFactionSpeechBubble('wind', col, info.position);
+                    console.log('💨 БОНУС ВЕТРА СРАБОТАЛ! Двойной урон');
+                }
             }
         }
         return isDouble;
@@ -419,10 +422,13 @@ function checkArmorIgnore(isHybrid = false, casterInfo = null) {
         effectCounters.armorIgnored++;
 
         // Речевой пузырь для бонуса земли
-        if (casterInfo && casterInfo.faction === 'earth' && typeof window.showFactionSpeechBubble === 'function') {
-            const col = casterInfo.casterType === 'player' ? 5 : 0;
-            window.showFactionSpeechBubble('earth', col, casterInfo.position);
-            console.log('🪨 БОНУС ЗЕМЛИ СРАБОТАЛ! Пробивание брони');
+        if (typeof window.showFactionSpeechBubble === 'function') {
+            const info = casterInfo || window.currentSpellCaster;
+            if (info && info.faction === 'earth') {
+                const col = info.casterType === 'player' ? 5 : 0;
+                window.showFactionSpeechBubble('earth', col, info.position);
+                console.log('🪨 БОНУС ЗЕМЛИ СРАБОТАЛ! Пробивание брони');
+            }
         }
     }
     return ignore ? 20 : 0;
