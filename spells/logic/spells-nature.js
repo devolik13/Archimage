@@ -490,9 +490,6 @@ function castMeteorokinesis(wizard, spellData, position, casterType) {
         const enemyEffect = disableEnemyWeather ? ', отключает погоду для врага' : '';
         window.addToBattleLog(`🌿 ${wizard.name} использует Метеокинез! +${damageBonus}% к стихийным заклинаниям союзников Природы ${duration}${enemyEffect}`);
     }
-    
-    // Применяем бонус фракции
-    applyNatureFactionBonus(wizard, casterType);
 }
 
 // --- Бонус фракции: Дар природы ---
