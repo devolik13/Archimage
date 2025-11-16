@@ -104,41 +104,47 @@ async function selectFaction(faction) {
                 constructions: []
             };
             
-            // Показываем игровую зону
+            // Скрываем экран выбора фракции
             document.getElementById('faction-selection').style.display = 'none';
-            document.getElementById('game-area').style.display = 'block';
-            
+
             const factionElement = document.getElementById('faction');
             if (factionElement) {
                 factionElement.textContent = getFactionName(faction);
             }
-            
-            // Инициализируем все системы игры
+
+            // Инициализируем все системы игры (нужны для демо батла)
             if (typeof window.updateUI === 'function') {
                 window.updateUI();
             }
-            
+
             if (typeof window.createPlayerAvatarUI === 'function') {
                 window.createPlayerAvatarUI();
             }
-            
+
             if (typeof window.initTimeCurrency === 'function') {
                 window.initTimeCurrency();
             }
-            
+
             if (typeof window.initConstructionSystem === 'function') {
                 window.initConstructionSystem();
             }
-            
+
             if (typeof window.initCityView === 'function') {
                 window.initCityView();
             }
-            
+
             if (typeof window.renderCityGrid === 'function') {
                 window.renderCityGrid();
             }
-            
-            alert(`🎉 Добро пожаловать в Академию Стихий!\nТы выбрал фракцию ${getFactionName(faction)}.`);
+
+            // Запускаем демо батл вместо прямого показа города
+            if (typeof window.startDemoBattle === 'function') {
+                console.log('🎬 Запуск демо батла для фракции:', faction);
+                window.startDemoBattle(faction);
+            } else {
+                console.warn('⚠️ startDemoBattle не найден, показываем город напрямую');
+                document.getElementById('game-area').style.display = 'block';
+            }
             
         } catch (error) {
             console.error('❌ Ошибка сохранения фракции:', error);
