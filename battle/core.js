@@ -873,6 +873,23 @@ function checkBattleEnd() {
             window.updateBattleField();
         }
 
+        // Показываем экран результатов боя
+        if (typeof window.showBattleResult === 'function') {
+            const opponent = window.selectedOpponent || {};
+            const battleData = {
+                opponentName: opponent.username || 'Противник',
+                opponentRating: opponent.rating || 1000,
+                ratingChange: ratingChange,
+                rewards: rewards,
+                battleDuration: 0 // TODO: добавить таймер боя если нужно
+            };
+
+            // Показываем с небольшой задержкой для визуального эффекта
+            setTimeout(() => {
+                window.showBattleResult(battleResult, battleData);
+            }, 1000);
+        }
+
         return true;
     }
     return false;

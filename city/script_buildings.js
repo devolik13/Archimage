@@ -11,8 +11,8 @@ function showPvPArenaModal() {
     const battleButtonStyle = hasArena 
         ? "padding: 12px; border: none; border-radius: 6px; background: #555; color: white; cursor: pointer; font-size: 16px;"
         : "padding: 12px; border: none; border-radius: 6px; background: #333; color: #666; cursor: not-allowed; font-size: 16px; opacity: 0.5;";
-    const battleButtonOnClick = hasArena 
-        ? "window.showBattleField()" 
+    const battleButtonOnClick = hasArena
+        ? "closePvPArenaModal(); window.showOpponentSelection()"
         : "alert('⚠️ Постройте Арену чтобы участвовать в PvP боях!')";
     const modalContent = `
         <div style="padding: 20px; max-width: 350px; background: #2c2c3d; border-radius: 10px; color: white;">
