@@ -78,7 +78,12 @@ function castSpark(wizard, spellData, position, casterType) {
         // Применение эффектов после урона
         applyEffects: (targetWizard, spellLevel, casterFaction) => {
             if (casterFaction === 'fire' && window.tryApplyEffect) {
-                window.tryApplyEffect('burning', targetWizard, false);
+                const casterInfo = {
+                    faction: wizard.faction,
+                    casterType: casterType,
+                    position: position
+                };
+                window.tryApplyEffect('burning', targetWizard, false, casterInfo);
                 console.log(`🔥 Применён эффект горения к ${targetWizard.name}`);
             }
         },
