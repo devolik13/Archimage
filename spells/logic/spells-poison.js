@@ -227,9 +227,9 @@ function castPoisonedGlade(wizard, spellData, position, casterType) {
                             
                             // Накладываем яд
                             applyPoisonEffect(targetObj.wizard, 1);
-                            
+
                             // Применяем бонус фракции
-                            applyPoisonFactionBonus(targetObj.wizard);
+                            applyPoisonFactionBonus(targetObj.wizard, wizard, casterType);
                             
                             hitCount++;
                         } else {
@@ -255,7 +255,7 @@ function castPoisonedGlade(wizard, spellData, position, casterType) {
                     }
                     
                     applyPoisonEffect(targetObj.wizard, 1);
-                    applyPoisonFactionBonus(targetObj.wizard);
+                    applyPoisonFactionBonus(targetObj.wizard, wizard, casterType);
                     hitCount++;
                 } else {
                     missCount++;
@@ -330,9 +330,9 @@ function castFoulCloud(wizard, spellData, position, casterType) {
         // Накладываем яд (только на магов, не на призванных)
         if (!targetInfo.isSummoned) {
             applyPoisonEffect(targetInfo.wizard, 1);
-            
+
             // Применяем бонус фракции
-            applyPoisonFactionBonus(targetInfo.wizard);
+            applyPoisonFactionBonus(targetInfo.wizard, wizard, casterType);
         }
     });
 }
@@ -516,7 +516,7 @@ function castPlague(wizard, spellData, position, casterType) {
                         // На 5 уровне — дополнительно накладываем яд
                         if (level === 5) {
                             applyPoisonEffect(target, 1);
-                            applyPoisonFactionBonus(target);
+                            applyPoisonFactionBonus(target, wizard, casterType);
                         }
                     }
                 });
@@ -538,7 +538,7 @@ function castPlague(wizard, spellData, position, casterType) {
                 
                 if (level === 5) {
                     applyPoisonEffect(target, 1);
-                    applyPoisonFactionBonus(target);
+                    applyPoisonFactionBonus(target, wizard, casterType);
                 }
             }
         }, index * 500); // Задержка 500ms между целями
@@ -700,9 +700,9 @@ function castEpidemic(wizard, spellData, position, casterType) {
             if (Math.random() < poisonChance) {
                 applyPoisonEffect(target, 1);
             }
-            
+
             // Бонус фракции
-            applyPoisonFactionBonus(target);
+            applyPoisonFactionBonus(target, wizard, casterType);
         });
         
         // На 5 уровне — бонусный урон от стаков яда
