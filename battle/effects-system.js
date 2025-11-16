@@ -69,9 +69,19 @@ function applyBurningEffect(targetWizard, isHybrid = false, casterInfo = null) {
         }
 
         // Речевой пузырь для фракционного бонуса (если кастер фракции Огонь)
-        if (casterInfo && casterInfo.faction === 'fire' && typeof window.showFactionSpeechBubble === 'function') {
-            const col = casterInfo.casterType === 'player' ? 5 : 0;
-            window.showFactionSpeechBubble('fire', col, casterInfo.position);
+        if (casterInfo && casterInfo.faction === 'fire') {
+            console.log('🔥 БОНУС ОГНЯ СРАБОТАЛ! casterInfo:', casterInfo);
+            if (typeof window.showFactionSpeechBubble === 'function') {
+                const col = casterInfo.casterType === 'player' ? 5 : 0;
+                console.log(`💬 Показываем пузырь: faction=fire, col=${col}, row=${casterInfo.position}`);
+                window.showFactionSpeechBubble('fire', col, casterInfo.position);
+            } else {
+                console.warn('⚠️ window.showFactionSpeechBubble не найдена');
+            }
+        } else if (casterInfo) {
+            console.log('ℹ️ Поджог сработал но не от фракции огня:', casterInfo);
+        } else {
+            console.log('ℹ️ Поджог сработал но casterInfo не передан');
         }
     }
 }
