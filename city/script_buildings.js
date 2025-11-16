@@ -28,6 +28,10 @@ function showPvPArenaModal() {
                         ${hasArena ? '' : 'disabled'}>
                     ⚔️ В бой (PvP) ${hasArena ? '' : '🔒'}
                 </button>
+                <button style="padding: 12px; border: none; border-radius: 6px; background: #FFD700; color: #333; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
+                        onclick="closePvPArenaModal(); window.showLeaderboard()">
+                    🏆 Рейтинг
+                </button>
                 <button style="padding: 12px; border: none; border-radius: 6px; background: #4CAF50; color: white; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
                         onclick="closePvPArenaModal(); window.showAdventureMenu()">
                     🗺️ Приключения (PvE)

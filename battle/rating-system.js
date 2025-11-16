@@ -27,17 +27,90 @@ const RATING_CONFIG = {
 };
 
 /**
- * Лиги (для будущего)
+ * Лиги магов с динамическими коэффициентами
+ * Чем выше лига - тем сложнее прогрессировать
  */
 const LEAGUES = [
-    { id: 'bronze', name: 'Бронза', minRating: 0, maxRating: 999, color: '#cd7f32', icon: '🥉' },
-    { id: 'silver', name: 'Серебро', minRating: 1000, maxRating: 1499, color: '#c0c0c0', icon: '🥈' },
-    { id: 'gold', name: 'Золото', minRating: 1500, maxRating: 1999, color: '#ffd700', icon: '🥇' },
-    { id: 'platinum', name: 'Платина', minRating: 2000, maxRating: 2499, color: '#e5e4e2', icon: '💎' },
-    { id: 'diamond', name: 'Алмаз', minRating: 2500, maxRating: 2999, color: '#b9f2ff', icon: '💠' },
-    { id: 'master', name: 'Мастер', minRating: 3000, maxRating: 3999, color: '#ff1493', icon: '⭐' },
-    { id: 'grandmaster', name: 'Грандмастер', minRating: 4000, maxRating: 9998, color: '#ff4500', icon: '🔥' },
-    { id: 'legend', name: 'Легенда', minRating: 9999, maxRating: Infinity, color: '#9400d3', icon: '👑' }
+    {
+        id: 'adept',
+        name: 'Адепт волшебства',
+        minRating: 0,
+        maxRating: 999,
+        color: '#8B4513',
+        icon: '🔰',
+        winMultiplier: 1.5,    // +50% к победам
+        lossMultiplier: 0.0    // Нет потери очков
+    },
+    {
+        id: 'apprentice',
+        name: 'Ученик мага',
+        minRating: 1000,
+        maxRating: 1499,
+        color: '#87CEEB',
+        icon: '📘',
+        winMultiplier: 1.3,    // +30% к победам
+        lossMultiplier: 0.5    // -50% потерь
+    },
+    {
+        id: 'journeyman',
+        name: 'Маг-подмастерье',
+        minRating: 1500,
+        maxRating: 1999,
+        color: '#4169E1',
+        icon: '📗',
+        winMultiplier: 1.1,    // +10% к победам
+        lossMultiplier: 0.8    // -20% потерь
+    },
+    {
+        id: 'skilled',
+        name: 'Искусный маг',
+        minRating: 2000,
+        maxRating: 2499,
+        color: '#9370DB',
+        icon: '🔮',
+        winMultiplier: 1.0,    // Базовые значения
+        lossMultiplier: 1.0
+    },
+    {
+        id: 'master',
+        name: 'Мастер магии',
+        minRating: 2500,
+        maxRating: 2999,
+        color: '#FF69B4',
+        icon: '✨',
+        winMultiplier: 0.9,    // -10% к победам
+        lossMultiplier: 1.2    // +20% потерь
+    },
+    {
+        id: 'great',
+        name: 'Великий маг',
+        minRating: 3000,
+        maxRating: 3999,
+        color: '#FFD700',
+        icon: '⭐',
+        winMultiplier: 0.8,    // -20% к победам
+        lossMultiplier: 1.4    // +40% потерь
+    },
+    {
+        id: 'supreme',
+        name: 'Верховный маг',
+        minRating: 4000,
+        maxRating: 9998,
+        color: '#FF4500',
+        icon: '🔥',
+        winMultiplier: 0.7,    // -30% к победам
+        lossMultiplier: 1.6    // +60% потерь
+    },
+    {
+        id: 'archmage',
+        name: 'Архимаг',
+        minRating: 9999,
+        maxRating: Infinity,
+        color: '#9400D3',
+        icon: '👑',
+        winMultiplier: 0.5,    // -50% к победам
+        lossMultiplier: 2.0    // +100% потерь
+    }
 ];
 
 /**
@@ -51,7 +124,10 @@ function calculateRatingChange(playerRating, opponentRating, result) {
     // Разница рейтингов (положительная = противник сильнее)
     const ratingDiff = opponentRating - playerRating;
 
-    // Находим подходящий множитель
+    // Находим лигу игрока для динамических коэффициентов
+    const playerLeague = getLeagueByRating(playerRating);
+
+    // Находим подходящий множитель по разнице рейтингов
     const multiplierConfig = RATING_CONFIG.RATING_DIFF_MULTIPLIERS.find(
         config => ratingDiff >= config.minDiff && ratingDiff < config.maxDiff
     );
@@ -65,10 +141,20 @@ function calculateRatingChange(playerRating, opponentRating, result) {
 
     switch (result) {
         case 'win':
-            change = Math.round(RATING_CONFIG.BASE_WIN * multiplierConfig.winMultiplier);
+            // Применяем множитель по разнице + множитель лиги
+            change = Math.round(
+                RATING_CONFIG.BASE_WIN *
+                multiplierConfig.winMultiplier *
+                playerLeague.winMultiplier
+            );
             break;
         case 'loss':
-            change = Math.round(RATING_CONFIG.BASE_LOSS * multiplierConfig.lossMultiplier);
+            // Применяем множитель по разнице + множитель лиги
+            change = Math.round(
+                RATING_CONFIG.BASE_LOSS *
+                multiplierConfig.lossMultiplier *
+                playerLeague.lossMultiplier
+            );
             break;
         case 'draw':
             change = RATING_CONFIG.BASE_DRAW;
@@ -78,7 +164,7 @@ function calculateRatingChange(playerRating, opponentRating, result) {
             change = 0;
     }
 
-    console.log(`📊 Расчет рейтинга: ${playerRating} vs ${opponentRating} (разница: ${ratingDiff > 0 ? '+' : ''}${ratingDiff})`);
+    console.log(`📊 Расчет рейтинга: ${playerRating} (${playerLeague.icon} ${playerLeague.name}) vs ${opponentRating} (разница: ${ratingDiff > 0 ? '+' : ''}${ratingDiff})`);
     console.log(`   Результат: ${result} | Изменение: ${change > 0 ? '+' : ''}${change}`);
 
     return change;
