@@ -329,7 +329,7 @@ function renderSpellsList(spells) {
     `).join('');
 }
 // Назначение заклинания магу
-function assignSpellToWizard(wizardIndex, spellSlotIndex, spellId) {
+async function assignSpellToWizard(wizardIndex, spellSlotIndex, spellId) {
     if (!userData.wizards?.[wizardIndex]) {
         console.error("Маг не найден");
         return;
@@ -339,10 +339,17 @@ function assignSpellToWizard(wizardIndex, spellSlotIndex, spellId) {
     }
     userData.wizards[wizardIndex].spells[spellSlotIndex] = spellId;
     closeCurrentModal();
-    
+
     // Обновляем только слоты заклинаний (без перерисовки всего окна)
     if (typeof window.updateWizardSpellSlots === 'function') {
         window.updateWizardSpellSlots();
+    }
+
+    // ВАЖНО: Сохраняем изменения в БД
+    if (window.eventSaveManager) {
+        await window.eventSaveManager.saveDebounced('wizard_spell_assigned', 1000);
+    } else if (window.dbManager) {
+        window.dbManager.markChanged();
     }
 }
 // Переименование мага
