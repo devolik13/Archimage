@@ -93,8 +93,8 @@ async function startSpellLearning(spellId, faction, tier, currentLevel) {
         alert('⚠️ Можно изучать только одно заклинание одновременно!');
         return false;
     }
-    
-    const timeRequired = SPELL_LEARNING_TIME.getLearnTime(tier, currentLevel);
+
+    const timeRequired = SPELL_LEARNING_TIME.getLearnTime(tier, currentLevel, faction);
     
     const construction = {
         type: 'spell',
@@ -508,15 +508,7 @@ async function completeConstruction(constructionIndex) {
             window.userData.spells[faction][spell_id].level = target_level;
             window.userData.spells[faction][spell_id].name = spellName; // Обновляем название на случай если было на английском
         }
-        
-        // Добавляем в доступные заклинания если ещё нет
-        if (!window.userData.available_spells) {
-            window.userData.available_spells = [];
-        }
-        if (!window.userData.available_spells.includes(spell_id)) {
-            window.userData.available_spells.push(spell_id);
-        }
-        
+
         // Разблокировка следующего заклинания при достижении 5 уровня
         if (target_level === 5) {
             const spellTiers = window.SPELL_TIERS?.[faction] || [];
@@ -535,28 +527,33 @@ async function completeConstruction(constructionIndex) {
                         level: 0,
                         tier: nextTier
                     };
-                    
-                    if (!window.userData.available_spells.includes(nextSpellId)) {
-                        window.userData.available_spells.push(nextSpellId);
-                    }
-                    
+
                     console.log(`🔓 Разблокировано новое заклинание: ${nextSpellName} (Tier ${nextTier})`);
                 }
             }
         }
         
         console.log(`✅ Заклинание ${spellName} улучшено до уровня ${target_level}`);
-        
+
         // Обновляем UI библиотеки
         if (typeof window.renderLibraryUI === 'function') {
             window.renderLibraryUI();
         }
-        
+
+        // Триггер сохранения
+        if (typeof window.onSpellLearned === 'function') {
+            if (target_level === 1) {
+                window.onSpellLearned(spell_id, target_level);
+            } else {
+                window.onSpellUpgraded(spell_id, target_level);
+            }
+        }
+
         // ВАЖНО: Закрываем ВСЕ модалки после завершения изучения
         if (window.Modal && window.Modal.closeAll) {
             window.Modal.closeAll();
         }
-        
+
         if (typeof Notification !== 'undefined' && Notification.show) { Notification.show(`✅ Заклинание улучшено до уровня ${target_level}!`, 'success'); }
         
     } else if (construction.type === 'wizard') {
@@ -589,10 +586,12 @@ async function completeConstruction(constructionIndex) {
         }
         
         console.log('✅ Маг добавлен локально:', newWizard);
-        
-        // Маги будут сохраняться через автосохранение в Supabase
-        console.log('💾 Маг будет сохранён через автосохранение');
-        
+
+        // Триггер сохранения
+        if (typeof window.onWizardHired === 'function') {
+            window.onWizardHired(newWizardId);
+        }
+
         const panel = document.getElementById('bottom-control-panel');
         if (panel) {
             // Пересоздаем панель чтобы обновить слоты магов
@@ -600,12 +599,12 @@ async function completeConstruction(constructionIndex) {
                 window.createBottomControlPanel();
             }
         }
-        
+
         // ВАЖНО: Закрываем ВСЕ модалки после найма мага
         if (window.Modal && window.Modal.closeAll) {
             window.Modal.closeAll();
         }
-        
+
         if (typeof Notification !== 'undefined' && Notification.show) { Notification.show('✅ Маг нанят успешно!', 'success'); }
         
     } else if (construction.type === 'building') {
@@ -636,11 +635,17 @@ async function completeConstruction(constructionIndex) {
                 }
                 console.log('⚙️ Шестеренка удалена');
             }
+
+            // Триггер сохранения для улучшения
+            if (typeof window.onBuildingUpgraded === 'function') {
+                window.onBuildingUpgraded(construction.building_id, construction.target_level);
+            }
+
             // ВАЖНО: Закрываем ВСЕ модалки после завершения улучшения
             if (window.Modal && window.Modal.closeAll) {
                 window.Modal.closeAll();
             }
-            
+
             // Просто показываем уведомление
             if (typeof Notification !== 'undefined' && Notification.show) { Notification.show('✅ Улучшение завершено!', 'success'); }
 	
@@ -679,12 +684,17 @@ async function completeConstruction(constructionIndex) {
                     console.log('🔨 Молоток удален');
                 }
             }
-            
+
+            // Триггер сохранения для нового здания
+            if (typeof window.onBuildingCompleted === 'function') {
+                window.onBuildingCompleted(construction.building_id);
+            }
+
             // ВАЖНО: Закрываем ВСЕ модалки после завершения строительства
             if (window.Modal && window.Modal.closeAll) {
                 window.Modal.closeAll();
             }
-            
+
             if (typeof Notification !== 'undefined' && Notification.show) { Notification.show('✅ Здание построено!', 'success'); }
 
 	    if (window.userData?.faction && container && window.createBuildingClickZones) {

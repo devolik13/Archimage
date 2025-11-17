@@ -139,9 +139,14 @@ function startBattle() {
     window.enemyMageIndex = 0;
     window.globalTurnCounter = 0;
     window.isVeryFirstTurn = true;
-    window.currentTurn = 'player';  
+    window.currentTurn = 'player';
     window.isPaused = false;
     window.battleSpeed = 2000;
+
+    // Инициализация логгера боя
+    if (window.battleLogger) {
+        window.battleLogger.init();
+    }
 
     // Очистка менеджера призванных существ
     if (window.summonsManager) {
@@ -462,15 +467,32 @@ function executeBattlePhase() {
 }
 
 function executeSingleMageAttack(wizard, position, casterType) {
+    // Логирование начала хода
+    if (window.battleLogger) {
+        window.battleLogger.logTurnStart(casterType, wizard, position);
+    }
+
     // ☠️ ОБРАБОТКА УРОНА ОТ ЯДА В НАЧАЛЕ ХОДА МАГА
     if (wizard.effects && wizard.effects.poison && wizard.effects.poison.stacks > 0) {
         const poisonDamage = wizard.effects.poison.stacks * (wizard.effects.poison.damagePerStack || 5);
         wizard.hp -= poisonDamage;
         if (wizard.hp < 0) wizard.hp = 0;
+
+        // Логирование DoT урона
+        if (window.battleLogger) {
+            window.battleLogger.logDotDamage(wizard, 'poison', poisonDamage, wizard.effects.poison.stacks);
+        }
+
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`☠️ ${wizard.name} получает ${poisonDamage} урона от яда (${wizard.effects.poison.stacks} стаков) (${wizard.hp}/${wizard.max_hp})`);
         }
-        if (wizard.hp <= 0) return false;
+
+        if (wizard.hp <= 0) {
+            if (window.battleLogger) {
+                window.battleLogger.logDeath(wizard, casterType, 'poison');
+            }
+            return false;
+        }
     }
 
     // 🌃 ОБРАБОТКА РЕГЕНЕРАЦИИ (включая благословения)
@@ -528,6 +550,13 @@ function executeSingleMageAttack(wizard, position, casterType) {
     // Огненные стены
     if (typeof window.processFireWallsForWizard === 'function') {
         window.processFireWallsForWizard(wizard, casterType);
+        // Проверка на смерть от огненной стены
+        if (wizard.hp <= 0) {
+            if (window.battleLogger) {
+                window.battleLogger.logDeath(wizard, casterType, 'fire_wall');
+            }
+            return false;
+        }
     }
 
     // ИСПОЛЬЗОВАНИЕ ЗАКЛИНАНИЙ
@@ -698,8 +727,37 @@ function checkBattleEnd() {
 
     const enemyAlive = window.enemyFormation.some(wizard => wizard && wizard.hp > 0);
 
+    // Подсчет живых магов
+    const playerAliveCount = window.playerFormation.filter((wizardId) => {
+        if (wizardId) {
+            const wizard = window.playerWizards.find(w => w.id === wizardId);
+            return wizard && wizard.hp > 0;
+        }
+        return false;
+    }).length;
+
+    const enemyAliveCount = window.enemyFormation.filter(wizard => wizard && wizard.hp > 0).length;
+
+    // Логирование проверки конца боя
+    if (window.battleLogger) {
+        window.battleLogger.logBattleEndCheck(playerAlive, enemyAlive, playerAliveCount, enemyAliveCount);
+    }
+
     if (!playerAlive || !enemyAlive) {
         window.battleState = 'finished';
+
+        // КРИТИЧНО: Останавливаем боевой цикл сразу после окончания боя
+        if (window.battleInterval) {
+            clearInterval(window.battleInterval);
+            window.battleInterval = null;
+            console.log('⏹️ Боевой интервал остановлен (бой завершён)');
+        }
+
+        // Останавливаем через battle-timer-manager если используется
+        if (window.battleTimerManager && window.battleTimerManager.stopBattleLoop) {
+            window.battleTimerManager.stopBattleLoop();
+        }
+
         let resultLog = '';
         if (!playerAlive && !enemyAlive) {
             resultLog = '💀 Все маги погибли! Ничья!';
@@ -707,6 +765,11 @@ function checkBattleEnd() {
             resultLog = '💀 Все маги игрока погибли! Поражение.';
         } else {
             resultLog = '🏆 Все маги противника погибли! Победа!';
+        }
+
+        // Логирование конца боя
+        if (window.battleLogger) {
+            window.battleLogger.logBattleEnd(resultLog, playerAlive, enemyAlive);
         }
 
         if (typeof window.addToBattleLog === 'function') {
@@ -760,13 +823,37 @@ function checkBattleEnd() {
         // ИСПРАВЛЕНО: Сохраняем опыт магов через Supabase вместо localhost
         if (window.userData && window.playerWizards) {
             window.userData.wizards = window.playerWizards;
-            
-            // Сохраняем в Supabase
-            if (window.dbManager && window.dbManager.savePlayer) {
-                window.dbManager.savePlayer(window.userData)
-                    .then(() => console.log('💾 Опыт магов сохранен в Supabase'))
-                    .catch(err => console.error('Ошибка сохранения опыта:', err));
-            }
+        }
+
+        // Определяем результат и награды для сохранения
+        let battleResult = 'draw';
+        let rewards = { exp: 0 };
+        let opponentLevel = 1; // TODO: получить реальный уровень противника
+        let ratingChange = 0;
+
+        if (!playerAlive && !enemyAlive) {
+            battleResult = 'draw';
+        } else if (!playerAlive) {
+            battleResult = 'loss';
+        } else if (!enemyAlive) {
+            battleResult = 'win';
+            // TODO: посчитать полученный опыт и другие награды
+        }
+
+        // Рассчитываем изменение рейтинга
+        if (typeof window.calculateRatingChange === 'function') {
+            const playerRating = window.userData?.rating || 1000;
+            // TODO: получить реальный рейтинг противника из данных боя
+            // Пока используем случайный AI рейтинг близкий к игроку
+            const opponentRating = playerRating + Math.floor(Math.random() * 200) - 100;
+
+            ratingChange = window.calculateRatingChange(playerRating, opponentRating, battleResult);
+            console.log(`📊 Изменение рейтинга: ${playerRating} → ${playerRating + ratingChange} (${ratingChange > 0 ? '+' : ''}${ratingChange})`);
+        }
+
+        // Триггер события завершения боя (вызовет немедленное сохранение)
+        if (typeof window.onBattleCompleted === 'function') {
+            window.onBattleCompleted(battleResult, rewards, opponentLevel, ratingChange);
         }
 
         if (window.animationManager) {
@@ -784,6 +871,23 @@ function checkBattleEnd() {
 
         if (typeof window.updateBattleField === 'function') {
             window.updateBattleField();
+        }
+
+        // Показываем экран результатов боя
+        if (typeof window.showBattleResult === 'function') {
+            const opponent = window.selectedOpponent || {};
+            const battleData = {
+                opponentName: opponent.username || 'Противник',
+                opponentRating: opponent.rating || 1000,
+                ratingChange: ratingChange,
+                rewards: rewards,
+                battleDuration: 0 // TODO: добавить таймер боя если нужно
+            };
+
+            // Показываем с небольшой задержкой для визуального эффекта
+            setTimeout(() => {
+                window.showBattleResult(battleResult, battleData);
+            }, 1000);
         }
 
         return true;

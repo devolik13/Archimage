@@ -93,7 +93,7 @@ console.log('✅ meteorokinesis.js (улучшенный) загружен');
     	
     	// Анимация
     	const animateEffect = () => {
-    	    if (!weatherContainer.parent) return;
+    	    if (!window.pixiAnimUtils.isValid(weatherContainer)) return;
     	    
     	    const time = Date.now() * 0.001;
     	    
@@ -191,7 +191,7 @@ console.log('✅ meteorokinesis.js (улучшенный) загружен');
         
         // Анимация ауры
         const animateAura = () => {
-            if (!auraContainer.parent) {
+            if (!window.pixiAnimUtils.isValid(auraContainer)) {
                 casterAuras.delete(wizard.id);
                 return;
             }
@@ -249,10 +249,12 @@ console.log('✅ meteorokinesis.js (улучшенный) загружен');
         // Анимация расширения волны
         const startTime = Date.now();
         const animate = () => {
+            if (!window.pixiAnimUtils.isValid(wave)) return;
+
             const progress = Math.min((Date.now() - startTime) / 500, 1);
             wave.scale.set(1 + progress * 4);
             wave.alpha = 0.8 * (1 - progress);
-            
+
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
@@ -278,10 +280,12 @@ console.log('✅ meteorokinesis.js (улучшенный) загружен');
         // Анимация текста
         const textStartTime = Date.now();
         const animateText = () => {
+            if (!window.pixiAnimUtils.isValid(boostText)) return;
+
             const progress = Math.min((Date.now() - textStartTime) / 1000, 1);
             boostText.y = casterSprite.y - 40 - progress * 20;
             boostText.alpha = 1 - progress;
-            
+
             if (progress < 1) {
                 requestAnimationFrame(animateText);
             } else {

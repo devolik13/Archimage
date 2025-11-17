@@ -238,13 +238,15 @@ console.log('✅ fireball.js загружен');
             const duration = 600;
             
             const animate = () => {
+                if (!window.pixiAnimUtils.isValid(explosion)) return;
+
                 const progress = Math.min((Date.now() - startTime) / duration, 1);
-                
+
                 const targetScale = level === 5 ? 2.0 : 1.5;
                 explosion.scale.set(0.1 + progress * centerCell.cellScale * targetScale);
                 explosion.alpha = (1 - progress * 0.5);
                 explosion.rotation += 0.1;
-                
+
                 if (progress < 1) {
                     requestAnimationFrame(animate);
                 } else {
@@ -272,11 +274,13 @@ console.log('✅ fireball.js загружен');
             const duration = 150;
             
             const animateFlash = () => {
+                if (!window.pixiAnimUtils.isValid(flash)) return;
+
                 const progress = Math.min((Date.now() - startTime) / duration, 1);
-                
+
                 flash.scale.set(scale * 0.5 * (1 + progress));
                 flash.alpha = 0.6 * (1 - progress);
-                
+
                 if (progress < 1) {
                     requestAnimationFrame(animateFlash);
                 } else {
@@ -325,9 +329,11 @@ console.log('✅ fireball.js загружен');
                 const fadeDuration = 1000;
                 
                 const fade = () => {
+                    if (!window.pixiAnimUtils.isValid(zone)) return;
+
                     const progress = Math.min((Date.now() - fadeStart) / fadeDuration, 1);
                     zone.alpha = 0.2 * (1 - progress);
-                    
+
                     if (progress < 1) {
                         requestAnimationFrame(fade);
                     } else {

@@ -113,11 +113,24 @@ function createPlayerAvatarUI() {
 function showPlayerProfile() {
     const level = calculatePlayerLevel();
     const breakdown = getPointsBreakdown();
-    
+
+    // Статистика боев
+    const totalBattles = userData.total_battles || 0;
+    const wins = userData.wins || 0;
+    const losses = userData.losses || 0;
+    const rating = userData.rating || 1000;
+    const winRate = totalBattles > 0 ? Math.round((wins / totalBattles) * 100) : 0;
+
+    // Лига
+    let leagueInfo = '🥉 Бронза';
+    if (typeof window.formatRating === 'function') {
+        leagueInfo = window.formatRating(rating);
+    }
+
     const modalContent = `
-        <div style="padding: 20px; max-width: 400px; background: #2c2c3d; border-radius: 10px; color: white;">
+        <div style="padding: 20px; max-width: 450px; background: #2c2c3d; border-radius: 10px; color: white;">
             <h3 style="margin-top: 0; color: #7289da;">👤 Профиль игрока</h3>
-            
+
             <div style="text-align: center; margin: 20px 0;">
                 <div style="
                     width: 80px;
@@ -135,9 +148,20 @@ function showPlayerProfile() {
                 <h4 style="color: white; margin: 5px 0;">${userData.username || 'Игрок'}</h4>
                 <div style="color: #ffa500; font-size: 20px;">⭐ Уровень ${level}</div>
             </div>
-            
+
             <div style="background: #3d3d5c; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                <h4 style="margin-top: 0; color: #7289da;">Источники очков:</h4>
+                <h4 style="margin-top: 0; color: #7289da;">⚔️ Статистика боев:</h4>
+                <div style="font-size: 14px; line-height: 1.8;">
+                    <div>🎯 Рейтинг: <strong style="color: #ffa500;">${leagueInfo}</strong></div>
+                    <div>📊 Всего боев: <strong>${totalBattles}</strong></div>
+                    <div>🏆 Побед: <strong style="color: #4CAF50;">${wins}</strong></div>
+                    <div>💀 Поражений: <strong style="color: #f44336;">${losses}</strong></div>
+                    <div>📈 Винрейт: <strong>${winRate}%</strong></div>
+                </div>
+            </div>
+
+            <div style="background: #3d3d5c; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <h4 style="margin-top: 0; color: #7289da;">📚 Прогресс:</h4>
                 <div style="font-size: 14px; line-height: 1.8;">
                     <div>📖 Заклинания: <strong>${breakdown.spells}</strong> очков</div>
                     <div>🏛️ Здания: <strong>${breakdown.buildings}</strong> очков</div>
@@ -146,7 +170,7 @@ function showPlayerProfile() {
                     <div>📊 Всего: <strong style="color: #ffa500;">${level}</strong> очков</div>
                 </div>
             </div>
-            
+
             <button style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer;"
                     onclick="closeCurrentModal()">
                 Закрыть

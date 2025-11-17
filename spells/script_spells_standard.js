@@ -65,10 +65,8 @@ async function learnSpell(spellId, faction) {
         if (result.success) {
             if (!userData.spells) userData.spells = {};
             if (!userData.spells[faction]) userData.spells[faction] = {};
-            if (!userData.available_spells) userData.available_spells = [];
 
             userData.spells = result.updated_spells;
-            userData.available_spells = result.updated_available_spells;
 
             if (typeof window.updatePlayerLevel === 'function') {
                 window.updatePlayerLevel();

@@ -490,34 +490,48 @@ function castMeteorokinesis(wizard, spellData, position, casterType) {
         const enemyEffect = disableEnemyWeather ? ', отключает погоду для врага' : '';
         window.addToBattleLog(`🌿 ${wizard.name} использует Метеокинез! +${damageBonus}% к стихийным заклинаниям союзников Природы ${duration}${enemyEffect}`);
     }
-    
-    // Применяем бонус фракции
-    applyNatureFactionBonus(wizard, casterType);
 }
 
 // --- Бонус фракции: Дар природы ---
 function applyNatureFactionBonus(wizard, casterType) {
     if (Math.random() < 0.05) { // 5% шанс
         // Находим живых союзных магов (кроме себя, если есть другие)
-        const allies = casterType === 'player' ? 
+        const allies = casterType === 'player' ?
             window.playerWizards.filter(w => w.id !== wizard.id && w.hp > 0) :
             window.enemyWizards.filter(w => w.id !== wizard.id && w.hp > 0);
-        
+
         let targetWizard = null;
-        
+
         if (allies.length > 0) {
             targetWizard = allies[Math.floor(Math.random() * allies.length)];
         } else {
             // Если других нет — лечим себя
             targetWizard = wizard;
         }
-        
+
         if (targetWizard) {
             const healAmount = Math.floor(targetWizard.max_hp * 0.05);
             targetWizard.hp = Math.min(targetWizard.hp + healAmount, targetWizard.max_hp);
-            
+
             if (typeof window.addToBattleLog === 'function') {
                 window.addToBattleLog(`💚 Природа исцеляет ${targetWizard.name} на ${healAmount} HP`);
+            }
+
+            // Речевой пузырь для бонуса природы
+            if (wizard.faction === 'nature' && typeof window.showFactionSpeechBubble === 'function') {
+                // Находим позицию кастера
+                let position = -1;
+                if (casterType === 'player') {
+                    position = window.playerFormation?.findIndex(id => id === wizard.id);
+                } else {
+                    position = window.enemyFormation?.findIndex(w => w && w.id === wizard.id);
+                }
+
+                if (position !== -1) {
+                    const col = casterType === 'player' ? 5 : 0;
+                    window.showFactionSpeechBubble('nature', col, position);
+                    console.log('🌱 БОНУС ПРИРОДЫ СРАБОТАЛ! Исцеление');
+                }
             }
         }
     }

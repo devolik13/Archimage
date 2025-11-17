@@ -64,9 +64,10 @@ console.log('✅ icicle.js загружен');
         
         // Функция анимации
         const animate = () => {
-            if (isDestroyed || !projectile.parent || !effectsContainer) {
+            // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+            if (isDestroyed || !projectile || projectile.destroyed || !projectile.transform || !projectile.parent || !effectsContainer) {
                 if (animationFrame) cancelAnimationFrame(animationFrame);
-                if (projectile.parent) {
+                if (projectile && projectile.parent) {
                     try {
                         effectsContainer.removeChild(projectile);
                     } catch (e) {}
@@ -122,12 +123,17 @@ console.log('✅ icicle.js загружен');
             const fadeDuration = 400;
             
             const fadeAnimate = () => {
+                // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+                if (!trail || trail.destroyed || !trail.transform) {
+                    return;
+                }
+
                 const elapsed = Date.now() - fadeStartTime;
                 const progress = Math.min(elapsed / fadeDuration, 1);
-                
+
                 trail.alpha = 0.4 * (1 - progress);
                 trail.scale.set(1 - progress * 0.5);
-                
+
                 if (progress < 1 && trail.parent) {
                     requestAnimationFrame(fadeAnimate);
                 } else {
@@ -182,6 +188,11 @@ console.log('✅ icicle.js загружен');
                     explosion.tint = 0xCCFFFF;         // Голубоватый оттенок
                     
                     explosion.onComplete = () => {
+                        // ПРОВЕРКА: если объект уничтожен - не обрабатываем
+                        if (!explosion || explosion.destroyed || !explosion.transform) {
+                            return;
+                        }
+
                         if (explosion.parent) {
                             effectsContainer.removeChild(explosion);
                             explosion.destroy({ texture: false, baseTexture: false });
@@ -215,12 +226,17 @@ console.log('✅ icicle.js загружен');
             const flashDuration = 200;
             
             const animateFlash = () => {
+                // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+                if (!flash || flash.destroyed || !flash.transform) {
+                    return;
+                }
+
                 const elapsed = Date.now() - flashStartTime;
                 const progress = Math.min(elapsed / flashDuration, 1);
-                
+
                 flash.scale.set(1 + progress * 0.5);
                 flash.alpha = 0.5 * (1 - progress);
-                
+
                 if (progress < 1) {
                     requestAnimationFrame(animateFlash);
                 } else {
@@ -262,14 +278,19 @@ console.log('✅ icicle.js загружен');
                 const shardDuration = 500;
                 
                 const animateShard = () => {
+                    // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+                    if (!shard || shard.destroyed || !shard.transform) {
+                        return;
+                    }
+
                     const elapsed = Date.now() - shardStartTime;
                     const progress = Math.min(elapsed / shardDuration, 1);
-                    
+
                     shard.x += vx * (1 - progress);
                     shard.y += vy * (1 - progress) + progress * 3;
                     shard.rotation += 0.2;
                     shard.alpha = 0.8 * (1 - progress);
-                    
+
                     if (progress < 1 && shard.parent) {
                         requestAnimationFrame(animateShard);
                     } else {
@@ -306,13 +327,18 @@ console.log('✅ icicle.js загружен');
                 const particleDuration = 400;
                 
                 const animateParticle = () => {
+                    // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+                    if (!particle || particle.destroyed || !particle.transform) {
+                        return;
+                    }
+
                     const elapsed = Date.now() - particleStartTime;
                     const progress = Math.min(elapsed / particleDuration, 1);
-                    
+
                     particle.x += vx * (1 - progress);
                     particle.y += vy * (1 - progress) + progress * 2;
                     particle.alpha = 0.7 * (1 - progress);
-                    
+
                     if (progress < 1 && particle.parent) {
                         requestAnimationFrame(animateParticle);
                     } else {

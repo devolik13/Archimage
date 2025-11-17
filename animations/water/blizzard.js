@@ -139,11 +139,13 @@ console.log('✅ blizzard.js загружен');
                 // Анимация тумана
                 const startTime = Date.now();
                 const animateFog = () => {
+                    if (!window.pixiAnimUtils.isValid(fog)) return;
+
                     const elapsed = Date.now() - startTime;
                     const pulse = Math.sin(elapsed * 0.002) * 0.2;
                     fog.scale.set(1 + pulse);
                     fog.alpha = 0.3 + pulse * 0.5;
-                    
+
                     if (fog.parent) {
                         requestAnimationFrame(animateFog);
                     }
@@ -184,17 +186,13 @@ console.log('✅ blizzard.js загружен');
     	        const drift = (Math.random() - 0.5) * 0.5;
     	        
     	        const animateSnow = () => {
-    	            // 🔥 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: проверяем transform перед доступом к свойствам
-    	            if (!snowflake.parent || !snowflake.transform) {
-    	                // Спрайт уже уничтожен или удалён
-    	                if (snowflake.parent) {
+    	            if (!window.pixiAnimUtils.isValid(snowflake)) {
+    	                if (snowflake && snowflake.parent) {
     	                    try {
     	                        container.removeChild(snowflake);
-    	                    } catch (e) {
-    	                        // Игнорируем ошибку если уже удалён
-    	                    }
+    	                    } catch (e) {}
     	                }
-    	                return; // Останавливаем анимацию
+    	                return;
     	            }
     	            
     	            snowflake.y += speed;

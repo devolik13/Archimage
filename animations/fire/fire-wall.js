@@ -73,19 +73,20 @@ console.log('✅ fire-wall.js загружен');
                 fireSprite.anchor.set(0.5);
                 
                 // Масштабируем спрайт под размер ячейки
-                // Спрайт 768x192, нужно подогнать под ячейку ~60px
-                const targetHeight = cellData.height * 1.8; // Немного выше ячейки для эффектности
-                const scale = targetHeight / frameHeight;
-                fireSprite.scale.set(scale * 0.2, scale * 0.4); // Уменьшаем ширину для одной ячейки
+                // Используем cellScale вместо height, так как height может быть 0
+                const baseScale = cellData.cellScale || 1.0;
+                const scaleFactor = baseScale * 0.5; // Масштабируем относительно размера ячейки
+
+                fireSprite.scale.set(scaleFactor * 0.4, scaleFactor); // Ширина меньше, высота больше для вертикальной стены
                 
-                fireSprite.animationSpeed = 0.2; // Скорость анимации (4 кадра)
+                fireSprite.animationSpeed = 0.1; // Скорость анимации (4 кадра)
                 fireSprite.loop = true; // Зацикливаем анимацию
                 fireSprite.play();
                 
                 // Эффекты свечения для огня
                 fireSprite.blendMode = PIXI.BLEND_MODES.ADD; // Режим наложения для свечения
                 fireSprite.tint = 0xFF6600; // Оранжевый оттенок
-                fireSprite.alpha = 0.9; // Небольшая прозрачность
+                fireSprite.alpha = 1; // Полная непрозрачность
                 
                 effectsContainer.addChild(fireSprite);
                 

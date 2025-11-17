@@ -191,10 +191,12 @@ console.log('✅ earth-wall.js загружен');
         
         const startTime = Date.now();
         const animate = () => {
+            if (!window.pixiAnimUtils.isValid(dust)) return;
+
             const progress = Math.min((Date.now() - startTime) / 300, 1);
             dust.scale.set(1 + progress * 0.5);
             dust.alpha = 0.4 * (1 - progress);
-            
+
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
@@ -261,10 +263,12 @@ console.log('✅ earth-wall.js загружен');
     		    
     	    const startTime = Date.now();
     	    const animate = () => {
+    	        if (!window.pixiAnimUtils.isValid(glow)) return;
+
     	        const progress = Math.min((Date.now() - startTime) / 500, 1);
     	        glow.scale.set(1 + progress * 0.3);
     	        glow.alpha = 0.8 * (1 - progress);
-            
+
     	        if (progress < 1) {
     	            requestAnimationFrame(animate);
     	        } else {

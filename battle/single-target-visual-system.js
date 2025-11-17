@@ -43,7 +43,12 @@ function castSingleTargetSpell(params) {
     } = params;
 
     console.log(`🎯 Single Target Spell: ${spellId} от ${caster.name} к ${target.wizard.name}`);
-    
+
+    // Устанавливаем текущего кастера для отслеживания фракционных бонусов
+    if (typeof window.setCurrentSpellCaster === 'function') {
+        window.setCurrentSpellCaster(caster, casterType, casterPosition);
+    }
+
     // Определяем колонки
     const casterCol = casterType === 'player' ? 5 : 0;
     
@@ -91,11 +96,16 @@ function castSingleTargetSpell(params) {
                 if (onComplete) {
                     onComplete(damageResult);
                 }
+
+                // Очищаем текущего кастера
+                if (typeof window.clearCurrentSpellCaster === 'function') {
+                    window.clearCurrentSpellCaster();
+                }
             }
         });
     } else {
         console.warn('⚠️ Функция создания снаряда не определена');
-        
+
         // Fallback - сразу вызываем callbacks
         if (window.logProtectionResult) {
             window.logProtectionResult(caster, target, damageResult, getSpellDisplayName(spellId, spellLevel));
@@ -105,6 +115,11 @@ function castSingleTargetSpell(params) {
         }
         if (onComplete) {
             onComplete(damageResult);
+        }
+
+        // Очищаем текущего кастера
+        if (typeof window.clearCurrentSpellCaster === 'function') {
+            window.clearCurrentSpellCaster();
         }
     }
 }

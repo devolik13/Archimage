@@ -11,34 +11,41 @@ function showPvPArenaModal() {
     const battleButtonStyle = hasArena 
         ? "padding: 12px; border: none; border-radius: 6px; background: #555; color: white; cursor: pointer; font-size: 16px;"
         : "padding: 12px; border: none; border-radius: 6px; background: #333; color: #666; cursor: not-allowed; font-size: 16px; opacity: 0.5;";
-    const battleButtonOnClick = hasArena 
-        ? "window.showBattleField()" 
-        : "alert('⚠️ Постройте Арену чтобы участвовать в PvP боях!')";
+    const battleButtonOnClick = hasArena
+    	? "if (!checkFormationBeforeBattle()) return; closePvPArenaModal(); window.showOpponentSelection()"
+    	: "alert('⚠️ Постройте Арену чтобы участвовать в PvP боях!')";
     const modalContent = `
-        <div style="padding: 20px; max-width: 350px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin-top: 0; color: #7289da;">⚔️ PvP Арена</h3>
-            <p>Добро пожаловать на арену! Здесь вы можете сражаться с другими магами.</p>
-            <div style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
-                <button style="padding: 12px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 16px;"
-                        onclick="window.showBattleSetup()">
-                    🎯 Расставить войска
-                </button>
-                <button style="${battleButtonStyle}"
-                        onclick="${battleButtonOnClick}"
-                        ${hasArena ? '' : 'disabled'}>
-                    ⚔️ В бой (PvP) ${hasArena ? '' : '🔒'}
-                </button>
-                <button style="padding: 12px; border: none; border-radius: 6px; background: #4CAF50; color: white; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
-                        onclick="closePvPArenaModal(); window.showAdventureMenu()">
-                    🗺️ Приключения (PvE)
-                </button>
-            </div>
-            ${!hasArena ? '<p style="color: #ff6b6b; font-size: 14px; text-align: center;">⚠️ Постройте Арену для PvP боёв</p>' : ''}
-            <button style="margin-top: 10px; padding: 8px 15px; width: 100%; border: 1px solid #7289da; border-radius: 6px; background: transparent; color: #7289da; cursor: pointer;"
-                    onclick="closePvPArenaModal()">
-                ❌ Закрыть
-            </button>
-        </div>
+    	<div style="padding: 12px; max-width: 320px; background: #2c2c3d; border-radius: 8px; color: white;">
+    	    <h3 style="margin: 0 0 8px 0; color: #7289da; font-size: 18px;">⚔️ PvP Арена</h3>
+    	    <p style="margin: 0 0 12px 0; font-size: 12px;">Добро пожаловать на арену! Здесь вы можете сражаться с другими магами.</p>
+    	    
+    	    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+    	        <button style="padding: 10px 8px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 14px;"
+    	                onclick="window.showBattleSetup()">
+    	            🎯 Расставить войска
+    	        </button>
+    	        <button style="${battleButtonStyle.replace('padding: 12px', 'padding: 10px 8px').replace('font-size: 16px', 'font-size: 14px')}"
+    	                onclick="${battleButtonOnClick}"
+    	                ${hasArena ? '' : 'disabled'}>
+    	            ⚔️ В бой (PvP) ${hasArena ? '' : '🔒'}
+    	        </button>
+    	        <button style="padding: 10px 8px; border: none; border-radius: 6px; background: #FFD700; color: #333; cursor: pointer; font-size: 14px; font-weight: bold;"
+    	                onclick="closePvPArenaModal(); window.showLeaderboard()">
+    	            🏆 Рейтинг
+    	        </button>
+    	        <button style="padding: 10px 8px; border: none; border-radius: 6px; background: #4CAF50; color: white; cursor: pointer; font-size: 14px; font-weight: bold;"
+    	                onclick="closePvPArenaModal(); window.showAdventureMenu()">
+    	            🗺️ Приключения (PvE)
+    	        </button>
+    	    </div>
+    	    
+    	    ${!hasArena ? '<p style="color: #ff6b6b; font-size: 11px; text-align: center; margin: 0 0 8px 0;">⚠️ Постройте Арену для PvP боёв</p>' : ''}
+    	    
+    	    <button style="margin-top: 0; padding: 8px; width: 100%; border: 1px solid #7289da; border-radius: 6px; background: transparent; color: #7289da; cursor: pointer; font-size: 13px;"
+    	            onclick="closePvPArenaModal()">
+    	        ❌ Закрыть
+    	    </button>
+    	</div>
     `;
     const modal = document.createElement('div');
     modal.innerHTML = modalContent;
@@ -71,118 +78,94 @@ function showWizardHireModal() {
     closeAllModals();
     const wizards = userData.wizards || [];
     const maxWizards = 5;
-    // Проверяем, идёт ли найм мага
     const constructions = window.userData?.constructions || [];
     const activeHire = constructions.find(c => c.type === 'wizard' && c.time_remaining > 0);
     let wizardsListHTML = '';
-    // Если идёт найм, показываем это первым элементом
+    
     if (activeHire) {
         wizardsListHTML += `
-            <div style="background: #555577; padding: 10px; border-radius: 5px; margin-bottom: 10px; cursor: pointer;"
+            <div style="background: #555577; padding: 4px 6px; border-radius: 4px; margin-bottom: 4px; cursor: pointer; font-size: 11px;"
                  onclick="showConstructionModal(${constructions.indexOf(activeHire)})">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <strong>🔨 Найм мага ${activeHire.wizard_index}</strong>
-                        <div style="font-size: 12px; color: #ffa500;">
-                            ⏱️ ${window.formatTimeCurrency(activeHire.time_remaining)}
-                        </div>
-                    </div>
-                </div>
+                <strong>🔨 Найм мага ${activeHire.wizard_index}</strong>
+                <div style="font-size: 9px; color: #ffa500;">⏱️ ${window.formatTimeCurrency(activeHire.time_remaining)}</div>
             </div>
         `;
     }
-    // Существующие маги
+    
     wizards.forEach((wizard, index) => {
         wizardsListHTML += `
-            <div style="background: #3d3d5c; padding: 10px; border-radius: 5px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="background: #3d3d5c; padding: 4px 6px; border-radius: 4px; margin-bottom: 4px; display: flex; justify-content: space-between; font-size: 11px;">
                 <div>
                     <strong>🧙‍♂️ ${wizard.name}</strong>
-                    <div style="font-size: 12px; color: #aaa;">HP: ${wizard.hp}/${wizard.max_hp} | AR: ${wizard.armor}/${wizard.max_armor}</div>
+                    <div style="font-size: 9px; color: #aaa;">HP: ${wizard.hp}/${wizard.max_hp} | AR: ${wizard.armor}/${wizard.max_armor}</div>
                 </div>
-                <div style="font-size: 12px; color: #7289da;">Ур. ${wizard.level || 1}</div>
+                <div style="font-size: 10px; color: #7289da;">Ур.${wizard.level || 1}</div>
             </div>
         `;
     });
+    
     const canHire = wizards.length < maxWizards && !activeHire;
-    const hireTime = window.WIZARD_HIRE_TIME?.getHireTime ? 
-        window.WIZARD_HIRE_TIME.getHireTime(wizards.length) : 
-        0;
+    const hireTime = window.WIZARD_HIRE_TIME?.getHireTime ? window.WIZARD_HIRE_TIME.getHireTime(wizards.length) : 0;
     const hireButton = canHire ? 
-        `<button style="margin: 10px 0 0 0; padding: 10px 15px; font-size: 14px; width: 100%; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer;"
+        `<button style="margin: 6px 0 0 0; padding: 6px; font-size: 12px; width: 100%; border: none; border-radius: 4px; background: #7289da; color: white; cursor: pointer;"
             onclick="hireNewWizard()">
-            ✅ Нанять мага
-            ${hireTime > 0 ? `<div style="font-size: 11px; margin-top: 3px; opacity: 0.9;">
-                ⏱️ ${window.formatTimeCurrency(hireTime)}
-            </div>` : ''}
+            ✅ Нанять мага ${hireTime > 0 ? `<span style="font-size: 9px;">(⏱️ ${window.formatTimeCurrency(hireTime)})</span>` : ''}
         </button>` : 
-        `<div style="text-align: center; color: #aaa; padding: 10px; font-size: 14px;">
-            Достигнут лимит магов (${maxWizards})
-        </div>`;
+        `<div style="text-align: center; color: #aaa; padding: 6px; font-size: 11px;">Лимит: ${maxWizards}</div>`;
+    
     const towerLevel = (userData.buildings?.wizard_tower?.level || 1);
     const maxTowerLevel = getBuildingMaxLevel('wizard_tower');
     const upgradeTime = window.CONSTRUCTION_TIME?.getUpgradeTime ? 
-        window.CONSTRUCTION_TIME.getUpgradeTime('wizard_tower', towerLevel + 1) : 
-        144 * (towerLevel + 1);
+        window.CONSTRUCTION_TIME.getUpgradeTime('wizard_tower', towerLevel + 1) : 144 * (towerLevel + 1);
     const upgradeButton = towerLevel < maxTowerLevel ? 
-        `<button style="margin: 10px 0; padding: 10px 15px; font-size: 14px; width: 100%; border: none; border-radius: 6px; background: #555; color: white; cursor: pointer;"
+        `<button style="margin: 6px 0; padding: 6px; font-size: 12px; width: 100%; border: none; border-radius: 4px; background: #555; color: white; cursor: pointer;"
             onclick="upgradeWizardTower()">
-            ⬆️ Улучшить башню (ур. ${towerLevel} → ${towerLevel + 1})
-            <div style="font-size: 11px; margin-top: 3px; opacity: 0.9;">
-                ⏱️ ${window.formatTimeCurrency(upgradeTime)}
-            </div>
+            ⬆️ Башня ${towerLevel}→${towerLevel + 1} <span style="font-size: 9px;">(⏱️ ${window.formatTimeCurrency(upgradeTime)})</span>
         </button>` : 
-        `<div style="text-align: center; color: #777; padding: 10px; font-size: 14px;">
-            ✅ Башня максимального уровня (${maxTowerLevel})
-        </div>`;
-    // НОВОЕ: Рассчитываем бонусы башни магов
-    const healthBonus = window.applyWizardTowerHealthBonus ? 
-        Math.round((window.applyWizardTowerHealthBonus() - 1) * 100) : 0;
-    const damageBonus = window.getWizardTowerDamageBonus ? 
-        Math.round((window.getWizardTowerDamageBonus() - 1) * 100) : 0;
+        `<div style="text-align: center; color: #777; padding: 6px; font-size: 11px;">✅ Макс. уровень</div>`;
+    
+    const healthBonus = window.applyWizardTowerHealthBonus ? Math.round((window.applyWizardTowerHealthBonus() - 1) * 100) : 0;
+    const damageBonus = window.getWizardTowerDamageBonus ? Math.round((window.getWizardTowerDamageBonus() - 1) * 100) : 0;
     const towerBonusHTML = (healthBonus > 0 || damageBonus > 0) ? `
-        <div style="background: #4a5568; padding: 12px; border-radius: 6px; margin-bottom: 15px;">
-            <div style="font-size: 14px; color: #ffa500; margin-bottom: 8px; font-weight: bold; text-align: center;">
-                🏰 Активные бонусы башни
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-size: 12px;">
-                ${healthBonus > 0 ? `
-                    <div style="background: #4ade8020; padding: 8px; border-radius: 4px; text-align: center;">
-                        ❤️ Здоровье: <strong>+${healthBonus}%</strong>
-                    </div>
-                ` : ''}
-                ${damageBonus > 0 ? `
-                    <div style="background: #ff6b6b20; padding: 8px; border-radius: 4px; text-align: center;">
-                        ⚔️ Урон: <strong>+${damageBonus}%</strong>
-                    </div>
-                ` : ''}
-            </div>
-            <div style="font-size: 10px; color: #aaa; text-align: center; margin-top: 8px;">
-                Бонусы применяются ко всем магам в бою
+        <div style="background: #4a5568; padding: 6px; border-radius: 4px; margin-bottom: 6px;">
+            <div style="font-size: 11px; color: #ffa500; margin-bottom: 4px; font-weight: bold; text-align: center;">🏰 Бонусы башни</div>
+            <div style="display: flex; gap: 6px; font-size: 10px; justify-content: center;">
+                ${healthBonus > 0 ? `<div style="background: #4ade8020; padding: 4px 8px; border-radius: 4px;">❤️ +${healthBonus}%</div>` : ''}
+                ${damageBonus > 0 ? `<div style="background: #ff6b6b20; padding: 4px 8px; border-radius: 4px;">⚔️ +${damageBonus}%</div>` : ''}
             </div>
         </div>
     ` : '';
+    
     const modalContent = `
-        <div style="padding: 15px; max-width: 350px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin-top: 0; color: #7289da;">🧙‍♂️ Башня магов</h3>
-            <p style="margin: 5px 0; color: #aaa;">Уровень башни: ${towerLevel}/${maxTowerLevel}</p>
-            ${towerBonusHTML}
-            <hr style="border: 1px solid #444; margin: 10px 0;">
-            <p>Ваши маги:</p>
-            <div style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;">
-                ${wizardsListHTML || '<div style="text-align: center; color: #aaa; padding: 20px;">У вас нет магов</div>'}
+        <div style="padding: 10px; max-width: 500px; max-height: 70vh; background: #2c2c3d; border-radius: 8px; color: white; display: flex; flex-direction: column;">
+            <h3 style="margin: 0 0 8px 0; color: #7289da; font-size: 14px; text-align: center;">🧙‍♂️ Башня магов (${towerLevel}/${maxTowerLevel})</h3>
+            
+            <div style="display: grid; grid-template-columns: 200px 1fr; gap: 10px; flex: 1; overflow: hidden;">
+                <!-- ЛЕВАЯ: Башня -->
+                <div style="display: flex; flex-direction: column;">
+                    ${towerBonusHTML}
+                    ${upgradeButton}
+                </div>
+                
+                <!-- ПРАВАЯ: Маги -->
+                <div style="display: flex; flex-direction: column;">
+                    <p style="margin: 0 0 4px 0; font-size: 11px;">Маги (${wizards.length}/${maxWizards}):</p>
+                    <div style="flex: 1; overflow-y: auto; margin-bottom: 6px;">
+                        ${wizardsListHTML || '<div style="text-align: center; color: #aaa; padding: 10px; font-size: 10px;">Нет магов</div>'}
+                    </div>
+                    ${hireButton}
+                </div>
             </div>
-            ${hireButton}
-            ${upgradeButton}
-            <button style="margin: 10px 0 0 0; padding: 8px 15px; font-size: 14px; width: 100%; border: 1px solid #7289da; border-radius: 6px; background: transparent; color: #7289da; cursor: pointer;"
-                onclick="closeCurrentModal()">
-                ❌ Закрыть
-            </button>
+            
+            <button style="margin-top: 8px; padding: 6px; font-size: 12px; width: 100%; border: 1px solid #7289da; border-radius: 4px; background: transparent; color: #7289da; cursor: pointer;"
+                onclick="closeCurrentModal()">❌ Закрыть</button>
         </div>
     `;
+    
     const modal = document.createElement('div');
     modal.id = 'wizard-hire-modal';
     modal.innerHTML = modalContent;
-    modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.8); padding: 20px; border-radius: 12px; z-index: 1000;';
+    modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;';
     const overlay = document.createElement('div');
     overlay.id = 'wizard-hire-overlay';
     overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;';
@@ -729,7 +712,24 @@ function showTimeGeneratorModal() {
         window.showModal(modalContent);
     }
 }
+// Проверка расстановки перед боем
+function checkFormationBeforeBattle() {
+    const formation = window.userData?.formation || [null, null, null, null, null];
+    const hasWizards = formation.some(wizardId => wizardId !== null);
+    
+    if (!hasWizards) {
+        if (window.showNotification) {
+            window.showNotification('⚠️ Расставь войска и выбери заклинания!', 'warning');
+        } else {
+            alert('⚠️ Расставь войска и выбери заклинания!');
+        }
+        return false;
+    }
+    
+    return true;
+}
 
+window.checkFormationBeforeBattle = checkFormationBeforeBattle;
 // Экспортируем функцию в window
 window.showTimeGeneratorModal = showTimeGeneratorModal;
 

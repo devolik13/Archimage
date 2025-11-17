@@ -109,9 +109,14 @@ class DatabaseManager {
                 wizards: playerData.wizards || [],
                 formation: playerData.formation || [null, null, null, null, null],
                 spells: playerData.spells || {},
-                available_spells: playerData.available_spells || [],
                 buildings: buildingsWithConstructions,
-                last_save: new Date().toISOString()
+                total_battles: playerData.total_battles || 0,
+                wins: playerData.wins || 0,
+                losses: playerData.losses || 0,
+                rating: playerData.rating || 1000,
+                pve_progress: playerData.pve_progress || {},
+                settings: playerData.settings || { sound: true, language: 'ru', battle_speed: 'normal' },
+                tutorial_completed: playerData.tutorial_completed || false
             };
 
             const { error } = await this.supabase
@@ -144,9 +149,8 @@ class DatabaseManager {
         try {
             const { error } = await this.supabase
                 .from('players')
-                .update({ 
-                    formation: formation,
-                    last_save: new Date().toISOString()
+                .update({
+                    formation: formation
                 })
                 .eq('id', this.currentPlayer.id);
 
@@ -165,27 +169,46 @@ class DatabaseManager {
     // Отдельная таблица player_buildings больше не используется
     // Здания загружаются из поля buildings (JSONB) в методе loadOrCreatePlayer()
 
-    // Сохранить результат боя
-    async saveBattleResult(result, rewards, opponentLevel) {
-        if (!this.currentPlayer) return false;
+    // Сохранить результат боя и обновить статистику
+    async saveBattleResult(result, rewards, opponentLevel, ratingChange) {
+        if (!this.currentPlayer || !window.userData) return false;
 
         try {
+            // Обновляем локальные данные
+            window.userData.total_battles = (window.userData.total_battles || 0) + 1;
+
+            if (result === 'win') {
+                window.userData.wins = (window.userData.wins || 0) + 1;
+            } else if (result === 'loss') {
+                window.userData.losses = (window.userData.losses || 0) + 1;
+            }
+
+            // Обновляем рейтинг
+            if (ratingChange !== undefined) {
+                window.userData.rating = (window.userData.rating || 1000) + ratingChange;
+                // Минимальный рейтинг - 0
+                window.userData.rating = Math.max(0, window.userData.rating);
+            }
+
+            // Сохраняем в БД
             const { error } = await this.supabase
-                .from('battle_history')
-                .insert([{
-                    player_id: this.currentPlayer.id,
-                    result: result, // 'win' или 'loss'
-                    rewards: rewards, // JSON объект
-                    opponent_level: opponentLevel
-                }]);
+                .from('players')
+                .update({
+                    total_battles: window.userData.total_battles,
+                    wins: window.userData.wins,
+                    losses: window.userData.losses,
+                    rating: window.userData.rating
+                })
+                .eq('id', this.currentPlayer.id);
 
             if (error) throw error;
 
-            console.log('Результат боя сохранён');
+            console.log(`⚔️ Результат боя сохранён: ${result} (${ratingChange > 0 ? '+' : ''}${ratingChange} рейтинга)`);
+            console.log(`📊 Статистика: ${window.userData.wins}W / ${window.userData.losses}L | Рейтинг: ${window.userData.rating}`);
             return true;
 
         } catch (error) {
-            console.error('Ошибка сохранения боя:', error);
+            console.error('❌ Ошибка сохранения боя:', error);
             return false;
         }
     }
@@ -210,9 +233,15 @@ class DatabaseManager {
                     wizards: window.userData.wizards,
                     formation: window.userData.formation,
                     spells: window.userData.spells,
-                    available_spells: window.userData.available_spells,
                     constructions: window.userData.constructions,
-                    buildings: window.userData.buildings
+                    buildings: window.userData.buildings,
+                    total_battles: window.userData.total_battles,
+                    wins: window.userData.wins,
+                    losses: window.userData.losses,
+                    rating: window.userData.rating,
+                    pve_progress: window.userData.pve_progress,
+                    settings: window.userData.settings,
+                    tutorial_completed: window.userData.tutorial_completed
                 };
                 await this.savePlayer(playerData);
             }
@@ -241,9 +270,15 @@ class DatabaseManager {
                     wizards: window.userData.wizards,
                     formation: window.userData.formation,
                     spells: window.userData.spells,
-                    available_spells: window.userData.available_spells,
                     constructions: window.userData.constructions,
-                    buildings: window.userData.buildings
+                    buildings: window.userData.buildings,
+                    total_battles: window.userData.total_battles,
+                    wins: window.userData.wins,
+                    losses: window.userData.losses,
+                    rating: window.userData.rating,
+                    pve_progress: window.userData.pve_progress,
+                    settings: window.userData.settings,
+                    tutorial_completed: window.userData.tutorial_completed
                 };
                 await this.savePlayer(playerData);
             }

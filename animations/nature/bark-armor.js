@@ -112,12 +112,14 @@ console.log('✅ bark-armor.js загружен');
             const startTime = Date.now();
             
             const animateAppear = () => {
+                if (!window.pixiAnimUtils.isValid(barkShield)) return;
+
                 const progress = Math.min((Date.now() - startTime) / appearDuration, 1);
-                
+
                 // Плавное появление и вращение щита
                 barkShield.alpha = progress * 0.6;
                 barkShield.rotation = progress * Math.PI * 2;
-                
+
                 // Расширение от центра
                 const scaleProgress = 0.5 + progress * 0.5;
                 barkShield.scale.set(scale * scaleProgress);
@@ -420,10 +422,12 @@ console.log('✅ bark-armor.js загружен');
             const vy = Math.sin(angle) * speed;
             
             const animateParticle = () => {
+                if (!window.pixiAnimUtils.isValid(particle)) return;
+
                 particle.x += vx;
                 particle.y += vy;
                 particle.alpha -= 0.02;
-                
+
                 if (particle.alpha > 0) {
                     requestAnimationFrame(animateParticle);
                 } else {

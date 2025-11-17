@@ -231,17 +231,24 @@ console.log('✅ chain-lightning.js загружен');
         const duration = 400;
         
         const animate = () => {
+            // Проверяем оба объекта
+            if (!window.pixiAnimUtils.isValid(flash) || !window.pixiAnimUtils.isValid(ring)) {
+                if (flash && flash.parent) container.removeChild(flash);
+                if (ring && ring.parent) container.removeChild(ring);
+                return;
+            }
+
             const elapsed = Date.now() - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            
+
             // Вспышка быстро гаснет
             flash.alpha = 1 * (1 - progress);
             flash.scale.set(1 + progress * 2);
-            
+
             // Кольцо расширяется
             ring.alpha = 1 * (1 - progress);
             ring.scale.set(1 + progress * 4);
-            
+
             if (progress < 1 && flash.parent) {
                 requestAnimationFrame(animate);
             } else {
@@ -271,13 +278,15 @@ console.log('✅ chain-lightning.js загружен');
             const sparkDuration = 500;
             
             const animateSpark = () => {
+                if (!window.pixiAnimUtils.isValid(spark)) return;
+
                 const elapsed = Date.now() - sparkStart;
                 const progress = Math.min(elapsed / sparkDuration, 1);
-                
+
                 spark.x += vx;
                 spark.y += vy;
                 spark.alpha = 1 - progress;
-                
+
                 if (progress < 1 && spark.parent) {
                     requestAnimationFrame(animateSpark);
                 } else {

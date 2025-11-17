@@ -75,7 +75,7 @@ console.log('✅ poisoned_blade.js загружен');
             const startTime = Date.now();
             
             const animate = () => {
-                if (!bladeSprite.parent) return;
+                if (!window.pixiAnimUtils.isValid(bladeSprite)) return;
                 
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
@@ -155,7 +155,7 @@ console.log('✅ poisoned_blade.js загружен');
             const startTime = Date.now();
             
             const animate = () => {
-                if (!blade.parent) return;
+                if (!window.pixiAnimUtils.isValid(blade)) return;
                 
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
@@ -255,10 +255,12 @@ console.log('✅ poisoned_blade.js загружен');
         const splashDuration = 300;
         
         const animateSplash = () => {
+            if (!window.pixiAnimUtils.isValid(splash)) return;
+
             const progress = Math.min((Date.now() - splashStart) / splashDuration, 1);
             splash.scale.set(0.1 + progress * 1.2);
             splash.alpha = 0.8 * (1 - progress);
-            
+
             if (progress < 1 && splash.parent) {
                 requestAnimationFrame(animateSplash);
             } else {
@@ -299,9 +301,11 @@ console.log('✅ poisoned_blade.js загружен');
             const duration = 400;
             
             const animateDroplet = () => {
+                if (!window.pixiAnimUtils.isValid(droplet)) return;
+
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                
+
                 droplet.x += vx * (1 - progress);
                 droplet.y += vy * (1 - progress) + progress * 4; // Падение
                 droplet.alpha = 0.9 * (1 - progress);
@@ -339,8 +343,10 @@ console.log('✅ poisoned_blade.js загружен');
             const vy = -1 - Math.random() * 1.5;
             
             const animateSmoke = () => {
+                if (!window.pixiAnimUtils.isValid(smoke)) return;
+
                 const progress = Math.min((Date.now() - startTime) / duration, 1);
-                
+
                 smoke.x += vx;
                 smoke.y += vy;
                 smoke.scale.set(0.1 + progress * 1);

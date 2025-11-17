@@ -44,7 +44,7 @@ console.log('✅ foul-cloud.js загружен');
     	    let isActive = true;
     	    
     	    const animate = () => {
-    	        if (!isActive || !cloudContainer.parent) return;
+    	        if (!isActive || !window.pixiAnimUtils.isValid(cloudContainer)) return;
     	        
     	        const elapsed = Date.now() - startTime;
     	        if (elapsed < 0) {
@@ -214,7 +214,7 @@ console.log('✅ foul-cloud.js загружен');
         
         // Анимация частиц
         const animateParticles = () => {
-            if (!particleContainer.parent) return;
+            if (!window.pixiAnimUtils.isValid(particleContainer)) return;
             
             particles.forEach(particle => {
                 // Движение

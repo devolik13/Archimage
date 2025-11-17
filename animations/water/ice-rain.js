@@ -107,16 +107,18 @@ console.log('✅ ice-rain.js загружен');
             const startTime = Date.now();
             
             const animate = () => {
+                if (!window.pixiAnimUtils.isValid(drop)) return;
+
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / fallDuration, 1);
-                
+
                 // Ускоренное падение
                 const fallProgress = 1 - Math.pow(1 - progress, 2);
                 drop.y = startY + (targetY - startY) * fallProgress;
-                
+
                 // Лёгкое покачивание
                 drop.x += Math.sin(progress * Math.PI * 2) * 0.5;
-                
+
                 if (progress < 1) {
                     requestAnimationFrame(animate);
                 } else {
@@ -144,10 +146,12 @@ console.log('✅ ice-rain.js загружен');
             
             const startTime = Date.now();
             const animate = () => {
+                if (!window.pixiAnimUtils.isValid(splash)) return;
+
                 const progress = Math.min((Date.now() - startTime) / 300, 1);
                 splash.scale.set(1 + progress * 2);
                 splash.alpha = 0.6 * (1 - progress);
-                
+
                 if (progress < 1) {
                     requestAnimationFrame(animate);
                 } else {
@@ -170,9 +174,11 @@ console.log('✅ ice-rain.js загружен');
             setTimeout(() => {
                 const startTime = Date.now();
                 const animate = () => {
+                    if (!window.pixiAnimUtils.isValid(frost)) return;
+
                     const progress = Math.min((Date.now() - startTime) / 1000, 1);
                     frost.alpha = 0.3 * (1 - progress);
-                    
+
                     if (progress < 1) {
                         requestAnimationFrame(animate);
                     } else {
@@ -207,9 +213,11 @@ console.log('✅ ice-rain.js загружен');
                                 // Падение
                                 const startTime = Date.now();
                                 const animate = () => {
+                                    if (!window.pixiAnimUtils.isValid(drop)) return;
+
                                     const progress = Math.min((Date.now() - startTime) / 600, 1);
                                     drop.y = cell.y - 50 + (cell.height + 50) * progress;
-                                    
+
                                     if (progress < 1) {
                                         requestAnimationFrame(animate);
                                     } else {

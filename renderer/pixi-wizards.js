@@ -284,6 +284,7 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 sprite.animationSpeed = config.animationSpeed || 0.15;
                 sprite.anchor.set(0.5);
                 sprite.scale.set(scale * (config.scale || 0.5));
+                sprite.loop = true; // Зацикливаем idle анимацию
                 sprite.play();
                 
                 // Зеркалим для игрока (смотрит влево)
@@ -321,8 +322,9 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 sprite.animationSpeed = 0.1;
                 sprite.anchor.set(0.5);
                 sprite.scale.set(scale * (config?.scale || 0.15));
+                sprite.loop = true; // Зацикливаем idle анимацию
                 sprite.play();
-                
+
                 if (type === 'player') {
                     sprite.scale.x *= -1;
                 }
@@ -465,19 +467,17 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                     try {
                         sprite.stop();
                         sprite.onComplete = null;
-                        
+
                         // Возвращаем idle анимацию
                         if (container.idleFrames && container.idleFrames.length > 0) {
                             sprite.textures = container.idleFrames;
                             sprite.animationSpeed = originalSpeed;
                             sprite.loop = true;
-                            sprite.gotoAndStop(0);
-                            
-                            safeSetTimeout(() => {
-                                if (isSpriteValid(sprite)) {
-                                    sprite.play();
-                                }
-                            }, 50);
+
+                            // ИСПРАВЛЕНО: Сразу запускаем анимацию без задержки
+                            sprite.gotoAndPlay(0);
+
+                            console.log('✅ Маг вернулся к idle анимации');
                         }
                     } catch (err) {
                         console.error('Ошибка при возврате к idle:', err);
@@ -585,16 +585,20 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         } else {
             // Простая анимация исчезновения для fallback
             console.log('⚠️ Используем fade out для смерти');
-            
+
             // Делаем полупрозрачным вместо полного исчезновения
             let alpha = 1;
             const fadeInterval = setInterval(() => {
-                alpha -= 0.05;
-                
-                if (isSpriteValid(sprite)) {
-                    sprite.alpha = Math.max(0.3, alpha); // Минимум 0.3 вместо 0
+                // ИСПРАВЛЕНО: Останавливаем интервал если спрайт уничтожен
+                if (!isSpriteValid(sprite)) {
+                    clearInterval(fadeInterval);
+                    if (callback) callback();
+                    return;
                 }
-                
+
+                alpha -= 0.05;
+                sprite.alpha = Math.max(0.3, alpha); // Минимум 0.3 вместо 0
+
                 if (alpha <= 0.3) {
                     clearInterval(fadeInterval);
                     // НЕ скрываем спрайт
@@ -698,22 +702,27 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
     // Обновление HP бара
     function updateWizardHP(key, hp, maxHp) {
         const container = wizardSprites[key];
-        
+
         if (!container || !container.hpBarFill) {
             return;
         }
-        
+
+        // ИСПРАВЛЕНО: Проверяем что HP бар не уничтожен
+        if (!window.pixiAnimUtils || !window.pixiAnimUtils.isValid(container.hpBarFill)) {
+            return;
+        }
+
         const hpPercent = Math.max(0, Math.min(1, hp / maxHp));
         container.hpBarFill.clear();
-        
+
         if (hp > 0) {
             const color = hpPercent > 0.5 ? 0x4ade80 : hpPercent > 0.25 ? 0xfbbf24 : 0xef4444;
             container.hpBarFill.beginFill(color);
             container.hpBarFill.drawRect(-20, 0, 40 * hpPercent, 5);
             container.hpBarFill.endFill();
         }
-        
-        if (container.hpBar) {
+
+        if (container.hpBar && window.pixiAnimUtils.isValid(container.hpBar)) {
             container.hpBar.visible = hp > 0;
         }
     }
@@ -781,6 +790,201 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         console.log('✅ Очистка магов завершена');
     }
     
+    // Анимация каста для отдельного спрайта (для демо-боя)
+    function playCastAnimation(sprite) {
+        if (!sprite || !sprite.userData) {
+            console.warn('⚠️ Нет данных спрайта для анимации каста');
+            return;
+        }
+
+        const { castFrames, idleFrames } = sprite.userData;
+
+        if (!castFrames || castFrames.length === 0) {
+            console.warn('⚠️ Нет кадров каста');
+            return;
+        }
+
+        const originalSpeed = sprite.animationSpeed;
+
+        sprite.stop();
+        sprite.textures = castFrames;
+        sprite.animationSpeed = 0.15;
+        sprite.loop = false;
+        sprite.gotoAndPlay(0);
+
+        sprite.onComplete = () => {
+            // Возврат к idle
+            sprite.stop();
+            sprite.textures = idleFrames;
+            sprite.animationSpeed = originalSpeed;
+            sprite.loop = true;
+            sprite.gotoAndPlay(0);
+            sprite.onComplete = null;
+        };
+    }
+
+    // Анимация смерти для отдельного спрайта (для демо-боя)
+    function playDeathAnimation(sprite, callback) {
+        if (!sprite || !sprite.userData) {
+            console.warn('⚠️ Нет данных спрайта для анимации смерти');
+            if (callback) callback();
+            return;
+        }
+
+        const { deathFrames } = sprite.userData;
+
+        if (!deathFrames || deathFrames.length === 0) {
+            // Fallback - затемнение
+            let alpha = 1;
+            const fadeInterval = setInterval(() => {
+                if (!window.pixiAnimUtils.isValid(sprite)) {
+                    clearInterval(fadeInterval);
+                    if (callback) callback();
+                    return;
+                }
+
+                alpha -= 0.05;
+                sprite.alpha = Math.max(0.3, alpha);
+
+                if (alpha <= 0.3) {
+                    clearInterval(fadeInterval);
+                    if (callback) callback();
+                }
+            }, 50);
+            return;
+        }
+
+        sprite.stop();
+        sprite.textures = deathFrames;
+        sprite.animationSpeed = 0.15;
+        sprite.loop = false;
+        sprite.gotoAndPlay(0);
+
+        sprite.onComplete = () => {
+            sprite.gotoAndStop(sprite.textures.length - 1);
+            if (callback) callback();
+        };
+    }
+
+    // Обновление HP для отдельного спрайта (для демо-боя)
+    function updateSpriteHP(wizard, hp, maxHp) {
+        if (!wizard || !wizard.hpBarFill) {
+            console.warn('⚠️ Нет HP бара для обновления');
+            return;
+        }
+
+        const hpPercent = Math.max(0, Math.min(1, hp / maxHp));
+        wizard.hpBarFill.clear();
+
+        if (hp > 0) {
+            const color = hpPercent > 0.5 ? 0x44ff44 : (hpPercent > 0.25 ? 0xffaa00 : 0xff4444);
+            wizard.hpBarFill.beginFill(color);
+            wizard.hpBarFill.drawRect(-25, 0, 50 * hpPercent, 5);
+            wizard.hpBarFill.endFill();
+        }
+
+        if (wizard.hpBar) {
+            wizard.hpBar.visible = hp > 0;
+        }
+    }
+
+    // Функция создания мага для демо-боя (упрощённая)
+    async function createDemoWizard(wizardData, col, row, type) {
+        // Инициализируем если нужно
+        if (!gridCells || !unitsContainer) {
+            init();
+        }
+
+        if (!gridCells || !unitsContainer) {
+            console.error('❌ Не могу создать мага - контейнеры не готовы');
+            return null;
+        }
+
+        const cellData = gridCells?.[col]?.[row];
+        if (!cellData) {
+            console.error(`❌ Ячейка ${col}_${row} не найдена`);
+            return null;
+        }
+
+        const faction = wizardData.faction || 'fire';
+        const config = FACTION_SPRITES_CONFIG[faction];
+
+        console.log(`🧙 Создаём демо-мага фракции ${faction} на ${col}_${row}`);
+
+        const container = new PIXI.Container();
+        const scale = cellData.cellScale || 1;
+
+        let sprite;
+
+        // Загружаем текстуры фракции
+        const textures = await loadFactionTextures(faction);
+
+        if (textures && textures.idle && textures.idle.length > 0) {
+            sprite = new PIXI.AnimatedSprite(textures.idle);
+            sprite.animationSpeed = config?.animationSpeed || 0.15;
+            sprite.anchor.set(0.5);
+            sprite.scale.set(scale * (config?.scale || 0.5));
+            sprite.loop = true;
+            sprite.play();
+
+            // Зеркалим для игрока (смотрит влево)
+            if (type === 'player') {
+                sprite.scale.x *= -1;
+            }
+
+            // Дополнительное отражение для фракции fire
+            if (faction === 'fire') {
+                sprite.scale.x *= -1;
+            }
+
+            sprite.x = cellData.x + cellData.width / 2;
+            sprite.y = cellData.y + cellData.height / 2;
+
+            // Сохраняем текстуры для анимаций
+            sprite.userData = {
+                idleFrames: textures.idle,
+                castFrames: textures.cast,
+                deathFrames: textures.death,
+                faction: faction
+            };
+
+            // Создаём HP бар для мага
+            const hpBarContainer = new PIXI.Container();
+
+            // Фон HP бара
+            const hpBarBg = new PIXI.Graphics();
+            hpBarBg.beginFill(0x000000, 0.7);
+            hpBarBg.drawRect(-25, 0, 50, 5);
+            hpBarBg.endFill();
+
+            // Заполнение HP бара
+            const hpBarFill = new PIXI.Graphics();
+            hpBarFill.beginFill(0x44ff44);
+            hpBarFill.drawRect(-25, 0, 50, 5);
+            hpBarFill.endFill();
+
+            hpBarContainer.addChild(hpBarBg);
+            hpBarContainer.addChild(hpBarFill);
+            hpBarContainer.x = cellData.x + cellData.width / 2;
+            hpBarContainer.y = cellData.y + cellData.height * 0.2; // Над головой
+
+            container.addChild(sprite);
+            unitsContainer.addChild(container);
+            unitsContainer.addChild(hpBarContainer); // HP бар отдельно
+
+            return {
+                sprite,
+                container,
+                data: wizardData,
+                hpBar: hpBarContainer,
+                hpBarFill: hpBarFill
+            };
+        } else {
+            console.error(`❌ Не удалось загрузить текстуры для ${faction}`);
+            return null;
+        }
+    }
+
     // Экспорт с поддержкой старого API
     window.pixiWizards = {
         init: init,
@@ -790,8 +994,13 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         clearAll: () => clearWizards(true), // Полная очистка
         clearPartial: () => clearWizards(false), // Частичная очистка
         playAttack: playWizardAttackAnimation,
-        playDeath: playWizardDeathAnimation
+        playDeath: playWizardDeathAnimation,
+        // Для демо-боя
+        createWizard: createDemoWizard,
+        playCastAnimation: playCastAnimation,
+        playDeathAnimation: playDeathAnimation,
+        updateWizardHP: updateSpriteHP
     };
-    
+
     console.log('✅ pixi-wizards готов (поддержка фракций)');
 })();

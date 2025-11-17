@@ -153,8 +153,8 @@ console.log('✅ wind-wall.js загружен');
             // Анимация волн
             let time = 0;
             const animate = () => {
-                if (!container.parent) return;
-                
+                if (!window.pixiAnimUtils.isValid(windLines) || !container.parent) return;
+
                 time += 0.1;
                 windLines.clear();
                 
@@ -245,12 +245,14 @@ console.log('✅ wind-wall.js загружен');
         const initialScale = scale;
         
         const animate = () => {
+            if (!window.pixiAnimUtils.isValid(deflectEffect)) return;
+
             const elapsed = Date.now() - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            
+
             deflectEffect.scale.set(initialScale * (1 + progress * 2));
             deflectEffect.alpha = 1 - progress;
-            
+
             if (progress < 1 && deflectEffect.parent) {
                 requestAnimationFrame(animate);
             } else {
@@ -289,14 +291,16 @@ console.log('✅ wind-wall.js загружен');
             const duration = 500;
             
             const animateParticle = () => {
+                if (!window.pixiAnimUtils.isValid(particle)) return;
+
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                
+
                 particle.x += vx;
                 particle.y += vy - progress; // Немного вверх
                 particle.alpha = 1 - progress;
                 particle.scale.set((1 - progress) * scale);
-                
+
                 if (progress < 1 && particle.parent) {
                     requestAnimationFrame(animateParticle);
                 } else {

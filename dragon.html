@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Sprite Animation Tester</title>
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@7/dist/pixi.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        h1 {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        #canvas-container {
+            border: 2px solid #4ecdc4;
+            display: inline-block;
+            margin: 20px 0;
+            box-shadow: 0 0 30px rgba(78, 205, 196, 0.3);
+            background: #0f1419;
+        }
+        .controls-panel {
+            background: rgba(30, 30, 50, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .file-upload {
+            background: rgba(40, 40, 60, 0.9);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 2px dashed #4ecdc4;
+        }
+        .config-section {
+            background: rgba(40, 40, 60, 0.9);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .config-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .config-item label {
+            font-size: 12px;
+            color: #4ecdc4;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .config-item input[type="number"] {
+            background: rgba(20, 20, 30, 0.9);
+            border: 1px solid #4ecdc4;
+            color: #fff;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            background: linear-gradient(145deg, #4ecdc4, #44a3a0);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(78, 205, 196, 0.3);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(78, 205, 196, 0.5);
+        }
+        button:disabled {
+            background: #444;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        button.danger {
+            background: linear-gradient(145deg, #ff6b6b, #ff5252);
+        }
+        button.secondary {
+            background: linear-gradient(145deg, #95afc0, #778899);
+        }
+        .file-input-group {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(20, 20, 30, 0.5);
+            border-radius: 5px;
+        }
+        .file-input-group label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+        }
+        input[type="file"] {
+            background: rgba(60, 60, 80, 0.5);
+            color: #fff;
+            padding: 5px;
+            border-radius: 3px;
+            border: 1px solid #4ecdc4;
+        }
+        .status {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.loaded {
+            background: #4ecdc4;
+            color: #000;
+        }
+        .status.pending {
+            background: #666;
+        }
+        .log {
+            background: rgba(10, 10, 20, 0.9);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            border: 1px solid #4ecdc4;
+        }
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px 5px;
+        }
+        .log-success { color: #4ecdc4; }
+        .log-error { color: #ff6b6b; }
+        .log-info { color: #95afc0; }
+        .log-warning { color: #ffd93d; }
+        
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .range-container {
+            margin: 15px 0;
+        }
+        .range-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .preset-btn {
+            padding: 8px 15px;
+            font-size: 14px;
+            background: rgba(78, 205, 196, 0.2);
+            border: 1px solid #4ecdc4;
+        }
+        .preset-btn:hover {
+            background: rgba(78, 205, 196, 0.4);
+        }
+        .info-box {
+            background: rgba(78, 205, 196, 0.1);
+            border-left: 4px solid #4ecdc4;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        #current-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .info-item {
+            background: rgba(20, 20, 30, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .info-item .label {
+            font-size: 10px;
+            color: #95afc0;
+            text-transform: uppercase;
+        }
+        .info-item .value {
+            font-size: 18px;
+            color: #4ecdc4;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h1>🎮 Universal Sprite Animation Tester</h1>
+        
+        <div class="config-section">
+            <h3>⚙️ Sprite Configuration</h3>
+            <div class="config-grid">
+                <div class="config-item">
+                    <label>Frame Width (px)</label>
+                    <input type="number" id="frame-width" value="256" min="1">
+                </div>
+                <div class="config-item">
+                    <label>Frame Height (px)</label>
+                    <input type="number" id="frame-height" value="256" min="1">
+                </div>
+                <div class="config-item">
+                    <label>Frame Count</label>
+                    <input type="number" id="frame-count" value="8" min="1">
+                </div>
+                <div class="config-item">
+                    <label>Sprite Orientation</label>
+                    <select id="orientation" style="background: rgba(20, 20, 30, 0.9); border: 1px solid #4ecdc4; color: #fff; padding: 8px; border-radius: 5px;">
+                        <option value="horizontal">Horizontal</option>
+                        <option value="vertical">Vertical</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="preset-buttons">
+                <button class="preset-btn" onclick="setPreset(256, 256, 8, 'horizontal')">🐉 Dragon/Wizard (2048×256)</button>
+                <button class="preset-btn" onclick="setPreset(128, 128, 6, 'horizontal')">🏃 Small Character (768×128)</button>
+                <button class="preset-btn" onclick="setPreset(512, 512, 4, 'horizontal')">🗿 Large Boss (2048×512)</button>
+                <button class="preset-btn" onclick="setPreset(256, 256, 8, 'vertical')">📱 Mobile Vertical (256×2048)</button>
+                <button class="preset-btn" onclick="setPreset(64, 64, 12, 'horizontal')">🐜 Tiny Sprite (768×64)</button>
+            </div>
+        </div>
+
+        <div class="file-upload">
+            <h3>📁 Load Sprite Sheets</h3>
+            <div class="file-input-group">
+                <label>🔄 Idle/Default:</label>
+                <input type="file" id="idle-file" accept="image/*">
+                <span class="status pending" id="idle-status">Not loaded</span>
+            </div>
+            <div class="file-input-group">
+                <label>⚔️ Action/Attack:</label>
+                <input type="file" id="cast-file" accept="image/*">
+                <span class="status pending" id="cast-status">Not loaded</span>
+            </div>
+            <div class="file-input-group">
+                <label>💀 Death/Special:</label>
+                <input type="file" id="death-file" accept="image/*">
+                <span class="status pending" id="death-status">Not loaded</span>
+            </div>
+            <br>
+            <button onclick="initSprites()" id="init-btn" disabled>
+                🚀 Initialize Sprites
+            </button>
+            <button onclick="clearAll()" class="danger">
+                🗑️ Clear All
+            </button>
+            <button onclick="useTestSprites()" class="secondary">
+                🎨 Generate Test Sprites
+            </button>
+        </div>
+
+        <div id="canvas-container"></div>
+        
+        <div class="controls-panel">
+            <h3>🎮 Animation Controls</h3>
+            <div style="margin-bottom: 20px;">
+                <button onclick="playAnimation('idle')" id="idle-btn" disabled>▶️ Play Idle</button>
+                <button onclick="playAnimation('cast')" id="cast-btn" disabled>⚔️ Play Action</button>
+                <button onclick="playAnimation('death')" id="death-btn" disabled>💀 Play Special</button>
+                <button onclick="togglePause()" id="pause-btn" disabled>⏸️ Pause/Resume</button>
+                <button onclick="resetAnimation()" id="reset-btn" disabled>🔄 Reset</button>
+            </div>
+            
+            <div class="range-container">
+                <div class="range-label">
+                    <span>📏 Scale</span>
+                    <span id="scale-value">1.0</span>
+                </div>
+                <input type="range" id="scale-slider" min="0.1" max="3" step="0.1" value="1" onchange="updateScale(this.value)" disabled>
+            </div>
+            
+            <div class="range-container">
+                <div class="range-label">
+                    <span>⚡ Animation Speed</span>
+                    <span id="speed-value">0.15</span>
+                </div>
+                <input type="range" id="speed-slider" min="0.01" max="0.5" step="0.01" value="0.15" onchange="updateSpeed(this.value)" disabled>
+            </div>
+            
+            <div class="range-container">
+                <div class="range-label">
+                    <span>🎯 Opacity</span>
+                    <span id="opacity-value">1.0</span>
+                </div>
+                <input type="range" id="opacity-slider" min="0" max="1" step="0.1" value="1" onchange="updateOpacity(this.value)" disabled>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>📊 Current Sprite Info</h3>
+            <div id="current-info">
+                <div class="info-item">
+                    <div class="label">Current Animation</div>
+                    <div class="value" id="current-anim">None</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Frame</div>
+                    <div class="value" id="current-frame">0/0</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Scale</div>
+                    <div class="value" id="current-scale">1.0</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">FPS</div>
+                    <div class="value" id="current-fps">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        let app;
+        let sprites = {
+            idle: null,
+            cast: null,
+            death: null,
+            currentSprite: null,
+            container: null,
+            targetScale: 1.0
+        };
+        
+        let loadedTextures = {
+            idle: null,
+            cast: null,
+            death: null
+        };
+        
+        let config = {
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            orientation: 'horizontal'
+        };
+        
+        let animationNames = {
+            idle: 'Idle/Default',
+            cast: 'Action/Attack',
+            death: 'Special/Death'
+        };
+
+        // File upload handlers
+        document.getElementById('idle-file').addEventListener('change', (e) => loadTextureFile(e, 'idle'));
+        document.getElementById('cast-file').addEventListener('change', (e) => loadTextureFile(e, 'cast'));
+        document.getElementById('death-file').addEventListener('change', (e) => loadTextureFile(e, 'death'));
+
+        // Config change handlers
+        document.getElementById('frame-width').addEventListener('change', updateConfig);
+        document.getElementById('frame-height').addEventListener('change', updateConfig);
+        document.getElementById('frame-count').addEventListener('change', updateConfig);
+        document.getElementById('orientation').addEventListener('change', updateConfig);
+
+        function updateConfig() {
+            config.frameWidth = parseInt(document.getElementById('frame-width').value);
+            config.frameHeight = parseInt(document.getElementById('frame-height').value);
+            config.frameCount = parseInt(document.getElementById('frame-count').value);
+            config.orientation = document.getElementById('orientation').value;
+            
+            log(`Config updated: ${config.frameWidth}×${config.frameHeight}, ${config.frameCount} frames, ${config.orientation}`, 'info');
+        }
+
+        function setPreset(width, height, count, orientation) {
+            document.getElementById('frame-width').value = width;
+            document.getElementById('frame-height').value = height;
+            document.getElementById('frame-count').value = count;
+            document.getElementById('orientation').value = orientation;
+            updateConfig();
+            
+            const totalWidth = orientation === 'horizontal' ? width * count : width;
+            const totalHeight = orientation === 'horizontal' ? height : height * count;
+            log(`Preset applied: ${totalWidth}×${totalHeight} sprite sheet`, 'success');
+        }
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            const typeClass = `log-${type}`;
+            logDiv.innerHTML += `<div class="log-entry ${typeClass}">[${time}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        async function loadTextureFile(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            log(`Loading ${type} texture: ${file.name}`, 'info');
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const texture = await PIXI.Texture.from(e.target.result);
+                    loadedTextures[type] = texture;
+                    
+                    document.getElementById(`${type}-status`).className = 'status loaded';
+                    document.getElementById(`${type}-status`).textContent = '✓ Loaded';
+                    
+                    const expectedWidth = config.orientation === 'horizontal' ? 
+                        config.frameWidth * config.frameCount : config.frameWidth;
+                    const expectedHeight = config.orientation === 'horizontal' ? 
+                        config.frameHeight : config.frameHeight * config.frameCount;
+                    
+                    log(`${type} texture loaded: ${texture.width}×${texture.height} (expected: ${expectedWidth}×${expectedHeight})`, 'success');
+                    
+                    if (texture.width !== expectedWidth || texture.height !== expectedHeight) {
+                        log(`⚠️ Size mismatch! Check your configuration`, 'warning');
+                    }
+                    
+                    // Check if all textures are loaded
+                    if (loadedTextures.idle || loadedTextures.cast || loadedTextures.death) {
+                        document.getElementById('init-btn').disabled = false;
+                        if (loadedTextures.idle && loadedTextures.cast && loadedTextures.death) {
+                            log(`All textures loaded! Ready to initialize`, 'success');
+                        }
+                    }
+                } catch (error) {
+                    log(`Failed to load ${type}: ${error.message}`, 'error');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function initSprites() {
+            log('Initializing PIXI application...', 'info');
+            
+            if (app) {
+                app.destroy(true);
+            }
+            
+            app = new PIXI.Application({
+                width: 800,
+                height: 600,
+                backgroundColor: 0x1a1a2e,
+                antialias: true
+            });
+            
+            document.getElementById('canvas-container').innerHTML = '';
+            document.getElementById('canvas-container').appendChild(app.view);
+            
+            sprites.container = new PIXI.Container();
+            sprites.container.x = app.screen.width / 2;
+            sprites.container.y = app.screen.height / 2;
+            app.stage.addChild(sprites.container);
+            
+            // Create frames from loaded textures
+            ['idle', 'cast', 'death'].forEach(type => {
+                if (!loadedTextures[type]) return;
+                
+                const frames = [];
+                for (let i = 0; i < config.frameCount; i++) {
+                    const rect = config.orientation === 'horizontal' ?
+                        new PIXI.Rectangle(
+                            i * config.frameWidth, 0,
+                            config.frameWidth, config.frameHeight
+                        ) :
+                        new PIXI.Rectangle(
+                            0, i * config.frameHeight,
+                            config.frameWidth, config.frameHeight
+                        );
+                    
+                    frames.push(new PIXI.Texture(loadedTextures[type].baseTexture, rect));
+                }
+                
+                sprites[type] = new PIXI.AnimatedSprite(frames);
+                sprites[type].animationSpeed = 0.15;
+                sprites[type].anchor.set(0.5);
+                sprites[type].loop = type === 'idle';
+                sprites[type].visible = false;
+                
+                sprites[type].scale.set(sprites.targetScale);
+                sprites.container.addChild(sprites[type]);
+                
+                log(`${type} sprite created with ${frames.length} frames`, 'success');
+            });
+            
+            // Start with first available sprite
+            if (sprites.idle) {
+                sprites.idle.visible = true;
+                sprites.idle.play();
+                sprites.currentSprite = sprites.idle;
+                updateInfo('idle');
+            }
+            
+            log('Sprites initialized successfully!', 'success');
+            enableControls();
+            
+            // Start FPS counter
+            startFPSCounter();
+        }
+
+        function useTestSprites() {
+            log('Generating test sprites...', 'info');
+            
+            if (app) app.destroy(true);
+            
+            app = new PIXI.Application({
+                width: 800,
+                height: 600,
+                backgroundColor: 0x1a1a2e,
+                antialias: true
+            });
+            
+            document.getElementById('canvas-container').innerHTML = '';
+            document.getElementById('canvas-container').appendChild(app.view);
+            
+            sprites.container = new PIXI.Container();
+            sprites.container.x = app.screen.width / 2;
+            sprites.container.y = app.screen.height / 2;
+            app.stage.addChild(sprites.container);
+            
+            const createTestFrames = (color, label) => {
+                const frames = [];
+                for (let i = 0; i < config.frameCount; i++) {
+                    const graphics = new PIXI.Graphics();
+                    graphics.beginFill(color, 0.8);
+                    graphics.drawRect(-config.frameWidth/2, -config.frameHeight/2, config.frameWidth, config.frameHeight);
+                    graphics.endFill();
+                    
+                    const text = new PIXI.Text(`${label}\nFrame ${i + 1}`, {
+                        fontSize: Math.min(config.frameWidth, config.frameHeight) / 8,
+                        fill: 0xffffff,
+                        align: 'center'
+                    });
+                    text.anchor.set(0.5);
+                    graphics.addChild(text);
+                    
+                    frames.push(app.renderer.generateTexture(graphics));
+                }
+                return frames;
+            };
+            
+            sprites.idle = new PIXI.AnimatedSprite(createTestFrames(0x4ecdc4, 'IDLE'));
+            sprites.cast = new PIXI.AnimatedSprite(createTestFrames(0xff6b6b, 'ACTION'));
+            sprites.death = new PIXI.AnimatedSprite(createTestFrames(0xffd93d, 'SPECIAL'));
+            
+            ['idle', 'cast', 'death'].forEach(type => {
+                sprites[type].animationSpeed = 0.15;
+                sprites[type].anchor.set(0.5);
+                sprites[type].loop = type === 'idle';
+                sprites[type].visible = false;
+                sprites[type].scale.set(sprites.targetScale);
+                sprites.container.addChild(sprites[type]);
+            });
+            
+            sprites.idle.visible = true;
+            sprites.idle.play();
+            sprites.currentSprite = sprites.idle;
+            
+            log('Test sprites created!', 'success');
+            updateInfo('idle');
+            enableControls();
+            startFPSCounter();
+        }
+
+        function enableControls() {
+            document.getElementById('idle-btn').disabled = false;
+            document.getElementById('cast-btn').disabled = false;
+            document.getElementById('death-btn').disabled = false;
+            document.getElementById('pause-btn').disabled = false;
+            document.getElementById('reset-btn').disabled = false;
+            document.getElementById('scale-slider').disabled = false;
+            document.getElementById('speed-slider').disabled = false;
+            document.getElementById('opacity-slider').disabled = false;
+        }
+
+        function hideAllSprites() {
+            ['idle', 'cast', 'death'].forEach(type => {
+                if (sprites[type]) {
+                    sprites[type].visible = false;
+                    sprites[type].stop();
+                }
+            });
+        }
+
+        function playAnimation(type) {
+            if (!sprites[type]) {
+                log(`${type} sprite not loaded`, 'error');
+                return;
+            }
+            
+            log(`Playing ${animationNames[type]} animation`, 'info');
+            hideAllSprites();
+            
+            sprites[type].scale.set(sprites.targetScale);
+            sprites[type].visible = true;
+            sprites[type].gotoAndPlay(0);
+            sprites.currentSprite = sprites[type];
+            
+            updateInfo(type);
+            
+            if (type === 'cast') {
+                sprites.cast.onComplete = () => {
+                    log('Action complete, returning to idle', 'info');
+                    if (sprites.idle) {
+                        playAnimation('idle');
+                    }
+                };
+            } else if (type === 'death') {
+                sprites.death.onComplete = () => {
+                    log('Special animation complete', 'info');
+                    sprites.death.gotoAndStop(sprites.death.totalFrames - 1);
+                };
+            }
+        }
+
+        function togglePause() {
+            if (!sprites.currentSprite) return;
+            
+            if (sprites.currentSprite.playing) {
+                sprites.currentSprite.stop();
+                log('Animation paused', 'info');
+            } else {
+                sprites.currentSprite.play();
+                log('Animation resumed', 'info');
+            }
+        }
+
+        function resetAnimation() {
+            if (!sprites.currentSprite) return;
+            sprites.currentSprite.gotoAndPlay(0);
+            log('Animation reset', 'info');
+        }
+
+        function clearAll() {
+            if (app) {
+                app.destroy(true);
+                app = null;
+            }
+            sprites = {
+                idle: null,
+                cast: null,
+                death: null,
+                currentSprite: null,
+                container: null,
+                targetScale: 1.0
+            };
+            loadedTextures = {
+                idle: null,
+                cast: null,
+                death: null
+            };
+            
+            ['idle', 'cast', 'death'].forEach(type => {
+                document.getElementById(`${type}-status`).className = 'status pending';
+                document.getElementById(`${type}-status`).textContent = 'Not loaded';
+                document.getElementById(`${type}-file`).value = '';
+            });
+            
+            document.getElementById('canvas-container').innerHTML = '';
+            document.getElementById('init-btn').disabled = true;
+            
+            log('All cleared', 'info');
+        }
+
+        function updateScale(value) {
+            sprites.targetScale = parseFloat(value);
+            document.getElementById('scale-value').textContent = value;
+            
+            ['idle', 'cast', 'death'].forEach(type => {
+                if (sprites[type]) sprites[type].scale.set(sprites.targetScale);
+            });
+            
+            document.getElementById('current-scale').textContent = value;
+            log(`Scale: ${value}`, 'info');
+        }
+
+        function updateSpeed(value) {
+            document.getElementById('speed-value').textContent = value;
+            
+            ['idle', 'cast', 'death'].forEach(type => {
+                if (sprites[type]) sprites[type].animationSpeed = parseFloat(value);
+            });
+            
+            log(`Speed: ${value}`, 'info');
+        }
+
+        function updateOpacity(value) {
+            document.getElementById('opacity-value').textContent = value;
+            
+            if (sprites.container) {
+                sprites.container.alpha = parseFloat(value);
+            }
+            
+            log(`Opacity: ${value}`, 'info');
+        }
+
+        function updateInfo(type) {
+            document.getElementById('current-anim').textContent = animationNames[type];
+        }
+
+        function startFPSCounter() {
+            if (!app) return;
+            
+            let lastTime = performance.now();
+            let frameCount = 0;
+            
+            app.ticker.add(() => {
+                frameCount++;
+                const currentTime = performance.now();
+                
+                if (currentTime - lastTime >= 1000) {
+                    document.getElementById('current-fps').textContent = frameCount;
+                    frameCount = 0;
+                    lastTime = currentTime;
+                }
+                
+                if (sprites.currentSprite && sprites.currentSprite.currentFrame !== undefined) {
+                    document.getElementById('current-frame').textContent = 
+                        `${sprites.currentSprite.currentFrame + 1}/${sprites.currentSprite.totalFrames}`;
+                }
+            });
+        }
+
+        // Initial log
+        log('Universal Sprite Animation Tester Ready', 'success');
+        log('Configure your sprite settings and load files to begin', 'info');
+    </script>
+</body>
+</html>

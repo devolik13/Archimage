@@ -184,6 +184,8 @@ console.log('✅ stone-spike.js загружен');
         const shakeDuration = 200;
         
         const animate = () => {
+            if (!window.pixiAnimUtils.isValid(shake)) return;
+
             const progress = (Date.now() - startTime) / shakeDuration;
             if (progress < 1) {
                 shake.x = (Math.random() - 0.5) * 4;
@@ -218,12 +220,14 @@ console.log('✅ stone-spike.js загружен');
             
             const startTime = Date.now();
             const animate = () => {
+                if (!window.pixiAnimUtils.isValid(debris)) return;
+
                 const progress = Math.min((Date.now() - startTime) / 500, 1);
                 debris.x += vx * (1 - progress);
                 debris.y += vy * (1 - progress) + progress * 4;
                 debris.alpha = 1 - progress;
                 debris.rotation += 0.2;
-                
+
                 if (progress < 1 && debris.parent) {
                     requestAnimationFrame(animate);
                 } else {

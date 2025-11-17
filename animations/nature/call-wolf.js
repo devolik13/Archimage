@@ -124,6 +124,8 @@ console.log('✅ call-wolf.js загружен');
             effectsContainer.addChild(wolf);
             
             const animate = () => {
+                if (!window.pixiAnimUtils.isValid(wolf)) return;
+
                 wolf.rotation = Math.sin(Date.now() * 0.001) * 0.05;
                 if (wolf.parent) requestAnimationFrame(animate);
             };
@@ -147,10 +149,12 @@ console.log('✅ call-wolf.js загружен');
             const duration = 500;
             
             const animate = () => {
+                if (!window.pixiAnimUtils.isValid(circle)) return;
+
                 const progress = Math.min((Date.now() - startTime) / duration, 1);
                 circle.scale.set(1 + progress * 3);
                 circle.alpha = 0.8 * (1 - progress);
-                
+
                 if (progress < 1) {
                     requestAnimationFrame(animate);
                 } else {
@@ -175,10 +179,12 @@ console.log('✅ call-wolf.js загружен');
                 const vy = Math.sin(angle) * speed;
                 
                 const animateSpark = () => {
+                    if (!window.pixiAnimUtils.isValid(spark)) return;
+
                     spark.x += vx;
                     spark.y += vy;
                     spark.alpha -= 0.02;
-                    
+
                     if (spark.alpha > 0 && spark.parent) {
                         requestAnimationFrame(animateSpark);
                     } else {
@@ -205,11 +211,13 @@ console.log('✅ call-wolf.js загружен');
                     const duration = 800;
                     
                     const animate = () => {
+                        if (!window.pixiAnimUtils.isValid(heal)) return;
+
                         const progress = Math.min((Date.now() - startTime) / duration, 1);
                         heal.scale.set(1 + progress * 2);
                         heal.alpha = 0.6 * (1 - progress);
                         heal.y -= 1;
-                        
+
                         if (progress < 1) {
                             requestAnimationFrame(animate);
                         } else {
