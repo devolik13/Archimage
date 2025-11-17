@@ -1075,6 +1075,7 @@ if (window.Telegram && window.Telegram.WebApp) {
 
 // Экспортируем функции в глобальную область
 window.initCityViewSystem = initCityViewSystem;
+window.loadBuildingImageNew = loadBuildingImageNew;
 window.buildNewBuilding = buildNewBuilding;
 window.showBuildingSelectionMenu = showBuildingSelectionMenu;
 window.closeBuildingModal = closeBuildingModal;
