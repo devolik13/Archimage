@@ -589,11 +589,9 @@ function showTimeGeneratorModal() {
     const generatorLevel = window.getBuildingLevel('time_generator');
     const maxLevel = window.getBuildingMaxLevel('time_generator');
     
-    // Расчет производства и хранилища
-    // Базовая формула: производство = 60 + (уровень - 1) * 30 мин/час
-    // Хранилище = 1440 + (уровень - 1) * 720 минут (1 день + 12 часов за уровень)
-    const production = generatorLevel > 0 ? 60 + (generatorLevel - 1) * 30 : 0;
-    const storage = generatorLevel > 0 ? 1440 + (generatorLevel - 1) * 720 : 0;
+    // Используем существующие функции вместо дублирования расчетов
+    const production = window.calculateProduction ? window.calculateProduction() : 0;
+    const storage = window.calculateMaxStorage ? window.calculateMaxStorage() : 0;
     
     // Рассчитываем следующий уровень
     const nextProduction = generatorLevel < maxLevel ? 
@@ -637,7 +635,7 @@ function showTimeGeneratorModal() {
                         ${window.formatTimeCurrency(storage)}
                     </div>
                     <div style="font-size: 11px; color: #aaa; text-align: center;">
-                        максимальная вместимость
+                        лимит офлайн накопления
                     </div>
                     ${generatorLevel < maxLevel ? `
                         <div style="font-size: 10px; color: #7289da; text-align: center; margin-top: 5px;">
@@ -645,29 +643,7 @@ function showTimeGeneratorModal() {
                         </div>
                     ` : ''}
                 </div>
-                
-                <!-- Текущий баланс -->
-                <div style="background: #3d3d5c; padding: 12px; border-radius: 8px;">
-                    <h4 style="margin: 0 0 8px 0; color: #ffa500; font-size: 14px;">💰 Баланс</h4>
-                    <div style="font-size: 20px; color: #ffa500; text-align: center; margin: 8px 0;">
-                        ${window.formatTimeCurrency(window.getTimeCurrency ? window.getTimeCurrency() : 0)}
-                    </div>
-                    <button style="
-                        width: 100%;
-                        margin-top: 8px;
-                        padding: 8px;
-                        border: none;
-                        border-radius: 6px;
-                        background: #4ade80;
-                        color: white;
-                        cursor: pointer;
-                        font-weight: bold;
-                        font-size: 11px;
-                    " onclick="if(window.collectTime) { window.collectTime(); closeCurrentModal(); showTimeGeneratorModal(); }">
-                        💰 Собрать
-                    </button>
-                </div>
-                
+
             </div>
             
             ${generatorLevel < maxLevel ? `
