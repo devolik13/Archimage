@@ -20,7 +20,7 @@ npm install
 ```bash
 npm run dev
 ```
-Откроется на http://localhost:3000 с мгновенными обновлениями при изменении кода
+Откроется на http://localhost:8000 с мгновенными обновлениями при изменении кода
 
 ### Production build:
 ```bash

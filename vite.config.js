@@ -6,7 +6,7 @@ export default defineConfig({
 
   // Настройки dev сервера
   server: {
-    port: 3000,
+    port: 8000,
     open: true,
     host: true, // Для доступа с других устройств
   },
