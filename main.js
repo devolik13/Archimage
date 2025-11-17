@@ -47,7 +47,6 @@ import './spells/logic/spells-nature.js';
 import './spells/logic/spells-poison.js';
 
 // ============ SPELLS SYSTEM ============
-import './spells/learning-system.js';
 import './spells/library_ui.js';
 
 // ============ CITY SYSTEMS ============

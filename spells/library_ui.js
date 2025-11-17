@@ -2,6 +2,7 @@
 console.log('✅ library_ui.js v6.0 - с таймерами изучения');
 
 let currentLibrarySchool = null;
+let libraryUpdateInterval = null;
 
 // ========== ГЛАВНЫЙ ЭКРАН: 6 ШКОЛ ==========
 function showLibrary() {
@@ -35,6 +36,13 @@ function showLibrary() {
 
 function showLibraryMainScreen() {
     currentLibrarySchool = null;
+
+    // Останавливаем автообновление
+    if (libraryUpdateInterval) {
+        clearInterval(libraryUpdateInterval);
+        libraryUpdateInterval = null;
+    }
+
     const libraryContainer = document.getElementById('library-fullscreen');
     if (!libraryContainer) return;
     
@@ -133,8 +141,38 @@ function openSchoolSpells(faction) {
         img.src = fallbackImage;
     };
 
-    img.onload = () => setupSpellsScreen(faction);
-    if (img.complete) setupSpellsScreen(faction);
+    img.onload = () => {
+        setupSpellsScreen(faction);
+        startLibraryAutoUpdate();
+    };
+    if (img.complete) {
+        setupSpellsScreen(faction);
+        startLibraryAutoUpdate();
+    }
+}
+
+// Запустить автообновление библиотеки (для таймеров)
+function startLibraryAutoUpdate() {
+    // Очистить предыдущий интервал
+    if (libraryUpdateInterval) {
+        clearInterval(libraryUpdateInterval);
+    }
+
+    // Обновлять каждые 2 секунды если есть активное изучение
+    libraryUpdateInterval = setInterval(() => {
+        if (currentLibrarySchool) {
+            const constructions = window.userData?.constructions || [];
+            const hasActiveSpellLearning = constructions.some(c =>
+                c.type === 'spell' &&
+                c.faction === currentLibrarySchool &&
+                c.time_remaining > 0
+            );
+
+            if (hasActiveSpellLearning) {
+                setupSpellsScreen(currentLibrarySchool);
+            }
+        }
+    }, 2000);
 }
 
 function setupSpellsScreen(faction) {
@@ -231,7 +269,7 @@ function setupSpellsScreen(faction) {
         };
         
         const [x1, y1, x2, y2] = spellZones[tierIndex];
-        const fontSize = Math.max(8, 10 * Math.min(scaleX, scaleY));
+        const fontSize = Math.max(12, 16 * Math.min(scaleX, scaleY));
         
         // Проверяем доступность:
         // - Активное (activeIndex) - всегда доступно
@@ -376,9 +414,17 @@ function setupSpellsScreen(faction) {
 }
 
 function closeLibrary() {
+    // Останавливаем автообновление
+    if (libraryUpdateInterval) {
+        clearInterval(libraryUpdateInterval);
+        libraryUpdateInterval = null;
+    }
+
+    currentLibrarySchool = null;
+
     const libraryContainer = document.getElementById('library-fullscreen');
     if (libraryContainer) libraryContainer.remove();
-    
+
     const cityView = document.getElementById('city-view');
     if (cityView) cityView.style.display = 'block';
 }
