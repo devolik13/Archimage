@@ -47,6 +47,7 @@ import './spells/logic/spells-nature.js';
 import './spells/logic/spells-poison.js';
 
 // ============ SPELLS SYSTEM ============
+import './spells/script_spells_standard.js';
 import './spells/library_ui.js';
 
 // ============ CITY SYSTEMS ============
@@ -76,31 +77,26 @@ import './wizards/blessing-tower-system.js';
 import './battle/rating-system.js';
 import './battle/opponent-selection.js';
 import './battle/leaderboard.js';
-import './battle/pvp-arena.js';
 import './battle/battle-logger.js';
 import './battle/battle-timer-manager.js';
 import './battle/battle-result-screen.js';
 import './battle/core.js';
 import './battle/spells.js';
-import './battle/damage-manager.js';
-import './battle/spell-resistances.js';
+import './battle/damage-system.js';
+import './battle/magic-resistance.js';
 import './battle/walls.js';
 import './battle/summons-manager.js';
 
-// ============ BATTLE ANIMATIONS ============
-import './battle/animations/animation-manager.js';
-import './battle/animations/projectile-system.js';
-import './battle/animations/spell-animations.js';
+// ============ RENDERER (PixiJS) ============
+import './renderer/pixi-core.js';
+import './renderer/pixi-wizards.js';
+import './renderer/pixi-dragon.js';
+import './renderer/animation-manager.js';
+import './renderer/animations-config.js';
 
-// Battle visuals (PixiJS)
-import './battle/visuals/pixi-core.js';
-import './battle/visuals/render-battlefield.js';
-import './battle/visuals/render-wizard.js';
-import './battle/visuals/render-health.js';
-import './battle/visuals/render-spellbar.js';
-
-// ============ TELEGRAM INTEGRATION ============
-import './telegram-init.js';
+// ============ ANIMATIONS ============
+import './animations/animation-utils.js';
+import './animations/faction-speech-bubble.js';
 
 // ============ CONSTRUCTION VISUAL ============
 import './construction-visual-clean.js';
