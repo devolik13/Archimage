@@ -85,32 +85,64 @@ async function showBattleField() {
 function generateEnemyFormation() {
     console.log('🤖 Генерация расстановки противника');
     window.enemyFormation = [null, null, null, null, null];
-    const playerWizardsCopy = [...window.playerWizards];
-    if (playerWizardsCopy.length > 0) {
-        for (let i = 0; i < Math.min(3, playerWizardsCopy.length); i++) {
-            if (window.playerFormation[i]) {
-                const playerWizard = playerWizardsCopy.find(w => w.id === window.playerFormation[i]);
-                if (playerWizard) {
-                    window.enemyFormation[i] = {
-                        ...playerWizard,
-                        id: `enemy_${playerWizard.id}`,
-                        name: `Тень ${playerWizard.name}`,
-                        spells: playerWizard.spells, // ВАЖНО: копируем заклинания
-                        hp: playerWizard.hp,
-                        max_hp: playerWizard.max_hp,
-                        armor: playerWizard.armor,
-                        max_armor: playerWizard.max_armor,
+    window.enemyWizards = [];
+
+    // Проверяем наличие выбранного противника из базы данных
+    if (window.selectedOpponent && window.selectedOpponent.wizards && window.selectedOpponent.formation) {
+        console.log('✅ Загрузка реального противника из БД:', window.selectedOpponent.username);
+        console.log('📦 Маги противника:', window.selectedOpponent.wizards);
+        console.log('📋 Расстановка противника:', window.selectedOpponent.formation);
+
+        const opponentWizards = window.selectedOpponent.wizards || [];
+        const opponentFormation = window.selectedOpponent.formation || [null, null, null, null, null];
+
+        // Создаем врагов на основе расстановки противника
+        opponentFormation.forEach((wizardId, position) => {
+            if (wizardId) {
+                const opponentWizard = opponentWizards.find(w => w.id === wizardId);
+                if (opponentWizard) {
+                    window.enemyFormation[position] = {
+                        ...opponentWizard,
+                        id: `enemy_${opponentWizard.id}`,
+                        original_id: opponentWizard.id, // Сохраняем оригинальный ID
+                        spells: opponentWizard.spells || [],
                         effects: {}
                     };
-                    console.log('Враг создан:', {
-                        name: window.enemyFormation[i].name,
-                        spells: window.enemyFormation[i].spells
-                    });
+                    console.log(`   Позиция ${position}: ${opponentWizard.name} (${opponentWizard.spells?.length || 0} заклинаний)`);
+                }
+            }
+        });
+
+        window.enemyWizards = window.enemyFormation.filter(w => w !== null);
+        console.log(`✅ Загружено ${window.enemyWizards.length} магов противника из БД`);
+
+    } else {
+        // FALLBACK: Создаем зеркало игрока (для тестирования)
+        console.warn('⚠️ Противник не выбран, создаём зеркало игрока');
+        const playerWizardsCopy = [...window.playerWizards];
+        if (playerWizardsCopy.length > 0) {
+            for (let i = 0; i < Math.min(3, playerWizardsCopy.length); i++) {
+                if (window.playerFormation[i]) {
+                    const playerWizard = playerWizardsCopy.find(w => w.id === window.playerFormation[i]);
+                    if (playerWizard) {
+                        window.enemyFormation[i] = {
+                            ...playerWizard,
+                            id: `enemy_${playerWizard.id}`,
+                            name: `Тень ${playerWizard.name}`,
+                            spells: playerWizard.spells,
+                            hp: playerWizard.hp,
+                            max_hp: playerWizard.max_hp,
+                            armor: playerWizard.armor,
+                            max_armor: playerWizard.max_armor,
+                            effects: {}
+                        };
+                    }
                 }
             }
         }
+        window.enemyWizards = window.enemyFormation.filter(w => w !== null);
+        console.log(`⚠️ Создано ${window.enemyWizards.length} зеркальных магов`);
     }
-    window.enemyWizards = window.enemyFormation.filter(w => w !== null);
 }
 
 // --- Очистка устаревших стен ---
@@ -828,7 +860,7 @@ function checkBattleEnd() {
         // Определяем результат и награды для сохранения
         let battleResult = 'draw';
         let rewards = { exp: 0 };
-        let opponentLevel = 1; // TODO: получить реальный уровень противника
+        let opponentLevel = window.selectedOpponent?.level || 1;
         let ratingChange = 0;
 
         if (!playerAlive && !enemyAlive) {
@@ -837,18 +869,17 @@ function checkBattleEnd() {
             battleResult = 'loss';
         } else if (!enemyAlive) {
             battleResult = 'win';
-            // TODO: посчитать полученный опыт и другие награды
         }
 
         // Рассчитываем изменение рейтинга
         if (typeof window.calculateRatingChange === 'function') {
             const playerRating = window.userData?.rating || 1000;
-            // TODO: получить реальный рейтинг противника из данных боя
-            // Пока используем случайный AI рейтинг близкий к игроку
-            const opponentRating = playerRating + Math.floor(Math.random() * 200) - 100;
+            // Используем реальный рейтинг противника из selectedOpponent
+            const opponentRating = window.selectedOpponent?.rating || playerRating;
 
             ratingChange = window.calculateRatingChange(playerRating, opponentRating, battleResult);
             console.log(`📊 Изменение рейтинга: ${playerRating} → ${playerRating + ratingChange} (${ratingChange > 0 ? '+' : ''}${ratingChange})`);
+            console.log(`   Противник: ${window.selectedOpponent?.username || 'AI'} (${opponentRating})`);
         }
 
         // Триггер события завершения боя (вызовет немедленное сохранение)

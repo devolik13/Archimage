@@ -17,7 +17,7 @@ async function getOpponentsList(playerRating, count = 4) {
         // Получаем всех игроков (включая ботов), отсортированных по рейтингу
         const { data, error } = await window.dbManager.supabase
             .from('players')
-            .select('telegram_id, username, rating, level, wins, losses, faction')
+            .select('telegram_id, username, rating, level, wins, losses, faction, wizards, spells, formation, buildings')
             .order('rating', { ascending: true });
 
         if (error) {
@@ -112,6 +112,9 @@ async function showOpponentSelection() {
     // Загружаем противников
     const opponents = await getOpponentsList(playerRating, 4);
 
+    // Сохраняем список в глобальную переменную для доступа по индексу
+    window.currentOpponentsList = opponents;
+
     // Убираем загрузку
     loadingModal.remove();
     loadingOverlay.remove();
@@ -137,7 +140,7 @@ async function showOpponentSelection() {
 
         return `
             <div class="opponent-card"
-                 onclick="selectOpponent(${opponent.telegram_id}, '${opponent.username.replace(/'/g, "\\'")}', ${opponent.rating}, ${opponent.level})">
+                 onclick="selectOpponent(${index})">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div style="flex: 1;">
                         <div style="font-weight: bold; font-size: 16px; color: white; margin-bottom: 5px;">
@@ -221,17 +224,21 @@ async function showOpponentSelection() {
 
 /**
  * Выбрать противника и начать бой
+ * @param {number} index - Индекс противника в window.currentOpponentsList
  */
-function selectOpponent(telegramId, username, rating, level) {
-    console.log(`⚔️ Выбран противник: ${username} (${rating})`);
+function selectOpponent(index) {
+    if (!window.currentOpponentsList || !window.currentOpponentsList[index]) {
+        console.error('❌ Противник не найден по индексу:', index);
+        alert('❌ Ошибка выбора противника');
+        return;
+    }
 
-    // Сохраняем данные противника
-    window.selectedOpponent = {
-        telegram_id: telegramId,
-        username: username,
-        rating: rating,
-        level: level
-    };
+    const opponent = window.currentOpponentsList[index];
+    console.log(`⚔️ Выбран противник: ${opponent.username} (${opponent.rating})`);
+    console.log('📦 Данные противника:', opponent);
+
+    // Сохраняем ВСЕ данные противника (включая wizards, spells, formation, buildings)
+    window.selectedOpponent = opponent;
 
     // Закрываем модалку выбора
     closeOpponentSelection();
