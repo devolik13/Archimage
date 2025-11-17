@@ -66,12 +66,11 @@ import './city/positions/nature-positions.js';
 import './city/positions/poison-positions.js';
 
 // ============ WIZARDS ============
-import './wizards/wizard-factory.js';
-import './wizards/wizard-detail.js';
-import './wizards/wizard-levels.js';
-import './wizards/wizard-formation.js';
-import './wizards/wizard-ui.js';
-import './wizards/wizard-blessings.js';
+import './wizards/experience-system.js';
+import './wizards/player-level-system.js';
+import './wizards/script_wizards.js';
+import './wizards/wizard-detail-screen.js';
+import './wizards/blessing-tower-system.js';
 
 // ============ BATTLE SYSTEMS ============
 import './battle/rating-system.js';
