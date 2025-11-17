@@ -73,8 +73,8 @@ class DatabaseManager {
                     username: username,
                     time_currency: 100, // Начальная валюта
                     level: 1,
-                    experience: 0,
-                    last_login: new Date().toISOString() // Время первого входа
+                    experience: 0
+                    // last_login убрано - добавится при обновлении игрока
                 }])
                 .select()
                 .single();

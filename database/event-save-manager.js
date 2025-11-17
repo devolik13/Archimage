@@ -74,6 +74,7 @@ class EventSaveManager {
                 level: window.userData.level,
                 experience: window.userData.experience,
                 faction: window.userData.faction,
+                lastLogin: window.userData.last_login, // Для офлайн накопления
                 wizards: window.userData.wizards,
                 formation: window.userData.formation,
                 spells: window.userData.spells,

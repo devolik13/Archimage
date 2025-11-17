@@ -109,7 +109,10 @@ async function initGameWithDatabase() {
         if (typeof window.initTimeCurrency === 'function') {
             window.initTimeCurrency();
         }
-        
+
+        // Обновляем last_login после расчета офлайн накопления
+        window.userData.last_login = new Date().toISOString();
+
         if (typeof window.initConstructionSystem === 'function') {
             window.initConstructionSystem();
         }
