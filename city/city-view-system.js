@@ -1075,6 +1075,7 @@ if (window.Telegram && window.Telegram.WebApp) {
 
 // Экспортируем функции в глобальную область
 window.initCityViewSystem = initCityViewSystem;
+window.initCityView = initCityViewSystem; // Алиас для обратной совместимости
 window.switchToCityView = switchToCityView;
 window.loadBuildingImageNew = loadBuildingImageNew;
 window.buildNewBuilding = buildNewBuilding;
