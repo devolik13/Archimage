@@ -305,94 +305,99 @@ window.FactionSelection = {
             background: rgba(0, 0, 0, 0.95);
             border-right: 2px solid #ffd700;
             z-index: 10000;
-            padding: 40px;
+            padding: 15px 20px;
             box-sizing: border-box;
             overflow-y: auto;
             transition: left 0.3s ease-out;
             color: white;
             font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
         `;
 
         // Содержимое панели
         panel.innerHTML = `
-            <div style="position: relative;">
+            <div style="position: relative; width: 100%;">
                 <button id="close-faction-panel" style="
                     position: absolute;
-                    top: 0;
-                    right: 0;
+                    top: -5px;
+                    right: -5px;
                     background: transparent;
                     border: none;
                     color: white;
-                    font-size: 24px;
+                    font-size: 20px;
                     cursor: pointer;
                     padding: 5px 10px;
                 ">✕</button>
 
                 <h1 style="
-                    font-size: 36px;
-                    margin-bottom: 30px;
+                    font-size: 24px;
+                    margin-bottom: 15px;
                     color: #ffd700;
+                    padding-right: 30px;
                 ">${factionData.name}</h1>
 
-                <div style="margin-bottom: 30px;">
+                <div style="margin-bottom: 15px;">
                     <h3 style="
-                        font-size: 18px;
+                        font-size: 13px;
                         color: #aaa;
-                        margin-bottom: 10px;
+                        margin-bottom: 8px;
+                        letter-spacing: 1px;
                     ">ОПИСАНИЕ</h3>
                     <p style="
-                        font-size: 16px;
-                        line-height: 1.6;
+                        font-size: 13px;
+                        line-height: 1.4;
                     ">${factionData.description}</p>
                 </div>
 
                 <hr style="
                     border: none;
                     border-top: 1px solid #444;
-                    margin: 30px 0;
+                    margin: 15px 0;
                 ">
 
-                <div style="margin-bottom: 40px;">
+                <div style="margin-bottom: 20px;">
                     <h3 style="
-                        font-size: 18px;
+                        font-size: 13px;
                         color: #ffd700;
-                        margin-bottom: 10px;
+                        margin-bottom: 8px;
+                        letter-spacing: 1px;
                     ">ФРАКЦИОННЫЙ БОНУС</h3>
                     <p style="
-                        font-size: 16px;
-                        line-height: 1.6;
+                        font-size: 13px;
+                        line-height: 1.4;
                         color: #90EE90;
                     ">${factionData.bonus}</p>
                 </div>
 
                 <div style="
                     display: flex;
-                    gap: 20px;
-                    margin-top: 50px;
+                    gap: 10px;
+                    margin-top: 15px;
                 ">
                     <button id="cancel-faction-btn" style="
                         flex: 1;
-                        padding: 15px 30px;
+                        padding: 12px 20px;
                         background: #666;
                         border: 2px solid #999;
                         color: white;
-                        font-size: 18px;
+                        font-size: 14px;
                         cursor: pointer;
                         border-radius: 5px;
                         transition: all 0.2s;
                     ">Отмена</button>
                     <button id="select-faction-btn" data-faction="${factionId}" style="
                         flex: 2;
-                        padding: 15px 30px;
+                        padding: 12px 20px;
                         background: linear-gradient(to bottom, #ffd700, #ffaa00);
                         border: 2px solid #ffd700;
                         color: #000;
-                        font-size: 18px;
+                        font-size: 14px;
                         font-weight: bold;
                         cursor: pointer;
                         border-radius: 5px;
                         transition: all 0.2s;
-                    ">Выбрать эту фракцию</button>
+                    ">Выбрать фракцию</button>
                 </div>
             </div>
         `;

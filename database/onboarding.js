@@ -61,18 +61,15 @@ async function selectFaction(faction) {
         "poison": { "poisoned_blade": { name: "Отравленный клинок", level: 1, tier: 1 } }
     };
     
-    const initialAvailableSpells = ["spark", "icicle", "gust", "pebble", "call_wolf", "poisoned_blade"];
-    
     // Сохраняем ВСЁ в Supabase
     if (window.dbManager && window.dbManager.currentPlayer) {
         try {
             const { error } = await window.dbManager.supabase
                 .from('players')
-                .update({ 
+                .update({
                     faction: faction,
                     wizards: initialWizards,
                     spells: initialSpells,
-                    available_spells: initialAvailableSpells,
                     formation: [null, null, null, null, null],
                     buildings: {}
                 })
@@ -86,7 +83,6 @@ async function selectFaction(faction) {
             window.dbManager.currentPlayer.faction = faction;
             window.dbManager.currentPlayer.wizards = initialWizards;
             window.dbManager.currentPlayer.spells = initialSpells;
-            window.dbManager.currentPlayer.available_spells = initialAvailableSpells;
             
             // Создаём window.userData для совместимости со старым кодом
             window.userData = {
@@ -99,7 +95,6 @@ async function selectFaction(faction) {
                 buildings: {},
                 wizards: initialWizards,
                 spells: initialSpells,
-                available_spells: initialAvailableSpells,
                 formation: [null, null, null, null, null],
                 constructions: []
             };
