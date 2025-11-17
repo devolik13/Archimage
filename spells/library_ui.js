@@ -107,21 +107,32 @@ function setupLibraryClickableZones() {
 function openSchoolSpells(faction) {
     console.log('📖 Открытие школы:', faction);
     currentLibrarySchool = faction;
-    
+
     const libraryContainer = document.getElementById('library-fullscreen');
     if (!libraryContainer) return;
-    
+
     const factionName = window.getFactionName ? window.getFactionName(faction) : faction;
-    
+
+    // Определяем картинку для каждой школы (с fallback на template)
+    const spellsImage = `assets/ui/modals/spells_${faction}.png`;
+    const fallbackImage = 'assets/ui/modals/spells_template.png';
+
     libraryContainer.innerHTML = `
         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #1a1a2e;">
-            <img id="spells-image" src="assets/ui/modals/spells_template.png" style="max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="${factionName}">
+            <img id="spells-image" src="${spellsImage}" style="max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="${factionName}">
             <div id="faction-name-overlay" style="position: absolute; top: 0; left: 0; right: 0;"></div>
             <div id="spells-overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
         </div>
     `;
-    
+
     const img = document.getElementById('spells-image');
+
+    // Fallback: если картинка не загрузилась - используем шаблон
+    img.onerror = () => {
+        console.warn(`⚠️ Картинка для ${faction} не найдена, используем шаблон`);
+        img.src = fallbackImage;
+    };
+
     img.onload = () => setupSpellsScreen(faction);
     if (img.complete) setupSpellsScreen(faction);
 }
