@@ -63,17 +63,41 @@
    LEADERBOARD - ТОП ИГРОКОВ
    ======================================== */
 
+/* Двухколоночная раскладка */
+.leaderboard-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 15px 0;
+}
+
 .leaderboard-top-players {
     background: #1a1a2e;
     padding: 15px;
     border-radius: 8px;
-    margin: 15px 0;
+}
+
+.leaderboard-player-stats {
+    background: #3d3d5c;
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px solid #7289da;
 }
 
 .leaderboard-top-title {
     margin-top: 0;
+    margin-bottom: 12px;
     color: #ffa500;
     text-align: center;
+    font-size: 14px;
+}
+
+.leaderboard-stats-title {
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: #7289da;
+    text-align: center;
+    font-size: 14px;
 }
 
 .leaderboard-players-list {
@@ -84,11 +108,12 @@
 
 .leaderboard-player-card {
     background: #3d3d5c;
-    padding: 10px;
+    padding: 8px;
     border-radius: 6px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-size: 12px;
 }
 
 .leaderboard-player-card.top-1 {
@@ -106,32 +131,84 @@
     border-left: 3px solid #CD7F32;
 }
 
+.player-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    font-size: 13px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 8px;
+    background: #2c2c3d;
+    border-radius: 6px;
+}
+
+.stat-label {
+    color: #aaa;
+    font-size: 11px;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: bold;
+}
+
 /* ========================================
    OPPONENT SELECTION - ВЫБОР ПРОТИВНИКА
    ======================================== */
+
+/* Двухколоночная раскладка для противников */
+.opponent-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 15px 0;
+}
 
 .opponent-list {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin: 20px 0;
-    max-height: 400px;
+    max-height: 60vh;
     overflow-y: auto;
     padding-right: 5px;
 }
 
 .opponent-card {
     background: #3d3d5c;
-    padding: 15px;
+    padding: 12px;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s;
     border: 2px solid transparent;
+    font-size: 13px;
 }
 
 .opponent-card:hover {
     border-color: #7289da;
     transform: scale(1.02);
+}
+
+.opponent-card:active {
+    transform: scale(0.98);
+}
+
+/* Вертикальные кнопки */
+.opponent-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.opponent-rating-display {
+    background: #1a1a2e;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
 /* ========================================
@@ -141,58 +218,72 @@
 @media (max-width: 768px) {
     .modal-container {
         max-width: 95vw;
-        max-height: 85vh;
+        max-height: 90vh;
         padding: 10px;
     }
 
     .modal-content {
-        padding: 15px;
-        max-height: calc(85vh - 20px);
+        padding: 12px;
+        max-height: calc(90vh - 20px);
+        max-width: 100%;
     }
 
     .modal-header {
-        font-size: 18px;
+        font-size: 16px;
         margin-bottom: 10px;
     }
 
-    /* LEADERBOARD - Горизонтальная прокрутка топа */
-    .leaderboard-players-list {
-        display: flex;
-        flex-direction: row;
+    /* Двухколоночная раскладка сохраняется */
+    .leaderboard-layout {
         gap: 10px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        padding-bottom: 10px;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
     }
 
-    .leaderboard-player-card {
-        min-width: 200px;
-        max-width: 200px;
-        flex-shrink: 0;
-        scroll-snap-align: start;
-        flex-direction: column;
-        gap: 10px;
-        padding: 12px;
-    }
-
-    .leaderboard-top-players {
+    .leaderboard-top-players,
+    .leaderboard-player-stats {
         padding: 10px;
     }
 
-    /* OPPONENT SELECTION - Компактный список */
+    .leaderboard-top-title,
+    .leaderboard-stats-title {
+        font-size: 12px;
+        margin-bottom: 8px;
+    }
+
+    .leaderboard-player-card {
+        padding: 6px;
+        font-size: 11px;
+    }
+
+    .player-stats-grid {
+        gap: 6px;
+        font-size: 11px;
+    }
+
+    .stat-item {
+        padding: 6px;
+    }
+
+    .stat-label {
+        font-size: 10px;
+    }
+
+    .stat-value {
+        font-size: 14px;
+    }
+
+    /* OPPONENT SELECTION - Двухколоночная раскладка */
+    .opponent-layout {
+        gap: 8px;
+    }
+
     .opponent-list {
-        max-height: 50vh;
+        max-height: 55vh;
         gap: 8px;
     }
 
     .opponent-card {
-        padding: 12px;
-    }
-
-    .opponent-card:active {
-        transform: scale(0.98);
+        padding: 10px;
+        font-size: 12px;
     }
 
     /* Фиксированная кнопка закрытия */
@@ -220,16 +311,16 @@
         border-radius: 4px;
     }
 
-    .leaderboard-players-list::-webkit-scrollbar {
-        height: 4px;
+    .opponent-list::-webkit-scrollbar {
+        width: 4px;
     }
 
-    .leaderboard-players-list::-webkit-scrollbar-track {
+    .opponent-list::-webkit-scrollbar-track {
         background: #1a1a2e;
         border-radius: 4px;
     }
 
-    .leaderboard-players-list::-webkit-scrollbar-thumb {
+    .opponent-list::-webkit-scrollbar-thumb {
         background: #7289da;
         border-radius: 4px;
     }
@@ -239,31 +330,34 @@
 @media (max-width: 480px) {
     .modal-container {
         max-width: 98vw;
-        max-height: 90vh;
-        padding: 8px;
+        max-height: 92vh;
+        padding: 6px;
     }
 
     .modal-content {
-        padding: 12px;
+        padding: 10px;
     }
 
     .modal-header {
-        font-size: 16px;
+        font-size: 14px;
     }
 
     .leaderboard-player-card {
-        min-width: 160px;
-        max-width: 160px;
-        font-size: 13px;
+        padding: 5px;
+        font-size: 10px;
     }
 
     .opponent-card {
-        padding: 10px;
-        font-size: 13px;
+        padding: 8px;
+        font-size: 11px;
     }
 
     .opponent-list {
-        max-height: 45vh;
+        max-height: 50vh;
+    }
+
+    .stat-value {
+        font-size: 12px;
     }
 }
 
@@ -274,15 +368,11 @@
     }
 
     .modal-content {
-        max-height: calc(95vh - 16px);
+        max-height: calc(95vh - 12px);
     }
 
     .opponent-list {
-        max-height: 40vh;
-    }
-
-    .leaderboard-players-list {
-        gap: 8px;
+        max-height: 45vh;
     }
 }
 

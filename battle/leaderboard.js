@@ -38,19 +38,13 @@ async function showLeaderboard() {
                 ? window.formatRating(player.rating)
                 : `⭐ ${player.rating}`;
 
+            const topClass = index === 0 ? 'top-1' : index === 1 ? 'top-2' : index === 2 ? 'top-3' : '';
+
             return `
-                <div style="
-                    background: ${index < 3 ? '#3d3d5c' : '#2c2c3d'};
-                    padding: 10px;
-                    border-radius: 6px;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    border-left: 3px solid ${index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : '#555'};
-                ">
-                    <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="leaderboard-player-card ${topClass}">
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
                         <span style="font-size: 20px; min-width: 30px;">${medal}</span>
-                        <div>
+                        <div style="flex: 1;">
                             <div style="font-weight: bold; color: white;">${player.username || 'Игрок'}</div>
                             <div style="font-size: 12px; color: #aaa;">${leagueInfo}</div>
                         </div>
@@ -65,44 +59,53 @@ async function showLeaderboard() {
     }
 
     const modalContent = `
-        <div style="padding: 20px; max-width: 500px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin-top: 0; color: #7289da; text-align: center;">🏆 Таблица лидеров</h3>
+        <div class="modal-content">
+            <h3 class="modal-header">🏆 Таблица лидеров</h3>
 
-            <!-- Топ-5 игроков -->
-            <div style="background: #1a1a2e; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                <h4 style="margin-top: 0; color: #ffa500; text-align: center;">Лучшие маги</h4>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    ${topPlayersHTML}
+            <div class="modal-body smooth-scroll">
+                <div class="leaderboard-layout">
+                    <!-- Левая колонка: Топ-5 игроков -->
+                    <div class="leaderboard-top-players">
+                        <h4 class="leaderboard-top-title">🥇 Лучшие маги</h4>
+                        <div class="leaderboard-players-list">
+                            ${topPlayersHTML}
+                        </div>
+                    </div>
+
+                    <!-- Правая колонка: Статистика игрока -->
+                    <div class="leaderboard-player-stats">
+                        <h4 class="leaderboard-stats-title">📊 Ваша статистика</h4>
+                        <div class="player-stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-label">Рейтинг</div>
+                                <div class="stat-value" style="color: #ffa500;">${playerRating}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Винрейт</div>
+                                <div class="stat-value" style="color: ${playerWinRate >= 50 ? '#4CAF50' : '#ff6b6b'};">${playerWinRate}%</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Побед</div>
+                                <div class="stat-value" style="color: #4CAF50;">${playerWins}</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Поражений</div>
+                                <div class="stat-value" style="color: #f44336;">${playerLosses}</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 10px; padding: 8px; background: #2c2c3d; border-radius: 6px; text-align: center;">
+                            <div class="stat-label">Лига</div>
+                            <div style="font-size: 13px; font-weight: bold; color: #ffa500;">${playerLeagueInfo}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Статистика текущего игрока -->
-            <div style="background: #3d3d5c; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid #7289da;">
-                <h4 style="margin-top: 0; color: #7289da; text-align: center;">Ваша статистика</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
-                    <div style="text-align: center;">
-                        <div style="color: #aaa;">Рейтинг</div>
-                        <div style="font-size: 18px; font-weight: bold; color: #ffa500;">${playerLeagueInfo}</div>
-                    </div>
-                    <div style="text-align: center;">
-                        <div style="color: #aaa;">Винрейт</div>
-                        <div style="font-size: 18px; font-weight: bold; color: ${playerWinRate >= 50 ? '#4CAF50' : '#ff6b6b'};">${playerWinRate}%</div>
-                    </div>
-                    <div style="text-align: center;">
-                        <div style="color: #aaa;">Побед</div>
-                        <div style="font-size: 18px; font-weight: bold; color: #4CAF50;">${playerWins}</div>
-                    </div>
-                    <div style="text-align: center;">
-                        <div style="color: #aaa;">Поражений</div>
-                        <div style="font-size: 18px; font-weight: bold; color: #f44336;">${playerLosses}</div>
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button class="modal-button" onclick="closeLeaderboard()">
+                    Закрыть
+                </button>
             </div>
-
-            <button style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 16px;"
-                    onclick="closeLeaderboard()">
-                Закрыть
-            </button>
         </div>
     `;
 
@@ -110,18 +113,12 @@ async function showLeaderboard() {
     const modal = document.createElement('div');
     modal.innerHTML = modalContent;
     modal.id = 'leaderboard-modal-container';
-    modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.9); padding: 20px; border-radius: 12px; z-index: 1000; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);';
+    modal.className = 'modal-container';
 
     const overlay = document.createElement('div');
     overlay.id = 'leaderboard-overlay';
-    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;';
+    overlay.className = 'modal-overlay';
     overlay.onclick = closeLeaderboard;
-
-    document.body.appendChild(overlay);
-    document.body.appendChild(modal);
-
-    window.currentLeaderboardModal = { modal, overlay };
-}
 
 /**
  * Закрыть таблицу лидеров

@@ -136,17 +136,8 @@ async function showOpponentSelection() {
             : `⭐ ${opponent.rating}`;
 
         return `
-            <div style="
-                background: #3d3d5c;
-                padding: 15px;
-                border-radius: 8px;
-                cursor: pointer;
-                transition: all 0.2s;
-                border: 2px solid transparent;
-            "
-            onmouseover="this.style.borderColor='#7289da'; this.style.transform='scale(1.02)'"
-            onmouseout="this.style.borderColor='transparent'; this.style.transform='scale(1)'"
-            onclick="selectOpponent(${opponent.telegram_id}, '${opponent.username.replace(/'/g, "\\'")}', ${opponent.rating}, ${opponent.level})">
+            <div class="opponent-card"
+                 onclick="selectOpponent(${opponent.telegram_id}, '${opponent.username.replace(/'/g, "\\'")}', ${opponent.rating}, ${opponent.level})">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div style="flex: 1;">
                         <div style="font-weight: bold; font-size: 16px; color: white; margin-bottom: 5px;">
@@ -177,33 +168,49 @@ async function showOpponentSelection() {
     }).join('');
 
     const modalContent = `
-        <div style="padding: 20px; max-width: 500px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin-top: 0; color: #7289da; text-align: center;">⚔️ Выбор противника</h3>
+        <div class="modal-content">
+            <h3 class="modal-header">⚔️ Выбор противника</h3>
 
-            <div style="background: #1a1a2e; padding: 10px; border-radius: 6px; margin: 15px 0; text-align: center;">
-                <div style="font-size: 12px; color: #aaa;">Ваш рейтинг</div>
-                <div style="font-size: 18px; color: #ffa500; font-weight: bold;">${playerRating}</div>
+            <div class="modal-body smooth-scroll">
+                <div class="opponent-layout">
+                    <!-- Левая колонка: Список противников -->
+                    <div>
+                        <div class="opponent-list">
+                            ${opponentsHTML}
+                        </div>
+                    </div>
+
+                    <!-- Правая колонка: Информация и кнопки -->
+                    <div class="opponent-actions">
+                        <div class="opponent-rating-display">
+                            <div style="font-size: 12px; color: #aaa;">Ваш рейтинг</div>
+                            <div style="font-size: 20px; color: #ffa500; font-weight: bold; margin-top: 5px;">${playerRating}</div>
+                        </div>
+
+                        <div style="background: #1a1a2e; padding: 12px; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 11px; color: #aaa; margin-bottom: 8px;">💡 Подсказка</div>
+                            <div style="font-size: 12px; color: #ddd; line-height: 1.4;">
+                                Выберите противника из списка слева. Чем ближе рейтинг, тем честнее бой!
+                            </div>
+                        </div>
+
+                        <button class="modal-button secondary" onclick="closeOpponentSelection()">
+                            ❌ Отмена
+                        </button>
+                    </div>
+                </div>
             </div>
-
-            <div style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
-                ${opponentsHTML}
-            </div>
-
-            <button style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: #555; color: white; cursor: pointer; font-size: 14px;"
-                    onclick="closeOpponentSelection()">
-                ❌ Отмена
-            </button>
         </div>
     `;
 
     const modal = document.createElement('div');
     modal.innerHTML = modalContent;
     modal.id = 'opponent-selection-modal';
-    modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1001;';
+    modal.className = 'modal-container';
 
     const overlay = document.createElement('div');
     overlay.id = 'opponent-selection-overlay';
-    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000;';
+    overlay.className = 'modal-overlay';
     overlay.onclick = closeOpponentSelection;
 
     document.body.appendChild(overlay);
