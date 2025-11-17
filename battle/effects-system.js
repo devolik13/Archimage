@@ -9,28 +9,28 @@ let effectCounters = {
 };
 
 // --- Универсальный хелпер для применения эффектов ---
-function tryApplyEffect(effectName, target, isHybrid = false) {
+function tryApplyEffect(effectName, target, isHybrid = false, casterInfo = null) {
     const effectMap = {
         'burning': applyBurningEffect,
         'chill': applyChillEffect,
         'hoarFrost': applyHoarFrostEffect,
         'freeze': applyFreezeEffect
     };
-    
+
     const effectFn = effectMap[effectName];
     if (typeof effectFn === 'function') {
-        effectFn(target, isHybrid);
+        effectFn(target, isHybrid, casterInfo);
         return true;
     }
     return false;
 }
 
 // --- Эффект поджигания ---
-function applyBurningEffect(targetWizard, isHybrid = false) {
+function applyBurningEffect(targetWizard, isHybrid = false, casterInfo = null) {
     const chance = isHybrid ? 0.05 : 0.10;
     if (Math.random() < chance) {
         const maxDamage = Math.min(Math.floor(targetWizard.max_hp * 0.10), 100);
-        
+
         if (targetWizard.effects && targetWizard.effects.burning) {
             targetWizard.effects.burning.duration = 3;
             targetWizard.effects.burning.damage = maxDamage;
@@ -46,7 +46,7 @@ function applyBurningEffect(targetWizard, isHybrid = false) {
         if (window.spellAnimations?.burning?.show) {
             let position = -1;
             let casterType = '';
-            
+
             position = window.playerFormation.findIndex(id => id === targetWizard.id);
             if (position !== -1) {
                 casterType = 'player';
@@ -56,7 +56,7 @@ function applyBurningEffect(targetWizard, isHybrid = false) {
                     casterType = 'enemy';
                 }
             }
-            
+
             if (position !== -1 && casterType) {
                 window.spellAnimations.burning.show(targetWizard, position, casterType);
             }
@@ -67,11 +67,27 @@ function applyBurningEffect(targetWizard, isHybrid = false) {
         } else if (Array.isArray(window.battleLog)) {
             window.battleLog.push(logEntry);
         }
+
+        // Речевой пузырь для фракционного бонуса (если кастер фракции Огонь)
+        if (casterInfo && casterInfo.faction === 'fire') {
+            console.log('🔥 БОНУС ОГНЯ СРАБОТАЛ! casterInfo:', casterInfo);
+            if (typeof window.showFactionSpeechBubble === 'function') {
+                const col = casterInfo.casterType === 'player' ? 5 : 0;
+                console.log(`💬 Показываем пузырь: faction=fire, col=${col}, row=${casterInfo.position}`);
+                window.showFactionSpeechBubble('fire', col, casterInfo.position);
+            } else {
+                console.warn('⚠️ window.showFactionSpeechBubble не найдена');
+            }
+        } else if (casterInfo) {
+            console.log('ℹ️ Поджог сработал но не от фракции огня:', casterInfo);
+        } else {
+            console.log('ℹ️ Поджог сработал но casterInfo не передан');
+        }
     }
 }
 
 // --- Эффект охлаждения ---
-function applyChillEffect(targetWizard, isHybrid = false) {
+function applyChillEffect(targetWizard, isHybrid = false, casterInfo = null) {
     const chance = isHybrid ? 0.10 : 0.20;
     if (Math.random() < chance) {
         if (targetWizard.effects && targetWizard.effects.chilled_caster) {
@@ -79,27 +95,37 @@ function applyChillEffect(targetWizard, isHybrid = false) {
         } else {
             if (!targetWizard.effects) targetWizard.effects = {};
             targetWizard.effects.chilled_caster = {
-                spellsLeft: 2, 
+                spellsLeft: 2,
                 damageReduction: 0.20
             };
             effectCounters.chilled++;
         }
-        
+
         const logEntry = `❄️ ${targetWizard.name} охлажден! Его следующие заклинания будут слабее.`;
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(logEntry);
         } else if (Array.isArray(window.battleLog)) {
             window.battleLog.push(logEntry);
         }
+
+        // Речевой пузырь для бонуса воды (охлаждение - это бонус фракции!)
+        if (typeof window.showFactionSpeechBubble === 'function') {
+            const info = casterInfo || window.currentSpellCaster;
+            if (info && info.faction === 'water') {
+                const col = info.casterType === 'player' ? 5 : 0;
+                window.showFactionSpeechBubble('water', col, info.position);
+                console.log('💧 БОНУС ВОДЫ СРАБОТАЛ! Охлаждение');
+            }
+        }
     }
 }
 
 // --- Эффект инея ---
-function applyHoarFrostEffect(targetWizard) {
+function applyHoarFrostEffect(targetWizard, isHybrid = false, casterInfo = null) {
     const chance = 0.30;
     if (Math.random() < chance) {
         if (!targetWizard.effects) targetWizard.effects = {};
-        
+
         if (targetWizard.effects.chilled_caster) {
             if (targetWizard.effects.chilled_caster.damageReduction <= 0.10) {
                 targetWizard.effects.chilled_caster.spellsLeft = 2;
@@ -112,7 +138,7 @@ function applyHoarFrostEffect(targetWizard) {
             };
             effectCounters.chilled++;
         }
-        
+
         const logEntry = `🧊 ${targetWizard.name} покрыт инеем! Его следующие заклинания будут слабее.`;
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(logEntry);
@@ -123,11 +149,11 @@ function applyHoarFrostEffect(targetWizard) {
 }
 
 // --- Эффект заморозки ---
-function applyFreezeEffect(targetWizard) {
+function applyFreezeEffect(targetWizard, isHybrid = false, casterInfo = null) {
     const chance = 0.50;
     if (Math.random() < chance) {
         if (!targetWizard.effects) targetWizard.effects = {};
-        
+
         if (targetWizard.effects.chilled_caster) {
             if (targetWizard.effects.chilled_caster.damageReduction <= 0.30) {
                 targetWizard.effects.chilled_caster.spellsLeft = 2;
@@ -140,12 +166,18 @@ function applyFreezeEffect(targetWizard) {
             };
             effectCounters.chilled++;
         }
-        
+
         const logEntry = `🧊 ${targetWizard.name} заморожен! Его следующие заклинания будут слабее.`;
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(logEntry);
         } else if (Array.isArray(window.battleLog)) {
             window.battleLog.push(logEntry);
+        }
+
+        // Речевой пузырь для фракционного бонуса (если кастер фракции Вода)
+        if (casterInfo && casterInfo.faction === 'water' && typeof window.showFactionSpeechBubble === 'function') {
+            const col = casterInfo.casterType === 'player' ? 5 : 0;
+            window.showFactionSpeechBubble('water', col, casterInfo.position);
         }
     }
 }
@@ -166,21 +198,46 @@ function processBurningForWizard(wizard) {
 
     // Логирование смерти от горения
     if (wizard.hp <= 0) {
-        // Определяем тип кастера
+        // Определяем тип кастера и позицию
         let casterType = '';
+        let col = -1;
+        let row = -1;
+
         const playerPos = window.playerFormation?.findIndex(id => id === wizard.id);
         if (playerPos !== -1) {
             casterType = 'player';
+            col = 5;
+            row = playerPos;
         } else {
             const enemyPos = window.enemyFormation?.findIndex(w => w && w.id === wizard.id);
             if (enemyPos !== -1) {
                 casterType = 'enemy';
+                col = 0;
+                row = enemyPos;
             }
         }
 
         if (casterType && window.battleLogger) {
             window.battleLogger.logDeath(wizard, casterType, 'burning');
         }
+
+        // Обновляем HP бар (скрываем)
+        if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function' && col !== -1 && row !== -1) {
+            const key = `${col}_${row}`;
+            window.pixiWizards.updateHP(key, 0, wizard.max_hp);
+        }
+
+        // Запускаем анимацию смерти
+        if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function' && col !== -1 && row !== -1) {
+            const key = `${col}_${row}`;
+            const container = window.wizardSprites?.[key];
+            if (container && !container.deathAnimationStarted) {
+                container.deathAnimationStarted = true;
+                window.pixiWizards.playDeath(col, row);
+                console.log(`🎬 Анимация смерти от горения для ${wizard.name} на ${key}`);
+            }
+        }
+
         return; // Маг мёртв, не продолжаем обработку
     }
     
@@ -289,20 +346,44 @@ function processPoisonForWizard(wizard) {
 
     // Логирование смерти от яда
     if (wizard.hp <= 0) {
-        // Определяем тип кастера
+        // Определяем тип кастера и позицию
         let casterType = '';
+        let col = -1;
+        let row = -1;
+
         const playerPos = window.playerFormation?.findIndex(id => id === wizard.id);
         if (playerPos !== -1) {
             casterType = 'player';
+            col = 5;
+            row = playerPos;
         } else {
             const enemyPos = window.enemyFormation?.findIndex(w => w && w.id === wizard.id);
             if (enemyPos !== -1) {
                 casterType = 'enemy';
+                col = 0;
+                row = enemyPos;
             }
         }
 
         if (casterType && window.battleLogger) {
             window.battleLogger.logDeath(wizard, casterType, 'poison');
+        }
+
+        // Обновляем HP бар (скрываем)
+        if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function' && col !== -1 && row !== -1) {
+            const key = `${col}_${row}`;
+            window.pixiWizards.updateHP(key, 0, wizard.max_hp);
+        }
+
+        // Запускаем анимацию смерти
+        if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function' && col !== -1 && row !== -1) {
+            const key = `${col}_${row}`;
+            const container = window.wizardSprites?.[key];
+            if (container && !container.deathAnimationStarted) {
+                container.deathAnimationStarted = true;
+                window.pixiWizards.playDeath(col, row);
+                console.log(`🎬 Анимация смерти от яда для ${wizard.name} на ${key}`);
+            }
         }
     }
 }
@@ -315,11 +396,23 @@ function checkCriticalHit(chancePercent = 5) {
     return isCritical;
 }
 
-function checkFactionDoubleDamage(wizardFaction, spellFaction) {
+function checkFactionDoubleDamage(wizardFaction, spellFaction, casterInfo = null) {
     if (wizardFaction !== spellFaction) return false;
     if (wizardFaction === 'wind') {
         const isDouble = Math.random() < 0.05;
-        if (isDouble) effectCounters.doubleDamage++;
+        if (isDouble) {
+            effectCounters.doubleDamage++;
+
+            // Речевой пузырь для бонуса ветра
+            if (typeof window.showFactionSpeechBubble === 'function') {
+                const info = casterInfo || window.currentSpellCaster;
+                if (info) {
+                    const col = info.casterType === 'player' ? 5 : 0;
+                    window.showFactionSpeechBubble('wind', col, info.position);
+                    console.log('💨 БОНУС ВЕТРА СРАБОТАЛ! Двойной урон');
+                }
+            }
+        }
         return isDouble;
     }
     return false;
@@ -332,10 +425,22 @@ function checkDoubleDamage(isHybrid = false) {
     return isDouble;
 }
 
-function checkArmorIgnore(isHybrid = false) {
+function checkArmorIgnore(isHybrid = false, casterInfo = null) {
     const chance = isHybrid ? 0.05 : 0.10;
     const ignore = Math.random() < chance;
-    if (ignore) effectCounters.armorIgnored++;
+    if (ignore) {
+        effectCounters.armorIgnored++;
+
+        // Речевой пузырь для бонуса земли
+        if (typeof window.showFactionSpeechBubble === 'function') {
+            const info = casterInfo || window.currentSpellCaster;
+            if (info && info.faction === 'earth') {
+                const col = info.casterType === 'player' ? 5 : 0;
+                window.showFactionSpeechBubble('earth', col, info.position);
+                console.log('🪨 БОНУС ЗЕМЛИ СРАБОТАЛ! Пробивание брони');
+            }
+        }
+    }
     return ignore ? 20 : 0;
 }
 

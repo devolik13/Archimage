@@ -559,11 +559,14 @@ function createWizardSlot(index) {
     const wizard = wizards[index];
     
     if (wizard) {
-        const level = wizard.level || 1;
-        slot.innerHTML = `
-            <div>🧙‍♂️</div>
-            <div style="font-size: 10px; position: absolute; bottom: 2px;">Ур.${level}</div>
-        `;
+    	const level = wizard.level || 1;
+    	const wizardFaction = wizard.faction || window.userData?.faction || 'fire';
+    	slot.innerHTML = `
+    	    <img src="assets/icons/${wizardFaction}/wizard.png" 
+    	         style="width: 40px; height: 40px;" 
+    	         onerror="this.outerHTML='<div>🧙‍♂️</div>'">
+    	    <div style="font-size: 10px; position: absolute; bottom: 2px;">Ур.${level}</div>
+    	`;
         
         slot.onclick = () => {
             console.log(`🧙‍♂️ Открыть окно мага ${index}`);

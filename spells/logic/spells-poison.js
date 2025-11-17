@@ -89,9 +89,9 @@ function castPoisonedBlade(wizard, spellData, position, casterType) {
                     window.applyPoisonEffect(targetWizard, 1);
                     console.log(`☠️ Применён эффект яда к ${targetWizard.name}`);
                 }
-                
+
                 if (window.applyPoisonFactionBonus) {
-                    window.applyPoisonFactionBonus(targetWizard);
+                    window.applyPoisonFactionBonus(targetWizard, wizard, casterType);
                     console.log(`☠️ Применён фракционный бонус яда к ${targetWizard.name}`);
                 }
             } else {
@@ -227,9 +227,9 @@ function castPoisonedGlade(wizard, spellData, position, casterType) {
                             
                             // Накладываем яд
                             applyPoisonEffect(targetObj.wizard, 1);
-                            
+
                             // Применяем бонус фракции
-                            applyPoisonFactionBonus(targetObj.wizard);
+                            applyPoisonFactionBonus(targetObj.wizard, wizard, casterType);
                             
                             hitCount++;
                         } else {
@@ -255,7 +255,7 @@ function castPoisonedGlade(wizard, spellData, position, casterType) {
                     }
                     
                     applyPoisonEffect(targetObj.wizard, 1);
-                    applyPoisonFactionBonus(targetObj.wizard);
+                    applyPoisonFactionBonus(targetObj.wizard, wizard, casterType);
                     hitCount++;
                 } else {
                     missCount++;
@@ -330,9 +330,9 @@ function castFoulCloud(wizard, spellData, position, casterType) {
         // Накладываем яд (только на магов, не на призванных)
         if (!targetInfo.isSummoned) {
             applyPoisonEffect(targetInfo.wizard, 1);
-            
+
             // Применяем бонус фракции
-            applyPoisonFactionBonus(targetInfo.wizard);
+            applyPoisonFactionBonus(targetInfo.wizard, wizard, casterType);
         }
     });
 }
@@ -516,7 +516,7 @@ function castPlague(wizard, spellData, position, casterType) {
                         // На 5 уровне — дополнительно накладываем яд
                         if (level === 5) {
                             applyPoisonEffect(target, 1);
-                            applyPoisonFactionBonus(target);
+                            applyPoisonFactionBonus(target, wizard, casterType);
                         }
                     }
                 });
@@ -538,7 +538,7 @@ function castPlague(wizard, spellData, position, casterType) {
                 
                 if (level === 5) {
                     applyPoisonEffect(target, 1);
-                    applyPoisonFactionBonus(target);
+                    applyPoisonFactionBonus(target, wizard, casterType);
                 }
             }
         }, index * 500); // Задержка 500ms между целями
@@ -700,9 +700,9 @@ function castEpidemic(wizard, spellData, position, casterType) {
             if (Math.random() < poisonChance) {
                 applyPoisonEffect(target, 1);
             }
-            
+
             // Бонус фракции
-            applyPoisonFactionBonus(target);
+            applyPoisonFactionBonus(target, wizard, casterType);
         });
         
         // На 5 уровне — бонусный урон от стаков яда
@@ -755,14 +755,31 @@ function applyPoisonEffect(targetWizard, stacks = 1) {
 }
 
 // --- Бонус фракции: Токсичный след ---
-function applyPoisonFactionBonus(targetWizard) {
+function applyPoisonFactionBonus(targetWizard, caster = null, casterType = null) {
     const chance = 0.05; // 5% шанс
     const roll = Math.random();
-    
+
     if (roll < chance) {
         applyPoisonEffect(targetWizard, 1); // Дополнительный стак
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`☠️ Токсичный след СРАБОТАЛ (выпало ${Math.round(roll * 100)}% < 5%) — дополнительный стак яда на ${targetWizard.name}`);
+        }
+
+        // Речевой пузырь для бонуса яда
+        if (caster && caster.faction === 'poison' && casterType && typeof window.showFactionSpeechBubble === 'function') {
+            // Находим позицию кастера
+            let position = -1;
+            if (casterType === 'player') {
+                position = window.playerFormation?.findIndex(id => id === caster.id);
+            } else {
+                position = window.enemyFormation?.findIndex(w => w && w.id === caster.id);
+            }
+
+            if (position !== -1) {
+                const col = casterType === 'player' ? 5 : 0;
+                window.showFactionSpeechBubble('poison', col, position);
+                console.log('☠️ БОНУС ЯДА СРАБОТАЛ! Дополнительный стак');
+            }
         }
     }
 }

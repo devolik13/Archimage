@@ -34,10 +34,11 @@ function initPixiBattle() {
     }
     
     // НОВОЕ: Полноэкранный размер
-    const bottomPanelHeight = 60; // Высота нижней панели
-    const maxWidth = window.innerWidth;  // ВСЯ ширина экрана
-    const maxHeight = window.innerHeight - bottomPanelHeight; // ВСЯ высота минус панель
     
+    const isDemoBattle = document.getElementById('pixi-container') !== null;
+    const bottomPanelHeight = isDemoBattle ? 0 : 60; // Для демо 0, для обычного боя 60
+    const maxWidth = window.innerWidth;
+    const maxHeight = window.innerHeight - bottomPanelHeight;
     console.log('📐 Размер canvas:', maxWidth, 'x', maxHeight);
     
     pixiApp = new PIXI.Application({

@@ -421,18 +421,38 @@ function checkCriticalHit(chancePercent = 5) {
 }
 
 // --- Проверка фракционного бонуса двойного урона ---
-function checkFactionDoubleDamage(wizardFaction, spellFaction) {
+function checkFactionDoubleDamage(wizardFaction, spellFaction, casterInfo = null) {
     if (wizardFaction !== spellFaction) return false;
     if (wizardFaction === 'wind') {
-        return Math.random() < 0.05; // 5% шанс
+        const isDouble = Math.random() < 0.05; // 5% шанс
+        if (isDouble && typeof window.showFactionSpeechBubble === 'function') {
+            // Используем переданный casterInfo или глобальный currentSpellCaster
+            const info = casterInfo || window.currentSpellCaster;
+            if (info) {
+                const col = info.casterType === 'player' ? 5 : 0;
+                window.showFactionSpeechBubble('wind', col, info.position);
+                console.log('💨 БОНУС ВЕТРА СРАБОТАЛ! Двойной урон');
+            }
+        }
+        return isDouble;
     }
     return false;
 }
 
 // --- Проверка игнорирования брони (для земли) ---
-function checkArmorIgnore(isHybrid = false) {
+function checkArmorIgnore(isHybrid = false, casterInfo = null) {
     const chance = isHybrid ? 0.05 : 0.10; // 10% для земли
-    return Math.random() < chance ? 10 : 0; // Возвращает 10% игнорирования
+    const ignore = Math.random() < chance;
+    if (ignore && typeof window.showFactionSpeechBubble === 'function') {
+        // Используем переданный casterInfo или глобальный currentSpellCaster
+        const info = casterInfo || window.currentSpellCaster;
+        if (info && info.faction === 'earth') {
+            const col = info.casterType === 'player' ? 5 : 0;
+            window.showFactionSpeechBubble('earth', col, info.position);
+            console.log('🪨 БОНУС ЗЕМЛИ СРАБОТАЛ! Пробивание брони');
+        }
+    }
+    return ignore ? 10 : 0; // Возвращает 10% игнорирования
 }
 
 // --- Применение исцеления с учётом дебаффов ---

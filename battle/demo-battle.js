@@ -351,55 +351,20 @@ function showCinematicOverlay() {
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+            background: #000;
             z-index: 9999;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
         ">
-            <div style="
-                max-width: 900px;
-                width: 90%;
-            ">
-                <h2 style="color: #ff6b6b; text-align: center; margin: 0 0 20px 0; font-size: 28px; text-shadow: 0 0 10px rgba(255,107,107,0.5);">
-                    ⚔️ Испытание Дракона ⚔️
-                </h2>
-
-                <!-- PIXI Canvas -->
-                <div id="pixi-container" style="
-                    display: flex;
-                    justify-content: center;
-                "></div>
-
-                <!-- Кнопка пропустить -->
-                <div style="text-align: center; margin-top: 20px;">
-                    <button onclick="skipDemoBattle()" style="
-                        padding: 12px 30px;
-                        background: linear-gradient(145deg, #7289da, #5e7bc7);
-                        border: none;
-                        border-radius: 8px;
-                        color: white;
-                        font-size: 16px;
-                        cursor: pointer;
-                        transition: transform 0.2s, box-shadow 0.2s;
-                        box-shadow: 0 4px 15px rgba(114, 137, 218, 0.4);
-                    " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(114, 137, 218, 0.6)';"
-                       onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(114, 137, 218, 0.4)';">
-                        ⏩ Пропустить
-                    </button>
-                </div>
-            </div>
+            <div id="pixi-container" style="
+                width: 100%;
+                height: 100%;
+            "></div>
         </div>
     `;
 
     document.body.insertAdjacentHTML('beforeend', overlayHTML);
-}
-
-// Пропустить сцену
-function skipDemoBattle() {
-    cinematicData.isPlaying = false;
-    endCinematic();
 }
 
 // Закрыть сцену
@@ -434,7 +399,6 @@ function closeDemoBattle() {
 
 // Экспорт функций
 window.startDemoBattle = startDemoBattle;
-window.skipDemoBattle = skipDemoBattle;
 window.closeDemoBattle = closeDemoBattle;
 
 // Удобная консольная команда
@@ -444,4 +408,3 @@ window.demo = function(faction = 'fire') {
 };
 
 console.log('✅ Кинематографическая сцена готова!');
-console.log('💡 Используй команду: demo()');

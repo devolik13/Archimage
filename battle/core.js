@@ -823,13 +823,37 @@ function checkBattleEnd() {
         // ИСПРАВЛЕНО: Сохраняем опыт магов через Supabase вместо localhost
         if (window.userData && window.playerWizards) {
             window.userData.wizards = window.playerWizards;
-            
-            // Сохраняем в Supabase
-            if (window.dbManager && window.dbManager.savePlayer) {
-                window.dbManager.savePlayer(window.userData)
-                    .then(() => console.log('💾 Опыт магов сохранен в Supabase'))
-                    .catch(err => console.error('Ошибка сохранения опыта:', err));
-            }
+        }
+
+        // Определяем результат и награды для сохранения
+        let battleResult = 'draw';
+        let rewards = { exp: 0 };
+        let opponentLevel = 1; // TODO: получить реальный уровень противника
+        let ratingChange = 0;
+
+        if (!playerAlive && !enemyAlive) {
+            battleResult = 'draw';
+        } else if (!playerAlive) {
+            battleResult = 'loss';
+        } else if (!enemyAlive) {
+            battleResult = 'win';
+            // TODO: посчитать полученный опыт и другие награды
+        }
+
+        // Рассчитываем изменение рейтинга
+        if (typeof window.calculateRatingChange === 'function') {
+            const playerRating = window.userData?.rating || 1000;
+            // TODO: получить реальный рейтинг противника из данных боя
+            // Пока используем случайный AI рейтинг близкий к игроку
+            const opponentRating = playerRating + Math.floor(Math.random() * 200) - 100;
+
+            ratingChange = window.calculateRatingChange(playerRating, opponentRating, battleResult);
+            console.log(`📊 Изменение рейтинга: ${playerRating} → ${playerRating + ratingChange} (${ratingChange > 0 ? '+' : ''}${ratingChange})`);
+        }
+
+        // Триггер события завершения боя (вызовет немедленное сохранение)
+        if (typeof window.onBattleCompleted === 'function') {
+            window.onBattleCompleted(battleResult, rewards, opponentLevel, ratingChange);
         }
 
         if (window.animationManager) {
@@ -847,6 +871,23 @@ function checkBattleEnd() {
 
         if (typeof window.updateBattleField === 'function') {
             window.updateBattleField();
+        }
+
+        // Показываем экран результатов боя
+        if (typeof window.showBattleResult === 'function') {
+            const opponent = window.selectedOpponent || {};
+            const battleData = {
+                opponentName: opponent.username || 'Противник',
+                opponentRating: opponent.rating || 1000,
+                ratingChange: ratingChange,
+                rewards: rewards,
+                battleDuration: 0 // TODO: добавить таймер боя если нужно
+            };
+
+            // Показываем с небольшой задержкой для визуального эффекта
+            setTimeout(() => {
+                window.showBattleResult(battleResult, battleData);
+            }, 1000);
         }
 
         return true;

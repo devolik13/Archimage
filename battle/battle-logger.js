@@ -202,7 +202,7 @@ function logBattleEnd(result, playerAlive, enemyAlive) {
     };
 
     // Автоматически сохраняем лог
-    saveBattleLog();
+    // saveBattleLog(); // ОТКЛЮЧЕНО - не скачиваем JSON файл автоматически
 }
 
 // Сохранение лога в файл

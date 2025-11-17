@@ -262,8 +262,8 @@ function setupSpellsScreen(faction) {
         } else if (spell.level === 0 && isActive) {
             // НЕ ИЗУЧЕНО (активное)
             status = '🔒 Не изучено';
-            const learnTime = window.SPELL_LEARNING_TIME?.getLearnTime ? 
-                window.SPELL_LEARNING_TIME.getLearnTime(tierIndex + 1, 0) : 144;
+            const learnTime = window.SPELL_LEARNING_TIME?.getLearnTime ?
+                window.SPELL_LEARNING_TIME.getLearnTime(tierIndex + 1, 0, faction) : 144;
             buttonHTML = `
                 <button 
                     style="
@@ -284,8 +284,8 @@ function setupSpellsScreen(faction) {
         } else if (spell.level > 0 && spell.level < 5 && isActive) {
             // УЛУЧШИТЬ (активное)
             status = `Ур.${spell.level}/5`;
-            const upgradeTime = window.SPELL_LEARNING_TIME?.getLearnTime ? 
-                window.SPELL_LEARNING_TIME.getLearnTime(tierIndex + 1, spell.level) : 144;
+            const upgradeTime = window.SPELL_LEARNING_TIME?.getLearnTime ?
+                window.SPELL_LEARNING_TIME.getLearnTime(tierIndex + 1, spell.level, faction) : 144;
             buttonHTML = `
                 <button 
                     style="
