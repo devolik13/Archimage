@@ -32,6 +32,7 @@ async function initGameWithDatabase() {
     window.userData.time_currency = player.time_currency || 0;
     window.userData.level = player.level || 1;
     window.userData.experience = player.experience || 0;
+    window.userData.last_login = player.last_login;
 
     // Игровые данные (JSONB)
     window.userData.wizards = player.wizards || [];

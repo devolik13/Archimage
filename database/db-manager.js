@@ -73,7 +73,8 @@ class DatabaseManager {
                     username: username,
                     time_currency: 100, // Начальная валюта
                     level: 1,
-                    experience: 0
+                    experience: 0,
+                    last_login: new Date().toISOString() // Время первого входа
                 }])
                 .select()
                 .single();
@@ -116,7 +117,8 @@ class DatabaseManager {
                 rating: playerData.rating || 1000,
                 pve_progress: playerData.pve_progress || {},
                 settings: playerData.settings || { sound: true, language: 'ru', battle_speed: 'normal' },
-                tutorial_completed: playerData.tutorial_completed || false
+                tutorial_completed: playerData.tutorial_completed || false,
+                last_login: new Date().toISOString() // Обновляем время последнего входа
             };
 
             const { error } = await this.supabase
