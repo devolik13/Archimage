@@ -120,6 +120,12 @@ async function showLeaderboard() {
     overlay.className = 'modal-overlay';
     overlay.onclick = closeLeaderboard;
 
+    document.body.appendChild(overlay);
+    document.body.appendChild(modal);
+
+    window.currentLeaderboardModal = { modal, overlay };
+}
+
 /**
  * Закрыть таблицу лидеров
  */
