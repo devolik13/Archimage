@@ -4,6 +4,7 @@ console.log('✅ pixi-core.js загружен');
 // Глобальные переменные рендерера
 let pixiApp = null;
 let battleContainer = null;
+let gridContainer = null;
 let effectsContainer = null;
 let unitsContainer = null;
 let gridCells = [];
