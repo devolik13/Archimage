@@ -73,12 +73,20 @@ import './battle/leaderboard.js';
 import './battle/battle-logger.js';
 import './battle/battle-timer-manager.js';
 import './battle/battle-result-screen.js';
+import './battle/script_battle_setup.js';
+import './battle/demo-battle.js';
 import './battle/core.js';
 import './battle/spells.js';
 import './battle/damage-system.js';
 import './battle/magic-resistance.js';
 import './battle/walls.js';
 import './battle/summons-manager.js';
+import './battle/effects-system.js';
+import './battle/targeting.js';
+import './battle/targeting-utils.js';
+import './battle/projectiles.js';
+import './battle/multi-layer-protection.js';
+import './battle/single-target-visual-system.js';
 
 // ============ RENDERER (PixiJS) ============
 import './renderer/pixi-core.js';
