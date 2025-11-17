@@ -1,0 +1,343 @@
+/* battle/modal-styles.css - Адаптивные стили для модальных окон */
+
+/* ========================================
+   БАЗОВЫЕ СТИЛИ МОДАЛОК
+   ======================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+}
+
+.modal-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 20px;
+    border-radius: 12px;
+    z-index: 1000;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: hidden;
+}
+
+.modal-content {
+    padding: 20px;
+    max-width: 500px;
+    background: #2c2c3d;
+    border-radius: 10px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(90vh - 40px);
+}
+
+.modal-header {
+    margin-top: 0;
+    color: #7289da;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.modal-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 15px 0;
+}
+
+.modal-footer {
+    flex-shrink: 0;
+    padding-top: 15px;
+}
+
+/* ========================================
+   LEADERBOARD - ТОП ИГРОКОВ
+   ======================================== */
+
+.leaderboard-top-players {
+    background: #1a1a2e;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.leaderboard-top-title {
+    margin-top: 0;
+    color: #ffa500;
+    text-align: center;
+}
+
+.leaderboard-players-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.leaderboard-player-card {
+    background: #3d3d5c;
+    padding: 10px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.leaderboard-player-card.top-1 {
+    background: #3d3d5c;
+    border-left: 3px solid #FFD700;
+}
+
+.leaderboard-player-card.top-2 {
+    background: #3d3d5c;
+    border-left: 3px solid #C0C0C0;
+}
+
+.leaderboard-player-card.top-3 {
+    background: #3d3d5c;
+    border-left: 3px solid #CD7F32;
+}
+
+/* ========================================
+   OPPONENT SELECTION - ВЫБОР ПРОТИВНИКА
+   ======================================== */
+
+.opponent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.opponent-card {
+    background: #3d3d5c;
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.opponent-card:hover {
+    border-color: #7289da;
+    transform: scale(1.02);
+}
+
+/* ========================================
+   МОБИЛЬНАЯ АДАПТАЦИЯ
+   ======================================== */
+
+@media (max-width: 768px) {
+    .modal-container {
+        max-width: 95vw;
+        max-height: 85vh;
+        padding: 10px;
+    }
+
+    .modal-content {
+        padding: 15px;
+        max-height: calc(85vh - 20px);
+    }
+
+    .modal-header {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    /* LEADERBOARD - Горизонтальная прокрутка топа */
+    .leaderboard-players-list {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 10px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .leaderboard-player-card {
+        min-width: 200px;
+        max-width: 200px;
+        flex-shrink: 0;
+        scroll-snap-align: start;
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .leaderboard-top-players {
+        padding: 10px;
+    }
+
+    /* OPPONENT SELECTION - Компактный список */
+    .opponent-list {
+        max-height: 50vh;
+        gap: 8px;
+    }
+
+    .opponent-card {
+        padding: 12px;
+    }
+
+    .opponent-card:active {
+        transform: scale(0.98);
+    }
+
+    /* Фиксированная кнопка закрытия */
+    .modal-footer {
+        position: sticky;
+        bottom: 0;
+        background: #2c2c3d;
+        padding-top: 10px;
+        margin-top: 10px;
+        border-top: 1px solid #3d3d5c;
+    }
+
+    /* Скроллбар для мобильных */
+    .modal-body::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .modal-body::-webkit-scrollbar-track {
+        background: #1a1a2e;
+        border-radius: 4px;
+    }
+
+    .modal-body::-webkit-scrollbar-thumb {
+        background: #7289da;
+        border-radius: 4px;
+    }
+
+    .leaderboard-players-list::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .leaderboard-players-list::-webkit-scrollbar-track {
+        background: #1a1a2e;
+        border-radius: 4px;
+    }
+
+    .leaderboard-players-list::-webkit-scrollbar-thumb {
+        background: #7289da;
+        border-radius: 4px;
+    }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 480px) {
+    .modal-container {
+        max-width: 98vw;
+        max-height: 90vh;
+        padding: 8px;
+    }
+
+    .modal-content {
+        padding: 12px;
+    }
+
+    .modal-header {
+        font-size: 16px;
+    }
+
+    .leaderboard-player-card {
+        min-width: 160px;
+        max-width: 160px;
+        font-size: 13px;
+    }
+
+    .opponent-card {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .opponent-list {
+        max-height: 45vh;
+    }
+}
+
+/* Горизонтальная ориентация (альбомная) */
+@media (max-height: 500px) and (orientation: landscape) {
+    .modal-container {
+        max-height: 95vh;
+    }
+
+    .modal-content {
+        max-height: calc(95vh - 16px);
+    }
+
+    .opponent-list {
+        max-height: 40vh;
+    }
+
+    .leaderboard-players-list {
+        gap: 8px;
+    }
+}
+
+/* ========================================
+   УТИЛИТЫ
+   ======================================== */
+
+/* Плавная прокрутка */
+.smooth-scroll {
+    scroll-behavior: smooth;
+}
+
+/* Скрыть скроллбар но оставить прокрутку */
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Кнопка модалки */
+.modal-button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    background: #7289da;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.modal-button:hover {
+    background: #5b6eae;
+}
+
+.modal-button:active {
+    transform: scale(0.98);
+}
+
+.modal-button.secondary {
+    background: #555;
+}
+
+.modal-button.secondary:hover {
+    background: #666;
+}
+
+@media (max-width: 480px) {
+    .modal-button {
+        padding: 10px;
+        font-size: 14px;
+    }
+}
