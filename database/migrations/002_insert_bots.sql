@@ -1,6 +1,6 @@
 -- Generated bots for PvP Arena
 -- Total: 200 bots
--- Generated: 2025-11-16T14:59:55.110Z
+-- Generated: 2025-11-17T22:39:09.868Z
 
 INSERT INTO players (
     telegram_id, username, rating, wins, losses, total_battles,
@@ -9,23 +9,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -1,
-    'Venomancer',
-    211,
-    58,
-    68,
-    126,
-    'water',
-    15,
+    'Ледокол',
+    455,
+    94,
+    105,
+    199,
+    'nature',
+    25,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195104_0","name":"Маг 1","faction":"water","level":2,"experience":59,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":1,"tier":1},"frost_armor":{"name":"Frost Armor","level":1,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195104_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149859_0","name":"Маг 1","faction":"nature","level":3,"experience":18,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","thorn"]},{"id":"wizard_bot_1763419149859_1","name":"Маг 2","faction":"nature","level":1,"experience":35,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":2,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149859_0","wizard_bot_1763419149859_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-08T14:59:55.104Z'
+    '2025-07-28T22:39:09.859Z'
 );
 
 INSERT INTO players (
@@ -35,23 +35,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -2,
-    'StormCaller',
-    341,
-    71,
-    82,
-    153,
-    'earth',
-    24,
+    'DeathWizard13',
+    508,
+    50,
+    57,
+    107,
+    'water',
+    16,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"earth","level":1,"experience":81,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"earth","level":1,"experience":45,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":1,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149860_0","name":"Маг 1","faction":"water","level":1,"experience":41,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":1,"tier":1},"frost_armor":{"name":"Frost Armor","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149860_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-16T14:59:55.105Z'
+    '2025-08-24T22:39:09.860Z'
 );
 
 INSERT INTO players (
@@ -61,23 +61,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -3,
-    'LightningBolt',
-    785,
-    34,
-    37,
-    71,
-    'fire',
-    17,
+    'Некромаг',
+    523,
+    69,
+    77,
+    146,
+    'wind',
+    25,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"fire","level":3,"experience":137,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":2,"tier":1},"fireball":{"name":"Fireball","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149860_0","name":"Маг 1","faction":"wind","level":3,"experience":138,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","lightning_bolt"]},{"id":"wizard_bot_1763419149860_1","name":"Маг 2","faction":"wind","level":1,"experience":19,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":1,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149860_0","wizard_bot_1763419149860_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-04T14:59:55.105Z'
+    '2025-06-02T22:39:09.860Z'
 );
 
 INSERT INTO players (
@@ -87,23 +87,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -4,
-    'MountainKing',
-    115,
-    32,
-    39,
-    71,
-    'nature',
-    24,
+    'Терраформер',
+    250,
+    37,
+    43,
+    80,
+    'wind',
+    14,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"nature","level":2,"experience":65,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"nature","level":2,"experience":134,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":1,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149860_0","name":"Маг 1","faction":"wind","level":2,"experience":8,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":1,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149860_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-30T14:59:55.105Z'
+    '2025-08-18T22:39:09.860Z'
 );
 
 INSERT INTO players (
@@ -113,23 +113,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -5,
-    'КраснаяВедьма',
-    124,
-    90,
-    108,
-    198,
+    'Фризер',
+    400,
+    44,
+    50,
+    94,
     'wind',
-    16,
+    15,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"wind","level":2,"experience":79,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":1,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149860_0","name":"Маг 1","faction":"wind","level":3,"experience":60,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":2,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149860_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-22T14:59:55.105Z'
+    '2025-06-22T22:39:09.860Z'
 );
 
 INSERT INTO players (
@@ -139,23 +139,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -6,
-    'Блейз',
-    371,
-    78,
-    89,
-    167,
-    'nature',
-    15,
+    'Темпест',
+    534,
+    56,
+    62,
+    118,
+    'poison',
+    25,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"nature","level":2,"experience":51,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":1,"tier":1},"heal":{"name":"Heal","level":1,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149860_0","name":"Маг 1","faction":"poison","level":2,"experience":100,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","venom_spit"]},{"id":"wizard_bot_1763419149860_1","name":"Маг 2","faction":"poison","level":2,"experience":15,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":2,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149860_0","wizard_bot_1763419149860_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-03T14:59:55.105Z'
+    '2025-05-23T22:39:09.860Z'
 );
 
 INSERT INTO players (
@@ -165,23 +165,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -7,
-    'ProMage2024',
-    52,
-    22,
-    27,
-    49,
-    'water',
-    27,
+    'Пламенный',
+    791,
+    33,
+    35,
+    68,
+    'earth',
+    14,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"water","level":2,"experience":45,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"water","level":3,"experience":33,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":2,"tier":1},"frost_armor":{"name":"Frost Armor","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"earth","level":1,"experience":39,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","stone_throw"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":1,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-21T14:59:55.105Z'
+    '2025-10-14T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -191,23 +191,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -8,
-    'Терра',
-    733,
-    14,
-    16,
-    30,
-    'earth',
-    26,
+    'RockSolid',
+    95,
+    66,
+    81,
+    147,
+    'poison',
+    24,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"earth","level":3,"experience":187,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"earth","level":1,"experience":56,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":2,"tier":1},"earth_armor":{"name":"Earth Armor","level":1,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"poison","level":3,"experience":138,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","venom_spit"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"poison","level":2,"experience":149,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":1,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-15T14:59:55.105Z'
+    '2025-09-04T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -217,23 +217,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -9,
-    'Друид',
-    158,
-    79,
-    94,
-    173,
-    'earth',
-    16,
+    'СерыйКардинал',
+    126,
+    47,
+    57,
+    104,
+    'water',
+    25,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"earth","level":1,"experience":4,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":2,"tier":1},"earth_armor":{"name":"Earth Armor","level":1,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"water","level":3,"experience":34,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","icicle"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"water","level":1,"experience":61,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","icicle"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":2,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-21T14:59:55.105Z'
+    '2025-06-26T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -243,23 +243,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -10,
-    'Пламенный',
-    179,
-    55,
-    67,
-    122,
-    'fire',
-    25,
+    'IcyQueen',
+    90,
+    15,
+    20,
+    35,
+    'wind',
+    16,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"fire","level":2,"experience":51,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"fire","level":1,"experience":19,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":2,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"wind","level":2,"experience":8,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":2,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-15T14:59:55.105Z'
+    '2025-08-30T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -269,23 +269,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -11,
-    'ШаманВетра',
+    'Zeus',
     660,
-    53,
-    58,
-    111,
+    61,
+    67,
+    128,
     'poison',
-    14,
+    24,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"poison","level":3,"experience":97,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"poison","level":1,"experience":36,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","venom_spit"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"poison","level":3,"experience":181,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","venom_spit"]}]'::jsonb,
     '{"poison":{"venom_spit":{"name":"Venom Spit","level":1,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-25T14:59:55.105Z'
+    '2025-10-16T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -295,23 +295,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -12,
-    'Earthquake',
-    435,
-    66,
-    75,
-    141,
+    'ХозяйкаЛьда',
+    552,
+    11,
+    13,
+    24,
     'poison',
-    26,
+    15,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"poison","level":1,"experience":48,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"poison","level":3,"experience":138,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":1,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"poison","level":1,"experience":69,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":1,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-27T14:59:55.105Z'
+    '2025-10-02T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -321,23 +321,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -13,
-    'PoisonMaster',
-    864,
-    79,
-    83,
-    162,
-    'wind',
-    27,
+    'Терракот',
+    240,
+    63,
+    74,
+    137,
+    'fire',
+    26,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"wind","level":3,"experience":188,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"wind","level":2,"experience":30,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":2,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"fire","level":2,"experience":88,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","spark"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"fire","level":2,"experience":37,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","spark"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":1,"tier":1},"fireball":{"name":"Fireball","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-05T14:59:55.105Z'
+    '2025-10-06T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -347,23 +347,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -14,
-    'МастерСтихий',
-    884,
-    45,
-    47,
-    92,
-    'wind',
+    'ЛедянойВластелин',
+    703,
+    46,
+    49,
+    95,
+    'earth',
     16,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"wind","level":1,"experience":29,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":1,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"earth","level":1,"experience":60,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","stone_throw"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":2,"tier":1},"earth_armor":{"name":"Earth Armor","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-18T14:59:55.105Z'
+    '2025-06-01T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -373,23 +373,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -15,
-    'Аквилон',
-    531,
-    65,
-    73,
-    138,
-    'fire',
-    25,
+    'EarthShaker',
+    679,
+    26,
+    28,
+    54,
+    'poison',
+    15,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"fire","level":2,"experience":63,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"fire","level":1,"experience":7,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":2,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"poison","level":3,"experience":74,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":2,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-01T14:59:55.105Z'
+    '2025-07-06T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -399,23 +399,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -16,
-    'Инферно',
-    743,
-    86,
-    91,
-    177,
-    'wind',
-    16,
+    'КолдунЯда',
+    306,
+    89,
+    103,
+    192,
+    'poison',
+    17,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"wind","level":1,"experience":60,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":1,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"poison","level":2,"experience":85,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":2,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-30T14:59:55.105Z'
+    '2025-08-18T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -425,23 +425,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -17,
-    'ОракулЗемли',
-    660,
-    23,
-    25,
-    48,
-    'fire',
-    17,
+    'Druid',
+    439,
+    57,
+    65,
+    122,
+    'nature',
+    15,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"fire","level":2,"experience":49,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":2,"tier":1},"fireball":{"name":"Fireball","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"nature","level":3,"experience":34,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":2,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-26T14:59:55.105Z'
+    '2025-09-21T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -451,23 +451,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -18,
-    'Огнемаг',
-    427,
-    93,
-    105,
-    198,
-    'water',
-    15,
+    'Каменолом',
+    170,
+    55,
+    65,
+    120,
+    'earth',
+    24,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"water","level":3,"experience":204,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":2,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"earth","level":1,"experience":82,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","stone_throw"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"earth","level":2,"experience":37,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","stone_throw"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":1,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-02T14:59:55.105Z'
+    '2025-09-02T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -477,23 +477,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -19,
-    'МагическийРыцарь',
-    75,
-    70,
-    85,
-    155,
-    'water',
-    26,
+    'VineWhip',
+    371,
+    36,
+    42,
+    78,
+    'earth',
+    16,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"water","level":3,"experience":200,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"water","level":2,"experience":140,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":1,"tier":1},"frost_armor":{"name":"Frost Armor","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"earth","level":3,"experience":4,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earth_armor"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":2,"tier":1},"earth_armor":{"name":"Earth Armor","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-13T14:59:55.105Z'
+    '2025-08-20T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -503,23 +503,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -20,
-    'Терракс',
-    680,
-    11,
-    12,
-    23,
-    'fire',
-    15,
+    'ХранительЛеса',
+    258,
+    60,
+    71,
+    131,
+    'water',
+    25,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"fire","level":1,"experience":10,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":2,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"water","level":1,"experience":85,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","icicle"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"water","level":1,"experience":28,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","icicle"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":2,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-16T14:59:55.105Z'
+    '2025-10-03T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -529,23 +529,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -21,
-    'Грозовой',
-    581,
-    32,
-    36,
-    68,
-    'poison',
-    14,
+    'ОтравительДуш',
+    625,
+    94,
+    103,
+    197,
+    'nature',
+    25,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"poison","level":1,"experience":62,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":1,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"nature","level":2,"experience":90,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"nature","level":3,"experience":155,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":1,"tier":1},"heal":{"name":"Heal","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-23T14:59:55.105Z'
+    '2025-08-23T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -555,23 +555,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -22,
-    'NatureMage',
-    494,
-    90,
-    101,
-    191,
-    'poison',
-    26,
+    'Ignition',
+    663,
+    74,
+    80,
+    154,
+    'wind',
+    15,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"poison","level":1,"experience":73,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"poison","level":3,"experience":199,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":1,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"wind","level":2,"experience":111,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":1,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-15T14:59:55.105Z'
+    '2025-09-12T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -581,23 +581,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -23,
-    'IceWizard777',
-    931,
-    67,
-    68,
-    135,
-    'earth',
-    24,
+    'ШаманВетра',
+    520,
+    41,
+    46,
+    87,
+    'nature',
+    16,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"earth","level":2,"experience":79,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"earth","level":1,"experience":25,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":1,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"nature","level":1,"experience":72,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","heal"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":1,"tier":1},"heal":{"name":"Heal","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-03T14:59:55.105Z'
+    '2025-06-15T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -607,23 +607,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -24,
-    'Морозко',
-    651,
-    84,
-    91,
-    175,
-    'wind',
-    25,
+    'ОгненныйДракон',
+    670,
+    41,
+    45,
+    86,
+    'nature',
+    24,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"wind","level":3,"experience":13,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"wind","level":1,"experience":58,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":1,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":1,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"nature","level":1,"experience":83,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","thorn"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"nature","level":2,"experience":19,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":1,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-23T14:59:55.105Z'
+    '2025-09-10T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -633,23 +633,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -25,
-    'ForestQueen',
-    483,
-    47,
-    53,
-    100,
-    'earth',
-    24,
+    'Infernalist',
+    289,
+    35,
+    42,
+    77,
+    'water',
+    17,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"earth","level":1,"experience":6,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"earth","level":3,"experience":67,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":1,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"water","level":2,"experience":55,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":2,"tier":1},"frost_armor":{"name":"Frost Armor","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-25T14:59:55.105Z'
+    '2025-05-29T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -659,23 +659,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -26,
-    'PoisonQueen13',
-    126,
-    41,
-    49,
-    90,
-    'wind',
-    14,
+    'КраснаяВедьма',
+    179,
+    9,
+    12,
+    21,
+    'poison',
+    27,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"wind","level":2,"experience":138,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":1,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"poison","level":2,"experience":104,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"poison","level":3,"experience":118,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":2,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-03T14:59:55.105Z'
+    '2025-07-05T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -685,23 +685,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -27,
-    'Страта',
-    702,
-    70,
-    76,
-    146,
-    'poison',
-    16,
+    'LightningBolt',
+    410,
+    34,
+    40,
+    74,
+    'wind',
+    24,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"poison","level":2,"experience":79,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":2,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":1,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"wind","level":1,"experience":19,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","gust"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"wind","level":1,"experience":60,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":1,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-21T14:59:55.105Z'
+    '2025-06-21T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -711,23 +711,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -28,
-    'NatureKing420',
-    727,
-    76,
-    81,
-    157,
-    'fire',
-    16,
+    'Фростбайт',
+    170,
+    32,
+    38,
+    70,
+    'nature',
+    25,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"fire","level":3,"experience":168,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":2,"tier":1},"fireball":{"name":"Fireball","level":1,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"nature","level":2,"experience":102,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","thorn"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"nature","level":2,"experience":94,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":2,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-27T14:59:55.105Z'
+    '2025-06-20T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -737,23 +737,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -29,
-    'Фризер',
-    855,
-    41,
-    44,
-    85,
-    'poison',
-    15,
+    'Инферно',
+    446,
+    42,
+    49,
+    91,
+    'water',
+    25,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"poison","level":3,"experience":72,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":2,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"water","level":1,"experience":93,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"water","level":3,"experience":127,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":1,"tier":1},"frost_armor":{"name":"Frost Armor","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-09T14:59:55.105Z'
+    '2025-10-08T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -763,23 +763,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -30,
-    'МагОгня',
-    692,
-    60,
-    64,
+    'Aeromancer',
+    940,
+    61,
+    63,
     124,
-    'earth',
-    25,
+    'poison',
+    15,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"earth","level":1,"experience":23,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"earth","level":2,"experience":133,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":2,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"poison","level":2,"experience":71,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":1,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-14T14:59:55.105Z'
+    '2025-05-21T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -789,23 +789,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -31,
-    'Флора',
-    160,
-    21,
+    'FireStorm',
+    781,
+    9,
+    11,
+    20,
+    'water',
     27,
-    48,
-    'wind',
-    15,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"wind","level":3,"experience":191,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":1,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":1,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"water","level":1,"experience":48,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"water","level":1,"experience":74,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":2,"tier":1},"frost_armor":{"name":"Frost Armor","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-23T14:59:55.105Z'
+    '2025-06-19T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -815,23 +815,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -32,
-    'МогучийВолшебник',
-    194,
-    40,
-    49,
-    89,
-    'poison',
-    17,
+    'Морозко33',
+    747,
+    11,
+    12,
+    23,
+    'nature',
+    15,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"poison","level":3,"experience":148,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":2,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"nature","level":3,"experience":220,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","heal"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":1,"tier":1},"heal":{"name":"Heal","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-08T14:59:55.105Z'
+    '2025-09-27T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -841,23 +841,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -33,
-    'ЗеленыйДруид',
-    132,
-    30,
-    37,
-    67,
+    'ДревнийЛес715',
+    202,
+    20,
+    24,
+    44,
     'wind',
-    25,
+    15,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"wind","level":2,"experience":23,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"wind","level":1,"experience":47,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"wind","level":2,"experience":95,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","gust"]}]'::jsonb,
     '{"wind":{"gust":{"name":"Gust","level":2,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-29T14:59:55.105Z'
+    '2025-09-22T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -867,23 +867,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -34,
-    'BlazeMage',
-    481,
-    18,
-    22,
-    40,
-    'water',
-    15,
+    'DeathTouch',
+    175,
+    13,
+    16,
+    29,
+    'earth',
+    25,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"water","level":1,"experience":21,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":2,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"earth","level":2,"experience":6,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","stone_throw"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"earth","level":2,"experience":75,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earth_armor"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":1,"tier":1},"earth_armor":{"name":"Earth Armor","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-13T14:59:55.105Z'
+    '2025-09-29T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -893,23 +893,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -35,
-    'ОтравительДуш',
-    330,
-    18,
-    21,
-    39,
-    'wind',
+    'ПовелительБури',
+    384,
+    87,
+    100,
+    187,
+    'poison',
     25,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"wind","level":3,"experience":207,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"wind","level":1,"experience":97,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":1,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":1,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"poison","level":1,"experience":6,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","venom_spit"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"poison","level":2,"experience":80,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":2,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-07T14:59:55.105Z'
+    '2025-10-13T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -919,23 +919,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -36,
-    'ЛедянойВластелин',
-    246,
-    12,
-    14,
-    26,
-    'fire',
-    14,
+    'Аркти',
+    56,
+    67,
+    82,
+    149,
+    'wind',
+    15,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"fire","level":3,"experience":80,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":1,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"wind","level":1,"experience":35,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":2,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-16T14:59:55.105Z'
+    '2025-06-08T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -945,23 +945,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -37,
-    'Druid',
-    349,
-    77,
-    89,
-    166,
-    'water',
-    14,
+    'Зефир',
+    815,
+    80,
+    84,
+    164,
+    'wind',
+    15,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"water","level":3,"experience":148,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":1,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"wind","level":1,"experience":8,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":2,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-30T14:59:55.105Z'
+    '2025-06-16T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -971,23 +971,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -38,
-    'Pyromancer',
-    621,
-    78,
-    85,
-    163,
-    'earth',
-    14,
+    'Огнемаг',
+    709,
+    39,
+    42,
+    81,
+    'wind',
+    17,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"earth","level":3,"experience":217,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":1,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"wind","level":2,"experience":66,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":2,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-06T14:59:55.105Z'
+    '2025-10-14T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -997,23 +997,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -39,
-    'Шокер',
-    513,
-    26,
-    30,
-    56,
+    'FireLord',
+    160,
+    44,
+    53,
+    97,
     'wind',
-    16,
+    24,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"wind","level":2,"experience":10,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":1,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"wind","level":1,"experience":54,"exp_to_next":100,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","gust"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"wind","level":3,"experience":94,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":1,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-28T14:59:55.105Z'
+    '2025-06-04T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -1023,23 +1023,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -40,
-    'IceAge642',
-    585,
-    36,
-    41,
-    77,
+    'FireMage228',
+    194,
+    75,
+    90,
+    165,
     'wind',
-    15,
+    17,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"wind","level":2,"experience":32,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":1,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":1,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0",null,null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"wind","level":3,"experience":50,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":2,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0",null,null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":1},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-15T14:59:55.105Z'
+    '2025-06-03T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -1049,23 +1049,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -41,
-    'Лесной',
-    1329,
-    17,
-    16,
-    33,
-    'earth',
-    39,
+    'NatureMage',
+    1397,
+    11,
+    11,
+    22,
+    'poison',
+    31,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"earth","level":4,"experience":128,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"earth","level":3,"experience":116,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_2","name":"Маг 3","faction":"earth","level":2,"experience":78,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":2,"tier":1},"earth_armor":{"name":"Earth Armor","level":3,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1","wizard_bot_1763305195105_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"poison","level":4,"experience":86,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","plague"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"poison","level":2,"experience":62,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":2,"tier":2},"plague":{"name":"Plague","level":2,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-04T14:59:55.105Z'
+    '2025-09-25T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -1075,23 +1075,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -42,
-    'Флора9',
-    1339,
-    26,
-    26,
-    52,
-    'earth',
-    41,
+    'ЖрецОгня',
+    1362,
+    23,
+    22,
+    45,
+    'nature',
+    27,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"earth","level":3,"experience":147,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"earth","level":4,"experience":269,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_2","name":"Маг 3","faction":"earth","level":5,"experience":411,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":1,"tier":1},"earth_armor":{"name":"Earth Armor","level":3,"tier":2},"stone_wall":{"name":"Stone Wall","level":3,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1","wizard_bot_1763305195105_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"nature","level":4,"experience":0,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","heal"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"nature","level":4,"experience":95,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":2,"tier":1},"heal":{"name":"Heal","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-23T14:59:55.105Z'
+    '2025-09-01T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -1101,23 +1101,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -43,
-    'Toxicologist',
-    1232,
-    55,
-    53,
-    108,
-    'fire',
-    39,
+    'NatureMage128',
+    1385,
+    26,
+    25,
+    51,
+    'nature',
+    40,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"fire","level":5,"experience":131,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"fire","level":5,"experience":131,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_2","name":"Маг 3","faction":"fire","level":5,"experience":133,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":3,"tier":1},"fireball":{"name":"Fireball","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1","wizard_bot_1763305195105_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"nature","level":5,"experience":92,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","vine_snare"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"nature","level":4,"experience":265,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]},{"id":"wizard_bot_1763419149861_2","name":"Маг 3","faction":"nature","level":2,"experience":59,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":2,"tier":1},"heal":{"name":"Heal","level":2,"tier":2},"vine_snare":{"name":"Vine Snare","level":2,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1","wizard_bot_1763419149861_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-05T14:59:55.105Z'
+    '2025-10-15T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -1127,23 +1127,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -44,
-    'Aeromancer',
-    1310,
-    43,
-    42,
-    85,
-    'fire',
-    40,
+    'Электрон',
+    1117,
+    46,
+    46,
+    92,
+    'earth',
+    29,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195105_0","name":"Маг 1","faction":"fire","level":5,"experience":68,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_1","name":"Маг 2","faction":"fire","level":4,"experience":50,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195105_2","name":"Маг 3","faction":"fire","level":5,"experience":343,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":2,"tier":1},"fireball":{"name":"Fireball","level":3,"tier":2},"flame_shield":{"name":"Flame Shield","level":1,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195105_0","wizard_bot_1763305195105_1","wizard_bot_1763305195105_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"earth","level":3,"experience":73,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","stone_wall"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"earth","level":2,"experience":57,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earth_armor"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":2,"tier":1},"earth_armor":{"name":"Earth Armor","level":2,"tier":2},"stone_wall":{"name":"Stone Wall","level":1,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-08T14:59:55.106Z'
+    '2025-08-22T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -1153,23 +1153,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -45,
-    'Алхимик',
-    1425,
-    88,
-    81,
-    169,
-    'water',
-    29,
+    'Venom',
+    1045,
+    37,
+    37,
+    74,
+    'nature',
+    39,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":4,"experience":50,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":3,"experience":130,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1},"frost_armor":{"name":"Frost Armor","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"nature","level":2,"experience":84,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"nature","level":3,"experience":180,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","heal"]},{"id":"wizard_bot_1763419149861_2","name":"Маг 3","faction":"nature","level":3,"experience":17,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":3,"tier":1},"heal":{"name":"Heal","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1","wizard_bot_1763419149861_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-17T14:59:55.106Z'
+    '2025-10-16T22:39:09.861Z'
 );
 
 INSERT INTO players (
@@ -1179,23 +1179,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -46,
-    'Страта466',
-    1320,
-    40,
-    38,
-    78,
-    'water',
-    32,
+    'StormMaster666',
+    1096,
+    96,
+    95,
+    191,
+    'nature',
+    35,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":4,"experience":149,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":5,"experience":124,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1},"frost_armor":{"name":"Frost Armor","level":3,"tier":2},"ice_wall":{"name":"Ice Wall","level":2,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149861_0","name":"Маг 1","faction":"nature","level":5,"experience":189,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","thorn"]},{"id":"wizard_bot_1763419149861_1","name":"Маг 2","faction":"nature","level":2,"experience":14,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","thorn"]},{"id":"wizard_bot_1763419149861_2","name":"Маг 3","faction":"nature","level":5,"experience":274,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":1,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149861_0","wizard_bot_1763419149861_1","wizard_bot_1763419149861_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-07T14:59:55.106Z'
+    '2025-08-11T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1205,23 +1205,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -47,
-    'DeathTouch',
-    1408,
-    53,
-    50,
-    103,
-    'nature',
-    35,
+    'ForestQueen',
+    1433,
+    33,
+    32,
+    65,
+    'fire',
+    29,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"nature","level":2,"experience":132,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"nature","level":5,"experience":178,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"nature","level":4,"experience":157,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":1,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"fire","level":4,"experience":317,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","spark"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"fire","level":4,"experience":272,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","spark"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":3,"tier":1},"fireball":{"name":"Fireball","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-26T14:59:55.106Z'
+    '2025-08-13T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1231,23 +1231,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -48,
-    'Электромаг213',
-    1150,
-    74,
-    73,
-    147,
-    'nature',
-    32,
+    'Вольт',
+    1428,
+    65,
+    60,
+    125,
+    'poison',
+    37,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"nature","level":2,"experience":18,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"nature","level":3,"experience":26,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":2,"tier":1},"heal":{"name":"Heal","level":3,"tier":2},"vine_snare":{"name":"Vine Snare","level":3,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"poison","level":4,"experience":199,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","venom_spit"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"poison","level":4,"experience":206,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","venom_spit"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"poison","level":3,"experience":24,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-19T14:59:55.106Z'
+    '2025-06-14T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1257,23 +1257,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -49,
-    'Отравитель',
-    1299,
-    46,
-    44,
-    90,
-    'nature',
-    26,
+    'МастерЯдов343',
+    1304,
+    68,
+    64,
+    132,
+    'water',
+    40,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"nature","level":4,"experience":79,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"nature","level":2,"experience":114,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":1,"tier":1},"heal":{"name":"Heal","level":1,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"water","level":3,"experience":137,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"water","level":3,"experience":166,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","ice_wall"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"water","level":4,"experience":192,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","frost_armor"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1},"frost_armor":{"name":"Frost Armor","level":2,"tier":2},"ice_wall":{"name":"Ice Wall","level":1,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-23T14:59:55.106Z'
+    '2025-09-29T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1283,23 +1283,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -50,
-    'Токсик',
-    1127,
+    'Алхимик',
+    1330,
+    65,
     61,
-    60,
-    121,
-    'poison',
-    28,
+    126,
+    'nature',
+    26,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"poison","level":5,"experience":361,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"poison","level":5,"experience":241,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":1,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"nature","level":4,"experience":165,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"nature","level":2,"experience":51,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":1,"tier":1},"heal":{"name":"Heal","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-20T14:59:55.106Z'
+    '2025-10-05T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1309,23 +1309,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -51,
-    'NoobSlayer497',
-    1046,
-    91,
-    91,
-    182,
-    'nature',
-    25,
+    'Pyromancer',
+    1207,
+    53,
+    52,
+    105,
+    'earth',
+    26,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"nature","level":3,"experience":18,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"nature","level":3,"experience":62,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":1,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"earth","level":2,"experience":32,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","stone_throw"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"earth","level":5,"experience":333,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","stone_throw"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":2,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-09T14:59:55.106Z'
+    '2025-09-04T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1335,23 +1335,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -52,
-    'ТемныйВолшебник',
-    1209,
-    63,
-    62,
-    125,
+    'ОракулЗемли',
+    1020,
+    55,
+    55,
+    110,
     'earth',
-    40,
+    35,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"earth","level":3,"experience":113,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"earth","level":2,"experience":51,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"earth","level":2,"experience":131,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":3,"tier":1},"earth_armor":{"name":"Earth Armor","level":2,"tier":2},"stone_wall":{"name":"Stone Wall","level":1,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"earth","level":3,"experience":83,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","stone_throw"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"earth","level":3,"experience":106,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","stone_throw"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"earth","level":4,"experience":212,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","stone_throw"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":1,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-04T14:59:55.106Z'
+    '2025-08-06T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1361,23 +1361,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -53,
-    'Granite',
-    1125,
-    24,
-    25,
-    49,
-    'poison',
-    32,
+    'Geomancer279',
+    1027,
+    13,
+    14,
+    27,
+    'water',
+    37,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"poison","level":3,"experience":110,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"poison","level":5,"experience":349,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":2,"tier":2},"plague":{"name":"Plague","level":3,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"water","level":4,"experience":8,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"water","level":3,"experience":202,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"water","level":4,"experience":235,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":2,"tier":1},"frost_armor":{"name":"Frost Armor","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-30T14:59:55.106Z'
+    '2025-08-06T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1387,23 +1387,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -54,
-    'Буревестник',
-    1466,
-    33,
-    31,
-    64,
-    'water',
-    30,
+    'Электромаг',
+    1090,
+    29,
+    29,
+    58,
+    'poison',
+    26,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":5,"experience":199,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":2,"experience":54,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":1,"tier":1},"frost_armor":{"name":"Frost Armor","level":2,"tier":2},"ice_wall":{"name":"Ice Wall","level":3,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"poison","level":2,"experience":14,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","venom_spit"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"poison","level":4,"experience":118,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":2,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-05T14:59:55.106Z'
+    '2025-08-12T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1413,23 +1413,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -55,
-    'Terraformer',
-    1211,
-    86,
-    83,
-    169,
-    'poison',
-    39,
+    'Зевс',
+    1476,
+    87,
+    81,
+    168,
+    'fire',
+    28,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"poison","level":4,"experience":163,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"poison","level":2,"experience":53,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"poison","level":4,"experience":163,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":1,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":1,"tier":2},"plague":{"name":"Plague","level":3,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"fire","level":3,"experience":134,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","fireball"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"fire","level":4,"experience":61,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","fireball"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":2,"tier":1},"fireball":{"name":"Fireball","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-14T14:59:55.106Z'
+    '2025-06-12T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1439,23 +1439,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -56,
-    'СерыйКардинал',
-    1452,
-    38,
-    36,
-    74,
+    'ЗащитникЗемли',
+    1477,
+    26,
+    25,
+    51,
     'water',
-    27,
+    28,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":2,"experience":27,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":4,"experience":40,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"water","level":3,"experience":159,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"water","level":2,"experience":79,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":1,"tier":1},"frost_armor":{"name":"Frost Armor","level":3,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-03T14:59:55.106Z'
+    '2025-09-30T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1465,23 +1465,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -57,
-    'ДриадЛеса',
-    1276,
-    10,
-    11,
-    21,
-    'water',
-    42,
+    'Флора',
+    1210,
+    15,
+    16,
+    31,
+    'poison',
+    28,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":4,"experience":220,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":2,"experience":135,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"water","level":5,"experience":13,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":2,"tier":1},"frost_armor":{"name":"Frost Armor","level":3,"tier":2},"ice_wall":{"name":"Ice Wall","level":3,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"poison","level":5,"experience":8,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"poison","level":5,"experience":297,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":1,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-19T14:59:55.106Z'
+    '2025-05-28T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1491,23 +1491,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -58,
-    'ЛедянойВластелин82',
-    1310,
-    64,
-    62,
-    126,
-    'nature',
-    27,
+    'Архонт',
+    1423,
+    103,
+    95,
+    198,
+    'fire',
+    31,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"nature","level":3,"experience":201,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"nature","level":3,"experience":76,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":3,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"fire","level":5,"experience":187,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","spark"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"fire","level":4,"experience":294,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","flame_shield"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":3,"tier":1},"fireball":{"name":"Fireball","level":2,"tier":2},"flame_shield":{"name":"Flame Shield","level":2,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-09T14:59:55.106Z'
+    '2025-06-25T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1517,23 +1517,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -59,
-    'StormMaster666',
-    1046,
-    45,
-    46,
-    91,
-    'nature',
-    26,
+    'xXx_Merlin_xXx',
+    1237,
+    83,
+    81,
+    164,
+    'fire',
+    40,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"nature","level":5,"experience":163,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"nature","level":4,"experience":225,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":2,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"fire","level":5,"experience":373,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","fireball"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"fire","level":2,"experience":148,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","fireball"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"fire","level":5,"experience":342,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","fireball"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":1,"tier":1},"fireball":{"name":"Fireball","level":2,"tier":2},"flame_shield":{"name":"Flame Shield","level":3,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-19T14:59:55.106Z'
+    '2025-07-31T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1543,23 +1543,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -60,
-    'PlagueDoctor',
-    1100,
-    70,
-    70,
-    140,
+    'МастерЯдов',
+    1456,
+    71,
+    65,
+    136,
     'water',
-    28,
+    38,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":3,"experience":219,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":4,"experience":12,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":2,"tier":1},"frost_armor":{"name":"Frost Armor","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"water","level":5,"experience":424,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","ice_wall"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"water","level":4,"experience":37,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","ice_wall"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"water","level":4,"experience":150,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","icicle"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":1,"tier":1},"frost_armor":{"name":"Frost Armor","level":2,"tier":2},"ice_wall":{"name":"Ice Wall","level":1,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-31T14:59:55.106Z'
+    '2025-05-27T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1569,23 +1569,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -61,
-    'Venom',
-    1062,
-    15,
-    16,
-    31,
-    'water',
-    42,
+    'ШаманВетра841',
+    1377,
+    65,
+    62,
+    127,
+    'earth',
+    29,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":4,"experience":331,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":4,"experience":195,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"water","level":4,"experience":326,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1},"frost_armor":{"name":"Frost Armor","level":2,"tier":2},"ice_wall":{"name":"Ice Wall","level":3,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"earth","level":2,"experience":68,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earth_armor"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"earth","level":3,"experience":64,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earth_armor"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":2,"tier":1},"earth_armor":{"name":"Earth Armor","level":3,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-12T14:59:55.106Z'
+    '2025-09-07T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1595,23 +1595,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -62,
-    'Gaia',
-    1301,
-    44,
-    42,
-    86,
-    'earth',
-    36,
+    'МагТьмы',
+    1071,
+    71,
+    71,
+    142,
+    'water',
+    29,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"earth","level":2,"experience":66,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"earth","level":3,"experience":72,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"earth","level":4,"experience":241,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":2,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"water","level":5,"experience":475,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","icicle"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"water","level":2,"experience":112,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","frost_armor"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1},"frost_armor":{"name":"Frost Armor","level":1,"tier":2},"ice_wall":{"name":"Ice Wall","level":1,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-27T14:59:55.106Z'
+    '2025-07-05T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1621,23 +1621,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -63,
-    'ЖрецОгня',
-    1274,
-    91,
-    88,
-    179,
-    'water',
+    'Сильва826',
+    1320,
     37,
+    35,
+    72,
+    'nature',
+    29,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":2,"experience":55,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":5,"experience":63,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"water","level":2,"experience":32,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"nature","level":2,"experience":94,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","heal"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"nature","level":5,"experience":199,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","heal"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":2,"tier":1},"heal":{"name":"Heal","level":3,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-19T14:59:55.106Z'
+    '2025-09-27T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1647,23 +1647,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -64,
-    'LightMage777',
-    1044,
-    36,
+    'MagicMaster',
+    1130,
+    60,
+    59,
+    119,
+    'water',
     37,
-    73,
-    'earth',
-    39,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"earth","level":2,"experience":121,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"earth","level":5,"experience":216,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"earth","level":3,"experience":80,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":2,"tier":1},"earth_armor":{"name":"Earth Armor","level":3,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"water","level":3,"experience":91,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","icicle"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"water","level":4,"experience":273,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","icicle"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"water","level":3,"experience":109,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","icicle"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-28T14:59:55.106Z'
+    '2025-06-18T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1673,23 +1673,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -65,
-    'Cryomancer',
-    1187,
-    66,
-    65,
-    131,
-    'earth',
+    'Фризер209',
+    1333,
+    39,
     37,
+    76,
+    'earth',
+    41,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"earth","level":4,"experience":29,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"earth","level":2,"experience":100,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"earth","level":4,"experience":159,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":1,"tier":1},"earth_armor":{"name":"Earth Armor","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"earth","level":3,"experience":210,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","earth_armor"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"earth","level":5,"experience":444,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","stone_wall"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"earth","level":3,"experience":147,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","stone_throw"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":3,"tier":1},"earth_armor":{"name":"Earth Armor","level":3,"tier":2},"stone_wall":{"name":"Stone Wall","level":1,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-03T14:59:55.106Z'
+    '2025-08-02T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1699,23 +1699,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -66,
-    'ЧернаяВдова',
-    1294,
-    98,
-    93,
-    191,
-    'earth',
-    37,
+    'ToxicRain',
+    1172,
+    92,
+    90,
+    182,
+    'nature',
+    25,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"earth","level":5,"experience":129,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"earth","level":3,"experience":22,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"earth","level":3,"experience":63,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":1,"tier":1},"earth_armor":{"name":"Earth Armor","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"nature","level":4,"experience":110,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","thorn"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"nature","level":5,"experience":449,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":1,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-03T14:59:55.106Z'
+    '2025-08-05T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1725,23 +1725,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -67,
-    'СветлыйМаг',
-    1114,
-    17,
-    17,
+    'Electro',
+    1150,
     34,
-    'water',
-    37,
+    33,
+    67,
+    'nature',
+    40,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":3,"experience":97,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":3,"experience":192,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"water","level":2,"experience":2,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"nature","level":5,"experience":5,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","heal"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"nature","level":3,"experience":177,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","heal"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"nature","level":3,"experience":98,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":3,"tier":1},"heal":{"name":"Heal","level":3,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-20T14:59:55.106Z'
+    '2025-07-18T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1751,23 +1751,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -68,
-    'Зевс',
-    1088,
-    72,
-    71,
-    143,
-    'nature',
-    39,
+    'Венома',
+    1091,
+    27,
+    27,
+    54,
+    'wind',
+    26,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"nature","level":4,"experience":45,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"nature","level":4,"experience":39,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"nature","level":2,"experience":118,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":1,"tier":1},"heal":{"name":"Heal","level":3,"tier":2},"vine_snare":{"name":"Vine Snare","level":1,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"wind","level":5,"experience":377,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","gust"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"wind","level":4,"experience":144,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":2,"tier":1}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1",null,null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-29T14:59:55.106Z'
+    '2025-06-12T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1777,23 +1777,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -69,
-    'Азар',
-    1212,
-    44,
-    43,
-    87,
-    'poison',
+    'Геомант',
+    1352,
+    36,
+    35,
+    71,
+    'water',
     39,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"poison","level":3,"experience":69,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"poison","level":3,"experience":107,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"poison","level":3,"experience":176,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":1,"tier":2},"plague":{"name":"Plague","level":1,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"water","level":3,"experience":224,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"water","level":2,"experience":97,"exp_to_next":150,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"water","level":3,"experience":9,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":2,"tier":1},"frost_armor":{"name":"Frost Armor","level":3,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-25T14:59:55.106Z'
+    '2025-07-27T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1803,23 +1803,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -70,
-    'LifeBloom',
-    1184,
-    29,
-    29,
-    58,
-    'wind',
-    30,
+    'FrostBite',
+    1159,
+    66,
+    64,
+    130,
+    'poison',
+    39,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"wind","level":5,"experience":228,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"wind","level":4,"experience":131,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":2,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":3,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":1,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1",null,null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"poison","level":3,"experience":168,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"poison","level":3,"experience":39,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"poison","level":3,"experience":221,"exp_to_next":225,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":2},"blessing_tower":{"level":1}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-03T14:59:55.106Z'
+    '2025-08-10T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1829,23 +1829,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -71,
-    'AbsoluteZero',
-    1749,
-    94,
-    82,
-    176,
-    'earth',
+    'Блейз',
+    1930,
+    28,
+    24,
     52,
+    'earth',
+    54,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"earth","level":7,"experience":250,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"earth","level":6,"experience":265,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"earth","level":4,"experience":19,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"earth","level":7,"experience":847,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":3,"tier":1},"earth_armor":{"name":"Earth Armor","level":3,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"earth","level":4,"experience":48,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","stone_throw"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"earth","level":7,"experience":421,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earth_armor"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"earth","level":6,"experience":74,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","stone_throw"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"earth","level":7,"experience":776,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earth_armor"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":2,"tier":1},"earth_armor":{"name":"Earth Armor","level":2,"tier":2},"stone_wall":{"name":"Stone Wall","level":4,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-18T14:59:55.106Z'
+    '2025-09-07T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1855,23 +1855,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -72,
-    'DeathWizard13',
-    1575,
-    102,
+    'Сильва745',
+    1580,
+    48,
+    44,
     92,
-    194,
-    'earth',
-    49,
+    'wind',
+    61,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"earth","level":6,"experience":616,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"earth","level":4,"experience":152,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"earth","level":5,"experience":195,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":2,"tier":1},"earth_armor":{"name":"Earth Armor","level":3,"tier":2},"stone_wall":{"name":"Stone Wall","level":4,"tier":3},"earthquake":{"name":"Earthquake","level":4,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"wind","level":4,"experience":158,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","wind_barrier"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"wind","level":5,"experience":446,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","wind_barrier"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"wind","level":5,"experience":236,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["wind_barrier","lightning_bolt"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"wind","level":7,"experience":312,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":4,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":4,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":4,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":3,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-29T14:59:55.106Z'
+    '2025-08-05T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1881,23 +1881,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -73,
-    'Blossom',
-    1602,
-    78,
-    70,
-    148,
-    'poison',
-    44,
+    'СветлыйМаг',
+    1873,
+    97,
+    82,
+    179,
+    'wind',
+    43,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"poison","level":6,"experience":737,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"poison","level":4,"experience":182,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"poison","level":4,"experience":126,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":2,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":3,"tier":2},"plague":{"name":"Plague","level":3,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"wind","level":6,"experience":575,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["wind_barrier","lightning_bolt"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"wind","level":4,"experience":156,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"wind","level":4,"experience":82,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["wind_barrier","lightning_bolt"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":2,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":3,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":2,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-06T14:59:55.106Z'
+    '2025-07-04T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1907,23 +1907,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -74,
-    'Granite650',
-    1906,
-    83,
-    70,
-    153,
+    'IceWizard777',
+    1582,
+    25,
+    23,
+    48,
     'wind',
-    52,
+    56,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"wind","level":6,"experience":94,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"wind","level":5,"experience":90,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"wind","level":4,"experience":275,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"wind","level":6,"experience":332,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":2,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":4,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"wind","level":6,"experience":327,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","wind_barrier"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"wind","level":4,"experience":165,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["wind_barrier","lightning_bolt"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"wind","level":6,"experience":266,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["wind_barrier","gust"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"wind","level":6,"experience":334,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","wind_barrier"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":4,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":4,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":2,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-08T14:59:55.106Z'
+    '2025-08-21T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1933,23 +1933,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -75,
-    'PoisonMaster135',
-    1753,
+    'LifeBloom',
+    1672,
     100,
-    87,
-    187,
-    'wind',
-    48,
+    88,
+    188,
+    'nature',
+    59,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"wind","level":4,"experience":80,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"wind","level":4,"experience":53,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"wind","level":6,"experience":262,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":3,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":3,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":3,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":3,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"nature","level":5,"experience":177,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","poison_cloud"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"nature","level":5,"experience":494,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","heal"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"nature","level":4,"experience":300,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","poison_cloud"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"nature","level":7,"experience":294,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","heal"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":2,"tier":1},"heal":{"name":"Heal","level":4,"tier":2},"vine_snare":{"name":"Vine Snare","level":4,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":3,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-28T14:59:55.106Z'
+    '2025-08-08T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1959,23 +1959,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -76,
-    'Электрон',
-    1773,
-    30,
+    'СильныйМаг',
+    1648,
+    14,
+    13,
     27,
-    57,
-    'nature',
-    59,
+    'poison',
+    55,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"nature","level":7,"experience":243,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"nature","level":7,"experience":71,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"nature","level":5,"experience":201,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"nature","level":4,"experience":278,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":4,"tier":1},"heal":{"name":"Heal","level":3,"tier":2},"vine_snare":{"name":"Vine Snare","level":4,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":2,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"poison","level":6,"experience":277,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","toxic_cloud"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"poison","level":6,"experience":371,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"poison","level":4,"experience":42,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"poison","level":7,"experience":686,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":3,"tier":2},"plague":{"name":"Plague","level":3,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-28T14:59:55.106Z'
+    '2025-10-06T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -1985,23 +1985,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -77,
-    'Фростбайт',
-    1776,
-    61,
-    54,
-    115,
-    'poison',
+    'МогучийВолшебник864',
+    1973,
     60,
+    50,
+    110,
+    'earth',
+    59,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"poison","level":7,"experience":1100,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"poison","level":6,"experience":567,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"poison","level":4,"experience":82,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"poison","level":6,"experience":233,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":3,"tier":2},"plague":{"name":"Plague","level":4,"tier":3},"acid_rain":{"name":"Acid Rain","level":4,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"earth","level":7,"experience":1106,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","stone_throw"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"earth","level":4,"experience":212,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","stone_throw"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"earth","level":5,"experience":385,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earth_armor"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"earth","level":5,"experience":457,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","stone_throw"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":3,"tier":1},"earth_armor":{"name":"Earth Armor","level":2,"tier":2},"stone_wall":{"name":"Stone Wall","level":4,"tier":3},"earthquake":{"name":"Earthquake","level":4,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-05T14:59:55.106Z'
+    '2025-08-16T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2011,23 +2011,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -78,
-    'ЗащитникЗемли42',
-    1811,
-    34,
-    30,
-    64,
-    'earth',
-    47,
+    'Грозовой',
+    1604,
+    27,
+    25,
+    52,
+    'wind',
+    46,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"earth","level":7,"experience":1082,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"earth","level":7,"experience":626,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"earth","level":6,"experience":698,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":3,"tier":1},"earth_armor":{"name":"Earth Armor","level":4,"tier":2},"stone_wall":{"name":"Stone Wall","level":4,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"wind","level":6,"experience":485,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","gust"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"wind","level":4,"experience":108,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","wind_barrier"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"wind","level":6,"experience":748,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","wind_barrier"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":2,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":3,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":3,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":2,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-06T14:59:55.106Z'
+    '2025-07-31T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2037,23 +2037,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -79,
-    'ThunderStrike238',
-    1850,
-    29,
-    26,
-    55,
-    'nature',
-    43,
+    'Кристалл',
+    1755,
+    62,
+    54,
+    116,
+    'fire',
+    44,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"nature","level":6,"experience":269,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"nature","level":6,"experience":115,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"nature","level":6,"experience":190,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":2,"tier":1},"heal":{"name":"Heal","level":3,"tier":2},"vine_snare":{"name":"Vine Snare","level":2,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"fire","level":6,"experience":435,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","spark"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"fire","level":6,"experience":228,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","flame_shield"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"fire","level":5,"experience":288,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","fireball"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":3,"tier":1},"fireball":{"name":"Fireball","level":3,"tier":2},"flame_shield":{"name":"Flame Shield","level":2,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-28T14:59:55.106Z'
+    '2025-06-10T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2063,23 +2063,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -80,
-    'VineWhip',
-    1570,
-    72,
-    66,
-    138,
-    'poison',
-    50,
+    'ShadowWizard',
+    1593,
+    88,
+    80,
+    168,
+    'water',
+    57,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"poison","level":4,"experience":32,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"poison","level":5,"experience":490,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"poison","level":5,"experience":488,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":4,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":4,"tier":2},"plague":{"name":"Plague","level":3,"tier":3},"acid_rain":{"name":"Acid Rain","level":3,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"water","level":5,"experience":379,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"water","level":5,"experience":492,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","ice_wall"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"water","level":6,"experience":579,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"water","level":6,"experience":237,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":4,"tier":1},"frost_armor":{"name":"Frost Armor","level":2,"tier":2},"ice_wall":{"name":"Ice Wall","level":3,"tier":3},"blizzard":{"name":"Blizzard","level":2,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-30T14:59:55.106Z'
+    '2025-09-18T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2089,23 +2089,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -81,
-    'Glacialist901',
-    1667,
-    46,
-    42,
-    88,
-    'water',
-    59,
+    'FrostMage99',
+    1579,
+    61,
+    55,
+    116,
+    'wind',
+    48,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":7,"experience":596,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":7,"experience":43,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"water","level":5,"experience":304,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"water","level":5,"experience":174,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":4,"tier":1},"frost_armor":{"name":"Frost Armor","level":2,"tier":2},"ice_wall":{"name":"Ice Wall","level":4,"tier":3},"blizzard":{"name":"Blizzard","level":3,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"wind","level":5,"experience":164,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","chain_lightning"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"wind","level":4,"experience":71,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","wind_barrier"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"wind","level":7,"experience":667,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","wind_barrier"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":3,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":3,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":4,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":2,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-17T14:59:55.106Z'
+    '2025-08-22T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2115,23 +2115,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -82,
-    'ПовелительМолний',
-    1713,
-    81,
+    'Глация',
+    1723,
+    80,
     71,
-    152,
+    151,
     'nature',
-    51,
+    44,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"nature","level":7,"experience":953,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"nature","level":7,"experience":475,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"nature","level":7,"experience":144,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"nature","level":5,"experience":402,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":3,"tier":1},"heal":{"name":"Heal","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"nature","level":7,"experience":993,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"nature","level":4,"experience":219,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"nature","level":7,"experience":749,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":4,"tier":1},"heal":{"name":"Heal","level":4,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-29T14:59:55.106Z'
+    '2025-07-09T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2141,23 +2141,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -83,
-    'Electro',
-    1765,
-    71,
-    61,
-    132,
-    'fire',
-    43,
+    'Шокер',
+    1895,
+    32,
+    27,
+    59,
+    'poison',
+    51,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"fire","level":5,"experience":423,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"fire","level":6,"experience":343,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"fire","level":4,"experience":146,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":4,"tier":1},"fireball":{"name":"Fireball","level":3,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"poison","level":6,"experience":266,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"poison","level":7,"experience":984,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"poison","level":7,"experience":76,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"poison","level":4,"experience":100,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-03T14:59:55.106Z'
+    '2025-07-03T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2167,23 +2167,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -84,
-    'Medusa',
-    1790,
-    25,
-    22,
+    'ProMage2024',
+    1845,
     47,
+    40,
+    87,
     'poison',
-    51,
+    58,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"poison","level":4,"experience":45,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"poison","level":4,"experience":306,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"poison","level":5,"experience":60,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":4,"tier":2},"plague":{"name":"Plague","level":4,"tier":3},"acid_rain":{"name":"Acid Rain","level":4,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"poison","level":6,"experience":448,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","venom_spit"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"poison","level":4,"experience":96,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["acid_rain","venom_spit"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"poison","level":6,"experience":425,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","venom_spit"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"poison","level":5,"experience":346,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","toxic_cloud"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":2,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":3,"tier":2},"plague":{"name":"Plague","level":4,"tier":3},"acid_rain":{"name":"Acid Rain","level":3,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-12T14:59:55.106Z'
+    '2025-07-16T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2193,23 +2193,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -85,
-    'Лесной678',
-    1734,
-    19,
-    17,
-    36,
-    'nature',
-    40,
+    'IcyQueen504',
+    1719,
+    53,
+    46,
+    99,
+    'water',
+    44,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"nature","level":4,"experience":136,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"nature","level":7,"experience":380,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"nature","level":4,"experience":29,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":2,"tier":1},"heal":{"name":"Heal","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"water","level":6,"experience":627,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","frost_armor"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"water","level":5,"experience":252,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"water","level":7,"experience":674,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","frost_armor"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":2,"tier":1},"frost_armor":{"name":"Frost Armor","level":2,"tier":2},"ice_wall":{"name":"Ice Wall","level":2,"tier":3},"blizzard":{"name":"Blizzard","level":2,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-24T14:59:55.106Z'
+    '2025-06-25T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2219,23 +2219,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -86,
-    'FlameKing',
-    1672,
-    40,
-    36,
-    76,
-    'earth',
+    'Токсик',
+    1921,
+    60,
+    50,
+    110,
+    'poison',
     54,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"earth","level":7,"experience":197,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"earth","level":6,"experience":133,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"earth","level":4,"experience":143,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"earth","level":6,"experience":264,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":2,"tier":1},"earth_armor":{"name":"Earth Armor","level":2,"tier":2},"stone_wall":{"name":"Stone Wall","level":4,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"poison","level":6,"experience":527,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"poison","level":4,"experience":284,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"poison","level":5,"experience":410,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"poison","level":7,"experience":121,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":4,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":4,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-28T14:59:55.106Z'
+    '2025-09-16T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2245,23 +2245,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -87,
-    'NatureMage733',
-    1890,
-    30,
-    26,
-    56,
-    'poison',
-    60,
+    'МагическийРыцарь638',
+    1660,
+    41,
+    36,
+    77,
+    'water',
+    59,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"poison","level":7,"experience":663,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"poison","level":4,"experience":330,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"poison","level":4,"experience":0,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"poison","level":5,"experience":333,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":2,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":4,"tier":2},"plague":{"name":"Plague","level":4,"tier":3},"acid_rain":{"name":"Acid Rain","level":4,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"water","level":7,"experience":122,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"water","level":4,"experience":101,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","icicle"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"water","level":5,"experience":121,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","blizzard"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"water","level":4,"experience":84,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1},"frost_armor":{"name":"Frost Armor","level":3,"tier":2},"ice_wall":{"name":"Ice Wall","level":3,"tier":3},"blizzard":{"name":"Blizzard","level":4,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-26T14:59:55.106Z'
+    '2025-06-06T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2271,23 +2271,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -88,
-    'ВеликийМаг',
-    1781,
-    73,
-    63,
-    136,
+    'ТитанЗемли',
+    1595,
+    102,
+    92,
+    194,
     'nature',
-    43,
+    58,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"nature","level":5,"experience":494,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"nature","level":6,"experience":287,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"nature","level":5,"experience":368,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":4,"tier":1},"heal":{"name":"Heal","level":3,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"nature","level":6,"experience":155,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","vine_snare"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"nature","level":7,"experience":742,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","heal"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"nature","level":7,"experience":572,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","heal"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"nature","level":4,"experience":230,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","vine_snare"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":2,"tier":1},"heal":{"name":"Heal","level":3,"tier":2},"vine_snare":{"name":"Vine Snare","level":4,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":3,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-30T14:59:55.106Z'
+    '2025-08-21T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2297,23 +2297,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -89,
-    'Пироман891',
-    1830,
-    94,
-    81,
-    175,
-    'wind',
-    48,
+    'StormCaller',
+    1562,
+    13,
+    12,
+    25,
+    'poison',
+    52,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"wind","level":7,"experience":1019,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"wind","level":5,"experience":177,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"wind","level":5,"experience":26,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":4,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":4,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":4,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"poison","level":4,"experience":69,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"poison","level":6,"experience":267,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"poison","level":6,"experience":6,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"poison","level":6,"experience":599,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":4,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-27T14:59:55.106Z'
+    '2025-07-25T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2323,23 +2323,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -90,
-    'Electro948',
-    1679,
-    29,
-    27,
-    56,
-    'wind',
-    49,
+    'NatureKing420',
+    1521,
+    45,
+    41,
+    86,
+    'nature',
+    60,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"wind","level":5,"experience":475,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"wind","level":5,"experience":197,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"wind","level":4,"experience":255,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":3,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":4,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":3,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":3,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"nature","level":6,"experience":524,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","heal"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"nature","level":5,"experience":87,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","heal"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"nature","level":5,"experience":224,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","thorn"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"nature","level":6,"experience":532,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","vine_snare"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":3,"tier":1},"heal":{"name":"Heal","level":3,"tier":2},"vine_snare":{"name":"Vine Snare","level":4,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":4,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-22T14:59:55.106Z'
+    '2025-06-17T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2349,23 +2349,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -91,
-    'Дриада479',
-    1741,
-    71,
-    62,
-    133,
-    'nature',
-    42,
+    'СнежнаяКоролева',
+    1558,
+    12,
+    12,
+    24,
+    'wind',
+    52,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"nature","level":5,"experience":333,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"nature","level":4,"experience":224,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"nature","level":5,"experience":123,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":4,"tier":1},"heal":{"name":"Heal","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"wind","level":6,"experience":736,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"wind","level":6,"experience":52,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","lightning_bolt"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"wind","level":4,"experience":224,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"wind","level":4,"experience":317,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","lightning_bolt"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":2,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":4,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-23T14:59:55.106Z'
+    '2025-07-19T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2375,23 +2375,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -92,
-    'Электромаг',
-    1836,
-    44,
-    38,
-    82,
+    'СнежнаяКоролева193',
+    1819,
+    106,
+    90,
+    196,
     'poison',
-    55,
+    41,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"poison","level":4,"experience":149,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"poison","level":7,"experience":140,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"poison","level":6,"experience":573,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"poison","level":4,"experience":68,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":2,"tier":2},"plague":{"name":"Plague","level":4,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"poison","level":6,"experience":79,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"poison","level":5,"experience":177,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"poison","level":6,"experience":165,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":2,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":3,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-26T14:59:55.106Z'
+    '2025-05-24T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2401,23 +2401,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -93,
-    'КолдунЯда',
-    1957,
-    98,
-    82,
-    180,
-    'poison',
-    45,
+    'Целитель148',
+    1662,
+    42,
+    38,
+    80,
+    'water',
+    44,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"poison","level":4,"experience":164,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"poison","level":5,"experience":12,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"poison","level":6,"experience":649,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":4,"tier":2},"plague":{"name":"Plague","level":2,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"water","level":5,"experience":454,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","ice_wall"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"water","level":7,"experience":117,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"water","level":7,"experience":481,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":2,"tier":1},"frost_armor":{"name":"Frost Armor","level":4,"tier":2},"ice_wall":{"name":"Ice Wall","level":2,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-06T14:59:55.106Z'
+    '2025-08-15T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2427,23 +2427,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -94,
-    'Zeus32',
-    1853,
-    55,
-    47,
-    102,
+    'Дриада',
+    1568,
+    23,
+    22,
+    45,
     'wind',
-    55,
+    54,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"wind","level":4,"experience":161,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"wind","level":4,"experience":255,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"wind","level":6,"experience":322,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"wind","level":4,"experience":221,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":2,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":4,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":3,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"wind","level":7,"experience":40,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"wind","level":5,"experience":55,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"wind","level":6,"experience":695,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"wind","level":5,"experience":286,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":4,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":4,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-01T14:59:55.106Z'
+    '2025-08-18T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2453,23 +2453,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -95,
-    'ЛедянойВластелин507',
-    1758,
-    12,
-    12,
-    24,
-    'poison',
-    42,
+    'Granite',
+    1822,
+    106,
+    91,
+    197,
+    'nature',
+    54,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"poison","level":6,"experience":13,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"poison","level":7,"experience":798,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"poison","level":5,"experience":468,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":4,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":2,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"nature","level":7,"experience":236,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","vine_snare"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"nature","level":5,"experience":390,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"nature","level":6,"experience":232,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","vine_snare"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"nature","level":6,"experience":647,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","vine_snare"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":2,"tier":1},"heal":{"name":"Heal","level":2,"tier":2},"vine_snare":{"name":"Vine Snare","level":4,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-17T14:59:55.106Z'
+    '2025-10-04T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2479,23 +2479,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -96,
-    'Целитель464',
-    1957,
-    51,
-    43,
-    94,
-    'water',
-    52,
+    'IcePrincess',
+    1581,
+    65,
+    58,
+    123,
+    'fire',
+    41,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":5,"experience":361,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":4,"experience":313,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"water","level":4,"experience":254,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"water","level":5,"experience":75,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1},"frost_armor":{"name":"Frost Armor","level":3,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"fire","level":7,"experience":212,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","fireball"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"fire","level":5,"experience":379,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","fireball"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"fire","level":4,"experience":295,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","fireball"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":3,"tier":1},"fireball":{"name":"Fireball","level":2,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-22T14:59:55.106Z'
+    '2025-09-15T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2505,23 +2505,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -97,
-    'Эмбер',
-    1810,
-    91,
-    78,
-    169,
-    'water',
-    56,
+    'Терра',
+    1882,
+    38,
+    33,
+    71,
+    'nature',
+    53,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":6,"experience":132,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":5,"experience":462,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"water","level":5,"experience":307,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"water","level":7,"experience":148,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1},"frost_armor":{"name":"Frost Armor","level":3,"tier":2},"ice_wall":{"name":"Ice Wall","level":2,"tier":3},"blizzard":{"name":"Blizzard","level":2,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"nature","level":5,"experience":90,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","heal"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"nature","level":5,"experience":43,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","vine_snare"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"nature","level":4,"experience":171,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","vine_snare"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"nature","level":4,"experience":161,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":2,"tier":1},"heal":{"name":"Heal","level":2,"tier":2},"vine_snare":{"name":"Vine Snare","level":3,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-02T14:59:55.106Z'
+    '2025-07-01T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2531,23 +2531,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -98,
-    'Целитель',
-    1732,
-    38,
-    33,
-    71,
+    'Грозовой666',
+    1675,
+    78,
+    69,
+    147,
     'fire',
-    47,
+    42,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"fire","level":7,"experience":744,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"fire","level":7,"experience":237,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"fire","level":5,"experience":48,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":2,"tier":1},"fireball":{"name":"Fireball","level":2,"tier":2},"flame_shield":{"name":"Flame Shield","level":4,"tier":3},"fire_storm":{"name":"Fire Storm","level":3,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"fire","level":5,"experience":471,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","fireball"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"fire","level":5,"experience":389,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","spark"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"fire","level":7,"experience":944,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","spark"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":2,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2",null,null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-04T14:59:55.106Z'
+    '2025-09-11T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2557,23 +2557,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -99,
-    'HellFire',
-    1862,
-    41,
-    36,
-    77,
-    'fire',
-    49,
+    'Буревестник',
+    1925,
+    68,
+    58,
+    126,
+    'nature',
+    60,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"fire","level":6,"experience":560,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"fire","level":6,"experience":52,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"fire","level":4,"experience":245,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":2,"tier":1},"fireball":{"name":"Fireball","level":3,"tier":2},"flame_shield":{"name":"Flame Shield","level":4,"tier":3},"fire_storm":{"name":"Fire Storm","level":4,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2",null,null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"nature","level":6,"experience":431,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","poison_cloud"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"nature","level":7,"experience":34,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","poison_cloud"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"nature","level":4,"experience":3,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","thorn"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"nature","level":5,"experience":445,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","vine_snare"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":3,"tier":1},"heal":{"name":"Heal","level":4,"tier":2},"vine_snare":{"name":"Vine Snare","level":3,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":4,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-30T14:59:55.106Z'
+    '2025-09-28T22:39:09.862Z'
 );
 
 INSERT INTO players (
@@ -2583,23 +2583,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -100,
-    'DarkMage',
-    1905,
-    62,
-    53,
-    115,
-    'wind',
-    53,
+    'ПовелительМагии',
+    1644,
+    77,
+    69,
+    146,
+    'fire',
+    57,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"wind","level":5,"experience":219,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"wind","level":5,"experience":107,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"wind","level":5,"experience":329,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"wind","level":4,"experience":278,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":4,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":3,"tier":2}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149862_0","name":"Маг 1","faction":"fire","level":5,"experience":464,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","fireball"]},{"id":"wizard_bot_1763419149862_1","name":"Маг 2","faction":"fire","level":5,"experience":485,"exp_to_next":506,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","fireball"]},{"id":"wizard_bot_1763419149862_2","name":"Маг 3","faction":"fire","level":4,"experience":315,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fire_storm","spark"]},{"id":"wizard_bot_1763419149862_3","name":"Маг 4","faction":"fire","level":4,"experience":273,"exp_to_next":337,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","fire_storm"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":3,"tier":1},"fireball":{"name":"Fireball","level":2,"tier":2},"flame_shield":{"name":"Flame Shield","level":2,"tier":3},"fire_storm":{"name":"Fire Storm","level":4,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149862_0","wizard_bot_1763419149862_1","wizard_bot_1763419149862_2","wizard_bot_1763419149862_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":3},"blessing_tower":{"level":2}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-05T14:59:55.106Z'
+    '2025-09-02T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2609,23 +2609,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -101,
-    'Zeus',
-    2267,
-    73,
-    57,
-    130,
-    'fire',
-    68,
+    'Toxicologist',
+    2261,
+    55,
+    44,
+    99,
+    'water',
+    64,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"fire","level":6,"experience":344,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"fire","level":9,"experience":2124,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"fire","level":8,"experience":1203,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"fire","level":6,"experience":197,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":4,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2},"flame_shield":{"name":"Flame Shield","level":4,"tier":3},"fire_storm":{"name":"Fire Storm","level":4,"tier":4},"inferno":{"name":"Inferno","level":3,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"water","level":8,"experience":205,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","ice_wall"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"water","level":8,"experience":1052,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","ice_wall"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"water","level":8,"experience":462,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","frost_armor"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"water","level":8,"experience":412,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":3,"tier":3},"blizzard":{"name":"Blizzard","level":4,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-27T14:59:55.106Z'
+    '2025-07-10T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2635,23 +2635,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -102,
-    'FrostBite',
-    2407,
-    80,
-    61,
-    141,
-    'fire',
-    67,
+    'ЗащитникЗемли295',
+    2210,
+    36,
+    30,
+    66,
+    'earth',
+    68,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"fire","level":9,"experience":1032,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"fire","level":8,"experience":983,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"fire","level":7,"experience":1135,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"fire","level":10,"experience":2904,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2},"flame_shield":{"name":"Flame Shield","level":4,"tier":3},"fire_storm":{"name":"Fire Storm","level":5,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"earth","level":9,"experience":456,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","rock_shield"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"earth","level":9,"experience":454,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","rock_shield"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"earth","level":8,"experience":1020,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["rock_shield","earthquake"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"earth","level":9,"experience":408,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["rock_shield","earth_armor"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":3,"tier":1},"earth_armor":{"name":"Earth Armor","level":4,"tier":2},"stone_wall":{"name":"Stone Wall","level":4,"tier":3},"earthquake":{"name":"Earthquake","level":3,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-22T14:59:55.106Z'
+    '2025-07-15T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2661,23 +2661,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -103,
-    'ShadowWizard',
-    2286,
-    42,
-    34,
-    76,
+    'ЖрицаВоды',
+    2214,
+    40,
+    32,
+    72,
     'water',
-    69,
+    65,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":7,"experience":359,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":9,"experience":2136,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"water","level":9,"experience":2107,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"water","level":6,"experience":33,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":4,"tier":2},"ice_wall":{"name":"Ice Wall","level":3,"tier":3},"blizzard":{"name":"Blizzard","level":3,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"water","level":9,"experience":777,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","blizzard"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"water","level":8,"experience":1222,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","blizzard"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"water","level":6,"experience":57,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","blizzard"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"water","level":8,"experience":1075,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","ice_wall"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":3,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":3,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-16T14:59:55.106Z'
+    '2025-06-30T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2687,23 +2687,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -104,
-    'LifeBloom209',
-    2459,
-    105,
-    79,
-    184,
-    'earth',
-    63,
+    'МастерСтихий',
+    2141,
+    100,
+    80,
+    180,
+    'water',
+    60,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"earth","level":8,"experience":1076,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"earth","level":7,"experience":677,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"earth","level":9,"experience":2456,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"earth","level":9,"experience":301,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":4,"tier":1},"earth_armor":{"name":"Earth Armor","level":3,"tier":2},"stone_wall":{"name":"Stone Wall","level":3,"tier":3},"earthquake":{"name":"Earthquake","level":4,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"water","level":8,"experience":531,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","frost_armor"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"water","level":7,"experience":379,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","ice_wall"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"water","level":6,"experience":187,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"water","level":10,"experience":2015,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","frost_armor"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1},"frost_armor":{"name":"Frost Armor","level":4,"tier":2},"ice_wall":{"name":"Ice Wall","level":4,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-29T14:59:55.106Z'
+    '2025-09-07T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2713,23 +2713,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -105,
-    'Сильва',
-    2319,
-    103,
-    79,
-    182,
-    'water',
-    72,
+    'Терра499',
+    2337,
+    96,
+    75,
+    171,
+    'fire',
+    59,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":7,"experience":786,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":8,"experience":285,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"water","level":6,"experience":707,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"water","level":7,"experience":372,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"fire","level":8,"experience":420,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","spark"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"fire","level":10,"experience":3494,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","fireball"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"fire","level":8,"experience":55,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","flame_shield"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"fire","level":7,"experience":844,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","spark"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":4,"tier":1},"fireball":{"name":"Fireball","level":3,"tier":2},"flame_shield":{"name":"Flame Shield","level":3,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-08T14:59:55.106Z'
+    '2025-10-12T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2739,23 +2739,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -106,
-    'HellFire213',
-    2289,
-    111,
-    87,
-    198,
+    'МогучийВолшебник',
+    2092,
+    85,
+    69,
+    154,
     'poison',
-    70,
+    66,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"poison","level":9,"experience":1472,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"poison","level":7,"experience":867,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"poison","level":7,"experience":310,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"poison","level":9,"experience":2441,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":4,"tier":3},"acid_rain":{"name":"Acid Rain","level":3,"tier":4},"corruption":{"name":"Corruption","level":4,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"poison","level":6,"experience":266,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","acid_rain"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"poison","level":7,"experience":423,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","toxic_cloud"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"poison","level":10,"experience":408,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["acid_rain","plague"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"poison","level":10,"experience":1974,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","toxic_cloud"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":4,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":4,"tier":2},"plague":{"name":"Plague","level":4,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-20T14:59:55.106Z'
+    '2025-06-04T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2765,23 +2765,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -107,
-    'MagicMaster',
-    2460,
-    89,
-    67,
-    156,
+    'ЗащитникЗемли670',
+    2108,
+    39,
+    32,
+    71,
     'earth',
-    72,
+    66,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"earth","level":7,"experience":772,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"earth","level":8,"experience":1346,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"earth","level":6,"experience":270,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"earth","level":6,"experience":526,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":3,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"earth","level":8,"experience":968,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earthquake"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"earth","level":10,"experience":196,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earthquake","stone_throw"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"earth","level":6,"experience":340,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earthquake","stone_wall"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"earth","level":10,"experience":43,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","earth_armor"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":3,"tier":1},"earth_armor":{"name":"Earth Armor","level":4,"tier":2},"stone_wall":{"name":"Stone Wall","level":3,"tier":3},"earthquake":{"name":"Earthquake","level":4,"tier":4},"rock_shield":{"name":"Rock Shield","level":3,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-03T14:59:55.106Z'
+    '2025-07-07T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2791,23 +2791,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -108,
-    'ЯдовитыйКлык',
-    2188,
-    46,
-    37,
-    83,
-    'wind',
-    66,
+    'MagicMaster744',
+    2329,
+    31,
+    24,
+    55,
+    'nature',
+    64,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"wind","level":8,"experience":1223,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"wind","level":8,"experience":1516,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"wind","level":10,"experience":2469,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"wind","level":6,"experience":445,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":4,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":4,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":4,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"nature","level":9,"experience":1807,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","heal"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"nature","level":10,"experience":68,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","heal"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"nature","level":7,"experience":789,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","poison_cloud"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"nature","level":7,"experience":433,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":4,"tier":1},"heal":{"name":"Heal","level":3,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":3,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-02T14:59:55.106Z'
+    '2025-09-07T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2817,23 +2817,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -109,
-    'Аркти',
-    2457,
-    86,
-    65,
-    151,
+    'Gaia',
+    2038,
+    88,
+    73,
+    161,
     'earth',
-    70,
+    62,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"earth","level":9,"experience":894,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"earth","level":7,"experience":781,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"earth","level":8,"experience":1320,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"earth","level":8,"experience":1252,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":4,"tier":1},"earth_armor":{"name":"Earth Armor","level":4,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":3,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"earth","level":7,"experience":568,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","stone_throw"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"earth","level":8,"experience":184,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","stone_wall"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"earth","level":7,"experience":761,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earth_armor"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"earth","level":10,"experience":3685,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","stone_throw"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":3,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-06T14:59:55.106Z'
+    '2025-08-14T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2843,23 +2843,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -110,
-    'Алхимик755',
-    2134,
-    61,
-    49,
-    110,
-    'fire',
-    67,
+    'LightningBolt332',
+    2047,
+    22,
+    18,
+    40,
+    'wind',
+    64,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"fire","level":8,"experience":997,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"fire","level":9,"experience":426,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"fire","level":10,"experience":3332,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"fire","level":6,"experience":733,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":5,"tier":2},"flame_shield":{"name":"Flame Shield","level":4,"tier":3},"fire_storm":{"name":"Fire Storm","level":4,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"wind","level":9,"experience":407,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","lightning_bolt"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"wind","level":6,"experience":78,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","wind_barrier"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"wind","level":10,"experience":2434,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","wind_barrier"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"wind","level":10,"experience":1676,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","wind_barrier"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":3,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":4,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":3,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-19T14:59:55.106Z'
+    '2025-07-15T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2869,23 +2869,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -111,
-    'DeathTouch696',
-    2291,
-    68,
-    54,
-    122,
-    'poison',
-    61,
+    'Целитель',
+    2050,
+    52,
+    43,
+    95,
+    'wind',
+    63,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"poison","level":9,"experience":1540,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"poison","level":7,"experience":428,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"poison","level":6,"experience":39,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"poison","level":7,"experience":590,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":4,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":4,"tier":2},"plague":{"name":"Plague","level":4,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"wind","level":6,"experience":264,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["wind_barrier","lightning_bolt"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"wind","level":6,"experience":532,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","wind_barrier"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"wind","level":6,"experience":20,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"wind","level":7,"experience":108,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":4,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-29T14:59:55.106Z'
+    '2025-06-11T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2895,23 +2895,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -112,
-    'ПовелительМолний589',
-    2435,
-    56,
-    43,
-    99,
-    'earth',
-    65,
+    'StormLord',
+    2363,
+    74,
+    58,
+    132,
+    'fire',
+    66,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"earth","level":10,"experience":3288,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"earth","level":10,"experience":801,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"earth","level":9,"experience":1594,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"earth","level":8,"experience":1221,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":3,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":3,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"fire","level":7,"experience":817,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fire_storm","flame_shield"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"fire","level":10,"experience":1976,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","flame_shield"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"fire","level":8,"experience":1696,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","fireball"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"fire","level":7,"experience":798,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fire_storm","flame_shield"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":4,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2},"flame_shield":{"name":"Flame Shield","level":4,"tier":3},"fire_storm":{"name":"Fire Storm","level":5,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-05T14:59:55.106Z'
+    '2025-05-27T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2921,23 +2921,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -113,
-    'ЗащитникЗемли',
-    2163,
-    76,
-    61,
-    137,
-    'water',
-    67,
+    'FireGod777',
+    2162,
+    70,
+    56,
+    126,
+    'earth',
+    60,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"water","level":10,"experience":139,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"water","level":8,"experience":982,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"water","level":10,"experience":671,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"water","level":9,"experience":1205,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1},"frost_armor":{"name":"Frost Armor","level":3,"tier":2},"ice_wall":{"name":"Ice Wall","level":4,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":3,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"earth","level":7,"experience":552,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","stone_wall"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"earth","level":9,"experience":2016,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","stone_throw"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"earth","level":10,"experience":2890,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","stone_wall"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"earth","level":9,"experience":2334,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","stone_wall"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":4,"tier":1},"earth_armor":{"name":"Earth Armor","level":3,"tier":2},"stone_wall":{"name":"Stone Wall","level":4,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-21T14:59:55.106Z'
+    '2025-07-11T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2947,23 +2947,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -114,
-    'Сепсис',
-    2465,
-    85,
-    64,
-    149,
-    'earth',
-    64,
+    'Atlas',
+    2148,
+    46,
+    38,
+    84,
+    'fire',
+    67,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195106_0","name":"Маг 1","faction":"earth","level":9,"experience":962,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_1","name":"Маг 2","faction":"earth","level":9,"experience":2104,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_2","name":"Маг 3","faction":"earth","level":9,"experience":1202,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195106_3","name":"Маг 4","faction":"earth","level":7,"experience":213,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":4,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":3,"tier":3},"earthquake":{"name":"Earthquake","level":3,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195106_0","wizard_bot_1763305195106_1","wizard_bot_1763305195106_2","wizard_bot_1763305195106_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"fire","level":6,"experience":506,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fire_storm","flame_shield"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"fire","level":9,"experience":128,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","flame_shield"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"fire","level":8,"experience":240,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","fire_storm"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"fire","level":8,"experience":982,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","fireball"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":5,"tier":2},"flame_shield":{"name":"Flame Shield","level":5,"tier":3},"fire_storm":{"name":"Fire Storm","level":3,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-06T14:59:55.107Z'
+    '2025-09-17T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2973,23 +2973,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -115,
-    'Друид973',
-    2076,
-    52,
-    42,
-    94,
-    'fire',
-    62,
+    'MagicMaster941',
+    2290,
+    83,
+    65,
+    148,
+    'earth',
+    67,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195107_0","name":"Маг 1","faction":"fire","level":7,"experience":199,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_1","name":"Маг 2","faction":"fire","level":7,"experience":1059,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_2","name":"Маг 3","faction":"fire","level":9,"experience":399,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_3","name":"Маг 4","faction":"fire","level":8,"experience":300,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2},"flame_shield":{"name":"Flame Shield","level":4,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195107_0","wizard_bot_1763305195107_1","wizard_bot_1763305195107_2","wizard_bot_1763305195107_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"earth","level":8,"experience":1292,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earthquake","earth_armor"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"earth","level":7,"experience":188,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earthquake","rock_shield"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"earth","level":7,"experience":637,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earth_armor"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"earth","level":10,"experience":3164,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["rock_shield","earthquake"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":3,"tier":1},"earth_armor":{"name":"Earth Armor","level":4,"tier":2},"stone_wall":{"name":"Stone Wall","level":3,"tier":3},"earthquake":{"name":"Earthquake","level":3,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-04T14:59:55.107Z'
+    '2025-06-22T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -2999,23 +2999,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -116,
-    'Atlas',
-    2373,
-    96,
+    'PoisonMaster',
+    2259,
     74,
-    170,
-    'nature',
+    58,
+    132,
+    'fire',
     68,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195107_0","name":"Маг 1","faction":"nature","level":8,"experience":1185,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_1","name":"Маг 2","faction":"nature","level":6,"experience":271,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_2","name":"Маг 3","faction":"nature","level":9,"experience":966,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_3","name":"Маг 4","faction":"nature","level":9,"experience":2144,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":4,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195107_0","wizard_bot_1763305195107_1","wizard_bot_1763305195107_2","wizard_bot_1763305195107_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"fire","level":10,"experience":2966,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","inferno"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"fire","level":10,"experience":1884,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fire_storm","spark"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"fire","level":8,"experience":1593,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fire_storm","flame_shield"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"fire","level":8,"experience":145,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["inferno","spark"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":4,"tier":1},"fireball":{"name":"Fireball","level":3,"tier":2},"flame_shield":{"name":"Flame Shield","level":5,"tier":3},"fire_storm":{"name":"Fire Storm","level":3,"tier":4},"inferno":{"name":"Inferno","level":4,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-24T14:59:55.107Z'
+    '2025-06-02T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3025,23 +3025,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -117,
-    'EarthLord999',
-    2025,
-    42,
-    36,
-    78,
+    'Алхимик842',
+    2147,
+    91,
+    74,
+    165,
     'earth',
-    59,
+    66,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195107_0","name":"Маг 1","faction":"earth","level":6,"experience":125,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_1","name":"Маг 2","faction":"earth","level":9,"experience":1792,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_2","name":"Маг 3","faction":"earth","level":10,"experience":3712,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_3","name":"Маг 4","faction":"earth","level":10,"experience":3144,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":3,"tier":1},"earth_armor":{"name":"Earth Armor","level":3,"tier":2},"stone_wall":{"name":"Stone Wall","level":4,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195107_0","wizard_bot_1763305195107_1","wizard_bot_1763305195107_2","wizard_bot_1763305195107_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"earth","level":8,"experience":1699,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","stone_throw"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"earth","level":8,"experience":60,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","stone_throw"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"earth","level":6,"experience":744,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earthquake"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"earth","level":10,"experience":1766,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","earthquake"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":4,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":3,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-12T14:59:55.107Z'
+    '2025-06-25T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3051,23 +3051,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -118,
-    'Zeus111',
-    2476,
-    19,
-    15,
-    34,
-    'fire',
-    69,
+    'EarthLord999',
+    2072,
+    77,
+    63,
+    140,
+    'poison',
+    60,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195107_0","name":"Маг 1","faction":"fire","level":9,"experience":182,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_1","name":"Маг 2","faction":"fire","level":8,"experience":108,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_2","name":"Маг 3","faction":"fire","level":9,"experience":66,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_3","name":"Маг 4","faction":"fire","level":10,"experience":135,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":4,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2},"flame_shield":{"name":"Flame Shield","level":4,"tier":3},"fire_storm":{"name":"Fire Storm","level":3,"tier":4},"inferno":{"name":"Inferno","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195107_0","wizard_bot_1763305195107_1","wizard_bot_1763305195107_2","wizard_bot_1763305195107_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"poison","level":10,"experience":165,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","venom_spit"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"poison","level":8,"experience":884,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"poison","level":7,"experience":1062,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"poison","level":8,"experience":236,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":4,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":4,"tier":2},"plague":{"name":"Plague","level":3,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-25T14:59:55.107Z'
+    '2025-06-12T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3077,23 +3077,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -119,
-    'Дриада',
-    2435,
-    30,
-    24,
-    54,
-    'fire',
-    72,
+    'МатьПрироды543',
+    2023,
+    83,
+    69,
+    152,
+    'wind',
+    60,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195107_0","name":"Маг 1","faction":"fire","level":10,"experience":1764,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_1","name":"Маг 2","faction":"fire","level":6,"experience":106,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_2","name":"Маг 3","faction":"fire","level":10,"experience":3555,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_3","name":"Маг 4","faction":"fire","level":8,"experience":415,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2},"flame_shield":{"name":"Flame Shield","level":4,"tier":3},"fire_storm":{"name":"Fire Storm","level":5,"tier":4},"inferno":{"name":"Inferno","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195107_0","wizard_bot_1763305195107_1","wizard_bot_1763305195107_2","wizard_bot_1763305195107_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"wind","level":8,"experience":330,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","lightning_bolt"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"wind","level":7,"experience":444,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"wind","level":9,"experience":702,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","lightning_bolt"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"wind","level":10,"experience":2912,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","wind_barrier"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":3,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":3,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-05T14:59:55.107Z'
+    '2025-08-24T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3103,23 +3103,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -120,
-    'ПовелительМагии',
-    2135,
-    111,
-    89,
-    200,
-    'poison',
-    70,
+    'Друид',
+    2296,
+    112,
+    87,
+    199,
+    'nature',
+    68,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195107_0","name":"Маг 1","faction":"poison","level":7,"experience":1135,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_1","name":"Маг 2","faction":"poison","level":10,"experience":2765,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_2","name":"Маг 3","faction":"poison","level":6,"experience":758,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_3","name":"Маг 4","faction":"poison","level":8,"experience":884,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":4,"tier":3},"acid_rain":{"name":"Acid Rain","level":4,"tier":4},"corruption":{"name":"Corruption","level":3,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195107_0","wizard_bot_1763305195107_1","wizard_bot_1763305195107_2","wizard_bot_1763305195107_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"nature","level":8,"experience":1091,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","heal"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"nature","level":8,"experience":1309,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","regeneration"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"nature","level":6,"experience":42,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","regeneration"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"nature","level":10,"experience":3604,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":4,"tier":2},"vine_snare":{"name":"Vine Snare","level":3,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":4,"tier":4},"regeneration":{"name":"Regeneration","level":3,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-05T14:59:55.107Z'
+    '2025-08-09T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3129,23 +3129,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -121,
-    'Темпест451',
-    2448,
-    96,
-    72,
-    168,
-    'water',
+    'ТемныйВолшебник113',
+    2047,
+    74,
     61,
+    135,
+    'water',
+    60,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195107_0","name":"Маг 1","faction":"water","level":9,"experience":94,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_1","name":"Маг 2","faction":"water","level":8,"experience":654,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_2","name":"Маг 3","faction":"water","level":7,"experience":65,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_3","name":"Маг 4","faction":"water","level":9,"experience":2347,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":4,"tier":1},"frost_armor":{"name":"Frost Armor","level":4,"tier":2},"ice_wall":{"name":"Ice Wall","level":4,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195107_0","wizard_bot_1763305195107_1","wizard_bot_1763305195107_2","wizard_bot_1763305195107_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"water","level":10,"experience":2970,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"water","level":10,"experience":674,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","frost_armor"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"water","level":7,"experience":240,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"water","level":6,"experience":342,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":4,"tier":1},"frost_armor":{"name":"Frost Armor","level":4,"tier":2},"ice_wall":{"name":"Ice Wall","level":3,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-20T14:59:55.107Z'
+    '2025-06-26T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3155,23 +3155,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -122,
-    'Venomancer7',
-    2370,
-    92,
-    71,
-    163,
+    'СильныйМаг163',
+    2096,
+    27,
+    22,
+    49,
     'water',
-    66,
+    67,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195107_0","name":"Маг 1","faction":"water","level":6,"experience":756,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_1","name":"Маг 2","faction":"water","level":10,"experience":309,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_2","name":"Маг 3","faction":"water","level":8,"experience":695,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_3","name":"Маг 4","faction":"water","level":6,"experience":118,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":3,"tier":1},"frost_armor":{"name":"Frost Armor","level":4,"tier":2},"ice_wall":{"name":"Ice Wall","level":4,"tier":3},"blizzard":{"name":"Blizzard","level":3,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":3,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195107_0","wizard_bot_1763305195107_1","wizard_bot_1763305195107_2","wizard_bot_1763305195107_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"water","level":10,"experience":1412,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","icicle"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"water","level":10,"experience":902,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","frost_armor"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"water","level":7,"experience":563,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"water","level":7,"experience":189,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","blizzard"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":4,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":4,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-30T14:59:55.107Z'
+    '2025-06-01T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3181,23 +3181,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -123,
-    'Floramancer860',
-    2038,
-    43,
-    36,
-    79,
-    'nature',
-    67,
+    'Сильва829',
+    2073,
+    24,
+    20,
+    44,
+    'poison',
+    69,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195107_0","name":"Маг 1","faction":"nature","level":8,"experience":60,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_1","name":"Маг 2","faction":"nature","level":7,"experience":796,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_2","name":"Маг 3","faction":"nature","level":7,"experience":173,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_3","name":"Маг 4","faction":"nature","level":10,"experience":282,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":3,"tier":2},"vine_snare":{"name":"Vine Snare","level":4,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":3,"tier":4},"regeneration":{"name":"Regeneration","level":3,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195107_0","wizard_bot_1763305195107_1","wizard_bot_1763305195107_2","wizard_bot_1763305195107_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"poison","level":8,"experience":4,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["acid_rain","corruption"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"poison","level":10,"experience":750,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","venom_spit"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"poison","level":7,"experience":926,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["corruption","venom_spit"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"poison","level":7,"experience":87,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["acid_rain","plague"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":3,"tier":3},"acid_rain":{"name":"Acid Rain","level":4,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-06T14:59:55.107Z'
+    '2025-10-18T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3207,23 +3207,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -124,
-    'ОпытныйВолшебник',
-    2083,
-    58,
-    48,
-    106,
+    'IceAge369',
+    2178,
+    89,
+    71,
+    160,
     'earth',
-    67,
+    61,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195107_0","name":"Маг 1","faction":"earth","level":9,"experience":712,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_1","name":"Маг 2","faction":"earth","level":8,"experience":33,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_2","name":"Маг 3","faction":"earth","level":6,"experience":530,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_3","name":"Маг 4","faction":"earth","level":6,"experience":628,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":3,"tier":1},"earth_armor":{"name":"Earth Armor","level":3,"tier":2},"stone_wall":{"name":"Stone Wall","level":4,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":3,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195107_0","wizard_bot_1763305195107_1","wizard_bot_1763305195107_2","wizard_bot_1763305195107_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"earth","level":8,"experience":439,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earth_armor"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"earth","level":7,"experience":0,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","stone_wall"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"earth","level":7,"experience":601,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","earth_armor"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"earth","level":7,"experience":776,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","stone_throw"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":4,"tier":1},"earth_armor":{"name":"Earth Armor","level":4,"tier":2},"stone_wall":{"name":"Stone Wall","level":4,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-13T14:59:55.107Z'
+    '2025-07-15T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3233,23 +3233,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -125,
-    'ХранительЛеса',
-    2326,
-    27,
-    22,
-    49,
-    'water',
-    65,
+    'Целитель275',
+    2245,
+    19,
+    16,
+    35,
+    'wind',
+    69,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195107_0","name":"Маг 1","faction":"water","level":8,"experience":396,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_1","name":"Маг 2","faction":"water","level":7,"experience":322,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_2","name":"Маг 3","faction":"water","level":8,"experience":253,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195107_3","name":"Маг 4","faction":"water","level":8,"experience":397,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":3,"tier":3},"blizzard":{"name":"Blizzard","level":3,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195107_0","wizard_bot_1763305195107_1","wizard_bot_1763305195107_2","wizard_bot_1763305195107_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"wind","level":6,"experience":526,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["wind_barrier","lightning_bolt"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"wind","level":8,"experience":911,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","wind_barrier"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"wind","level":7,"experience":133,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"wind","level":9,"experience":1379,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","tornado"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":4,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":4,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":4,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":4,"tier":4},"tornado":{"name":"Tornado","level":4,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-20T14:59:55.108Z'
+    '2025-10-15T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3259,23 +3259,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -126,
-    'СильныйМаг',
-    2471,
-    23,
-    18,
-    41,
-    'fire',
-    67,
+    'IceAge571',
+    2256,
+    69,
+    55,
+    124,
+    'nature',
+    61,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"fire","level":8,"experience":642,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"fire","level":7,"experience":335,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"fire","level":7,"experience":754,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"fire","level":7,"experience":211,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":3,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2},"flame_shield":{"name":"Flame Shield","level":4,"tier":3},"fire_storm":{"name":"Fire Storm","level":3,"tier":4},"inferno":{"name":"Inferno","level":4,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"nature","level":6,"experience":535,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","heal"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"nature","level":7,"experience":682,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","vine_snare"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"nature","level":10,"experience":1780,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","heal"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"nature","level":10,"experience":651,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":4,"tier":1},"heal":{"name":"Heal","level":4,"tier":2},"vine_snare":{"name":"Vine Snare","level":4,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-29T14:59:55.108Z'
+    '2025-09-24T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3285,23 +3285,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -127,
-    'МагТьмы',
-    2076,
-    11,
-    9,
-    20,
+    'Druid965',
+    2245,
+    61,
+    49,
+    110,
     'wind',
-    66,
+    69,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"wind","level":10,"experience":196,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"wind","level":8,"experience":1447,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"wind","level":9,"experience":1819,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"wind","level":6,"experience":211,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":4,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":3,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"wind","level":10,"experience":1362,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["tornado","lightning_bolt"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"wind","level":7,"experience":1021,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","tornado"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"wind","level":6,"experience":96,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","wind_barrier"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"wind","level":10,"experience":3377,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["tornado","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":4,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":4,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":3,"tier":4},"tornado":{"name":"Tornado","level":4,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-28T14:59:55.108Z'
+    '2025-06-14T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3311,23 +3311,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -128,
-    'Архонт',
-    2359,
-    20,
-    16,
-    36,
-    'earth',
-    59,
+    'Дриада340',
+    2143,
+    85,
+    68,
+    153,
+    'wind',
+    69,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"earth","level":9,"experience":2217,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"earth","level":7,"experience":636,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"earth","level":8,"experience":1065,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"earth","level":10,"experience":1804,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":4,"tier":1},"earth_armor":{"name":"Earth Armor","level":3,"tier":2},"stone_wall":{"name":"Stone Wall","level":3,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"wind","level":9,"experience":977,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"wind","level":6,"experience":465,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","chain_lightning"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"wind","level":9,"experience":43,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","tornado"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"wind","level":9,"experience":826,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","wind_barrier"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":4,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":4,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":3,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":4,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-28T14:59:55.108Z'
+    '2025-06-06T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3337,23 +3337,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -129,
-    'ХозяйкаЛьда',
-    2238,
-    64,
-    50,
-    114,
-    'poison',
-    64,
+    'ОтравительДуш573',
+    2462,
+    47,
+    36,
+    83,
+    'water',
+    68,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"poison","level":6,"experience":562,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"poison","level":7,"experience":1002,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"poison","level":6,"experience":341,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"poison","level":8,"experience":1433,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":3,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":3,"tier":2},"plague":{"name":"Plague","level":4,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"water","level":7,"experience":270,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"water","level":9,"experience":1497,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","ice_wall"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"water","level":7,"experience":660,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","frost_armor"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"water","level":8,"experience":298,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","blizzard"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":4,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-05T14:59:55.108Z'
+    '2025-08-13T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3363,23 +3363,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -130,
-    'ВладыкаПламени562',
+    'NatureMage31',
     2457,
-    38,
-    29,
-    67,
-    'nature',
+    39,
+    30,
     69,
+    'nature',
+    66,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"nature","level":6,"experience":163,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"nature","level":6,"experience":694,"exp_to_next":759,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"nature","level":7,"experience":854,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"nature","level":7,"experience":801,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":3,"tier":2},"vine_snare":{"name":"Vine Snare","level":3,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":4,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149864_0","name":"Маг 1","faction":"nature","level":9,"experience":231,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","vine_snare"]},{"id":"wizard_bot_1763419149864_1","name":"Маг 2","faction":"nature","level":7,"experience":296,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","poison_cloud"]},{"id":"wizard_bot_1763419149864_2","name":"Маг 3","faction":"nature","level":7,"experience":60,"exp_to_next":1139,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]},{"id":"wizard_bot_1763419149864_3","name":"Маг 4","faction":"nature","level":10,"experience":1039,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","heal"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":3,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":4,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149864_0","wizard_bot_1763419149864_1","wizard_bot_1763419149864_2","wizard_bot_1763419149864_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":5},"blessing_tower":{"level":3}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-21T14:59:55.108Z'
+    '2025-06-19T22:39:09.864Z'
 );
 
 INSERT INTO players (
@@ -3389,23 +3389,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -131,
-    'ПовелительБури360',
-    2741,
-    63,
-    45,
-    108,
-    'poison',
-    84,
+    'Пироман',
+    2812,
+    66,
+    46,
+    112,
+    'water',
+    71,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"poison","level":12,"experience":5663,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"poison","level":11,"experience":4664,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"poison","level":9,"experience":686,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"poison","level":12,"experience":7821,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_4","name":"Маг 5","faction":"poison","level":9,"experience":1371,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":4,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":4,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":4,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3","wizard_bot_1763305195108_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"water","level":11,"experience":2910,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","frost_armor"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"water","level":10,"experience":3167,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","blizzard"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"water","level":10,"experience":306,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","blizzard"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"water","level":10,"experience":657,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","ice_wall"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":4,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-30T14:59:55.108Z'
+    '2025-09-24T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3415,23 +3415,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -132,
-    'Друид583',
-    2826,
-    50,
-    36,
-    86,
-    'water',
-    82,
+    'Страта',
+    2892,
+    47,
+    33,
+    80,
+    'fire',
+    79,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"water","level":8,"experience":163,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"water","level":11,"experience":4159,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"water","level":9,"experience":388,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"water","level":9,"experience":2529,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_4","name":"Маг 5","faction":"water","level":9,"experience":399,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":4,"tier":1},"frost_armor":{"name":"Frost Armor","level":4,"tier":2},"ice_wall":{"name":"Ice Wall","level":4,"tier":3},"blizzard":{"name":"Blizzard","level":4,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":4,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3","wizard_bot_1763305195108_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"fire","level":9,"experience":1736,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","flame_shield"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"fire","level":10,"experience":3669,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","spark"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"fire","level":12,"experience":7246,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","fire_storm"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"fire","level":12,"experience":1925,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","flame_shield"]},{"id":"wizard_bot_1763419149865_4","name":"Маг 5","faction":"fire","level":11,"experience":5501,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fire_storm","spark"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":4,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2},"flame_shield":{"name":"Flame Shield","level":4,"tier":3},"fire_storm":{"name":"Fire Storm","level":5,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3","wizard_bot_1763419149865_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-16T14:59:55.108Z'
+    '2025-07-12T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3441,23 +3441,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -133,
-    'IcyQueen467',
-    2848,
-    91,
-    63,
-    154,
+    'Криоманс',
+    2855,
+    113,
+    79,
+    192,
     'fire',
-    81,
+    85,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"fire","level":12,"experience":6057,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"fire","level":8,"experience":684,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"fire","level":10,"experience":1888,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"fire","level":10,"experience":3216,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_4","name":"Маг 5","faction":"fire","level":8,"experience":635,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2},"flame_shield":{"name":"Flame Shield","level":5,"tier":3},"fire_storm":{"name":"Fire Storm","level":5,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3","wizard_bot_1763305195108_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"fire","level":9,"experience":1955,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","inferno"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"fire","level":12,"experience":8075,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","inferno"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"fire","level":10,"experience":1153,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fire_storm","spark"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"fire","level":11,"experience":3931,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","fire_storm"]},{"id":"wizard_bot_1763419149865_4","name":"Маг 5","faction":"fire","level":10,"experience":2924,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fire_storm","fireball"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":4,"tier":1},"fireball":{"name":"Fireball","level":5,"tier":2},"flame_shield":{"name":"Flame Shield","level":4,"tier":3},"fire_storm":{"name":"Fire Storm","level":5,"tier":4},"inferno":{"name":"Inferno","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3","wizard_bot_1763419149865_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-19T14:59:55.108Z'
+    '2025-08-20T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3467,23 +3467,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -134,
-    'Floramancer',
-    2629,
-    37,
-    27,
-    64,
-    'fire',
-    79,
+    'Грозовой605',
+    2756,
+    88,
+    63,
+    151,
+    'poison',
+    68,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"fire","level":11,"experience":4264,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"fire","level":12,"experience":1810,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"fire","level":12,"experience":1999,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"fire","level":10,"experience":64,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2},"flame_shield":{"name":"Flame Shield","level":5,"tier":3},"fire_storm":{"name":"Fire Storm","level":4,"tier":4},"inferno":{"name":"Inferno","level":4,"tier":5},"meteor_shower":{"name":"Meteor Shower","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"poison","level":9,"experience":3,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","venom_spit"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"poison","level":10,"experience":3309,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"poison","level":9,"experience":2390,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["acid_rain","toxic_cloud"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"poison","level":8,"experience":382,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","plague"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":4,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":4,"tier":2},"plague":{"name":"Plague","level":4,"tier":3},"acid_rain":{"name":"Acid Rain","level":4,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-11T14:59:55.108Z'
+    '2025-06-16T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3493,23 +3493,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -135,
-    'Вердант652',
-    2578,
-    83,
-    62,
-    145,
-    'earth',
-    77,
+    'МастерСтихий248',
+    2831,
+    116,
+    81,
+    197,
+    'nature',
+    81,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"earth","level":9,"experience":720,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"earth","level":8,"experience":1335,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"earth","level":11,"experience":3672,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"earth","level":8,"experience":1425,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"nature","level":10,"experience":2106,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","vine_snare"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"nature","level":9,"experience":1943,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","poison_cloud"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"nature","level":11,"experience":2309,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"nature","level":8,"experience":283,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","heal"]},{"id":"wizard_bot_1763419149865_4","name":"Маг 5","faction":"nature","level":10,"experience":1321,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","heal"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":4,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3","wizard_bot_1763419149865_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-15T14:59:55.108Z'
+    '2025-07-17T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3519,23 +3519,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -136,
-    'Терра492',
-    2530,
-    28,
-    22,
-    50,
-    'nature',
-    81,
+    'Терракот29',
+    2889,
+    84,
+    58,
+    142,
+    'water',
+    87,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"nature","level":10,"experience":979,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"nature","level":12,"experience":5252,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"nature","level":11,"experience":5324,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"nature","level":10,"experience":3406,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":4,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5},"nature_fury":{"name":"Nature Fury","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"water","level":12,"experience":4819,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","ice_wall"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"water","level":12,"experience":4343,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","blizzard"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"water","level":11,"experience":5648,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["tidal_wave","frost_armor"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"water","level":12,"experience":5354,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","tidal_wave"]},{"id":"wizard_bot_1763419149865_4","name":"Маг 5","faction":"water","level":8,"experience":1333,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frozen_heart","blizzard"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":4,"tier":1},"frost_armor":{"name":"Frost Armor","level":4,"tier":2},"ice_wall":{"name":"Ice Wall","level":4,"tier":3},"blizzard":{"name":"Blizzard","level":4,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":4,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3","wizard_bot_1763419149865_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-18T14:59:55.108Z'
+    '2025-07-16T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3545,23 +3545,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -137,
-    'Каменолом',
-    2601,
-    22,
-    16,
-    38,
-    'wind',
-    79,
+    'ВеликийМаг',
+    2539,
+    96,
+    72,
+    168,
+    'water',
+    71,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"wind","level":9,"experience":169,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"wind","level":12,"experience":262,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"wind","level":11,"experience":1960,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"wind","level":8,"experience":1121,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":4,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":4,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5},"thunder_storm":{"name":"Thunder Storm","level":4,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"water","level":8,"experience":437,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","icicle"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"water","level":9,"experience":668,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","ice_wall"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"water","level":8,"experience":1037,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","ice_wall"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"water","level":11,"experience":3776,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","ice_wall"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":4,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-28T14:59:55.108Z'
+    '2025-08-26T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3571,23 +3571,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -138,
-    'СнежнаяКоролева',
-    2767,
-    72,
-    52,
-    124,
-    'earth',
-    79,
+    'Фростбайт349',
+    2705,
+    28,
+    20,
+    48,
+    'fire',
+    90,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"earth","level":12,"experience":8202,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"earth","level":11,"experience":1944,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"earth","level":9,"experience":2440,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"earth","level":9,"experience":2487,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":4,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":4,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5},"meteor_strike":{"name":"Meteor Strike","level":4,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"fire","level":9,"experience":1850,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["inferno","fire_storm"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"fire","level":11,"experience":4189,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["inferno","spark"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"fire","level":9,"experience":2486,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["inferno","fire_storm"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"fire","level":11,"experience":2108,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["inferno","fire_storm"]},{"id":"wizard_bot_1763419149865_4","name":"Маг 5","faction":"fire","level":11,"experience":1837,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","inferno"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2},"flame_shield":{"name":"Flame Shield","level":5,"tier":3},"fire_storm":{"name":"Fire Storm","level":4,"tier":4},"inferno":{"name":"Inferno","level":5,"tier":5},"meteor_shower":{"name":"Meteor Shower","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3","wizard_bot_1763419149865_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-02T14:59:55.108Z'
+    '2025-10-13T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3597,23 +3597,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -139,
-    'ШаманВетра753',
-    2850,
-    87,
-    61,
-    148,
-    'water',
-    85,
+    'ОпытныйВолшебник',
+    2710,
+    84,
+    60,
+    144,
+    'earth',
+    74,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"water","level":11,"experience":6,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"water","level":11,"experience":4325,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"water","level":9,"experience":426,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"water","level":12,"experience":8316,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_4","name":"Маг 5","faction":"water","level":11,"experience":3809,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":4,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":4,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3","wizard_bot_1763305195108_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"earth","level":10,"experience":550,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["rock_shield","earth_armor"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"earth","level":8,"experience":350,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","rock_shield"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"earth","level":9,"experience":328,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","rock_shield"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"earth","level":11,"experience":5634,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","stone_throw"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":4,"tier":2},"stone_wall":{"name":"Stone Wall","level":4,"tier":3},"earthquake":{"name":"Earthquake","level":4,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-15T14:59:55.108Z'
+    '2025-08-12T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3623,23 +3623,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -140,
-    'DarkLord666',
-    2538,
-    79,
-    59,
-    138,
-    'earth',
-    69,
+    'Эмбер',
+    2647,
+    57,
+    42,
+    99,
+    'poison',
+    77,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"earth","level":10,"experience":64,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"earth","level":10,"experience":3195,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"earth","level":11,"experience":4186,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"earth","level":9,"experience":1264,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":4,"tier":1},"earth_armor":{"name":"Earth Armor","level":4,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":4,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"poison","level":9,"experience":381,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","death_touch"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"poison","level":8,"experience":743,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","acid_rain"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"poison","level":12,"experience":7148,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["acid_rain","toxic_cloud"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"poison","level":10,"experience":1971,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["acid_rain","death_touch"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":4,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":4,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":4,"tier":4},"corruption":{"name":"Corruption","level":4,"tier":5},"death_touch":{"name":"Death Touch","level":4,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-18T14:59:55.108Z'
+    '2025-05-24T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3649,23 +3649,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -141,
-    'Терракот',
-    2648,
-    85,
-    61,
-    146,
-    'water',
-    88,
+    'MountainKing',
+    2963,
+    119,
+    81,
+    200,
+    'nature',
+    73,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"water","level":8,"experience":517,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"water","level":9,"experience":1416,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"water","level":9,"experience":1475,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"water","level":9,"experience":651,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_4","name":"Маг 5","faction":"water","level":9,"experience":1258,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":4,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":4,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":4,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":4,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3","wizard_bot_1763305195108_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"nature","level":12,"experience":8540,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","regeneration"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"nature","level":8,"experience":762,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","vine_snare"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"nature","level":12,"experience":927,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","regeneration"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"nature","level":12,"experience":3299,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["regeneration","poison_cloud"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":4,"tier":1},"heal":{"name":"Heal","level":4,"tier":2},"vine_snare":{"name":"Vine Snare","level":4,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":4,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-04T14:59:55.108Z'
+    '2025-05-25T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3675,23 +3675,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -142,
-    'FireGod777',
-    2830,
-    69,
-    48,
-    117,
+    'Некроз',
+    2869,
+    35,
+    25,
+    60,
     'wind',
-    73,
+    90,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"wind","level":10,"experience":964,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"wind","level":11,"experience":1688,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"wind","level":12,"experience":2620,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"wind","level":10,"experience":231,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":4,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":4,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":4,"tier":4},"tornado":{"name":"Tornado","level":4,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"wind","level":12,"experience":6902,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","lightning_bolt"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"wind","level":12,"experience":155,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","wind_barrier"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"wind","level":11,"experience":958,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","tornado"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"wind","level":11,"experience":1321,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["wind_barrier","thunder_storm"]},{"id":"wizard_bot_1763419149865_4","name":"Маг 5","faction":"wind","level":10,"experience":229,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["wind_barrier","thunder_storm"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":4,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":4,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5},"thunder_storm":{"name":"Thunder Storm","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3","wizard_bot_1763419149865_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-10T14:59:55.108Z'
+    '2025-08-10T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3701,23 +3701,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -143,
-    'Шокер88',
-    2978,
-    20,
-    14,
-    34,
-    'poison',
-    70,
+    'ДревнийЛес898',
+    2640,
+    112,
+    81,
+    193,
+    'earth',
+    69,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"poison","level":12,"experience":2649,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"poison","level":10,"experience":1070,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"poison","level":12,"experience":7453,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"poison","level":10,"experience":3193,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":4,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":4,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"earth","level":9,"experience":1019,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","earthquake"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"earth","level":8,"experience":855,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","earth_armor"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"earth","level":10,"experience":1728,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earthquake","earth_armor"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"earth","level":11,"experience":5047,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earthquake"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":4,"tier":1},"earth_armor":{"name":"Earth Armor","level":4,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":4,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-26T14:59:55.108Z'
+    '2025-09-18T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3727,23 +3727,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -144,
-    'МастерСтихий788',
-    2591,
-    96,
-    70,
-    166,
-    'nature',
-    91,
+    'ShadowWizard912',
+    2830,
+    63,
+    44,
+    107,
+    'fire',
+    78,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"nature","level":12,"experience":6134,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"nature","level":8,"experience":1064,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"nature","level":8,"experience":1106,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"nature","level":12,"experience":2924,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_4","name":"Маг 5","faction":"nature","level":11,"experience":4524,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":4,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5},"nature_fury":{"name":"Nature Fury","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3","wizard_bot_1763305195108_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"fire","level":8,"experience":146,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["inferno","meteor_shower"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"fire","level":12,"experience":5868,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fire_storm","flame_shield"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"fire","level":10,"experience":3826,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fire_storm","fireball"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"fire","level":9,"experience":1380,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["inferno","flame_shield"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":4,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2},"flame_shield":{"name":"Flame Shield","level":4,"tier":3},"fire_storm":{"name":"Fire Storm","level":5,"tier":4},"inferno":{"name":"Inferno","level":4,"tier":5},"meteor_shower":{"name":"Meteor Shower","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-17T14:59:55.108Z'
+    '2025-08-11T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3753,23 +3753,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -145,
-    'Целитель585',
-    2878,
-    58,
-    40,
-    98,
+    'HellFire801',
+    2812,
+    37,
+    26,
+    63,
     'water',
-    70,
+    77,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"water","level":12,"experience":3019,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"water","level":11,"experience":219,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"water","level":9,"experience":806,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"water","level":10,"experience":340,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":4,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":4,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"water","level":11,"experience":2564,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["tidal_wave","frost_armor"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"water","level":10,"experience":1607,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frozen_heart"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"water","level":10,"experience":1763,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frozen_heart","ice_wall"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"water","level":11,"experience":3967,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","icicle"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":4,"tier":2},"ice_wall":{"name":"Ice Wall","level":4,"tier":3},"blizzard":{"name":"Blizzard","level":4,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":4,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":4,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-19T14:59:55.108Z'
+    '2025-08-22T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3779,23 +3779,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -146,
-    'FireStorm',
-    2935,
-    71,
-    49,
-    120,
-    'wind',
-    76,
+    'Pyromancer672',
+    2716,
+    110,
+    78,
+    188,
+    'fire',
+    74,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"wind","level":9,"experience":1955,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"wind","level":12,"experience":4269,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"wind","level":11,"experience":2571,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"wind","level":12,"experience":3849,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":4,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"fire","level":8,"experience":1239,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","inferno"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"fire","level":10,"experience":936,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","inferno"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"fire","level":9,"experience":340,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","spark"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"fire","level":12,"experience":6289,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","fire_storm"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":4,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2},"flame_shield":{"name":"Flame Shield","level":5,"tier":3},"fire_storm":{"name":"Fire Storm","level":4,"tier":4},"inferno":{"name":"Inferno","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-28T14:59:55.108Z'
+    '2025-08-08T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3805,23 +3805,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -147,
-    'МастерЯдов',
-    2810,
-    41,
-    29,
-    70,
-    'poison',
-    70,
+    'Электрон939',
+    2927,
+    45,
+    31,
+    76,
+    'wind',
+    83,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"poison","level":10,"experience":2162,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"poison","level":11,"experience":3238,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"poison","level":9,"experience":711,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"poison","level":10,"experience":1465,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":4,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":4,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"wind","level":10,"experience":2121,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","chain_lightning"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"wind","level":9,"experience":2080,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","wind_barrier"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"wind","level":11,"experience":4523,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","wind_barrier"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"wind","level":10,"experience":3841,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]},{"id":"wizard_bot_1763419149865_4","name":"Маг 5","faction":"wind","level":11,"experience":2847,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","wind_barrier"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":4,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":4,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":4,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4},"tornado":{"name":"Tornado","level":4,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3","wizard_bot_1763419149865_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-31T14:59:55.108Z'
+    '2025-09-24T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3831,23 +3831,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -148,
-    'ОгненныйДракон',
-    2753,
-    18,
-    14,
-    32,
-    'fire',
-    88,
+    'Темпест525',
+    2715,
+    59,
+    42,
+    101,
+    'water',
+    70,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"fire","level":12,"experience":8462,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"fire","level":11,"experience":1892,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"fire","level":11,"experience":819,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"fire","level":9,"experience":1935,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_4","name":"Маг 5","faction":"fire","level":11,"experience":4893,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":4,"tier":2},"flame_shield":{"name":"Flame Shield","level":4,"tier":3},"fire_storm":{"name":"Fire Storm","level":4,"tier":4},"inferno":{"name":"Inferno","level":4,"tier":5},"meteor_shower":{"name":"Meteor Shower","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3","wizard_bot_1763305195108_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"water","level":9,"experience":795,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","ice_wall"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"water","level":9,"experience":1137,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","blizzard"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"water","level":12,"experience":2463,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","icicle"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"water","level":10,"experience":1237,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","blizzard"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":4,"tier":3},"blizzard":{"name":"Blizzard","level":4,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-17T14:59:55.108Z'
+    '2025-09-22T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3857,23 +3857,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -149,
-    'КаменныйГолем',
-    2838,
-    63,
-    45,
-    108,
-    'nature',
-    86,
+    'Терракс337',
+    2679,
+    32,
+    23,
+    55,
+    'wind',
+    87,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"nature","level":9,"experience":1130,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"nature","level":11,"experience":3768,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"nature","level":10,"experience":1092,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"nature","level":12,"experience":4913,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_4","name":"Маг 5","faction":"nature","level":8,"experience":814,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":4,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3","wizard_bot_1763305195108_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"wind","level":11,"experience":2848,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thunder_storm","lightning_bolt"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"wind","level":12,"experience":4875,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"wind","level":10,"experience":2225,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thunder_storm","gust"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"wind","level":9,"experience":1710,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","thunder_storm"]},{"id":"wizard_bot_1763419149865_4","name":"Маг 5","faction":"wind","level":10,"experience":3008,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thunder_storm","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":4,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":4,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":4,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4},"tornado":{"name":"Tornado","level":4,"tier":5},"thunder_storm":{"name":"Thunder Storm","level":4,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3","wizard_bot_1763419149865_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-19T14:59:55.108Z'
+    '2025-09-15T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3883,23 +3883,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -150,
-    'Вольт',
-    2864,
-    49,
-    34,
-    83,
-    'water',
-    76,
+    'Пламенный979',
+    2548,
+    46,
+    35,
+    81,
+    'earth',
+    85,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"water","level":10,"experience":3236,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"water","level":10,"experience":2913,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"water","level":12,"experience":5849,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"water","level":9,"experience":612,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":4,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"earth","level":9,"experience":614,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["rock_shield","earth_armor"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"earth","level":10,"experience":3588,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earthquake","earth_armor"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"earth","level":9,"experience":239,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","rock_shield"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"earth","level":10,"experience":2588,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","rock_shield"]},{"id":"wizard_bot_1763419149865_4","name":"Маг 5","faction":"earth","level":9,"experience":1214,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earthquake"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":4,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":4,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3","wizard_bot_1763419149865_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-11T14:59:55.108Z'
+    '2025-05-22T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3909,23 +3909,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -151,
-    'Криоманс',
-    2657,
-    58,
+    'Некроз133',
+    2933,
+    61,
     42,
-    100,
-    'earth',
-    86,
+    103,
+    'nature',
+    80,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"earth","level":8,"experience":1203,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"earth","level":10,"experience":3200,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"earth","level":11,"experience":366,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"earth","level":11,"experience":217,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_4","name":"Маг 5","faction":"earth","level":11,"experience":2923,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":4,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3","wizard_bot_1763305195108_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"nature","level":9,"experience":1035,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","thorn"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"nature","level":9,"experience":12,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","heal"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"nature","level":8,"experience":594,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","thorn"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"nature","level":10,"experience":2512,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","poison_cloud"]},{"id":"wizard_bot_1763419149865_4","name":"Маг 5","faction":"nature","level":12,"experience":650,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":4,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":4,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3","wizard_bot_1763419149865_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-21T14:59:55.108Z'
+    '2025-06-18T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3935,23 +3935,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -152,
-    'Архонт187',
-    2667,
-    103,
-    75,
-    178,
+    'Вердант',
+    2861,
+    94,
+    66,
+    160,
     'poison',
-    70,
+    74,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"poison","level":10,"experience":674,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"poison","level":8,"experience":295,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"poison","level":11,"experience":4456,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"poison","level":10,"experience":1463,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":4,"tier":3},"acid_rain":{"name":"Acid Rain","level":4,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"poison","level":8,"experience":322,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"poison","level":12,"experience":8438,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","corruption"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"poison","level":11,"experience":2899,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["corruption","venom_spit"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"poison","level":12,"experience":3598,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["corruption","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":4,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":4,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":4,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-26T14:59:55.108Z'
+    '2025-10-10T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3961,23 +3961,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -153,
-    'Кристалл543',
-    2975,
-    100,
-    68,
-    168,
-    'earth',
-    68,
+    'ТемныйВолшебник489',
+    2797,
+    115,
+    81,
+    196,
+    'fire',
+    80,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"earth","level":8,"experience":905,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"earth","level":9,"experience":1890,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"earth","level":9,"experience":2556,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"earth","level":11,"experience":5177,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":4,"tier":1},"earth_armor":{"name":"Earth Armor","level":4,"tier":2},"stone_wall":{"name":"Stone Wall","level":4,"tier":3},"earthquake":{"name":"Earthquake","level":4,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"fire","level":8,"experience":939,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","flame_shield"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"fire","level":8,"experience":62,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fire_storm","flame_shield"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"fire","level":9,"experience":2246,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","fireball"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"fire","level":12,"experience":4383,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fire_storm","fireball"]},{"id":"wizard_bot_1763419149865_4","name":"Маг 5","faction":"fire","level":10,"experience":2859,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","spark"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":4,"tier":1},"fireball":{"name":"Fireball","level":5,"tier":2},"flame_shield":{"name":"Flame Shield","level":5,"tier":3},"fire_storm":{"name":"Fire Storm","level":4,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3","wizard_bot_1763419149865_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-27T14:59:55.108Z'
+    '2025-10-16T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -3987,23 +3987,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -154,
-    'Глация',
-    2724,
-    82,
-    59,
-    141,
-    'wind',
-    75,
+    'ThunderStrike843',
+    2718,
+    103,
+    73,
+    176,
+    'nature',
+    80,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"wind","level":12,"experience":716,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"wind","level":11,"experience":3195,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"wind","level":8,"experience":206,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"wind","level":11,"experience":3449,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":4,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4},"tornado":{"name":"Tornado","level":4,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"nature","level":8,"experience":362,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","vine_snare"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"nature","level":8,"experience":433,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","vine_snare"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"nature","level":9,"experience":1997,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["nature_fury","heal"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"nature","level":12,"experience":5810,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","poison_cloud"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":4,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":4,"tier":5},"nature_fury":{"name":"Nature Fury","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-13T14:59:55.108Z'
+    '2025-09-10T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -4013,23 +4013,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -155,
-    'Electro433',
-    2531,
-    103,
-    77,
-    180,
-    'poison',
-    79,
+    'LightningKing88',
+    2766,
+    12,
+    9,
+    21,
+    'water',
+    69,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"poison","level":8,"experience":1122,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"poison","level":12,"experience":6294,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"poison","level":11,"experience":2502,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"poison","level":8,"experience":763,"exp_to_next":1708,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":4,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":4,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5},"death_touch":{"name":"Death Touch","level":4,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3",null]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"water","level":12,"experience":4983,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","blizzard"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"water","level":9,"experience":2395,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"water","level":11,"experience":939,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","blizzard"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"water","level":9,"experience":280,"exp_to_next":2562,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","frost_armor"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":4,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":4,"tier":3},"blizzard":{"name":"Blizzard","level":4,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3",null]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":7},"blessing_tower":{"level":4}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-22T14:59:55.108Z'
+    '2025-06-07T22:39:09.865Z'
 );
 
 INSERT INTO players (
@@ -4039,23 +4039,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -156,
-    'Венома',
-    3557,
-    120,
-    72,
-    192,
-    'earth',
-    90,
+    'ИнфернальныйМаг',
+    3573,
+    64,
+    38,
+    102,
+    'poison',
+    95,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195108_0","name":"Маг 1","faction":"earth","level":13,"experience":2263,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_1","name":"Маг 2","faction":"earth","level":13,"experience":8758,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_2","name":"Маг 3","faction":"earth","level":12,"experience":6131,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_3","name":"Маг 4","faction":"earth","level":10,"experience":2821,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195108_4","name":"Маг 5","faction":"earth","level":15,"experience":27115,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195108_0","wizard_bot_1763305195108_1","wizard_bot_1763305195108_2","wizard_bot_1763305195108_3","wizard_bot_1763305195108_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149865_0","name":"Маг 1","faction":"poison","level":14,"experience":19388,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","acid_rain"]},{"id":"wizard_bot_1763419149865_1","name":"Маг 2","faction":"poison","level":13,"experience":6067,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","acid_rain"]},{"id":"wizard_bot_1763419149865_2","name":"Маг 3","faction":"poison","level":14,"experience":9952,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["corruption","acid_rain"]},{"id":"wizard_bot_1763419149865_3","name":"Маг 4","faction":"poison","level":13,"experience":7613,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","acid_rain"]},{"id":"wizard_bot_1763419149865_4","name":"Маг 5","faction":"poison","level":11,"experience":896,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["corruption","acid_rain"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5},"death_touch":{"name":"Death Touch","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149865_0","wizard_bot_1763419149865_1","wizard_bot_1763419149865_2","wizard_bot_1763419149865_3","wizard_bot_1763419149865_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-20T14:59:55.109Z'
+    '2025-10-14T22:39:09.866Z'
 );
 
 INSERT INTO players (
@@ -4065,23 +4065,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -157,
-    'ЧерныйНекромант',
-    3383,
-    30,
-    19,
-    49,
-    'wind',
-    95,
+    'Earthquake',
+    3685,
+    22,
+    13,
+    35,
+    'nature',
+    100,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"wind","level":14,"experience":10033,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"wind","level":14,"experience":8699,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"wind","level":10,"experience":1512,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"wind","level":13,"experience":9425,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"wind","level":11,"experience":57,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5},"thunder_storm":{"name":"Thunder Storm","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149866_0","name":"Маг 1","faction":"nature","level":12,"experience":982,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","life_bloom"]},{"id":"wizard_bot_1763419149866_1","name":"Маг 2","faction":"nature","level":15,"experience":19104,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["life_bloom","thorn"]},{"id":"wizard_bot_1763419149866_2","name":"Маг 3","faction":"nature","level":10,"experience":1877,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["regeneration","life_bloom"]},{"id":"wizard_bot_1763419149866_3","name":"Маг 4","faction":"nature","level":14,"experience":9509,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","poison_cloud"]},{"id":"wizard_bot_1763419149866_4","name":"Маг 5","faction":"nature","level":12,"experience":145,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","life_bloom"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5},"nature_fury":{"name":"Nature Fury","level":5,"tier":6},"life_bloom":{"name":"Life Bloom","level":5,"tier":7}}}'::jsonb,
+    '["wizard_bot_1763419149866_0","wizard_bot_1763419149866_1","wizard_bot_1763419149866_2","wizard_bot_1763419149866_3","wizard_bot_1763419149866_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-14T14:59:55.109Z'
+    '2025-05-31T22:39:09.866Z'
 );
 
 INSERT INTO players (
@@ -4091,23 +4091,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -158,
-    'Терраформер',
-    3063,
-    113,
-    75,
-    188,
+    'Морбиус',
+    3575,
+    99,
+    59,
+    158,
     'poison',
-    95,
+    90,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"poison","level":13,"experience":12609,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"poison","level":12,"experience":5794,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"poison","level":10,"experience":2142,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"poison","level":10,"experience":2514,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"poison","level":11,"experience":5735,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5},"death_touch":{"name":"Death Touch","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149866_0","name":"Маг 1","faction":"poison","level":10,"experience":1908,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","corruption"]},{"id":"wizard_bot_1763419149866_1","name":"Маг 2","faction":"poison","level":15,"experience":25556,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["corruption","acid_rain"]},{"id":"wizard_bot_1763419149866_2","name":"Маг 3","faction":"poison","level":11,"experience":5113,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["corruption","acid_rain"]},{"id":"wizard_bot_1763419149866_3","name":"Маг 4","faction":"poison","level":14,"experience":157,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","acid_rain"]},{"id":"wizard_bot_1763419149866_4","name":"Маг 5","faction":"poison","level":13,"experience":2817,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["corruption","acid_rain"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149866_0","wizard_bot_1763419149866_1","wizard_bot_1763419149866_2","wizard_bot_1763419149866_3","wizard_bot_1763419149866_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-21T14:59:55.109Z'
+    '2025-07-21T22:39:09.866Z'
 );
 
 INSERT INTO players (
@@ -4117,23 +4117,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -159,
-    'ИнфернальныйМаг245',
-    3877,
-    101,
-    57,
-    158,
-    'wind',
-    90,
+    'Блейз262',
+    3815,
+    42,
+    24,
+    66,
+    'water',
+    95,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"wind","level":14,"experience":13092,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"wind","level":10,"experience":744,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"wind","level":12,"experience":4778,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"wind","level":10,"experience":3173,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"wind","level":15,"experience":7962,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149866_0","name":"Маг 1","faction":"water","level":11,"experience":1543,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["tidal_wave","blizzard"]},{"id":"wizard_bot_1763419149866_1","name":"Маг 2","faction":"water","level":14,"experience":14214,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","ice_wall"]},{"id":"wizard_bot_1763419149866_2","name":"Маг 3","faction":"water","level":11,"experience":895,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","tidal_wave"]},{"id":"wizard_bot_1763419149866_3","name":"Маг 4","faction":"water","level":10,"experience":2460,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","frozen_heart"]},{"id":"wizard_bot_1763419149866_4","name":"Маг 5","faction":"water","level":14,"experience":18713,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["tidal_wave","ice_wall"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149866_0","wizard_bot_1763419149866_1","wizard_bot_1763419149866_2","wizard_bot_1763419149866_3","wizard_bot_1763419149866_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-07T14:59:55.109Z'
+    '2025-07-29T22:39:09.866Z'
 );
 
 INSERT INTO players (
@@ -4143,23 +4143,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -160,
-    'Эмбер764',
-    3627,
-    78,
-    46,
-    124,
-    'poison',
+    'NoobSlayer',
+    3911,
+    105,
+    59,
+    164,
+    'earth',
     95,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"poison","level":11,"experience":3947,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"poison","level":11,"experience":4884,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"poison","level":10,"experience":1247,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"poison","level":15,"experience":23340,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"poison","level":14,"experience":16238,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5},"death_touch":{"name":"Death Touch","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149866_0","name":"Маг 1","faction":"earth","level":15,"experience":21497,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earthquake","rock_shield"]},{"id":"wizard_bot_1763419149866_1","name":"Маг 2","faction":"earth","level":13,"experience":210,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["meteor_strike","rock_shield"]},{"id":"wizard_bot_1763419149866_2","name":"Маг 3","faction":"earth","level":12,"experience":6540,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["meteor_strike","earth_armor"]},{"id":"wizard_bot_1763419149866_3","name":"Маг 4","faction":"earth","level":12,"experience":640,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earthquake","stone_throw"]},{"id":"wizard_bot_1763419149866_4","name":"Маг 5","faction":"earth","level":12,"experience":1080,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["rock_shield","earthquake"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5},"meteor_strike":{"name":"Meteor Strike","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149866_0","wizard_bot_1763419149866_1","wizard_bot_1763419149866_2","wizard_bot_1763419149866_3","wizard_bot_1763419149866_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-14T14:59:55.109Z'
+    '2025-05-30T22:39:09.866Z'
 );
 
 INSERT INTO players (
@@ -4169,23 +4169,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -161,
-    'Zeus315',
-    3751,
-    52,
-    30,
-    82,
-    'earth',
-    95,
+    'Glacialist',
+    3602,
+    114,
+    67,
+    181,
+    'poison',
+    90,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"earth","level":12,"experience":8338,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"earth","level":12,"experience":6069,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"earth","level":14,"experience":19140,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"earth","level":15,"experience":17926,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"earth","level":13,"experience":11689,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5},"meteor_strike":{"name":"Meteor Strike","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149866_0","name":"Маг 1","faction":"poison","level":14,"experience":18586,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["corruption","venom_spit"]},{"id":"wizard_bot_1763419149866_1","name":"Маг 2","faction":"poison","level":13,"experience":157,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["acid_rain","toxic_cloud"]},{"id":"wizard_bot_1763419149866_2","name":"Маг 3","faction":"poison","level":15,"experience":9209,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["acid_rain","corruption"]},{"id":"wizard_bot_1763419149866_3","name":"Маг 4","faction":"poison","level":10,"experience":2618,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["corruption","venom_spit"]},{"id":"wizard_bot_1763419149866_4","name":"Маг 5","faction":"poison","level":12,"experience":3939,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","plague"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149866_0","wizard_bot_1763419149866_1","wizard_bot_1763419149866_2","wizard_bot_1763419149866_3","wizard_bot_1763419149866_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-25T14:59:55.109Z'
+    '2025-06-24T22:39:09.866Z'
 );
 
 INSERT INTO players (
@@ -4195,23 +4195,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -162,
-    'ИнфернальныйМаг845',
-    3934,
-    15,
-    9,
-    24,
-    'water',
-    95,
+    'МастерЯдов649',
+    3265,
+    115,
+    73,
+    188,
+    'wind',
+    100,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"water","level":15,"experience":26503,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"water","level":13,"experience":9670,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"water","level":13,"experience":12839,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"water","level":13,"experience":168,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"water","level":13,"experience":8619,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149866_0","name":"Маг 1","faction":"wind","level":10,"experience":432,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["tornado","thunder_storm"]},{"id":"wizard_bot_1763419149866_1","name":"Маг 2","faction":"wind","level":10,"experience":1573,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","thunder_storm"]},{"id":"wizard_bot_1763419149866_2","name":"Маг 3","faction":"wind","level":14,"experience":11158,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","chain_lightning"]},{"id":"wizard_bot_1763419149866_3","name":"Маг 4","faction":"wind","level":12,"experience":6834,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["hurricane","lightning_bolt"]},{"id":"wizard_bot_1763419149866_4","name":"Маг 5","faction":"wind","level":12,"experience":3570,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["tornado","chain_lightning"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5},"thunder_storm":{"name":"Thunder Storm","level":5,"tier":6},"hurricane":{"name":"Hurricane","level":5,"tier":7}}}'::jsonb,
+    '["wizard_bot_1763419149866_0","wizard_bot_1763419149866_1","wizard_bot_1763419149866_2","wizard_bot_1763419149866_3","wizard_bot_1763419149866_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-28T14:59:55.109Z'
+    '2025-07-03T22:39:09.866Z'
 );
 
 INSERT INTO players (
@@ -4221,23 +4221,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -163,
-    'Зевс277',
-    3130,
-    117,
-    76,
-    193,
+    'xXx_Merlin_xXx621',
+    3614,
+    59,
+    35,
+    94,
     'water',
-    95,
+    100,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"water","level":14,"experience":9791,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"water","level":10,"experience":1516,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"water","level":14,"experience":2572,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"water","level":14,"experience":18090,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"water","level":13,"experience":7637,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149866_0","name":"Маг 1","faction":"water","level":12,"experience":5894,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","ice_wall"]},{"id":"wizard_bot_1763419149866_1","name":"Маг 2","faction":"water","level":12,"experience":6344,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","blizzard"]},{"id":"wizard_bot_1763419149866_2","name":"Маг 3","faction":"water","level":14,"experience":8883,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["tidal_wave","ice_wall"]},{"id":"wizard_bot_1763419149866_3","name":"Маг 4","faction":"water","level":14,"experience":14049,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","blizzard"]},{"id":"wizard_bot_1763419149866_4","name":"Маг 5","faction":"water","level":10,"experience":787,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","tidal_wave"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":5,"tier":6},"absolute_zero":{"name":"Absolute Zero","level":5,"tier":7}}}'::jsonb,
+    '["wizard_bot_1763419149866_0","wizard_bot_1763419149866_1","wizard_bot_1763419149866_2","wizard_bot_1763419149866_3","wizard_bot_1763419149866_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-30T14:59:55.109Z'
+    '2025-06-11T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4247,23 +4247,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -164,
-    'ВластелинЗаклинаний',
-    3453,
-    18,
-    11,
-    29,
-    'earth',
+    'Ледокол25',
+    3881,
+    112,
+    62,
+    174,
+    'water',
     90,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"earth","level":14,"experience":1965,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"earth","level":15,"experience":16824,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"earth","level":15,"experience":12663,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"earth","level":11,"experience":5644,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"earth","level":14,"experience":6982,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"water","level":11,"experience":1258,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frozen_heart","blizzard"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"water","level":15,"experience":14665,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","icicle"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"water","level":10,"experience":167,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frozen_heart","blizzard"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"water","level":10,"experience":1414,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","frost_armor"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"water","level":12,"experience":3635,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","frost_armor"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-12T14:59:55.109Z'
+    '2025-06-30T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4273,23 +4273,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -165,
-    'Геомант578',
-    3521,
-    52,
-    32,
-    84,
-    'earth',
-    95,
+    'СинийМудрец',
+    3934,
+    116,
+    64,
+    180,
+    'nature',
+    90,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"earth","level":15,"experience":16959,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"earth","level":11,"experience":850,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"earth","level":13,"experience":10712,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"earth","level":11,"experience":884,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"earth","level":13,"experience":5281,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5},"meteor_strike":{"name":"Meteor Strike","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"nature","level":14,"experience":1721,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","vine_snare"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"nature","level":10,"experience":208,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","regeneration"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"nature","level":10,"experience":3312,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","poison_cloud"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"nature","level":11,"experience":2999,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","vine_snare"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"nature","level":11,"experience":815,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","regeneration"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-03T14:59:55.109Z'
+    '2025-08-05T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4299,23 +4299,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -166,
-    'БогГрома',
-    3285,
-    107,
-    68,
-    175,
-    'water',
-    90,
+    'ДревнийЛес',
+    3397,
+    74,
+    46,
+    120,
+    'nature',
+    95,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"water","level":15,"experience":18004,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"water","level":11,"experience":4733,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"water","level":15,"experience":15936,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"water","level":15,"experience":27438,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"water","level":15,"experience":10246,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"nature","level":13,"experience":947,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","regeneration"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"nature","level":14,"experience":11825,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","vine_snare"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"nature","level":11,"experience":1457,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","nature_fury"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"nature","level":10,"experience":123,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","regeneration"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"nature","level":13,"experience":10942,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","nature_fury"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5},"nature_fury":{"name":"Nature Fury","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-12T14:59:55.109Z'
+    '2025-07-07T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4325,23 +4325,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -167,
-    'Целитель276',
-    3206,
-    49,
-    32,
-    81,
-    'nature',
-    100,
+    'Крушитель',
+    3090,
+    35,
+    24,
+    59,
+    'earth',
+    90,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"nature","level":11,"experience":5719,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"nature","level":15,"experience":17899,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"nature","level":15,"experience":26491,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"nature","level":10,"experience":2563,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"nature","level":10,"experience":2711,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5},"nature_fury":{"name":"Nature Fury","level":5,"tier":6},"life_bloom":{"name":"Life Bloom","level":5,"tier":7}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"earth","level":13,"experience":11265,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","stone_throw"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"earth","level":10,"experience":1482,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earthquake","earth_armor"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"earth","level":11,"experience":1869,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","rock_shield"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"earth","level":14,"experience":4102,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","rock_shield"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"earth","level":14,"experience":9403,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","stone_throw"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-15T14:59:55.109Z'
+    '2025-08-26T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4351,23 +4351,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -168,
-    'Tempest38',
-    3604,
-    105,
-    62,
-    167,
-    'nature',
-    90,
+    'МастерЯдов21',
+    3315,
+    30,
+    20,
+    50,
+    'wind',
+    95,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"nature","level":14,"experience":12241,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"nature","level":11,"experience":2131,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"nature","level":10,"experience":3516,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"nature","level":11,"experience":4117,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"nature","level":10,"experience":2703,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"wind","level":14,"experience":748,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","tornado"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"wind","level":11,"experience":3234,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["wind_barrier","thunder_storm"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"wind","level":12,"experience":3606,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","lightning_bolt"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"wind","level":13,"experience":2010,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["wind_barrier","chain_lightning"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"wind","level":10,"experience":2305,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5},"thunder_storm":{"name":"Thunder Storm","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-10T14:59:55.109Z'
+    '2025-05-27T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4377,23 +4377,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -169,
-    'HellFire72',
-    3621,
-    114,
-    68,
-    182,
+    'ForestQueen381',
+    3175,
+    15,
+    10,
+    25,
     'fire',
-    95,
+    100,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"fire","level":10,"experience":1992,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"fire","level":14,"experience":15,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"fire","level":11,"experience":27,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"fire","level":13,"experience":7840,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"fire","level":10,"experience":1728,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":5,"tier":2},"flame_shield":{"name":"Flame Shield","level":5,"tier":3},"fire_storm":{"name":"Fire Storm","level":5,"tier":4},"inferno":{"name":"Inferno","level":5,"tier":5},"meteor_shower":{"name":"Meteor Shower","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"fire","level":11,"experience":1187,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","inferno"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"fire","level":12,"experience":4267,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["meteor_shower","fire_storm"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"fire","level":15,"experience":25422,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["phoenix_rebirth","spark"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"fire","level":15,"experience":3600,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","phoenix_rebirth"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"fire","level":15,"experience":4316,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","inferno"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":5,"tier":2},"flame_shield":{"name":"Flame Shield","level":5,"tier":3},"fire_storm":{"name":"Fire Storm","level":5,"tier":4},"inferno":{"name":"Inferno","level":5,"tier":5},"meteor_shower":{"name":"Meteor Shower","level":5,"tier":6},"phoenix_rebirth":{"name":"Phoenix Rebirth","level":5,"tier":7}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-07T14:59:55.109Z'
+    '2025-08-14T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4403,23 +4403,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -170,
-    'Некроз',
-    3632,
-    51,
-    31,
-    82,
-    'wind',
-    95,
+    'BlazeMage',
+    3507,
+    80,
+    49,
+    129,
+    'water',
+    100,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"wind","level":12,"experience":288,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"wind","level":12,"experience":3461,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"wind","level":10,"experience":3159,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"wind","level":11,"experience":4251,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"wind","level":12,"experience":2581,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5},"thunder_storm":{"name":"Thunder Storm","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"water","level":11,"experience":2388,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["absolute_zero","blizzard"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"water","level":11,"experience":2769,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","ice_wall"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"water","level":15,"experience":5024,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","absolute_zero"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"water","level":12,"experience":7400,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","blizzard"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"water","level":10,"experience":2636,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frozen_heart","icicle"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":5,"tier":6},"absolute_zero":{"name":"Absolute Zero","level":5,"tier":7}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-03T14:59:55.109Z'
+    '2025-08-18T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4429,23 +4429,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -171,
-    'Кристалл79',
-    3520,
-    95,
-    57,
-    152,
+    'Medusa',
+    3711,
+    104,
+    60,
+    164,
     'poison',
-    100,
+    95,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"poison","level":11,"experience":3848,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"poison","level":11,"experience":3367,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"poison","level":14,"experience":160,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"poison","level":12,"experience":7059,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"poison","level":12,"experience":4576,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5},"death_touch":{"name":"Death Touch","level":5,"tier":6},"pestilence":{"name":"Pestilence","level":5,"tier":7}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"poison","level":12,"experience":6770,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["corruption","acid_rain"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"poison","level":12,"experience":1855,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","acid_rain"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"poison","level":13,"experience":10506,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","corruption"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"poison","level":12,"experience":7730,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["acid_rain","venom_spit"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"poison","level":11,"experience":796,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["death_touch","plague"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5},"death_touch":{"name":"Death Touch","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-30T14:59:55.109Z'
+    '2025-07-08T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4455,23 +4455,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -172,
-    'Glacialist408',
-    3559,
-    118,
-    70,
-    188,
-    'water',
-    100,
+    'Druid454',
+    3703,
+    99,
+    57,
+    156,
+    'wind',
+    90,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"water","level":14,"experience":13993,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"water","level":11,"experience":2373,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"water","level":14,"experience":6230,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"water","level":15,"experience":1611,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"water","level":12,"experience":6395,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":5,"tier":6},"absolute_zero":{"name":"Absolute Zero","level":5,"tier":7}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"wind","level":12,"experience":4266,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","chain_lightning"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"wind","level":15,"experience":4104,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["wind_barrier","tornado"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"wind","level":10,"experience":1526,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","gust"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"wind","level":13,"experience":9215,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["wind_barrier","tornado"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"wind","level":11,"experience":297,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","chain_lightning"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-02T14:59:55.109Z'
+    '2025-07-17T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4481,23 +4481,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -173,
-    'ThunderStrike561',
-    3350,
-    19,
-    13,
-    32,
-    'nature',
+    'HellFire',
+    3574,
+    114,
+    68,
+    182,
+    'fire',
     90,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"nature","level":10,"experience":3148,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"nature","level":15,"experience":26997,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"nature","level":12,"experience":1233,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"nature","level":10,"experience":3082,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"nature","level":15,"experience":14385,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"fire","level":13,"experience":11763,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["inferno","flame_shield"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"fire","level":12,"experience":530,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","inferno"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"fire","level":15,"experience":22235,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","spark"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"fire","level":15,"experience":6757,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","inferno"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"fire","level":14,"experience":483,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","fire_storm"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":5,"tier":2},"flame_shield":{"name":"Flame Shield","level":5,"tier":3},"fire_storm":{"name":"Fire Storm","level":5,"tier":4},"inferno":{"name":"Inferno","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-13T14:59:55.109Z'
+    '2025-09-03T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4507,23 +4507,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -174,
-    'ЖрицаВоды',
-    3439,
-    69,
-    43,
-    112,
-    'nature',
-    95,
+    'ПовелительМолний',
+    3441,
+    122,
+    75,
+    197,
+    'earth',
+    100,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"nature","level":14,"experience":19386,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"nature","level":13,"experience":5639,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"nature","level":12,"experience":2131,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"nature","level":13,"experience":725,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"nature","level":15,"experience":20045,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5},"nature_fury":{"name":"Nature Fury","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"earth","level":14,"experience":13282,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","rock_shield"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"earth","level":13,"experience":7215,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","rock_shield"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"earth","level":11,"experience":2974,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["mountain_rage","stone_wall"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"earth","level":15,"experience":24804,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["mountain_rage","rock_shield"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"earth","level":14,"experience":2491,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","mountain_rage"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5},"meteor_strike":{"name":"Meteor Strike","level":5,"tier":6},"mountain_rage":{"name":"Mountain Rage","level":5,"tier":7}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-17T14:59:55.109Z'
+    '2025-08-19T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4533,23 +4533,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -175,
-    'xXx_Merlin_xXx500',
-    3301,
-    30,
-    19,
-    49,
-    'poison',
-    90,
+    'ЗеленыйДруид',
+    3468,
+    58,
+    36,
+    94,
+    'wind',
+    95,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"poison","level":12,"experience":2508,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"poison","level":11,"experience":930,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"poison","level":11,"experience":5229,"exp_to_next":5766,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"poison","level":12,"experience":243,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"poison","level":10,"experience":1422,"exp_to_next":3844,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"wind","level":13,"experience":4998,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["tornado","wind_barrier"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"wind","level":15,"experience":9126,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","tornado"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"wind","level":13,"experience":8615,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","wind_barrier"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"wind","level":14,"experience":2585,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thunder_storm","gust"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"wind","level":15,"experience":13478,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","tornado"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5},"thunder_storm":{"name":"Thunder Storm","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":9},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-03T14:59:55.109Z'
+    '2025-09-16T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4559,23 +4559,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -176,
-    'Инферно949',
-    8518,
-    155,
-    23,
-    178,
-    'wind',
-    106,
+    'ЧерныйНекромант',
+    6339,
+    22,
+    7,
+    29,
+    'poison',
+    91,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"wind","level":17,"experience":44623,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"wind","level":13,"experience":6648,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"wind","level":12,"experience":7010,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"wind","level":13,"experience":5409,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"wind","level":15,"experience":11940,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5},"thunder_storm":{"name":"Thunder Storm","level":5,"tier":6},"hurricane":{"name":"Hurricane","level":5,"tier":7},"sky_wrath":{"name":"Sky Wrath","level":5,"tier":8}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"poison","level":17,"experience":12635,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["acid_rain","venom_spit"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"poison","level":18,"experience":10344,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","venom_spit"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"poison","level":17,"experience":30872,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","corruption"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"poison","level":14,"experience":16007,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["corruption","toxic_cloud"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"poison","level":12,"experience":8086,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["acid_rain","corruption"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-08T14:59:55.109Z'
+    '2025-06-03T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4585,23 +4585,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -177,
-    'FireLord325',
-    5824,
-    89,
-    32,
-    121,
+    'Terraformer',
+    8395,
+    66,
+    10,
+    76,
     'water',
-    106,
+    101,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"water","level":14,"experience":4293,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"water","level":13,"experience":12195,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"water","level":13,"experience":12924,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"water","level":18,"experience":37786,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"water","level":15,"experience":28651,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":5,"tier":6},"absolute_zero":{"name":"Absolute Zero","level":5,"tier":7},"ocean_fury":{"name":"Ocean Fury","level":5,"tier":8}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"water","level":17,"experience":26499,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["tidal_wave","blizzard"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"water","level":13,"experience":2896,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["tidal_wave","frost_armor"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"water","level":13,"experience":8812,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","blizzard"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"water","level":15,"experience":21220,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","ice_wall"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"water","level":13,"experience":4793,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","tidal_wave"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":5,"tier":6},"absolute_zero":{"name":"Absolute Zero","level":5,"tier":7}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-14T14:59:55.109Z'
+    '2025-08-31T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4611,23 +4611,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -178,
-    'МатьПрироды',
-    7977,
-    120,
+    'ТемныйВолшебник',
+    9774,
+    20,
+    2,
     22,
-    142,
-    'nature',
+    'earth',
     101,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"nature","level":17,"experience":39071,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"nature","level":18,"experience":86559,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"nature","level":15,"experience":8297,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"nature","level":17,"experience":47460,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"nature","level":17,"experience":428,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5},"nature_fury":{"name":"Nature Fury","level":5,"tier":6},"life_bloom":{"name":"Life Bloom","level":5,"tier":7}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"earth","level":12,"experience":7551,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["rock_shield","earth_armor"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"earth","level":13,"experience":9438,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","rock_shield"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"earth","level":12,"experience":1683,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","rock_shield"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"earth","level":13,"experience":5173,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","earthquake"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"earth","level":12,"experience":6233,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","stone_throw"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5},"meteor_strike":{"name":"Meteor Strike","level":5,"tier":6},"mountain_rage":{"name":"Mountain Rage","level":5,"tier":7}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-23T14:59:55.109Z'
+    '2025-06-12T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4637,23 +4637,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -179,
-    'ЗеленыйДруид27',
-    9475,
-    109,
-    10,
-    119,
+    'Страта150',
+    5379,
+    112,
+    45,
+    157,
     'poison',
-    96,
+    106,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"poison","level":16,"experience":39451,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"poison","level":14,"experience":8427,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"poison","level":17,"experience":58055,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"poison","level":15,"experience":21592,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"poison","level":15,"experience":7199,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5},"death_touch":{"name":"Death Touch","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"poison","level":13,"experience":5856,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["death_touch","pestilence"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"poison","level":14,"experience":3418,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","venom_spit"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"poison","level":16,"experience":4982,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["corruption","death_touch"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"poison","level":14,"experience":13180,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["black_death","plague"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"poison","level":14,"experience":2518,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["black_death","death_touch"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5},"death_touch":{"name":"Death Touch","level":5,"tier":6},"pestilence":{"name":"Pestilence","level":5,"tier":7},"black_death":{"name":"Black Death","level":5,"tier":8}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-17T14:59:55.109Z'
+    '2025-08-22T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4663,23 +4663,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -180,
-    'PoisonMaster895',
-    4420,
-    57,
-    29,
-    86,
-    'wind',
-    91,
+    'Tempest',
+    6121,
+    96,
+    31,
+    127,
+    'poison',
+    96,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"wind","level":13,"experience":10367,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"wind","level":12,"experience":6134,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"wind","level":17,"experience":11137,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"wind","level":17,"experience":54501,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"wind","level":15,"experience":23555,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"poison","level":18,"experience":85835,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","corruption"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"poison","level":15,"experience":7052,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","death_touch"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"poison","level":12,"experience":175,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","venom_spit"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"poison","level":17,"experience":24110,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","toxic_cloud"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"poison","level":14,"experience":1068,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["corruption","venom_spit"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5},"death_touch":{"name":"Death Touch","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-21T14:59:55.109Z'
+    '2025-08-03T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4689,23 +4689,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -181,
-    'Эмбер272',
-    4408,
-    123,
-    61,
-    184,
+    'КолдунЯда582',
+    6645,
+    31,
+    9,
+    40,
     'nature',
-    96,
+    91,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"nature","level":16,"experience":20970,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"nature","level":16,"experience":2355,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"nature","level":12,"experience":2746,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"nature","level":15,"experience":24976,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"nature","level":13,"experience":10360,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5},"nature_fury":{"name":"Nature Fury","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"nature","level":16,"experience":39499,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","thorn"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"nature","level":12,"experience":3901,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","heal"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"nature","level":14,"experience":3296,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","heal"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"nature","level":12,"experience":4031,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","poison_cloud"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"nature","level":15,"experience":13783,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","heal"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-19T14:59:55.109Z'
+    '2025-09-27T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4715,23 +4715,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -182,
-    'Electro38',
-    5164,
-    56,
-    24,
-    80,
-    'poison',
-    91,
+    'ПовелительМагии539',
+    4214,
+    72,
+    37,
+    109,
+    'water',
+    101,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"poison","level":12,"experience":2943,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"poison","level":12,"experience":8056,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"poison","level":18,"experience":93409,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"poison","level":14,"experience":8785,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"poison","level":16,"experience":37624,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"water","level":13,"experience":8405,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","blizzard"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"water","level":17,"experience":29410,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frost_armor"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"water","level":16,"experience":20466,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["absolute_zero","blizzard"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"water","level":15,"experience":27909,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","tidal_wave"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"water","level":12,"experience":8540,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","absolute_zero"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":5,"tier":6},"absolute_zero":{"name":"Absolute Zero","level":5,"tier":7}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-18T14:59:55.109Z'
+    '2025-06-14T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4741,23 +4741,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -183,
-    'ЛедянойВластелин84',
-    4658,
-    71,
-    34,
-    105,
-    'fire',
-    106,
+    'Криоманс687',
+    4263,
+    18,
+    10,
+    28,
+    'water',
+    101,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"fire","level":12,"experience":2669,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"fire","level":17,"experience":6510,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"fire","level":18,"experience":50716,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"fire","level":14,"experience":7828,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"fire","level":18,"experience":45096,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":5,"tier":2},"flame_shield":{"name":"Flame Shield","level":5,"tier":3},"fire_storm":{"name":"Fire Storm","level":5,"tier":4},"inferno":{"name":"Inferno","level":5,"tier":5},"meteor_shower":{"name":"Meteor Shower","level":5,"tier":6},"phoenix_rebirth":{"name":"Phoenix Rebirth","level":5,"tier":7},"apocalypse":{"name":"Apocalypse","level":5,"tier":8}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"water","level":12,"experience":6192,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["tidal_wave","ice_wall"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"water","level":18,"experience":13817,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frozen_heart","icicle"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"water","level":16,"experience":26997,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","absolute_zero"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"water","level":13,"experience":1259,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","ice_wall"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"water","level":12,"experience":3815,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","frost_armor"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":5,"tier":6},"absolute_zero":{"name":"Absolute Zero","level":5,"tier":7}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-14T14:59:55.109Z'
+    '2025-08-29T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4767,23 +4767,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -184,
-    'Инцинератор',
-    4490,
-    111,
-    55,
-    166,
-    'water',
-    91,
+    'Geomancer384',
+    4755,
+    18,
+    9,
+    27,
+    'fire',
+    106,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"water","level":12,"experience":7177,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"water","level":17,"experience":10113,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"water","level":13,"experience":11311,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"water","level":13,"experience":4822,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"water","level":13,"experience":10939,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"fire","level":16,"experience":17524,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["meteor_shower","apocalypse"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"fire","level":13,"experience":3009,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["phoenix_rebirth","apocalypse"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"fire","level":16,"experience":43115,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","apocalypse"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"fire","level":17,"experience":40946,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","inferno"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"fire","level":18,"experience":57758,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["inferno","phoenix_rebirth"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":5,"tier":2},"flame_shield":{"name":"Flame Shield","level":5,"tier":3},"fire_storm":{"name":"Fire Storm","level":5,"tier":4},"inferno":{"name":"Inferno","level":5,"tier":5},"meteor_shower":{"name":"Meteor Shower","level":5,"tier":6},"phoenix_rebirth":{"name":"Phoenix Rebirth","level":5,"tier":7},"apocalypse":{"name":"Apocalypse","level":5,"tier":8}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-05-26T14:59:55.109Z'
+    '2025-10-14T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4793,23 +4793,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -185,
-    'Пироман630',
-    5609,
-    88,
-    33,
-    121,
-    'poison',
-    106,
+    'СнежнаяКоролева857',
+    9700,
+    67,
+    5,
+    72,
+    'nature',
+    96,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"poison","level":14,"experience":4388,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"poison","level":16,"experience":26580,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"poison","level":17,"experience":43163,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"poison","level":15,"experience":22761,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"poison","level":13,"experience":10185,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5},"death_touch":{"name":"Death Touch","level":5,"tier":6},"pestilence":{"name":"Pestilence","level":5,"tier":7},"black_death":{"name":"Black Death","level":5,"tier":8}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"nature","level":16,"experience":5145,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["poison_cloud","thorn"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"nature","level":17,"experience":20191,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["regeneration","poison_cloud"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"nature","level":17,"experience":24489,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","vine_snare"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"nature","level":16,"experience":15861,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","nature_fury"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"nature","level":18,"experience":9238,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["nature_fury","thorn"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5},"nature_fury":{"name":"Nature Fury","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-11T14:59:55.109Z'
+    '2025-09-20T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4819,23 +4819,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -186,
-    'Зефир',
-    8523,
-    57,
-    9,
-    66,
+    'БогГрома',
+    4102,
+    102,
+    55,
+    157,
     'earth',
-    96,
+    106,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"earth","level":14,"experience":8484,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"earth","level":18,"experience":50332,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"earth","level":17,"experience":42479,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"earth","level":12,"experience":2400,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"earth","level":12,"experience":7922,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5},"meteor_strike":{"name":"Meteor Strike","level":5,"tier":6}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"earth","level":17,"experience":50078,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["mountain_rage","earth_armor"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"earth","level":13,"experience":7220,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["mountain_rage","rock_shield"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"earth","level":18,"experience":55308,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","mountain_rage"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"earth","level":14,"experience":9157,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["meteor_strike","stone_wall"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"earth","level":17,"experience":16553,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earthquake","meteor_strike"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5},"meteor_strike":{"name":"Meteor Strike","level":5,"tier":6},"mountain_rage":{"name":"Mountain Rage","level":5,"tier":7},"titan_wrath":{"name":"Titan Wrath","level":5,"tier":8}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-30T14:59:55.109Z'
+    '2025-06-01T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4845,23 +4845,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -187,
-    'ThunderStrike',
-    6498,
-    111,
-    33,
-    144,
-    'poison',
-    106,
+    'DeathTouch653',
+    7130,
+    116,
+    29,
+    145,
+    'water',
+    96,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"poison","level":15,"experience":24511,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"poison","level":14,"experience":14436,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"poison","level":15,"experience":12873,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"poison","level":16,"experience":20466,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"poison","level":18,"experience":6348,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5},"death_touch":{"name":"Death Touch","level":5,"tier":6},"pestilence":{"name":"Pestilence","level":5,"tier":7},"black_death":{"name":"Black Death","level":5,"tier":8}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"water","level":12,"experience":2370,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","frozen_heart"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"water","level":16,"experience":7138,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","frost_armor"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"water","level":14,"experience":6895,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","frost_armor"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"water","level":16,"experience":10186,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","tidal_wave"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"water","level":13,"experience":11182,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frost_armor","icicle"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-09T14:59:55.109Z'
+    '2025-07-04T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4871,23 +4871,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -188,
-    'NoobSlayer',
-    6336,
-    116,
-    36,
-    152,
-    'earth',
-    91,
+    'DarkMage',
+    5222,
+    110,
+    45,
+    155,
+    'nature',
+    101,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"earth","level":17,"experience":11690,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"earth","level":17,"experience":55584,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"earth","level":15,"experience":14385,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"earth","level":12,"experience":6719,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"earth","level":18,"experience":2881,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"nature","level":16,"experience":34609,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["nature_fury","poison_cloud"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"nature","level":13,"experience":10037,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["life_bloom","regeneration"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"nature","level":16,"experience":9838,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","heal"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"nature","level":15,"experience":19599,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["life_bloom","regeneration"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"nature","level":12,"experience":4915,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","heal"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5},"nature_fury":{"name":"Nature Fury","level":5,"tier":6},"life_bloom":{"name":"Life Bloom","level":5,"tier":7}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-27T14:59:55.109Z'
+    '2025-09-13T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4897,23 +4897,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -189,
-    'Cryomancer613',
-    8483,
-    138,
-    21,
-    159,
-    'nature',
+    'Отравитель4',
+    6369,
+    108,
+    33,
+    141,
+    'wind',
     91,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"nature","level":15,"experience":6844,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"nature","level":14,"experience":11899,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"nature","level":18,"experience":54915,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"nature","level":13,"experience":8542,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"nature","level":13,"experience":1988,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"wind","level":15,"experience":20713,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","wind_barrier"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"wind","level":16,"experience":4715,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","tornado"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"wind","level":14,"experience":863,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["tornado","wind_barrier"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"wind","level":12,"experience":8231,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","chain_lightning"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"wind","level":15,"experience":16710,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["lightning_bolt","wind_barrier"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-15T14:59:55.109Z'
+    '2025-07-26T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4923,23 +4923,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -190,
-    'Пироман735',
-    7147,
-    81,
-    20,
-    101,
-    'water',
+    'Venomancer641',
+    5956,
+    133,
+    46,
+    179,
+    'wind',
     101,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"water","level":17,"experience":62591,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"water","level":16,"experience":3670,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"water","level":15,"experience":17957,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"water","level":17,"experience":34869,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"water","level":14,"experience":8810,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":5,"tier":6},"absolute_zero":{"name":"Absolute Zero","level":5,"tier":7}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"wind","level":17,"experience":58227,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["gust","chain_lightning"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"wind","level":16,"experience":40211,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","gust"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"wind","level":13,"experience":12757,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["hurricane","gust"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"wind","level":17,"experience":4216,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thunder_storm","gust"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"wind","level":12,"experience":8608,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["chain_lightning","thunder_storm"]}]'::jsonb,
+    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3},"chain_lightning":{"name":"Chain Lightning","level":5,"tier":4},"tornado":{"name":"Tornado","level":5,"tier":5},"thunder_storm":{"name":"Thunder Storm","level":5,"tier":6},"hurricane":{"name":"Hurricane","level":5,"tier":7}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-01T14:59:55.109Z'
+    '2025-08-21T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4949,23 +4949,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -191,
-    'Некромаг',
-    8587,
-    141,
-    20,
-    161,
-    'water',
-    101,
+    'Permafrost461',
+    4479,
+    88,
+    43,
+    131,
+    'earth',
+    96,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195109_0","name":"Маг 1","faction":"water","level":16,"experience":5650,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_1","name":"Маг 2","faction":"water","level":12,"experience":4544,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_2","name":"Маг 3","faction":"water","level":13,"experience":11333,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_3","name":"Маг 4","faction":"water","level":14,"experience":11328,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195109_4","name":"Маг 5","faction":"water","level":15,"experience":3814,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5},"tidal_wave":{"name":"Tidal Wave","level":5,"tier":6},"absolute_zero":{"name":"Absolute Zero","level":5,"tier":7}}}'::jsonb,
-    '["wizard_bot_1763305195109_0","wizard_bot_1763305195109_1","wizard_bot_1763305195109_2","wizard_bot_1763305195109_3","wizard_bot_1763305195109_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"earth","level":15,"experience":27517,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","meteor_strike"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"earth","level":12,"experience":6499,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["rock_shield","stone_throw"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"earth","level":12,"experience":6820,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","earthquake"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"earth","level":17,"experience":8595,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["meteor_strike","stone_wall"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"earth","level":18,"experience":16229,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earthquake","stone_wall"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5},"meteor_strike":{"name":"Meteor Strike","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-05T14:59:55.110Z'
+    '2025-07-17T22:39:09.867Z'
 );
 
 INSERT INTO players (
@@ -4975,23 +4975,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -192,
-    'xXx_Merlin_xXx',
-    4753,
-    137,
-    63,
-    200,
-    'poison',
+    'IceAge',
+    8835,
+    95,
+    12,
+    107,
+    'nature',
     91,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195110_0","name":"Маг 1","faction":"poison","level":18,"experience":53142,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_1","name":"Маг 2","faction":"poison","level":12,"experience":1875,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_2","name":"Маг 3","faction":"poison","level":13,"experience":6420,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_3","name":"Маг 4","faction":"poison","level":18,"experience":31988,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_4","name":"Маг 5","faction":"poison","level":17,"experience":43747,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195110_0","wizard_bot_1763305195110_1","wizard_bot_1763305195110_2","wizard_bot_1763305195110_3","wizard_bot_1763305195110_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149867_0","name":"Маг 1","faction":"nature","level":14,"experience":11192,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","vine_snare"]},{"id":"wizard_bot_1763419149867_1","name":"Маг 2","faction":"nature","level":18,"experience":86900,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","regeneration"]},{"id":"wizard_bot_1763419149867_2","name":"Маг 3","faction":"nature","level":18,"experience":21735,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","regeneration"]},{"id":"wizard_bot_1763419149867_3","name":"Маг 4","faction":"nature","level":16,"experience":3788,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","poison_cloud"]},{"id":"wizard_bot_1763419149867_4","name":"Маг 5","faction":"nature","level":18,"experience":29141,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","regeneration"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149867_0","wizard_bot_1763419149867_1","wizard_bot_1763419149867_2","wizard_bot_1763419149867_3","wizard_bot_1763419149867_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-21T14:59:55.110Z'
+    '2025-08-19T22:39:09.868Z'
 );
 
 INSERT INTO players (
@@ -5001,23 +5001,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -193,
-    'ПовелительМагии906',
-    5415,
-    24,
-    10,
+    'Ignition543',
+    8430,
+    29,
+    5,
     34,
-    'nature',
-    91,
+    'poison',
+    96,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195110_0","name":"Маг 1","faction":"nature","level":15,"experience":7719,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_1","name":"Маг 2","faction":"nature","level":13,"experience":6795,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_2","name":"Маг 3","faction":"nature","level":15,"experience":6186,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_3","name":"Маг 4","faction":"nature","level":17,"experience":19777,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_4","name":"Маг 5","faction":"nature","level":18,"experience":2496,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195110_0","wizard_bot_1763305195110_1","wizard_bot_1763305195110_2","wizard_bot_1763305195110_3","wizard_bot_1763305195110_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149868_0","name":"Маг 1","faction":"poison","level":14,"experience":4714,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["death_touch","plague"]},{"id":"wizard_bot_1763419149868_1","name":"Маг 2","faction":"poison","level":12,"experience":5638,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["acid_rain","toxic_cloud"]},{"id":"wizard_bot_1763419149868_2","name":"Маг 3","faction":"poison","level":14,"experience":15924,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","toxic_cloud"]},{"id":"wizard_bot_1763419149868_3","name":"Маг 4","faction":"poison","level":13,"experience":1307,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","death_touch"]},{"id":"wizard_bot_1763419149868_4","name":"Маг 5","faction":"poison","level":16,"experience":6239,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5},"death_touch":{"name":"Death Touch","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149868_0","wizard_bot_1763419149868_1","wizard_bot_1763419149868_2","wizard_bot_1763419149868_3","wizard_bot_1763419149868_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-21T14:59:55.110Z'
+    '2025-07-11T22:39:09.868Z'
 );
 
 INSERT INTO players (
@@ -5027,23 +5027,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -194,
-    'ВладыкаПламени',
-    4380,
-    112,
-    56,
-    168,
-    'poison',
-    101,
+    'Целитель936',
+    8922,
+    81,
+    10,
+    91,
+    'water',
+    91,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195110_0","name":"Маг 1","faction":"poison","level":15,"experience":25889,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_1","name":"Маг 2","faction":"poison","level":16,"experience":26422,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_2","name":"Маг 3","faction":"poison","level":17,"experience":50261,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_3","name":"Маг 4","faction":"poison","level":14,"experience":5668,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_4","name":"Маг 5","faction":"poison","level":13,"experience":5634,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5},"death_touch":{"name":"Death Touch","level":5,"tier":6},"pestilence":{"name":"Pestilence","level":5,"tier":7}}}'::jsonb,
-    '["wizard_bot_1763305195110_0","wizard_bot_1763305195110_1","wizard_bot_1763305195110_2","wizard_bot_1763305195110_3","wizard_bot_1763305195110_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149868_0","name":"Маг 1","faction":"water","level":14,"experience":16967,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["frozen_heart","icicle"]},{"id":"wizard_bot_1763419149868_1","name":"Маг 2","faction":"water","level":17,"experience":15657,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","frozen_heart"]},{"id":"wizard_bot_1763419149868_2","name":"Маг 3","faction":"water","level":17,"experience":3155,"exp_to_next":65684,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["blizzard","frost_armor"]},{"id":"wizard_bot_1763419149868_3","name":"Маг 4","faction":"water","level":18,"experience":97813,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["icicle","blizzard"]},{"id":"wizard_bot_1763419149868_4","name":"Маг 5","faction":"water","level":12,"experience":5836,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["ice_wall","blizzard"]}]'::jsonb,
+    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149868_0","wizard_bot_1763419149868_1","wizard_bot_1763419149868_2","wizard_bot_1763419149868_3","wizard_bot_1763419149868_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-21T14:59:55.110Z'
+    '2025-06-15T22:39:09.868Z'
 );
 
 INSERT INTO players (
@@ -5053,23 +5053,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -195,
-    'ТитанЗемли386',
-    6912,
-    108,
-    29,
-    137,
-    'fire',
-    106,
+    'СнежнаяКоролева403',
+    5248,
+    101,
+    41,
+    142,
+    'nature',
+    96,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195110_0","name":"Маг 1","faction":"fire","level":15,"experience":13862,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_1","name":"Маг 2","faction":"fire","level":14,"experience":6982,"exp_to_next":19461,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_2","name":"Маг 3","faction":"fire","level":18,"experience":20553,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_3","name":"Маг 4","faction":"fire","level":18,"experience":45362,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_4","name":"Маг 5","faction":"fire","level":12,"experience":245,"exp_to_next":8649,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":5,"tier":2},"flame_shield":{"name":"Flame Shield","level":5,"tier":3},"fire_storm":{"name":"Fire Storm","level":5,"tier":4},"inferno":{"name":"Inferno","level":5,"tier":5},"meteor_shower":{"name":"Meteor Shower","level":5,"tier":6},"phoenix_rebirth":{"name":"Phoenix Rebirth","level":5,"tier":7},"apocalypse":{"name":"Apocalypse","level":5,"tier":8}}}'::jsonb,
-    '["wizard_bot_1763305195110_0","wizard_bot_1763305195110_1","wizard_bot_1763305195110_2","wizard_bot_1763305195110_3","wizard_bot_1763305195110_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149868_0","name":"Маг 1","faction":"nature","level":15,"experience":4340,"exp_to_next":29192,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","nature_fury"]},{"id":"wizard_bot_1763419149868_1","name":"Маг 2","faction":"nature","level":18,"experience":85113,"exp_to_next":98526,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","thorn"]},{"id":"wizard_bot_1763419149868_2","name":"Маг 3","faction":"nature","level":13,"experience":9181,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["thorn","heal"]},{"id":"wizard_bot_1763419149868_3","name":"Маг 4","faction":"nature","level":13,"experience":8956,"exp_to_next":12974,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["heal","poison_cloud"]},{"id":"wizard_bot_1763419149868_4","name":"Маг 5","faction":"nature","level":16,"experience":39680,"exp_to_next":43789,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["vine_snare","nature_fury"]}]'::jsonb,
+    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3},"poison_cloud":{"name":"Poison Cloud","level":5,"tier":4},"regeneration":{"name":"Regeneration","level":5,"tier":5},"nature_fury":{"name":"Nature Fury","level":5,"tier":6}}}'::jsonb,
+    '["wizard_bot_1763419149868_0","wizard_bot_1763419149868_1","wizard_bot_1763419149868_2","wizard_bot_1763419149868_3","wizard_bot_1763419149868_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-12T14:59:55.110Z'
+    '2025-06-11T22:39:09.868Z'
 );
 
 INSERT INTO players (
@@ -5079,23 +5079,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -196,
-    'FrostBite389',
+    'Пламенный331',
     9999,
-    134,
-    8,
-    142,
-    'water',
-    86,
+    106,
+    6,
+    112,
+    'earth',
+    81,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195110_0","name":"Маг 1","faction":"water","level":20,"experience":181149,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_1","name":"Маг 2","faction":"water","level":20,"experience":69469,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_2","name":"Маг 3","faction":"water","level":20,"experience":141391,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_3","name":"Маг 4","faction":"water","level":20,"experience":12861,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_4","name":"Маг 5","faction":"water","level":20,"experience":32353,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4}}}'::jsonb,
-    '["wizard_bot_1763305195110_0","wizard_bot_1763305195110_1","wizard_bot_1763305195110_2","wizard_bot_1763305195110_3","wizard_bot_1763305195110_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149868_0","name":"Маг 1","faction":"earth","level":20,"experience":4820,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","stone_wall"]},{"id":"wizard_bot_1763419149868_1","name":"Маг 2","faction":"earth","level":20,"experience":160164,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","stone_throw"]},{"id":"wizard_bot_1763419149868_2","name":"Маг 3","faction":"earth","level":20,"experience":196660,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earth_armor"]},{"id":"wizard_bot_1763419149868_3","name":"Маг 4","faction":"earth","level":20,"experience":110661,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earth_armor","stone_throw"]},{"id":"wizard_bot_1763419149868_4","name":"Маг 5","faction":"earth","level":20,"experience":62950,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earth_armor"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3}}}'::jsonb,
+    '["wizard_bot_1763419149868_0","wizard_bot_1763419149868_1","wizard_bot_1763419149868_2","wizard_bot_1763419149868_3","wizard_bot_1763419149868_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-06-01T14:59:55.110Z'
+    '2025-07-16T22:39:09.868Z'
 );
 
 INSERT INTO players (
@@ -5105,23 +5105,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -197,
-    'FrostMage99',
+    'Gaia707',
     9999,
-    157,
+    156,
     9,
-    166,
-    'wind',
-    81,
+    165,
+    'earth',
+    91,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195110_0","name":"Маг 1","faction":"wind","level":20,"experience":149854,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_1","name":"Маг 2","faction":"wind","level":20,"experience":136783,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_2","name":"Маг 3","faction":"wind","level":20,"experience":80556,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_3","name":"Маг 4","faction":"wind","level":20,"experience":113139,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_4","name":"Маг 5","faction":"wind","level":20,"experience":186713,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195110_0","wizard_bot_1763305195110_1","wizard_bot_1763305195110_2","wizard_bot_1763305195110_3","wizard_bot_1763305195110_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149868_0","name":"Маг 1","faction":"earth","level":20,"experience":155168,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_wall","earth_armor"]},{"id":"wizard_bot_1763419149868_1","name":"Маг 2","faction":"earth","level":20,"experience":46139,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earthquake","stone_wall"]},{"id":"wizard_bot_1763419149868_2","name":"Маг 3","faction":"earth","level":20,"experience":75966,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["earthquake","earth_armor"]},{"id":"wizard_bot_1763419149868_3","name":"Маг 4","faction":"earth","level":20,"experience":117602,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","earth_armor"]},{"id":"wizard_bot_1763419149868_4","name":"Маг 5","faction":"earth","level":20,"experience":67140,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["stone_throw","rock_shield"]}]'::jsonb,
+    '{"earth":{"stone_throw":{"name":"Stone Throw","level":5,"tier":1},"earth_armor":{"name":"Earth Armor","level":5,"tier":2},"stone_wall":{"name":"Stone Wall","level":5,"tier":3},"earthquake":{"name":"Earthquake","level":5,"tier":4},"rock_shield":{"name":"Rock Shield","level":5,"tier":5}}}'::jsonb,
+    '["wizard_bot_1763419149868_0","wizard_bot_1763419149868_1","wizard_bot_1763419149868_2","wizard_bot_1763419149868_3","wizard_bot_1763419149868_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-09-07T14:59:55.110Z'
+    '2025-05-23T22:39:09.868Z'
 );
 
 INSERT INTO players (
@@ -5131,23 +5131,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -198,
-    'МастерСтихий587',
+    'StormLord698',
     9999,
-    186,
-    10,
-    196,
-    'water',
-    91,
+    98,
+    6,
+    104,
+    'poison',
+    86,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195110_0","name":"Маг 1","faction":"water","level":20,"experience":89712,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_1","name":"Маг 2","faction":"water","level":20,"experience":138241,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_2","name":"Маг 3","faction":"water","level":20,"experience":90880,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_3","name":"Маг 4","faction":"water","level":20,"experience":159688,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_4","name":"Маг 5","faction":"water","level":20,"experience":168284,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"water":{"icicle":{"name":"Icicle","level":5,"tier":1},"frost_armor":{"name":"Frost Armor","level":5,"tier":2},"ice_wall":{"name":"Ice Wall","level":5,"tier":3},"blizzard":{"name":"Blizzard","level":5,"tier":4},"frozen_heart":{"name":"Frozen Heart","level":5,"tier":5}}}'::jsonb,
-    '["wizard_bot_1763305195110_0","wizard_bot_1763305195110_1","wizard_bot_1763305195110_2","wizard_bot_1763305195110_3","wizard_bot_1763305195110_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149868_0","name":"Маг 1","faction":"poison","level":20,"experience":8699,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["acid_rain","plague"]},{"id":"wizard_bot_1763419149868_1","name":"Маг 2","faction":"poison","level":20,"experience":143576,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","acid_rain"]},{"id":"wizard_bot_1763419149868_2","name":"Маг 3","faction":"poison","level":20,"experience":169421,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","plague"]},{"id":"wizard_bot_1763419149868_3","name":"Маг 4","faction":"poison","level":20,"experience":40862,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","plague"]},{"id":"wizard_bot_1763419149868_4","name":"Маг 5","faction":"poison","level":20,"experience":111718,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","plague"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149868_0","wizard_bot_1763419149868_1","wizard_bot_1763419149868_2","wizard_bot_1763419149868_3","wizard_bot_1763419149868_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-08-20T14:59:55.110Z'
+    '2025-07-28T22:39:09.868Z'
 );
 
 INSERT INTO players (
@@ -5157,23 +5157,23 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -199,
-    'ОтравительДуш528',
+    'ВластелинЗаклинаний',
     9999,
-    21,
-    2,
-    23,
-    'wind',
-    81,
+    172,
+    10,
+    182,
+    'fire',
+    86,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195110_0","name":"Маг 1","faction":"wind","level":20,"experience":84345,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_1","name":"Маг 2","faction":"wind","level":20,"experience":141315,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_2","name":"Маг 3","faction":"wind","level":20,"experience":114606,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_3","name":"Маг 4","faction":"wind","level":20,"experience":116855,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_4","name":"Маг 5","faction":"wind","level":20,"experience":20791,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"wind":{"gust":{"name":"Gust","level":5,"tier":1},"lightning_bolt":{"name":"Lightning Bolt","level":5,"tier":2},"wind_barrier":{"name":"Wind Barrier","level":5,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195110_0","wizard_bot_1763305195110_1","wizard_bot_1763305195110_2","wizard_bot_1763305195110_3","wizard_bot_1763305195110_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149868_0","name":"Маг 1","faction":"fire","level":20,"experience":61386,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["spark","flame_shield"]},{"id":"wizard_bot_1763419149868_1","name":"Маг 2","faction":"fire","level":20,"experience":209912,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","fireball"]},{"id":"wizard_bot_1763419149868_2","name":"Маг 3","faction":"fire","level":20,"experience":83885,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","fireball"]},{"id":"wizard_bot_1763419149868_3","name":"Маг 4","faction":"fire","level":20,"experience":110252,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["flame_shield","fireball"]},{"id":"wizard_bot_1763419149868_4","name":"Маг 5","faction":"fire","level":20,"experience":204313,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["fireball","flame_shield"]}]'::jsonb,
+    '{"fire":{"spark":{"name":"Spark","level":5,"tier":1},"fireball":{"name":"Fireball","level":5,"tier":2},"flame_shield":{"name":"Flame Shield","level":5,"tier":3},"fire_storm":{"name":"Fire Storm","level":5,"tier":4}}}'::jsonb,
+    '["wizard_bot_1763419149868_0","wizard_bot_1763419149868_1","wizard_bot_1763419149868_2","wizard_bot_1763419149868_3","wizard_bot_1763419149868_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-07-29T14:59:55.110Z'
+    '2025-09-28T22:39:09.868Z'
 );
 
 INSERT INTO players (
@@ -5183,22 +5183,22 @@ INSERT INTO players (
     pve_progress, settings, tutorial_completed, created_at
 ) VALUES (
     -200,
-    'СветлыйМаг175',
+    'StormCaller626',
     9999,
-    118,
-    7,
-    125,
-    'nature',
-    81,
+    53,
+    3,
+    56,
+    'poison',
+    101,
     0,
     0,
-    '[{"id":"wizard_bot_1763305195110_0","name":"Маг 1","faction":"nature","level":20,"experience":13563,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_1","name":"Маг 2","faction":"nature","level":20,"experience":88924,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_2","name":"Маг 3","faction":"nature","level":20,"experience":72495,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_3","name":"Маг 4","faction":"nature","level":20,"experience":165743,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]},{"id":"wizard_bot_1763305195110_4","name":"Маг 5","faction":"nature","level":20,"experience":98209,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":[]}]'::jsonb,
-    '{"nature":{"thorn":{"name":"Thorn","level":5,"tier":1},"heal":{"name":"Heal","level":5,"tier":2},"vine_snare":{"name":"Vine Snare","level":5,"tier":3}}}'::jsonb,
-    '["wizard_bot_1763305195110_0","wizard_bot_1763305195110_1","wizard_bot_1763305195110_2","wizard_bot_1763305195110_3","wizard_bot_1763305195110_4"]'::jsonb,
+    '[{"id":"wizard_bot_1763419149868_0","name":"Маг 1","faction":"poison","level":20,"experience":2594,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","pestilence"]},{"id":"wizard_bot_1763419149868_1","name":"Маг 2","faction":"poison","level":20,"experience":159690,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["toxic_cloud","plague"]},{"id":"wizard_bot_1763419149868_2","name":"Маг 3","faction":"poison","level":20,"experience":44335,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["venom_spit","toxic_cloud"]},{"id":"wizard_bot_1763419149868_3","name":"Маг 4","faction":"poison","level":20,"experience":205888,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["plague","corruption"]},{"id":"wizard_bot_1763419149868_4","name":"Маг 5","faction":"poison","level":20,"experience":167949,"exp_to_next":221683,"hp":100,"armor":100,"max_hp":100,"max_armor":100,"spells":["death_touch","acid_rain"]}]'::jsonb,
+    '{"poison":{"venom_spit":{"name":"Venom Spit","level":5,"tier":1},"toxic_cloud":{"name":"Toxic Cloud","level":5,"tier":2},"plague":{"name":"Plague","level":5,"tier":3},"acid_rain":{"name":"Acid Rain","level":5,"tier":4},"corruption":{"name":"Corruption","level":5,"tier":5},"death_touch":{"name":"Death Touch","level":5,"tier":6},"pestilence":{"name":"Pestilence","level":5,"tier":7}}}'::jsonb,
+    '["wizard_bot_1763419149868_0","wizard_bot_1763419149868_1","wizard_bot_1763419149868_2","wizard_bot_1763419149868_3","wizard_bot_1763419149868_4"]'::jsonb,
     '{"library":{"level":1},"wizard_tower":{"level":10},"blessing_tower":{"level":5}}'::jsonb,
     '{}'::jsonb,
     '{"sound":true,"language":"ru","battle_speed":"normal"}'::jsonb,
     true,
-    '2025-10-17T14:59:55.110Z'
+    '2025-07-02T22:39:09.868Z'
 );
 
