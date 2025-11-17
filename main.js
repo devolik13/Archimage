@@ -1,13 +1,6 @@
 // main.js - Entry point для Vite
 console.log('🚀 Загрузка Archimage через Vite...');
 
-// ============ СТИЛИ ============
-import './style.css';
-import './city/city-mobile.css';
-import './wizards/wizard-detail.css';
-import './battle/script_battle.css';
-import './battle/modal-styles.css';
-
 // ============ CORE СИСТЕМЫ ============
 import './portrait-blocker.js';
 import './core/utilities.js';
