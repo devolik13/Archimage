@@ -117,12 +117,20 @@ function castSpell(wizard, spellId, position, casterType) {
         console.log(`⚠️ ${wizard.name} пытается использовать пустое заклинание`);
         return;
     }
-    
-    const spellData = window.findSpellInUserData ? window.findSpellInUserData(spellId, window.userData?.spells) : null;
-    console.log(`   Spell Data:`, spellData);
-    
+
+    // ИСПРАВЛЕНИЕ: Используем правильный источник данных для врагов и игрока
+    let spellsSource = null;
+    if (casterType === 'player') {
+        spellsSource = window.userData?.spells;
+    } else if (casterType === 'enemy') {
+        spellsSource = window.selectedOpponent?.spells;
+    }
+
+    const spellData = window.findSpellInUserData ? window.findSpellInUserData(spellId, spellsSource) : null;
+    console.log(`   Spell Data (from ${casterType}):`, spellData);
+
     if (!spellData) {
-        console.log(`❌ Заклинание ${spellId} не найдено, используем базовую атаку`);
+        console.log(`❌ Заклинание ${spellId} не найдено в данных ${casterType}, используем базовую атаку`);
         castBasicAttack(wizard, position, casterType);
         return;
     }
