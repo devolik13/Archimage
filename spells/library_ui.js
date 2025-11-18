@@ -132,8 +132,8 @@ function openSchoolSpells(faction) {
     const spellsImage = `assets/ui/modals/spells_${faction}.png`;
 
     libraryContainer.innerHTML = `
-        <div id="spells-background" style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: ${gradientBackground};">
-            <img id="spells-image" src="${spellsImage}" style="max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="${factionName}">
+        <div id="spells-background" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: ${gradientBackground};">
+            <img id="spells-image" src="${spellsImage}" style="position: absolute; max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="${factionName}">
             <div id="faction-name-overlay" style="position: absolute; top: 0; left: 0; right: 0;"></div>
             <div id="spells-overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
         </div>
