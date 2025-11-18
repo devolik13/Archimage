@@ -14,9 +14,14 @@ function initDailyLoginData(userData) {
         userData.daily_login = {
             day: 1,                    // Текущий день награды (1-24+)
             last_login_date: null,     // Последняя дата входа (ISO string)
+            last_reward_date: null,    // Последняя дата получения награды (ISO string)
             total_logins: 0            // Общее количество входов
         };
         console.log('🎁 Инициализированы данные ежедневных наград');
+    }
+    // Добавляем поле last_reward_date для старых пользователей
+    if (!userData.daily_login.last_reward_date) {
+        userData.daily_login.last_reward_date = userData.daily_login.last_login_date;
     }
 }
 
@@ -32,6 +37,21 @@ function isNewDay(lastLoginDate) {
     const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
     return nowDate.getTime() > lastDate.getTime();
+}
+
+// Вычисление разницы в днях между датами
+function getDaysDifference(date1, date2) {
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+
+    // Сбрасываем время для точного подсчета дней
+    const dateOnly1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
+    const dateOnly2 = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate());
+
+    const diffMs = dateOnly2.getTime() - dateOnly1.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    return diffDays;
 }
 
 // Получение награды текущего дня
@@ -53,39 +73,55 @@ async function checkDailyLoginReward() {
     initDailyLoginData(window.userData);
 
     const dailyData = window.userData.daily_login;
+    const now = new Date().toISOString();
 
-    // Проверяем новый день
-    if (isNewDay(dailyData.last_login_date)) {
-        // Увеличиваем день награды
-        dailyData.day += 1;
-
-        // Обновляем дату последнего входа
-        dailyData.last_login_date = new Date().toISOString();
-
-        // Увеличиваем счетчик входов
-        dailyData.total_logins += 1;
-
-        // Вычисляем награду
-        const hoursReward = getCurrentDayReward(dailyData.day);
-
-        console.log(`🎁 День ${dailyData.day}: награда ${hoursReward} часов`);
-
-        // Добавляем время
-        if (typeof window.addTimeCurrency === 'function') {
-            const minutesReward = hoursReward * 60;
-            window.addTimeCurrency(minutesReward);
-        }
-
-        // Сохраняем
-        if (typeof window.eventSaveManager?.saveDebounced === 'function') {
-            window.eventSaveManager.saveDebounced('daily_login');
-        }
-
-        // Показываем модальное окно с наградой
-        showDailyRewardModal(dailyData.day, hoursReward);
-    } else {
+    // Проверяем, получали ли уже награду сегодня
+    if (!isNewDay(dailyData.last_reward_date)) {
         console.log(`🎁 Награда уже получена сегодня (день ${dailyData.day})`);
+        return;
     }
+
+    // Это новый день для получения награды
+    console.log(`🎁 Новый день! Выдаём награду за день ${dailyData.day}`);
+
+    // Проверяем, был ли пропуск дней (сброс стрика)
+    if (dailyData.last_login_date && isNewDay(dailyData.last_login_date)) {
+        const daysSinceLastLogin = getDaysDifference(dailyData.last_login_date, now);
+        if (daysSinceLastLogin > 1) {
+            // Пропустили день(и) - сбрасываем стрик
+            console.log(`⚠️ Пропущено дней: ${daysSinceLastLogin - 1}. Стрик сброшен.`);
+            dailyData.day = 1;
+        } else {
+            // Следующий день подряд - увеличиваем
+            dailyData.day += 1;
+        }
+    }
+
+    // Обновляем даты
+    dailyData.last_login_date = now;
+    dailyData.last_reward_date = now;
+
+    // Увеличиваем счетчик входов
+    dailyData.total_logins += 1;
+
+    // Вычисляем награду
+    const hoursReward = getCurrentDayReward(dailyData.day);
+
+    console.log(`🎁 День ${dailyData.day}: награда ${hoursReward} часов`);
+
+    // Добавляем время
+    if (typeof window.addTimeCurrency === 'function') {
+        const minutesReward = hoursReward * 60;
+        window.addTimeCurrency(minutesReward);
+    }
+
+    // Сохраняем
+    if (typeof window.eventSaveManager?.saveDebounced === 'function') {
+        window.eventSaveManager.saveDebounced('daily_login');
+    }
+
+    // Показываем модальное окно с наградой
+    showDailyRewardModal(dailyData.day, hoursReward);
 }
 
 // Показ модального окна с наградой
