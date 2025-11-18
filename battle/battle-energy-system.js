@@ -129,22 +129,36 @@ function updateBattleEnergyUI() {
     const max = window.BATTLE_ENERGY.MAX;
     const timeToNext = getTimeToNextRegen();
 
-    let html = `⚡ Попытки боев: ${current}/${max}`;
+    let html = `⚡ Попытки: ${current}/${max}`;
 
     if (current < max && timeToNext > 0) {
-        html += ` (след. через ${formatTimeToRegen(timeToNext)})`;
+        html += ` (${formatTimeToRegen(timeToNext)})`;
+    }
+
+    // Вычисляем положение правого края города
+    const cityView = document.getElementById('city-view');
+    const backgroundImg = cityView?.querySelector('.city-background-img');
+
+    let rightPosition = '10px'; // Дефолт
+
+    if (backgroundImg) {
+        const imgRect = backgroundImg.getBoundingClientRect();
+        const screenWidth = window.innerWidth;
+        const cityRight = imgRect.right;
+        rightPosition = `${screenWidth - cityRight + 10}px`;
+        console.log(`📍 Энергия привязана к городу: right = ${rightPosition}`);
     }
 
     energyDisplay.innerHTML = html;
     energyDisplay.style.cssText = `
         position: fixed;
         top: 10px;
-        right: 10px;
+        right: ${rightPosition};
         background: rgba(0, 0, 0, 0.7);
         color: white;
         padding: 8px 12px;
         border-radius: 6px;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: bold;
         z-index: 1000;
         box-shadow: 0 2px 8px rgba(0,0,0,0.3);

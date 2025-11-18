@@ -48,18 +48,32 @@ function createTimeCurrencyUI() {
     const currentTime = getTimeCurrency();
     const maxStorage = calculateMaxStorage();
     const production = calculateProduction();
-    
+
     // Проверяем, что formatTimeCurrency доступна
     if (typeof window.formatTimeCurrency !== 'function') {
         console.error('❌ formatTimeCurrency не найдена. Убедитесь, что utilities.js загружен первым!');
         return;
     }
-    
+
+    // Вычисляем положение правого края города
+    const cityView = document.getElementById('city-view');
+    const backgroundImg = cityView?.querySelector('.city-background-img');
+
+    let rightPosition = '10px'; // Дефолт
+
+    if (backgroundImg) {
+        const imgRect = backgroundImg.getBoundingClientRect();
+        const screenWidth = window.innerWidth;
+        const cityRight = imgRect.right;
+        rightPosition = `${screenWidth - cityRight + 10}px`;
+        console.log(`📍 Время привязано к городу: right = ${rightPosition}`);
+    }
+
     const currencyHTML = `
         <div id="time-currency-container" style="
             position: fixed;
-            top: 10px;
-            right: 10px;
+            top: 70px;
+            right: ${rightPosition};
             background: rgba(44, 44, 61, 0.95);
             padding: 10px 15px;
             border-radius: 8px;
@@ -87,11 +101,11 @@ function createTimeCurrencyUI() {
             ` : ''}
         </div>
     `;
-    
+
     // Удаляем старый если есть
     const oldCurrency = document.getElementById('time-currency-container');
     if (oldCurrency) oldCurrency.remove();
-    
+
     // Добавляем новый
     document.body.insertAdjacentHTML('beforeend', currencyHTML);
 }
