@@ -80,33 +80,44 @@ console.log('✅ fireball.js загружен');
             const startTime = Date.now();
             
             const animateFlight = () => {
+                // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+                if (!projectile || projectile.destroyed || !projectile.transform) {
+                    createExplosion();
+                    return;
+                }
+
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                
+
                 // Траектория с ускорением
                 const easeProgress = 1 - Math.pow(1 - progress, 2);
-                
-                projectile.x = casterCell.x + casterCell.width / 2 + 
+
+                projectile.x = casterCell.x + casterCell.width / 2 +
                               (targetX - (casterCell.x + casterCell.width / 2)) * easeProgress;
-                projectile.y = casterCell.y + casterCell.height / 2 + 
+                projectile.y = casterCell.y + casterCell.height / 2 +
                               (targetY - (casterCell.y + casterCell.height / 2)) * easeProgress;
-                
+
                 // Увеличиваем размер по мере приближения
                 projectile.scale.set(0.5 + progress * 0.5);
-                
+
                 // Вращение
                 projectile.rotation += 0.2;
-                
+
                 // След огня
                 if (Math.random() > 0.7) {
                     createFireTrail(projectile.x, projectile.y);
                 }
-                
+
                 if (progress < 1) {
                     requestAnimationFrame(animateFlight);
                 } else {
                     // Удаляем снаряд и запускаем взрыв
-                    effectsContainer.removeChild(projectile);
+                    if (projectile.parent) {
+                        effectsContainer.removeChild(projectile);
+                    }
+                    if (!projectile.destroyed) {
+                        projectile.destroy();
+                    }
                     createExplosion();
                 }
             };
@@ -131,14 +142,24 @@ console.log('✅ fireball.js загружен');
             const fadeDuration = 400;
             
             const fade = () => {
+                // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+                if (!trail || trail.destroyed || !trail.transform) {
+                    return;
+                }
+
                 const progress = Math.min((Date.now() - fadeStart) / fadeDuration, 1);
                 trail.alpha = 0.5 * (1 - progress);
                 trail.scale.set(1 - progress * 0.5);
-                
+
                 if (progress < 1 && trail.parent) {
                     requestAnimationFrame(fade);
                 } else {
-                    if (trail.parent) effectsContainer.removeChild(trail);
+                    if (trail.parent) {
+                        effectsContainer.removeChild(trail);
+                    }
+                    if (!trail.destroyed) {
+                        trail.destroy();
+                    }
                 }
             };
             fade();
