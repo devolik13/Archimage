@@ -115,9 +115,9 @@ async function checkDailyLoginReward() {
         window.addTimeCurrency(minutesReward);
     }
 
-    // Сохраняем
-    if (typeof window.eventSaveManager?.saveDebounced === 'function') {
-        window.eventSaveManager.saveDebounced('daily_login');
+    // Сохраняем НЕМЕДЛЕННО (критическая операция - награда не должна выдаваться дважды)
+    if (typeof window.eventSaveManager?.saveImmediate === 'function') {
+        window.eventSaveManager.saveImmediate('daily_login_reward');
     }
 
     // Показываем модальное окно с наградой

@@ -50,6 +50,14 @@ async function initGameWithDatabase() {
     window.userData.pve_progress = player.pve_progress || {};
     window.userData.settings = player.settings || { sound: true, language: 'ru', battle_speed: 'normal' };
     window.userData.tutorial_completed = player.tutorial_completed || false;
+
+    // Ежедневные награды
+    window.userData.daily_login = player.daily_login || {
+        day: 1,
+        last_login_date: null,
+        last_reward_date: null,
+        total_logins: 0
+    };
     
     // КРИТИЧНО: Извлекаем constructions из buildings._active_constructions
     if (player.buildings && player.buildings._active_constructions) {

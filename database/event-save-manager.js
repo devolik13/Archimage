@@ -86,7 +86,8 @@ class EventSaveManager {
                 rating: window.userData.rating,
                 pve_progress: window.userData.pve_progress,
                 settings: window.userData.settings,
-                tutorial_completed: window.userData.tutorial_completed
+                tutorial_completed: window.userData.tutorial_completed,
+                daily_login: window.userData.daily_login // НОВОЕ: Сохранение данных ежедневных наград
             };
 
             const success = await window.dbManager.savePlayer(playerData);
