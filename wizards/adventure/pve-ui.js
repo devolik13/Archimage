@@ -321,11 +321,15 @@ function startPvELevel(levelId) {
     // Закрываем модальное окно
     closePvEModal();
 
-    // Инициализируем формацию игрока из userData
-    window.playerWizards = window.userData?.wizards || [];
-    window.playerFormation = window.userData?.battle_formation || [null, null, null, null, null];
+    // ВАЖНО: Создаем КОПИИ данных игрока для PvE, чтобы не потерять оригинальные данные
+    const originalWizards = window.userData?.wizards || [];
+    const originalFormation = window.userData?.battle_formation || [null, null, null, null, null];
 
-    console.log('🎮 Формация игрока загружена для PvE:');
+    // Делаем глубокую копию магов
+    window.playerWizards = originalWizards.map(wizard => ({...wizard}));
+    window.playerFormation = [...originalFormation];
+
+    console.log('🎮 Формация игрока загружена для PvE (КОПИЯ):');
     console.log('  - playerFormation:', window.playerFormation);
     console.log('  - playerWizards:', window.playerWizards.map(w => ({id: w.id, name: w.name, hp: w.hp})));
 

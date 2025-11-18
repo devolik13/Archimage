@@ -913,8 +913,9 @@ function checkBattleEnd() {
             window.currentAdventureLevel = null;
         }
 
-        // ИСПРАВЛЕНО: Сохраняем опыт магов через Supabase вместо localhost
-        if (window.userData && window.playerWizards) {
+        // ИСПРАВЛЕНО: Сохраняем опыт магов через Supabase вместо localhost (ТОЛЬКО ДЛЯ PvP!)
+        // ДЛЯ PvE НЕ СОХРАНЯЕМ, чтобы не потерять данные магов
+        if (!window.isPvEBattle && window.userData && window.playerWizards) {
             window.userData.wizards = window.playerWizards;
         }
 
@@ -992,6 +993,11 @@ function checkBattleEnd() {
                 } else {
                     alert('⚔️ Ничья!');
                 }
+
+                // Очищаем флаги PvE
+                window.isPvEBattle = false;
+                window.currentPvELevel = null;
+
                 // Возвращаемся в город
                 if (typeof window.returnToCity === 'function') {
                     window.returnToCity();
