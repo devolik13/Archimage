@@ -616,21 +616,27 @@ class SummonsManager {
     playDeathAnimation(summonId, onComplete) {
         const visual = this.visuals.get(summonId);
         if (!visual) return;
-        
+
         // Остановить анимацию для спрайтов
         if (visual.stop) visual.stop();
-        
+
         // Падение и исчезновение
         const startY = visual.y;
         const startTime = Date.now();
         const duration = 500;
-        
+
         const animate = () => {
+            // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+            if (!visual || visual.destroyed || !visual.transform) {
+                if (onComplete) onComplete();
+                return;
+            }
+
             const progress = Math.min((Date.now() - startTime) / duration, 1);
             visual.y = startY + progress * 20;
             visual.alpha = 1 - progress;
             visual.rotation = progress * 0.5;
-            
+
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {

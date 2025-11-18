@@ -1,7 +1,7 @@
 console.log('✅ battle/systems/logger.js загружен');
 
 
-const MAX_LOG_ENTRIES = 1000; // Максимум записей в логе
+const MAX_LOG_ENTRIES = 3000; // Максимум записей в логе (увеличено с 1000)
 const LOG_ROTATION_SIZE = 100;
 
 // Глобальные переменные для отслеживания ходов
@@ -14,12 +14,12 @@ window.battleStartTime = null;
 function addToBattleLog(message) {
     if (Array.isArray(window.battleLog)) {
         window.battleLog.push(message);
-        
+
         // Ротация лога при переполнении
         if (window.battleLog.length > MAX_LOG_ENTRIES) {
             // Сохраняем важные записи начала боя
-            const importantEntries = window.battleLog.slice(0, 5); // первые 5 записей
-            const recentEntries = window.battleLog.slice(-800); // последние 800 записей
+            const importantEntries = window.battleLog.slice(0, 10); // первые 10 записей
+            const recentEntries = window.battleLog.slice(-2500); // последние 2500 записей (увеличено с 800)
             window.battleLog = [...importantEntries, '... [записи удалены для экономии памяти] ...', ...recentEntries];
         }
         
