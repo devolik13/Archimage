@@ -13,13 +13,19 @@ const PLAYER_LEVEL_CONFIG = {
 
 // Расчет общего уровня игрока
 function calculatePlayerLevel() {
+    // Проверяем наличие userData
+    if (!window.userData) {
+        console.warn('⚠️ userData не загружена, уровень = 0');
+        return 0;
+    }
+
     let totalPoints = 0;
-    
+
     // Очки за заклинания
-    if (userData.spells) {
+    if (window.userData.spells) {
         ['fire', 'water', 'wind', 'earth', 'nature', 'poison'].forEach(faction => {
-            if (userData.spells[faction]) {
-                Object.values(userData.spells[faction]).forEach(spell => {
+            if (window.userData.spells[faction]) {
+                Object.values(window.userData.spells[faction]).forEach(spell => {
                     if (spell.level > 0) {
                         totalPoints += spell.level * PLAYER_LEVEL_CONFIG.SPELL_LEARNED;
                     }
@@ -27,25 +33,30 @@ function calculatePlayerLevel() {
             }
         });
     }
-    
+
     // Очки за здания
-    if (userData.buildings) {
-        Object.values(userData.buildings).forEach(building => {
+    if (window.userData.buildings) {
+        Object.values(window.userData.buildings).forEach(building => {
             totalPoints += PLAYER_LEVEL_CONFIG.BUILDING_BUILT; // За само здание
             totalPoints += (building.level - 1) * PLAYER_LEVEL_CONFIG.BUILDING_LEVEL; // За улучшения
         });
     }
-    
+
     // Очки за магов
-    if (userData.wizards) {
-        totalPoints += userData.wizards.length * PLAYER_LEVEL_CONFIG.WIZARD_HIRED;
+    if (window.userData.wizards) {
+        totalPoints += window.userData.wizards.length * PLAYER_LEVEL_CONFIG.WIZARD_HIRED;
     }
-    
+
     return totalPoints;
 }
 
 // Создание UI элемента аватара
 function createPlayerAvatarUI() {
+    if (!window.userData) {
+        console.warn('⚠️ userData не загружена, аватар не создан');
+        return;
+    }
+
     const playerLevel = calculatePlayerLevel();
 
     // Вычисляем положение города
@@ -58,6 +69,41 @@ function createPlayerAvatarUI() {
         const imgRect = backgroundImg.getBoundingClientRect();
         leftPosition = `${imgRect.left + 10}px`;
         console.log(`📍 Аватар привязан к городу: left = ${leftPosition}`);
+    }
+
+    // Определяем аватар (реальное фото или дефолт)
+    const avatarUrl = window.userData.avatar_url;
+    let avatarContent = '';
+
+    if (avatarUrl) {
+        avatarContent = `
+            <img src="${avatarUrl}"
+                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div style="
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                display: none;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+            ">👤</div>
+        `;
+    } else {
+        avatarContent = `
+            <div style="
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+            ">👤</div>
+        `;
     }
 
     const avatarHTML = `
@@ -76,21 +122,10 @@ function createPlayerAvatarUI() {
             transition: all 0.3s;
             z-index: 100;
         " onclick="showPlayerProfile()">
-            <div style="
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 24px;
-            ">
-                👤
-            </div>
+            ${avatarContent}
             <div>
                 <div style="color: white; font-size: 14px; font-weight: bold;">
-                    ${userData.username || 'Игрок'}
+                    ${window.userData.username || 'Игрок'}
                 </div>
                 <div style="color: #ffa500; font-size: 12px;">
                     ⭐ Уровень ${playerLevel}
