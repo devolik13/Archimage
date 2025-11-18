@@ -119,6 +119,16 @@ async function initGameWithDatabase() {
             window.initTimeCurrency();
         }
 
+        // Инициализация аватара игрока
+        if (typeof window.initPlayerAvatar === 'function') {
+            await window.initPlayerAvatar(window.userData);
+        }
+
+        // Проверка ежедневной награды
+        if (typeof window.checkDailyLoginReward === 'function') {
+            window.checkDailyLoginReward();
+        }
+
         // Инициализация UI энергии боев
         if (typeof window.initBattleEnergyUI === 'function') {
             window.initBattleEnergyUI();
