@@ -321,6 +321,13 @@ function startPvELevel(levelId) {
     // Закрываем модальное окно
     closePvEModal();
 
+    // Инициализируем формацию игрока из userData
+    if (!window.playerFormation || !window.playerWizards) {
+        window.playerFormation = window.userData?.battle_formation || [null, null, null, null, null];
+        window.playerWizards = window.userData?.wizards || [];
+        console.log('🎮 Формация игрока загружена для PvE:', window.playerFormation);
+    }
+
     // Формируем врагов для боя
     window.enemyFormation = [null, null, null, null, null];
     window.enemyWizards = [];

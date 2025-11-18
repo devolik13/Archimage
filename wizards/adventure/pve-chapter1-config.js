@@ -170,6 +170,31 @@ const TIME_REWARDS = {
  * @returns {Object} - данные врага
  */
 function generateEnemyForLevel(level, position) {
+    // ========== ТЕСТОВЫЙ РЕЖИМ: ВСЕ ВРАГИ - ГОБЛИНЫ ==========
+    // TODO: Раскомментировать оригинальную логику после добавления спрайтов
+
+    const enemyType = ENEMY_TYPES.goblin;
+    const levelInGroup = level - 1;
+
+    // Вычисляем характеристики с учетом роста
+    const hp = enemyType.baseHp + (enemyType.hpGrowth * levelInGroup);
+    const damage = enemyType.baseDamage + (enemyType.damageGrowth * levelInGroup);
+
+    return {
+        id: `enemy_${level}_${position}`,
+        name: `${enemyType.name} (ур. ${level})`,
+        hp: hp,
+        max_hp: hp,
+        armor: enemyType.armor,
+        max_armor: enemyType.armor,
+        damage: damage,
+        attackType: enemyType.attackType,
+        level: level,
+        spriteSheet: enemyType.spriteSheet,
+        isAdventureEnemy: true
+    };
+
+    /* ========== ОРИГИНАЛЬНАЯ ЛОГИКА (закомментирована) ==========
     // Определяем тип врага по уровню
     let enemyType, levelInGroup;
 
@@ -252,6 +277,7 @@ function generateEnemyForLevel(level, position) {
         spriteSheet: enemyType.spriteSheet,
         isAdventureEnemy: true
     };
+    */
 }
 
 /**
