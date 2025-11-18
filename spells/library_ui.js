@@ -444,10 +444,25 @@ function setupSpellsScreen(faction) {
         height: ${(by2 - by1) * scaleY}px;
         cursor: pointer;
         transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: ${28 * Math.min(scaleX, scaleY)}px;
+        font-weight: bold;
+        color: #7289da;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
     `;
-    
-    backDiv.addEventListener('mouseenter', () => backDiv.style.background = 'rgba(114, 137, 218, 0.3)');
-    backDiv.addEventListener('mouseleave', () => backDiv.style.background = 'transparent');
+
+    backDiv.textContent = 'Назад';
+
+    backDiv.addEventListener('mouseenter', () => {
+        backDiv.style.background = 'rgba(114, 137, 218, 0.3)';
+        backDiv.style.color = '#a0b5ff';
+    });
+    backDiv.addEventListener('mouseleave', () => {
+        backDiv.style.background = 'transparent';
+        backDiv.style.color = '#7289da';
+    });
     backDiv.addEventListener('click', showLibraryMainScreen);
     overlay.appendChild(backDiv);
 }
