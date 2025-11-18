@@ -93,16 +93,20 @@ async function loadUserData() {
         updateUIWithError('Нет ID пользователя');
         return;
     }
-    
+
     try {
         console.log('📥 Загрузка данных пользователя...');
-        
-        // Используем Supabase вместо старого API
+
+        // ИСПРАВЛЕНИЕ: Используем правильную инициализацию через game-db-integration
         console.log('✅ Используем Supabase для управления данными');
-        if (typeof window.showFactionSelection === 'function') {
-            window.showFactionSelection();
+        if (typeof window.initGameWithDatabase === 'function') {
+            await window.initGameWithDatabase();
         } else {
-            console.error("Функция showFactionSelection не найдена.");
+            console.error("❌ Функция initGameWithDatabase не найдена.");
+            // Fallback - показываем выбор фракции только если функция не найдена
+            if (typeof window.showFactionSelection === 'function') {
+                window.showFactionSelection();
+            }
         }
         return;
         
