@@ -913,10 +913,23 @@ function checkBattleEnd() {
             window.currentAdventureLevel = null;
         }
 
-        // ИСПРАВЛЕНО: Сохраняем опыт магов через Supabase вместо localhost (ТОЛЬКО ДЛЯ PvP!)
-        // ДЛЯ PvE НЕ СОХРАНЯЕМ, чтобы не потерять данные магов
-        if (!window.isPvEBattle && window.userData && window.playerWizards) {
-            window.userData.wizards = window.playerWizards;
+        // ИСПРАВЛЕНО: Сохраняем опыт магов через Supabase вместо localhost
+        if (window.userData && window.playerWizards) {
+            if (!window.isPvEBattle) {
+                // Для PvP сохраняем всё
+                window.userData.wizards = window.playerWizards;
+            } else {
+                // Для PvE сохраняем ТОЛЬКО опыт и уровень, но не HP и эффекты
+                window.playerWizards.forEach(battleWizard => {
+                    const originalWizard = window.userData.wizards.find(w => w.id === battleWizard.id);
+                    if (originalWizard) {
+                        // Обновляем только опыт и уровень
+                        originalWizard.exp = battleWizard.exp || 0;
+                        originalWizard.level = battleWizard.level || 1;
+                        console.log(`💾 PvE: Сохранён опыт для ${originalWizard.name}: ${originalWizard.exp} exp, уровень ${originalWizard.level}`);
+                    }
+                });
+            }
         }
 
         // Определяем результат и награды для сохранения
