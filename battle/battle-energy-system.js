@@ -167,19 +167,12 @@ function updateBattleEnergyUI() {
 
 // Инициализация UI
 function initBattleEnergyUI() {
-    // Удаляем старый элемент если есть
+    // UI больше не отображается отдельно - энергия показывается в модальном окне арены
+    console.log('⚡ Энергия боев отображается в модальном окне арены');
+
+    // Удаляем старый элемент если остался
     const old = document.getElementById('battle-energy-display');
     if (old) old.remove();
-
-    // Создаем новый
-    const display = document.createElement('div');
-    display.id = 'battle-energy-display';
-    document.body.appendChild(display);
-
-    updateBattleEnergyUI();
-
-    // Обновляем каждые 10 секунд
-    setInterval(updateBattleEnergyUI, 10000);
 }
 
 // Проверка перед началом боя

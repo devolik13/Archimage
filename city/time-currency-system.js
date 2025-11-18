@@ -72,7 +72,7 @@ function createTimeCurrencyUI() {
     const currencyHTML = `
         <div id="time-currency-container" style="
             position: fixed;
-            top: 70px;
+            top: 10px;
             right: ${rightPosition};
             background: rgba(44, 44, 61, 0.95);
             padding: 10px 15px;
