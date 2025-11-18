@@ -60,11 +60,19 @@ async function showBattleField() {
         if (!window.userData) {
             throw new Error('userData не инициализирован');
         }
-        console.log('📦 Загрузка расстановки из userData:', window.userData.formation);
-        window.playerFormation = window.userData.formation || [null, null, null, null, null];
-        window.playerWizards = window.userData.wizards || [];
-        console.log('⚔️ Расстановка игрока:', window.playerFormation);
-        console.log('🧙 Маги игрока:', window.playerWizards.length);
+
+        // НОВОЕ: Для PvE данные игрока уже настроены (копии) в pve-ui.js, не перезаписываем
+        if (window.isPvEBattle && window.playerFormation && window.playerWizards && window.playerWizards.length > 0) {
+            console.log('✅ PvE бой: данные игрока уже настроены (копии), пропускаем загрузку');
+            console.log('⚔️ Расстановка игрока:', window.playerFormation);
+            console.log('🧙 Маги игрока:', window.playerWizards.length);
+        } else {
+            console.log('📦 Загрузка расстановки из userData:', window.userData.formation);
+            window.playerFormation = window.userData.formation || [null, null, null, null, null];
+            window.playerWizards = window.userData.wizards || [];
+            console.log('⚔️ Расстановка игрока:', window.playerFormation);
+            console.log('🧙 Маги игрока:', window.playerWizards.length);
+        }
 
         // Генерация расстановки противника
         generateEnemyFormation();
@@ -84,6 +92,14 @@ async function showBattleField() {
 
 function generateEnemyFormation() {
     console.log('🤖 Генерация расстановки противника');
+
+    // НОВОЕ: Для PvE враги уже настроены в pve-ui.js, не перезаписываем их
+    if (window.isPvEBattle && window.enemyFormation && window.enemyWizards && window.enemyWizards.length > 0) {
+        console.log('✅ PvE бой: враги уже настроены, пропускаем генерацию');
+        console.log(`   Враги: ${window.enemyWizards.length} шт.`);
+        return;
+    }
+
     window.enemyFormation = [null, null, null, null, null];
     window.enemyWizards = [];
 

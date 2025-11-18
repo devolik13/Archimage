@@ -323,7 +323,7 @@ function startPvELevel(levelId) {
 
     // ВАЖНО: Создаем КОПИИ данных игрока для PvE, чтобы не потерять оригинальные данные
     const originalWizards = window.userData?.wizards || [];
-    const originalFormation = window.userData?.battle_formation || [null, null, null, null, null];
+    const originalFormation = window.userData?.formation || [null, null, null, null, null];
 
     // Делаем глубокую копию магов
     window.playerWizards = originalWizards.map(wizard => ({...wizard}));
@@ -360,11 +360,11 @@ function startPvELevel(levelId) {
 
     console.log(`⚔️ Враги сформированы:`, window.enemyWizards);
 
-    // Запускаем бой
-    if (typeof window.startBattle === 'function') {
-        window.startBattle();
+    // Запускаем бой через showBattleField (открывает UI и запускает бой)
+    if (typeof window.showBattleField === 'function') {
+        window.showBattleField();
     } else {
-        console.error('Функция startBattle не найдена');
+        console.error('Функция showBattleField не найдена');
     }
 }
 
