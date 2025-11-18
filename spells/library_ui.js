@@ -94,8 +94,11 @@ function setupLibraryClickableZones() {
             transition: background 0.2s;
         `;
         
-        zoneDiv.addEventListener('mouseenter', () => zoneDiv.style.background = 'rgba(114, 137, 218, 0.3)');
-        zoneDiv.addEventListener('mouseleave', () => zoneDiv.style.background = 'transparent');
+        // DEV: Подсветка кликабельных зон
+        if (window.DEV_MODE) {
+            zoneDiv.addEventListener('mouseenter', () => zoneDiv.style.background = 'rgba(114, 137, 218, 0.3)');
+            zoneDiv.addEventListener('mouseleave', () => zoneDiv.style.background = 'transparent');
+        }
         
         const clickHandler = () => {
             if (zone.faction) {
@@ -455,14 +458,17 @@ function setupSpellsScreen(faction) {
 
     backDiv.textContent = 'Назад';
 
-    backDiv.addEventListener('mouseenter', () => {
-        backDiv.style.background = 'rgba(114, 137, 218, 0.3)';
-        backDiv.style.color = '#a0b5ff';
-    });
-    backDiv.addEventListener('mouseleave', () => {
-        backDiv.style.background = 'transparent';
-        backDiv.style.color = '#7289da';
-    });
+    // DEV: Подсветка кликабельной зоны
+    if (window.DEV_MODE) {
+        backDiv.addEventListener('mouseenter', () => {
+            backDiv.style.background = 'rgba(114, 137, 218, 0.3)';
+            backDiv.style.color = '#a0b5ff';
+        });
+        backDiv.addEventListener('mouseleave', () => {
+            backDiv.style.background = 'transparent';
+            backDiv.style.color = '#7289da';
+        });
+    }
     backDiv.addEventListener('click', showLibraryMainScreen);
     overlay.appendChild(backDiv);
 }
