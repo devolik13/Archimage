@@ -108,6 +108,26 @@ function applyChillEffect(targetWizard, isHybrid = false, casterInfo = null) {
             window.battleLog.push(logEntry);
         }
 
+        // Показываем визуальный эффект снежинки
+        if (window.spellAnimations?.chilled?.show) {
+            let position = -1;
+            let casterType = '';
+
+            position = window.playerFormation.findIndex(id => id === targetWizard.id);
+            if (position !== -1) {
+                casterType = 'player';
+            } else {
+                position = window.enemyFormation.findIndex(w => w && w.id === targetWizard.id);
+                if (position !== -1) {
+                    casterType = 'enemy';
+                }
+            }
+
+            if (position !== -1 && casterType) {
+                window.spellAnimations.chilled.show(targetWizard, position, casterType);
+            }
+        }
+
         // Речевой пузырь для бонуса воды (охлаждение - это бонус фракции!)
         if (typeof window.showFactionSpeechBubble === 'function') {
             const info = casterInfo || window.currentSpellCaster;
@@ -145,6 +165,26 @@ function applyHoarFrostEffect(targetWizard, isHybrid = false, casterInfo = null)
         } else if (Array.isArray(window.battleLog)) {
             window.battleLog.push(logEntry);
         }
+
+        // Показываем визуальный эффект снежинки
+        if (window.spellAnimations?.chilled?.show) {
+            let position = -1;
+            let casterType = '';
+
+            position = window.playerFormation.findIndex(id => id === targetWizard.id);
+            if (position !== -1) {
+                casterType = 'player';
+            } else {
+                position = window.enemyFormation.findIndex(w => w && w.id === targetWizard.id);
+                if (position !== -1) {
+                    casterType = 'enemy';
+                }
+            }
+
+            if (position !== -1 && casterType) {
+                window.spellAnimations.chilled.show(targetWizard, position, casterType);
+            }
+        }
     }
 }
 
@@ -172,6 +212,26 @@ function applyFreezeEffect(targetWizard, isHybrid = false, casterInfo = null) {
             window.addToBattleLog(logEntry);
         } else if (Array.isArray(window.battleLog)) {
             window.battleLog.push(logEntry);
+        }
+
+        // Показываем визуальный эффект снежинки
+        if (window.spellAnimations?.chilled?.show) {
+            let position = -1;
+            let casterType = '';
+
+            position = window.playerFormation.findIndex(id => id === targetWizard.id);
+            if (position !== -1) {
+                casterType = 'player';
+            } else {
+                position = window.enemyFormation.findIndex(w => w && w.id === targetWizard.id);
+                if (position !== -1) {
+                    casterType = 'enemy';
+                }
+            }
+
+            if (position !== -1 && casterType) {
+                window.spellAnimations.chilled.show(targetWizard, position, casterType);
+            }
         }
 
         // Речевой пузырь для фракционного бонуса (если кастер фракции Вода)

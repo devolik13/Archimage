@@ -232,6 +232,26 @@ function applyDamageWithEffects(caster, target, baseDamage, spellId = 'basic', a
         caster.effects.chilled_caster.spellsLeft--;
         if (caster.effects.chilled_caster.spellsLeft <= 0) {
             delete caster.effects.chilled_caster;
+
+            // УДАЛЕНИЕ ВИЗУАЛЬНОГО ЭФФЕКТА СНЕЖИНКИ
+            if (window.spellAnimations?.chilled?.remove) {
+                let position = -1;
+                let casterType = '';
+
+                position = window.playerFormation.findIndex(id => id === caster.id);
+                if (position !== -1) {
+                    casterType = 'player';
+                } else {
+                    position = window.enemyFormation.findIndex(w => w && w.id === caster.id);
+                    if (position !== -1) {
+                        casterType = 'enemy';
+                    }
+                }
+
+                if (position !== -1 && casterType) {
+                    window.spellAnimations.chilled.remove(`${casterType}_${position}`);
+                }
+            }
         }
     }
     if (caster && caster.spellDamageMultiplier !== undefined && caster.spellDamageMultiplier < 1) {
