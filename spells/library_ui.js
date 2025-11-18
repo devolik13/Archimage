@@ -190,12 +190,40 @@ function setupSpellsScreen(faction) {
     const img = document.getElementById('spells-image');
     const overlay = document.getElementById('spells-overlay');
     const nameOverlay = document.getElementById('faction-name-overlay');
-    if (!img || !overlay) return;
-    
+    const background = document.getElementById('spells-background');
+    if (!overlay || !background) return;
+
     const originalWidth = 768, originalHeight = 512;
-    const currentWidth = img.offsetWidth, currentHeight = img.offsetHeight;
-    const scaleX = currentWidth / originalWidth, scaleY = currentHeight / originalHeight;
-    
+
+    // Используем размеры контейнера если картинка скрыта или не загружена
+    let currentWidth, currentHeight;
+    if (img && img.offsetWidth > 0 && img.offsetHeight > 0) {
+        // Картинка есть и видна - используем её размеры
+        currentWidth = img.offsetWidth;
+        currentHeight = img.offsetHeight;
+    } else {
+        // Картинки нет - используем размеры контейнера
+        const containerWidth = background.offsetWidth;
+        const containerHeight = background.offsetHeight;
+
+        // Вычисляем размеры с сохранением пропорций 768:512
+        const aspectRatio = originalWidth / originalHeight;
+        const containerRatio = containerWidth / containerHeight;
+
+        if (containerRatio > aspectRatio) {
+            // Контейнер шире - ограничиваемся по высоте
+            currentHeight = containerHeight * 0.9; // 90% высоты
+            currentWidth = currentHeight * aspectRatio;
+        } else {
+            // Контейнер выше - ограничиваемся по ширине
+            currentWidth = containerWidth * 0.9; // 90% ширины
+            currentHeight = currentWidth / aspectRatio;
+        }
+    }
+
+    const scaleX = currentWidth / originalWidth;
+    const scaleY = currentHeight / originalHeight;
+
     overlay.style.width = currentWidth + 'px';
     overlay.style.height = currentHeight + 'px';
     overlay.innerHTML = '';
