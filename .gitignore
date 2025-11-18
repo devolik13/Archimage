@@ -1,5 +1,14 @@
 .vercel
 
+# Environment variables (SECRETS)
+.env
+.env.local
+.env.production
+.env.development
+*.key
+*.pem
+service-account.json
+
 # Vite
 node_modules
 dist
