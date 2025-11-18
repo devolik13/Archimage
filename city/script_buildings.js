@@ -5,10 +5,44 @@ console.log('✅ script_buildings.js загружен');
 function showPvPArenaModal() {
     // Закрываем предыдущие модальные окна
     closeCurrentModal();
+
     // Проверяем построена ли арена
     const hasArena = window.userData?.buildings?.pvp_arena?.level > 0;
+
+    // Получаем данные энергии боев
+    let battleEnergyInfo = '';
+    if (typeof window.regenerateBattleEnergy === 'function') {
+        window.regenerateBattleEnergy();
+    }
+
+    if (window.userData?.battle_energy) {
+        const current = window.userData.battle_energy.current;
+        const max = window.userData.battle_energy.max;
+        const timeToNext = typeof window.getTimeToNextRegen === 'function' ? window.getTimeToNextRegen() : 0;
+
+        let regenText = '';
+        if (current < max && timeToNext > 0 && typeof window.formatTimeCurrency === 'function') {
+            const totalMinutes = Math.ceil(timeToNext / 60000);
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            regenText = hours > 0 ? ` (след. через ${hours}ч ${minutes}м)` : ` (след. через ${minutes}м)`;
+        }
+
+        const color = current > 0 ? '#4ade80' : '#ff6b6b';
+        battleEnergyInfo = `
+            <div style="background: #3d3d5c; padding: 10px; border-radius: 6px; margin-bottom: 12px; text-align: center;">
+                <div style="font-size: 14px; color: ${color}; font-weight: bold;">
+                    ⚡ Попытки боев: ${current}/${max}${regenText}
+                </div>
+                <div style="font-size: 11px; color: #aaa; margin-top: 4px;">
+                    Каждые 2 часа восстанавливается 1 попытка
+                </div>
+            </div>
+        `;
+    }
+
     // Стили для кнопки "В бой"
-    const battleButtonStyle = hasArena 
+    const battleButtonStyle = hasArena
         ? "padding: 12px; border: none; border-radius: 6px; background: #555; color: white; cursor: pointer; font-size: 16px;"
         : "padding: 12px; border: none; border-radius: 6px; background: #333; color: #666; cursor: not-allowed; font-size: 16px; opacity: 0.5;";
     const battleButtonOnClick = hasArena
@@ -18,7 +52,9 @@ function showPvPArenaModal() {
     	<div style="padding: 12px; max-width: 320px; background: #2c2c3d; border-radius: 8px; color: white;">
     	    <h3 style="margin: 0 0 8px 0; color: #7289da; font-size: 18px;">⚔️ PvP Арена</h3>
     	    <p style="margin: 0 0 12px 0; font-size: 12px;">Добро пожаловать на арену! Здесь вы можете сражаться с другими магами.</p>
-    	    
+
+    	    ${battleEnergyInfo}
+
     	    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
     	        <button style="padding: 10px 8px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 14px;"
     	                onclick="window.showBattleSetup()">
@@ -38,9 +74,9 @@ function showPvPArenaModal() {
     	            🗺️ Приключения (PvE)
     	        </button>
     	    </div>
-    	    
+
     	    ${!hasArena ? '<p style="color: #ff6b6b; font-size: 11px; text-align: center; margin: 0 0 8px 0;">⚠️ Постройте Арену для PvP боёв</p>' : ''}
-    	    
+
     	    <button style="margin-top: 0; padding: 8px; width: 100%; border: 1px solid #7289da; border-radius: 6px; background: transparent; color: #7289da; cursor: pointer; font-size: 13px;"
     	            onclick="closePvPArenaModal()">
     	        ❌ Закрыть
