@@ -121,12 +121,18 @@ function openSchoolSpells(faction) {
 
     const factionName = window.getFactionName ? window.getFactionName(faction) : faction;
 
-    // Определяем картинку для каждой школы (с fallback на template)
+    // Получаем цвет школы из конфига
+    const schoolConfig = window.SCHOOL_CONFIG?.[faction];
+    const schoolColor = schoolConfig?.color || '#1a1a2e';
+
+    // Создаем градиент на основе цвета школы
+    const gradientBackground = `radial-gradient(ellipse at center, ${schoolColor}33 0%, ${schoolColor}11 50%, #0a0a15 100%)`;
+
+    // Определяем картинку для каждой школы
     const spellsImage = `assets/ui/modals/spells_${faction}.png`;
-    const fallbackImage = 'assets/ui/modals/spells_template.png';
 
     libraryContainer.innerHTML = `
-        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #1a1a2e;">
+        <div id="spells-background" style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: ${gradientBackground};">
             <img id="spells-image" src="${spellsImage}" style="max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="${factionName}">
             <div id="faction-name-overlay" style="position: absolute; top: 0; left: 0; right: 0;"></div>
             <div id="spells-overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
@@ -135,16 +141,21 @@ function openSchoolSpells(faction) {
 
     const img = document.getElementById('spells-image');
 
-    // Fallback: если картинка не загрузилась - используем шаблон
+    // Fallback: если картинка не загрузилась - скрываем img и оставляем только градиент
     img.onerror = () => {
-        console.warn(`⚠️ Картинка для ${faction} не найдена, используем шаблон`);
-        img.src = fallbackImage;
-    };
-
-    img.onload = () => {
+        console.log(`💡 Картинка для ${faction} не найдена, используем тематический фон`);
+        img.style.display = 'none';
+        // Градиент уже установлен, просто продолжаем
         setupSpellsScreen(faction);
         startLibraryAutoUpdate();
     };
+
+    img.onload = () => {
+        // Картинка загрузилась - показываем её поверх градиента
+        setupSpellsScreen(faction);
+        startLibraryAutoUpdate();
+    };
+
     if (img.complete) {
         setupSpellsScreen(faction);
         startLibraryAutoUpdate();
