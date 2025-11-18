@@ -209,10 +209,10 @@ function castBasicAttack(wizard, position, casterType) {
     	});
     }
     const target = window.findTarget ? window.findTarget(position, casterType) : null;
-    
+
     if (target) {
-        const baseDamage = 15 + (wizard.level || 1) * 2;
-        const finalDamage = window.applyFinalDamage ? 
+        const baseDamage = 5 + (wizard.level || 1) * 1;
+        const finalDamage = window.applyFinalDamage ?
             window.applyFinalDamage(wizard, target.wizard, baseDamage, 'basic_attack', 0, false) : baseDamage;
             
         target.wizard.hp -= finalDamage;
