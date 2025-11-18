@@ -413,16 +413,22 @@ function initializeWizardHealth() {
         }
     });
 
-    window.playerFormation.forEach((wizardId, index) => {
-        if (wizardId) {
-            const wizard = window.playerWizards.find(w => w.id === wizardId);
-            if (wizard) wizard.effects = wizard.effects || {};
-        }
-    });
+    // Инициализируем эффекты для магов игрока
+    if (window.playerFormation && Array.isArray(window.playerFormation)) {
+        window.playerFormation.forEach((wizardId, index) => {
+            if (wizardId) {
+                const wizard = window.playerWizards.find(w => w.id === wizardId);
+                if (wizard) wizard.effects = wizard.effects || {};
+            }
+        });
+    }
 
-    window.enemyFormation.forEach((wizard, index) => {
-        if (wizard) wizard.effects = wizard.effects || {};
-    });
+    // Инициализируем эффекты для врагов
+    if (window.enemyFormation && Array.isArray(window.enemyFormation)) {
+        window.enemyFormation.forEach((wizard, index) => {
+            if (wizard) wizard.effects = wizard.effects || {};
+        });
+    }
 }
 
 // НОВОЕ: Обработка регенерации от благословений
@@ -926,8 +932,8 @@ function checkBattleEnd() {
             battleResult = 'win';
         }
 
-        // Рассчитываем изменение рейтинга
-        if (typeof window.calculateRatingChange === 'function') {
+        // Рассчитываем изменение рейтинга ТОЛЬКО ДЛЯ PvP
+        if (!window.isPvEBattle && typeof window.calculateRatingChange === 'function') {
             const playerRating = window.userData?.rating || 1000;
             // Используем реальный рейтинг противника из selectedOpponent
             const opponentRating = window.selectedOpponent?.rating || playerRating;
@@ -937,8 +943,8 @@ function checkBattleEnd() {
             console.log(`   Противник: ${window.selectedOpponent?.username || 'AI'} (${opponentRating})`);
         }
 
-        // Триггер события завершения боя (вызовет немедленное сохранение)
-        if (typeof window.onBattleCompleted === 'function') {
+        // Триггер события завершения боя ТОЛЬКО ДЛЯ PvP (вызовет немедленное сохранение)
+        if (!window.isPvEBattle && typeof window.onBattleCompleted === 'function') {
             window.onBattleCompleted(battleResult, rewards, opponentLevel, ratingChange);
         }
 
@@ -959,8 +965,8 @@ function checkBattleEnd() {
             window.updateBattleField();
         }
 
-        // Показываем экран результатов боя
-        if (typeof window.showBattleResult === 'function') {
+        // Показываем экран результатов боя ТОЛЬКО ДЛЯ PvP
+        if (!window.isPvEBattle && typeof window.showBattleResult === 'function') {
             const opponent = window.selectedOpponent || {};
             const battleData = {
                 opponentName: opponent.username || 'Противник',
@@ -973,6 +979,23 @@ function checkBattleEnd() {
             // Показываем с небольшой задержкой для визуального эффекта
             setTimeout(() => {
                 window.showBattleResult(battleResult, battleData);
+            }, 1000);
+        }
+
+        // Для PvE показываем простое сообщение
+        if (window.isPvEBattle) {
+            setTimeout(() => {
+                if (battleResult === 'win') {
+                    alert('🎉 Победа! Вы прошли уровень!');
+                } else if (battleResult === 'loss') {
+                    alert('💀 Поражение! Попробуйте еще раз.');
+                } else {
+                    alert('⚔️ Ничья!');
+                }
+                // Возвращаемся в город
+                if (typeof window.returnToCity === 'function') {
+                    window.returnToCity();
+                }
             }, 1000);
         }
 

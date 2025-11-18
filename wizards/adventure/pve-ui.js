@@ -322,11 +322,12 @@ function startPvELevel(levelId) {
     closePvEModal();
 
     // Инициализируем формацию игрока из userData
-    if (!window.playerFormation || !window.playerWizards) {
-        window.playerFormation = window.userData?.battle_formation || [null, null, null, null, null];
-        window.playerWizards = window.userData?.wizards || [];
-        console.log('🎮 Формация игрока загружена для PvE:', window.playerFormation);
-    }
+    window.playerWizards = window.userData?.wizards || [];
+    window.playerFormation = window.userData?.battle_formation || [null, null, null, null, null];
+
+    console.log('🎮 Формация игрока загружена для PvE:');
+    console.log('  - playerFormation:', window.playerFormation);
+    console.log('  - playerWizards:', window.playerWizards.map(w => ({id: w.id, name: w.name, hp: w.hp})));
 
     // Формируем врагов для боя
     window.enemyFormation = [null, null, null, null, null];
