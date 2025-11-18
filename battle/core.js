@@ -165,6 +165,15 @@ function cleanupOldWalls() {
 // --- Начало боя ---
 function startBattle() {
     console.log('🔥 Начало боя');
+
+    // ПОТРАТИТЬ ЭНЕРГИЮ НА БОЙ
+    if (typeof window.consumeBattleEnergy === 'function') {
+        if (!window.consumeBattleEnergy()) {
+            console.error('❌ Не удалось начать бой - недостаточно энергии');
+            return;
+        }
+    }
+
     window.battleState = 'active';
     window.battleLog = [];
     window.playerMageIndex = 0;

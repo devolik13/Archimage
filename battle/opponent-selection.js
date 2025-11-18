@@ -78,6 +78,14 @@ async function getOpponentsList(playerRating, count = 4) {
  * Показать UI выбора противника
  */
 async function showOpponentSelection() {
+    // ПРОВЕРКА ЭНЕРГИИ БОЕВ
+    if (typeof window.checkBattleEnergyBeforeFight === 'function') {
+        if (!window.checkBattleEnergyBeforeFight()) {
+            console.log('⚡ Недостаточно энергии для боя');
+            return; // Прерываем если нет энергии
+        }
+    }
+
     // Закрываем текущие модалки
     if (typeof window.closeCurrentModal === 'function') {
         window.closeCurrentModal();
