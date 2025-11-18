@@ -149,12 +149,15 @@ console.log('✅ storm-cloud.js загружен');
         // Анимация тучи - покачивание
         let time = 0;
         const animate = () => {
-            if (!cloudContainer.parent) return;
-            
+            // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+            if (!cloudContainer || cloudContainer.destroyed || !cloudContainer.transform || !cloudContainer.parent) {
+                return;
+            }
+
             time += 0.05;
             cloudContainer.y = centerY + Math.sin(time) * 3;
             cloudContainer.alpha = 0.8 + Math.sin(time * 2) * 0.2; // Мерцание
-            
+
             requestAnimationFrame(animate);
         };
         animate();
@@ -184,12 +187,17 @@ console.log('✅ storm-cloud.js загружен');
         const duration = 150;
         
         const animate = () => {
+            // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+            if (!flash || flash.destroyed || !flash.transform) {
+                return;
+            }
+
             const elapsed = Date.now() - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            
+
             flash.alpha = 0.8 * (1 - progress);
             flash.scale.set(1 + progress * 2);
-            
+
             if (progress < 1 && flash.parent) {
                 requestAnimationFrame(animate);
             } else {
