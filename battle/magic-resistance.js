@@ -82,20 +82,37 @@ function getSpellSchool(spellId) {
 // ИСПРАВЛЕНО: Функция применения сопротивления магии - используется в damage-system.js
 function applyMagicResistance(target, spellId, damage) {
     if (!target || !spellId || damage <= 0) return damage;
-    
+
     const spellSchool = getSpellSchool(spellId);
     let totalResistance = 0;
-    
-    if (Array.isArray(spellSchool)) {
-        // Для гибридных заклинаний берем среднее сопротивление
-        let resistanceSum = 0;
-        spellSchool.forEach(school => {
-            resistanceSum += calculateMagicResistance(target, school);
-        });
-        totalResistance = resistanceSum / spellSchool.length;
-    } else if (spellSchool) {
-        // Для обычных заклинаний
-        totalResistance = calculateMagicResistance(target, spellSchool);
+
+    // НОВОЕ: Проверяем кастомные сопротивления для PvE врагов
+    if (target.resistances && target.isPvEEnemy) {
+        // Для PvE врагов используем кастомные сопротивления из конфига
+        if (Array.isArray(spellSchool)) {
+            // Для гибридных заклинаний берем среднее сопротивление
+            let resistanceSum = 0;
+            spellSchool.forEach(school => {
+                resistanceSum += (target.resistances[school] || 0);
+            });
+            totalResistance = resistanceSum / spellSchool.length;
+        } else if (spellSchool) {
+            // Для обычных заклинаний
+            totalResistance = target.resistances[spellSchool] || 0;
+        }
+    } else {
+        // Для обычных магов используем расчет по изученным заклинаниям
+        if (Array.isArray(spellSchool)) {
+            // Для гибридных заклинаний берем среднее сопротивление
+            let resistanceSum = 0;
+            spellSchool.forEach(school => {
+                resistanceSum += calculateMagicResistance(target, school);
+            });
+            totalResistance = resistanceSum / spellSchool.length;
+        } else if (spellSchool) {
+            // Для обычных заклинаний
+            totalResistance = calculateMagicResistance(target, spellSchool);
+        }
     }
     
     if (totalResistance > 0) {

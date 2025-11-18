@@ -836,9 +836,53 @@ function checkBattleEnd() {
             }
         }
 
-        // Если это приключение и игрок победил
-        if (window.currentAdventureLevel && !enemyAlive && playerAlive) {
-            const level = window.ADVENTURE_LEVELS.find(l => l.id === window.currentAdventureLevel);
+        // Если это PvE приключение и игрок победил
+        if (window.currentPvELevel && !enemyAlive && playerAlive) {
+            const level = window.CHAPTER_1_LEVELS?.find(l => l.id === window.currentPvELevel);
+            if (level) {
+                // Сохраняем прогресс
+                const progress = window.loadPvEProgress();
+                if (!progress.chapter1.completed) {
+                    progress.chapter1.completed = {};
+                }
+                progress.chapter1.completed[window.currentPvELevel] = true;
+
+                // Открываем следующий уровень
+                if (window.currentPvELevel >= progress.chapter1.maxLevel) {
+                    progress.chapter1.maxLevel = window.currentPvELevel + 1;
+                }
+
+                window.savePvEProgress(progress);
+
+                // Даём награду временем (если есть)
+                if (level.reward) {
+                    const timeReward = level.reward; // в минутах
+                    if (typeof window.addTimeCurrency === 'function') {
+                        window.addTimeCurrency(timeReward * 60); // конвертируем в секунды
+                        if (typeof window.addToBattleLog === 'function') {
+                            window.addToBattleLog(`⏰ Получено: ${timeReward} минут времени!`);
+                        }
+                    }
+                }
+
+                // Логируем прохождение
+                if (typeof window.addToBattleLog === 'function') {
+                    window.addToBattleLog(`🎉 Уровень ${window.currentPvELevel} пройден!`);
+                    if (window.currentPvELevel < 50) {
+                        window.addToBattleLog(`✅ Открыт уровень ${window.currentPvELevel + 1}`);
+                    } else {
+                        window.addToBattleLog(`👑 Поздравляем! Глава 1 пройдена!`);
+                    }
+                }
+            }
+
+            // Очищаем флаг PvE боя
+            window.currentPvELevel = null;
+            window.isPvEBattle = false;
+        }
+        // Старая система приключений (для обратной совместимости)
+        else if (window.currentAdventureLevel && !enemyAlive && playerAlive) {
+            const level = window.ADVENTURE_LEVELS?.find(l => l.id === window.currentAdventureLevel);
             if (level) {
                 // Даём награды
                 const aliveWizards = window.playerFormation
