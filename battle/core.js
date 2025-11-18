@@ -856,11 +856,13 @@ function checkBattleEnd() {
 
                 // Даём награду временем (если есть)
                 if (level.reward) {
-                    const timeReward = level.reward; // в минутах
+                    const timeRewardDays = level.reward; // в днях
+                    const timeRewardSeconds = timeRewardDays * 24 * 60 * 60; // конвертируем дни в секунды
                     if (typeof window.addTimeCurrency === 'function') {
-                        window.addTimeCurrency(timeReward * 60); // конвертируем в секунды
+                        window.addTimeCurrency(timeRewardSeconds);
                         if (typeof window.addToBattleLog === 'function') {
-                            window.addToBattleLog(`⏰ Получено: ${timeReward} минут времени!`);
+                            const daysText = timeRewardDays === 1 ? 'день' : (timeRewardDays < 5 ? 'дня' : 'дней');
+                            window.addToBattleLog(`⏰ Получено: ${timeRewardDays} ${daysText} времени!`);
                         }
                     }
                 }

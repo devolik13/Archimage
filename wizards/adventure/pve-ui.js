@@ -168,7 +168,7 @@ function showChapter1Levels() {
                                 ${!isUnlocked ? '<span style="color: #999; margin-left: 8px;">🔒</span>' : ''}
                                 <div style="font-size: 12px; color: #aaa; margin-top: 4px;">
                                     ${level.enemies.length} ${level.enemies.length === 1 ? 'враг' : 'врагов'}
-                                    ${level.reward ? ` • Награда: ⏰ +${level.reward} мин` : ''}
+                                    ${level.reward ? ` • Награда: ⏰ +${level.reward} ${level.reward === 1 ? 'день' : (level.reward < 5 ? 'дня' : 'дней')}` : ''}
                                 </div>
                             </div>
                         </div>
