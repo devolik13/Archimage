@@ -49,7 +49,7 @@ async function initGameWithDatabase() {
     // Прогресс и настройки
     window.userData.pve_progress = player.pve_progress || {};
     window.userData.settings = player.settings || { sound: true, language: 'ru', battle_speed: 'normal' };
-    window.userData.tutorial_completed = player.tutorial_completed || false;
+    window.userData.welcome_shown = player.welcome_shown || false;
 
     // Ежедневные награды
     window.userData.daily_login = player.daily_login || {
