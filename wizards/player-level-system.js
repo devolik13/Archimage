@@ -36,9 +36,15 @@ function calculatePlayerLevel() {
 
     // Очки за здания
     if (window.userData.buildings) {
-        Object.values(window.userData.buildings).forEach(building => {
-            totalPoints += PLAYER_LEVEL_CONFIG.BUILDING_BUILT; // За само здание
-            totalPoints += (building.level - 1) * PLAYER_LEVEL_CONFIG.BUILDING_LEVEL; // За улучшения
+        Object.entries(window.userData.buildings).forEach(([key, building]) => {
+            // Пропускаем специальные поля (массив строек)
+            if (key === '_active_constructions') return;
+
+            // Проверяем что это действительно здание с уровнем
+            if (building && typeof building.level === 'number') {
+                totalPoints += PLAYER_LEVEL_CONFIG.BUILDING_BUILT; // За само здание
+                totalPoints += (building.level - 1) * PLAYER_LEVEL_CONFIG.BUILDING_LEVEL; // За улучшения
+            }
         });
     }
 
@@ -276,9 +282,15 @@ function getPointsBreakdown() {
     
     // Считаем здания
     if (userData.buildings) {
-        Object.values(userData.buildings).forEach(building => {
-            buildingPoints += PLAYER_LEVEL_CONFIG.BUILDING_BUILT;
-            buildingPoints += (building.level - 1) * PLAYER_LEVEL_CONFIG.BUILDING_LEVEL;
+        Object.entries(userData.buildings).forEach(([key, building]) => {
+            // Пропускаем специальные поля (массив строек)
+            if (key === '_active_constructions') return;
+
+            // Проверяем что это действительно здание с уровнем
+            if (building && typeof building.level === 'number') {
+                buildingPoints += PLAYER_LEVEL_CONFIG.BUILDING_BUILT;
+                buildingPoints += (building.level - 1) * PLAYER_LEVEL_CONFIG.BUILDING_LEVEL;
+            }
         });
     }
     
