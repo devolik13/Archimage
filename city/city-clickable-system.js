@@ -454,10 +454,14 @@ function getActionButton(buildingId) {
 // Функция показа меню строительства
 function showBuildingConstructionMenu(buildingId) {
     console.log(`🏗️ Открытие меню строительства для ${buildingId}`);
-    
+
+    // КРИТИЧЕСКИ ВАЖНО: Проверяем config ДО создания overlay!
     const config = window.BUILDINGS_CONFIG[buildingId];
-    if (!config) return;
-    
+    if (!config) {
+        console.warn(`⚠️ Нет конфигурации для здания ${buildingId}, меню не показано`);
+        return;
+    }
+
     // Закрываем предыдущие модальные окна
     closeAllModals();
     
@@ -1059,7 +1063,7 @@ function checkActiveUpgrades() {
 }
 
 // ===== ВИЗУАЛИЗАЦИЯ ИССЛЕДОВАНИЯ ЗАКЛИНАНИЙ НА БИБЛИОТЕКЕ =====
-function addSpellResearchVisualization() {
+function addSpellResearchVisualization(retryCount = 0) {
     const container = document.getElementById('city-background-container');
     if (!container) return;
 
@@ -1077,14 +1081,29 @@ function addSpellResearchVisualization() {
         return;
     }
 
-    // Находим изображение библиотеки
+    // Находим изображение библиотеки - с несколькими попытками
     let libraryImg = document.querySelector('#building-library');
     if (!libraryImg) {
         libraryImg = document.querySelector('[id*="library"]');
     }
+    if (!libraryImg) {
+        // Пробуем найти по классу
+        const buildings = document.querySelectorAll('.city-building');
+        libraryImg = Array.from(buildings).find(img =>
+            img.id && img.id.includes('library')
+        );
+    }
 
     if (!libraryImg) {
-        console.error('Не найдено изображение библиотеки для индикатора исследования');
+        // Максимум 5 попыток с интервалом 500ms
+        if (retryCount < 5) {
+            console.warn(`⚠️ Изображение библиотеки не найдено, попытка ${retryCount + 1}/5 через 500ms`);
+            setTimeout(() => {
+                addSpellResearchVisualization(retryCount + 1);
+            }, 500);
+        } else {
+            console.error('❌ Библиотека не найдена после 5 попыток. Возможно она не построена.');
+        }
         return;
     }
 
