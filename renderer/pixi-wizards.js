@@ -74,6 +74,16 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             animationSpeed: 0.15,
             scale: 0.350, // Масштаб для спрайта 256x256
             reverseOnDeath: true // Проигрывать анимацию смерти в обратном порядке
+        },
+        goblin: {
+            idle: 'images/enemies/goblin/idle.png',
+            cast: 'images/enemies/goblin/attack.png',
+            death: 'images/enemies/goblin/death.png',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            animationSpeed: 0.15,
+            scale: 0.350
         }
     };
     
@@ -201,11 +211,20 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         // Для врагов (col === 0)
         if (col === 0) {
             const enemy = window.enemyFormation?.[row];
-            if (enemy && enemy.faction) {
-                return enemy.faction;
+            if (enemy) {
+                // Если это PVE враг - используем спрайты гоблинов
+                const enemyWizard = window.enemyWizards?.find(w => w.id === enemy.id);
+                if (enemyWizard && enemyWizard.isAdventureEnemy) {
+                    return 'goblin';
+                }
+
+                // Иначе используем фракцию врага
+                if (enemy.faction) {
+                    return enemy.faction;
+                }
             }
         }
-        
+
         // Для игроков (col === 5)
         if (col === 5) {
             const wizardId = window.playerFormation?.[row];
@@ -216,7 +235,7 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 }
             }
         }
-        
+
         // По умолчанию используем фракцию игрока
         return window.userData?.faction || 'fire';
     }
