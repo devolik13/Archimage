@@ -248,6 +248,10 @@ function selectOpponent(index) {
     // Сохраняем ВСЕ данные противника (включая wizards, spells, formation, buildings)
     window.selectedOpponent = opponent;
 
+    // ВАЖНО: Это PvP бой, очищаем флаги PvE
+    window.isPvEBattle = false;
+    window.currentPvELevel = null;
+
     // Закрываем модалку выбора
     closeOpponentSelection();
 

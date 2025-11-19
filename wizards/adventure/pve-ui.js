@@ -354,9 +354,10 @@ function startPvELevel(levelId) {
         }
     });
 
-    // Сохраняем текущий PvE уровень
+    // Сохраняем текущий PvE уровень и очищаем данные PvP
     window.currentPvELevel = levelId;
     window.isPvEBattle = true;
+    window.selectedOpponent = null; // ВАЖНО: Очищаем выбранного противника из PvP
 
     console.log(`⚔️ Враги сформированы:`, window.enemyWizards);
 
