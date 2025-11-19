@@ -39,19 +39,32 @@ function getFactionName(faction) {
 async function selectFaction(faction) {
     console.log('Выбрана фракция:', faction);
     
+    // Определяем родное заклинание фракции
+    const factionSpellMap = {
+        "fire": "spark",
+        "water": "icicle",
+        "wind": "gust",
+        "earth": "pebble",
+        "nature": "call_wolf",
+        "poison": "poisoned_blade"
+    };
+
+    const factionSpell = factionSpellMap[faction];
+
     // Создаём начальные данные игрока
+    // Маг сразу с прикрепленным родным заклинанием + пустой слот для второго
     const initialWizards = [{
         id: 'wizard_1',
         name: 'Начальный маг',
         faction: faction,
-        spells: [],
+        spells: [factionSpell, null], // Родное заклинание + пустой слот
         hp: 100,
         armor: 100,
         max_hp: 100,
         max_armor: 100,
         level: 1
     }];
-    
+
     const initialSpells = {
         "fire": { "spark": { name: "Искра", level: 1, tier: 1 } },
         "water": { "icicle": { name: "Ледышка", level: 1, tier: 1 } },
@@ -70,13 +83,16 @@ async function selectFaction(faction) {
     // Сохраняем ВСЁ в Supabase
     if (window.dbManager && window.dbManager.currentPlayer) {
         try {
+            // Автоматическая расстановка первого мага в первую позицию
+            const initialFormation = ['wizard_1', null, null, null, null];
+
             const { error } = await window.dbManager.supabase
                 .from('players')
                 .update({
                     faction: faction,
                     wizards: initialWizards,
                     spells: initialSpells,
-                    formation: [null, null, null, null, null],
+                    formation: initialFormation,
                     buildings: initialBuildings,
                     time_currency: 300, // 5 часов стартового времени
                     welcome_shown: false
@@ -106,7 +122,7 @@ async function selectFaction(faction) {
                 buildings: initialBuildings,
                 wizards: initialWizards,
                 spells: initialSpells,
-                formation: [null, null, null, null, null],
+                formation: initialFormation, // Маг автоматически в первой позиции
                 constructions: [],
                 welcome_shown: false
             };
