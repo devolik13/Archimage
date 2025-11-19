@@ -525,17 +525,21 @@ function showBuildingConstructionMenu(buildingId) {
 // Закрыть модальное окно строительства
 function closeConstructionModal() {
     const modal = document.getElementById('construction-modal');
-    const overlay = document.getElementById('modal-overlay');
     if (modal) modal.remove();
-    if (overlay) overlay.remove();
+
+    // ИСПРАВЛЕНИЕ: Удаляем ВСЕ overlay-и с id='modal-overlay', а не только первый
+    const overlays = document.querySelectorAll('[id="modal-overlay"]');
+    overlays.forEach(overlay => overlay.remove());
 }
 
 // Закрыть окно информации о здании
 function closeBuildingInfoModal() {
     const modal = document.getElementById('building-info-modal');
-    const overlay = document.getElementById('modal-overlay');
     if (modal) modal.remove();
-    if (overlay) overlay.remove();
+
+    // ИСПРАВЛЕНИЕ: Удаляем ВСЕ overlay-и с id='modal-overlay', а не только первый
+    const overlays = document.querySelectorAll('[id="modal-overlay"]');
+    overlays.forEach(overlay => overlay.remove());
 }
 
 // Закрыть все модальные окна
@@ -1054,10 +1058,153 @@ function checkActiveUpgrades() {
     });
 }
 
+// ===== ВИЗУАЛИЗАЦИЯ ИССЛЕДОВАНИЯ ЗАКЛИНАНИЙ НА БИБЛИОТЕКЕ =====
+function addSpellResearchVisualization() {
+    const container = document.getElementById('city-background-container');
+    if (!container) return;
+
+    // Проверяем, есть ли активное изучение заклинания
+    const constructions = window.userData?.constructions || [];
+    const spellConstruction = constructions.find(c =>
+        c.type === 'spell' &&
+        c.time_remaining > 0
+    );
+
+    if (!spellConstruction) {
+        // Нет активного изучения - удаляем индикатор если есть
+        const oldResearch = document.getElementById('spell-research-library');
+        if (oldResearch) oldResearch.remove();
+        return;
+    }
+
+    // Находим изображение библиотеки
+    let libraryImg = document.querySelector('#building-library');
+    if (!libraryImg) {
+        libraryImg = document.querySelector('[id*="library"]');
+    }
+
+    if (!libraryImg) {
+        console.error('Не найдено изображение библиотеки для индикатора исследования');
+        return;
+    }
+
+    // Удаляем старый индикатор если есть
+    const oldResearch = document.getElementById('spell-research-library');
+    if (oldResearch) oldResearch.remove();
+
+    // Создаем индикатор исследования
+    const researchDiv = document.createElement('div');
+    researchDiv.id = 'spell-research-library';
+    researchDiv.className = 'research-visualization';
+
+    // Позиционируем относительно изображения библиотеки
+    const rect = libraryImg.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+
+    researchDiv.style.cssText = `
+        position: absolute;
+        left: ${rect.left - containerRect.left + rect.width/2}px;
+        top: ${rect.top - containerRect.top + rect.height/2}px;
+        transform: translate(-50%, -50%);
+        z-index: 600;
+        pointer-events: auto;
+        cursor: pointer;
+    `;
+
+    researchDiv.onclick = (e) => {
+        e.stopPropagation();
+        const constructions = window.userData?.constructions || [];
+        const index = constructions.findIndex(c =>
+            c.type === 'spell' &&
+            c.time_remaining > 0
+        );
+        if (index !== -1 && window.showConstructionModal) {
+            window.showConstructionModal(index);
+        }
+    };
+
+    updateSpellResearchTimer(researchDiv, spellConstruction);
+    container.appendChild(researchDiv);
+}
+
+// Функция обновления таймера исследования заклинаний
+function updateSpellResearchTimer(element, construction) {
+    if (!construction || construction.time_remaining <= 0) {
+        // Исследование завершено
+        element.remove();
+        return;
+    }
+
+    const spellName = construction.spell_name || construction.spell_id || 'Заклинание';
+    const factionEmoji = window.getFactionEmoji ? window.getFactionEmoji(construction.faction) : '📖';
+
+    // Отображаем индикатор исследования
+    element.innerHTML = `
+        <div style="
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #9333ea;
+            border-radius: 8px;
+            padding: 6px;
+            color: white;
+            text-align: center;
+            min-width: 80px;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(147,51,234,0.4);
+        ">
+            <div style="font-size: 20px; animation: sparkle 2s infinite;">${factionEmoji}📚</div>
+            <div style="font-size: 9px; margin: 2px 0; color: #c084fc;">Ур.${construction.target_level}</div>
+            <div style="font-size: 11px; color: #9333ea; font-weight: bold;">
+                ${window.formatTimeCurrency ? window.formatTimeCurrency(construction.time_remaining) : construction.time_remaining}
+            </div>
+        </div>
+    `;
+
+    setTimeout(() => {
+        if (document.getElementById('spell-research-library')) {
+            // Перепроверяем конструкцию
+            const constructions = window.userData?.constructions || [];
+            const updatedConstruction = constructions.find(c =>
+                c.type === 'spell' &&
+                c.time_remaining > 0
+            );
+            updateSpellResearchTimer(element, updatedConstruction);
+        }
+    }, 10000);
+}
+
+// При инициализации проверяем активные исследования заклинаний
+function checkActiveSpellResearch() {
+    const constructions = window.userData?.constructions || [];
+    const hasSpellResearch = constructions.some(c =>
+        c.type === 'spell' &&
+        c.time_remaining > 0
+    );
+
+    if (hasSpellResearch) {
+        addSpellResearchVisualization();
+    }
+}
+
+// Добавим CSS для анимации исследования
+if (!document.getElementById('research-animation-styles')) {
+    const style = document.createElement('style');
+    style.id = 'research-animation-styles';
+    style.textContent = `
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
 // Экспортируем новые функции
 window.addUpgradeVisualization = addUpgradeVisualization;
 window.updateUpgradeTimer = updateUpgradeTimer;
 window.checkActiveUpgrades = checkActiveUpgrades;
+window.addSpellResearchVisualization = addSpellResearchVisualization;
+window.updateSpellResearchTimer = updateSpellResearchTimer;
+window.checkActiveSpellResearch = checkActiveSpellResearch;
 
 // Экспортируем функции
 window.highlightBuilding = highlightBuilding;

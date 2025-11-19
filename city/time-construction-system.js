@@ -112,9 +112,18 @@ async function startSpellLearning(spellId, faction, tier, currentLevel) {
         window.userData.constructions = [];
     }
     window.userData.constructions.push(construction);
-    
+
     updateConstructionUI();
     await saveConstruction();
+
+    // НОВОЕ: Добавляем визуализацию исследования на библиотеке
+    if (window.addSpellResearchVisualization) {
+        console.log('📚 Добавляем визуализацию исследования на библиотеке');
+        setTimeout(() => {
+            window.addSpellResearchVisualization();
+        }, 100);
+    }
+
     return true;
 }
 
@@ -648,7 +657,13 @@ async function completeConstruction(constructionIndex) {
 
             // Просто показываем уведомление
             if (typeof Notification !== 'undefined' && Notification.show) { Notification.show('✅ Улучшение завершено!', 'success'); }
-	
+
+            // ИСПРАВЛЕНИЕ: Обновляем UI времени если улучшили генератор времени
+            if (construction.building_id === 'time_generator' && typeof window.createTimeCurrencyUI === 'function') {
+                window.createTimeCurrencyUI();
+                console.log('⏰ UI времени обновлен после улучшения генератора');
+            }
+
 	    if (window.userData?.faction) {
 	        const container = document.getElementById('city-background-container');
     		if (container && window.createBuildingClickZones) {

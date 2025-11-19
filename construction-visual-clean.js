@@ -358,6 +358,12 @@ console.log('🔨 construction-visual-clean.js загружен');
             if (window.checkActiveConstructions) {
                 window.checkActiveConstructions();
             }
+            if (window.checkActiveUpgrades) {
+                window.checkActiveUpgrades();
+            }
+            if (window.checkActiveSpellResearch) {
+                window.checkActiveSpellResearch();
+            }
         }, 1000);
         
         // === CSS АНИМАЦИИ ===
