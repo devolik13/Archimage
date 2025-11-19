@@ -344,53 +344,119 @@ function showUpgradeModal(buildingId, currentLevel, maxLevel) {
     const buildingConfig = getBuildingsConfig()[buildingId];
     const nextLevel = currentLevel + 1;
     const previewImage = buildingConfig.image || buildingConfig.emoji || '🏛️';
+
+    // Получаем информацию о бонусах через систему building-descriptions
+    let levelInfo = '';
+    if (typeof window.getBuildingModalData === 'function') {
+        const modalData = window.getBuildingModalData(buildingId, currentLevel, nextLevel, true);
+        levelInfo = modalData.levelInfo;
+    }
+
     // Получаем время улучшения
-    const upgradeTime = CONSTRUCTION_TIME.getUpgradeTime ? 
-        CONSTRUCTION_TIME.getUpgradeTime(buildingId, nextLevel) : 
+    const upgradeTime = CONSTRUCTION_TIME.getUpgradeTime ?
+        CONSTRUCTION_TIME.getUpgradeTime(buildingId, nextLevel) :
         144 * nextLevel; // Fallback
+
     const modalContent = `
-        <div style="padding: 15px; max-width: 350px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin-top: 0; color: #7289da; display: flex; align-items: center; gap: 10px;">
-                ${previewImage}
-                🔧 Улучшение
-            </h3>
-            <p>Вы хотите улучшить <strong>${buildingConfig.name}</strong> до уровня ${nextLevel}?</p>
-            <div style="
-                background: #3d3d5c; 
-                padding: 10px; 
-                border-radius: 6px; 
-                margin: 15px 0;
-            ">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <span>Текущий уровень:</span>
-                    <span style="color: #7289da;">${currentLevel}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <span>Новый уровень:</span>
-                    <span style="color: #4ade80;">${nextLevel}</span>
-                </div>
-                <hr style="border: 1px solid #555; margin: 10px 0;">
-                <div style="display: flex; justify-content: space-between;">
-                    <span>⏱️ Время улучшения:</span>
-                    <span style="color: #ffa500;">${window.formatTimeCurrency(upgradeTime)}</span>
+        <div style="padding: 20px; max-width: 450px; background: #2c2c3d; border-radius: 15px; color: white;">
+            <!-- Заголовок -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 50px; margin-bottom: 10px;">${previewImage}</div>
+                <h2 style="margin: 0; color: #7289da; font-size: 24px;">
+                    🔧 ${buildingConfig.name}
+                </h2>
+                <div style="color: #aaa; font-size: 14px; margin-top: 5px;">
+                    Уровень ${currentLevel} → ${nextLevel}
                 </div>
             </div>
-            <button style="margin: 10px 0 0 0; padding: 8px 15px; font-size: 14px; width: 100%; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer;"
-                onclick="confirmUpgrade('${buildingId}', ${nextLevel})">
-                ✅ Улучшить
-            </button>
-            <button style="margin: 5px 0 0 0; padding: 8px 15px; font-size: 14px; width: 100%; border: 1px solid #7289da; border-radius: 6px; background: transparent; color: #7289da; cursor: pointer;"
-                onclick="closeCurrentModal()">
-                ❌ Отмена
-            </button>
+
+            <!-- Описание -->
+            <div style="background: #3d3d5c; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                <div style="font-size: 14px; color: #ccc; line-height: 1.6;">
+                    ${buildingConfig.description || 'Улучшение здания'}
+                </div>
+            </div>
+
+            <!-- Новый бонус -->
+            ${levelInfo ? `
+            <div style="background: #3d3d5c; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                <div style="
+                    font-size: 12px;
+                    color: #ffa500;
+                    font-weight: bold;
+                    margin-bottom: 8px;
+                    text-transform: uppercase;
+                ">
+                    Новый бонус:
+                </div>
+                <div style="font-size: 16px; color: #4ade80; font-weight: bold;">
+                    ${levelInfo}
+                </div>
+            </div>
+            ` : ''}
+
+            <!-- Стоимость -->
+            <div style="
+                background: rgba(255, 165, 0, 0.1);
+                border: 1px solid rgba(255, 165, 0, 0.3);
+                padding: 12px;
+                border-radius: 8px;
+                margin: 15px 0;
+                text-align: center;
+            ">
+                <div style="font-size: 12px; color: #aaa; margin-bottom: 5px;">
+                    Время улучшения:
+                </div>
+                <div style="font-size: 18px; color: #ffa500; font-weight: bold;">
+                    ⏳ ${window.formatTimeCurrency(upgradeTime)}
+                </div>
+            </div>
+
+            <!-- Кнопки -->
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button style="
+                    flex: 1;
+                    padding: 12px 24px;
+                    background: #444;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    transition: background 0.2s;
+                " onclick="closeCurrentModal()"
+                   onmouseover="this.style.background='#555'"
+                   onmouseout="this.style.background='#444'">
+                    Отмена
+                </button>
+                <button style="
+                    flex: 1;
+                    padding: 12px 24px;
+                    background: #7289da;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    font-weight: bold;
+                    transition: background 0.2s;
+                " onclick="confirmUpgrade('${buildingId}', ${nextLevel})"
+                   onmouseover="this.style.background='#5b6eaf'"
+                   onmouseout="this.style.background='#7289da'">
+                    ✅ Улучшить
+                </button>
+            </div>
         </div>
     `;
+
     const modal = document.createElement('div');
     modal.innerHTML = modalContent;
-    modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.8); padding: 20px; border-radius: 12px; z-index: 1000;';
+    modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;';
+
     const overlay = document.createElement('div');
     overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;';
     overlay.onclick = closeCurrentModal;
+
     document.body.appendChild(overlay);
     document.body.appendChild(modal);
     window.currentModal = { modal, overlay };

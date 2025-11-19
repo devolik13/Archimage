@@ -462,9 +462,22 @@ function showBuildingConstructionMenu(buildingId) {
         return;
     }
 
+    // Получаем информацию о бонусах через систему building-descriptions
+    let levelInfo = '';
+    if (typeof window.getBuildingModalData === 'function') {
+        const modalData = window.getBuildingModalData(buildingId, 0, 1, false);
+        levelInfo = modalData.levelInfo;
+    }
+
+    // Вычисляем стоимость строительства
+    const timeCost = window.CONSTRUCTION_TIME[buildingId] || 1440;
+    const timeCostFormatted = typeof window.formatTimeCurrency === 'function'
+        ? window.formatTimeCurrency(timeCost)
+        : `${timeCost} мин`;
+
     // Закрываем предыдущие модальные окна
     closeAllModals();
-    
+
     // Создаем модальное окно
     const modal = document.createElement('div');
     modal.id = 'construction-modal';
@@ -474,40 +487,98 @@ function showBuildingConstructionMenu(buildingId) {
         left: 50%;
         transform: translate(-50%, -50%);
         background: #2c2c3d;
-        border-radius: 10px;
-        padding: 20px;
+        border-radius: 15px;
+        padding: 25px;
         color: white;
         z-index: 2000;
         box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        min-width: 300px;
+        max-width: 450px;
         animation: modalFadeIn 0.3s ease;
     `;
-    
+
     modal.innerHTML = `
-        <h3 style="margin-top: 0; color: #ffa500;">
-            ${config.emoji} ${config.name}
-        </h3>
-        <p style="color: #aaa;">${config.description}</p>
+        <!-- Заголовок -->
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 50px; margin-bottom: 10px;">${config.emoji}</div>
+            <h2 style="margin: 0; color: #7289da; font-size: 24px;">
+                ${config.name}
+            </h2>
+        </div>
+
+        <!-- Описание -->
+        <div style="background: #3d3d5c; padding: 15px; border-radius: 10px; margin: 15px 0;">
+            <div style="font-size: 14px; color: #ccc; line-height: 1.6;">
+                ${config.description}
+            </div>
+        </div>
+
+        <!-- Бонусы (что даст здание) -->
+        ${levelInfo ? `
+        <div style="background: #3d3d5c; padding: 15px; border-radius: 10px; margin: 15px 0;">
+            <div style="
+                font-size: 12px;
+                color: #ffa500;
+                font-weight: bold;
+                margin-bottom: 8px;
+                text-transform: uppercase;
+            ">
+                Что даст:
+            </div>
+            <div style="font-size: 16px; color: #4ade80; font-weight: bold;">
+                ${levelInfo}
+            </div>
+        </div>
+        ` : ''}
+
+        <!-- Стоимость -->
+        <div style="
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        ">
+            <div style="font-size: 12px; color: #aaa; margin-bottom: 5px;">
+                Время строительства:
+            </div>
+            <div style="font-size: 18px; color: #ffa500; font-weight: bold;">
+                ⏳ ${timeCostFormatted}
+            </div>
+        </div>
+
+        <!-- Кнопки -->
         <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
             <button onclick="closeConstructionModal()" style="
-                padding: 8px 16px;
+                padding: 12px 24px;
                 background: #444;
                 color: white;
                 border: none;
-                border-radius: 5px;
+                border-radius: 8px;
                 cursor: pointer;
-            ">Отмена</button>
+                font-size: 14px;
+                transition: background 0.2s;
+            " onmouseover="this.style.background='#555'"
+               onmouseout="this.style.background='#444'">
+                Отмена
+            </button>
             <button onclick="startBuilding('${buildingId}')" style="
-                padding: 8px 16px;
+                padding: 12px 24px;
                 background: #4CAF50;
                 color: white;
                 border: none;
-                border-radius: 5px;
+                border-radius: 8px;
                 cursor: pointer;
-            ">Построить</button>
+                font-size: 14px;
+                font-weight: bold;
+                transition: background 0.2s;
+            " onmouseover="this.style.background='#45a049'"
+               onmouseout="this.style.background='#4CAF50'">
+                ✅ Построить
+            </button>
         </div>
     `;
-    
+
     // Добавляем затемнение фона
     const overlay = document.createElement('div');
     overlay.id = 'modal-overlay';
@@ -521,7 +592,7 @@ function showBuildingConstructionMenu(buildingId) {
         z-index: 1999;
     `;
     overlay.onclick = closeConstructionModal;
-    
+
     document.body.appendChild(overlay);
     document.body.appendChild(modal);
 }
