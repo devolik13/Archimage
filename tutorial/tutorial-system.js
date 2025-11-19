@@ -56,7 +56,8 @@ class TutorialSystem {
         console.log('📚 Шаг 1: Построй библиотеку');
 
         this.showOverlay();
-        this.showHint('Построй библиотеку здесь!', 'library');
+        this.showBigHint('Открой меню строительства и построй библиотеку');
+        this.startBuildButtonBlink();
 
         // Блокируем все кроме строительства библиотеки
         this.blockAllExceptLibraryBuild();
@@ -146,6 +147,7 @@ class TutorialSystem {
      */
     onLibraryBuildStarted() {
         if (this.currentStep === 1) {
+            this.stopBuildButtonBlink();
             this.step2_SpeedupLibrary();
         }
     }
@@ -264,6 +266,97 @@ class TutorialSystem {
         if (this.hint) {
             this.hint.remove();
             this.hint = null;
+        }
+    }
+
+    /**
+     * Показать большую подсказку (без стрелки вниз)
+     */
+    showBigHint(text) {
+        this.clearHint();
+
+        this.hint = document.createElement('div');
+        this.hint.id = 'tutorial-hint';
+        this.hint.innerHTML = `
+            <div style="
+                position: fixed;
+                top: 30%;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 30px 40px;
+                border-radius: 20px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+                z-index: 9999;
+                font-size: 24px;
+                font-weight: bold;
+                text-align: center;
+                max-width: 90%;
+                animation: pulse 2s infinite;
+            ">
+                ${text}
+            </div>
+            <style>
+                @keyframes pulse {
+                    0%, 100% { transform: translateX(-50%) scale(1); }
+                    50% { transform: translateX(-50%) scale(1.05); }
+                }
+            </style>
+        `;
+        document.body.appendChild(this.hint);
+    }
+
+    /**
+     * Начать мигание кнопки строительства
+     */
+    startBuildButtonBlink() {
+        // Останавливаем предыдущее мигание если есть
+        this.stopBuildButtonBlink();
+
+        // Находим кнопку строительства
+        const buildBtn = document.getElementById('build-btn');
+        if (!buildBtn) {
+            console.warn('⚠️ Кнопка строительства не найдена');
+            return;
+        }
+
+        // Добавляем класс для мигания
+        buildBtn.classList.add('tutorial-blink');
+
+        // Добавляем стили для мигания если их еще нет
+        if (!document.getElementById('tutorial-blink-style')) {
+            const style = document.createElement('style');
+            style.id = 'tutorial-blink-style';
+            style.innerHTML = `
+                @keyframes tutorial-blink {
+                    0%, 100% {
+                        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+                        transform: scale(1);
+                    }
+                    50% {
+                        box-shadow: 0 0 40px rgba(255, 215, 0, 1);
+                        transform: scale(1.1);
+                    }
+                }
+                .tutorial-blink {
+                    animation: tutorial-blink 1.5s infinite !important;
+                    z-index: 10000 !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        console.log('✨ Начало мигания кнопки строительства');
+    }
+
+    /**
+     * Остановить мигание кнопки строительства
+     */
+    stopBuildButtonBlink() {
+        const buildBtn = document.getElementById('build-btn');
+        if (buildBtn) {
+            buildBtn.classList.remove('tutorial-blink');
         }
     }
 
