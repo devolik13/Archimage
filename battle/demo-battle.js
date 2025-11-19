@@ -422,7 +422,50 @@ function showWelcomeMessage() {
         justify-content: center;
     `;
 
-    modal.innerHTML = `
+    // Контейнер для контента с поддержкой rotation
+    const contentContainer = document.createElement('div');
+    contentContainer.id = 'welcome-content-container';
+    contentContainer.style.cssText = `
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    `;
+
+    // Проверяем CSS rotation (мобильные устройства)
+    const isRotated = window.cssRotationActive === true;
+    console.log('🔄 Welcome modal - CSS Rotation активен:', isRotated);
+
+    if (isRotated) {
+        // Удаляем старый style если есть
+        const oldStyle = document.getElementById('welcome-rotation-style');
+        if (oldStyle) {
+            oldStyle.remove();
+        }
+
+        // Применяем rotation как в faction-selection
+        const style = document.createElement('style');
+        style.id = 'welcome-rotation-style';
+        style.innerHTML = `
+            #welcome-content-container {
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) rotate(-90deg) !important;
+                transform-origin: center center !important;
+                width: 100vh !important;
+                height: 100vw !important;
+            }
+        `;
+        document.head.appendChild(style);
+        console.log('✅ Welcome rotation style применен (-90deg)');
+    }
+
+    contentContainer.innerHTML = `
         <div style="
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 40px 30px;
@@ -432,6 +475,8 @@ function showWelcomeMessage() {
             text-align: center;
             color: white;
             box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
         ">
             <div style="font-size: 60px; margin-bottom: 20px;">⚔️</div>
 
@@ -450,6 +495,7 @@ function showWelcomeMessage() {
                 margin: 20px 0;
                 font-size: 18px;
                 line-height: 1.8;
+                flex: 1;
             ">
                 Строить можно одновременно<br>
                 <strong>одно здание</strong><br>
@@ -481,6 +527,7 @@ function showWelcomeMessage() {
         </div>
     `;
 
+    modal.appendChild(contentContainer);
     document.body.appendChild(modal);
 }
 
@@ -488,6 +535,12 @@ function closeWelcomeMessage() {
     const modal = document.getElementById('welcome-modal');
     if (modal) {
         modal.remove();
+    }
+
+    // Удаляем rotation style
+    const rotationStyle = document.getElementById('welcome-rotation-style');
+    if (rotationStyle) {
+        rotationStyle.remove();
     }
 
     // Отмечаем что сообщение показано
