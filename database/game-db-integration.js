@@ -142,6 +142,11 @@ async function initGameWithDatabase() {
             window.initBattleEnergyUI();
         }
 
+        // Проверяем оффлайн события ПЕРЕД обновлением last_login
+        if (typeof window.checkOfflineEvents === 'function') {
+            await window.checkOfflineEvents(player.last_login);
+        }
+
         // Обновляем last_login после расчета офлайн накопления
         window.userData.last_login = new Date().toISOString();
 
