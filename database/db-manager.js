@@ -210,7 +210,7 @@ class DatabaseManager {
             console.log(`📊 Статистика: ${window.userData.wins}W / ${window.userData.losses}L | Рейтинг: ${window.userData.rating}`);
 
             // НОВОЕ: Обновляем рейтинг противника (симметрично)
-            // Только для реальных игроков (не ботов и с валидным ID)
+            // Для всех противников (включая ботов)
             console.log('🔍 DEBUG: Проверка обновления рейтинга противника');
             console.log('   selectedOpponent:', window.selectedOpponent);
             console.log('   ratingChange:', ratingChange);
@@ -218,10 +218,9 @@ class DatabaseManager {
             if (window.selectedOpponent && ratingChange !== undefined) {
                 const opponentId = window.selectedOpponent.id;
                 console.log('   opponentId:', opponentId);
-                console.log('   opponentId > 0:', opponentId > 0);
 
-                // Проверяем что ID валиден (не undefined, не null, и положительный - боты имеют отрицательные ID)
-                if (opponentId && opponentId > 0) {
+                // Проверяем что ID валиден (не undefined и не null)
+                if (opponentId !== undefined && opponentId !== null) {
                     const opponentRatingChange = -ratingChange; // Противоположное изменение
                     const currentOpponentRating = window.selectedOpponent.rating || 1000;
                     const newOpponentRating = Math.max(0, currentOpponentRating + opponentRatingChange);
@@ -246,7 +245,7 @@ class DatabaseManager {
                         console.log(`   ${window.selectedOpponent.username}: ${currentOpponentRating} → ${newOpponentRating} (${opponentRatingChange > 0 ? '+' : ''}${opponentRatingChange})`);
                     }
                 } else {
-                    console.log('ℹ️ Противник - бот или демо, рейтинг не обновляется (ID:', opponentId, ')');
+                    console.log('⚠️ Противник не имеет валидного ID:', opponentId);
                 }
             } else {
                 console.log('⚠️ Не выполнены условия для обновления рейтинга противника');
