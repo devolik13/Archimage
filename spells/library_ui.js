@@ -369,7 +369,7 @@ function setupSpellsScreen(faction) {
                         cursor: pointer;
                         width: 85%;
                     "
-                    onclick="console.log('🔵 Клик Изучить:', '${spellId}', '${faction}'); learnSpell('${spellId}', '${faction}')"
+                    onclick="console.log('🔵 Клик Изучить:', '${spellId}', '${faction}'); showSpellInfoModal('${spellId}', '${faction}', ${spell.level || 0}, 'learn')"
                 >Изучить (${window.formatTimeCurrency ? window.formatTimeCurrency(learnTime) : learnTime})</button>
             `;
         } else if (spell.level > 0 && spell.level < 5 && isActive) {
@@ -391,7 +391,7 @@ function setupSpellsScreen(faction) {
                         cursor: pointer;
                         width: 85%;
                     "
-                    onclick="console.log('🟠 Клик Улучшить:', '${spellId}', ${spell.level + 1}, '${faction}'); upgradeSpell('${spellId}', ${spell.level + 1}, '${faction}')"
+                    onclick="console.log('🟠 Клик Улучшить:', '${spellId}', ${spell.level + 1}, '${faction}'); showSpellInfoModal('${spellId}', '${faction}', ${spell.level}, 'upgrade')"
                 >Улучшить (${window.formatTimeCurrency ? window.formatTimeCurrency(upgradeTime) : upgradeTime})</button>
             `;
         } else if (spell.level === 5) {
@@ -487,6 +487,13 @@ function closeLibrary() {
 
     const cityView = document.getElementById('city-view');
     if (cityView) cityView.style.display = 'block';
+
+    // ВАЖНО: Показываем таймер исследования если есть активное изучение
+    if (window.addSpellResearchVisualization) {
+        setTimeout(() => {
+            window.addSpellResearchVisualization();
+        }, 300); // Задержка чтобы город успел отобразиться
+    }
 }
 
 // Обновление контента библиотеки после изучения/улучшения
@@ -511,11 +518,169 @@ function renderLibrary() {
     }
 }
 
+// ========== МОДАЛЬНОЕ ОКНО С ИНФОРМАЦИЕЙ О ЗАКЛИНАНИИ ==========
+function showSpellInfoModal(spellId, faction, currentLevel, action) {
+    // Получаем полную информацию о заклинании
+    const spellData = window.SPELL_FULL_DATA?.[spellId];
+    if (!spellData) {
+        console.error('Данные заклинания не найдены:', spellId);
+        // Fallback - вызываем старую функцию
+        if (action === 'learn') {
+            learnSpell(spellId, faction);
+        } else {
+            upgradeSpell(spellId, currentLevel + 1, faction);
+        }
+        return;
+    }
+
+    const targetLevel = action === 'learn' ? 1 : currentLevel + 1;
+    const tierIndex = window.SPELL_TIERS?.[faction]?.indexOf(spellId) || 0;
+    const tier = tierIndex + 1;
+
+    // Рассчитываем время изучения
+    const learnTime = window.SPELL_LEARNING_TIME?.getLearnTime ?
+        window.SPELL_LEARNING_TIME.getLearnTime(tier, currentLevel, faction) : 144;
+
+    // Рассчитываем урон на текущем и следующем уровне
+    const currentDamage = currentLevel > 0 ? (window.getSpellDamage ? window.getSpellDamage(spellId, currentLevel) : 0) : 0;
+    const nextDamage = window.getSpellDamage ? window.getSpellDamage(spellId, targetLevel) : 0;
+
+    // Создаем оверлей
+    const overlay = document.createElement('div');
+    overlay.id = 'spell-info-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 10001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+
+    // Создаем модальное окно
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        background: linear-gradient(145deg, #2c2c3d, #1a1a2e);
+        border: 3px solid ${window.SCHOOL_CONFIG?.[faction]?.color || '#7289da'};
+        border-radius: 15px;
+        padding: 25px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        animation: modalSlideIn 0.3s ease-out;
+    `;
+
+    modal.innerHTML = `
+        <style>
+            @keyframes modalSlideIn {
+                from { transform: translateY(-50px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        </style>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 48px; margin-bottom: 10px;">${spellData.icon}</div>
+            <h2 style="margin: 0; color: ${window.SCHOOL_CONFIG?.[faction]?.color || '#ffa500'};">
+                ${spellData.name}
+            </h2>
+            <div style="color: #aaa; font-size: 14px; margin-top: 5px;">
+                Школа: ${window.getFactionName ? window.getFactionName(faction) : faction} • Тир ${tier}
+            </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+            <div style="color: #fff; font-size: 14px; line-height: 1.6;">
+                ${spellData.description}
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">Тип</div>
+                <div style="color: #fff; font-weight: bold;">${spellData.type === 'single_target' ? 'Одна цель' : spellData.type === 'aoe' ? 'Область' : 'Несколько целей'}</div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">Базовый урон</div>
+                <div style="color: #ffa500; font-weight: bold; font-size: 18px;">${spellData.base_damage}💥</div>
+            </div>
+        </div>
+
+        ${action === 'upgrade' && currentLevel > 0 ? `
+            <div style="background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                <div style="color: #ffa500; font-size: 13px; font-weight: bold; margin-bottom: 8px;">📈 При улучшении:</div>
+                <div style="color: #fff; font-size: 14px;">
+                    Урон: ${currentDamage}💥 → ${nextDamage}💥 (+${nextDamage - currentDamage})
+                </div>
+            </div>
+        ` : ''}
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button id="spell-cancel-btn" style="
+                flex: 1;
+                padding: 12px;
+                background: #666;
+                border: 2px solid #999;
+                border-radius: 8px;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.2s;
+            ">Отмена</button>
+
+            <button id="spell-confirm-btn" style="
+                flex: 2;
+                padding: 12px;
+                background: linear-gradient(to bottom, ${window.SCHOOL_CONFIG?.[faction]?.color || '#ffa500'}, ${window.SCHOOL_CONFIG?.[faction]?.color || '#ff8c00'});
+                border: 2px solid ${window.SCHOOL_CONFIG?.[faction]?.color || '#ffa500'};
+                border-radius: 8px;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.2s;
+            ">${action === 'learn' ? '📖 Изучить' : '⬆️ Улучшить'} (${window.formatTimeCurrency ? window.formatTimeCurrency(learnTime) : learnTime})</button>
+        </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    // Обработчики кнопок
+    document.getElementById('spell-cancel-btn').onclick = () => {
+        overlay.remove();
+    };
+
+    document.getElementById('spell-confirm-btn').onclick = () => {
+        overlay.remove();
+        if (action === 'learn') {
+            learnSpell(spellId, faction);
+        } else {
+            upgradeSpell(spellId, targetLevel, faction);
+        }
+    };
+
+    // Закрытие по клику вне окна
+    overlay.onclick = (e) => {
+        if (e.target === overlay) {
+            overlay.remove();
+        }
+    };
+}
+
 // Экспорт
 window.showLibrary = showLibrary;
 window.closeLibrary = closeLibrary;
 window.openSchoolSpells = openSchoolSpells;
 window.updateLibraryContent = updateLibraryContent;
 window.renderLibrary = renderLibrary;
+window.showSpellInfoModal = showSpellInfoModal;
 
 console.log('📚 Библиотека с таймерами готова!');
