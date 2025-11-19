@@ -61,6 +61,12 @@ async function selectFaction(faction) {
         "poison": { "poisoned_blade": { name: "Отравленный клинок", level: 1, tier: 1 } }
     };
     
+    // Стартовые здания: Башня магов и Генератор времени
+    const initialBuildings = {
+        wizard_tower: { level: 1, building_id: 'wizard_tower' },
+        time_generator: { level: 1, building_id: 'time_generator' }
+    };
+
     // Сохраняем ВСЁ в Supabase
     if (window.dbManager && window.dbManager.currentPlayer) {
         try {
@@ -71,7 +77,9 @@ async function selectFaction(faction) {
                     wizards: initialWizards,
                     spells: initialSpells,
                     formation: [null, null, null, null, null],
-                    buildings: {}
+                    buildings: initialBuildings,
+                    time_currency: 300, // 5 часов стартового времени
+                    tutorial_completed: false
                 })
                 .eq('id', window.dbManager.currentPlayer.id);
             
@@ -83,20 +91,25 @@ async function selectFaction(faction) {
             window.dbManager.currentPlayer.faction = faction;
             window.dbManager.currentPlayer.wizards = initialWizards;
             window.dbManager.currentPlayer.spells = initialSpells;
-            
+            window.dbManager.currentPlayer.buildings = initialBuildings;
+            window.dbManager.currentPlayer.time_currency = 300;
+            window.dbManager.currentPlayer.tutorial_completed = false;
+
             // Создаём window.userData для совместимости со старым кодом
             window.userData = {
                 user_id: window.dbManager.currentPlayer.telegram_id,
                 username: window.dbManager.currentPlayer.username,
                 faction: faction,
-                time_currency: window.dbManager.currentPlayer.time_currency,
+                time_currency: 300,
                 level: window.dbManager.currentPlayer.level,
                 experience: window.dbManager.currentPlayer.experience,
-                buildings: {},
+                buildings: initialBuildings,
                 wizards: initialWizards,
                 spells: initialSpells,
                 formation: [null, null, null, null, null],
-                constructions: []
+                constructions: [],
+                tutorial_completed: false,
+                tutorial_step: 0
             };
             
             // Скрываем экран выбора фракции

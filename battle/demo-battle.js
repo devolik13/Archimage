@@ -339,6 +339,12 @@ function endCinematic() {
         if (typeof window.showGameArea === 'function') {
             window.showGameArea();
         }
+
+        // НОВОЕ: Запускаем обучение если игрок новый
+        if (window.userData && !window.userData.tutorial_completed && window.tutorialSystem) {
+            console.log('🎓 Запуск обучения после демо-боя');
+            window.tutorialSystem.start();
+        }
     }, CINEMATIC_CONFIG.fadeOutDuration);
 }
 

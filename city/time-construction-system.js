@@ -24,7 +24,7 @@ function hasActiveConstruction(type = 'building') {
 }
 
 // Начать строительство
-async function startConstruction(buildingId, cellIndex, isUpgrade = false, targetLevel = 1) {
+async function startConstruction(buildingId, cellIndex, isUpgrade = false, targetLevel = 1, skipModal = false) {
     // Проверяем, нет ли уже активной стройки (маги больше не блокируют!)
     if (hasActiveConstruction('any_building_or_wizard')) {
         // Определяем, что именно идет
@@ -43,10 +43,29 @@ async function startConstruction(buildingId, cellIndex, isUpgrade = false, targe
         }
         return false;
     }
-   
-    const timeRequired = isUpgrade ? 
-        CONSTRUCTION_TIME.getUpgradeTime(buildingId, targetLevel) : 
+
+    const timeRequired = isUpgrade ?
+        CONSTRUCTION_TIME.getUpgradeTime(buildingId, targetLevel) :
         CONSTRUCTION_TIME[buildingId];
+
+    // НОВОЕ: Показываем модальное окно информации перед строительством (если не skipModal)
+    if (!skipModal && typeof window.showBuildingInfoModal === 'function') {
+        const currentLevel = window.userData.buildings?.[buildingId]?.level || 0;
+
+        window.showBuildingInfoModal(
+            buildingId,
+            currentLevel,
+            targetLevel,
+            isUpgrade,
+            timeRequired,
+            () => {
+                // Callback при подтверждении - вызываем строительство с skipModal=true
+                startConstruction(buildingId, cellIndex, isUpgrade, targetLevel, true);
+            }
+        );
+
+        return false; // Возвращаем false т.к. строительство еще не началось
+    }
     
     const construction = {
         type: 'building',
@@ -63,7 +82,12 @@ async function startConstruction(buildingId, cellIndex, isUpgrade = false, targe
         window.userData.constructions = [];
     }
     window.userData.constructions.push(construction);
-    
+
+    // НОВОЕ: Уведомляем tutorial system о начале строительства библиотеки
+    if (buildingId === 'library' && window.tutorialSystem) {
+        window.tutorialSystem.onLibraryBuildStarted();
+    }
+
     // ============ НОВЫЙ КОД: ДОБАВЛЯЕМ ВИЗУАЛИЗАЦИЮ МОЛОТКА ============
     // Показываем молоток в правильной позиции на здании
     if (!isUpgrade && window.addConstructionVisualization) {
@@ -110,6 +134,11 @@ async function startSpellLearning(spellId, faction, tier, currentLevel) {
         window.userData.constructions = [];
     }
     window.userData.constructions.push(construction);
+
+    // НОВОЕ: Уведомляем tutorial system о начале изучения заклинания
+    if (window.tutorialSystem) {
+        window.tutorialSystem.onSpellLearningStarted();
+    }
 
     updateConstructionUI();
     await saveConstruction();
@@ -332,13 +361,18 @@ function speedupConstruction(constructionIndex) {
     }
     
     if (window.useTimeCurrency(cost, () => {
+        // НОВОЕ: Уведомляем tutorial system об ускорении библиотеки
+        if (construction.building_id === 'library' && window.tutorialSystem) {
+            window.tutorialSystem.onLibrarySpedUp();
+        }
+
         completeConstruction(constructionIndex);
         updateConstructionUI();
         updateAllConstructionTimers();
         if (typeof window.showNotification === 'function') {
             window.showNotification(`⚡ Строительство ускорено за ${formatTimeCurrency(cost)}`);
         }
-        
+
         // Разблокируем через 500ms
         setTimeout(() => {
             blockConstructionModalReopen = false;
@@ -466,9 +500,15 @@ function updateAllConstructionTimers() {
     
     constructions.forEach((construction, index) => {
         if (construction.time_remaining > 0) {
+            // НОВОЕ: Проверяем заморожен ли таймер (для обучения)
+            if (window.tutorialSystem && window.tutorialSystem.isFrozen(construction.building_id)) {
+                console.log(`❄️ Таймер ${construction.building_id} заморожен (обучение)`);
+                return; // Пропускаем обновление времени
+            }
+
             const elapsed = Math.floor((Date.now() - construction.started_at) / 60000);
             construction.time_remaining = Math.max(0, construction.time_required - elapsed);
-            
+
             if (construction.time_remaining === 0) {
                 completeConstruction(index);
                 hasChanges = true;
