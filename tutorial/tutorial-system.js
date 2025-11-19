@@ -270,7 +270,7 @@ class TutorialSystem {
     }
 
     /**
-     * Показать большую подсказку (без стрелки вниз)
+     * Показать большую подсказку (просто текст без фона)
      */
     showBigHint(text) {
         this.clearHint();
@@ -283,24 +283,31 @@ class TutorialSystem {
                 top: 30%;
                 left: 50%;
                 transform: translateX(-50%);
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white;
-                padding: 30px 40px;
-                border-radius: 20px;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
                 z-index: 9999;
-                font-size: 24px;
+                font-size: 28px;
                 font-weight: bold;
                 text-align: center;
                 max-width: 90%;
+                text-shadow:
+                    0 0 10px rgba(0,0,0,0.9),
+                    0 0 20px rgba(102,126,234,0.8),
+                    2px 2px 6px rgba(0,0,0,1);
                 animation: pulse 2s infinite;
+                pointer-events: none;
             ">
                 ${text}
             </div>
             <style>
                 @keyframes pulse {
-                    0%, 100% { transform: translateX(-50%) scale(1); }
-                    50% { transform: translateX(-50%) scale(1.05); }
+                    0%, 100% {
+                        transform: translateX(-50%) scale(1);
+                        opacity: 1;
+                    }
+                    50% {
+                        transform: translateX(-50%) scale(1.05);
+                        opacity: 0.95;
+                    }
                 }
             </style>
         `;
