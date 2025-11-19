@@ -780,6 +780,9 @@ function executeEnemyPhase(mageCount) {
 
 // --- Проверка окончания боя ---
 function checkBattleEnd() {
+    // ВАЖНО: Сохраняем флаг PvE в начале, чтобы избежать race conditions
+    const isPvEBattle = window.isPvEBattle || false;
+
     const playerAlive = window.playerFormation.some((wizardId, index) => {
         if (wizardId) {
             const wizard = window.playerWizards.find(w => w.id === wizardId);
@@ -931,7 +934,7 @@ function checkBattleEnd() {
 
         // ИСПРАВЛЕНО: Сохраняем опыт магов через Supabase вместо localhost
         if (window.userData && window.playerWizards) {
-            if (!window.isPvEBattle) {
+            if (!isPvEBattle) {
                 // Для PvP сохраняем всё
                 window.userData.wizards = window.playerWizards;
             } else {
@@ -963,7 +966,7 @@ function checkBattleEnd() {
         }
 
         // Рассчитываем изменение рейтинга ТОЛЬКО ДЛЯ PvP
-        if (!window.isPvEBattle && typeof window.calculateRatingChange === 'function') {
+        if (!isPvEBattle && typeof window.calculateRatingChange === 'function') {
             const playerRating = window.userData?.rating || 1000;
             // Используем реальный рейтинг противника из selectedOpponent
             const opponentRating = window.selectedOpponent?.rating || playerRating;
@@ -974,7 +977,7 @@ function checkBattleEnd() {
         }
 
         // Триггер события завершения боя ТОЛЬКО ДЛЯ PvP (вызовет немедленное сохранение)
-        if (!window.isPvEBattle && typeof window.onBattleCompleted === 'function') {
+        if (!isPvEBattle && typeof window.onBattleCompleted === 'function') {
             window.onBattleCompleted(battleResult, rewards, opponentLevel, ratingChange);
         }
 
@@ -996,7 +999,7 @@ function checkBattleEnd() {
         }
 
         // Показываем экран результатов боя ТОЛЬКО ДЛЯ PvP
-        if (!window.isPvEBattle && typeof window.showBattleResult === 'function') {
+        if (!isPvEBattle && typeof window.showBattleResult === 'function') {
             const opponent = window.selectedOpponent || {};
             const battleData = {
                 opponentName: opponent.username || 'Противник',
@@ -1013,7 +1016,7 @@ function checkBattleEnd() {
         }
 
         // Для PvE показываем простое сообщение
-        if (window.isPvEBattle) {
+        if (isPvEBattle) {
             setTimeout(() => {
                 if (battleResult === 'win') {
                     alert('🎉 Победа! Вы прошли уровень!');

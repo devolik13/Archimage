@@ -343,11 +343,15 @@ function startPvELevel(levelId) {
                 ...enemy,
                 max_hp: enemy.hp,
                 max_armor: enemy.armor,
-                faction: enemy.faction || 'fire', // дефолтная фракция для обычных врагов
                 spells: enemy.spells || [], // заклинания для элементалей и боссов
                 isPvEEnemy: true,
                 pveLevel: levelId
             };
+
+            // Добавляем faction ТОЛЬКО если она есть в конфиге (для элементалей/боссов)
+            if (enemy.faction) {
+                enemyWizard.faction = enemy.faction;
+            }
 
             window.enemyFormation[index] = enemyWizard;
             window.enemyWizards.push(enemyWizard);
