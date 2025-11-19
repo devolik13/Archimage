@@ -186,12 +186,12 @@ window.FactionSelection = {
             border-radius: 50%;
             pointer-events: auto;
             cursor: ${circle.active ? 'pointer' : 'not-allowed'};
-            background: ${circle.active ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)'};
-            border: 2px solid ${circle.active ? 'lime' : 'red'};
+            background: transparent;
+            border: none;
             transition: all 0.3s;
         `;
 
-        // Подпись
+        // Подпись - СКРЫТА (кликабельные зоны невидимы)
         const label = document.createElement('div');
         label.style.cssText = `
             position: absolute;
@@ -203,6 +203,7 @@ window.FactionSelection = {
             font-size: 12px;
             text-shadow: 0 0 3px black;
             pointer-events: none;
+            display: none;
         `;
         label.textContent = factionId.toUpperCase();
         zone.appendChild(label);
@@ -215,15 +216,17 @@ window.FactionSelection = {
 
         zone.onmouseenter = () => {
             if (circle.active) {
-                zone.style.background = 'rgba(255, 255, 0, 0.5)';
-                zone.style.borderColor = 'yellow';
+                // Зоны невидимы - не показываем подсветку
+                // zone.style.background = 'rgba(255, 255, 0, 0.5)';
+                // zone.style.borderColor = 'yellow';
                 zone.style.transform = 'scale(1.1)';
             }
         };
 
         zone.onmouseleave = () => {
-            zone.style.background = circle.active ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)';
-            zone.style.borderColor = circle.active ? 'lime' : 'red';
+            // Зоны невидимы - возвращаем прозрачность
+            zone.style.background = 'transparent';
+            zone.style.border = 'none';
             zone.style.transform = 'scale(1)';
         };
 
