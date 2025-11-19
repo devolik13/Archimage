@@ -463,7 +463,7 @@ function showWelcomeMessage() {
         console.log('✅ Welcome rotation style применен (-90deg)');
     }
 
-    // Контент (position: absolute КАК У ГОРОДА)
+    // Контент - ГОРИЗОНТАЛЬНЫЙ LAYOUT
     const contentWrapper = document.createElement('div');
     contentWrapper.style.cssText = `
         position: absolute;
@@ -472,116 +472,92 @@ function showWelcomeMessage() {
         width: 100%;
         height: 100%;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
-        justify-content: space-between;
-        padding: 5vh 5vw;
+        justify-content: center;
+        padding: 2vh 3vw;
         box-sizing: border-box;
+        gap: 20px;
     `;
 
     contentWrapper.innerHTML = `
+        <!-- Левая часть - иконка и заголовок -->
         <div style="
-            flex: 1;
+            flex: 0 0 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            max-width: 600px;
         ">
-            <div style="font-size: 80px; margin-bottom: 30px; animation: pulse 2s infinite;">
-                ⚔️✨
-            </div>
-
+            <div style="font-size: 50px; margin-bottom: 10px;">⚔️✨</div>
             <h1 style="
-                margin: 0 0 20px 0;
-                font-size: 32px;
+                margin: 0;
+                font-size: 20px;
                 color: #ffd700;
-                text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+                text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
                 font-weight: bold;
                 text-align: center;
+                white-space: nowrap;
             ">
-                Приветствуем тебя, маг!
+                Приветствуем<br>тебя, маг!
             </h1>
+        </div>
 
-            <h2 style="
-                margin: 0 0 40px 0;
-                font-size: 20px;
-                color: #fff;
-                text-align: center;
-                opacity: 0.9;
-            ">
-                Твой путь к величию начинается здесь
-            </h2>
+        <!-- Центр - основной текст -->
+        <div style="
+            flex: 1;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            text-align: center;
+            color: white;
+            font-size: 16px;
+            line-height: 1.6;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            max-width: 450px;
+        ">
+            <div style="color: #ffd700; font-size: 17px; font-weight: bold; margin-bottom: 10px;">
+                📜 Основы магии:
+            </div>
 
-            <div style="
-                background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
-                padding: 30px;
-                border-radius: 15px;
-                border: 2px solid rgba(255, 215, 0, 0.3);
-                text-align: center;
-                color: white;
-                font-size: 18px;
-                line-height: 2;
-                backdrop-filter: blur(10px);
-                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            ">
-                <div style="margin-bottom: 20px; color: #ffd700; font-size: 20px; font-weight: bold;">
-                    📜 Запомни основы магии:
-                </div>
+            Строить: <strong style="color: #ffd700;">одно здание</strong><br>
+            Изучать: <strong style="color: #ffd700;">одно заклинание</strong><br>
+            <div style="color: #87ceeb; font-size: 15px; margin-top: 8px;">
+                ⚡ Не забывай ускорять!
+            </div>
 
-                Строить можно одновременно<br>
-                <strong style="color: #ffd700; font-size: 20px;">одно здание</strong><br>
-                и изучать<br>
-                <strong style="color: #ffd700; font-size: 20px;">одно заклинание</strong>.<br><br>
-
-                <div style="color: #87ceeb; font-size: 19px;">
-                    ⚡ Не забывай ускорять процессы!
-                </div>
-                <br>
-
-                <div style="
-                    color: #ffd700;
-                    font-weight: bold;
-                    font-size: 24px;
-                    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-                    margin-top: 10px;
-                ">
-                    Выбирай мудро! 🔮
-                </div>
+            <div style="color: #ffd700; font-weight: bold; font-size: 18px; margin-top: 8px;">
+                Выбирай мудро! 🔮
             </div>
         </div>
 
-        <button onclick="closeWelcomeMessage()" style="
-            width: 100%;
-            max-width: 400px;
-            padding: 18px 40px;
-            border: 2px solid #ffd700;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 20px;
-            transition: all 0.3s;
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
-            margin-top: 30px;
-        "
-        onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 30px rgba(255, 215, 0, 0.5)'"
-        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 5px 20px rgba(255, 215, 0, 0.3)'">
-            ⚔️ Начать приключение!
-        </button>
+        <!-- Правая часть - кнопка -->
+        <div style="
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+        ">
+            <button onclick="closeWelcomeMessage()" style="
+                padding: 20px 30px;
+                border: 2px solid #ffd700;
+                border-radius: 12px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 18px;
+                transition: all 0.3s;
+                box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+                white-space: nowrap;
+            "
+            onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 30px rgba(255, 215, 0, 0.5)'"
+            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 5px 20px rgba(255, 215, 0, 0.3)'">
+                ⚔️ Начать<br>приключение!
+            </button>
+        </div>
     `;
-
-    // Добавляем CSS анимацию
-    const animStyle = document.createElement('style');
-    animStyle.innerHTML = `
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
-    `;
-    document.head.appendChild(animStyle);
 
     bgContainer.appendChild(contentWrapper);
     modal.appendChild(bgContainer);
