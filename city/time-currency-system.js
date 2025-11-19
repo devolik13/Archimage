@@ -95,8 +95,19 @@ function createTimeCurrencyUI() {
                 </div>
             </div>
             ${production > 0 ? `
-                <div style="font-size: 11px; color: #4ade80; margin-top: 5px; padding-top: 5px; border-top: 1px solid #444;">
-                    +${production} мин/час
+                <div onclick="if(typeof window.showTimeGeneratorModal === 'function') { window.showTimeGeneratorModal(); }" style="
+                    font-size: 11px;
+                    color: #4ade80;
+                    margin-top: 5px;
+                    padding-top: 5px;
+                    border-top: 1px solid #444;
+                    cursor: pointer;
+                    transition: color 0.2s;
+                "
+                onmouseover="this.style.color='#5ef195'"
+                onmouseout="this.style.color='#4ade80'"
+                title="Открыть Генератор времени">
+                    +${production} мин/час ⚡
                 </div>
             ` : ''}
         </div>

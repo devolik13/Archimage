@@ -540,12 +540,9 @@ async function upgradeWizardTower() {
         showNotification(`⚠️ Башня магов уже максимального уровня (${maxLevel})`);
         return;
     }
-    const nextLevel = currentLevel + 1;
     closeAllModals();
-    // Используем нашу функцию startBuilding с флагом улучшения
-    if (window.startBuilding) {
-        window.startBuilding('wizard_tower', true);
-    }
+    // Показываем модальное окно с информацией о бонусах
+    showUpgradeModal('wizard_tower', currentLevel, maxLevel);
 }
 
 // Модалка кузницы
