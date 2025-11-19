@@ -84,6 +84,46 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             frameCount: 8,
             animationSpeed: 0.15,
             scale: 0.350
+        },
+        fire_elemental: {
+            idle: 'images/enemies/fire_elemental/idle.png',
+            cast: 'images/enemies/fire_elemental/attack.png',
+            death: 'images/enemies/fire_elemental/death.png',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            animationSpeed: 0.15,
+            scale: 0.700 // В 2 раза больше гоблина - занимает 4 клетки (2x2)
+        },
+        water_elemental: {
+            idle: 'images/enemies/water_elemental/idle.png',
+            cast: 'images/enemies/water_elemental/attack.png',
+            death: 'images/enemies/water_elemental/death.png',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            animationSpeed: 0.15,
+            scale: 0.700
+        },
+        wind_elemental: {
+            idle: 'images/enemies/wind_elemental/idle.png',
+            cast: 'images/enemies/wind_elemental/attack.png',
+            death: 'images/enemies/wind_elemental/death.png',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            animationSpeed: 0.15,
+            scale: 0.700
+        },
+        earth_elemental: {
+            idle: 'images/enemies/earth_elemental/idle.png',
+            cast: 'images/enemies/earth_elemental/attack.png',
+            death: 'images/enemies/earth_elemental/death.png',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            animationSpeed: 0.15,
+            scale: 0.700
         }
     };
     
@@ -212,14 +252,22 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         if (col === 0) {
             const enemy = window.enemyFormation?.[row];
             if (enemy) {
-                // Если это PVE враг - используем спрайты гоблинов
                 const enemyWizard = window.enemyWizards?.find(w => w.id === enemy.id);
+
+                // Если это элементаль-босс - используем специальные спрайты
+                if (enemyWizard && enemyWizard.isElemental) {
+                    const elementalType = `${enemyWizard.faction}_elemental`;
+                    console.log(`🔥 Элементаль обнаружен: ${enemyWizard.name}, используем спрайты ${elementalType}`);
+                    return elementalType;
+                }
+
+                // Если это обычный PVE враг - используем спрайты гоблинов/орков/троллей
                 if (enemyWizard && enemyWizard.isAdventureEnemy) {
                     console.log(`🎯 PvE враг обнаружен: ${enemyWizard.name}, используем спрайты гоблина`);
                     return 'goblin';
                 }
 
-                // Иначе используем фракцию врага
+                // Иначе используем фракцию врага (PvP)
                 if (enemy.faction) {
                     console.log(`🎯 PvP враг с фракцией: ${enemy.faction}`);
                     return enemy.faction;
