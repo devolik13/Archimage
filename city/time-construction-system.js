@@ -10,10 +10,11 @@ let blockConstructionModalReopen = false;
 function hasActiveConstruction(type = 'building') {
     const constructions = window.userData.constructions || [];
 
-    // Проверяем есть ли ЛЮБАЯ стройка, улучшение или найм (НЕ заклинания!)
+    // Проверяем есть ли ЛЮБАЯ стройка или улучшение (НЕ заклинания и НЕ маги!)
+    // Маги теперь независимы от зданий!
     if (type === 'any_building_or_wizard') {
         return constructions.some(c =>
-            (c.type === 'building' || c.type === 'wizard') &&
+            c.type === 'building' &&
             c.time_remaining > 0
         );
     }
@@ -24,19 +25,17 @@ function hasActiveConstruction(type = 'building') {
 
 // Начать строительство
 async function startConstruction(buildingId, cellIndex, isUpgrade = false, targetLevel = 1) {
-    // Проверяем, нет ли уже активной стройки ИЛИ найма
+    // Проверяем, нет ли уже активной стройки (маги больше не блокируют!)
     if (hasActiveConstruction('any_building_or_wizard')) {
         // Определяем, что именно идет
         const constructions = window.userData.constructions || [];
-        const activeConstruction = constructions.find(c => 
-            (c.type === 'building' || c.type === 'wizard') && 
+        const activeConstruction = constructions.find(c =>
+            c.type === 'building' &&
             c.time_remaining > 0
         );
-        
+
         if (activeConstruction) {
-            if (activeConstruction.type === 'wizard') {
-                alert('⚠️ Нельзя строить пока идет найм мага!');
-            } else if (activeConstruction.is_upgrade) {
+            if (activeConstruction.is_upgrade) {
                 alert('⚠️ Нельзя строить пока идет улучшение другого здания!');
             } else {
                 alert('⚠️ Можно строить только одно здание одновременно!');

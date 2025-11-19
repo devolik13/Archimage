@@ -140,16 +140,32 @@ function showWizardHireModal() {
         `;
     });
     
+    // НОВОЕ: Проверка требований уровня башни для найма
+    const towerLevel = userData.buildings?.wizard_tower?.level || 1;
+    const wizardIndex = wizards.length;
+    const towerRequirements = { 0: 1, 1: 3, 2: 5, 3: 7, 4: 10 };
+    const requiredLevel = towerRequirements[wizardIndex];
+    const canHireByLevel = towerLevel >= requiredLevel;
+
     const canHire = wizards.length < maxWizards && !activeHire;
     const hireTime = window.WIZARD_HIRE_TIME?.getHireTime ? window.WIZARD_HIRE_TIME.getHireTime(wizards.length) : 0;
-    const hireButton = canHire ? 
-        `<button style="margin: 6px 0 0 0; padding: 6px; font-size: 12px; width: 100%; border: none; border-radius: 4px; background: #7289da; color: white; cursor: pointer;"
+
+    let hireButton;
+    if (!canHire && wizards.length >= maxWizards) {
+        hireButton = `<div style="text-align: center; color: #aaa; padding: 6px; font-size: 11px;">✅ Все маги наняты (${maxWizards}/${maxWizards})</div>`;
+    } else if (!canHire && activeHire) {
+        hireButton = `<div style="text-align: center; color: #ffa500; padding: 6px; font-size: 11px;">⏱️ Идет найм...</div>`;
+    } else if (!canHireByLevel) {
+        hireButton = `<button style="margin: 6px 0 0 0; padding: 6px; font-size: 12px; width: 100%; border: none; border-radius: 4px; background: #555; color: #999; cursor: not-allowed;" disabled>
+            🔒 ${wizardIndex + 1}-й маг (требуется башня ${requiredLevel} ур)
+        </button>`;
+    } else {
+        hireButton = `<button style="margin: 6px 0 0 0; padding: 6px; font-size: 12px; width: 100%; border: none; border-radius: 4px; background: #7289da; color: white; cursor: pointer;"
             onclick="hireNewWizard()">
-            ✅ Нанять мага ${hireTime > 0 ? `<span style="font-size: 9px;">(⏱️ ${window.formatTimeCurrency(hireTime)})</span>` : ''}
-        </button>` : 
-        `<div style="text-align: center; color: #aaa; padding: 6px; font-size: 11px;">Лимит: ${maxWizards}</div>`;
-    
-    const towerLevel = (userData.buildings?.wizard_tower?.level || 1);
+            ✅ Нанять ${wizardIndex + 1}-го мага ${hireTime > 0 ? `<span style="font-size: 9px;">(⏱️ ${window.formatTimeCurrency(hireTime)})</span>` : ''}
+        </button>`;
+    }
+
     const maxTowerLevel = getBuildingMaxLevel('wizard_tower');
     const upgradeTime = window.CONSTRUCTION_TIME?.getUpgradeTime ? 
         window.CONSTRUCTION_TIME.getUpgradeTime('wizard_tower', towerLevel + 1) : 144 * (towerLevel + 1);
@@ -211,19 +227,42 @@ function showWizardHireModal() {
     window.currentModal = { modal, overlay };
 }
 
-// Найм мага - ИСПРАВЛЕННАЯ ВЕРСИЯ (полностью заменить функцию)
+// Найм мага - ИСПРАВЛЕННАЯ ВЕРСИЯ с требованиями уровня башни
 async function hireNewWizard() {
     const wizards = userData.wizards || [];
     const maxWizards = 5;
+
     if (wizards.length >= maxWizards) {
         showNotification('Достигнут лимит магов!');
         return;
     }
-    // Проверяем активные стройки
-    if (window.hasActiveConstruction && window.hasActiveConstruction('any_building_or_wizard')) {
-        showNotification('⚠️ Нельзя нанимать мага пока идет строительство!');
+
+    // НОВОЕ: Проверяем уровень башни магов для найма
+    const towerLevel = userData.buildings?.wizard_tower?.level || 1;
+    const wizardIndex = wizards.length; // 0-based: 0=первый, 1=второй и т.д.
+
+    // Требования для каждого мага (первый маг всегда доступен)
+    const towerRequirements = {
+        0: 1,   // 1-й маг: есть с начала (башня 1 ур)
+        1: 3,   // 2-й маг: требует башню 3 ур
+        2: 5,   // 3-й маг: требует башню 5 ур
+        3: 7,   // 4-й маг: требует башню 7 ур
+        4: 10   // 5-й маг: требует башню 10 ур (макс)
+    };
+
+    const requiredLevel = towerRequirements[wizardIndex];
+    if (towerLevel < requiredLevel) {
+        showNotification(`⚠️ Для найма ${wizardIndex + 1}-го мага требуется башня магов ${requiredLevel} уровня! (сейчас: ${towerLevel})`);
         return;
     }
+
+    // Маги больше НЕ блокируют строительство!
+    // Проверяем только что нет другого найма мага
+    if (window.hasActiveConstruction && window.hasActiveConstruction('wizard')) {
+        showNotification('⚠️ Уже идет найм другого мага!');
+        return;
+    }
+
     // ВСЕ наймы идут только через систему времени
     if (typeof window.startWizardHire === 'function') {
         const success = await window.startWizardHire(wizards.length);
@@ -245,17 +284,15 @@ async function hireNewWizard() {
 // Начать строительство
 async function selectBuildingToBuild(buildingId, cellIndex) {
     closeCurrentModal();
-    // Проверяем активные конструкции ДО начала строительства
+    // Проверяем активные конструкции ДО начала строительства (маги больше не блокируют!)
     if (window.hasActiveConstruction && window.hasActiveConstruction('any_building_or_wizard')) {
         const constructions = window.userData.constructions || [];
-        const activeConstruction = constructions.find(c => 
-            (c.type === 'building' || c.type === 'wizard') && 
+        const activeConstruction = constructions.find(c =>
+            c.type === 'building' &&
             c.time_remaining > 0
         );
         if (activeConstruction) {
-            if (activeConstruction.type === 'wizard') {
-                showNotification('⚠️ Нельзя строить пока идет найм мага!');
-            } else if (activeConstruction.is_upgrade) {
+            if (activeConstruction.is_upgrade) {
                 showNotification('⚠️ Нельзя строить пока идет улучшение!');
             } else {
                 showNotification('⚠️ Можно строить только одно здание одновременно!');
@@ -362,17 +399,15 @@ function showUpgradeModal(buildingId, currentLevel, maxLevel) {
 // Подтвердить улучшение
 async function confirmUpgrade(buildingId, targetLevel) {
     closeCurrentModal();
-    // Проверяем активные конструкции
+    // Проверяем активные конструкции (маги больше не блокируют!)
     if (window.hasActiveConstruction && window.hasActiveConstruction('any_building_or_wizard')) {
         const constructions = window.userData.constructions || [];
-        const activeConstruction = constructions.find(c => 
-            (c.type === 'building' || c.type === 'wizard') && 
+        const activeConstruction = constructions.find(c =>
+            c.type === 'building' &&
             c.time_remaining > 0
         );
         if (activeConstruction) {
-            if (activeConstruction.type === 'wizard') {
-                showNotification('⚠️ Нельзя улучшать пока идет найм мага!');
-            } else if (activeConstruction.is_upgrade) {
+            if (activeConstruction.is_upgrade) {
                 showNotification('⚠️ Уже идет улучшение другого здания!');
             } else {
                 showNotification('⚠️ Нельзя улучшать пока идет строительство!');
