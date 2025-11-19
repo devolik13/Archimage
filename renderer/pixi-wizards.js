@@ -515,8 +515,13 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             }
         } else {
             // Простая анимация масштабирования для fallback
-            console.log('⚠️ Используем масштабирование для анимации');
-            
+            console.warn(`⚠️ Нет кадров атаки для ${wizardKey}, используем fallback`, {
+                hasContainer: !!container,
+                hasAttackFrames: !!container?.attackFrames,
+                attackFramesLength: container?.attackFrames?.length || 0,
+                faction: container?.faction
+            });
+
             const originalScaleX = sprite.scale.x;
             const originalScaleY = sprite.scale.y;
             
