@@ -208,6 +208,28 @@ class DatabaseManager {
 
             console.log(`⚔️ Результат боя сохранён: ${result} (${ratingChange > 0 ? '+' : ''}${ratingChange} рейтинга)`);
             console.log(`📊 Статистика: ${window.userData.wins}W / ${window.userData.losses}L | Рейтинг: ${window.userData.rating}`);
+
+            // НОВОЕ: Обновляем рейтинг противника (симметрично)
+            if (window.selectedOpponent && ratingChange !== undefined) {
+                const opponentRatingChange = -ratingChange; // Противоположное изменение
+                const opponentId = window.selectedOpponent.id;
+                const currentOpponentRating = window.selectedOpponent.rating || 1000;
+                const newOpponentRating = Math.max(0, currentOpponentRating + opponentRatingChange);
+
+                const { error: opponentError } = await this.supabase
+                    .from('players')
+                    .update({
+                        rating: newOpponentRating
+                    })
+                    .eq('id', opponentId);
+
+                if (opponentError) {
+                    console.error('⚠️ Ошибка обновления рейтинга противника:', opponentError);
+                } else {
+                    console.log(`🎯 Рейтинг противника обновлён: ${window.selectedOpponent.username} ${currentOpponentRating} → ${newOpponentRating} (${opponentRatingChange > 0 ? '+' : ''}${opponentRatingChange})`);
+                }
+            }
+
             return true;
 
         } catch (error) {
