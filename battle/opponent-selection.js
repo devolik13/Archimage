@@ -17,7 +17,7 @@ async function getOpponentsList(playerRating, count = 4) {
         // Получаем всех игроков (включая ботов), отсортированных по рейтингу
         const { data, error } = await window.dbManager.supabase
             .from('players')
-            .select('telegram_id, username, rating, level, wins, losses, faction, wizards, spells, formation, buildings')
+            .select('id, telegram_id, username, rating, level, wins, losses, faction, wizards, spells, formation, buildings')
             .order('rating', { ascending: true });
 
         if (error) {
