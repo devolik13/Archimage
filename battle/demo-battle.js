@@ -340,10 +340,12 @@ function endCinematic() {
             window.showGameArea();
         }
 
-        // НОВОЕ: Запускаем обучение если игрок новый
-        if (window.userData && !window.userData.tutorial_completed && window.tutorialSystem) {
-            console.log('🎓 Запуск обучения после демо-боя');
-            window.tutorialSystem.start();
+        // Показываем приветственное сообщение для новых игроков
+        if (window.userData && !window.userData.welcome_shown) {
+            console.log('👋 Показываем приветственное сообщение');
+            setTimeout(() => {
+                showWelcomeMessage();
+            }, 500);
         }
     }, CINEMATIC_CONFIG.fadeOutDuration);
 }
@@ -403,9 +405,104 @@ function closeDemoBattle() {
     console.log('🧹 Кинематографическая сцена завершена');
 }
 
+// Показать приветственное сообщение для новых игроков
+function showWelcomeMessage() {
+    const modal = document.createElement('div');
+    modal.id = 'welcome-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+
+    modal.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            color: white;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        ">
+            <div style="font-size: 60px; margin-bottom: 20px;">⚔️</div>
+
+            <h2 style="
+                margin: 0 0 30px 0;
+                font-size: 24px;
+                color: #fff;
+            ">
+                Добро пожаловать, маг!
+            </h2>
+
+            <div style="
+                background: rgba(255,255,255,0.1);
+                padding: 25px;
+                border-radius: 10px;
+                margin: 20px 0;
+                font-size: 18px;
+                line-height: 1.8;
+            ">
+                Строить можно одновременно<br>
+                <strong>одно здание</strong><br>
+                и изучать<br>
+                <strong>одно заклинание</strong>.<br><br>
+                Не забывай ускорять.<br><br>
+                <span style="color: #ffd700; font-weight: bold; font-size: 20px;">
+                    Выбирай мудро!
+                </span>
+            </div>
+
+            <button onclick="closeWelcomeMessage()" style="
+                width: 100%;
+                margin-top: 20px;
+                padding: 15px;
+                border: none;
+                border-radius: 10px;
+                background: rgba(255,255,255,0.2);
+                backdrop-filter: blur(10px);
+                color: white;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 18px;
+                transition: all 0.3s;
+            " onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+               onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                Понятно
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+}
+
+function closeWelcomeMessage() {
+    const modal = document.getElementById('welcome-modal');
+    if (modal) {
+        modal.remove();
+    }
+
+    // Отмечаем что сообщение показано
+    if (window.userData) {
+        window.userData.welcome_shown = true;
+        if (window.dbManager) {
+            window.dbManager.markChanged();
+        }
+    }
+}
+
 // Экспорт функций
 window.startDemoBattle = startDemoBattle;
 window.closeDemoBattle = closeDemoBattle;
+window.closeWelcomeMessage = closeWelcomeMessage;
 
 // Удобная консольная команда
 window.demo = function(faction = 'fire') {

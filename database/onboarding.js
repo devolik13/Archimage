@@ -79,21 +79,21 @@ async function selectFaction(faction) {
                     formation: [null, null, null, null, null],
                     buildings: initialBuildings,
                     time_currency: 300, // 5 часов стартового времени
-                    tutorial_completed: false
+                    welcome_shown: false
                 })
                 .eq('id', window.dbManager.currentPlayer.id);
-            
+
             if (error) throw error;
-            
+
             console.log('✅ Начальные данные сохранены в БД');
-            
+
             // Обновляем локальные данные
             window.dbManager.currentPlayer.faction = faction;
             window.dbManager.currentPlayer.wizards = initialWizards;
             window.dbManager.currentPlayer.spells = initialSpells;
             window.dbManager.currentPlayer.buildings = initialBuildings;
             window.dbManager.currentPlayer.time_currency = 300;
-            window.dbManager.currentPlayer.tutorial_completed = false;
+            window.dbManager.currentPlayer.welcome_shown = false;
 
             // Создаём window.userData для совместимости со старым кодом
             window.userData = {
@@ -108,8 +108,7 @@ async function selectFaction(faction) {
                 spells: initialSpells,
                 formation: [null, null, null, null, null],
                 constructions: [],
-                tutorial_completed: false,
-                tutorial_step: 0
+                welcome_shown: false
             };
             
             // Скрываем экран выбора фракции

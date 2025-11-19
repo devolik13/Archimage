@@ -289,11 +289,6 @@ function handleBuildingClick(buildingId, buildingData) {
         }
     } else {
         // Слот пустой - показываем меню строительства
-        // НО: Во время обучения не показываем модальное окно
-        if (window.tutorialSystem && window.tutorialSystem.isActive && window.tutorialSystem.currentStep === 1) {
-            console.log('🎓 Обучение активно - модальное окно заблокировано');
-            return;
-        }
         showBuildingConstructionMenu(buildingId);
     }
 }

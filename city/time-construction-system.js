@@ -83,11 +83,6 @@ async function startConstruction(buildingId, cellIndex, isUpgrade = false, targe
     }
     window.userData.constructions.push(construction);
 
-    // НОВОЕ: Уведомляем tutorial system о начале строительства библиотеки
-    if (buildingId === 'library' && window.tutorialSystem) {
-        window.tutorialSystem.onLibraryBuildStarted();
-    }
-
     // ============ НОВЫЙ КОД: ДОБАВЛЯЕМ ВИЗУАЛИЗАЦИЮ МОЛОТКА ============
     // Показываем молоток в правильной позиции на здании
     if (!isUpgrade && window.addConstructionVisualization) {
@@ -134,11 +129,6 @@ async function startSpellLearning(spellId, faction, tier, currentLevel) {
         window.userData.constructions = [];
     }
     window.userData.constructions.push(construction);
-
-    // НОВОЕ: Уведомляем tutorial system о начале изучения заклинания
-    if (window.tutorialSystem) {
-        window.tutorialSystem.onSpellLearningStarted();
-    }
 
     updateConstructionUI();
     await saveConstruction();
@@ -361,11 +351,6 @@ function speedupConstruction(constructionIndex) {
     }
     
     if (window.useTimeCurrency(cost, () => {
-        // НОВОЕ: Уведомляем tutorial system об ускорении библиотеки
-        if (construction.building_id === 'library' && window.tutorialSystem) {
-            window.tutorialSystem.onLibrarySpedUp();
-        }
-
         completeConstruction(constructionIndex);
         updateConstructionUI();
         updateAllConstructionTimers();
@@ -500,12 +485,6 @@ function updateAllConstructionTimers() {
     
     constructions.forEach((construction, index) => {
         if (construction.time_remaining > 0) {
-            // НОВОЕ: Проверяем заморожен ли таймер (для обучения)
-            if (window.tutorialSystem && window.tutorialSystem.isFrozen(construction.building_id)) {
-                console.log(`❄️ Таймер ${construction.building_id} заморожен (обучение)`);
-                return; // Пропускаем обновление времени
-            }
-
             const elapsed = Math.floor((Date.now() - construction.started_at) / 60000);
             construction.time_remaining = Math.max(0, construction.time_required - elapsed);
 
