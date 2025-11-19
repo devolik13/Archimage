@@ -937,10 +937,11 @@ function checkBattleEnd() {
                 window.playerWizards.forEach(battleWizard => {
                     const originalWizard = window.userData.wizards.find(w => w.id === battleWizard.id);
                     if (originalWizard) {
-                        // Обновляем только опыт и уровень
-                        originalWizard.exp = battleWizard.exp || 0;
+                        // Обновляем только опыт и уровень (ИСПРАВЛЕНО: используем правильные поля)
+                        originalWizard.experience = battleWizard.experience || 0;
                         originalWizard.level = battleWizard.level || 1;
-                        console.log(`💾 PvE: Сохранён опыт для ${originalWizard.name}: ${originalWizard.exp} exp, уровень ${originalWizard.level}`);
+                        originalWizard.exp_to_next = battleWizard.exp_to_next || (typeof window.calculateExpToNext === 'function' ? window.calculateExpToNext(battleWizard.level) : 50);
+                        console.log(`💾 PvE: Сохранён опыт для ${originalWizard.name}: ${originalWizard.experience} exp, уровень ${originalWizard.level}`);
                     }
                 });
             }
