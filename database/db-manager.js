@@ -117,7 +117,7 @@ class DatabaseManager {
                 rating: playerData.rating || 1000,
                 pve_progress: playerData.pve_progress || {},
                 settings: playerData.settings || { sound: true, language: 'ru', battle_speed: 'normal' },
-                tutorial_completed: playerData.tutorial_completed || false,
+                welcome_shown: playerData.welcome_shown || false,
                 daily_login: playerData.daily_login || { day: 1, last_login_date: null, last_reward_date: null, total_logins: 0 }, // НОВОЕ: Ежедневные награды
                 last_login: new Date().toISOString() // Обновляем время последнего входа
             };
@@ -266,7 +266,7 @@ class DatabaseManager {
                     rating: window.userData.rating,
                     pve_progress: window.userData.pve_progress,
                     settings: window.userData.settings,
-                    tutorial_completed: window.userData.tutorial_completed,
+                    welcome_shown: window.userData.welcome_shown,
                     daily_login: window.userData.daily_login
                 };
                 await this.savePlayer(playerData);
@@ -304,7 +304,7 @@ class DatabaseManager {
                     rating: window.userData.rating,
                     pve_progress: window.userData.pve_progress,
                     settings: window.userData.settings,
-                    tutorial_completed: window.userData.tutorial_completed,
+                    welcome_shown: window.userData.welcome_shown,
                     daily_login: window.userData.daily_login
                 };
                 await this.savePlayer(playerData);
