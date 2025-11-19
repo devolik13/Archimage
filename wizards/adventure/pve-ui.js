@@ -344,7 +344,7 @@ function startPvELevel(levelId) {
                 max_hp: enemy.hp,
                 max_armor: enemy.armor,
                 spells: enemy.spells || [], // заклинания для элементалей и боссов
-                isPvEEnemy: true,
+                isAdventureEnemy: true, // ИСПРАВЛЕНО: используем правильный флаг
                 pveLevel: levelId
             };
 
