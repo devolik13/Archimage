@@ -48,7 +48,7 @@ function showLibraryMainScreen() {
     
     libraryContainer.innerHTML = `
         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-            <img id="library-image" src="assets/ui/modals/library_template.png" style="max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="Библиотека">
+            <img id="library-image" src="assets/ui/modals/library_template.jpg" style="max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="Библиотека">
             <div id="library-clickable-zones" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
         </div>
     `;
