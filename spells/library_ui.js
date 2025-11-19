@@ -50,16 +50,6 @@ function showLibraryMainScreen() {
         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
             <img id="library-image" src="assets/ui/modals/library_template.jpg" style="max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="Библиотека">
             <div id="library-clickable-zones" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
-
-            <!-- Надпись "Назад" на кнопке -->
-            <div id="library-back-label" style="
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                pointer-events: none;
-                text-align: center;
-            "></div>
         </div>
     `;
     
@@ -71,7 +61,6 @@ function showLibraryMainScreen() {
 function setupLibraryClickableZones() {
     const img = document.getElementById('library-image');
     const zonesContainer = document.getElementById('library-clickable-zones');
-    const backLabelDiv = document.getElementById('library-back-label');
     if (!img || !zonesContainer) return;
 
     const originalWidth = 768, originalHeight = 512;
@@ -81,20 +70,6 @@ function setupLibraryClickableZones() {
     zonesContainer.style.width = currentWidth + 'px';
     zonesContainer.style.height = currentHeight + 'px';
     zonesContainer.innerHTML = '';
-
-    // Позиционируем надпись "Назад" точно на кнопке
-    if (backLabelDiv) {
-        const backButtonY = 470; // центр кнопки "Назад" по Y (оригинал 768x512)
-        backLabelDiv.style.width = currentWidth + 'px';
-        backLabelDiv.style.top = (backButtonY * scaleY - currentHeight / 2) + 'px';
-        backLabelDiv.innerHTML = `<div style="
-            margin: 0;
-            font-size: ${Math.max(16, 20 * Math.min(scaleX, scaleY))}px;
-            color: #FFFFFF;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-            font-weight: bold;
-        ">Назад</div>`;
-    }
     
     const zones = [
         { id: 'fire', coords: [55, 130, 220, 260], faction: 'fire' },
@@ -117,14 +92,29 @@ function setupLibraryClickableZones() {
             height: ${(y2 - y1) * scaleY}px;
             cursor: pointer;
             transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         `;
-        
+
+        // Добавляем текст "Назад" прямо в кнопку
+        if (zone.id === 'back') {
+            const fontSize = Math.max(16, 20 * Math.min(scaleX, scaleY));
+            zoneDiv.innerHTML = `<div style="
+                font-size: ${fontSize}px;
+                color: #FFFFFF;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+                font-weight: bold;
+                pointer-events: none;
+            ">Назад</div>`;
+        }
+
         // DEV: Подсветка кликабельных зон
         if (window.DEV_MODE) {
             zoneDiv.addEventListener('mouseenter', () => zoneDiv.style.background = 'rgba(114, 137, 218, 0.3)');
             zoneDiv.addEventListener('mouseleave', () => zoneDiv.style.background = 'transparent');
         }
-        
+
         const clickHandler = () => {
             if (zone.faction) {
                 openSchoolSpells(zone.faction);
@@ -132,7 +122,7 @@ function setupLibraryClickableZones() {
                 closeLibrary();
             }
         };
-        
+
         zoneDiv.addEventListener('click', clickHandler);
         zoneDiv.addEventListener('touchend', (e) => { e.preventDefault(); clickHandler(); });
         zonesContainer.appendChild(zoneDiv);
