@@ -616,21 +616,27 @@ class SummonsManager {
     playDeathAnimation(summonId, onComplete) {
         const visual = this.visuals.get(summonId);
         if (!visual) return;
-        
+
         // Остановить анимацию для спрайтов
         if (visual.stop) visual.stop();
-        
+
         // Падение и исчезновение
         const startY = visual.y;
         const startTime = Date.now();
         const duration = 500;
-        
+
         const animate = () => {
+            // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+            if (!visual || visual.destroyed || !visual.transform) {
+                if (onComplete) onComplete();
+                return;
+            }
+
             const progress = Math.min((Date.now() - startTime) / duration, 1);
             visual.y = startY + progress * 20;
             visual.alpha = 1 - progress;
             visual.rotation = progress * 0.5;
-            
+
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
@@ -778,11 +784,11 @@ window.cleanupDeadSummons = function() {
 // Адаптер для создания волка через новую систему
 window.createWolfSummon = function(wizard, casterType, position, level) {
     const wolfStats = [
-        { hp: 20, damage: 10 },   // Ур.1
-        { hp: 25, damage: 12 },   // Ур.2
-        { hp: 30, damage: 14 },   // Ур.3
-        { hp: 35, damage: 16 },   // Ур.4
-        { hp: 40, damage: 16 }    // Ур.5
+        { hp: 10, damage: 10 },   // Ур.1
+        { hp: 12, damage: 12 },   // Ур.2
+        { hp: 15, damage: 14 },   // Ур.3
+        { hp: 18, damage: 16 },   // Ур.4
+        { hp: 20, damage: 16 }    // Ур.5
     ];
     
     const stats = wolfStats[Math.min(level, 5) - 1] || wolfStats[0];

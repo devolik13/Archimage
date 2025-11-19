@@ -9,35 +9,33 @@ let blockConstructionModalReopen = false;
 // Проверка активных строек
 function hasActiveConstruction(type = 'building') {
     const constructions = window.userData.constructions || [];
-    
-    // Проверяем есть ли ЛЮБАЯ стройка или найм
+
+    // Проверяем есть ли ЛЮБАЯ стройка или улучшение (НЕ заклинания и НЕ маги!)
+    // Маги теперь независимы от зданий!
     if (type === 'any_building_or_wizard') {
-        return constructions.some(c => 
-            (c.type === 'building' || c.type === 'wizard') && 
-            !c.is_upgrade && // не считаем улучшения
+        return constructions.some(c =>
+            c.type === 'building' &&
             c.time_remaining > 0
         );
     }
-    
+
     // Проверяем конкретный тип
     return constructions.some(c => c.type === type && c.time_remaining > 0);
 }
 
 // Начать строительство
-async function startConstruction(buildingId, cellIndex, isUpgrade = false, targetLevel = 1) {
-    // Проверяем, нет ли уже активной стройки ИЛИ найма
+async function startConstruction(buildingId, cellIndex, isUpgrade = false, targetLevel = 1, skipModal = false) {
+    // Проверяем, нет ли уже активной стройки (маги больше не блокируют!)
     if (hasActiveConstruction('any_building_or_wizard')) {
         // Определяем, что именно идет
         const constructions = window.userData.constructions || [];
-        const activeConstruction = constructions.find(c => 
-            (c.type === 'building' || c.type === 'wizard') && 
+        const activeConstruction = constructions.find(c =>
+            c.type === 'building' &&
             c.time_remaining > 0
         );
-        
+
         if (activeConstruction) {
-            if (activeConstruction.type === 'wizard') {
-                alert('⚠️ Нельзя строить пока идет найм мага!');
-            } else if (activeConstruction.is_upgrade) {
+            if (activeConstruction.is_upgrade) {
                 alert('⚠️ Нельзя строить пока идет улучшение другого здания!');
             } else {
                 alert('⚠️ Можно строить только одно здание одновременно!');
@@ -45,10 +43,29 @@ async function startConstruction(buildingId, cellIndex, isUpgrade = false, targe
         }
         return false;
     }
-   
-    const timeRequired = isUpgrade ? 
-        CONSTRUCTION_TIME.getUpgradeTime(buildingId, targetLevel) : 
+
+    const timeRequired = isUpgrade ?
+        CONSTRUCTION_TIME.getUpgradeTime(buildingId, targetLevel) :
         CONSTRUCTION_TIME[buildingId];
+
+    // НОВОЕ: Показываем модальное окно информации перед строительством (если не skipModal)
+    if (!skipModal && typeof window.showBuildingInfoModal === 'function') {
+        const currentLevel = window.userData.buildings?.[buildingId]?.level || 0;
+
+        window.showBuildingInfoModal(
+            buildingId,
+            currentLevel,
+            targetLevel,
+            isUpgrade,
+            timeRequired,
+            () => {
+                // Callback при подтверждении - вызываем строительство с skipModal=true
+                startConstruction(buildingId, cellIndex, isUpgrade, targetLevel, true);
+            }
+        );
+
+        return false; // Возвращаем false т.к. строительство еще не началось
+    }
     
     const construction = {
         type: 'building',
@@ -65,7 +82,7 @@ async function startConstruction(buildingId, cellIndex, isUpgrade = false, targe
         window.userData.constructions = [];
     }
     window.userData.constructions.push(construction);
-    
+
     // ============ НОВЫЙ КОД: ДОБАВЛЯЕМ ВИЗУАЛИЗАЦИЮ МОЛОТКА ============
     // Показываем молоток в правильной позиции на здании
     if (!isUpgrade && window.addConstructionVisualization) {
@@ -112,9 +129,18 @@ async function startSpellLearning(spellId, faction, tier, currentLevel) {
         window.userData.constructions = [];
     }
     window.userData.constructions.push(construction);
-    
+
     updateConstructionUI();
     await saveConstruction();
+
+    // НОВОЕ: Добавляем визуализацию исследования на библиотеке
+    if (window.addSpellResearchVisualization) {
+        console.log('📚 Добавляем визуализацию исследования на библиотеке');
+        setTimeout(() => {
+            window.addSpellResearchVisualization();
+        }, 100);
+    }
+
     return true;
 }
 
@@ -331,7 +357,7 @@ function speedupConstruction(constructionIndex) {
         if (typeof window.showNotification === 'function') {
             window.showNotification(`⚡ Строительство ускорено за ${formatTimeCurrency(cost)}`);
         }
-        
+
         // Разблокируем через 500ms
         setTimeout(() => {
             blockConstructionModalReopen = false;
@@ -461,7 +487,7 @@ function updateAllConstructionTimers() {
         if (construction.time_remaining > 0) {
             const elapsed = Math.floor((Date.now() - construction.started_at) / 60000);
             construction.time_remaining = Math.max(0, construction.time_required - elapsed);
-            
+
             if (construction.time_remaining === 0) {
                 completeConstruction(index);
                 hasChanges = true;
@@ -648,7 +674,13 @@ async function completeConstruction(constructionIndex) {
 
             // Просто показываем уведомление
             if (typeof Notification !== 'undefined' && Notification.show) { Notification.show('✅ Улучшение завершено!', 'success'); }
-	
+
+            // ИСПРАВЛЕНИЕ: Обновляем UI времени если улучшили генератор времени
+            if (construction.building_id === 'time_generator' && typeof window.createTimeCurrencyUI === 'function') {
+                window.createTimeCurrencyUI();
+                console.log('⏰ UI времени обновлен после улучшения генератора');
+            }
+
 	    if (window.userData?.faction) {
 	        const container = document.getElementById('city-background-container');
     		if (container && window.createBuildingClickZones) {

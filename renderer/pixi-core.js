@@ -4,6 +4,7 @@ console.log('✅ pixi-core.js загружен');
 // Глобальные переменные рендерера
 let pixiApp = null;
 let battleContainer = null;
+let gridContainer = null;
 let effectsContainer = null;
 let unitsContainer = null;
 let gridCells = [];
@@ -60,6 +61,18 @@ function initPixiBattle() {
         container.innerHTML = ''; // Очищаем перед добавлением
         container.appendChild(pixiApp.view);
         console.log('✅ Canvas добавлен в контейнер');
+
+        // Добавляем обработчик клика на canvas для закрытия лога боя
+        pixiApp.view.addEventListener('click', () => {
+            const logPanel = document.getElementById('battle-log-panel');
+            if (logPanel && logPanel.style.display !== 'none' && logPanel.style.right === '0px') {
+                // Лог открыт - закрываем его
+                if (typeof window.toggleBattleLog === 'function') {
+                    window.toggleBattleLog();
+                }
+            }
+        });
+        console.log('✅ Обработчик клика на canvas добавлен (закрытие лога)');
     } else {
         console.error('❌ Контейнер для PIXI не найден');
         return;

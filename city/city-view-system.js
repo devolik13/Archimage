@@ -784,9 +784,11 @@ function showBuildingSelectionMenu() {
 // Закрыть модальное окно строительства
 function closeBuildingModal() {
     const modal = document.getElementById('building-selection-modal');
-    const overlay = document.getElementById('modal-overlay');
     if (modal) modal.remove();
-    if (overlay) overlay.remove();
+
+    // ИСПРАВЛЕНИЕ: Удаляем ВСЕ overlay-и с id='modal-overlay', а не только первый
+    const overlays = document.querySelectorAll('[id="modal-overlay"]');
+    overlays.forEach(overlay => overlay.remove());
 }
 
 // Построить здание - ОБНОВЛЁННАЯ ВЕРСИЯ
@@ -1075,6 +1077,9 @@ if (window.Telegram && window.Telegram.WebApp) {
 
 // Экспортируем функции в глобальную область
 window.initCityViewSystem = initCityViewSystem;
+window.initCityView = initCityViewSystem; // Алиас для обратной совместимости
+window.switchToCityView = switchToCityView;
+window.loadBuildingImageNew = loadBuildingImageNew;
 window.buildNewBuilding = buildNewBuilding;
 window.showBuildingSelectionMenu = showBuildingSelectionMenu;
 window.closeBuildingModal = closeBuildingModal;

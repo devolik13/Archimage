@@ -145,15 +145,18 @@ console.log('✅ fire-wall.js загружен');
             // Анимация пламени
             let time = 0;
             const animate = () => {
-                if (!container.parent) return;
-                
+                // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+                if (!container || container.destroyed || !container.transform || !container.parent) {
+                    return;
+                }
+
                 time += 0.15;
                 flames.forEach((flame, i) => {
                     flame.scale.y = 1 + Math.sin(time + i * 0.5) * 0.3;
                     flame.alpha = 0.6 + Math.sin(time * 2 + i) * 0.3;
                     flame.y = Math.sin(time + i) * 5;
                 });
-                
+
                 requestAnimationFrame(animate);
             };
             animate();

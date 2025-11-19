@@ -60,11 +60,19 @@ async function showBattleField() {
         if (!window.userData) {
             throw new Error('userData не инициализирован');
         }
-        console.log('📦 Загрузка расстановки из userData:', window.userData.formation);
-        window.playerFormation = window.userData.formation || [null, null, null, null, null];
-        window.playerWizards = window.userData.wizards || [];
-        console.log('⚔️ Расстановка игрока:', window.playerFormation);
-        console.log('🧙 Маги игрока:', window.playerWizards.length);
+
+        // НОВОЕ: Для PvE данные игрока уже настроены (копии) в pve-ui.js, не перезаписываем
+        if (window.isPvEBattle && window.playerFormation && window.playerWizards && window.playerWizards.length > 0) {
+            console.log('✅ PvE бой: данные игрока уже настроены (копии), пропускаем загрузку');
+            console.log('⚔️ Расстановка игрока:', window.playerFormation);
+            console.log('🧙 Маги игрока:', window.playerWizards.length);
+        } else {
+            console.log('📦 Загрузка расстановки из userData:', window.userData.formation);
+            window.playerFormation = window.userData.formation || [null, null, null, null, null];
+            window.playerWizards = window.userData.wizards || [];
+            console.log('⚔️ Расстановка игрока:', window.playerFormation);
+            console.log('🧙 Маги игрока:', window.playerWizards.length);
+        }
 
         // Генерация расстановки противника
         generateEnemyFormation();
@@ -84,33 +92,73 @@ async function showBattleField() {
 
 function generateEnemyFormation() {
     console.log('🤖 Генерация расстановки противника');
+
+    // НОВОЕ: Для PvE враги уже настроены в pve-ui.js, не перезаписываем их
+    if (window.isPvEBattle && window.enemyFormation && window.enemyWizards && window.enemyWizards.length > 0) {
+        console.log('✅ PvE бой: враги уже настроены, пропускаем генерацию');
+        console.log(`   Враги: ${window.enemyWizards.length} шт.`);
+        return;
+    }
+
     window.enemyFormation = [null, null, null, null, null];
-    const playerWizardsCopy = [...window.playerWizards];
-    if (playerWizardsCopy.length > 0) {
-        for (let i = 0; i < Math.min(3, playerWizardsCopy.length); i++) {
-            if (window.playerFormation[i]) {
-                const playerWizard = playerWizardsCopy.find(w => w.id === window.playerFormation[i]);
-                if (playerWizard) {
-                    window.enemyFormation[i] = {
-                        ...playerWizard,
-                        id: `enemy_${playerWizard.id}`,
-                        name: `Тень ${playerWizard.name}`,
-                        spells: playerWizard.spells, // ВАЖНО: копируем заклинания
-                        hp: playerWizard.hp,
-                        max_hp: playerWizard.max_hp,
-                        armor: playerWizard.armor,
-                        max_armor: playerWizard.max_armor,
+    window.enemyWizards = [];
+
+    // Проверяем наличие выбранного противника из базы данных
+    if (window.selectedOpponent && window.selectedOpponent.wizards && window.selectedOpponent.formation) {
+        console.log('✅ Загрузка реального противника из БД:', window.selectedOpponent.username);
+        console.log('📦 Маги противника:', window.selectedOpponent.wizards);
+        console.log('📋 Расстановка противника:', window.selectedOpponent.formation);
+
+        const opponentWizards = window.selectedOpponent.wizards || [];
+        const opponentFormation = window.selectedOpponent.formation || [null, null, null, null, null];
+
+        // Создаем врагов на основе расстановки противника
+        opponentFormation.forEach((wizardId, position) => {
+            if (wizardId) {
+                const opponentWizard = opponentWizards.find(w => w.id === wizardId);
+                if (opponentWizard) {
+                    window.enemyFormation[position] = {
+                        ...opponentWizard,
+                        id: `enemy_${opponentWizard.id}`,
+                        original_id: opponentWizard.id, // Сохраняем оригинальный ID
+                        spells: opponentWizard.spells || [],
                         effects: {}
                     };
-                    console.log('Враг создан:', {
-                        name: window.enemyFormation[i].name,
-                        spells: window.enemyFormation[i].spells
-                    });
+                    console.log(`   Позиция ${position}: ${opponentWizard.name} (${opponentWizard.spells?.length || 0} заклинаний)`);
+                }
+            }
+        });
+
+        window.enemyWizards = window.enemyFormation.filter(w => w !== null);
+        console.log(`✅ Загружено ${window.enemyWizards.length} магов противника из БД`);
+
+    } else {
+        // FALLBACK: Создаем зеркало игрока (для тестирования)
+        console.warn('⚠️ Противник не выбран, создаём зеркало игрока');
+        const playerWizardsCopy = [...window.playerWizards];
+        if (playerWizardsCopy.length > 0) {
+            for (let i = 0; i < Math.min(3, playerWizardsCopy.length); i++) {
+                if (window.playerFormation[i]) {
+                    const playerWizard = playerWizardsCopy.find(w => w.id === window.playerFormation[i]);
+                    if (playerWizard) {
+                        window.enemyFormation[i] = {
+                            ...playerWizard,
+                            id: `enemy_${playerWizard.id}`,
+                            name: `Тень ${playerWizard.name}`,
+                            spells: playerWizard.spells,
+                            hp: playerWizard.hp,
+                            max_hp: playerWizard.max_hp,
+                            armor: playerWizard.armor,
+                            max_armor: playerWizard.max_armor,
+                            effects: {}
+                        };
+                    }
                 }
             }
         }
+        window.enemyWizards = window.enemyFormation.filter(w => w !== null);
+        console.log(`⚠️ Создано ${window.enemyWizards.length} зеркальных магов`);
     }
-    window.enemyWizards = window.enemyFormation.filter(w => w !== null);
 }
 
 // --- Очистка устаревших стен ---
@@ -133,6 +181,10 @@ function cleanupOldWalls() {
 // --- Начало боя ---
 function startBattle() {
     console.log('🔥 Начало боя');
+
+    // ЭНЕРГИЯ УЖЕ СПИСАНА при выборе противника в opponent-selection.js
+    // Это предотвращает эксплойт с отменой боя
+
     window.battleState = 'active';
     window.battleLog = [];
     window.playerMageIndex = 0;
@@ -372,16 +424,22 @@ function initializeWizardHealth() {
         }
     });
 
-    window.playerFormation.forEach((wizardId, index) => {
-        if (wizardId) {
-            const wizard = window.playerWizards.find(w => w.id === wizardId);
-            if (wizard) wizard.effects = wizard.effects || {};
-        }
-    });
+    // Инициализируем эффекты для магов игрока
+    if (window.playerFormation && Array.isArray(window.playerFormation)) {
+        window.playerFormation.forEach((wizardId, index) => {
+            if (wizardId) {
+                const wizard = window.playerWizards.find(w => w.id === wizardId);
+                if (wizard) wizard.effects = wizard.effects || {};
+            }
+        });
+    }
 
-    window.enemyFormation.forEach((wizard, index) => {
-        if (wizard) wizard.effects = wizard.effects || {};
-    });
+    // Инициализируем эффекты для врагов
+    if (window.enemyFormation && Array.isArray(window.enemyFormation)) {
+        window.enemyFormation.forEach((wizard, index) => {
+            if (wizard) wizard.effects = wizard.effects || {};
+        });
+    }
 }
 
 // НОВОЕ: Обработка регенерации от благословений
@@ -717,6 +775,9 @@ function executeEnemyPhase(mageCount) {
 
 // --- Проверка окончания боя ---
 function checkBattleEnd() {
+    // ВАЖНО: Сохраняем флаг PvE в начале, чтобы избежать race conditions
+    const isPvEBattle = window.isPvEBattle || false;
+
     const playerAlive = window.playerFormation.some((wizardId, index) => {
         if (wizardId) {
             const wizard = window.playerWizards.find(w => w.id === wizardId);
@@ -795,9 +856,55 @@ function checkBattleEnd() {
             }
         }
 
-        // Если это приключение и игрок победил
-        if (window.currentAdventureLevel && !enemyAlive && playerAlive) {
-            const level = window.ADVENTURE_LEVELS.find(l => l.id === window.currentAdventureLevel);
+        // Если это PvE приключение и игрок победил
+        if (window.currentPvELevel && !enemyAlive && playerAlive) {
+            const level = window.CHAPTER_1_LEVELS?.find(l => l.id === window.currentPvELevel);
+            if (level) {
+                // Сохраняем прогресс
+                const progress = window.loadPvEProgress();
+                if (!progress.chapter1.completed) {
+                    progress.chapter1.completed = {};
+                }
+                progress.chapter1.completed[window.currentPvELevel] = true;
+
+                // Открываем следующий уровень
+                if (window.currentPvELevel >= progress.chapter1.maxLevel) {
+                    progress.chapter1.maxLevel = window.currentPvELevel + 1;
+                }
+
+                window.savePvEProgress(progress);
+
+                // Даём награду временем (если есть)
+                if (level.reward) {
+                    const timeRewardDays = level.reward; // в днях
+                    const timeRewardSeconds = timeRewardDays * 24 * 60 * 60; // конвертируем дни в секунды
+                    if (typeof window.addTimeCurrency === 'function') {
+                        window.addTimeCurrency(timeRewardSeconds);
+                        if (typeof window.addToBattleLog === 'function') {
+                            const daysText = timeRewardDays === 1 ? 'день' : (timeRewardDays < 5 ? 'дня' : 'дней');
+                            window.addToBattleLog(`⏰ Получено: ${timeRewardDays} ${daysText} времени!`);
+                        }
+                    }
+                }
+
+                // Логируем прохождение
+                if (typeof window.addToBattleLog === 'function') {
+                    window.addToBattleLog(`🎉 Уровень ${window.currentPvELevel} пройден!`);
+                    if (window.currentPvELevel < 50) {
+                        window.addToBattleLog(`✅ Открыт уровень ${window.currentPvELevel + 1}`);
+                    } else {
+                        window.addToBattleLog(`👑 Поздравляем! Глава 1 пройдена!`);
+                    }
+                }
+            }
+
+            // Очищаем флаг PvE боя
+            window.currentPvELevel = null;
+            window.isPvEBattle = false;
+        }
+        // Старая система приключений (для обратной совместимости)
+        else if (window.currentAdventureLevel && !enemyAlive && playerAlive) {
+            const level = window.ADVENTURE_LEVELS?.find(l => l.id === window.currentAdventureLevel);
             if (level) {
                 // Даём награды
                 const aliveWizards = window.playerFormation
@@ -822,13 +929,28 @@ function checkBattleEnd() {
 
         // ИСПРАВЛЕНО: Сохраняем опыт магов через Supabase вместо localhost
         if (window.userData && window.playerWizards) {
-            window.userData.wizards = window.playerWizards;
+            if (!isPvEBattle) {
+                // Для PvP сохраняем всё
+                window.userData.wizards = window.playerWizards;
+            } else {
+                // Для PvE сохраняем ТОЛЬКО опыт и уровень, но не HP и эффекты
+                window.playerWizards.forEach(battleWizard => {
+                    const originalWizard = window.userData.wizards.find(w => w.id === battleWizard.id);
+                    if (originalWizard) {
+                        // Обновляем только опыт и уровень (ИСПРАВЛЕНО: используем правильные поля)
+                        originalWizard.experience = battleWizard.experience || 0;
+                        originalWizard.level = battleWizard.level || 1;
+                        originalWizard.exp_to_next = battleWizard.exp_to_next || (typeof window.calculateExpToNext === 'function' ? window.calculateExpToNext(battleWizard.level) : 50);
+                        console.log(`💾 PvE: Сохранён опыт для ${originalWizard.name}: ${originalWizard.experience} exp, уровень ${originalWizard.level}`);
+                    }
+                });
+            }
         }
 
         // Определяем результат и награды для сохранения
         let battleResult = 'draw';
         let rewards = { exp: 0 };
-        let opponentLevel = 1; // TODO: получить реальный уровень противника
+        let opponentLevel = window.selectedOpponent?.level || 1;
         let ratingChange = 0;
 
         if (!playerAlive && !enemyAlive) {
@@ -837,22 +959,21 @@ function checkBattleEnd() {
             battleResult = 'loss';
         } else if (!enemyAlive) {
             battleResult = 'win';
-            // TODO: посчитать полученный опыт и другие награды
         }
 
-        // Рассчитываем изменение рейтинга
-        if (typeof window.calculateRatingChange === 'function') {
+        // Рассчитываем изменение рейтинга ТОЛЬКО ДЛЯ PvP
+        if (!isPvEBattle && typeof window.calculateRatingChange === 'function') {
             const playerRating = window.userData?.rating || 1000;
-            // TODO: получить реальный рейтинг противника из данных боя
-            // Пока используем случайный AI рейтинг близкий к игроку
-            const opponentRating = playerRating + Math.floor(Math.random() * 200) - 100;
+            // Используем реальный рейтинг противника из selectedOpponent
+            const opponentRating = window.selectedOpponent?.rating || playerRating;
 
             ratingChange = window.calculateRatingChange(playerRating, opponentRating, battleResult);
             console.log(`📊 Изменение рейтинга: ${playerRating} → ${playerRating + ratingChange} (${ratingChange > 0 ? '+' : ''}${ratingChange})`);
+            console.log(`   Противник: ${window.selectedOpponent?.username || 'AI'} (${opponentRating})`);
         }
 
-        // Триггер события завершения боя (вызовет немедленное сохранение)
-        if (typeof window.onBattleCompleted === 'function') {
+        // Триггер события завершения боя ТОЛЬКО ДЛЯ PvP (вызовет немедленное сохранение)
+        if (!isPvEBattle && typeof window.onBattleCompleted === 'function') {
             window.onBattleCompleted(battleResult, rewards, opponentLevel, ratingChange);
         }
 
@@ -873,8 +994,8 @@ function checkBattleEnd() {
             window.updateBattleField();
         }
 
-        // Показываем экран результатов боя
-        if (typeof window.showBattleResult === 'function') {
+        // Показываем экран результатов боя ТОЛЬКО ДЛЯ PvP
+        if (!isPvEBattle && typeof window.showBattleResult === 'function') {
             const opponent = window.selectedOpponent || {};
             const battleData = {
                 opponentName: opponent.username || 'Противник',
@@ -887,6 +1008,28 @@ function checkBattleEnd() {
             // Показываем с небольшой задержкой для визуального эффекта
             setTimeout(() => {
                 window.showBattleResult(battleResult, battleData);
+            }, 1000);
+        }
+
+        // Для PvE показываем простое сообщение
+        if (isPvEBattle) {
+            setTimeout(() => {
+                if (battleResult === 'win') {
+                    alert('🎉 Победа! Вы прошли уровень!');
+                } else if (battleResult === 'loss') {
+                    alert('💀 Поражение! Попробуйте еще раз.');
+                } else {
+                    alert('⚔️ Ничья!');
+                }
+
+                // Очищаем флаги PvE
+                window.isPvEBattle = false;
+                window.currentPvELevel = null;
+
+                // Возвращаемся в город
+                if (typeof window.returnToCity === 'function') {
+                    window.returnToCity();
+                }
             }, 1000);
         }
 

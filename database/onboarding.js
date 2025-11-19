@@ -39,19 +39,37 @@ function getFactionName(faction) {
 async function selectFaction(faction) {
     console.log('Выбрана фракция:', faction);
     
+    // Определяем родное заклинание фракции
+    const factionSpellMap = {
+        "fire": "spark",
+        "water": "icicle",
+        "wind": "gust",
+        "earth": "pebble",
+        "nature": "call_wolf",
+        "poison": "poisoned_blade"
+    };
+
+    const factionSpell = factionSpellMap[faction];
+
+    // Выбираем случайное второе заклинание tier 1 (не родное)
+    const allTier1Spells = ["spark", "icicle", "gust", "pebble", "call_wolf", "poisoned_blade"];
+    const otherSpells = allTier1Spells.filter(spell => spell !== factionSpell);
+    const randomSecondSpell = otherSpells[Math.floor(Math.random() * otherSpells.length)];
+
     // Создаём начальные данные игрока
+    // Маг сразу с прикрепленным родным заклинанием + случайное второе заклинание tier 1
     const initialWizards = [{
         id: 'wizard_1',
         name: 'Начальный маг',
         faction: faction,
-        spells: [],
+        spells: [factionSpell, randomSecondSpell], // Родное + случайное tier 1
         hp: 100,
         armor: 100,
         max_hp: 100,
         max_armor: 100,
         level: 1
     }];
-    
+
     const initialSpells = {
         "fire": { "spark": { name: "Искра", level: 1, tier: 1 } },
         "water": { "icicle": { name: "Ледышка", level: 1, tier: 1 } },
@@ -61,42 +79,57 @@ async function selectFaction(faction) {
         "poison": { "poisoned_blade": { name: "Отравленный клинок", level: 1, tier: 1 } }
     };
     
+    // Стартовые здания: Башня магов и Генератор времени
+    const initialBuildings = {
+        wizard_tower: { level: 1, building_id: 'wizard_tower' },
+        time_generator: { level: 1, building_id: 'time_generator' }
+    };
+
     // Сохраняем ВСЁ в Supabase
     if (window.dbManager && window.dbManager.currentPlayer) {
         try {
+            // Автоматическая расстановка первого мага в первую позицию
+            const initialFormation = ['wizard_1', null, null, null, null];
+
             const { error } = await window.dbManager.supabase
                 .from('players')
                 .update({
                     faction: faction,
                     wizards: initialWizards,
                     spells: initialSpells,
-                    formation: [null, null, null, null, null],
-                    buildings: {}
+                    formation: initialFormation,
+                    buildings: initialBuildings,
+                    time_currency: 300, // 5 часов стартового времени
+                    welcome_shown: false
                 })
                 .eq('id', window.dbManager.currentPlayer.id);
-            
+
             if (error) throw error;
-            
+
             console.log('✅ Начальные данные сохранены в БД');
-            
+
             // Обновляем локальные данные
             window.dbManager.currentPlayer.faction = faction;
             window.dbManager.currentPlayer.wizards = initialWizards;
             window.dbManager.currentPlayer.spells = initialSpells;
-            
+            window.dbManager.currentPlayer.buildings = initialBuildings;
+            window.dbManager.currentPlayer.time_currency = 300;
+            window.dbManager.currentPlayer.welcome_shown = false;
+
             // Создаём window.userData для совместимости со старым кодом
             window.userData = {
                 user_id: window.dbManager.currentPlayer.telegram_id,
                 username: window.dbManager.currentPlayer.username,
                 faction: faction,
-                time_currency: window.dbManager.currentPlayer.time_currency,
+                time_currency: 300,
                 level: window.dbManager.currentPlayer.level,
                 experience: window.dbManager.currentPlayer.experience,
-                buildings: {},
+                buildings: initialBuildings,
                 wizards: initialWizards,
                 spells: initialSpells,
-                formation: [null, null, null, null, null],
-                constructions: []
+                formation: initialFormation, // Маг автоматически в первой позиции
+                constructions: [],
+                welcome_shown: false
             };
             
             // Скрываем экран выбора фракции

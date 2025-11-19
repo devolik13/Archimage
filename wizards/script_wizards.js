@@ -329,7 +329,7 @@ function renderSpellsList(spells) {
     `).join('');
 }
 // Назначение заклинания магу
-function assignSpellToWizard(wizardIndex, spellSlotIndex, spellId) {
+async function assignSpellToWizard(wizardIndex, spellSlotIndex, spellId) {
     if (!userData.wizards?.[wizardIndex]) {
         console.error("Маг не найден");
         return;
@@ -339,10 +339,17 @@ function assignSpellToWizard(wizardIndex, spellSlotIndex, spellId) {
     }
     userData.wizards[wizardIndex].spells[spellSlotIndex] = spellId;
     closeCurrentModal();
-    
+
     // Обновляем только слоты заклинаний (без перерисовки всего окна)
     if (typeof window.updateWizardSpellSlots === 'function') {
         window.updateWizardSpellSlots();
+    }
+
+    // ВАЖНО: Сохраняем изменения в БД
+    if (window.eventSaveManager) {
+        await window.eventSaveManager.saveDebounced('wizard_spell_assigned', 1000);
+    } else if (window.dbManager) {
+        window.dbManager.markChanged();
     }
 }
 // Переименование мага
@@ -452,62 +459,49 @@ async function renameWizard(wizardIndex, newName) {
     const wizard = userData.wizards[wizardIndex];
     if (!wizard) return;
     const trimmedName = newName.substring(0, MAX_NAME_LENGTH);
-    // Используем глобальную переменную API_BASE_URL или дефолтное значение
-    const apiUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '';
-    const userIdValue = typeof userId !== 'undefined' ? userId : (userData?.user_id || '');
+
     try {
-        const response = await fetch(`${apiUrl}/api/wizards/rename`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_id: userIdValue,
-                wizard_id: wizard.id,
-                new_name: trimmedName
-            })
-        });
-        const result = await response.json();
-        if (result.success) {
-            userData.wizards[wizardIndex].name = trimmedName;
-            const nameDisplay = document.getElementById('wizard-name-display');
-            if (nameDisplay) {
-                nameDisplay.textContent = trimmedName;
-            }
-            updateWizardsList();
-            showInlineNotification('✅ Переименовано!');
-        } else {
-            alert(`❌ Ошибка: ${result.error || 'Не удалось переименовать'}`);
+        // Обновляем имя локально
+        userData.wizards[wizardIndex].name = trimmedName;
+
+        // Обновляем UI
+        const nameDisplay = document.getElementById('wizard-name-display');
+        if (nameDisplay) {
+            nameDisplay.textContent = trimmedName;
         }
+        updateWizardsList();
+
+        // Сохраняем изменения через event-save-manager
+        if (window.eventSaveManager) {
+            await window.eventSaveManager.saveDebounced('wizard_renamed', 1000);
+        } else if (window.dbManager) {
+            window.dbManager.markChanged();
+        }
+
+        showInlineNotification('✅ Переименовано!');
     } catch (error) {
         console.error('Ошибка переименования:', error);
-        alert('❌ Ошибка сети');
+        alert('❌ Ошибка сохранения');
     }
 }
 // Сохранение заклинаний мага
 async function saveWizardSpells(wizardIndex) {
     const wizard = userData.wizards[wizardIndex];
     if (!wizard) return;
-    // Используем глобальную переменную API_BASE_URL или дефолтное значение
-    const apiUrl = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '';
-    const userIdValue = typeof userId !== 'undefined' ? userId : (userData?.user_id || '');
+
     try {
-        const response = await fetch(`${apiUrl}/api/wizards/update-spells`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user_id: userIdValue,
-                wizard_id: wizard.id,
-                spells: wizard.spells || []
-            })
-        });
-        const result = await response.json();
-        if (result.success) {
-            showInlineNotification('✅ Сохранено!');
-        } else {
-            alert(`❌ Ошибка: ${result.error || 'Не удалось сохранить'}`);
+        // Заклинания уже обновлены в userData.wizards[wizardIndex].spells
+        // Сохраняем изменения через event-save-manager
+        if (window.eventSaveManager) {
+            await window.eventSaveManager.saveDebounced('wizard_spells_updated', 1000);
+        } else if (window.dbManager) {
+            window.dbManager.markChanged();
         }
+
+        showInlineNotification('✅ Сохранено!');
     } catch (error) {
         console.error('Ошибка сохранения:', error);
-        alert('❌ Ошибка сети');
+        alert('❌ Ошибка сохранения');
     }
 }
 // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ

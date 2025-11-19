@@ -454,13 +454,30 @@ function getActionButton(buildingId) {
 // Функция показа меню строительства
 function showBuildingConstructionMenu(buildingId) {
     console.log(`🏗️ Открытие меню строительства для ${buildingId}`);
-    
+
+    // КРИТИЧЕСКИ ВАЖНО: Проверяем config ДО создания overlay!
     const config = window.BUILDINGS_CONFIG[buildingId];
-    if (!config) return;
-    
+    if (!config) {
+        console.warn(`⚠️ Нет конфигурации для здания ${buildingId}, меню не показано`);
+        return;
+    }
+
+    // Получаем информацию о бонусах через систему building-descriptions
+    let levelInfo = '';
+    if (typeof window.getBuildingModalData === 'function') {
+        const modalData = window.getBuildingModalData(buildingId, 0, 1, false);
+        levelInfo = modalData.levelInfo;
+    }
+
+    // Вычисляем стоимость строительства
+    const timeCost = window.CONSTRUCTION_TIME[buildingId] || 1440;
+    const timeCostFormatted = typeof window.formatTimeCurrency === 'function'
+        ? window.formatTimeCurrency(timeCost)
+        : `${timeCost} мин`;
+
     // Закрываем предыдущие модальные окна
     closeAllModals();
-    
+
     // Создаем модальное окно
     const modal = document.createElement('div');
     modal.id = 'construction-modal';
@@ -470,40 +487,98 @@ function showBuildingConstructionMenu(buildingId) {
         left: 50%;
         transform: translate(-50%, -50%);
         background: #2c2c3d;
-        border-radius: 10px;
-        padding: 20px;
+        border-radius: 15px;
+        padding: 25px;
         color: white;
         z-index: 2000;
         box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        min-width: 300px;
+        max-width: 450px;
         animation: modalFadeIn 0.3s ease;
     `;
-    
+
     modal.innerHTML = `
-        <h3 style="margin-top: 0; color: #ffa500;">
-            ${config.emoji} ${config.name}
-        </h3>
-        <p style="color: #aaa;">${config.description}</p>
+        <!-- Заголовок -->
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 50px; margin-bottom: 10px;">${config.emoji}</div>
+            <h2 style="margin: 0; color: #7289da; font-size: 24px;">
+                ${config.name}
+            </h2>
+        </div>
+
+        <!-- Описание -->
+        <div style="background: #3d3d5c; padding: 15px; border-radius: 10px; margin: 15px 0;">
+            <div style="font-size: 14px; color: #ccc; line-height: 1.6;">
+                ${config.description}
+            </div>
+        </div>
+
+        <!-- Бонусы (что даст здание) -->
+        ${levelInfo ? `
+        <div style="background: #3d3d5c; padding: 15px; border-radius: 10px; margin: 15px 0;">
+            <div style="
+                font-size: 12px;
+                color: #ffa500;
+                font-weight: bold;
+                margin-bottom: 8px;
+                text-transform: uppercase;
+            ">
+                Что даст:
+            </div>
+            <div style="font-size: 16px; color: #4ade80; font-weight: bold;">
+                ${levelInfo}
+            </div>
+        </div>
+        ` : ''}
+
+        <!-- Стоимость -->
+        <div style="
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        ">
+            <div style="font-size: 12px; color: #aaa; margin-bottom: 5px;">
+                Время строительства:
+            </div>
+            <div style="font-size: 18px; color: #ffa500; font-weight: bold;">
+                ⏳ ${timeCostFormatted}
+            </div>
+        </div>
+
+        <!-- Кнопки -->
         <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
             <button onclick="closeConstructionModal()" style="
-                padding: 8px 16px;
+                padding: 12px 24px;
                 background: #444;
                 color: white;
                 border: none;
-                border-radius: 5px;
+                border-radius: 8px;
                 cursor: pointer;
-            ">Отмена</button>
+                font-size: 14px;
+                transition: background 0.2s;
+            " onmouseover="this.style.background='#555'"
+               onmouseout="this.style.background='#444'">
+                Отмена
+            </button>
             <button onclick="startBuilding('${buildingId}')" style="
-                padding: 8px 16px;
+                padding: 12px 24px;
                 background: #4CAF50;
                 color: white;
                 border: none;
-                border-radius: 5px;
+                border-radius: 8px;
                 cursor: pointer;
-            ">Построить</button>
+                font-size: 14px;
+                font-weight: bold;
+                transition: background 0.2s;
+            " onmouseover="this.style.background='#45a049'"
+               onmouseout="this.style.background='#4CAF50'">
+                ✅ Построить
+            </button>
         </div>
     `;
-    
+
     // Добавляем затемнение фона
     const overlay = document.createElement('div');
     overlay.id = 'modal-overlay';
@@ -517,7 +592,7 @@ function showBuildingConstructionMenu(buildingId) {
         z-index: 1999;
     `;
     overlay.onclick = closeConstructionModal;
-    
+
     document.body.appendChild(overlay);
     document.body.appendChild(modal);
 }
@@ -525,17 +600,21 @@ function showBuildingConstructionMenu(buildingId) {
 // Закрыть модальное окно строительства
 function closeConstructionModal() {
     const modal = document.getElementById('construction-modal');
-    const overlay = document.getElementById('modal-overlay');
     if (modal) modal.remove();
-    if (overlay) overlay.remove();
+
+    // ИСПРАВЛЕНИЕ: Удаляем ВСЕ overlay-и с id='modal-overlay', а не только первый
+    const overlays = document.querySelectorAll('[id="modal-overlay"]');
+    overlays.forEach(overlay => overlay.remove());
 }
 
 // Закрыть окно информации о здании
 function closeBuildingInfoModal() {
     const modal = document.getElementById('building-info-modal');
-    const overlay = document.getElementById('modal-overlay');
     if (modal) modal.remove();
-    if (overlay) overlay.remove();
+
+    // ИСПРАВЛЕНИЕ: Удаляем ВСЕ overlay-и с id='modal-overlay', а не только первый
+    const overlays = document.querySelectorAll('[id="modal-overlay"]');
+    overlays.forEach(overlay => overlay.remove());
 }
 
 // Закрыть все модальные окна
@@ -550,107 +629,6 @@ function closeAllModals() {
     
     const overlays = document.querySelectorAll('[id*="overlay"]:not(#overlay-zones-container)');
     overlays.forEach(overlay => overlay.remove());
-}
-
-// Начать строительство - ФИНАЛЬНАЯ ВЕРСИЯ без вызова startConstruction
-function startBuilding(buildingId) {
-    console.log(`🏗️ Начинаем строительство ${buildingId}`);
-    
-    // Добавляем здание в данные пользователя
-    if (!window.userData.buildings) {
-        window.userData.buildings = {};
-    }
-    
-    // Закрываем модальное окно
-    closeConstructionModal();
-    
-    // Проверяем есть ли система временной валюты
-    if (window.userData.constructions !== undefined && window.CONSTRUCTION_TIME) {
-        // Проверяем, нет ли уже активной стройки
-        const constructions = window.userData.constructions || [];
-        const hasActive = constructions.some(c => 
-            c.type === 'building' && 
-            c.time_remaining > 0
-        );
-        
-        if (hasActive) {
-            if (window.showNotification) {
-                window.showNotification('⚠️ Можно строить только одно здание одновременно!');
-            }
-            return;
-        }
-        
-        // Добавляем в массив строительств
-        if (!window.userData.constructions) {
-            window.userData.constructions = [];
-        }
-        
-        // Получаем время строительства
-        const timeRequired = window.CONSTRUCTION_TIME ? 
-            (window.CONSTRUCTION_TIME[buildingId] || 144) : 144;
-        
-        // Добавляем новое строительство
-        const construction = {
-            type: 'building',
-            building_id: buildingId,
-            cell_index: null, // Не используем старые ячейки
-            is_upgrade: false,
-            target_level: 1,
-            time_required: timeRequired,
-            time_remaining: timeRequired,
-            started_at: Date.now()
-        };
-        
-        window.userData.constructions.push(construction);
-        
-        // НЕ вызываем updateBuildingsGrid() - это переключит на старую сетку!
-        // Вместо этого только обновляем UI строительства
-        if (window.updateConstructionUI) {
-            window.updateConstructionUI();
-        }
-        
-        // Сохраняем на сервер
-        if (window.saveConstruction) {
-            window.saveConstruction();
-        }
-        
-        // Добавляем визуализацию строительства
-        addConstructionVisualization(buildingId);
-        
-        // Обновляем кликабельные зоны
-        const container = document.getElementById('city-background-container');
-        if (container && window.userData?.faction) {
-            createBuildingClickZones(window.userData.faction, container);
-        }
-        
-        // Показываем уведомление
-        if (window.showNotification) {
-            window.showNotification(`🏗️ Строительство ${buildingId} началось!`);
-        }
-        
-    } else {
-        // Простое добавление здания без системы времени
-        window.userData.buildings[buildingId] = {
-            level: 1,
-            building_id: buildingId
-        };
-        
-        // Загружаем изображение нового здания
-        const faction = window.userData.faction;
-        const container = document.getElementById('city-background-container');
-        if (container) {
-            const existingBuildings = container.querySelectorAll('.city-building');
-            const newZIndex = existingBuildings.length + 1;
-            window.loadBuildingImageNew(faction, buildingId, container, newZIndex);
-            
-            // Обновляем кликабельные зоны
-            createBuildingClickZones(faction, container);
-        }
-        
-        if (window.showNotification) {
-            window.showNotification(`✅ Здание ${buildingId} построено!`);
-        }
-    }
 }
 
 // Модифицируем функцию switchToCityView чтобы добавить кликабельные зоны
@@ -1155,10 +1133,168 @@ function checkActiveUpgrades() {
     });
 }
 
+// ===== ВИЗУАЛИЗАЦИЯ ИССЛЕДОВАНИЯ ЗАКЛИНАНИЙ НА БИБЛИОТЕКЕ =====
+function addSpellResearchVisualization(retryCount = 0) {
+    const container = document.getElementById('city-background-container');
+    if (!container) return;
+
+    // Проверяем, есть ли активное изучение заклинания
+    const constructions = window.userData?.constructions || [];
+    const spellConstruction = constructions.find(c =>
+        c.type === 'spell' &&
+        c.time_remaining > 0
+    );
+
+    if (!spellConstruction) {
+        // Нет активного изучения - удаляем индикатор если есть
+        const oldResearch = document.getElementById('spell-research-library');
+        if (oldResearch) oldResearch.remove();
+        return;
+    }
+
+    // Находим изображение библиотеки - с несколькими попытками
+    let libraryImg = document.querySelector('#building-library');
+    if (!libraryImg) {
+        libraryImg = document.querySelector('[id*="library"]');
+    }
+    if (!libraryImg) {
+        // Пробуем найти по классу
+        const buildings = document.querySelectorAll('.city-building');
+        libraryImg = Array.from(buildings).find(img =>
+            img.id && img.id.includes('library')
+        );
+    }
+
+    if (!libraryImg) {
+        // Максимум 5 попыток с интервалом 500ms
+        if (retryCount < 5) {
+            console.warn(`⚠️ Изображение библиотеки не найдено, попытка ${retryCount + 1}/5 через 500ms`);
+            setTimeout(() => {
+                addSpellResearchVisualization(retryCount + 1);
+            }, 500);
+        } else {
+            console.error('❌ Библиотека не найдена после 5 попыток. Возможно она не построена.');
+        }
+        return;
+    }
+
+    // Удаляем старый индикатор если есть
+    const oldResearch = document.getElementById('spell-research-library');
+    if (oldResearch) oldResearch.remove();
+
+    // Создаем индикатор исследования
+    const researchDiv = document.createElement('div');
+    researchDiv.id = 'spell-research-library';
+    researchDiv.className = 'research-visualization';
+
+    // Позиционируем относительно изображения библиотеки
+    const rect = libraryImg.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+
+    researchDiv.style.cssText = `
+        position: absolute;
+        left: ${rect.left - containerRect.left + rect.width/2}px;
+        top: ${rect.top - containerRect.top + rect.height/2}px;
+        transform: translate(-50%, -50%);
+        z-index: 600;
+        pointer-events: auto;
+        cursor: pointer;
+    `;
+
+    researchDiv.onclick = (e) => {
+        e.stopPropagation();
+        const constructions = window.userData?.constructions || [];
+        const index = constructions.findIndex(c =>
+            c.type === 'spell' &&
+            c.time_remaining > 0
+        );
+        if (index !== -1 && window.showConstructionModal) {
+            window.showConstructionModal(index);
+        }
+    };
+
+    updateSpellResearchTimer(researchDiv, spellConstruction);
+    container.appendChild(researchDiv);
+}
+
+// Функция обновления таймера исследования заклинаний
+function updateSpellResearchTimer(element, construction) {
+    if (!construction || construction.time_remaining <= 0) {
+        // Исследование завершено
+        element.remove();
+        return;
+    }
+
+    const spellName = construction.spell_name || construction.spell_id || 'Заклинание';
+    const factionEmoji = window.getFactionEmoji ? window.getFactionEmoji(construction.faction) : '📖';
+
+    // Отображаем индикатор исследования
+    element.innerHTML = `
+        <div style="
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #9333ea;
+            border-radius: 8px;
+            padding: 6px;
+            color: white;
+            text-align: center;
+            min-width: 80px;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(147,51,234,0.4);
+        ">
+            <div style="font-size: 20px; animation: sparkle 2s infinite;">${factionEmoji}📚</div>
+            <div style="font-size: 9px; margin: 2px 0; color: #c084fc;">Ур.${construction.target_level}</div>
+            <div style="font-size: 11px; color: #9333ea; font-weight: bold;">
+                ${window.formatTimeCurrency ? window.formatTimeCurrency(construction.time_remaining) : construction.time_remaining}
+            </div>
+        </div>
+    `;
+
+    setTimeout(() => {
+        if (document.getElementById('spell-research-library')) {
+            // Перепроверяем конструкцию
+            const constructions = window.userData?.constructions || [];
+            const updatedConstruction = constructions.find(c =>
+                c.type === 'spell' &&
+                c.time_remaining > 0
+            );
+            updateSpellResearchTimer(element, updatedConstruction);
+        }
+    }, 10000);
+}
+
+// При инициализации проверяем активные исследования заклинаний
+function checkActiveSpellResearch() {
+    const constructions = window.userData?.constructions || [];
+    const hasSpellResearch = constructions.some(c =>
+        c.type === 'spell' &&
+        c.time_remaining > 0
+    );
+
+    if (hasSpellResearch) {
+        addSpellResearchVisualization();
+    }
+}
+
+// Добавим CSS для анимации исследования
+if (!document.getElementById('research-animation-styles')) {
+    const style = document.createElement('style');
+    style.id = 'research-animation-styles';
+    style.textContent = `
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
 // Экспортируем новые функции
 window.addUpgradeVisualization = addUpgradeVisualization;
 window.updateUpgradeTimer = updateUpgradeTimer;
 window.checkActiveUpgrades = checkActiveUpgrades;
+window.addSpellResearchVisualization = addSpellResearchVisualization;
+window.updateSpellResearchTimer = updateSpellResearchTimer;
+window.checkActiveSpellResearch = checkActiveSpellResearch;
 
 // Экспортируем функции
 window.highlightBuilding = highlightBuilding;

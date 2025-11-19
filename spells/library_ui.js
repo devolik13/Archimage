@@ -2,6 +2,7 @@
 console.log('✅ library_ui.js v6.0 - с таймерами изучения');
 
 let currentLibrarySchool = null;
+let libraryUpdateInterval = null;
 
 // ========== ГЛАВНЫЙ ЭКРАН: 6 ШКОЛ ==========
 function showLibrary() {
@@ -35,6 +36,13 @@ function showLibrary() {
 
 function showLibraryMainScreen() {
     currentLibrarySchool = null;
+
+    // Останавливаем автообновление
+    if (libraryUpdateInterval) {
+        clearInterval(libraryUpdateInterval);
+        libraryUpdateInterval = null;
+    }
+
     const libraryContainer = document.getElementById('library-fullscreen');
     if (!libraryContainer) return;
     
@@ -86,8 +94,11 @@ function setupLibraryClickableZones() {
             transition: background 0.2s;
         `;
         
-        zoneDiv.addEventListener('mouseenter', () => zoneDiv.style.background = 'rgba(114, 137, 218, 0.3)');
-        zoneDiv.addEventListener('mouseleave', () => zoneDiv.style.background = 'transparent');
+        // DEV: Подсветка кликабельных зон
+        if (window.DEV_MODE) {
+            zoneDiv.addEventListener('mouseenter', () => zoneDiv.style.background = 'rgba(114, 137, 218, 0.3)');
+            zoneDiv.addEventListener('mouseleave', () => zoneDiv.style.background = 'transparent');
+        }
         
         const clickHandler = () => {
             if (zone.faction) {
@@ -107,35 +118,115 @@ function setupLibraryClickableZones() {
 function openSchoolSpells(faction) {
     console.log('📖 Открытие школы:', faction);
     currentLibrarySchool = faction;
-    
+
     const libraryContainer = document.getElementById('library-fullscreen');
     if (!libraryContainer) return;
-    
+
     const factionName = window.getFactionName ? window.getFactionName(faction) : faction;
-    
+
+    // Получаем цвет школы из конфига
+    const schoolConfig = window.SCHOOL_CONFIG?.[faction];
+    const schoolColor = schoolConfig?.color || '#1a1a2e';
+
+    // Создаем градиент на основе цвета школы
+    const gradientBackground = `radial-gradient(ellipse at center, ${schoolColor}33 0%, ${schoolColor}11 50%, #0a0a15 100%)`;
+
+    // Определяем картинку для каждой школы
+    const spellsImage = `assets/ui/modals/spells_${faction}.png`;
+
     libraryContainer.innerHTML = `
-        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #1a1a2e;">
-            <img id="spells-image" src="assets/ui/modals/spells_template.png" style="max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="${factionName}">
+        <div id="spells-background" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: ${gradientBackground};">
+            <img id="spells-image" src="${spellsImage}" style="position: absolute; max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="${factionName}">
             <div id="faction-name-overlay" style="position: absolute; top: 0; left: 0; right: 0;"></div>
             <div id="spells-overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
         </div>
     `;
-    
+
     const img = document.getElementById('spells-image');
-    img.onload = () => setupSpellsScreen(faction);
-    if (img.complete) setupSpellsScreen(faction);
+
+    // Fallback: если картинка не загрузилась - скрываем img и оставляем только градиент
+    img.onerror = () => {
+        console.log(`💡 Картинка для ${faction} не найдена, используем тематический фон`);
+        img.style.display = 'none';
+        // Градиент уже установлен, просто продолжаем
+        setupSpellsScreen(faction);
+        startLibraryAutoUpdate();
+    };
+
+    img.onload = () => {
+        // Картинка загрузилась - показываем её поверх градиента
+        setupSpellsScreen(faction);
+        startLibraryAutoUpdate();
+    };
+
+    if (img.complete) {
+        setupSpellsScreen(faction);
+        startLibraryAutoUpdate();
+    }
+}
+
+// Запустить автообновление библиотеки (для таймеров)
+function startLibraryAutoUpdate() {
+    // Очистить предыдущий интервал
+    if (libraryUpdateInterval) {
+        clearInterval(libraryUpdateInterval);
+    }
+
+    // Обновлять каждые 2 секунды если есть активное изучение
+    libraryUpdateInterval = setInterval(() => {
+        if (currentLibrarySchool) {
+            const constructions = window.userData?.constructions || [];
+            const hasActiveSpellLearning = constructions.some(c =>
+                c.type === 'spell' &&
+                c.faction === currentLibrarySchool &&
+                c.time_remaining > 0
+            );
+
+            if (hasActiveSpellLearning) {
+                setupSpellsScreen(currentLibrarySchool);
+            }
+        }
+    }, 2000);
 }
 
 function setupSpellsScreen(faction) {
     const img = document.getElementById('spells-image');
     const overlay = document.getElementById('spells-overlay');
     const nameOverlay = document.getElementById('faction-name-overlay');
-    if (!img || !overlay) return;
-    
+    const background = document.getElementById('spells-background');
+    if (!overlay || !background) return;
+
     const originalWidth = 768, originalHeight = 512;
-    const currentWidth = img.offsetWidth, currentHeight = img.offsetHeight;
-    const scaleX = currentWidth / originalWidth, scaleY = currentHeight / originalHeight;
-    
+
+    // Используем размеры контейнера если картинка скрыта или не загружена
+    let currentWidth, currentHeight;
+    if (img && img.offsetWidth > 0 && img.offsetHeight > 0) {
+        // Картинка есть и видна - используем её размеры
+        currentWidth = img.offsetWidth;
+        currentHeight = img.offsetHeight;
+    } else {
+        // Картинки нет - используем размеры контейнера
+        const containerWidth = background.offsetWidth;
+        const containerHeight = background.offsetHeight;
+
+        // Вычисляем размеры с сохранением пропорций 768:512
+        const aspectRatio = originalWidth / originalHeight;
+        const containerRatio = containerWidth / containerHeight;
+
+        if (containerRatio > aspectRatio) {
+            // Контейнер шире - ограничиваемся по высоте
+            currentHeight = containerHeight * 0.9; // 90% высоты
+            currentWidth = currentHeight * aspectRatio;
+        } else {
+            // Контейнер выше - ограничиваемся по ширине
+            currentWidth = containerWidth * 0.9; // 90% ширины
+            currentHeight = currentWidth / aspectRatio;
+        }
+    }
+
+    const scaleX = currentWidth / originalWidth;
+    const scaleY = currentHeight / originalHeight;
+
     overlay.style.width = currentWidth + 'px';
     overlay.style.height = currentHeight + 'px';
     overlay.innerHTML = '';
@@ -220,7 +311,7 @@ function setupSpellsScreen(faction) {
         };
         
         const [x1, y1, x2, y2] = spellZones[tierIndex];
-        const fontSize = Math.max(8, 10 * Math.min(scaleX, scaleY));
+        const fontSize = Math.max(12, 16 * Math.min(scaleX, scaleY));
         
         // Проверяем доступность:
         // - Активное (activeIndex) - всегда доступно
@@ -278,7 +369,7 @@ function setupSpellsScreen(faction) {
                         cursor: pointer;
                         width: 85%;
                     "
-                    onclick="console.log('🔵 Клик Изучить:', '${spellId}', '${faction}'); learnSpell('${spellId}', '${faction}')"
+                    onclick="console.log('🔵 Клик Изучить:', '${spellId}', '${faction}'); showSpellInfoModal('${spellId}', '${faction}', ${spell.level || 0}, 'learn')"
                 >Изучить (${window.formatTimeCurrency ? window.formatTimeCurrency(learnTime) : learnTime})</button>
             `;
         } else if (spell.level > 0 && spell.level < 5 && isActive) {
@@ -300,7 +391,7 @@ function setupSpellsScreen(faction) {
                         cursor: pointer;
                         width: 85%;
                     "
-                    onclick="console.log('🟠 Клик Улучшить:', '${spellId}', ${spell.level + 1}, '${faction}'); upgradeSpell('${spellId}', ${spell.level + 1}, '${faction}')"
+                    onclick="console.log('🟠 Клик Улучшить:', '${spellId}', ${spell.level + 1}, '${faction}'); showSpellInfoModal('${spellId}', '${faction}', ${spell.level}, 'upgrade')"
                 >Улучшить (${window.formatTimeCurrency ? window.formatTimeCurrency(upgradeTime) : upgradeTime})</button>
             `;
         } else if (spell.level === 5) {
@@ -356,20 +447,53 @@ function setupSpellsScreen(faction) {
         height: ${(by2 - by1) * scaleY}px;
         cursor: pointer;
         transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: ${28 * Math.min(scaleX, scaleY)}px;
+        font-weight: bold;
+        color: #7289da;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
     `;
-    
-    backDiv.addEventListener('mouseenter', () => backDiv.style.background = 'rgba(114, 137, 218, 0.3)');
-    backDiv.addEventListener('mouseleave', () => backDiv.style.background = 'transparent');
+
+    backDiv.textContent = 'Назад';
+
+    // DEV: Подсветка кликабельной зоны
+    if (window.DEV_MODE) {
+        backDiv.addEventListener('mouseenter', () => {
+            backDiv.style.background = 'rgba(114, 137, 218, 0.3)';
+            backDiv.style.color = '#a0b5ff';
+        });
+        backDiv.addEventListener('mouseleave', () => {
+            backDiv.style.background = 'transparent';
+            backDiv.style.color = '#7289da';
+        });
+    }
     backDiv.addEventListener('click', showLibraryMainScreen);
     overlay.appendChild(backDiv);
 }
 
 function closeLibrary() {
+    // Останавливаем автообновление
+    if (libraryUpdateInterval) {
+        clearInterval(libraryUpdateInterval);
+        libraryUpdateInterval = null;
+    }
+
+    currentLibrarySchool = null;
+
     const libraryContainer = document.getElementById('library-fullscreen');
     if (libraryContainer) libraryContainer.remove();
-    
+
     const cityView = document.getElementById('city-view');
     if (cityView) cityView.style.display = 'block';
+
+    // ВАЖНО: Показываем таймер исследования если есть активное изучение
+    if (window.addSpellResearchVisualization) {
+        setTimeout(() => {
+            window.addSpellResearchVisualization();
+        }, 300); // Задержка чтобы город успел отобразиться
+    }
 }
 
 // Обновление контента библиотеки после изучения/улучшения
@@ -394,11 +518,169 @@ function renderLibrary() {
     }
 }
 
+// ========== МОДАЛЬНОЕ ОКНО С ИНФОРМАЦИЕЙ О ЗАКЛИНАНИИ ==========
+function showSpellInfoModal(spellId, faction, currentLevel, action) {
+    // Получаем полную информацию о заклинании
+    const spellData = window.SPELL_FULL_DATA?.[spellId];
+    if (!spellData) {
+        console.error('Данные заклинания не найдены:', spellId);
+        // Fallback - вызываем старую функцию
+        if (action === 'learn') {
+            learnSpell(spellId, faction);
+        } else {
+            upgradeSpell(spellId, currentLevel + 1, faction);
+        }
+        return;
+    }
+
+    const targetLevel = action === 'learn' ? 1 : currentLevel + 1;
+    const tierIndex = window.SPELL_TIERS?.[faction]?.indexOf(spellId) || 0;
+    const tier = tierIndex + 1;
+
+    // Рассчитываем время изучения
+    const learnTime = window.SPELL_LEARNING_TIME?.getLearnTime ?
+        window.SPELL_LEARNING_TIME.getLearnTime(tier, currentLevel, faction) : 144;
+
+    // Рассчитываем урон на текущем и следующем уровне
+    const currentDamage = currentLevel > 0 ? (window.getSpellDamage ? window.getSpellDamage(spellId, currentLevel) : 0) : 0;
+    const nextDamage = window.getSpellDamage ? window.getSpellDamage(spellId, targetLevel) : 0;
+
+    // Создаем оверлей
+    const overlay = document.createElement('div');
+    overlay.id = 'spell-info-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 10001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+
+    // Создаем модальное окно
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        background: linear-gradient(145deg, #2c2c3d, #1a1a2e);
+        border: 3px solid ${window.SCHOOL_CONFIG?.[faction]?.color || '#7289da'};
+        border-radius: 15px;
+        padding: 25px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        animation: modalSlideIn 0.3s ease-out;
+    `;
+
+    modal.innerHTML = `
+        <style>
+            @keyframes modalSlideIn {
+                from { transform: translateY(-50px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        </style>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="font-size: 48px; margin-bottom: 10px;">${spellData.icon}</div>
+            <h2 style="margin: 0; color: ${window.SCHOOL_CONFIG?.[faction]?.color || '#ffa500'};">
+                ${spellData.name}
+            </h2>
+            <div style="color: #aaa; font-size: 14px; margin-top: 5px;">
+                Школа: ${window.getFactionName ? window.getFactionName(faction) : faction} • Тир ${tier}
+            </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+            <div style="color: #fff; font-size: 14px; line-height: 1.6;">
+                ${spellData.description}
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">Тип</div>
+                <div style="color: #fff; font-weight: bold;">${spellData.type === 'single_target' ? 'Одна цель' : spellData.type === 'aoe' ? 'Область' : 'Несколько целей'}</div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; text-align: center;">
+                <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">Базовый урон</div>
+                <div style="color: #ffa500; font-weight: bold; font-size: 18px;">${spellData.base_damage}💥</div>
+            </div>
+        </div>
+
+        ${action === 'upgrade' && currentLevel > 0 ? `
+            <div style="background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                <div style="color: #ffa500; font-size: 13px; font-weight: bold; margin-bottom: 8px;">📈 При улучшении:</div>
+                <div style="color: #fff; font-size: 14px;">
+                    Урон: ${currentDamage}💥 → ${nextDamage}💥 (+${nextDamage - currentDamage})
+                </div>
+            </div>
+        ` : ''}
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button id="spell-cancel-btn" style="
+                flex: 1;
+                padding: 12px;
+                background: #666;
+                border: 2px solid #999;
+                border-radius: 8px;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.2s;
+            ">Отмена</button>
+
+            <button id="spell-confirm-btn" style="
+                flex: 2;
+                padding: 12px;
+                background: linear-gradient(to bottom, ${window.SCHOOL_CONFIG?.[faction]?.color || '#ffa500'}, ${window.SCHOOL_CONFIG?.[faction]?.color || '#ff8c00'});
+                border: 2px solid ${window.SCHOOL_CONFIG?.[faction]?.color || '#ffa500'};
+                border-radius: 8px;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.2s;
+            ">${action === 'learn' ? '📖 Изучить' : '⬆️ Улучшить'} (${window.formatTimeCurrency ? window.formatTimeCurrency(learnTime) : learnTime})</button>
+        </div>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    // Обработчики кнопок
+    document.getElementById('spell-cancel-btn').onclick = () => {
+        overlay.remove();
+    };
+
+    document.getElementById('spell-confirm-btn').onclick = () => {
+        overlay.remove();
+        if (action === 'learn') {
+            learnSpell(spellId, faction);
+        } else {
+            upgradeSpell(spellId, targetLevel, faction);
+        }
+    };
+
+    // Закрытие по клику вне окна
+    overlay.onclick = (e) => {
+        if (e.target === overlay) {
+            overlay.remove();
+        }
+    };
+}
+
 // Экспорт
 window.showLibrary = showLibrary;
 window.closeLibrary = closeLibrary;
 window.openSchoolSpells = openSchoolSpells;
 window.updateLibraryContent = updateLibraryContent;
 window.renderLibrary = renderLibrary;
+window.showSpellInfoModal = showSpellInfoModal;
 
 console.log('📚 Библиотека с таймерами готова!');

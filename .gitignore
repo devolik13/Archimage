@@ -1,1 +1,34 @@
 .vercel
+
+# Environment variables (SECRETS)
+.env
+.env.local
+.env.production
+.env.development
+*.key
+*.pem
+service-account.json
+
+# Vite
+node_modules
+dist
+dist-ssr
+*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

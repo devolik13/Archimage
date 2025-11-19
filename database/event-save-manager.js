@@ -74,6 +74,7 @@ class EventSaveManager {
                 level: window.userData.level,
                 experience: window.userData.experience,
                 faction: window.userData.faction,
+                lastLogin: window.userData.last_login, // Для офлайн накопления
                 wizards: window.userData.wizards,
                 formation: window.userData.formation,
                 spells: window.userData.spells,
@@ -85,7 +86,8 @@ class EventSaveManager {
                 rating: window.userData.rating,
                 pve_progress: window.userData.pve_progress,
                 settings: window.userData.settings,
-                tutorial_completed: window.userData.tutorial_completed
+                welcome_shown: window.userData.welcome_shown,
+                daily_login: window.userData.daily_login // НОВОЕ: Сохранение данных ежедневных наград
             };
 
             const success = await window.dbManager.savePlayer(playerData);

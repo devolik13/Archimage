@@ -68,22 +68,30 @@ console.log('✅ plague.js загружен');
         const startTime = Date.now();
         
         const animate = () => {
+            // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+            if (!orb || orb.destroyed || !orb.transform) {
+                if (onHit) onHit();
+                return;
+            }
+
             const elapsed = Date.now() - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            
+
             // Плавное движение с небольшой дугой
             orb.x = startX + (endX - startX) * progress;
             orb.y = startY + (endY - startY) * progress - Math.sin(progress * Math.PI) * 30;
-            
+
             // Пульсация
             const pulse = 1 + Math.sin(elapsed * 0.01) * 0.2;
             orb.scale.set(pulse);
-            
+
             if (progress < 1) {
                 requestAnimationFrame(animate);
             } else {
                 // Удаляем шарик и запускаем эффект заражения
-                effectsContainer.removeChild(orb);
+                if (orb.parent) {
+                    effectsContainer.removeChild(orb);
+                }
                 if (onHit) onHit();
             }
         };

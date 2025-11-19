@@ -265,30 +265,40 @@ console.log('✅ firebolt.js загружен');
             impact.beginFill(0xFFAA00, 0.8);
             impact.drawCircle(0, 0, 15);
             impact.endFill();
-            
+
             impact.x = x;
             impact.y = y;
             impact.blendMode = PIXI.BLEND_MODES.ADD;
-            
+
             effectsContainer.addChild(impact);
-            
+
             const startTime = Date.now();
             const duration = 300;
-            
+
             const animate = () => {
+                // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+                if (!impact || impact.destroyed || !impact.transform) {
+                    return;
+                }
+
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                
+
                 impact.scale.set(1 + progress * 2);
                 impact.alpha = 0.8 * (1 - progress);
-                
+
                 if (progress < 1) {
                     requestAnimationFrame(animate);
                 } else {
-                    effectsContainer.removeChild(impact);
+                    if (impact.parent) {
+                        effectsContainer.removeChild(impact);
+                    }
+                    if (!impact.destroyed) {
+                        impact.destroy();
+                    }
                 }
             };
-            
+
             animate();
         }
         

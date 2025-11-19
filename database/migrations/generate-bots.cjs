@@ -192,6 +192,25 @@ function generateBattleStats(rating, leagueId) {
     return { total_battles: battles, wins, losses };
 }
 
+// Назначение заклинаний магам
+function assignSpellsToWizards(wizards, spells, faction) {
+    const factionSpells = spells[faction];
+    if (!factionSpells) return;
+
+    const availableSpells = Object.keys(factionSpells).filter(spellId => factionSpells[spellId].level > 0);
+
+    if (availableSpells.length === 0) return;
+
+    wizards.forEach(wizard => {
+        // Каждый маг получает 2 случайных заклинания из изученных
+        const shuffled = shuffle(availableSpells);
+        wizard.spells = [
+            shuffled[0] || null,
+            shuffled[1] || shuffled[0] || null
+        ];
+    });
+}
+
 // Главная функция генерации
 function generateBots() {
     const bots = [];
@@ -207,6 +226,10 @@ function generateBots() {
             const wizardCount = random(league.wizards[0], league.wizards[1]);
             const wizards = generateWizards(faction, wizardCount, league.levels[0], league.levels[1]);
             const spells = generateSpells(faction, league.tiers[0], league.tiers[1], league.spellLevels[0], league.spellLevels[1]);
+
+            // ВАЖНО: Назначаем заклинания магам после генерации
+            assignSpellsToWizards(wizards, spells, faction);
+
             const buildings = generateBuildings(league.buildings);
             const level = calculateBotLevel(wizards, spells, buildings);
             const stats = generateBattleStats(rating, league.id);

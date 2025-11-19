@@ -74,6 +74,7 @@ class DatabaseManager {
                     time_currency: 100, // Начальная валюта
                     level: 1,
                     experience: 0
+                    // last_login убрано - добавится при обновлении игрока
                 }])
                 .select()
                 .single();
@@ -116,7 +117,9 @@ class DatabaseManager {
                 rating: playerData.rating || 1000,
                 pve_progress: playerData.pve_progress || {},
                 settings: playerData.settings || { sound: true, language: 'ru', battle_speed: 'normal' },
-                tutorial_completed: playerData.tutorial_completed || false
+                welcome_shown: playerData.welcome_shown || false,
+                daily_login: playerData.daily_login || { day: 1, last_login_date: null, last_reward_date: null, total_logins: 0 }, // НОВОЕ: Ежедневные награды
+                last_login: new Date().toISOString() // Обновляем время последнего входа
             };
 
             const { error } = await this.supabase
@@ -205,6 +208,35 @@ class DatabaseManager {
 
             console.log(`⚔️ Результат боя сохранён: ${result} (${ratingChange > 0 ? '+' : ''}${ratingChange} рейтинга)`);
             console.log(`📊 Статистика: ${window.userData.wins}W / ${window.userData.losses}L | Рейтинг: ${window.userData.rating}`);
+
+            // НОВОЕ: Обновляем рейтинг противника (симметрично)
+            // Только для реальных игроков (не ботов и с валидным ID)
+            if (window.selectedOpponent && ratingChange !== undefined) {
+                const opponentId = window.selectedOpponent.id;
+
+                // Проверяем что ID валиден (не undefined, не null, и положительный - боты имеют отрицательные ID)
+                if (opponentId && opponentId > 0) {
+                    const opponentRatingChange = -ratingChange; // Противоположное изменение
+                    const currentOpponentRating = window.selectedOpponent.rating || 1000;
+                    const newOpponentRating = Math.max(0, currentOpponentRating + opponentRatingChange);
+
+                    const { error: opponentError } = await this.supabase
+                        .from('players')
+                        .update({
+                            rating: newOpponentRating
+                        })
+                        .eq('id', opponentId);
+
+                    if (opponentError) {
+                        console.error('⚠️ Ошибка обновления рейтинга противника:', opponentError);
+                    } else {
+                        console.log(`🎯 Рейтинг противника обновлён: ${window.selectedOpponent.username} ${currentOpponentRating} → ${newOpponentRating} (${opponentRatingChange > 0 ? '+' : ''}${opponentRatingChange})`);
+                    }
+                } else {
+                    console.log('ℹ️ Противник - бот или демо, рейтинг не обновляется');
+                }
+            }
+
             return true;
 
         } catch (error) {
@@ -241,7 +273,8 @@ class DatabaseManager {
                     rating: window.userData.rating,
                     pve_progress: window.userData.pve_progress,
                     settings: window.userData.settings,
-                    tutorial_completed: window.userData.tutorial_completed
+                    welcome_shown: window.userData.welcome_shown,
+                    daily_login: window.userData.daily_login
                 };
                 await this.savePlayer(playerData);
             }
@@ -278,7 +311,8 @@ class DatabaseManager {
                     rating: window.userData.rating,
                     pve_progress: window.userData.pve_progress,
                     settings: window.userData.settings,
-                    tutorial_completed: window.userData.tutorial_completed
+                    welcome_shown: window.userData.welcome_shown,
+                    daily_login: window.userData.daily_login
                 };
                 await this.savePlayer(playerData);
             }

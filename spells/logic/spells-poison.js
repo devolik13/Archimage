@@ -730,9 +730,9 @@ function castEpidemic(wizard, spellData, position, casterType) {
 // --- Применить эффект яда ---
 function applyPoisonEffect(targetWizard, stacks = 1) {
     if (!targetWizard.effects) targetWizard.effects = {};
-    
+
     const oldStacks = targetWizard.effects.poison?.stacks || 0;
-    
+
     if (targetWizard.effects.poison) {
         targetWizard.effects.poison.stacks += stacks;
     } else {
@@ -741,15 +741,48 @@ function applyPoisonEffect(targetWizard, stacks = 1) {
             damagePerStack: 5 // 5 урона за стак в начале хода
         };
     }
-    
+
     const newStacks = targetWizard.effects.poison.stacks;
     const totalDamage = newStacks * targetWizard.effects.poison.damagePerStack;
-    
+
     if (typeof window.addToBattleLog === 'function') {
         if (oldStacks > 0) {
             window.addToBattleLog(`☠️ ${targetWizard.name} отравлен! (${oldStacks} → ${newStacks} стаков, ${totalDamage} урона в ход)`);
         } else {
             window.addToBattleLog(`☠️ ${targetWizard.name} отравлен! (${newStacks} ${newStacks === 1 ? 'стак' : newStacks < 5 ? 'стака' : 'стаков'}, ${totalDamage} урона в ход)`);
+        }
+    }
+
+    // Обновляем визуализацию иконки яда
+    if (typeof window.pixiWizards?.updatePoisonIcon === 'function') {
+        // Ищем позицию мага
+        let wizardKey = null;
+
+        // Проверяем в игроках
+        if (window.playerWizards && window.playerFormation) {
+            const playerIndex = window.playerWizards.findIndex(w => w && w.id === targetWizard.id);
+            if (playerIndex !== -1) {
+                const position = window.playerFormation.findIndex(id => id === targetWizard.id);
+                if (position !== -1) {
+                    wizardKey = `0_${position}`; // Колонка 0 для игрока
+                }
+            }
+        }
+
+        // Проверяем во врагах
+        if (!wizardKey && window.enemyWizards && window.enemyFormation) {
+            const enemyIndex = window.enemyWizards.findIndex(w => w && w.id === targetWizard.id);
+            if (enemyIndex !== -1) {
+                const position = window.enemyFormation.findIndex(id => id === targetWizard.id);
+                if (position !== -1) {
+                    wizardKey = `5_${position}`; // Колонка 5 для врага
+                }
+            }
+        }
+
+        // Обновляем иконку если нашли позицию
+        if (wizardKey) {
+            window.pixiWizards.updatePoisonIcon(wizardKey, newStacks);
         }
     }
 }

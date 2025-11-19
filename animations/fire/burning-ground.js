@@ -100,8 +100,13 @@ console.log('✅ burning-ground.js загружен');
         
         // Пульсация
         const pulse = () => {
+            // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+            if (!ground || ground.destroyed || !ground.transform || !ground.parent) {
+                return;
+            }
+
             ground.alpha = 0.3 + Math.sin(Date.now() * 0.003) * 0.2;
-            if (ground.parent) requestAnimationFrame(pulse);
+            requestAnimationFrame(pulse);
         };
         pulse();
         
@@ -120,14 +125,22 @@ console.log('✅ burning-ground.js загружен');
     function removeBurningGround(groundId) {
         const groundData = activeBurningGrounds.get(groundId);
         if (!groundData) return;
-        
+
         const fadeOut = () => {
+            // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+            if (!groundData.sprite || groundData.sprite.destroyed || !groundData.sprite.transform) {
+                activeBurningGrounds.delete(groundId);
+                return;
+            }
+
             groundData.sprite.alpha -= 0.05;
             if (groundData.sprite.alpha > 0) {
                 requestAnimationFrame(fadeOut);
             } else {
                 if (groundData.sprite.parent) {
                     groundData.sprite.parent.removeChild(groundData.sprite);
+                }
+                if (!groundData.sprite.destroyed) {
                     groundData.sprite.destroy();
                 }
                 activeBurningGrounds.delete(groundId);

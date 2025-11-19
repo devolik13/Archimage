@@ -32,6 +32,7 @@ async function initGameWithDatabase() {
     window.userData.time_currency = player.time_currency || 0;
     window.userData.level = player.level || 1;
     window.userData.experience = player.experience || 0;
+    window.userData.last_login = player.last_login;
 
     // Игровые данные (JSONB)
     window.userData.wizards = player.wizards || [];
@@ -48,7 +49,15 @@ async function initGameWithDatabase() {
     // Прогресс и настройки
     window.userData.pve_progress = player.pve_progress || {};
     window.userData.settings = player.settings || { sound: true, language: 'ru', battle_speed: 'normal' };
-    window.userData.tutorial_completed = player.tutorial_completed || false;
+    window.userData.welcome_shown = player.welcome_shown || false;
+
+    // Ежедневные награды
+    window.userData.daily_login = player.daily_login || {
+        day: 1,
+        last_login_date: null,
+        last_reward_date: null,
+        total_logins: 0
+    };
     
     // КРИТИЧНО: Извлекаем constructions из buildings._active_constructions
     if (player.buildings && player.buildings._active_constructions) {
@@ -59,12 +68,21 @@ async function initGameWithDatabase() {
         console.log('📦 Constructions инициализирована пустым массивом');
     }
 
+    // Инициализация энергии боев (если нет в БД)
+    if (player.battle_energy) {
+        window.userData.battle_energy = player.battle_energy;
+    } else if (typeof window.initBattleEnergy === 'function') {
+        window.initBattleEnergy(window.userData);
+        console.log('⚡ Энергия боев инициализирована');
+    }
+
     console.log('📦 Данные применены к window.userData:', {
         faction: window.userData.faction,
         wizards: window.userData.wizards.length,
         spells: Object.keys(window.userData.spells).length,
         constructions: window.userData.constructions.length,
-        buildings: Object.keys(window.userData.buildings).length
+        buildings: Object.keys(window.userData.buildings).length,
+        battle_energy: window.userData.battle_energy?.current + '/' + window.userData.battle_energy?.max
     });
 
     // КРИТИЧНО: Проверяем есть ли фракция
@@ -108,7 +126,30 @@ async function initGameWithDatabase() {
         if (typeof window.initTimeCurrency === 'function') {
             window.initTimeCurrency();
         }
-        
+
+        // Инициализация аватара игрока
+        if (typeof window.initPlayerAvatar === 'function') {
+            await window.initPlayerAvatar(window.userData);
+        }
+
+        // Проверка ежедневной награды
+        if (typeof window.checkDailyLoginReward === 'function') {
+            window.checkDailyLoginReward();
+        }
+
+        // Инициализация UI энергии боев
+        if (typeof window.initBattleEnergyUI === 'function') {
+            window.initBattleEnergyUI();
+        }
+
+        // Проверяем оффлайн события ПЕРЕД обновлением last_login
+        if (typeof window.checkOfflineEvents === 'function') {
+            await window.checkOfflineEvents(player.last_login);
+        }
+
+        // Обновляем last_login после расчета офлайн накопления
+        window.userData.last_login = new Date().toISOString();
+
         if (typeof window.initConstructionSystem === 'function') {
             window.initConstructionSystem();
         }

@@ -339,6 +339,14 @@ function endCinematic() {
         if (typeof window.showGameArea === 'function') {
             window.showGameArea();
         }
+
+        // Показываем приветственное сообщение для новых игроков
+        if (window.userData && !window.userData.welcome_shown) {
+            console.log('👋 Показываем приветственное сообщение');
+            setTimeout(() => {
+                showWelcomeMessage();
+            }, 500);
+        }
     }, CINEMATIC_CONFIG.fadeOutDuration);
 }
 
@@ -397,9 +405,190 @@ function closeDemoBattle() {
     console.log('🧹 Кинематографическая сцена завершена');
 }
 
+// Показать приветственное сообщение для новых игроков
+function showWelcomeMessage() {
+    console.log('👋 Показываем приветственное окно');
+
+    // Основной контейнер (как у города и faction-selection)
+    const modal = document.createElement('div');
+    modal.id = 'welcome-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: block;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 10000;
+        overflow: hidden;
+    `;
+
+    // Контейнер с rotation КАК У ГОРОДА
+    const bgContainer = document.createElement('div');
+    bgContainer.id = 'welcome-bg-container';
+    bgContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+    `;
+
+    // Проверяем CSS rotation (мобильные устройства)
+    const isRotated = window.cssRotationActive === true;
+    console.log('🔄 Welcome - CSS Rotation активен:', isRotated);
+
+    // ROTATION через style (как у города!)
+    if (isRotated) {
+        const oldStyle = document.getElementById('welcome-rotation-style');
+        if (oldStyle) {
+            oldStyle.remove();
+        }
+
+        const style = document.createElement('style');
+        style.id = 'welcome-rotation-style';
+        style.innerHTML = `
+            #welcome-bg-container {
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) rotate(-90deg) !important;
+                transform-origin: center center !important;
+                width: 100vh !important;
+                height: 100vw !important;
+            }
+        `;
+        document.head.appendChild(style);
+        console.log('✅ Welcome rotation style применен (-90deg)');
+    }
+
+    // Контент - ГОРИЗОНТАЛЬНЫЙ LAYOUT
+    const contentWrapper = document.createElement('div');
+    contentWrapper.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 2vh 3vw;
+        box-sizing: border-box;
+        gap: 20px;
+    `;
+
+    contentWrapper.innerHTML = `
+        <!-- Левая часть - иконка и заголовок -->
+        <div style="
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        ">
+            <div style="font-size: 50px; margin-bottom: 10px;">⚔️✨</div>
+            <h1 style="
+                margin: 0;
+                font-size: 20px;
+                color: #ffd700;
+                text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+                font-weight: bold;
+                text-align: center;
+                white-space: nowrap;
+            ">
+                Приветствуем<br>тебя, маг!
+            </h1>
+        </div>
+
+        <!-- Центр - основной текст -->
+        <div style="
+            flex: 1;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            text-align: center;
+            color: white;
+            font-size: 16px;
+            line-height: 1.6;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            max-width: 450px;
+        ">
+            <div style="color: #ffd700; font-size: 17px; font-weight: bold; margin-bottom: 10px;">
+                📜 Основы магии:
+            </div>
+
+            Строить: <strong style="color: #ffd700;">одно здание</strong><br>
+            Изучать: <strong style="color: #ffd700;">одно заклинание</strong><br>
+            <div style="color: #87ceeb; font-size: 15px; margin-top: 8px;">
+                ⚡ Не забывай ускорять!
+            </div>
+
+            <div style="color: #ffd700; font-weight: bold; font-size: 18px; margin-top: 8px;">
+                Выбирай мудро! 🔮
+            </div>
+        </div>
+
+        <!-- Правая часть - кнопка -->
+        <div style="
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+        ">
+            <button onclick="closeWelcomeMessage()" style="
+                padding: 20px 30px;
+                border: 2px solid #ffd700;
+                border-radius: 12px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 18px;
+                transition: all 0.3s;
+                box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+                white-space: nowrap;
+            "
+            onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 30px rgba(255, 215, 0, 0.5)'"
+            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 5px 20px rgba(255, 215, 0, 0.3)'">
+                ⚔️ Начать<br>приключение!
+            </button>
+        </div>
+    `;
+
+    bgContainer.appendChild(contentWrapper);
+    modal.appendChild(bgContainer);
+    document.body.appendChild(modal);
+}
+
+function closeWelcomeMessage() {
+    const modal = document.getElementById('welcome-modal');
+    if (modal) {
+        modal.remove();
+    }
+
+    // Удаляем rotation style
+    const rotationStyle = document.getElementById('welcome-rotation-style');
+    if (rotationStyle) {
+        rotationStyle.remove();
+    }
+
+    // Отмечаем что сообщение показано
+    if (window.userData) {
+        window.userData.welcome_shown = true;
+        if (window.dbManager) {
+            window.dbManager.markChanged();
+        }
+    }
+}
+
 // Экспорт функций
 window.startDemoBattle = startDemoBattle;
 window.closeDemoBattle = closeDemoBattle;
+window.closeWelcomeMessage = closeWelcomeMessage;
 
 // Удобная консольная команда
 window.demo = function(faction = 'fire') {

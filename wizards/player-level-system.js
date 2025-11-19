@@ -13,13 +13,19 @@ const PLAYER_LEVEL_CONFIG = {
 
 // Расчет общего уровня игрока
 function calculatePlayerLevel() {
+    // Проверяем наличие userData
+    if (!window.userData) {
+        console.warn('⚠️ userData не загружена, уровень = 0');
+        return 0;
+    }
+
     let totalPoints = 0;
-    
+
     // Очки за заклинания
-    if (userData.spells) {
+    if (window.userData.spells) {
         ['fire', 'water', 'wind', 'earth', 'nature', 'poison'].forEach(faction => {
-            if (userData.spells[faction]) {
-                Object.values(userData.spells[faction]).forEach(spell => {
+            if (window.userData.spells[faction]) {
+                Object.values(window.userData.spells[faction]).forEach(spell => {
                     if (spell.level > 0) {
                         totalPoints += spell.level * PLAYER_LEVEL_CONFIG.SPELL_LEARNED;
                     }
@@ -27,33 +33,90 @@ function calculatePlayerLevel() {
             }
         });
     }
-    
+
     // Очки за здания
-    if (userData.buildings) {
-        Object.values(userData.buildings).forEach(building => {
-            totalPoints += PLAYER_LEVEL_CONFIG.BUILDING_BUILT; // За само здание
-            totalPoints += (building.level - 1) * PLAYER_LEVEL_CONFIG.BUILDING_LEVEL; // За улучшения
+    if (window.userData.buildings) {
+        Object.entries(window.userData.buildings).forEach(([key, building]) => {
+            // Пропускаем специальные поля (массив строек)
+            if (key === '_active_constructions') return;
+
+            // Проверяем что это действительно здание с уровнем
+            if (building && typeof building.level === 'number') {
+                totalPoints += PLAYER_LEVEL_CONFIG.BUILDING_BUILT; // За само здание
+                totalPoints += (building.level - 1) * PLAYER_LEVEL_CONFIG.BUILDING_LEVEL; // За улучшения
+            }
         });
     }
-    
+
     // Очки за магов
-    if (userData.wizards) {
-        totalPoints += userData.wizards.length * PLAYER_LEVEL_CONFIG.WIZARD_HIRED;
+    if (window.userData.wizards) {
+        totalPoints += window.userData.wizards.length * PLAYER_LEVEL_CONFIG.WIZARD_HIRED;
     }
-    
+
     return totalPoints;
 }
 
 // Создание UI элемента аватара
-// Создание UI элемента аватара
 function createPlayerAvatarUI() {
+    if (!window.userData) {
+        console.warn('⚠️ userData не загружена, аватар не создан');
+        return;
+    }
+
     const playerLevel = calculatePlayerLevel();
-    
+
+    // Вычисляем положение города
+    const cityView = document.getElementById('city-view');
+    const backgroundImg = cityView?.querySelector('.city-background-img');
+
+    let leftPosition = '10px'; // Дефолт
+
+    if (backgroundImg) {
+        const imgRect = backgroundImg.getBoundingClientRect();
+        leftPosition = `${imgRect.left + 10}px`;
+        console.log(`📍 Аватар привязан к городу: left = ${leftPosition}`);
+    }
+
+    // Определяем аватар (реальное фото или дефолт)
+    const avatarUrl = window.userData.avatar_url;
+    let avatarContent = '';
+
+    if (avatarUrl) {
+        avatarContent = `
+            <img src="${avatarUrl}"
+                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div style="
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                display: none;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+            ">👤</div>
+        `;
+    } else {
+        avatarContent = `
+            <div style="
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+            ">👤</div>
+        `;
+    }
+
     const avatarHTML = `
         <div id="player-avatar-container" style="
-            position: absolute;
+            position: fixed;
             top: 10px;
-            left: 10px;
+            left: ${leftPosition};
             display: flex;
             align-items: center;
             gap: 10px;
@@ -65,21 +128,10 @@ function createPlayerAvatarUI() {
             transition: all 0.3s;
             z-index: 100;
         " onclick="showPlayerProfile()">
-            <div style="
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 24px;
-            ">
-                👤
-            </div>
+            ${avatarContent}
             <div>
                 <div style="color: white; font-size: 14px; font-weight: bold;">
-                    ${userData.username || 'Игрок'}
+                    ${window.userData.username || 'Игрок'}
                 </div>
                 <div style="color: #ffa500; font-size: 12px;">
                     ⭐ Уровень ${playerLevel}
@@ -87,26 +139,14 @@ function createPlayerAvatarUI() {
             </div>
         </div>
     `;
-    
+
     // Удаляем старый если есть
     const oldAvatar = document.getElementById('player-avatar-container');
     if (oldAvatar) oldAvatar.remove();
-    
-    // Ищем контейнер - пробуем разные варианты
-    let container = document.getElementById('city-view');
-    if (!container) {
-        container = document.getElementById('game-area');
-    }
-    if (!container) {
-        container = document.querySelector('.game-container');
-    }
-    
-    if (container) {
-        container.insertAdjacentHTML('beforeend', avatarHTML);
-        console.log('✅ Аватар игрока добавлен');
-    } else {
-        console.error('❌ Не найден контейнер для аватара');
-    }
+
+    // Добавляем в body (fixed позиционирование)
+    document.body.insertAdjacentHTML('beforeend', avatarHTML);
+    console.log('✅ Аватар игрока добавлен');
 }
 
 // Показать профиль игрока
@@ -128,50 +168,58 @@ function showPlayerProfile() {
     }
 
     const modalContent = `
-        <div style="padding: 20px; max-width: 450px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin-top: 0; color: #7289da;">👤 Профиль игрока</h3>
+        <div style="padding: 15px; max-width: 90vw; width: 600px; background: #2c2c3d; border-radius: 10px; color: white;">
+            <h3 style="margin: 0 0 15px 0; color: #7289da; text-align: center;">👤 Профиль игрока</h3>
 
-            <div style="text-align: center; margin: 20px 0;">
-                <div style="
-                    width: 80px;
-                    height: 80px;
-                    border-radius: 50%;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 40px;
-                    margin: 0 auto 10px;
-                ">
-                    👤
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <!-- Левая колонка: Аватар + Имя + Статистика боев -->
+                <div>
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <div style="
+                            width: 60px;
+                            height: 60px;
+                            border-radius: 50%;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 30px;
+                            margin: 0 auto 8px;
+                        ">
+                            👤
+                        </div>
+                        <h4 style="color: white; margin: 5px 0; font-size: 14px;">${userData.username || 'Игрок'}</h4>
+                        <div style="color: #ffa500; font-size: 16px;">⭐ Уровень ${level}</div>
+                    </div>
+
+                    <div style="background: #3d3d5c; padding: 10px; border-radius: 8px;">
+                        <h4 style="margin: 0 0 8px 0; color: #7289da; font-size: 13px;">⚔️ Статистика боев:</h4>
+                        <div style="font-size: 11px; line-height: 1.6;">
+                            <div>🎯 Рейтинг: <strong style="color: #ffa500;">${leagueInfo}</strong></div>
+                            <div>📊 Всего: <strong>${totalBattles}</strong></div>
+                            <div>🏆 Побед: <strong style="color: #4CAF50;">${wins}</strong></div>
+                            <div>💀 Поражений: <strong style="color: #f44336;">${losses}</strong></div>
+                            <div>📈 Винрейт: <strong>${winRate}%</strong></div>
+                        </div>
+                    </div>
                 </div>
-                <h4 style="color: white; margin: 5px 0;">${userData.username || 'Игрок'}</h4>
-                <div style="color: #ffa500; font-size: 20px;">⭐ Уровень ${level}</div>
+
+                <!-- Правая колонка: Прогресс -->
+                <div>
+                    <div style="background: #3d3d5c; padding: 10px; border-radius: 8px;">
+                        <h4 style="margin: 0 0 8px 0; color: #7289da; font-size: 13px;">📚 Прогресс:</h4>
+                        <div style="font-size: 11px; line-height: 1.6;">
+                            <div>📖 Заклинания: <strong>${breakdown.spells}</strong> очков</div>
+                            <div>🏛️ Здания: <strong>${breakdown.buildings}</strong> очков</div>
+                            <div>🧙‍♂️ Маги: <strong>${breakdown.wizards}</strong> очков</div>
+                            <hr style="border: 1px solid #555; margin: 8px 0;">
+                            <div>📊 Всего: <strong style="color: #ffa500;">${level}</strong> очков</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div style="background: #3d3d5c; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                <h4 style="margin-top: 0; color: #7289da;">⚔️ Статистика боев:</h4>
-                <div style="font-size: 14px; line-height: 1.8;">
-                    <div>🎯 Рейтинг: <strong style="color: #ffa500;">${leagueInfo}</strong></div>
-                    <div>📊 Всего боев: <strong>${totalBattles}</strong></div>
-                    <div>🏆 Побед: <strong style="color: #4CAF50;">${wins}</strong></div>
-                    <div>💀 Поражений: <strong style="color: #f44336;">${losses}</strong></div>
-                    <div>📈 Винрейт: <strong>${winRate}%</strong></div>
-                </div>
-            </div>
-
-            <div style="background: #3d3d5c; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                <h4 style="margin-top: 0; color: #7289da;">📚 Прогресс:</h4>
-                <div style="font-size: 14px; line-height: 1.8;">
-                    <div>📖 Заклинания: <strong>${breakdown.spells}</strong> очков</div>
-                    <div>🏛️ Здания: <strong>${breakdown.buildings}</strong> очков</div>
-                    <div>🧙‍♂️ Маги: <strong>${breakdown.wizards}</strong> очков</div>
-                    <hr style="border: 1px solid #555; margin: 10px 0;">
-                    <div>📊 Всего: <strong style="color: #ffa500;">${level}</strong> очков</div>
-                </div>
-            </div>
-
-            <button style="width: 100%; padding: 10px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer;"
+            <button style="width: 100%; padding: 8px; margin-top: 15px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 13px;"
                     onclick="closeCurrentModal()">
                 Закрыть
             </button>
@@ -234,9 +282,15 @@ function getPointsBreakdown() {
     
     // Считаем здания
     if (userData.buildings) {
-        Object.values(userData.buildings).forEach(building => {
-            buildingPoints += PLAYER_LEVEL_CONFIG.BUILDING_BUILT;
-            buildingPoints += (building.level - 1) * PLAYER_LEVEL_CONFIG.BUILDING_LEVEL;
+        Object.entries(userData.buildings).forEach(([key, building]) => {
+            // Пропускаем специальные поля (массив строек)
+            if (key === '_active_constructions') return;
+
+            // Проверяем что это действительно здание с уровнем
+            if (building && typeof building.level === 'number') {
+                buildingPoints += PLAYER_LEVEL_CONFIG.BUILDING_BUILT;
+                buildingPoints += (building.level - 1) * PLAYER_LEVEL_CONFIG.BUILDING_LEVEL;
+            }
         });
     }
     

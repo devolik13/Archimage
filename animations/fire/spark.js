@@ -126,17 +126,25 @@ console.log('✅ spark.js загружен');
             const fadeDuration = 300;
             
             const fadeAnimate = () => {
+                // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+                if (!trail || trail.destroyed || !trail.transform) {
+                    return;
+                }
+
                 const elapsed = Date.now() - fadeStartTime;
                 const progress = Math.min(elapsed / fadeDuration, 1);
-                
+
                 trail.alpha = 0.5 * (1 - progress);
                 trail.scale.set(1 - progress * 0.5);
-                
+
                 if (progress < 1 && trail.parent) {
                     requestAnimationFrame(fadeAnimate);
                 } else {
                     if (trail.parent) {
                         effectsContainer.removeChild(trail);
+                    }
+                    if (!trail.destroyed) {
+                        trail.destroy();
                     }
                 }
             };

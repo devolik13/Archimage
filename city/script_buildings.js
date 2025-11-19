@@ -5,10 +5,44 @@ console.log('✅ script_buildings.js загружен');
 function showPvPArenaModal() {
     // Закрываем предыдущие модальные окна
     closeCurrentModal();
+
     // Проверяем построена ли арена
     const hasArena = window.userData?.buildings?.pvp_arena?.level > 0;
+
+    // Получаем данные энергии боев
+    let battleEnergyInfo = '';
+    if (typeof window.regenerateBattleEnergy === 'function') {
+        window.regenerateBattleEnergy();
+    }
+
+    if (window.userData?.battle_energy) {
+        const current = window.userData.battle_energy.current;
+        const max = window.userData.battle_energy.max;
+        const timeToNext = typeof window.getTimeToNextRegen === 'function' ? window.getTimeToNextRegen() : 0;
+
+        let regenText = '';
+        if (current < max && timeToNext > 0 && typeof window.formatTimeCurrency === 'function') {
+            const totalMinutes = Math.ceil(timeToNext / 60000);
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            regenText = hours > 0 ? ` (след. через ${hours}ч ${minutes}м)` : ` (след. через ${minutes}м)`;
+        }
+
+        const color = current > 0 ? '#4ade80' : '#ff6b6b';
+        battleEnergyInfo = `
+            <div style="background: #3d3d5c; padding: 10px; border-radius: 6px; margin-bottom: 12px; text-align: center;">
+                <div style="font-size: 14px; color: ${color}; font-weight: bold;">
+                    ⚡ Попытки боев: ${current}/${max}${regenText}
+                </div>
+                <div style="font-size: 11px; color: #aaa; margin-top: 4px;">
+                    Каждые 2 часа восстанавливается 1 попытка
+                </div>
+            </div>
+        `;
+    }
+
     // Стили для кнопки "В бой"
-    const battleButtonStyle = hasArena 
+    const battleButtonStyle = hasArena
         ? "padding: 12px; border: none; border-radius: 6px; background: #555; color: white; cursor: pointer; font-size: 16px;"
         : "padding: 12px; border: none; border-radius: 6px; background: #333; color: #666; cursor: not-allowed; font-size: 16px; opacity: 0.5;";
     const battleButtonOnClick = hasArena
@@ -18,7 +52,9 @@ function showPvPArenaModal() {
     	<div style="padding: 12px; max-width: 320px; background: #2c2c3d; border-radius: 8px; color: white;">
     	    <h3 style="margin: 0 0 8px 0; color: #7289da; font-size: 18px;">⚔️ PvP Арена</h3>
     	    <p style="margin: 0 0 12px 0; font-size: 12px;">Добро пожаловать на арену! Здесь вы можете сражаться с другими магами.</p>
-    	    
+
+    	    ${battleEnergyInfo}
+
     	    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
     	        <button style="padding: 10px 8px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 14px;"
     	                onclick="window.showBattleSetup()">
@@ -34,13 +70,13 @@ function showPvPArenaModal() {
     	            🏆 Рейтинг
     	        </button>
     	        <button style="padding: 10px 8px; border: none; border-radius: 6px; background: #4CAF50; color: white; cursor: pointer; font-size: 14px; font-weight: bold;"
-    	                onclick="closePvPArenaModal(); window.showAdventureMenu()">
+    	                onclick="closePvPArenaModal(); window.showPvEChaptersMenu()">
     	            🗺️ Приключения (PvE)
     	        </button>
     	    </div>
-    	    
+
     	    ${!hasArena ? '<p style="color: #ff6b6b; font-size: 11px; text-align: center; margin: 0 0 8px 0;">⚠️ Постройте Арену для PvP боёв</p>' : ''}
-    	    
+
     	    <button style="margin-top: 0; padding: 8px; width: 100%; border: 1px solid #7289da; border-radius: 6px; background: transparent; color: #7289da; cursor: pointer; font-size: 13px;"
     	            onclick="closePvPArenaModal()">
     	        ❌ Закрыть
@@ -104,16 +140,32 @@ function showWizardHireModal() {
         `;
     });
     
+    // НОВОЕ: Проверка требований уровня башни для найма
+    const towerLevel = userData.buildings?.wizard_tower?.level || 1;
+    const wizardIndex = wizards.length;
+    const towerRequirements = { 0: 1, 1: 3, 2: 5, 3: 7, 4: 10 };
+    const requiredLevel = towerRequirements[wizardIndex];
+    const canHireByLevel = towerLevel >= requiredLevel;
+
     const canHire = wizards.length < maxWizards && !activeHire;
     const hireTime = window.WIZARD_HIRE_TIME?.getHireTime ? window.WIZARD_HIRE_TIME.getHireTime(wizards.length) : 0;
-    const hireButton = canHire ? 
-        `<button style="margin: 6px 0 0 0; padding: 6px; font-size: 12px; width: 100%; border: none; border-radius: 4px; background: #7289da; color: white; cursor: pointer;"
+
+    let hireButton;
+    if (!canHire && wizards.length >= maxWizards) {
+        hireButton = `<div style="text-align: center; color: #aaa; padding: 6px; font-size: 11px;">✅ Все маги наняты (${maxWizards}/${maxWizards})</div>`;
+    } else if (!canHire && activeHire) {
+        hireButton = `<div style="text-align: center; color: #ffa500; padding: 6px; font-size: 11px;">⏱️ Идет найм...</div>`;
+    } else if (!canHireByLevel) {
+        hireButton = `<button style="margin: 6px 0 0 0; padding: 6px; font-size: 12px; width: 100%; border: none; border-radius: 4px; background: #555; color: #999; cursor: not-allowed;" disabled>
+            🔒 ${wizardIndex + 1}-й маг (требуется башня ${requiredLevel} ур)
+        </button>`;
+    } else {
+        hireButton = `<button style="margin: 6px 0 0 0; padding: 6px; font-size: 12px; width: 100%; border: none; border-radius: 4px; background: #7289da; color: white; cursor: pointer;"
             onclick="hireNewWizard()">
-            ✅ Нанять мага ${hireTime > 0 ? `<span style="font-size: 9px;">(⏱️ ${window.formatTimeCurrency(hireTime)})</span>` : ''}
-        </button>` : 
-        `<div style="text-align: center; color: #aaa; padding: 6px; font-size: 11px;">Лимит: ${maxWizards}</div>`;
-    
-    const towerLevel = (userData.buildings?.wizard_tower?.level || 1);
+            ✅ Нанять ${wizardIndex + 1}-го мага ${hireTime > 0 ? `<span style="font-size: 9px;">(⏱️ ${window.formatTimeCurrency(hireTime)})</span>` : ''}
+        </button>`;
+    }
+
     const maxTowerLevel = getBuildingMaxLevel('wizard_tower');
     const upgradeTime = window.CONSTRUCTION_TIME?.getUpgradeTime ? 
         window.CONSTRUCTION_TIME.getUpgradeTime('wizard_tower', towerLevel + 1) : 144 * (towerLevel + 1);
@@ -175,19 +227,42 @@ function showWizardHireModal() {
     window.currentModal = { modal, overlay };
 }
 
-// Найм мага - ИСПРАВЛЕННАЯ ВЕРСИЯ (полностью заменить функцию)
+// Найм мага - ИСПРАВЛЕННАЯ ВЕРСИЯ с требованиями уровня башни
 async function hireNewWizard() {
     const wizards = userData.wizards || [];
     const maxWizards = 5;
+
     if (wizards.length >= maxWizards) {
         showNotification('Достигнут лимит магов!');
         return;
     }
-    // Проверяем активные стройки
-    if (window.hasActiveConstruction && window.hasActiveConstruction('any_building_or_wizard')) {
-        showNotification('⚠️ Нельзя нанимать мага пока идет строительство!');
+
+    // НОВОЕ: Проверяем уровень башни магов для найма
+    const towerLevel = userData.buildings?.wizard_tower?.level || 1;
+    const wizardIndex = wizards.length; // 0-based: 0=первый, 1=второй и т.д.
+
+    // Требования для каждого мага (первый маг всегда доступен)
+    const towerRequirements = {
+        0: 1,   // 1-й маг: есть с начала (башня 1 ур)
+        1: 3,   // 2-й маг: требует башню 3 ур
+        2: 5,   // 3-й маг: требует башню 5 ур
+        3: 7,   // 4-й маг: требует башню 7 ур
+        4: 10   // 5-й маг: требует башню 10 ур (макс)
+    };
+
+    const requiredLevel = towerRequirements[wizardIndex];
+    if (towerLevel < requiredLevel) {
+        showNotification(`⚠️ Для найма ${wizardIndex + 1}-го мага требуется башня магов ${requiredLevel} уровня! (сейчас: ${towerLevel})`);
         return;
     }
+
+    // Маги больше НЕ блокируют строительство!
+    // Проверяем только что нет другого найма мага
+    if (window.hasActiveConstruction && window.hasActiveConstruction('wizard')) {
+        showNotification('⚠️ Уже идет найм другого мага!');
+        return;
+    }
+
     // ВСЕ наймы идут только через систему времени
     if (typeof window.startWizardHire === 'function') {
         const success = await window.startWizardHire(wizards.length);
@@ -209,17 +284,15 @@ async function hireNewWizard() {
 // Начать строительство
 async function selectBuildingToBuild(buildingId, cellIndex) {
     closeCurrentModal();
-    // Проверяем активные конструкции ДО начала строительства
+    // Проверяем активные конструкции ДО начала строительства (маги больше не блокируют!)
     if (window.hasActiveConstruction && window.hasActiveConstruction('any_building_or_wizard')) {
         const constructions = window.userData.constructions || [];
-        const activeConstruction = constructions.find(c => 
-            (c.type === 'building' || c.type === 'wizard') && 
+        const activeConstruction = constructions.find(c =>
+            c.type === 'building' &&
             c.time_remaining > 0
         );
         if (activeConstruction) {
-            if (activeConstruction.type === 'wizard') {
-                showNotification('⚠️ Нельзя строить пока идет найм мага!');
-            } else if (activeConstruction.is_upgrade) {
+            if (activeConstruction.is_upgrade) {
                 showNotification('⚠️ Нельзя строить пока идет улучшение!');
             } else {
                 showNotification('⚠️ Можно строить только одно здание одновременно!');
@@ -271,53 +344,119 @@ function showUpgradeModal(buildingId, currentLevel, maxLevel) {
     const buildingConfig = getBuildingsConfig()[buildingId];
     const nextLevel = currentLevel + 1;
     const previewImage = buildingConfig.image || buildingConfig.emoji || '🏛️';
+
+    // Получаем информацию о бонусах через систему building-descriptions
+    let levelInfo = '';
+    if (typeof window.getBuildingModalData === 'function') {
+        const modalData = window.getBuildingModalData(buildingId, currentLevel, nextLevel, true);
+        levelInfo = modalData.levelInfo;
+    }
+
     // Получаем время улучшения
-    const upgradeTime = CONSTRUCTION_TIME.getUpgradeTime ? 
-        CONSTRUCTION_TIME.getUpgradeTime(buildingId, nextLevel) : 
+    const upgradeTime = CONSTRUCTION_TIME.getUpgradeTime ?
+        CONSTRUCTION_TIME.getUpgradeTime(buildingId, nextLevel) :
         144 * nextLevel; // Fallback
+
     const modalContent = `
-        <div style="padding: 15px; max-width: 350px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin-top: 0; color: #7289da; display: flex; align-items: center; gap: 10px;">
-                ${previewImage}
-                🔧 Улучшение
-            </h3>
-            <p>Вы хотите улучшить <strong>${buildingConfig.name}</strong> до уровня ${nextLevel}?</p>
-            <div style="
-                background: #3d3d5c; 
-                padding: 10px; 
-                border-radius: 6px; 
-                margin: 15px 0;
-            ">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <span>Текущий уровень:</span>
-                    <span style="color: #7289da;">${currentLevel}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <span>Новый уровень:</span>
-                    <span style="color: #4ade80;">${nextLevel}</span>
-                </div>
-                <hr style="border: 1px solid #555; margin: 10px 0;">
-                <div style="display: flex; justify-content: space-between;">
-                    <span>⏱️ Время улучшения:</span>
-                    <span style="color: #ffa500;">${window.formatTimeCurrency(upgradeTime)}</span>
+        <div style="padding: 20px; max-width: 450px; background: #2c2c3d; border-radius: 15px; color: white;">
+            <!-- Заголовок -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 50px; margin-bottom: 10px;">${previewImage}</div>
+                <h2 style="margin: 0; color: #7289da; font-size: 24px;">
+                    🔧 ${buildingConfig.name}
+                </h2>
+                <div style="color: #aaa; font-size: 14px; margin-top: 5px;">
+                    Уровень ${currentLevel} → ${nextLevel}
                 </div>
             </div>
-            <button style="margin: 10px 0 0 0; padding: 8px 15px; font-size: 14px; width: 100%; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer;"
-                onclick="confirmUpgrade('${buildingId}', ${nextLevel})">
-                ✅ Улучшить
-            </button>
-            <button style="margin: 5px 0 0 0; padding: 8px 15px; font-size: 14px; width: 100%; border: 1px solid #7289da; border-radius: 6px; background: transparent; color: #7289da; cursor: pointer;"
-                onclick="closeCurrentModal()">
-                ❌ Отмена
-            </button>
+
+            <!-- Описание -->
+            <div style="background: #3d3d5c; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                <div style="font-size: 14px; color: #ccc; line-height: 1.6;">
+                    ${buildingConfig.description || 'Улучшение здания'}
+                </div>
+            </div>
+
+            <!-- Новый бонус -->
+            ${levelInfo ? `
+            <div style="background: #3d3d5c; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                <div style="
+                    font-size: 12px;
+                    color: #ffa500;
+                    font-weight: bold;
+                    margin-bottom: 8px;
+                    text-transform: uppercase;
+                ">
+                    Новый бонус:
+                </div>
+                <div style="font-size: 16px; color: #4ade80; font-weight: bold;">
+                    ${levelInfo}
+                </div>
+            </div>
+            ` : ''}
+
+            <!-- Стоимость -->
+            <div style="
+                background: rgba(255, 165, 0, 0.1);
+                border: 1px solid rgba(255, 165, 0, 0.3);
+                padding: 12px;
+                border-radius: 8px;
+                margin: 15px 0;
+                text-align: center;
+            ">
+                <div style="font-size: 12px; color: #aaa; margin-bottom: 5px;">
+                    Время улучшения:
+                </div>
+                <div style="font-size: 18px; color: #ffa500; font-weight: bold;">
+                    ⏳ ${window.formatTimeCurrency(upgradeTime)}
+                </div>
+            </div>
+
+            <!-- Кнопки -->
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button style="
+                    flex: 1;
+                    padding: 12px 24px;
+                    background: #444;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    transition: background 0.2s;
+                " onclick="closeCurrentModal()"
+                   onmouseover="this.style.background='#555'"
+                   onmouseout="this.style.background='#444'">
+                    Отмена
+                </button>
+                <button style="
+                    flex: 1;
+                    padding: 12px 24px;
+                    background: #7289da;
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    font-weight: bold;
+                    transition: background 0.2s;
+                " onclick="confirmUpgrade('${buildingId}', ${nextLevel})"
+                   onmouseover="this.style.background='#5b6eaf'"
+                   onmouseout="this.style.background='#7289da'">
+                    ✅ Улучшить
+                </button>
+            </div>
         </div>
     `;
+
     const modal = document.createElement('div');
     modal.innerHTML = modalContent;
-    modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.8); padding: 20px; border-radius: 12px; z-index: 1000;';
+    modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;';
+
     const overlay = document.createElement('div');
     overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;';
     overlay.onclick = closeCurrentModal;
+
     document.body.appendChild(overlay);
     document.body.appendChild(modal);
     window.currentModal = { modal, overlay };
@@ -326,17 +465,15 @@ function showUpgradeModal(buildingId, currentLevel, maxLevel) {
 // Подтвердить улучшение
 async function confirmUpgrade(buildingId, targetLevel) {
     closeCurrentModal();
-    // Проверяем активные конструкции
+    // Проверяем активные конструкции (маги больше не блокируют!)
     if (window.hasActiveConstruction && window.hasActiveConstruction('any_building_or_wizard')) {
         const constructions = window.userData.constructions || [];
-        const activeConstruction = constructions.find(c => 
-            (c.type === 'building' || c.type === 'wizard') && 
+        const activeConstruction = constructions.find(c =>
+            c.type === 'building' &&
             c.time_remaining > 0
         );
         if (activeConstruction) {
-            if (activeConstruction.type === 'wizard') {
-                showNotification('⚠️ Нельзя улучшать пока идет найм мага!');
-            } else if (activeConstruction.is_upgrade) {
+            if (activeConstruction.is_upgrade) {
                 showNotification('⚠️ Уже идет улучшение другого здания!');
             } else {
                 showNotification('⚠️ Нельзя улучшать пока идет строительство!');
@@ -403,12 +540,9 @@ async function upgradeWizardTower() {
         showNotification(`⚠️ Башня магов уже максимального уровня (${maxLevel})`);
         return;
     }
-    const nextLevel = currentLevel + 1;
     closeAllModals();
-    // Используем нашу функцию startBuilding с флагом улучшения
-    if (window.startBuilding) {
-        window.startBuilding('wizard_tower', true);
-    }
+    // Показываем модальное окно с информацией о бонусах
+    showUpgradeModal('wizard_tower', currentLevel, maxLevel);
 }
 
 // Модалка кузницы
@@ -589,11 +723,9 @@ function showTimeGeneratorModal() {
     const generatorLevel = window.getBuildingLevel('time_generator');
     const maxLevel = window.getBuildingMaxLevel('time_generator');
     
-    // Расчет производства и хранилища
-    // Базовая формула: производство = 60 + (уровень - 1) * 30 мин/час
-    // Хранилище = 1440 + (уровень - 1) * 720 минут (1 день + 12 часов за уровень)
-    const production = generatorLevel > 0 ? 60 + (generatorLevel - 1) * 30 : 0;
-    const storage = generatorLevel > 0 ? 1440 + (generatorLevel - 1) * 720 : 0;
+    // Используем существующие функции вместо дублирования расчетов
+    const production = window.calculateProduction ? window.calculateProduction() : 0;
+    const storage = window.calculateMaxStorage ? window.calculateMaxStorage() : 0;
     
     // Рассчитываем следующий уровень
     const nextProduction = generatorLevel < maxLevel ? 
@@ -606,68 +738,82 @@ function showTimeGeneratorModal() {
         window.CONSTRUCTION_TIME.getUpgradeTime('time_generator', generatorLevel + 1) : 
         144 * (generatorLevel + 1);
     
+    // Текущая валюта игрока
+    const currentCurrency = window.userData?.time_currency || 0;
+
+    // Время до заполнения хранилища
+    const minutesToFull = storage > currentCurrency ? Math.ceil((storage - currentCurrency) / (production / 60)) : 0;
+    const hoursToFull = Math.floor(minutesToFull / 60);
+    const minsToFull = minutesToFull % 60;
+    const timeToFullText = minutesToFull > 0 ?
+        (hoursToFull > 0 ? `${hoursToFull}ч ${minsToFull}м` : `${minsToFull}м`) :
+        'Заполнено';
+
     const modalContent = `
-        <div style="padding: 15px; max-width: 700px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin-top: 0; color: #ffa500;">⏱️ Генератор Времени</h3>
-            <p style="color: #aaa;">Уровень: ${generatorLevel}/${maxLevel}</p>
-            
+        <div style="padding: 15px; max-width: 800px; background: #2c2c3d; border-radius: 10px; color: white;">
+            <div style="text-align: center; margin-bottom: 15px;">
+                <h3 style="margin: 0 0 5px 0; color: #ffa500; font-size: 20px;">⏱️ Генератор Времени</h3>
+                <p style="margin: 0; color: #aaa; font-size: 12px;">Уровень: ${generatorLevel}/${maxLevel}</p>
+            </div>
+
             <!-- Горизонтальная сетка блоков -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 15px 0;">
-                
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+
                 <!-- Производство -->
-                <div style="background: #3d3d5c; padding: 12px; border-radius: 8px;">
-                    <h4 style="margin: 0 0 8px 0; color: #4ade80; font-size: 14px;">⚡ Производство</h4>
-                    <div style="font-size: 24px; color: #ffa500; text-align: center; margin: 8px 0;">
-                        +${production} мин/час
+                <div style="background: linear-gradient(135deg, #4ade80 0%, #3d9b68 100%); padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                        <span style="font-size: 24px;">⚡</span>
                     </div>
-                    <div style="font-size: 11px; color: #aaa; text-align: center;">
-                        временной валюты в час
+                    <h4 style="margin: 0 0 8px 0; color: white; font-size: 13px; text-align: center; font-weight: bold;">Производство</h4>
+                    <div style="font-size: 28px; color: white; text-align: center; margin: 10px 0; font-weight: bold;">
+                        +${production}
+                    </div>
+                    <div style="font-size: 11px; color: rgba(255,255,255,0.9); text-align: center;">
+                        мин/час
                     </div>
                     ${generatorLevel < maxLevel ? `
-                        <div style="font-size: 10px; color: #7289da; text-align: center; margin-top: 5px;">
+                        <div style="font-size: 10px; color: rgba(255,255,255,0.8); text-align: center; margin-top: 8px; padding: 4px; background: rgba(0,0,0,0.2); border-radius: 4px;">
                             След. ур: +${nextProduction} мин/час
                         </div>
                     ` : ''}
                 </div>
-                
+
                 <!-- Хранилище -->
-                <div style="background: #3d3d5c; padding: 12px; border-radius: 8px;">
-                    <h4 style="margin: 0 0 8px 0; color: #00bcd4; font-size: 14px;">📦 Хранилище</h4>
-                    <div style="font-size: 20px; color: #00bcd4; text-align: center; margin: 8px 0;">
+                <div style="background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%); padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                        <span style="font-size: 24px;">📦</span>
+                    </div>
+                    <h4 style="margin: 0 0 8px 0; color: white; font-size: 13px; text-align: center; font-weight: bold;">Хранилище</h4>
+                    <div style="font-size: 24px; color: white; text-align: center; margin: 10px 0; font-weight: bold;">
                         ${window.formatTimeCurrency(storage)}
                     </div>
-                    <div style="font-size: 11px; color: #aaa; text-align: center;">
-                        максимальная вместимость
+                    <div style="font-size: 11px; color: rgba(255,255,255,0.9); text-align: center;">
+                        лимит офлайн
                     </div>
                     ${generatorLevel < maxLevel ? `
-                        <div style="font-size: 10px; color: #7289da; text-align: center; margin-top: 5px;">
+                        <div style="font-size: 10px; color: rgba(255,255,255,0.8); text-align: center; margin-top: 8px; padding: 4px; background: rgba(0,0,0,0.2); border-radius: 4px;">
                             След. ур: ${window.formatTimeCurrency(nextStorage)}
                         </div>
                     ` : ''}
                 </div>
-                
-                <!-- Текущий баланс -->
-                <div style="background: #3d3d5c; padding: 12px; border-radius: 8px;">
-                    <h4 style="margin: 0 0 8px 0; color: #ffa500; font-size: 14px;">💰 Баланс</h4>
-                    <div style="font-size: 20px; color: #ffa500; text-align: center; margin: 8px 0;">
-                        ${window.formatTimeCurrency(window.getTimeCurrency ? window.getTimeCurrency() : 0)}
+
+                <!-- Время до заполнения -->
+                <div style="background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%); padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                        <span style="font-size: 24px;">⏰</span>
                     </div>
-                    <button style="
-                        width: 100%;
-                        margin-top: 8px;
-                        padding: 8px;
-                        border: none;
-                        border-radius: 6px;
-                        background: #4ade80;
-                        color: white;
-                        cursor: pointer;
-                        font-weight: bold;
-                        font-size: 11px;
-                    " onclick="if(window.collectTime) { window.collectTime(); closeCurrentModal(); showTimeGeneratorModal(); }">
-                        💰 Собрать
-                    </button>
+                    <h4 style="margin: 0 0 8px 0; color: white; font-size: 13px; text-align: center; font-weight: bold;">Заполнение</h4>
+                    <div style="font-size: 24px; color: white; text-align: center; margin: 10px 0; font-weight: bold;">
+                        ${timeToFullText}
+                    </div>
+                    <div style="font-size: 11px; color: rgba(255,255,255,0.9); text-align: center;">
+                        до полного
+                    </div>
+                    <div style="font-size: 10px; color: rgba(255,255,255,0.8); text-align: center; margin-top: 8px; padding: 4px; background: rgba(0,0,0,0.2); border-radius: 4px;">
+                        Валюта: ${window.formatTimeCurrency(currentCurrency)}
+                    </div>
                 </div>
-                
+
             </div>
             
             ${generatorLevel < maxLevel ? `

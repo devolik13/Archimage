@@ -591,37 +591,7 @@ function findCaster(casterId, casterType) {
         return window.enemyWizards.find(w => w.id === casterId);
     }
 }
-// --- Поиск Энта, защищающего цель ---
-function findProtectingEnt(target, casterType) {
-    if (!window.activeSummons) return null;
-    
-    return window.activeSummons.find(summon => 
-        summon.type === 'nature_ent' && 
-        summon.isAlive && 
-        summon.linkedWizards.some(w => w.id === target.id)
-    );
-}
 
-// --- Исцеление самого слабого союзного мага ---
-function healWeakestAlly(casterType) {
-    const allies = casterType === 'player' ? 
-        window.playerWizards.filter(w => w.hp > 0) :
-        window.enemyWizards.filter(w => w.hp > 0);
-    
-    if (allies.length === 0) return;
-    
-    // Находим самого слабого (минимальное % HP)
-    const weakest = allies.reduce((min, w) => 
-        (w.hp / w.max_hp) < (min.hp / min.max_hp) ? w : min
-    );
-    
-    const healAmount = Math.floor(weakest.max_hp * 0.10); // 10% от max HP
-    weakest.hp = Math.min(weakest.hp + healAmount, weakest.max_hp);
-    
-    if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`💚 Энт исцеляет ${weakest.name} на ${healAmount} HP`);
-    }
-}
 function removeDeadWolf(wolf) {
     if (window.spellAnimations?.call_wolf?.remove) {
         window.spellAnimations.call_wolf.remove(wolf.column, wolf.position);

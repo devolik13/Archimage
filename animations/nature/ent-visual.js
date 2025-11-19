@@ -184,12 +184,22 @@ console.log('✅ ent-visual.js загружен');
             if (ent) {
                 // Анимация смерти
                 const fadeOut = () => {
+                    // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+                    if (!ent.sprite || ent.sprite.destroyed || !ent.sprite.transform) {
+                        activeEnts.delete(summonId);
+                        return;
+                    }
+
                     ent.sprite.alpha -= 0.05;
                     if (ent.sprite.alpha > 0) {
                         requestAnimationFrame(fadeOut);
                     } else {
-                        ent.sprite.parent?.removeChild(ent.sprite);
-                        ent.sprite.destroy();
+                        if (ent.sprite.parent) {
+                            ent.sprite.parent.removeChild(ent.sprite);
+                        }
+                        if (!ent.sprite.destroyed) {
+                            ent.sprite.destroy();
+                        }
                         activeEnts.delete(summonId);
                     }
                 };

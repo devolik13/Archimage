@@ -147,6 +147,11 @@ console.log('✅ faction-speech-bubble.js загружен');
         const fadeOutDuration = 300;  // 0.3 секунды на исчезновение
 
         const animate = () => {
+            // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+            if (!bubbleContainer || bubbleContainer.destroyed || !bubbleContainer.transform) {
+                return;
+            }
+
             const elapsed = Date.now() - startTime;
 
             // Фаза появления

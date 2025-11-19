@@ -1,0 +1,9 @@
+{
+  "name": "archimage",
+  "version": "1.0.0",
+  "description": "Archimage: Arcane Secrets - магическая игра для Telegram",
+  "scripts": {
+    "start": "python3 -m http.server 8000"
+  },
+  "dependencies": {}
+}
