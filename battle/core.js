@@ -182,13 +182,8 @@ function cleanupOldWalls() {
 function startBattle() {
     console.log('🔥 Начало боя');
 
-    // ПОТРАТИТЬ ЭНЕРГИЮ НА БОЙ (только для PvP)
-    if (!window.isPvEBattle && typeof window.consumeBattleEnergy === 'function') {
-        if (!window.consumeBattleEnergy()) {
-            console.error('❌ Не удалось начать бой - недостаточно энергии');
-            return;
-        }
-    }
+    // ЭНЕРГИЯ УЖЕ СПИСАНА при выборе противника в opponent-selection.js
+    // Это предотвращает эксплойт с отменой боя
 
     window.battleState = 'active';
     window.battleLog = [];
