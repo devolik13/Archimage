@@ -407,51 +407,49 @@ function closeDemoBattle() {
 
 // Показать приветственное сообщение для новых игроков
 function showWelcomeMessage() {
+    console.log('👋 Показываем приветственное окно');
+
+    // Основной контейнер (как у города и faction-selection)
     const modal = document.createElement('div');
     modal.id = 'welcome-modal';
     modal.style.cssText = `
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.85);
+        width: 100vw;
+        height: 100vh;
+        display: block;
+        background: rgba(0, 0, 0, 0.9);
         z-index: 10000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        overflow: hidden;
     `;
 
-    // Контейнер для контента с поддержкой rotation
-    const contentContainer = document.createElement('div');
-    contentContainer.id = 'welcome-content-container';
-    contentContainer.style.cssText = `
-        position: relative;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
+    // Контейнер с rotation КАК У ГОРОДА
+    const bgContainer = document.createElement('div');
+    bgContainer.id = 'welcome-bg-container';
+    bgContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
     `;
 
     // Проверяем CSS rotation (мобильные устройства)
     const isRotated = window.cssRotationActive === true;
-    console.log('🔄 Welcome modal - CSS Rotation активен:', isRotated);
+    console.log('🔄 Welcome - CSS Rotation активен:', isRotated);
 
+    // ROTATION через style (как у города!)
     if (isRotated) {
-        // Удаляем старый style если есть
         const oldStyle = document.getElementById('welcome-rotation-style');
         if (oldStyle) {
             oldStyle.remove();
         }
 
-        // Применяем rotation как в faction-selection
         const style = document.createElement('style');
         style.id = 'welcome-rotation-style';
         style.innerHTML = `
-            #welcome-content-container {
+            #welcome-bg-container {
                 position: fixed !important;
                 top: 50% !important;
                 left: 50% !important;
@@ -465,69 +463,128 @@ function showWelcomeMessage() {
         console.log('✅ Welcome rotation style применен (-90deg)');
     }
 
-    contentContainer.innerHTML = `
+    // Контент (position: absolute КАК У ГОРОДА)
+    const contentWrapper = document.createElement('div');
+    contentWrapper.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        padding: 5vh 5vw;
+        box-sizing: border-box;
+    `;
+
+    contentWrapper.innerHTML = `
         <div style="
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 40px 30px;
-            border-radius: 20px;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            color: white;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            flex: 1;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 600px;
         ">
-            <div style="font-size: 60px; margin-bottom: 20px;">⚔️</div>
+            <div style="font-size: 80px; margin-bottom: 30px; animation: pulse 2s infinite;">
+                ⚔️✨
+            </div>
+
+            <h1 style="
+                margin: 0 0 20px 0;
+                font-size: 32px;
+                color: #ffd700;
+                text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+                font-weight: bold;
+                text-align: center;
+            ">
+                Приветствуем тебя, маг!
+            </h1>
 
             <h2 style="
-                margin: 0 0 30px 0;
-                font-size: 24px;
+                margin: 0 0 40px 0;
+                font-size: 20px;
                 color: #fff;
+                text-align: center;
+                opacity: 0.9;
             ">
-                Добро пожаловать, маг!
+                Твой путь к величию начинается здесь
             </h2>
 
             <div style="
-                background: rgba(255,255,255,0.1);
-                padding: 25px;
-                border-radius: 10px;
-                margin: 20px 0;
-                font-size: 18px;
-                line-height: 1.8;
-                flex: 1;
-            ">
-                Строить можно одновременно<br>
-                <strong>одно здание</strong><br>
-                и изучать<br>
-                <strong>одно заклинание</strong>.<br><br>
-                Не забывай ускорять.<br><br>
-                <span style="color: #ffd700; font-weight: bold; font-size: 20px;">
-                    Выбирай мудро!
-                </span>
-            </div>
-
-            <button onclick="closeWelcomeMessage()" style="
-                width: 100%;
-                margin-top: 20px;
-                padding: 15px;
-                border: none;
-                border-radius: 10px;
-                background: rgba(255,255,255,0.2);
-                backdrop-filter: blur(10px);
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+                padding: 30px;
+                border-radius: 15px;
+                border: 2px solid rgba(255, 215, 0, 0.3);
+                text-align: center;
                 color: white;
-                cursor: pointer;
-                font-weight: bold;
                 font-size: 18px;
-                transition: all 0.3s;
-            " onmouseover="this.style.background='rgba(255,255,255,0.3)'"
-               onmouseout="this.style.background='rgba(255,255,255,0.2)'">
-                Понятно
-            </button>
+                line-height: 2;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            ">
+                <div style="margin-bottom: 20px; color: #ffd700; font-size: 20px; font-weight: bold;">
+                    📜 Запомни основы магии:
+                </div>
+
+                Строить можно одновременно<br>
+                <strong style="color: #ffd700; font-size: 20px;">одно здание</strong><br>
+                и изучать<br>
+                <strong style="color: #ffd700; font-size: 20px;">одно заклинание</strong>.<br><br>
+
+                <div style="color: #87ceeb; font-size: 19px;">
+                    ⚡ Не забывай ускорять процессы!
+                </div>
+                <br>
+
+                <div style="
+                    color: #ffd700;
+                    font-weight: bold;
+                    font-size: 24px;
+                    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+                    margin-top: 10px;
+                ">
+                    Выбирай мудро! 🔮
+                </div>
+            </div>
         </div>
+
+        <button onclick="closeWelcomeMessage()" style="
+            width: 100%;
+            max-width: 400px;
+            padding: 18px 40px;
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+            margin-top: 30px;
+        "
+        onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 30px rgba(255, 215, 0, 0.5)'"
+        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 5px 20px rgba(255, 215, 0, 0.3)'">
+            ⚔️ Начать приключение!
+        </button>
     `;
 
-    modal.appendChild(contentContainer);
+    // Добавляем CSS анимацию
+    const animStyle = document.createElement('style');
+    animStyle.innerHTML = `
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+    `;
+    document.head.appendChild(animStyle);
+
+    bgContainer.appendChild(contentWrapper);
+    modal.appendChild(bgContainer);
     document.body.appendChild(modal);
 }
 
