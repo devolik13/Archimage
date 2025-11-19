@@ -215,11 +215,13 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 // Если это PVE враг - используем спрайты гоблинов
                 const enemyWizard = window.enemyWizards?.find(w => w.id === enemy.id);
                 if (enemyWizard && enemyWizard.isAdventureEnemy) {
+                    console.log(`🎯 PvE враг обнаружен: ${enemyWizard.name}, используем спрайты гоблина`);
                     return 'goblin';
                 }
 
                 // Иначе используем фракцию врага
                 if (enemy.faction) {
+                    console.log(`🎯 PvP враг с фракцией: ${enemy.faction}`);
                     return enemy.faction;
                 }
             }
@@ -321,12 +323,13 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 container.attackFrames = textures.cast;
                 container.deathFrames = textures.death;
                 container.faction = faction;
-                
+
                 console.log(`✅ Создан маг ${faction} с анимациями:`, {
                     idle: textures.idle?.length || 0,
-                    cast: textures.cast?.length || 0,
+                    attack: textures.cast?.length || 0,
                     death: textures.death?.length || 0
                 });
+                console.log(`   🎬 Attack frames загружены из: ${config.cast}`);
             }
         } else if (fireAtlas) {
             // Используем старую систему с атласом для других фракций
@@ -453,8 +456,9 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         
         // Если есть кадры атаки
         if (sprite instanceof PIXI.AnimatedSprite && container.attackFrames && container.attackFrames.length > 0) {
-            console.log(`🎬 Запуск анимации атаки (${container.attackFrames.length} кадров)`);
-            
+            console.log(`🎬 Запуск анимации атаки для ${container.faction || 'unknown'} (${container.attackFrames.length} кадров)`);
+            console.log(`   Позиция: ${wizardCol}_${wizardRow}`);
+
             // Сохраняем текущее состояние
             const originalFrames = sprite.textures;
             const originalSpeed = sprite.animationSpeed;
