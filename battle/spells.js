@@ -208,16 +208,25 @@ function castBasicAttack(wizard, position, casterType) {
     	    console.log(`✅ Анимация базовой атаки завершена для ${wizard.name}`);
     	});
     }
+    console.log(`🎯 Ищем цель для ${wizard.name} (позиция: ${position}, тип: ${casterType})`);
+    console.log(`   window.findTarget существует:`, typeof window.findTarget === 'function');
+
     const target = window.findTarget ? window.findTarget(position, casterType) : null;
+
+    console.log(`   Найденная цель:`, target);
 
     if (target) {
         const baseDamage = 5 + (wizard.level || 1) * 1;
+        console.log(`💥 Базовый урон: ${baseDamage}, наносим цели: ${target.wizard.name}`);
+
         const finalDamage = window.applyFinalDamage ?
             window.applyFinalDamage(wizard, target.wizard, baseDamage, 'basic_attack', 0, false) : baseDamage;
-            
+
         target.wizard.hp -= finalDamage;
         if (target.wizard.hp < 0) target.wizard.hp = 0;
-        
+
+        console.log(`✅ Атака завершена: ${target.wizard.name} HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
+
         if (typeof window.logSpellHit === 'function') {
             window.logSpellHit(wizard, target.wizard, finalDamage, 'Базовая атака');
         } else if (Array.isArray(window.battleLog)) {
@@ -226,6 +235,7 @@ function castBasicAttack(wizard, position, casterType) {
             console.log(logEntry);
         }
     } else {
+        console.warn(`⚠️ Цель НЕ НАЙДЕНА для ${wizard.name}!`);
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`⚔️ ${wizard.name} атакует, но цель не найдена`);
         } else if (Array.isArray(window.battleLog)) {
