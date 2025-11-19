@@ -1146,5 +1146,8 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         updatePoisonIcon: updatePoisonIcon // НОВОЕ: обновление иконки яда
     };
 
+    // КРИТИЧЕСКИ ВАЖНО: Прямой экспорт для базовой атаки!
+    window.playWizardAttackAnimation = playWizardAttackAnimation;
+
     console.log('✅ pixi-wizards готов (поддержка фракций)');
 })();
