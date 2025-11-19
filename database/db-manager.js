@@ -210,23 +210,30 @@ class DatabaseManager {
             console.log(`📊 Статистика: ${window.userData.wins}W / ${window.userData.losses}L | Рейтинг: ${window.userData.rating}`);
 
             // НОВОЕ: Обновляем рейтинг противника (симметрично)
+            // Только для реальных игроков (не ботов и с валидным ID)
             if (window.selectedOpponent && ratingChange !== undefined) {
-                const opponentRatingChange = -ratingChange; // Противоположное изменение
                 const opponentId = window.selectedOpponent.id;
-                const currentOpponentRating = window.selectedOpponent.rating || 1000;
-                const newOpponentRating = Math.max(0, currentOpponentRating + opponentRatingChange);
 
-                const { error: opponentError } = await this.supabase
-                    .from('players')
-                    .update({
-                        rating: newOpponentRating
-                    })
-                    .eq('id', opponentId);
+                // Проверяем что ID валиден (не undefined, не null, и положительный - боты имеют отрицательные ID)
+                if (opponentId && opponentId > 0) {
+                    const opponentRatingChange = -ratingChange; // Противоположное изменение
+                    const currentOpponentRating = window.selectedOpponent.rating || 1000;
+                    const newOpponentRating = Math.max(0, currentOpponentRating + opponentRatingChange);
 
-                if (opponentError) {
-                    console.error('⚠️ Ошибка обновления рейтинга противника:', opponentError);
+                    const { error: opponentError } = await this.supabase
+                        .from('players')
+                        .update({
+                            rating: newOpponentRating
+                        })
+                        .eq('id', opponentId);
+
+                    if (opponentError) {
+                        console.error('⚠️ Ошибка обновления рейтинга противника:', opponentError);
+                    } else {
+                        console.log(`🎯 Рейтинг противника обновлён: ${window.selectedOpponent.username} ${currentOpponentRating} → ${newOpponentRating} (${opponentRatingChange > 0 ? '+' : ''}${opponentRatingChange})`);
+                    }
                 } else {
-                    console.log(`🎯 Рейтинг противника обновлён: ${window.selectedOpponent.username} ${currentOpponentRating} → ${newOpponentRating} (${opponentRatingChange > 0 ? '+' : ''}${opponentRatingChange})`);
+                    console.log('ℹ️ Противник - бот или демо, рейтинг не обновляется');
                 }
             }
 
