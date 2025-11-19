@@ -9,16 +9,15 @@ let blockConstructionModalReopen = false;
 // Проверка активных строек
 function hasActiveConstruction(type = 'building') {
     const constructions = window.userData.constructions || [];
-    
-    // Проверяем есть ли ЛЮБАЯ стройка или найм
+
+    // Проверяем есть ли ЛЮБАЯ стройка, улучшение или найм (НЕ заклинания!)
     if (type === 'any_building_or_wizard') {
-        return constructions.some(c => 
-            (c.type === 'building' || c.type === 'wizard') && 
-            !c.is_upgrade && // не считаем улучшения
+        return constructions.some(c =>
+            (c.type === 'building' || c.type === 'wizard') &&
             c.time_remaining > 0
         );
     }
-    
+
     // Проверяем конкретный тип
     return constructions.some(c => c.type === type && c.time_remaining > 0);
 }
