@@ -94,6 +94,36 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             frameCount: 8,
             animationSpeed: 0.15,
             scale: 0.700 // В 2 раза больше гоблина - занимает 4 клетки (2x2)
+        },
+        water_elemental: {
+            idle: 'images/enemies/water_elemental/idle.png',
+            cast: 'images/enemies/water_elemental/attack.png',
+            death: 'images/enemies/water_elemental/death.png',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            animationSpeed: 0.15,
+            scale: 0.700
+        },
+        wind_elemental: {
+            idle: 'images/enemies/wind_elemental/idle.png',
+            cast: 'images/enemies/wind_elemental/attack.png',
+            death: 'images/enemies/wind_elemental/death.png',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            animationSpeed: 0.15,
+            scale: 0.700
+        },
+        earth_elemental: {
+            idle: 'images/enemies/earth_elemental/idle.png',
+            cast: 'images/enemies/earth_elemental/attack.png',
+            death: 'images/enemies/earth_elemental/death.png',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            animationSpeed: 0.15,
+            scale: 0.700
         }
     };
     
