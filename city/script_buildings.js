@@ -640,44 +640,80 @@ function showTimeGeneratorModal() {
         window.CONSTRUCTION_TIME.getUpgradeTime('time_generator', generatorLevel + 1) : 
         144 * (generatorLevel + 1);
     
+    // Текущая валюта игрока
+    const currentCurrency = window.userData?.time_currency || 0;
+
+    // Время до заполнения хранилища
+    const minutesToFull = storage > currentCurrency ? Math.ceil((storage - currentCurrency) / (production / 60)) : 0;
+    const hoursToFull = Math.floor(minutesToFull / 60);
+    const minsToFull = minutesToFull % 60;
+    const timeToFullText = minutesToFull > 0 ?
+        (hoursToFull > 0 ? `${hoursToFull}ч ${minsToFull}м` : `${minsToFull}м`) :
+        'Заполнено';
+
     const modalContent = `
-        <div style="padding: 15px; max-width: 700px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin-top: 0; color: #ffa500;">⏱️ Генератор Времени</h3>
-            <p style="color: #aaa;">Уровень: ${generatorLevel}/${maxLevel}</p>
-            
+        <div style="padding: 15px; max-width: 800px; background: #2c2c3d; border-radius: 10px; color: white;">
+            <div style="text-align: center; margin-bottom: 15px;">
+                <h3 style="margin: 0 0 5px 0; color: #ffa500; font-size: 20px;">⏱️ Генератор Времени</h3>
+                <p style="margin: 0; color: #aaa; font-size: 12px;">Уровень: ${generatorLevel}/${maxLevel}</p>
+            </div>
+
             <!-- Горизонтальная сетка блоков -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 15px 0;">
-                
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+
                 <!-- Производство -->
-                <div style="background: #3d3d5c; padding: 12px; border-radius: 8px;">
-                    <h4 style="margin: 0 0 8px 0; color: #4ade80; font-size: 14px;">⚡ Производство</h4>
-                    <div style="font-size: 24px; color: #ffa500; text-align: center; margin: 8px 0;">
-                        +${production} мин/час
+                <div style="background: linear-gradient(135deg, #4ade80 0%, #3d9b68 100%); padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                        <span style="font-size: 24px;">⚡</span>
                     </div>
-                    <div style="font-size: 11px; color: #aaa; text-align: center;">
-                        временной валюты в час
+                    <h4 style="margin: 0 0 8px 0; color: white; font-size: 13px; text-align: center; font-weight: bold;">Производство</h4>
+                    <div style="font-size: 28px; color: white; text-align: center; margin: 10px 0; font-weight: bold;">
+                        +${production}
+                    </div>
+                    <div style="font-size: 11px; color: rgba(255,255,255,0.9); text-align: center;">
+                        мин/час
                     </div>
                     ${generatorLevel < maxLevel ? `
-                        <div style="font-size: 10px; color: #7289da; text-align: center; margin-top: 5px;">
+                        <div style="font-size: 10px; color: rgba(255,255,255,0.8); text-align: center; margin-top: 8px; padding: 4px; background: rgba(0,0,0,0.2); border-radius: 4px;">
                             След. ур: +${nextProduction} мин/час
                         </div>
                     ` : ''}
                 </div>
-                
+
                 <!-- Хранилище -->
-                <div style="background: #3d3d5c; padding: 12px; border-radius: 8px;">
-                    <h4 style="margin: 0 0 8px 0; color: #00bcd4; font-size: 14px;">📦 Хранилище</h4>
-                    <div style="font-size: 20px; color: #00bcd4; text-align: center; margin: 8px 0;">
+                <div style="background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%); padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                        <span style="font-size: 24px;">📦</span>
+                    </div>
+                    <h4 style="margin: 0 0 8px 0; color: white; font-size: 13px; text-align: center; font-weight: bold;">Хранилище</h4>
+                    <div style="font-size: 24px; color: white; text-align: center; margin: 10px 0; font-weight: bold;">
                         ${window.formatTimeCurrency(storage)}
                     </div>
-                    <div style="font-size: 11px; color: #aaa; text-align: center;">
-                        лимит офлайн накопления
+                    <div style="font-size: 11px; color: rgba(255,255,255,0.9); text-align: center;">
+                        лимит офлайн
                     </div>
                     ${generatorLevel < maxLevel ? `
-                        <div style="font-size: 10px; color: #7289da; text-align: center; margin-top: 5px;">
+                        <div style="font-size: 10px; color: rgba(255,255,255,0.8); text-align: center; margin-top: 8px; padding: 4px; background: rgba(0,0,0,0.2); border-radius: 4px;">
                             След. ур: ${window.formatTimeCurrency(nextStorage)}
                         </div>
                     ` : ''}
+                </div>
+
+                <!-- Время до заполнения -->
+                <div style="background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%); padding: 15px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                        <span style="font-size: 24px;">⏰</span>
+                    </div>
+                    <h4 style="margin: 0 0 8px 0; color: white; font-size: 13px; text-align: center; font-weight: bold;">Заполнение</h4>
+                    <div style="font-size: 24px; color: white; text-align: center; margin: 10px 0; font-weight: bold;">
+                        ${timeToFullText}
+                    </div>
+                    <div style="font-size: 11px; color: rgba(255,255,255,0.9); text-align: center;">
+                        до полного
+                    </div>
+                    <div style="font-size: 10px; color: rgba(255,255,255,0.8); text-align: center; margin-top: 8px; padding: 4px; background: rgba(0,0,0,0.2); border-radius: 4px;">
+                        Валюта: ${window.formatTimeCurrency(currentCurrency)}
+                    </div>
                 </div>
 
             </div>
