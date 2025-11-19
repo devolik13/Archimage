@@ -482,11 +482,16 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
     
     // Анимация атаки мага
     function playWizardAttackAnimation(wizardCol, wizardRow, callback) {
-        console.log('⚔️ Анимация атаки для позиции:', wizardCol, wizardRow);
+        console.log('⚔️⚔️⚔️ playWizardAttackAnimation ВЫЗВАНА для позиции:', wizardCol, wizardRow);
+        console.log('   Все спрайты магов:', Object.keys(wizardSprites));
 
         const wizardKey = `${wizardCol}_${wizardRow}`;
         const container = wizardSprites[wizardKey];
-        
+
+        console.log(`   Ищем спрайт: ${wizardKey}`);
+        console.log(`   Найден контейнер:`, !!container);
+        console.log(`   Есть sprite в контейнере:`, !!container?.sprite);
+
         if (!container || !container.sprite) {
             console.warn(`⚠️ Маг не найден на позиции ${wizardCol}_${wizardRow}`);
             if (callback) callback();
