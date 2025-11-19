@@ -50,6 +50,26 @@ function showLibraryMainScreen() {
         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
             <img id="library-image" src="assets/ui/modals/library_template.jpg" style="max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="Библиотека">
             <div id="library-clickable-zones" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+
+            <!-- Надпись "Библиотека" сверху -->
+            <div id="library-title" style="
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                pointer-events: none;
+                text-align: center;
+            "></div>
+
+            <!-- Надпись "Назад" снизу -->
+            <div id="library-back-label" style="
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                pointer-events: none;
+                text-align: center;
+            "></div>
         </div>
     `;
     
@@ -61,15 +81,45 @@ function showLibraryMainScreen() {
 function setupLibraryClickableZones() {
     const img = document.getElementById('library-image');
     const zonesContainer = document.getElementById('library-clickable-zones');
+    const titleDiv = document.getElementById('library-title');
+    const backLabelDiv = document.getElementById('library-back-label');
     if (!img || !zonesContainer) return;
-    
+
     const originalWidth = 768, originalHeight = 512;
     const currentWidth = img.offsetWidth, currentHeight = img.offsetHeight;
     const scaleX = currentWidth / originalWidth, scaleY = currentHeight / originalHeight;
-    
+
     zonesContainer.style.width = currentWidth + 'px';
     zonesContainer.style.height = currentHeight + 'px';
     zonesContainer.innerHTML = '';
+
+    // Позиционируем надпись "Библиотека" сверху по центру
+    if (titleDiv) {
+        const titleY = 50; // позиция Y относительно оригинального изображения (768x512)
+        titleDiv.style.width = currentWidth + 'px';
+        titleDiv.style.top = (titleY * scaleY - currentHeight / 2) + 'px';
+        titleDiv.innerHTML = `<h2 style="
+            margin: 0;
+            font-size: ${Math.max(24, 32 * Math.min(scaleX, scaleY))}px;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            font-weight: bold;
+        ">📚 Библиотека</h2>`;
+    }
+
+    // Позиционируем надпись "Назад" снизу по центру
+    if (backLabelDiv) {
+        const backY = 470; // позиция Y кнопки "Назад"
+        backLabelDiv.style.width = currentWidth + 'px';
+        backLabelDiv.style.top = (backY * scaleY - currentHeight / 2) + 'px';
+        backLabelDiv.innerHTML = `<div style="
+            margin: 0;
+            font-size: ${Math.max(18, 24 * Math.min(scaleX, scaleY))}px;
+            color: #FFFFFF;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            font-weight: bold;
+        ">◄ Назад</div>`;
+    }
     
     const zones = [
         { id: 'fire', coords: [55, 130, 220, 260], faction: 'fire' },
