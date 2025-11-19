@@ -51,13 +51,18 @@ async function selectFaction(faction) {
 
     const factionSpell = factionSpellMap[faction];
 
+    // Выбираем случайное второе заклинание tier 1 (не родное)
+    const allTier1Spells = ["spark", "icicle", "gust", "pebble", "call_wolf", "poisoned_blade"];
+    const otherSpells = allTier1Spells.filter(spell => spell !== factionSpell);
+    const randomSecondSpell = otherSpells[Math.floor(Math.random() * otherSpells.length)];
+
     // Создаём начальные данные игрока
-    // Маг сразу с прикрепленным родным заклинанием + пустой слот для второго
+    // Маг сразу с прикрепленным родным заклинанием + случайное второе заклинание tier 1
     const initialWizards = [{
         id: 'wizard_1',
         name: 'Начальный маг',
         faction: faction,
-        spells: [factionSpell, null], // Родное заклинание + пустой слот
+        spells: [factionSpell, randomSecondSpell], // Родное + случайное tier 1
         hp: 100,
         armor: 100,
         max_hp: 100,

@@ -784,11 +784,11 @@ window.cleanupDeadSummons = function() {
 // Адаптер для создания волка через новую систему
 window.createWolfSummon = function(wizard, casterType, position, level) {
     const wolfStats = [
-        { hp: 20, damage: 10 },   // Ур.1
-        { hp: 25, damage: 12 },   // Ур.2
-        { hp: 30, damage: 14 },   // Ур.3
-        { hp: 35, damage: 16 },   // Ур.4
-        { hp: 40, damage: 16 }    // Ур.5
+        { hp: 10, damage: 10 },   // Ур.1
+        { hp: 12, damage: 12 },   // Ур.2
+        { hp: 15, damage: 14 },   // Ур.3
+        { hp: 18, damage: 16 },   // Ур.4
+        { hp: 20, damage: 16 }    // Ур.5
     ];
     
     const stats = wolfStats[Math.min(level, 5) - 1] || wolfStats[0];

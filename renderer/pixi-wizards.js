@@ -774,6 +774,15 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                             container.hpBar.destroy({ children: true });
                         }
                     }
+
+                    if (container.poisonIcon) {
+                        if (container.poisonIcon.parent) {
+                            container.poisonIcon.parent.removeChild(container.poisonIcon);
+                        }
+                        if (container.poisonIcon.destroy) {
+                            container.poisonIcon.destroy({ children: true });
+                        }
+                    }
                 } catch (e) {
                     console.error(`Ошибка при очистке спрайта ${key}:`, e);
                 }
@@ -985,6 +994,59 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         }
     }
 
+    // Обновление иконки яда (стаки)
+    function updatePoisonIcon(key, stacks) {
+        const container = wizardSprites[key];
+
+        if (!container) {
+            return;
+        }
+
+        // Удаляем старую иконку если есть
+        if (container.poisonIcon) {
+            if (container.poisonIcon.parent) {
+                container.poisonIcon.parent.removeChild(container.poisonIcon);
+            }
+            if (container.poisonIcon.destroy) {
+                container.poisonIcon.destroy({ children: true });
+            }
+            container.poisonIcon = null;
+        }
+
+        // Если стаков нет - ничего не показываем
+        if (!stacks || stacks <= 0) {
+            return;
+        }
+
+        // Создаем новую иконку с количеством стаков
+        const poisonText = new PIXI.Text(`☠️${stacks}`, {
+            fontFamily: 'Arial',
+            fontSize: 16,
+            fill: 0x00ff00, // Зеленый цвет для яда
+            stroke: 0x000000,
+            strokeThickness: 3,
+            fontWeight: 'bold'
+        });
+
+        poisonText.anchor.set(0.5, 1); // Центрируем по горизонтали, низ по вертикали
+
+        // Позиционируем над HP баром
+        if (container.hpBar) {
+            poisonText.x = container.hpBar.x;
+            poisonText.y = container.hpBar.y - 8; // Чуть выше HP бара
+        } else if (container.sprite) {
+            poisonText.x = container.sprite.x;
+            poisonText.y = container.sprite.y + 18; // Чуть выше спрайта
+        }
+
+        container.poisonIcon = poisonText;
+
+        // Добавляем в контейнер
+        if (unitsContainer) {
+            unitsContainer.addChild(poisonText);
+        }
+    }
+
     // Экспорт с поддержкой старого API
     window.pixiWizards = {
         init: init,
@@ -999,7 +1061,8 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         createWizard: createDemoWizard,
         playCastAnimation: playCastAnimation,
         playDeathAnimation: playDeathAnimation,
-        updateWizardHP: updateSpriteHP
+        updateWizardHP: updateSpriteHP,
+        updatePoisonIcon: updatePoisonIcon // НОВОЕ: обновление иконки яда
     };
 
     console.log('✅ pixi-wizards готов (поддержка фракций)');
