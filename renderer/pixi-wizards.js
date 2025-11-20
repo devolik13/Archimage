@@ -83,7 +83,7 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             frameHeight: 256,
             frameCount: 8,
             animationSpeed: 0.15,
-            scale: 0.350
+            scale: 0.245 // Уменьшено на 30% (0.350 * 0.7)
         },
         fire_elemental: {
             idle: 'images/enemies/fire_elemental/idle.png',
