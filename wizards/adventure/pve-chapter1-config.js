@@ -81,7 +81,11 @@ const ELEMENTALS = {
         hp: 400,
         armor: 150,
         faction: "fire",
-        spells: ["spark", "firebolt", "fireball"], // использует огненную магию
+        spells: ['fire_arrow', 'fireball'],  // ID заклинаний
+        spell_levels: {  // Уровни заклинаний
+            'fire_arrow': 5,
+            'fireball': 3
+        },
         resistances: {
             fire: 75,    // 75% сопротивление огню
             water: 30,   // 30% ко всем остальным

@@ -344,6 +344,7 @@ function startPvELevel(levelId) {
                 max_hp: enemy.hp,
                 max_armor: enemy.armor,
                 spells: enemy.spells || [], // заклинания для элементалей и боссов
+                spell_levels: enemy.spell_levels || null, // уровни заклинаний
                 isAdventureEnemy: true, // ИСПРАВЛЕНО: используем правильный флаг
                 pveLevel: levelId
             };
@@ -351,6 +352,14 @@ function startPvELevel(levelId) {
             // Добавляем faction ТОЛЬКО если она есть в конфиге (для элементалей/боссов)
             if (enemy.faction) {
                 enemyWizard.faction = enemy.faction;
+            }
+
+            // Для элементалей добавляем логирование
+            if (enemy.isElemental) {
+                console.log(`🔥 Создан элементаль: ${enemy.name}`);
+                console.log(`   Фракция: ${enemy.faction}`);
+                console.log(`   Заклинания:`, enemy.spells);
+                console.log(`   Уровни заклинаний:`, enemy.spell_levels);
             }
 
             window.enemyFormation[index] = enemyWizard;

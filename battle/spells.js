@@ -120,13 +120,34 @@ function castSpell(wizard, spellId, position, casterType) {
 
     // ИСПРАВЛЕНИЕ: Используем правильный источник данных для врагов и игрока
     let spellsSource = null;
+    let spellData = null;
+
     if (casterType === 'player') {
         spellsSource = window.userData?.spells;
+        spellData = window.findSpellInUserData ? window.findSpellInUserData(spellId, spellsSource) : null;
     } else if (casterType === 'enemy') {
-        spellsSource = window.selectedOpponent?.spells;
+        // Для PvE врагов (элементалей) с spell_levels создаем spellData напрямую
+        if (wizard.spell_levels && wizard.spell_levels[spellId]) {
+            const spellLevel = wizard.spell_levels[spellId];
+            console.log(`🔥 Создаем spellData для элементаля: ${spellId} уровень ${spellLevel}`);
+
+            // Получаем базовые данные заклинания
+            const baseSpellData = window.spellsData?.[spellId];
+            if (baseSpellData) {
+                spellData = {
+                    ...baseSpellData,
+                    id: spellId,
+                    level: spellLevel,
+                    name: baseSpellData.name
+                };
+            }
+        } else {
+            // Для PvP врагов используем стандартный путь
+            spellsSource = window.selectedOpponent?.spells;
+            spellData = window.findSpellInUserData ? window.findSpellInUserData(spellId, spellsSource) : null;
+        }
     }
 
-    const spellData = window.findSpellInUserData ? window.findSpellInUserData(spellId, spellsSource) : null;
     console.log(`   Spell Data (from ${casterType}):`, spellData);
 
     if (!spellData) {
