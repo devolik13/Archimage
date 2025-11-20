@@ -197,22 +197,8 @@ function logMiss(direction, level) {
     addToBattleLogWithIndent(`❌ Шип ${directionName} → пусто`);
 }
 
-function logProtectionResult(caster, target, result, spellName) {
-    // Логируем слои защиты
-    if (result.protectionLayers) {
-        result.protectionLayers.forEach(layer => {
-            if (!layer.includes('не получает урона')) {
-                addToBattleLogWithIndent(`🛡️ ${layer}`);
-            }
-        });
-    }
-    
-    // Основной лог
-    const blockedText = result.blocked > 0 ? `, ${result.blocked} заблокировано` : '';
-    const mainLog = `🎯 ${caster.name} использует ${spellName} на ${target.wizard.name} ` +
-                   `(${result.finalDamage} урона${blockedText}) (${target.wizard.hp}/${target.wizard.max_hp})`;
-    addToBattleLogWithIndent(mainLog);
-}
+// ПРИМЕЧАНИЕ: logProtectionResult перенесена в multi-layer-protection.js
+// Там используется полная версия с деталями (сопротивление, броня, _lastDamageSteps)
 
 // --- Получить статистику боя ---
 function getBattleStatistics() {
@@ -304,7 +290,7 @@ window.logSpellHit = logSpellHit;
 window.logWallBlock = logWallBlock;
 window.logEffectApplied = logEffectApplied;
 window.logMiss = logMiss;
-window.logProtectionResult = logProtectionResult;
+// window.logProtectionResult экспортируется из multi-layer-protection.js (полная версия с деталями)
 window.getBattleStatistics = getBattleStatistics;
 window.processStartOfTurnEffects = processStartOfTurnEffects;
 window.processEndOfTurnEffects = processEndOfTurnEffects;
