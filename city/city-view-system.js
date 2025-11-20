@@ -912,9 +912,16 @@ function onBuildingClick(buildingId) {
 
 // Показ информации о здании
 function showBuildingInfo(buildingId, name, description) {
+    // Проверяем, не открыто ли уже окно
+    const existingModal = document.getElementById('building-info-modal');
+    if (existingModal) {
+        console.log('⚠️ Модальное окно уже открыто, игнорируем повторный клик');
+        return;
+    }
+
     const buildingInfo = window.userData?.buildings?.[buildingId];
     const level = buildingInfo?.level || 1;
-    
+
     const modal = document.createElement('div');
     modal.id = 'building-info-modal';
     modal.style.cssText = `
@@ -974,10 +981,23 @@ function showBuildingInfo(buildingId, name, description) {
 
 // Закрыть окно информации о здании
 function closeBuildingInfoModal() {
+    console.log('🔧 Закрываем модальное окно здания...');
     const modal = document.getElementById('building-info-modal');
     const overlay = document.getElementById('building-info-overlay');
-    if (modal) modal.remove();
-    if (overlay) overlay.remove();
+
+    console.log('   modal:', modal ? 'найдено' : 'НЕ НАЙДЕНО');
+    console.log('   overlay:', overlay ? 'найдено' : 'НЕ НАЙДЕНО');
+
+    if (modal) {
+        modal.remove();
+        console.log('   ✅ Модальное окно удалено');
+    }
+    if (overlay) {
+        overlay.remove();
+        console.log('   ✅ Оверлей удален');
+    }
+
+    console.log('✅ Закрытие завершено');
 }
 
 // Обработка изменения размера окна (поворот телефона)
