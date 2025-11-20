@@ -288,8 +288,21 @@ function showOfflineEarningsNotification(earnedMinutes) {
     }, 10000);
 }
 
+// Флаг для предотвращения множественных вызовов
+let timeCurrencyInitialized = false;
+let offlineNotificationShown = false;
+
 // Инициализация системы
 function initTimeCurrency() {
+    // КРИТИЧНО: Предотвращаем повторную инициализацию
+    if (timeCurrencyInitialized) {
+        console.log('⏭️ initTimeCurrency уже вызван, пропуск');
+        return;
+    }
+
+    console.log('💰 Инициализация системы временной валюты...');
+    timeCurrencyInitialized = true;
+
     // Инициализация валюты если её нет
     if (!window.userData.time_currency) {
         window.userData.time_currency = 0;
@@ -300,8 +313,9 @@ function initTimeCurrency() {
 
     // Рассчитываем и добавляем офлайн накопление
     const offlineEarnings = calculateOfflineEarnings();
-    if (offlineEarnings > 0) {
+    if (offlineEarnings > 0 && !offlineNotificationShown) {
         window.userData.time_currency += offlineEarnings;
+        offlineNotificationShown = true; // Устанавливаем флаг ДО показа уведомления
         showOfflineEarningsNotification(offlineEarnings);
 
         // Сохраняем обновленное значение
@@ -312,8 +326,11 @@ function initTimeCurrency() {
 
     createTimeCurrencyUI();
 
-    // Обновляем каждую минуту
-    setInterval(updateTimeCurrency, 60000);
+    // Обновляем каждую минуту (только если интервал еще не запущен)
+    if (!window.timeCurrencyInterval) {
+        window.timeCurrencyInterval = setInterval(updateTimeCurrency, 60000);
+        console.log('⏰ Запущен интервал обновления временной валюты');
+    }
 }
 
 // Экспорт функций
