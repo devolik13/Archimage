@@ -87,12 +87,17 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             
             // УЛУЧШЕННОЕ ЛОГИРОВАНИЕ с указанием типа существа и защищаемой цели
             let protectionMessage = '';
+
+            // Определяем имя защищаемого (не показываем "Пустота")
+            const defendedName = (target.wizard.name && target.wizard.name !== 'Пустота') ?
+                target.wizard.name : 'союзника';
+
             if (summonedCreature.type === 'nature_wolf') {
-                protectionMessage = `🐺 Волк защищает ${target.wizard.name} и получает ${creatureDamage} урона`;
+                protectionMessage = `🐺 Волк защищает ${defendedName} и получает ${creatureDamage} урона`;
             } else if (summonedCreature.type === 'nature_ent') {
-                protectionMessage = `🌳 Энт защищает ${target.wizard.name} и поглощает ${creatureDamage} урона`;
+                protectionMessage = `🌳 Энт защищает ${defendedName} и поглощает ${creatureDamage} урона`;
             } else {
-                protectionMessage = `${summonedCreature.name || 'Призванное существо'} защищает ${target.wizard.name} и получает ${creatureDamage} урона`;
+                protectionMessage = `${summonedCreature.name || 'Призванное существо'} защищает ${defendedName} и получает ${creatureDamage} урона`;
             }
         
             // Добавляем информацию об оставшемся HP существа
@@ -111,10 +116,15 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             if (summonedCreature.hp <= 0) {
                 // Специальное сообщение для разных типов существ
                 let deathMessage = '';
+
+                // Определяем имя защищаемого (не показываем "Пустота")
+                const defendedNameDeath = (target.wizard.name && target.wizard.name !== 'Пустота') ?
+                    target.wizard.name : 'союзника';
+
                 if (summonedCreature.type === 'nature_wolf') {
-                    deathMessage = `💀 Волк погиб, защищая ${target.wizard.name}!`;
+                    deathMessage = `💀 Волк погиб, защищая ${defendedNameDeath}!`;
                 } else if (summonedCreature.type === 'nature_ent') {
-                    deathMessage = `💀 Энт разрушен, защищая ${target.wizard.name}!`;
+                    deathMessage = `💀 Энт разрушен, защищая ${defendedNameDeath}!`;
                     // Если это Энт 5 уровня - лечим союзника
                     if (summonedCreature.level === 5 && typeof window.healWeakestAlly === 'function') {
                         window.healWeakestAlly(summonedCreature.casterType);
@@ -139,12 +149,16 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             
             // Если урон полностью поглощен
             if (remainingDamage === 0) {
-                const fullBlockMessage = summonedCreature.type === 'nature_wolf' ? 
-                    `🐺 Волк полностью защитил ${target.wizard.name} от атаки!` :
+                // Определяем имя защищаемого (не показываем "Пустота")
+                const defendedNameFull = (target.wizard.name && target.wizard.name !== 'Пустота') ?
+                    target.wizard.name : 'союзника';
+
+                const fullBlockMessage = summonedCreature.type === 'nature_wolf' ?
+                    `🐺 Волк полностью защитил ${defendedNameFull} от атаки!` :
                     summonedCreature.type === 'nature_ent' ?
-                    `🌳 Энт полностью поглотил урон за ${target.wizard.name}!` :
-                    `${summonedCreature.name} полностью защитил ${target.wizard.name}!`;
-                    
+                    `🌳 Энт полностью поглотил урон за ${defendedNameFull}!` :
+                    `${summonedCreature.name} полностью защитил ${defendedNameFull}!`;
+
                 if (typeof window.addToBattleLog === 'function') {
                     window.addToBattleLog(fullBlockMessage);
                 }
@@ -234,11 +248,17 @@ function logProtectionResult(caster, target, result, spellName) {
     }
 
     if (!window.addToBattleLog || !result) return;
-    
+
+    // ИСПРАВЛЕНИЕ: Не логируем если цель "Пустота" (виртуальная цель для пустой клетки)
+    if (target.wizard.name === 'Пустота') {
+        console.log('⏭️ Пропуск логирования для пустой цели');
+        return;
+    }
+
     // Определяем уровень заклинания из названия
     const spellLevel = spellName.match(/\d+/) ? spellName.match(/\d+/)[0] : '';
     const spellDisplayName = spellLevel ? `${spellName.replace(/\d+/, '').trim()} ${spellLevel}ур` : spellName;
-    
+
     // Основная строка
     const mainLog = `🎯 ${target.wizard.name} получает от ${caster.name} ${result.finalDamage} урона (${spellDisplayName})`;
     window.addToBattleLog(mainLog);
