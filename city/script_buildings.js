@@ -120,22 +120,22 @@ function showWizardHireModal() {
     
     if (activeHire) {
         wizardsListHTML += `
-            <div style="background: #555577; padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; font-size: 22px;"
+            <div style="background: #555577; padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; font-size: 15px;"
                  onclick="showConstructionModal(${constructions.indexOf(activeHire)})">
                 <strong>🔨 Найм мага ${activeHire.wizard_index}</strong>
-                <div style="font-size: 18px; color: #ffa500;">⏱️ ${window.formatTimeCurrency(activeHire.time_remaining)}</div>
+                <div style="font-size: 13px; color: #ffa500;">⏱️ ${window.formatTimeCurrency(activeHire.time_remaining)}</div>
             </div>
         `;
     }
 
     wizards.forEach((wizard, index) => {
         wizardsListHTML += `
-            <div style="background: #3d3d5c; padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 22px;">
+            <div style="background: #3d3d5c; padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; font-size: 15px;">
                 <div>
                     <strong>🧙‍♂️ ${wizard.name}</strong>
-                    <div style="font-size: 18px; color: #aaa;">HP: ${wizard.hp}/${wizard.max_hp} | AR: ${wizard.armor}/${wizard.max_armor}</div>
+                    <div style="font-size: 13px; color: #aaa;">HP: ${wizard.hp}/${wizard.max_hp} | AR: ${wizard.armor}/${wizard.max_armor}</div>
                 </div>
-                <div style="font-size: 20px; color: #7289da;">Ур.${wizard.level || 1}</div>
+                <div style="font-size: 14px; color: #7289da;">Ур.${wizard.level || 1}</div>
             </div>
         `;
     });
@@ -152,17 +152,17 @@ function showWizardHireModal() {
 
     let hireButton;
     if (!canHire && wizards.length >= maxWizards) {
-        hireButton = `<div style="text-align: center; color: #aaa; padding: 12px; font-size: 22px;">✅ Все маги наняты (${maxWizards}/${maxWizards})</div>`;
+        hireButton = `<div style="text-align: center; color: #aaa; padding: 12px; font-size: 15px;">✅ Все маги наняты (${maxWizards}/${maxWizards})</div>`;
     } else if (!canHire && activeHire) {
-        hireButton = `<div style="text-align: center; color: #ffa500; padding: 12px; font-size: 22px;">⏱️ Идет найм...</div>`;
+        hireButton = `<div style="text-align: center; color: #ffa500; padding: 12px; font-size: 15px;">⏱️ Идет найм...</div>`;
     } else if (!canHireByLevel) {
-        hireButton = `<button style="margin: 12px 0 0 0; padding: 12px; font-size: 24px; width: 100%; border: none; border-radius: 8px; background: #555; color: #999; cursor: not-allowed;" disabled>
+        hireButton = `<button style="margin: 12px 0 0 0; padding: 12px; font-size: 17px; width: 100%; border: none; border-radius: 8px; background: #555; color: #999; cursor: not-allowed;" disabled>
             🔒 ${wizardIndex + 1}-й маг (требуется башня ${requiredLevel} ур)
         </button>`;
     } else {
-        hireButton = `<button style="margin: 12px 0 0 0; padding: 12px; font-size: 24px; width: 100%; border: none; border-radius: 8px; background: #7289da; color: white; cursor: pointer;"
+        hireButton = `<button style="margin: 12px 0 0 0; padding: 12px; font-size: 17px; width: 100%; border: none; border-radius: 8px; background: #7289da; color: white; cursor: pointer;"
             onclick="hireNewWizard()">
-            ✅ Нанять ${wizardIndex + 1}-го мага ${hireTime > 0 ? `<span style="font-size: 18px;">(⏱️ ${window.formatTimeCurrency(hireTime)})</span>` : ''}
+            ✅ Нанять ${wizardIndex + 1}-го мага ${hireTime > 0 ? `<span style="font-size: 13px;">(⏱️ ${window.formatTimeCurrency(hireTime)})</span>` : ''}
         </button>`;
     }
 
@@ -170,18 +170,18 @@ function showWizardHireModal() {
     const upgradeTime = window.CONSTRUCTION_TIME?.getUpgradeTime ?
         window.CONSTRUCTION_TIME.getUpgradeTime('wizard_tower', towerLevel + 1) : 144 * (towerLevel + 1);
     const upgradeButton = towerLevel < maxTowerLevel ?
-        `<button style="margin: 12px 0; padding: 12px; font-size: 24px; width: 100%; border: none; border-radius: 8px; background: #555; color: white; cursor: pointer;"
+        `<button style="margin: 12px 0; padding: 12px; font-size: 17px; width: 100%; border: none; border-radius: 8px; background: #555; color: white; cursor: pointer;"
             onclick="upgradeWizardTower()">
-            ⬆️ Башня ${towerLevel}→${towerLevel + 1} <span style="font-size: 18px;">(⏱️ ${window.formatTimeCurrency(upgradeTime)})</span>
+            ⬆️ Башня ${towerLevel}→${towerLevel + 1} <span style="font-size: 13px;">(⏱️ ${window.formatTimeCurrency(upgradeTime)})</span>
         </button>` :
-        `<div style="text-align: center; color: #777; padding: 12px; font-size: 22px;">✅ Макс. уровень</div>`;
+        `<div style="text-align: center; color: #777; padding: 12px; font-size: 15px;">✅ Макс. уровень</div>`;
     
     const healthBonus = window.applyWizardTowerHealthBonus ? Math.round((window.applyWizardTowerHealthBonus() - 1) * 100) : 0;
     const damageBonus = window.getWizardTowerDamageBonus ? Math.round((window.getWizardTowerDamageBonus() - 1) * 100) : 0;
     const towerBonusHTML = (healthBonus > 0 || damageBonus > 0) ? `
         <div style="background: #4a5568; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-            <div style="font-size: 22px; color: #ffa500; margin-bottom: 8px; font-weight: bold; text-align: center;">🏰 Бонусы башни</div>
-            <div style="display: flex; gap: 12px; font-size: 20px; justify-content: center;">
+            <div style="font-size: 15px; color: #ffa500; margin-bottom: 8px; font-weight: bold; text-align: center;">🏰 Бонусы башни</div>
+            <div style="display: flex; gap: 12px; font-size: 14px; justify-content: center;">
                 ${healthBonus > 0 ? `<div style="background: #4ade8020; padding: 8px 16px; border-radius: 8px;">❤️ +${healthBonus}%</div>` : ''}
                 ${damageBonus > 0 ? `<div style="background: #ff6b6b20; padding: 8px 16px; border-radius: 8px;">⚔️ +${damageBonus}%</div>` : ''}
             </div>
@@ -189,10 +189,10 @@ function showWizardHireModal() {
     ` : '';
     
     const modalContent = `
-        <div style="padding: 20px; max-width: 1000px; max-height: 80vh; background: #2c2c3d; border-radius: 16px; color: white; display: flex; flex-direction: column;">
-            <h3 style="margin: 0 0 16px 0; color: #7289da; font-size: 28px; text-align: center;">🧙‍♂️ Башня магов (${towerLevel}/${maxTowerLevel})</h3>
+        <div style="padding: 20px; max-width: 700px; max-height: 80vh; background: #2c2c3d; border-radius: 16px; color: white; display: flex; flex-direction: column;">
+            <h3 style="margin: 0 0 16px 0; color: #7289da; font-size: 20px; text-align: center;">🧙‍♂️ Башня магов (${towerLevel}/${maxTowerLevel})</h3>
 
-            <div style="display: grid; grid-template-columns: 400px 1fr; gap: 20px; flex: 1; overflow: hidden;">
+            <div style="display: grid; grid-template-columns: 280px 1fr; gap: 20px; flex: 1; overflow: hidden;">
                 <!-- ЛЕВАЯ: Башня -->
                 <div style="display: flex; flex-direction: column;">
                     ${towerBonusHTML}
@@ -201,15 +201,15 @@ function showWizardHireModal() {
 
                 <!-- ПРАВАЯ: Маги -->
                 <div style="display: flex; flex-direction: column;">
-                    <p style="margin: 0 0 8px 0; font-size: 22px;">Маги (${wizards.length}/${maxWizards}):</p>
+                    <p style="margin: 0 0 8px 0; font-size: 15px;">Маги (${wizards.length}/${maxWizards}):</p>
                     <div style="flex: 1; overflow-y: auto; margin-bottom: 12px;">
-                        ${wizardsListHTML || '<div style="text-align: center; color: #aaa; padding: 20px; font-size: 20px;">Нет магов</div>'}
+                        ${wizardsListHTML || '<div style="text-align: center; color: #aaa; padding: 20px; font-size: 14px;">Нет магов</div>'}
                     </div>
                     ${hireButton}
                 </div>
             </div>
 
-            <button style="margin-top: 16px; padding: 12px; font-size: 24px; width: 100%; border: 2px solid #7289da; border-radius: 8px; background: transparent; color: #7289da; cursor: pointer;"
+            <button style="margin-top: 16px; padding: 12px; font-size: 17px; width: 100%; border: 2px solid #7289da; border-radius: 8px; background: transparent; color: #7289da; cursor: pointer;"
                 onclick="closeCurrentModal()">❌ Закрыть</button>
         </div>
     `;

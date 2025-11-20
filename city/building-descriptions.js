@@ -31,11 +31,24 @@ const BUILDING_DESCRIPTIONS = {
         baseDescription: 'Позволяет нанимать новых магов в вашу армию',
         getLevelDescription(currentLevel, targetLevel) {
             if (targetLevel === 1) {
-                return 'Откроет возможность найма магов';
+                return 'Откроет возможность найма магов. +10% HP, +2% урона';
             }
-            // Каждый уровень увеличивает максимум магов
-            const maxWizards = targetLevel + 2; // 1 уровень = 3 мага, 2 уровень = 4 мага и т.д.
-            return `Максимум магов: ${maxWizards}`;
+            // Каждый уровень дает +10% HP и +2% урона
+            const healthBonus = targetLevel * 10;
+            const damageBonus = targetLevel * 2;
+
+            // Проверяем, какой маг открывается на этом уровне
+            const towerRequirements = { 0: 1, 1: 3, 2: 5, 3: 7, 4: 10 };
+            let unlocksWizard = '';
+            for (let wizardIndex in towerRequirements) {
+                if (towerRequirements[wizardIndex] === targetLevel) {
+                    const wizardNumber = parseInt(wizardIndex) + 1;
+                    unlocksWizard = ` Откроет найм ${wizardNumber}-го мага.`;
+                    break;
+                }
+            }
+
+            return `+${healthBonus}% HP, +${damageBonus}% урона.${unlocksWizard}`;
         }
     },
 
