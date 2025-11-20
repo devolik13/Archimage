@@ -369,12 +369,12 @@ function updateBattleField() {
     const logElement = document.getElementById('battle-log');
     if (logElement) {
         const recentLogs = battleLog.slice(-20);
-        logElement.innerHTML = recentLogs.length > 0 ? 
-            recentLogs.map(log => `<div style="margin-bottom: 5px; padding: 5px; background: rgba(255,255,255,0.05); border-radius: 4px;">${log}</div>`).join('') : 
+        logElement.innerHTML = recentLogs.length > 0 ?
+            recentLogs.map(log => `<div style="margin-bottom: 5px; padding: 5px; background: rgba(255,255,255,0.05); border-radius: 4px; white-space: pre-wrap; font-family: monospace;">${log}</div>`).join('') :
             '<div style="color: #777;">Бой начался...</div>';
         logElement.scrollTop = logElement.scrollHeight;
     }
-    
+
     console.log('✅ updateBattleField completed');
 }
 
