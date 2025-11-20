@@ -12,7 +12,7 @@ function showWizardDetailScreen(wizard) {
         const wizardIndex = userData.wizards.findIndex(w => w.id === wizard.id);
         if (wizardIndex !== -1) {
             window.currentWizardDetailIndex = wizardIndex;
-            renderWizardDetailScreen(wizardIndex);
+            renderWizardDetailScreenWithBackground(wizardIndex);
         }
         return;
     }
@@ -48,8 +48,8 @@ function showWizardDetailScreen(wizard) {
     
     // Сохраняем индекс для обновлений
     window.currentWizardDetailIndex = wizardIndex;
-    
-    renderWizardDetailScreen(wizardIndex);
+
+    renderWizardDetailScreenWithBackground(wizardIndex);
 }
 
 // Рендер/обновление окна мага
