@@ -7,44 +7,44 @@ function showPvPArenaModal() {
     closeCurrentModal();
     // Проверяем построена ли арена
     const hasArena = window.userData?.buildings?.pvp_arena?.level > 0;
-    // Стили для кнопки "В бой"
-    const battleButtonStyle = hasArena 
-        ? "padding: 12px; border: none; border-radius: 6px; background: #555; color: white; cursor: pointer; font-size: 16px;"
-        : "padding: 12px; border: none; border-radius: 6px; background: #333; color: #666; cursor: not-allowed; font-size: 16px; opacity: 0.5;";
     const battleButtonOnClick = hasArena
     	? "if (!checkFormationBeforeBattle()) return; closePvPArenaModal(); window.showOpponentSelection()"
     	: "alert('⚠️ Постройте Арену чтобы участвовать в PvP боях!')";
     const modalContent = `
-    	<div style="padding: 12px; max-width: 320px; background: #2c2c3d; border-radius: 8px; color: white;">
-    	    <h3 style="margin: 0 0 8px 0; color: #7289da; font-size: 18px;">⚔️ PvP Арена</h3>
-    	    <p style="margin: 0 0 12px 0; font-size: 12px;">Добро пожаловать на арену! Здесь вы можете сражаться с другими магами.</p>
-    	    
-    	    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-    	        <button style="padding: 10px 8px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 14px;"
-    	                onclick="window.showBattleSetup()">
-    	            🎯 Расставить войска
-    	        </button>
-    	        <button style="${battleButtonStyle.replace('padding: 12px', 'padding: 10px 8px').replace('font-size: 16px', 'font-size: 14px')}"
-    	                onclick="${battleButtonOnClick}"
-    	                ${hasArena ? '' : 'disabled'}>
-    	            ⚔️ В бой (PvP) ${hasArena ? '' : '🔒'}
-    	        </button>
-    	        <button style="padding: 10px 8px; border: none; border-radius: 6px; background: #FFD700; color: #333; cursor: pointer; font-size: 14px; font-weight: bold;"
-    	                onclick="closePvPArenaModal(); window.showLeaderboard()">
-    	            🏆 Рейтинг
-    	        </button>
-    	        <button style="padding: 10px 8px; border: none; border-radius: 6px; background: #4CAF50; color: white; cursor: pointer; font-size: 14px; font-weight: bold;"
-    	                onclick="closePvPArenaModal(); window.showAdventureMenu()">
-    	            🗺️ Приключения (PvE)
+    	<div class="building-modal-content" style="max-width: 350px;">
+    	    <h3 class="building-modal-header">⚔️ PvP Арена</h3>
+    	    <div class="building-modal-body">
+    	        <p style="margin: 0 0 12px 0; font-size: 12px;">Добро пожаловать на арену! Здесь вы можете сражаться с другими магами.</p>
+
+    	        <div class="arena-buttons-grid">
+    	            <button class="building-button primary"
+    	                    onclick="window.showBattleSetup()">
+    	                🎯 Расставить войска
+    	            </button>
+    	            <button class="building-button secondary"
+    	                    onclick="${battleButtonOnClick}"
+    	                    ${hasArena ? '' : 'disabled'}>
+    	                ⚔️ В бой (PvP) ${hasArena ? '' : '🔒'}
+    	            </button>
+    	            <button class="building-button" style="background: #FFD700; color: #333;"
+    	                    onclick="closePvPArenaModal(); window.showLeaderboard()">
+    	                🏆 Рейтинг
+    	            </button>
+    	            <button class="building-button" style="background: #4CAF50; color: white;"
+    	                    onclick="closePvPArenaModal(); window.showAdventureMenu()">
+    	                🗺️ Приключения (PvE)
+    	            </button>
+    	        </div>
+
+    	        ${!hasArena ? '<p class="arena-warning">⚠️ Постройте Арену для PvP боёв</p>' : ''}
+    	    </div>
+
+    	    <div class="building-modal-footer">
+    	        <button class="building-button close" style="width: 100%;"
+    	                onclick="closePvPArenaModal()">
+    	            ❌ Закрыть
     	        </button>
     	    </div>
-    	    
-    	    ${!hasArena ? '<p style="color: #ff6b6b; font-size: 11px; text-align: center; margin: 0 0 8px 0;">⚠️ Постройте Арену для PvP боёв</p>' : ''}
-    	    
-    	    <button style="margin-top: 0; padding: 8px; width: 100%; border: 1px solid #7289da; border-radius: 6px; background: transparent; color: #7289da; cursor: pointer; font-size: 13px;"
-    	            onclick="closePvPArenaModal()">
-    	        ❌ Закрыть
-    	    </button>
     	</div>
     `;
     const modal = document.createElement('div');
@@ -81,20 +81,20 @@ function showWizardHireModal() {
     const constructions = window.userData?.constructions || [];
     const activeHire = constructions.find(c => c.type === 'wizard' && c.time_remaining > 0);
     let wizardsListHTML = '';
-    
+
     if (activeHire) {
         wizardsListHTML += `
-            <div style="background: #555577; padding: 4px 6px; border-radius: 4px; margin-bottom: 4px; cursor: pointer; font-size: 11px;"
+            <div class="wizard-list-item hiring"
                  onclick="showConstructionModal(${constructions.indexOf(activeHire)})">
                 <strong>🔨 Найм мага ${activeHire.wizard_index}</strong>
                 <div style="font-size: 9px; color: #ffa500;">⏱️ ${window.formatTimeCurrency(activeHire.time_remaining)}</div>
             </div>
         `;
     }
-    
+
     wizards.forEach((wizard, index) => {
         wizardsListHTML += `
-            <div style="background: #3d3d5c; padding: 4px 6px; border-radius: 4px; margin-bottom: 4px; display: flex; justify-content: space-between; font-size: 11px;">
+            <div class="wizard-list-item">
                 <div>
                     <strong>🧙‍♂️ ${wizard.name}</strong>
                     <div style="font-size: 9px; color: #aaa;">HP: ${wizard.hp}/${wizard.max_hp} | AR: ${wizard.armor}/${wizard.max_armor}</div>
@@ -103,65 +103,69 @@ function showWizardHireModal() {
             </div>
         `;
     });
-    
+
     const canHire = wizards.length < maxWizards && !activeHire;
     const hireTime = window.WIZARD_HIRE_TIME?.getHireTime ? window.WIZARD_HIRE_TIME.getHireTime(wizards.length) : 0;
-    const hireButton = canHire ? 
-        `<button style="margin: 6px 0 0 0; padding: 6px; font-size: 12px; width: 100%; border: none; border-radius: 4px; background: #7289da; color: white; cursor: pointer;"
+    const hireButton = canHire ?
+        `<button class="building-button primary" style="width: 100%;"
             onclick="hireNewWizard()">
             ✅ Нанять мага ${hireTime > 0 ? `<span style="font-size: 9px;">(⏱️ ${window.formatTimeCurrency(hireTime)})</span>` : ''}
-        </button>` : 
+        </button>` :
         `<div style="text-align: center; color: #aaa; padding: 6px; font-size: 11px;">Лимит: ${maxWizards}</div>`;
-    
+
     const towerLevel = (userData.buildings?.wizard_tower?.level || 1);
     const maxTowerLevel = getBuildingMaxLevel('wizard_tower');
-    const upgradeTime = window.CONSTRUCTION_TIME?.getUpgradeTime ? 
+    const upgradeTime = window.CONSTRUCTION_TIME?.getUpgradeTime ?
         window.CONSTRUCTION_TIME.getUpgradeTime('wizard_tower', towerLevel + 1) : 144 * (towerLevel + 1);
-    const upgradeButton = towerLevel < maxTowerLevel ? 
-        `<button style="margin: 6px 0; padding: 6px; font-size: 12px; width: 100%; border: none; border-radius: 4px; background: #555; color: white; cursor: pointer;"
+    const upgradeButton = towerLevel < maxTowerLevel ?
+        `<button class="building-button secondary" style="width: 100%;"
             onclick="upgradeWizardTower()">
             ⬆️ Башня ${towerLevel}→${towerLevel + 1} <span style="font-size: 9px;">(⏱️ ${window.formatTimeCurrency(upgradeTime)})</span>
-        </button>` : 
+        </button>` :
         `<div style="text-align: center; color: #777; padding: 6px; font-size: 11px;">✅ Макс. уровень</div>`;
-    
+
     const healthBonus = window.applyWizardTowerHealthBonus ? Math.round((window.applyWizardTowerHealthBonus() - 1) * 100) : 0;
     const damageBonus = window.getWizardTowerDamageBonus ? Math.round((window.getWizardTowerDamageBonus() - 1) * 100) : 0;
     const towerBonusHTML = (healthBonus > 0 || damageBonus > 0) ? `
-        <div style="background: #4a5568; padding: 6px; border-radius: 4px; margin-bottom: 6px;">
-            <div style="font-size: 11px; color: #ffa500; margin-bottom: 4px; font-weight: bold; text-align: center;">🏰 Бонусы башни</div>
-            <div style="display: flex; gap: 6px; font-size: 10px; justify-content: center;">
+        <div class="wizard-tower-bonus-box">
+            <div class="wizard-tower-bonus-title">🏰 Бонусы башни</div>
+            <div class="wizard-tower-bonus-grid">
                 ${healthBonus > 0 ? `<div style="background: #4ade8020; padding: 4px 8px; border-radius: 4px;">❤️ +${healthBonus}%</div>` : ''}
                 ${damageBonus > 0 ? `<div style="background: #ff6b6b20; padding: 4px 8px; border-radius: 4px;">⚔️ +${damageBonus}%</div>` : ''}
             </div>
         </div>
     ` : '';
-    
+
     const modalContent = `
-        <div style="padding: 10px; max-width: 500px; max-height: 70vh; background: #2c2c3d; border-radius: 8px; color: white; display: flex; flex-direction: column;">
-            <h3 style="margin: 0 0 8px 0; color: #7289da; font-size: 14px; text-align: center;">🧙‍♂️ Башня магов (${towerLevel}/${maxTowerLevel})</h3>
-            
-            <div style="display: grid; grid-template-columns: 200px 1fr; gap: 10px; flex: 1; overflow: hidden;">
-                <!-- ЛЕВАЯ: Башня -->
-                <div style="display: flex; flex-direction: column;">
-                    ${towerBonusHTML}
-                    ${upgradeButton}
-                </div>
-                
-                <!-- ПРАВАЯ: Маги -->
-                <div style="display: flex; flex-direction: column;">
-                    <p style="margin: 0 0 4px 0; font-size: 11px;">Маги (${wizards.length}/${maxWizards}):</p>
-                    <div style="flex: 1; overflow-y: auto; margin-bottom: 6px;">
-                        ${wizardsListHTML || '<div style="text-align: center; color: #aaa; padding: 10px; font-size: 10px;">Нет магов</div>'}
+        <div class="building-modal-content" style="max-width: 550px;">
+            <h3 class="building-modal-header">🧙‍♂️ Башня магов (${towerLevel}/${maxTowerLevel})</h3>
+
+            <div class="building-modal-body">
+                <div class="building-two-column-layout">
+                    <!-- ЛЕВАЯ: Башня -->
+                    <div class="building-left-column">
+                        ${towerBonusHTML}
+                        ${upgradeButton}
                     </div>
-                    ${hireButton}
+
+                    <!-- ПРАВАЯ: Маги -->
+                    <div class="building-right-column">
+                        <p style="margin: 0 0 4px 0; font-size: 11px;">Маги (${wizards.length}/${maxWizards}):</p>
+                        <div class="wizard-list-container">
+                            ${wizardsListHTML || '<div style="text-align: center; color: #aaa; padding: 10px; font-size: 10px;">Нет магов</div>'}
+                        </div>
+                        ${hireButton}
+                    </div>
                 </div>
             </div>
-            
-            <button style="margin-top: 8px; padding: 6px; font-size: 12px; width: 100%; border: 1px solid #7289da; border-radius: 4px; background: transparent; color: #7289da; cursor: pointer;"
-                onclick="closeCurrentModal()">❌ Закрыть</button>
+
+            <div class="building-modal-footer">
+                <button class="building-button close" style="width: 100%;"
+                    onclick="closeCurrentModal()">❌ Закрыть</button>
+            </div>
         </div>
     `;
-    
+
     const modal = document.createElement('div');
     modal.id = 'wizard-hire-modal';
     modal.innerHTML = modalContent;
@@ -272,44 +276,43 @@ function showUpgradeModal(buildingId, currentLevel, maxLevel) {
     const nextLevel = currentLevel + 1;
     const previewImage = buildingConfig.image || buildingConfig.emoji || '🏛️';
     // Получаем время улучшения
-    const upgradeTime = CONSTRUCTION_TIME.getUpgradeTime ? 
-        CONSTRUCTION_TIME.getUpgradeTime(buildingId, nextLevel) : 
+    const upgradeTime = CONSTRUCTION_TIME.getUpgradeTime ?
+        CONSTRUCTION_TIME.getUpgradeTime(buildingId, nextLevel) :
         144 * nextLevel; // Fallback
     const modalContent = `
-        <div style="padding: 15px; max-width: 350px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin-top: 0; color: #7289da; display: flex; align-items: center; gap: 10px;">
+        <div class="building-modal-content" style="max-width: 380px;">
+            <h3 class="building-modal-header" style="display: flex; align-items: center; gap: 10px; justify-content: center;">
                 ${previewImage}
                 🔧 Улучшение
             </h3>
-            <p>Вы хотите улучшить <strong>${buildingConfig.name}</strong> до уровня ${nextLevel}?</p>
-            <div style="
-                background: #3d3d5c; 
-                padding: 10px; 
-                border-radius: 6px; 
-                margin: 15px 0;
-            ">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <span>Текущий уровень:</span>
-                    <span style="color: #7289da;">${currentLevel}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <span>Новый уровень:</span>
-                    <span style="color: #4ade80;">${nextLevel}</span>
-                </div>
-                <hr style="border: 1px solid #555; margin: 10px 0;">
-                <div style="display: flex; justify-content: space-between;">
-                    <span>⏱️ Время улучшения:</span>
-                    <span style="color: #ffa500;">${window.formatTimeCurrency(upgradeTime)}</span>
+            <div class="building-modal-body">
+                <p style="margin: 0 0 15px 0;">Вы хотите улучшить <strong>${buildingConfig.name}</strong> до уровня ${nextLevel}?</p>
+                <div class="upgrade-info-box">
+                    <div class="upgrade-info-row">
+                        <span>Текущий уровень:</span>
+                        <span style="color: #7289da;">${currentLevel}</span>
+                    </div>
+                    <div class="upgrade-info-row">
+                        <span>Новый уровень:</span>
+                        <span style="color: #4ade80;">${nextLevel}</span>
+                    </div>
+                    <hr class="upgrade-divider">
+                    <div class="upgrade-info-row">
+                        <span>⏱️ Время улучшения:</span>
+                        <span style="color: #ffa500;">${window.formatTimeCurrency(upgradeTime)}</span>
+                    </div>
                 </div>
             </div>
-            <button style="margin: 10px 0 0 0; padding: 8px 15px; font-size: 14px; width: 100%; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer;"
-                onclick="confirmUpgrade('${buildingId}', ${nextLevel})">
-                ✅ Улучшить
-            </button>
-            <button style="margin: 5px 0 0 0; padding: 8px 15px; font-size: 14px; width: 100%; border: 1px solid #7289da; border-radius: 6px; background: transparent; color: #7289da; cursor: pointer;"
-                onclick="closeCurrentModal()">
-                ❌ Отмена
-            </button>
+            <div class="building-modal-footer">
+                <button class="building-button primary" style="width: 100%; margin-bottom: 8px;"
+                    onclick="confirmUpgrade('${buildingId}', ${nextLevel})">
+                    ✅ Улучшить
+                </button>
+                <button class="building-button close" style="width: 100%;"
+                    onclick="closeCurrentModal()">
+                    ❌ Отмена
+                </button>
+            </div>
         </div>
     `;
     const modal = document.createElement('div');
@@ -421,13 +424,13 @@ function showForgeModal() {
         contentHTML = '<p style="color: #aaa; text-align: center;">Кузница ещё не построена</p>';
     } else {
         contentHTML = `
-            <p>Уровень кузницы: ${forgeLevel}</p>
-            <div style="margin: 20px 0;">
-                <button style="padding: 12px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 16px; width: 100%;"
+            <p style="margin: 0 0 15px 0;">Уровень кузницы: ${forgeLevel}</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="building-button primary"
                         onclick="showNotification('Система брони в разработке')">
                     ⚔️ Создать броню
                 </button>
-                <button style="padding: 12px; border: none; border-radius: 6px; background: #555; color: white; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px;"
+                <button class="building-button secondary"
                         onclick="showNotification('Система улучшения в разработке')">
                     📈 Улучшить броню
                 </button>
@@ -435,13 +438,17 @@ function showForgeModal() {
         `;
     }
     const modalContent = `
-        <div style="padding: 20px; max-width: 350px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin-top: 0; color: #7289da;">⚒️ Кузница</h3>
-            ${contentHTML}
-            <button style="margin-top: 10px; padding: 8px 15px; width: 100%; border: 1px solid #7289da; border-radius: 6px; background: transparent; color: #7289da; cursor: pointer;"
-                    onclick="closeCurrentModal()">
-                ❌ Закрыть
-            </button>
+        <div class="building-modal-content" style="max-width: 380px;">
+            <h3 class="building-modal-header">⚒️ Кузница</h3>
+            <div class="building-modal-body">
+                ${contentHTML}
+            </div>
+            <div class="building-modal-footer">
+                <button class="building-button close" style="width: 100%;"
+                        onclick="closeCurrentModal()">
+                    ❌ Закрыть
+                </button>
+            </div>
         </div>
     `;
     const modal = document.createElement('div');
@@ -527,53 +534,41 @@ function showArcaneLabModal() {
     const currentBonus = Math.min(labLevel * 2, 30); // максимум 30%
     const nextBonus = Math.min((labLevel + 1) * 2, 30);
     const modalContent = `
-        <div style="padding: 20px; max-width: 400px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin-top: 0; color: #7289da;">🧪 Арканская лаборатория</h3>
-            <p style="color: #aaa;">Уровень: ${labLevel}/${maxLevel}</p>
-            <div style="background: #3d3d5c; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                <h4 style="margin-top: 0; color: #ffa500;">Бонус к скорости изучения</h4>
-                <div style="font-size: 32px; color: #4ade80; text-align: center; margin: 10px 0;">
-                    -${currentBonus}%
-                </div>
-                <div style="font-size: 14px; color: #aaa; text-align: center;">
-                    времени на изучение заклинаний
-                </div>
-                ${labLevel < maxLevel && currentBonus < 30 ? `
-                    <div style="font-size: 12px; color: #7289da; text-align: center; margin-top: 10px;">
-                        Следующий уровень: -${nextBonus}%
+        <div class="building-modal-content" style="max-width: 420px;">
+            <h3 class="building-modal-header">🧪 Арканская лаборатория</h3>
+            <div class="building-modal-body">
+                <p style="color: #aaa; margin: 0 0 15px 0;">Уровень: ${labLevel}/${maxLevel}</p>
+                <div class="arcane-lab-bonus-box">
+                    <h4 class="arcane-lab-bonus-title">Бонус к скорости изучения</h4>
+                    <div class="arcane-lab-bonus-value">
+                        -${currentBonus}%
                     </div>
-                ` : ''}
-            </div>
-            ${labLevel < maxLevel ? `
-                <button style="
-                    width: 100%;
-                    margin-top: 15px;
-                    padding: 10px;
-                    border: none;
-                    border-radius: 6px;
-                    background: #7289da;
-                    color: white;
-                    cursor: pointer;
-                " onclick="confirmUpgrade('arcane_lab', ${labLevel + 1})">
-                    ⬆️ Улучшить до уровня ${labLevel + 1}
-                </button>
-            ` : `
-                <div style="text-align: center; color: #4ade80; padding: 10px;">
-                    ✅ Максимальный уровень достигнут!
+                    <div class="arcane-lab-bonus-description">
+                        времени на изучение заклинаний
+                    </div>
+                    ${labLevel < maxLevel && currentBonus < 30 ? `
+                        <div class="arcane-lab-next-level">
+                            Следующий уровень: -${nextBonus}%
+                        </div>
+                    ` : ''}
                 </div>
-            `}
-            <button style="
-                width: 100%;
-                margin-top: 10px;
-                padding: 10px;
-                border: 1px solid #7289da;
-                border-radius: 6px;
-                background: transparent;
-                color: #7289da;
-                cursor: pointer;
-            " onclick="closeCurrentModal()">
-                Закрыть
-            </button>
+            </div>
+            <div class="building-modal-footer">
+                ${labLevel < maxLevel ? `
+                    <button class="building-button primary" style="width: 100%; margin-bottom: 8px;"
+                        onclick="confirmUpgrade('arcane_lab', ${labLevel + 1})">
+                        ⬆️ Улучшить до уровня ${labLevel + 1}
+                    </button>
+                ` : `
+                    <div style="text-align: center; color: #4ade80; padding: 10px; margin-bottom: 8px;">
+                        ✅ Максимальный уровень достигнут!
+                    </div>
+                `}
+                <button class="building-button close" style="width: 100%;"
+                    onclick="closeCurrentModal()">
+                    Закрыть
+                </button>
+            </div>
         </div>
     `;
     if (typeof window.showModal === 'function') {
@@ -585,129 +580,105 @@ function showTimeGeneratorModal() {
     if (typeof window.closeCurrentModal === 'function') {
         window.closeCurrentModal();
     }
-    
+
     const generatorLevel = window.getBuildingLevel('time_generator');
     const maxLevel = window.getBuildingMaxLevel('time_generator');
-    
+
     // Расчет производства и хранилища
     // Базовая формула: производство = 60 + (уровень - 1) * 30 мин/час
     // Хранилище = 1440 + (уровень - 1) * 720 минут (1 день + 12 часов за уровень)
     const production = generatorLevel > 0 ? 60 + (generatorLevel - 1) * 30 : 0;
     const storage = generatorLevel > 0 ? 1440 + (generatorLevel - 1) * 720 : 0;
-    
+
     // Рассчитываем следующий уровень
-    const nextProduction = generatorLevel < maxLevel ? 
+    const nextProduction = generatorLevel < maxLevel ?
         60 + generatorLevel * 30 : production;
     const nextStorage = generatorLevel < maxLevel ?
         1440 + generatorLevel * 720 : storage;
-    
+
     // Получаем время для следующего улучшения
-    const upgradeTime = window.CONSTRUCTION_TIME?.getUpgradeTime ? 
-        window.CONSTRUCTION_TIME.getUpgradeTime('time_generator', generatorLevel + 1) : 
+    const upgradeTime = window.CONSTRUCTION_TIME?.getUpgradeTime ?
+        window.CONSTRUCTION_TIME.getUpgradeTime('time_generator', generatorLevel + 1) :
         144 * (generatorLevel + 1);
-    
+
     const modalContent = `
-        <div style="padding: 15px; max-width: 700px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin-top: 0; color: #ffa500;">⏱️ Генератор Времени</h3>
-            <p style="color: #aaa;">Уровень: ${generatorLevel}/${maxLevel}</p>
-            
-            <!-- Горизонтальная сетка блоков -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 15px 0;">
-                
-                <!-- Производство -->
-                <div style="background: #3d3d5c; padding: 12px; border-radius: 8px;">
-                    <h4 style="margin: 0 0 8px 0; color: #4ade80; font-size: 14px;">⚡ Производство</h4>
-                    <div style="font-size: 24px; color: #ffa500; text-align: center; margin: 8px 0;">
-                        +${production} мин/час
-                    </div>
-                    <div style="font-size: 11px; color: #aaa; text-align: center;">
-                        временной валюты в час
-                    </div>
-                    ${generatorLevel < maxLevel ? `
-                        <div style="font-size: 10px; color: #7289da; text-align: center; margin-top: 5px;">
-                            След. ур: +${nextProduction} мин/час
+        <div class="building-modal-content" style="max-width: 750px;">
+            <h3 class="building-modal-header">⏱️ Генератор Времени</h3>
+            <div class="building-modal-body">
+                <p style="color: #aaa; margin: 0 0 15px 0;">Уровень: ${generatorLevel}/${maxLevel}</p>
+
+                <!-- Горизонтальная сетка блоков -->
+                <div class="time-generator-grid">
+
+                    <!-- Производство -->
+                    <div class="time-stat-box">
+                        <h4 class="time-stat-title" style="color: #4ade80;">⚡ Производство</h4>
+                        <div class="time-stat-value" style="color: #ffa500;">
+                            +${production} мин/час
                         </div>
-                    ` : ''}
-                </div>
-                
-                <!-- Хранилище -->
-                <div style="background: #3d3d5c; padding: 12px; border-radius: 8px;">
-                    <h4 style="margin: 0 0 8px 0; color: #00bcd4; font-size: 14px;">📦 Хранилище</h4>
-                    <div style="font-size: 20px; color: #00bcd4; text-align: center; margin: 8px 0;">
-                        ${window.formatTimeCurrency(storage)}
-                    </div>
-                    <div style="font-size: 11px; color: #aaa; text-align: center;">
-                        максимальная вместимость
-                    </div>
-                    ${generatorLevel < maxLevel ? `
-                        <div style="font-size: 10px; color: #7289da; text-align: center; margin-top: 5px;">
-                            След. ур: ${window.formatTimeCurrency(nextStorage)}
+                        <div class="time-stat-description">
+                            временной валюты в час
                         </div>
-                    ` : ''}
-                </div>
-                
-                <!-- Текущий баланс -->
-                <div style="background: #3d3d5c; padding: 12px; border-radius: 8px;">
-                    <h4 style="margin: 0 0 8px 0; color: #ffa500; font-size: 14px;">💰 Баланс</h4>
-                    <div style="font-size: 20px; color: #ffa500; text-align: center; margin: 8px 0;">
-                        ${window.formatTimeCurrency(window.getTimeCurrency ? window.getTimeCurrency() : 0)}
+                        ${generatorLevel < maxLevel ? `
+                            <div class="time-stat-next">
+                                След. ур: +${nextProduction} мин/час
+                            </div>
+                        ` : ''}
                     </div>
-                    <button style="
-                        width: 100%;
-                        margin-top: 8px;
-                        padding: 8px;
-                        border: none;
-                        border-radius: 6px;
-                        background: #4ade80;
-                        color: white;
-                        cursor: pointer;
-                        font-weight: bold;
-                        font-size: 11px;
-                    " onclick="if(window.collectTime) { window.collectTime(); closeCurrentModal(); showTimeGeneratorModal(); }">
-                        💰 Собрать
-                    </button>
+
+                    <!-- Хранилище -->
+                    <div class="time-stat-box">
+                        <h4 class="time-stat-title" style="color: #00bcd4;">📦 Хранилище</h4>
+                        <div class="time-stat-value" style="color: #00bcd4; font-size: 20px;">
+                            ${window.formatTimeCurrency(storage)}
+                        </div>
+                        <div class="time-stat-description">
+                            максимальная вместимость
+                        </div>
+                        ${generatorLevel < maxLevel ? `
+                            <div class="time-stat-next">
+                                След. ур: ${window.formatTimeCurrency(nextStorage)}
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Текущий баланс -->
+                    <div class="time-stat-box">
+                        <h4 class="time-stat-title" style="color: #ffa500;">💰 Баланс</h4>
+                        <div class="time-stat-value" style="color: #ffa500; font-size: 20px;">
+                            ${window.formatTimeCurrency(window.getTimeCurrency ? window.getTimeCurrency() : 0)}
+                        </div>
+                        <button class="building-button success" style="width: 100%; margin-top: 8px; font-size: 11px;"
+                            onclick="if(window.collectTime) { window.collectTime(); closeCurrentModal(); showTimeGeneratorModal(); }">
+                            💰 Собрать
+                        </button>
+                    </div>
+
                 </div>
-                
             </div>
-            
-            ${generatorLevel < maxLevel ? `
-                <button style="
-                    width: 100%;
-                    margin-top: 15px;
-                    padding: 10px;
-                    border: none;
-                    border-radius: 6px;
-                    background: #ffa500;
-                    color: white;
-                    cursor: pointer;
-                    font-weight: bold;
-                " onclick="confirmUpgrade('time_generator', ${generatorLevel + 1})">
-                    ⬆️ Улучшить до уровня ${generatorLevel + 1}
-                    <div style="font-size: 11px; margin-top: 3px; opacity: 0.9;">
-                        ⏱️ ${window.formatTimeCurrency(upgradeTime)}
+
+            <div class="building-modal-footer">
+                ${generatorLevel < maxLevel ? `
+                    <button class="building-button warning" style="width: 100%; margin-bottom: 8px;"
+                        onclick="confirmUpgrade('time_generator', ${generatorLevel + 1})">
+                        ⬆️ Улучшить до уровня ${generatorLevel + 1}
+                        <div style="font-size: 11px; margin-top: 3px; opacity: 0.9;">
+                            ⏱️ ${window.formatTimeCurrency(upgradeTime)}
+                        </div>
+                    </button>
+                ` : `
+                    <div style="text-align: center; color: #4ade80; padding: 10px; margin-bottom: 8px;">
+                        ✅ Максимальный уровень достигнут!
                     </div>
+                `}
+                <button class="building-button close" style="width: 100%;"
+                    onclick="closeCurrentModal()">
+                    Закрыть
                 </button>
-            ` : `
-                <div style="text-align: center; color: #4ade80; padding: 10px;">
-                    ✅ Максимальный уровень достигнут!
-                </div>
-            `}
-            
-            <button style="
-                width: 100%;
-                margin-top: 10px;
-                padding: 10px;
-                border: 1px solid #7289da;
-                border-radius: 6px;
-                background: transparent;
-                color: #7289da;
-                cursor: pointer;
-            " onclick="closeCurrentModal()">
-                Закрыть
-            </button>
+            </div>
         </div>
     `;
-    
+
     if (typeof window.showModal === 'function') {
         window.showModal(modalContent);
     }
