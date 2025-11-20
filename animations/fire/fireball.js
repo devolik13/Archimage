@@ -4,7 +4,14 @@ console.log('✅ fireball.js загружен');
 (function() {
     function playFireballAnimation(params) {
         const { casterType, casterPosition, targetCol, targetRow, level = 1, onComplete } = params;
-        
+
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Fireball');
+            if (onComplete) onComplete();
+            return;
+        }
+
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
         const PIXI_CONFIG = window.PIXI_CONFIG || { cellWidth: 60, cellHeight: 60 };

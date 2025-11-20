@@ -7,7 +7,13 @@ console.log('✅ wind-wall.js загружен');
     
     function playWindWallAnimation(params) {
         const { casterType, positions, weakenPercent, level } = params;
-        
+
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Стена ветра');
+            return;
+        }
+
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
         

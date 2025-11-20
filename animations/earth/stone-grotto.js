@@ -7,7 +7,14 @@ console.log('✅ stone-grotto.js загружен');
     
     function playStoneGrottoAnimation(params) {
         const { casterType, casterPosition, targetWizards = [], level = 1, onComplete } = params;
-        
+
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Каменный грот');
+            if (onComplete) onComplete();
+            return;
+        }
+
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
         

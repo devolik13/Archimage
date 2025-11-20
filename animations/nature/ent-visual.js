@@ -37,9 +37,15 @@ console.log('✅ ent-visual.js загружен');
     }
     
     function createEntVisual(entData) {
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Энт');
+            return;
+        }
+
         const gridCells = window.pixiCore?.getGridCells();
         const unitsContainer = window.pixiCore?.getUnitsContainer();
-        
+
         if (!gridCells || !unitsContainer) return;
         
         // Энт в колонке 2 (игрок) или 3 (враг)

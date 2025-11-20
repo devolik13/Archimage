@@ -6,7 +6,14 @@ console.log('✅ spark.js загружен');
     
     function playSparkAnimation(params) {
         const { casterCol, casterRow, targetCol, targetRow, onComplete } = params;
-        
+
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Spark');
+            if (onComplete) onComplete();
+            return;
+        }
+
         // Получаем необходимые объекты из ядра
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();

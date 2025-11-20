@@ -7,7 +7,14 @@ console.log('✅ call-wolf.js загружен');
     
     function playCallWolfAnimation(params) {
         const { casterType, casterPosition, targetPosition, level = 1, wolfId, isNew = true, onComplete } = params;
-        
+
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Призыв волка');
+            if (onComplete) onComplete();
+            return;
+        }
+
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
         

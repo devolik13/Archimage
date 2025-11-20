@@ -7,7 +7,14 @@ console.log('✅ epidemic.js загружен');
     
     function playEpidemicAnimation(params) {
         const { targetCol, targetRow, onComplete, isMegaExplosion = false } = params;
-        
+
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Эпидемия');
+            if (onComplete) onComplete();
+            return;
+        }
+
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
         

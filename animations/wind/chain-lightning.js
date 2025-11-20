@@ -4,7 +4,17 @@ console.log('✅ chain-lightning.js загружен');
 (function() {
     function playChainLightningAnimation(params) {
         const { targets, casterType, onHitTarget } = params;
-        
+
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Цепная молния');
+            // Вызываем onHitTarget для всех целей сразу
+            if (onHitTarget && targets) {
+                targets.forEach((_, index) => onHitTarget(index));
+            }
+            return;
+        }
+
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
         

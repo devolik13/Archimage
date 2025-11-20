@@ -5,6 +5,12 @@ console.log('✅ meteorokinesis.js (улучшенный) загружен');
     let casterAuras = new Map(); // Ауры вокруг кастеров
     
     function showMeteorokinesisEffect(casterType, level, wizard) {
+    	// КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+    	if (window.fastSimulation) {
+    	    console.log('⚡ Быстрая симуляция: пропуск анимации Метеорокинез');
+    	    return;
+    	}
+
     	const container = window.pixiCore?.getEffectsContainer();
     	if (!container) return;
     

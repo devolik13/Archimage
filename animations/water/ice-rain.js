@@ -5,7 +5,14 @@ console.log('✅ ice-rain.js загружен');
     
     function playIceRainAnimation(params) {
         const { casterType, targetPositions, level = 1, onComplete } = params;
-        
+
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Ледяной дождь');
+            if (onComplete) onComplete();
+            return;
+        }
+
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
         

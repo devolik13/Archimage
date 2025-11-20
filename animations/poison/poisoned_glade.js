@@ -7,7 +7,14 @@ console.log('✅ poisoned_glade.js загружен');
     
     function playPoisonedGladeAnimation(params) {
         const { targetCol, targetRow, onComplete } = params;
-        
+
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Ядовитая поляна');
+            if (onComplete) onComplete();
+            return;
+        }
+
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
         

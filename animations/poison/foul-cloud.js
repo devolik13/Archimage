@@ -7,7 +7,13 @@ console.log('✅ foul-cloud.js загружен');
     
     function playFoulCloudAnimation(params) {
     	const { casterCol, casterRow, targetCol, targetRow, damage, duration = 8000 } = params;
-    
+
+    	// КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+    	if (window.fastSimulation) {
+    	    console.log('⚡ Быстрая симуляция: пропуск анимации Мерзкое облако');
+    	    return;
+    	}
+
     	const effectsContainer = window.pixiCore?.getEffectsContainer();
     	const gridCells = window.pixiCore?.getGridCells();
     

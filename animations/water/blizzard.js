@@ -8,6 +8,12 @@ console.log('✅ blizzard.js загружен');
     function playBlizzardAnimation(params) {
         const { casterType, centerRow, radius, level } = params;
 
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Снежная буря');
+            return;
+        }
+
 	activeBlizzardZones = activeBlizzardZones.filter(zone => {
             if (zone.casterType === casterType) {
             	if (zone.sprite && zone.sprite.parent) {

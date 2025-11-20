@@ -7,7 +7,13 @@ console.log('✅ wind-blade.js загружен');
     
     function playWindBladeAnimation(params) {
         const { projectileId, casterType, targetColumn, initialPosition } = params;
-        
+
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Ветрорез');
+            return;
+        }
+
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
         

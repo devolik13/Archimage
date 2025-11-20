@@ -162,7 +162,14 @@ console.log('✅ frost-arrow.js загружен');
     
     function playFrostArrowAnimation(params) {
         const { casterCol, casterRow, targetCol, targetRow, onHit } = params;
-        
+
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации FrostArrow');
+            if (onHit) onHit();
+            return;
+        }
+
         // Получаем необходимые объекты из ядра
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();

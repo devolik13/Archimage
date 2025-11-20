@@ -3,16 +3,23 @@ console.log('✅ firebolt.js загружен');
 
 (function() {
     function playFireboltAnimation(params) {
-        const { 
-            casterType, 
-            casterPosition, 
+        const {
+            casterType,
+            casterPosition,
             casterCol,
-            level = 1, 
+            level = 1,
             arrows = [],      // НОВОЕ: массив с данными о стрелах
             onArrowHit,       // НОВОЕ: callback для каждой стрелы
-            onComplete 
+            onComplete
         } = params;
-        
+
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Firebolt');
+            if (onComplete) onComplete();
+            return;
+        }
+
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
         

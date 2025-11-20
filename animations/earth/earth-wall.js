@@ -8,6 +8,12 @@ console.log('✅ earth-wall.js загружен');
     function playEarthWallAnimation(params) {
     	const { casterType, casterPosition, wallColumn, wallRows, wallHP, level, casterId } = params;
 
+    	// КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+    	if (window.fastSimulation) {
+    	    console.log('⚡ Быстрая симуляция: пропуск анимации Земляная стена');
+    	    return;
+    	}
+
 	console.log('🧱 playEarthWallAnimation вызван с параметрами:', params);
     
     	const effectsContainer = window.pixiCore?.getEffectsContainer();

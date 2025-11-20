@@ -7,7 +7,13 @@ console.log('✅ fire-tsunami.js загружен');
     
     function playFireTsunamiAnimation(params) {
         const { casterType, casterPosition, level = 1, tsunamiId } = params;
-        
+
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Огненное цунами');
+            return;
+        }
+
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
         

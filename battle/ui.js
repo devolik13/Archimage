@@ -437,9 +437,48 @@ function closeBattleFieldModal() {
         const simulateBattleToEnd = () => {
             const MAX_TURNS = 1000; // Защита от бесконечного цикла
             let turnCount = 0;
+            let lastPlayerHP = 0;
+            let lastEnemyHP = 0;
 
             // Запускаем симуляцию хода за ходом
             while (window.battleState === 'active' && turnCount < MAX_TURNS) {
+                // Диагностика каждые 100 ходов
+                if (turnCount % 100 === 0 && turnCount > 0) {
+                    const playerHP = window.playerFormation.reduce((sum, wizardId) => {
+                        if (wizardId) {
+                            const wizard = window.playerWizards?.find(w => w.id === wizardId);
+                            return sum + (wizard?.hp || 0);
+                        }
+                        return sum;
+                    }, 0);
+
+                    const enemyHP = window.enemyFormation.reduce((sum, wizard) => {
+                        return sum + (wizard?.hp || 0);
+                    }, 0);
+
+                    console.log(`🔍 Ход ${turnCount}: Игрок HP=${playerHP}, Враг HP=${enemyHP}`);
+
+                    // Если HP не меняется 200 ходов - принудительно завершаем
+                    if (turnCount >= 200 && playerHP === lastPlayerHP && enemyHP === lastEnemyHP) {
+                        console.warn('⚠️ HP не меняется - принудительное завершение боя');
+                        // Побеждает тот, у кого больше HP
+                        if (playerHP > enemyHP) {
+                            window.enemyFormation.forEach(w => { if (w) w.hp = 0; });
+                        } else {
+                            window.playerFormation.forEach(wizardId => {
+                                if (wizardId) {
+                                    const wizard = window.playerWizards?.find(w => w.id === wizardId);
+                                    if (wizard) wizard.hp = 0;
+                                }
+                            });
+                        }
+                        break;
+                    }
+
+                    lastPlayerHP = playerHP;
+                    lastEnemyHP = enemyHP;
+                }
+
                 // Выполняем фазу боя без задержек
                 if (typeof window.executeBattlePhase === 'function') {
                     window.executeBattlePhase();

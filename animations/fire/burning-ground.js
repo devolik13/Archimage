@@ -6,9 +6,15 @@ console.log('✅ burning-ground.js загружен');
     const activeBurningGrounds = new Map();
     
     function createBurningGround(column, row, duration = 1) {
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Горящая земля');
+            return;
+        }
+
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
-        
+
         if (!effectsContainer || !gridCells) return;
         
         const cell = gridCells[column]?.[row];

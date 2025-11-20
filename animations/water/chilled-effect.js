@@ -6,6 +6,12 @@ console.log('✅ chilled-effect.js загружен');
     const activeChilledEffects = new Map();
 
     function showChilledEffect(wizard, position, casterType) {
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Эффект охлаждения');
+            return;
+        }
+
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
 

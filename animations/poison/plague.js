@@ -7,7 +7,14 @@ console.log('✅ plague.js загружен');
     
     function playPlagueAnimation(params) {
         const { casterCol, casterRow, targetCol, targetRow, targetWizardId, onComplete } = params;
-        
+
+        // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Plague');
+            if (onComplete) onComplete();
+            return;
+        }
+
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
         
