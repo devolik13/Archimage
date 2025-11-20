@@ -279,11 +279,15 @@ function logProtectionResult(caster, target, result, spellName) {
     }
     
     // Показываем модификаторы урона
+    console.log(`🔍 Проверка _lastDamageSteps для ${target.wizard.name}:`, target.wizard._lastDamageSteps);
     if (target.wizard._lastDamageSteps && target.wizard._lastDamageSteps.length > 0) {
+        console.log(`✅ Найдено ${target.wizard._lastDamageSteps.length} шагов урона`);
         target.wizard._lastDamageSteps.forEach(step => {
             window.addToBattleLog(`    ├─ ${step}`);
         });
         delete target.wizard._lastDamageSteps; // Очищаем
+    } else {
+        console.warn(`⚠️ НЕТ _lastDamageSteps для ${target.wizard.name}`);
     }
     
     // Итоговое HP

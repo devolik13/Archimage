@@ -579,23 +579,41 @@ function castFireball(wizard, spellData, position, casterType) {
             window.findTargetsInArea(centerCol, centerRow, 3, 3, casterType) : [];
     }
     
-    // Наносим урон
+    // Наносим урон с многоуровневой защитой
     targets.forEach(targetInfo => {
-        const finalDamage = typeof window.applyFinalDamage === 'function' ? 
-            window.applyFinalDamage(wizard, targetInfo.wizard, baseDamage, 'fireball', 0, true) : baseDamage;
-            
-        targetInfo.wizard.hp -= finalDamage;
-        if (targetInfo.wizard.hp < 0) targetInfo.wizard.hp = 0;
-        
-        if (typeof window.logSpellHit === 'function') {
-            window.logSpellHit(wizard, targetInfo.wizard, finalDamage, 'Огненный шар');
-        } else if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`🔥 ${targetInfo.wizard.name} получает ${finalDamage} урона от Огненного шара (${targetInfo.wizard.hp}/${targetInfo.wizard.max_hp})`);
-        }
-        
-        // Эффект горения для фракции Огонь
-        if (wizard.faction === 'fire' && typeof window.tryApplyEffect === 'function') {
-            window.tryApplyEffect('burning', targetInfo.wizard, false);
+        // ИСПРАВЛЕНИЕ: Используем многоуровневую защиту для детального логирования
+        if (typeof window.applyDamageWithMultiLayerProtection === 'function') {
+            const result = window.applyDamageWithMultiLayerProtection(wizard, targetInfo, baseDamage, 'fireball', casterType);
+
+            if (result) {
+                // Детальное логирование через logProtectionResult
+                if (typeof window.logProtectionResult === 'function') {
+                    window.logProtectionResult(wizard, targetInfo, result, 'Огненный шар');
+                }
+
+                // Эффект горения для фракции Огонь
+                if (wizard.faction === 'fire' && typeof window.tryApplyEffect === 'function') {
+                    window.tryApplyEffect('burning', targetInfo.wizard, false);
+                }
+            }
+        } else {
+            // Fallback на старую систему
+            const finalDamage = typeof window.applyFinalDamage === 'function' ?
+                window.applyFinalDamage(wizard, targetInfo.wizard, baseDamage, 'fireball', 0, true) : baseDamage;
+
+            targetInfo.wizard.hp -= finalDamage;
+            if (targetInfo.wizard.hp < 0) targetInfo.wizard.hp = 0;
+
+            if (typeof window.logSpellHit === 'function') {
+                window.logSpellHit(wizard, targetInfo.wizard, finalDamage, 'Огненный шар');
+            } else if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`🔥 ${targetInfo.wizard.name} получает ${finalDamage} урона от Огненного шара (${targetInfo.wizard.hp}/${targetInfo.wizard.max_hp})`);
+            }
+
+            // Эффект горения для фракции Огонь
+            if (wizard.faction === 'fire' && typeof window.tryApplyEffect === 'function') {
+                window.tryApplyEffect('burning', targetInfo.wizard, false);
+            }
         }
     });
     if (window.spellRegistry?.play) {
