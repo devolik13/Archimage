@@ -1,0 +1,627 @@
+/* city/building-modals.css - Адаптивные стили для модалок зданий */
+
+/* ========================================
+   БАЗОВЫЕ СТИЛИ ДЛЯ МОДАЛОК ЗДАНИЙ
+   ======================================== */
+
+.building-modal-content {
+    padding: 15px;
+    background: #2c2c3d;
+    border-radius: 10px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+    overflow: hidden;
+}
+
+.building-modal-header {
+    margin: 0 0 12px 0;
+    color: #7289da;
+    font-size: 16px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.building-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.building-modal-footer {
+    flex-shrink: 0;
+    margin-top: 10px;
+}
+
+/* ========================================
+   ДВУХКОЛОНОЧНАЯ РАСКЛАДКА
+   ======================================== */
+
+.building-two-column-layout {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.building-left-column,
+.building-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* ========================================
+   БАШНЯ МАГОВ
+   ======================================== */
+
+.wizard-tower-bonus-box {
+    background: #4a5568;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.wizard-tower-bonus-title {
+    font-size: 12px;
+    color: #ffa500;
+    margin-bottom: 6px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.wizard-tower-bonus-grid {
+    display: flex;
+    gap: 8px;
+    font-size: 11px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.wizard-list-container {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 8px;
+}
+
+.wizard-list-item {
+    background: #3d3d5c;
+    padding: 6px 8px;
+    border-radius: 6px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.wizard-list-item.hiring {
+    background: #555577;
+    cursor: pointer;
+}
+
+/* ========================================
+   ГЕНЕРАТОР ВРЕМЕНИ
+   ======================================== */
+
+.time-generator-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 15px 0;
+}
+
+.time-stat-box {
+    background: #3d3d5c;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.time-stat-title {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.time-stat-value {
+    font-size: 24px;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.time-stat-description {
+    font-size: 11px;
+    color: #aaa;
+    text-align: center;
+}
+
+.time-stat-next {
+    font-size: 10px;
+    color: #7289da;
+    text-align: center;
+    margin-top: 5px;
+}
+
+/* ========================================
+   АРКАНСКАЯ ЛАБОРАТОРИЯ
+   ======================================== */
+
+.arcane-lab-bonus-box {
+    background: #3d3d5c;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+.arcane-lab-bonus-title {
+    margin-top: 0;
+    color: #ffa500;
+    font-size: 16px;
+}
+
+.arcane-lab-bonus-value {
+    font-size: 32px;
+    color: #4ade80;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.arcane-lab-bonus-description {
+    font-size: 14px;
+    color: #aaa;
+    text-align: center;
+}
+
+.arcane-lab-next-level {
+    font-size: 12px;
+    color: #7289da;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* ========================================
+   PVP АРЕНА
+   ======================================== */
+
+.arena-buttons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.arena-warning {
+    color: #ff6b6b;
+    font-size: 12px;
+    text-align: center;
+    margin: 0 0 10px 0;
+}
+
+/* ========================================
+   КНОПКИ
+   ======================================== */
+
+.building-button {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.building-button.primary {
+    background: #7289da;
+    color: white;
+}
+
+.building-button.secondary {
+    background: #555;
+    color: white;
+}
+
+.building-button.success {
+    background: #4ade80;
+    color: white;
+}
+
+.building-button.warning {
+    background: #ffa500;
+    color: white;
+}
+
+.building-button.close {
+    background: transparent;
+    border: 1px solid #7289da;
+    color: #7289da;
+}
+
+.building-button:disabled {
+    background: #333;
+    color: #666;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.building-button:not(:disabled):hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.building-button:active {
+    transform: scale(0.98);
+}
+
+/* ========================================
+   УЛУЧШЕНИЕ ЗДАНИЙ
+   ======================================== */
+
+.upgrade-info-box {
+    background: #3d3d5c;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.upgrade-info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.upgrade-divider {
+    border: 1px solid #555;
+    margin: 12px 0;
+}
+
+/* ========================================
+   МОБИЛЬНАЯ АДАПТАЦИЯ (≤768px)
+   ======================================== */
+
+@media (max-width: 768px) {
+    .building-modal-content {
+        padding: 12px;
+        max-width: 95vw;
+    }
+
+    .building-modal-header {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    /* Двухколоночная раскладка сохраняется, но колонки уже */
+    .building-two-column-layout {
+        grid-template-columns: 170px 1fr;
+        gap: 8px;
+    }
+
+    .wizard-tower-bonus-box {
+        padding: 6px;
+    }
+
+    .wizard-tower-bonus-title {
+        font-size: 10px;
+        margin-bottom: 4px;
+    }
+
+    .wizard-tower-bonus-grid {
+        font-size: 10px;
+        gap: 6px;
+    }
+
+    .wizard-list-item {
+        padding: 5px 6px;
+        font-size: 11px;
+    }
+
+    /* Генератор времени - сохраняем адаптивную сетку */
+    .time-generator-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+    }
+
+    .time-stat-box {
+        padding: 12px;
+    }
+
+    .time-stat-title {
+        font-size: 12px;
+    }
+
+    .time-stat-value {
+        font-size: 20px;
+    }
+
+    .time-stat-description {
+        font-size: 10px;
+    }
+
+    .time-stat-next {
+        font-size: 9px;
+    }
+
+    /* Арканская лаборатория */
+    .arcane-lab-bonus-box {
+        padding: 12px;
+    }
+
+    .arcane-lab-bonus-title {
+        font-size: 14px;
+    }
+
+    .arcane-lab-bonus-value {
+        font-size: 28px;
+    }
+
+    .arcane-lab-bonus-description {
+        font-size: 13px;
+    }
+
+    .arcane-lab-next-level {
+        font-size: 11px;
+    }
+
+    /* Кнопки */
+    .building-button {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .arena-buttons-grid {
+        gap: 8px;
+    }
+
+    .arena-warning {
+        font-size: 11px;
+    }
+
+    /* Улучшение */
+    .upgrade-info-box {
+        padding: 10px;
+    }
+
+    .upgrade-info-row {
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+}
+
+/* ========================================
+   МАЛЕНЬКИЕ ЭКРАНЫ (≤650px)
+   ======================================== */
+
+@media (max-width: 650px) {
+    .building-modal-content {
+        padding: 10px;
+    }
+
+    .building-modal-header {
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    /* Делаем колонки еще уже */
+    .building-two-column-layout {
+        grid-template-columns: 150px 1fr;
+        gap: 6px;
+    }
+
+    .wizard-tower-bonus-box {
+        padding: 5px;
+    }
+
+    .wizard-tower-bonus-title {
+        font-size: 9px;
+    }
+
+    .wizard-tower-bonus-grid {
+        font-size: 9px;
+        gap: 4px;
+    }
+
+    .wizard-list-item {
+        padding: 4px 5px;
+        font-size: 10px;
+    }
+
+    /* Генератор времени */
+    .time-generator-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .time-stat-box {
+        padding: 10px;
+    }
+
+    .time-stat-title {
+        font-size: 11px;
+    }
+
+    .time-stat-value {
+        font-size: 18px;
+    }
+
+    /* Арена - одна колонка */
+    .arena-buttons-grid {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    /* Кнопки */
+    .building-button {
+        padding: 7px;
+        font-size: 11px;
+    }
+
+    /* Улучшение */
+    .upgrade-info-box {
+        padding: 8px;
+    }
+
+    .upgrade-info-row {
+        font-size: 12px;
+    }
+}
+
+/* ========================================
+   ОЧЕНЬ МАЛЕНЬКИЕ ЭКРАНЫ (≤480px)
+   ======================================== */
+
+@media (max-width: 480px) {
+    .building-modal-content {
+        padding: 8px;
+    }
+
+    .building-modal-header {
+        font-size: 12px;
+    }
+
+    /* Башня магов - одна колонка на совсем маленьких экранах */
+    .building-two-column-layout {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .wizard-list-item {
+        font-size: 10px;
+    }
+
+    .building-button {
+        padding: 6px;
+        font-size: 10px;
+    }
+
+    .time-stat-value {
+        font-size: 16px;
+    }
+
+    .arcane-lab-bonus-value {
+        font-size: 24px;
+    }
+}
+
+/* ========================================
+   НИЗКАЯ ВЫСОТА ЭКРАНА (≤500px)
+   ======================================== */
+
+@media (max-height: 500px) {
+    .building-modal-content {
+        max-height: 85vh;
+        padding: 8px;
+    }
+
+    .building-modal-header {
+        margin-bottom: 6px;
+        font-size: 13px;
+    }
+
+    .building-modal-body {
+        margin: 6px 0;
+    }
+
+    .building-modal-footer {
+        margin-top: 6px;
+    }
+
+    .building-two-column-layout {
+        gap: 6px;
+        margin: 8px 0;
+    }
+
+    .wizard-tower-bonus-box,
+    .arcane-lab-bonus-box,
+    .upgrade-info-box {
+        padding: 6px;
+        margin: 6px 0;
+    }
+
+    .time-generator-grid {
+        gap: 6px;
+        margin: 8px 0;
+    }
+
+    .time-stat-box {
+        padding: 8px;
+    }
+
+    .building-button {
+        padding: 6px;
+        font-size: 11px;
+    }
+}
+
+/* ========================================
+   ДЕСКТОП (≥769px)
+   ======================================== */
+
+@media (min-width: 769px) {
+    .building-modal-content {
+        max-width: 700px;
+    }
+
+    /* Башня магов - увеличиваем левую колонку */
+    .building-two-column-layout {
+        grid-template-columns: 220px 1fr;
+        gap: 12px;
+    }
+}
+
+/* ========================================
+   iOS ФИКСЫ
+   ======================================== */
+
+@supports (-webkit-touch-callout: none) {
+    .building-modal-content {
+        max-height: -webkit-fill-available;
+    }
+}
+
+/* ========================================
+   СКРОЛЛБАРЫ
+   ======================================== */
+
+.building-modal-body::-webkit-scrollbar,
+.wizard-list-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.building-modal-body::-webkit-scrollbar-track,
+.wizard-list-container::-webkit-scrollbar-track {
+    background: #1a1a2e;
+    border-radius: 4px;
+}
+
+.building-modal-body::-webkit-scrollbar-thumb,
+.wizard-list-container::-webkit-scrollbar-thumb {
+    background: #7289da;
+    border-radius: 4px;
+}
+
+/* Для мобильных - тонкие скроллбары */
+@media (max-width: 768px) {
+    .building-modal-body::-webkit-scrollbar,
+    .wizard-list-container::-webkit-scrollbar {
+        width: 4px;
+    }
+}
+
+/* ========================================
+   ОТКЛЮЧЕНИЕ ЖЕСТОВ
+   ======================================== */
+
+.building-modal-content * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+/* Разрешаем выделение текста в полях ввода */
+.building-modal-content input,
+.building-modal-content textarea {
+    -webkit-user-select: text;
+    user-select: text;
+}

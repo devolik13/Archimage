@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест окна мага с фоном</title>
+    <link rel="stylesheet" href="wizards/wizard-detail-bg.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a2e;
+            font-family: Arial, sans-serif;
+        }
+        .test-controls {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            z-index: 10000;
+        }
+        .test-controls button {
+            margin: 5px;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #7289da;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-controls">
+        <h3 style="margin: 0 0 10px 0;">Тест окна мага</h3>
+        <button onclick="showTestWizard('fire')">🔥 Огонь</button>
+        <button onclick="showTestWizard('water')">💧 Вода</button>
+        <button onclick="showTestWizard('wind')">🌬️ Ветер</button>
+        <button onclick="showTestWizard('earth')">🪨 Земля</button>
+        <button onclick="showTestWizard('nature')">🌿 Природа</button>
+        <button onclick="showTestWizard('poison')">☠️ Яд</button>
+    </div>
+
+    <script>
+        function showTestWizard(faction) {
+            const container = document.createElement('div');
+            container.innerHTML = `
+                <div class="wizard-bg-overlay" onclick="this.parentElement.remove()"></div>
+                <div class="wizard-bg-container ${faction}">
+                    <!-- Кнопка закрытия -->
+                    <button class="wizard-bg-close-button" onclick="this.parentElement.parentElement.remove()">
+                        ← Назад
+                    </button>
+
+                    <!-- Имя мага -->
+                    <div class="wizard-bg-name">
+                        <span>Великий маг ${faction}</span>
+                        <button class="wizard-bg-name-edit" title="Переименовать">
+                            ✏️
+                        </button>
+                    </div>
+
+                    <!-- Уровень -->
+                    <div class="wizard-bg-level">
+                        Уровень 15
+                    </div>
+
+                    <!-- Полоса опыта -->
+                    <div class="wizard-bg-exp-bar">
+                        <div class="wizard-bg-exp-text">450 / 600</div>
+                        <div class="wizard-bg-exp-progress">
+                            <div class="wizard-bg-exp-fill" style="width: 75%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопка сопротивлений -->
+                    <button class="wizard-bg-resistance-button" onclick="alert('Сопротивления')">
+                        🛡️ Сопротивления
+                    </button>
+
+                    <!-- Кнопка инвентаря -->
+                    <button class="wizard-bg-inventory-button" onclick="alert('Инвентарь')">
+                        🎒 Инвентарь
+                    </button>
+
+                    <!-- Сетка 2x3 -->
+                    <div class="wizard-bg-stats-grid">
+                        <!-- Здоровье -->
+                        <div class="wizard-bg-cell health">
+                            <div class="wizard-bg-cell-label">Здоровье</div>
+                            <div class="wizard-bg-cell-value">850</div>
+                            <div class="wizard-bg-cell-bonus">+70% ур. +20% 🏰</div>
+                        </div>
+
+                        <!-- Броня -->
+                        <div class="wizard-bg-cell armor">
+                            <div class="wizard-bg-cell-label">Броня</div>
+                            <div class="wizard-bg-cell-value">120</div>
+                            <div class="wizard-bg-cell-bonus">+20 ✨</div>
+                        </div>
+
+                        <!-- Урон -->
+                        <div class="wizard-bg-cell damage">
+                            <div class="wizard-bg-cell-label">Урон</div>
+                            <div class="wizard-bg-cell-value">+35%</div>
+                            <div class="wizard-bg-cell-bonus">🏰 +25% ✨ +10%</div>
+                        </div>
+
+                        <!-- Заклинание 1 -->
+                        <div class="wizard-bg-cell spell" onclick="alert('Выбор заклинания 1')">
+                            <div class="wizard-bg-spell-name">Огненный шар</div>
+                            <div class="wizard-bg-spell-info">Ур.5 • 180 → 243💥</div>
+                        </div>
+
+                        <!-- Заклинание 2 -->
+                        <div class="wizard-bg-cell spell" onclick="alert('Выбор заклинания 2')">
+                            <div class="wizard-bg-spell-name">Метеорит</div>
+                            <div class="wizard-bg-spell-info">Ур.3 • 120 → 162💥</div>
+                        </div>
+
+                        <!-- Заблокировано -->
+                        <div class="wizard-bg-cell spell locked">
+                            <div class="wizard-bg-cell-value">🔒</div>
+                            <div class="wizard-bg-spell-info">Закрыто</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(container);
+        }
+    </script>
+</body>
+</html>
