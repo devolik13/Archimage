@@ -427,8 +427,11 @@ function closeBattleFieldModal() {
 
         console.log('🤖 Симуляция боя до завершения без анимации...');
 
-        // Устанавливаем флаг досрочного выхода
+        // Устанавливаем флаги досрочного выхода и быстрой симуляции
         window.battleEarlyExit = true;
+        window.fastSimulation = true; // КРИТИЧНО: отключает setTimeout в фазах боя
+
+        console.log('⚡ Быстрая симуляция ВКЛЮЧЕНА (без анимаций)');
 
         // Функция быстрой симуляции боя до конца
         const simulateBattleToEnd = () => {
@@ -442,11 +445,6 @@ function closeBattleFieldModal() {
                     window.executeBattlePhase();
                 }
 
-                // Проверяем окончание боя
-                if (typeof window.checkBattleEnd === 'function') {
-                    window.checkBattleEnd();
-                }
-
                 turnCount++;
 
                 // Если бой завершился, выходим из цикла
@@ -456,8 +454,11 @@ function closeBattleFieldModal() {
             }
 
             if (turnCount >= MAX_TURNS) {
-                console.error('⚠️ Достигнут лимит ходов симуляции - засчитываем ничью');
-                window.battleState = 'finished';
+                console.error('⚠️ Достигнут лимит ходов симуляции');
+                // Принудительно завершаем и определяем победителя
+                if (typeof window.checkBattleEnd === 'function') {
+                    window.checkBattleEnd();
+                }
             }
 
             console.log(`✅ Симуляция завершена за ${turnCount} ходов`);
@@ -468,6 +469,10 @@ function closeBattleFieldModal() {
             simulateBattleToEnd();
         } catch (error) {
             console.error('❌ Ошибка симуляции боя:', error);
+        } finally {
+            // ВАЖНО: Отключаем быструю симуляцию после завершения
+            window.fastSimulation = false;
+            console.log('⚡ Быстрая симуляция ВЫКЛЮЧЕНА');
         }
 
         // После симуляции checkBattleEnd уже вызвал onBattleCompleted и showBattleResult

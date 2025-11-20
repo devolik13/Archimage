@@ -686,14 +686,36 @@ function executePlayerPhase(mageCount) {
         positionsChecked++;
     }
 
-    // Атакуем
-    magesToAttack.forEach((mageData, index) => {
-        setTimeout(() => {
+    // Атакуем - с учетом быстрой симуляции
+    if (window.fastSimulation) {
+        // Быстрая симуляция: без задержек, синхронно
+        magesToAttack.forEach((mageData) => {
             if (mageData.wizard.hp > 0) {
                 executeSingleMageAttack(mageData.wizard, mageData.position, 'player');
             }
-        }, index * 1500);
-    });
+        });
+
+        // Проверка на Метеокинез синхронно
+        if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
+            window.checkMeteorokinesisCasterAlive();
+        }
+    } else {
+        // Обычный режим: с анимациями и задержками
+        magesToAttack.forEach((mageData, index) => {
+            setTimeout(() => {
+                if (mageData.wizard.hp > 0) {
+                    executeSingleMageAttack(mageData.wizard, mageData.position, 'player');
+                }
+            }, index * 1500);
+        });
+
+        // Проверка на Метеокинез с задержкой
+        setTimeout(() => {
+            if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
+                window.checkMeteorokinesisCasterAlive();
+            }
+        }, magesToAttack.length * 500);
+    }
 
     // ВАЖНО: Сохраняем позицию после последнего атаковавшего мага
     if (magesToAttack.length > 0) {
@@ -707,13 +729,6 @@ function executePlayerPhase(mageCount) {
         }
     }
     console.log(`   Новый playerMageIndex: ${window.playerMageIndex}`);
-
-    // Проверка на Метеокинез
-    setTimeout(() => {
-        if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
-            window.checkMeteorokinesisCasterAlive();
-        }
-    }, magesToAttack.length * 500);
 }
 
 // --- Фаза противника ---
@@ -739,14 +754,36 @@ function executeEnemyPhase(mageCount) {
         positionsChecked++;
     }
 
-    // Атакуем
-    magesToAttack.forEach((mageData, index) => {
-        setTimeout(() => {
+    // Атакуем - с учетом быстрой симуляции
+    if (window.fastSimulation) {
+        // Быстрая симуляция: без задержек, синхронно
+        magesToAttack.forEach((mageData) => {
             if (mageData.wizard.hp > 0) {
                 executeSingleMageAttack(mageData.wizard, mageData.position, 'enemy');
             }
-        }, index * 1500);
-    });
+        });
+
+        // Проверка на Метеокинез синхронно
+        if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
+            window.checkMeteorokinesisCasterAlive();
+        }
+    } else {
+        // Обычный режим: с анимациями и задержками
+        magesToAttack.forEach((mageData, index) => {
+            setTimeout(() => {
+                if (mageData.wizard.hp > 0) {
+                    executeSingleMageAttack(mageData.wizard, mageData.position, 'enemy');
+                }
+            }, index * 1500);
+        });
+
+        // Проверка на Метеокинез с задержкой
+        setTimeout(() => {
+            if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
+                window.checkMeteorokinesisCasterAlive();
+            }
+        }, magesToAttack.length * 500);
+    }
 
     // Сохраняем позицию после последнего атаковавшего мага
     if (magesToAttack.length > 0) {
@@ -764,13 +801,6 @@ function executeEnemyPhase(mageCount) {
         }
     }
     console.log(`   Новый enemyMageIndex: ${window.enemyMageIndex}`);
-
-    // Проверка на Метеокинез
-    setTimeout(() => {
-        if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
-            window.checkMeteorokinesisCasterAlive();
-        }
-    }, magesToAttack.length * 500);
 }
 
 // --- Проверка окончания боя ---

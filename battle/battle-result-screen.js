@@ -216,14 +216,14 @@ function showBattleResult(result, battleData = {}) {
         </div>
     `;
 
-    // Используем ModalSystem для показа
-    if (!window.modalSystem) {
-        console.error('❌ ModalSystem не найдена!');
+    // Используем Modal для показа (из modal-system.js)
+    if (!window.Modal) {
+        console.error('❌ Modal не найдена! Проверьте загрузку modal-system.js');
         return;
     }
 
-    // Показываем модалку через ModalSystem
-    window.modalSystem.show(modalContent, {
+    // Показываем модалку через Modal.show
+    window.Modal.show(modalContent, {
         id: 'battle-result-modal',
         overlayId: 'battle-result-overlay',
         closeOnOverlay: false, // Нельзя закрыть кликом вне окна
@@ -264,9 +264,9 @@ function closeBattleResult() {
     console.log('🚪 closeBattleResult вызван');
 
     try {
-        // Закрываем через ModalSystem
-        if (window.modalSystem) {
-            window.modalSystem.close();
+        // Закрываем через Modal
+        if (window.Modal) {
+            window.Modal.close();
         }
 
         // ВАЖНО: Проверяем, нужна ли дополнительная очистка
