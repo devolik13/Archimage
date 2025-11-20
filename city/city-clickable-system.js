@@ -805,6 +805,9 @@ function updateConstructionTimer(buildingId, element) {
             box-shadow: 0 0 10px rgba(255,165,0,0.4);
         ">
             <div style="font-size: 20px; animation: hammer 1s infinite;">🔨</div>
+            <div style="font-size: 9px; color: #fff; margin-top: 2px; white-space: nowrap;">
+                ${buildingName}
+            </div>
             <div style="font-size: 10px; color: #ffa500; font-weight: bold; margin-top: 2px;">
                 ${window.formatTimeCurrency ? window.formatTimeCurrency(construction.time_remaining) : construction.time_remaining}
             </div>

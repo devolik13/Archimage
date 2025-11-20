@@ -764,6 +764,20 @@ window.addEventListener('load', () => {
 // Запускаем обновление таймеров после инициализации userData
 function initConstructionSystem() {
     updateAllConstructionTimers();
+
+    // Восстанавливаем визуальные молотки для активных строительств
+    const constructions = window.userData?.constructions || [];
+    constructions.forEach(construction => {
+        if (construction.type === 'building' && construction.time_remaining > 0) {
+            console.log('🔨 Восстанавливаем молоток для:', construction.building_id);
+            if (window.addConstructionVisualization) {
+                setTimeout(() => {
+                    window.addConstructionVisualization(construction.building_id);
+                }, 500); // Даем время контейнеру загрузиться
+            }
+        }
+    });
+
     // Запускаем обновление каждую минуту
     setInterval(updateAllConstructionTimers, 1000);
 }
