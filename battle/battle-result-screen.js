@@ -7,6 +7,11 @@ console.log('✅ battle-result-screen.js загружен');
  * @param {object} battleData - Данные о бое
  */
 function showBattleResult(result, battleData = {}) {
+    console.log('🎬 showBattleResult вызвана!');
+    console.log('   result:', result);
+    console.log('   battleData:', battleData);
+    console.log('   Стек вызова:', new Error().stack);
+
     const {
         opponentName = 'Противник',
         opponentRating = 1000,
@@ -15,6 +20,8 @@ function showBattleResult(result, battleData = {}) {
         battleDuration = 0,
         earlyExit = false // Флаг преждевременного выхода
     } = battleData;
+
+    console.log('   earlyExit:', earlyExit);
 
     const isWin = result === 'win';
 
@@ -227,31 +234,61 @@ function showBattleResult(result, battleData = {}) {
     document.body.appendChild(overlay);
     document.body.appendChild(modal);
 
+    console.log('🔍 Модальное окно добавлено в DOM');
+    console.log('   modal.children.length:', modal.children.length);
+    console.log('   modal.querySelector проверка...');
+
     // ВАЖНО: Навешиваем обработчики событий после добавления в DOM
-    // Находим кнопки и навешиваем события через addEventListener (надежнее чем onclick)
-    const newFightBtn = modal.querySelector('.battle-result-new-fight');
-    const returnBtn = modal.querySelector('.battle-result-return');
+    // Используем setTimeout чтобы дать браузеру время распарсить innerHTML
+    setTimeout(() => {
+        console.log('⏱️ setTimeout сработал, ищем кнопки...');
 
-    if (newFightBtn) {
-        newFightBtn.addEventListener('click', () => {
-            console.log('🎮 Нажата кнопка "Новый бой"');
-            window.closeBattleResult();
-            if (typeof window.showOpponentSelection === 'function') {
-                window.showOpponentSelection();
-            }
-        });
-    } else {
-        console.error('❌ Кнопка "Новый бой" не найдена!');
-    }
+        const newFightBtn = modal.querySelector('.battle-result-new-fight');
+        const returnBtn = modal.querySelector('.battle-result-return');
+        const allButtons = modal.querySelectorAll('button');
 
-    if (returnBtn) {
-        returnBtn.addEventListener('click', () => {
-            console.log('🏠 Нажата кнопка "Вернуться"');
-            window.closeBattleResult();
-        });
-    } else {
-        console.error('❌ Кнопка "Вернуться" не найдена!');
-    }
+        console.log('   Найдено кнопок всего:', allButtons.length);
+        console.log('   newFightBtn:', !!newFightBtn);
+        console.log('   returnBtn:', !!returnBtn);
+
+        if (newFightBtn) {
+            console.log('✅ Навешиваем обработчик на "Новый бой"');
+            newFightBtn.addEventListener('click', () => {
+                console.log('🎮 КЛИК по кнопке "Новый бой"');
+                window.closeBattleResult();
+                if (typeof window.showOpponentSelection === 'function') {
+                    window.showOpponentSelection();
+                }
+            });
+            // Тест - навешиваем еще и через onclick для надежности
+            newFightBtn.onclick = () => {
+                console.log('🎮 ONCLICK по кнопке "Новый бой"');
+                window.closeBattleResult();
+                if (typeof window.showOpponentSelection === 'function') {
+                    window.showOpponentSelection();
+                }
+            };
+        } else {
+            console.error('❌ Кнопка "Новый бой" не найдена!');
+        }
+
+        if (returnBtn) {
+            console.log('✅ Навешиваем обработчик на "Вернуться"');
+            returnBtn.addEventListener('click', () => {
+                console.log('🏠 КЛИК по кнопке "Вернуться"');
+                window.closeBattleResult();
+            });
+            // Тест - навешиваем еще и через onclick для надежности
+            returnBtn.onclick = () => {
+                console.log('🏠 ONCLICK по кнопке "Вернуться"');
+                window.closeBattleResult();
+            };
+        } else {
+            console.error('❌ Кнопка "Вернуться" не найдена!');
+        }
+
+        console.log('✅ Обработчики событий навешены');
+    }, 100); // Даем время на рендер
 
     window.currentBattleResultModal = { modal, overlay };
 
