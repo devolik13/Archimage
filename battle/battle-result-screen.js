@@ -238,19 +238,35 @@ function showBattleResult(result, battleData = {}) {
  * Закрыть экран результатов
  */
 function closeBattleResult() {
+    console.log('🚪 Закрытие экрана результатов боя');
+
     const modal = document.getElementById('battle-result-modal');
     const overlay = document.getElementById('battle-result-overlay');
 
-    if (modal) modal.remove();
-    if (overlay) overlay.remove();
+    if (modal) {
+        modal.remove();
+        console.log('✅ battle-result-modal удален');
+    }
+    if (overlay) {
+        overlay.remove();
+        console.log('✅ battle-result-overlay удален');
+    }
 
     if (window.currentBattleResultModal) {
         window.currentBattleResultModal = null;
     }
 
-    // Очищаем ресурсы боя если нужно
-    if (typeof window.cleanupBattleResources === 'function') {
-        window.cleanupBattleResources();
+    // ВАЖНО: Проверяем, нужна ли дополнительная очистка
+    // При досрочном выходе cleanupBattleResources уже был вызван
+    const needsCleanup = document.getElementById('battle-field-modal') !== null;
+
+    if (needsCleanup) {
+        console.log('🧹 Требуется очистка ресурсов боя');
+        if (typeof window.cleanupBattleResources === 'function') {
+            window.cleanupBattleResources();
+        }
+    } else {
+        console.log('✅ Ресурсы боя уже очищены (досрочный выход)');
     }
 
     // Возвращаемся в город
@@ -259,6 +275,8 @@ function closeBattleResult() {
     } else if (typeof window.closeBattleField === 'function') {
         window.closeBattleField();
     }
+
+    console.log('✅ Экран результатов закрыт');
 }
 
 // Экспорт

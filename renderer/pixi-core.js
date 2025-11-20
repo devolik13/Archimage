@@ -237,49 +237,75 @@ function startBattleSync() {
 function destroyPixiBattle() {
     console.log('🔥 Уничтожение PixiJS');
 
+    // Защита от повторного вызова - если приложение уже уничтожено
+    if (!pixiApp && !battleContainer) {
+        console.log('⏭️ PixiJS уже уничтожен, пропускаем');
+        return;
+    }
+
     if (updateInterval) {
         clearInterval(updateInterval);
         updateInterval = null;
         console.log('⏸️ Интервал обновлений остановлен');
     }
-    
+
     // ВАЖНО: Сначала очищаем магов
     if (window.pixiWizards?.clear) {
-        window.pixiWizards.clear();
+        try {
+            window.pixiWizards.clear();
+        } catch (error) {
+            console.warn('⚠️ Ошибка при очистке магов:', error);
+        }
     }
-    
+
     // Очищаем анимации
     if (window.spellAnimations) {
         Object.keys(window.spellAnimations).forEach(key => {
             if (window.spellAnimations[key]?.clear) {
-                window.spellAnimations[key].clear();
+                try {
+                    window.spellAnimations[key].clear();
+                } catch (error) {
+                    console.warn(`⚠️ Ошибка при очистке анимации ${key}:`, error);
+                }
             }
         });
     }
-    
+
     // Уничтожаем контейнеры
     if (battleContainer) {
-        battleContainer.destroy({ children: true, texture: true, baseTexture: true });
-        battleContainer = null;
+        try {
+            battleContainer.destroy({ children: true, texture: true, baseTexture: true });
+            battleContainer = null;
+            console.log('✅ battleContainer уничтожен');
+        } catch (error) {
+            console.warn('⚠️ Ошибка при уничтожении battleContainer:', error);
+            battleContainer = null;
+        }
     }
-    
+
     // Уничтожаем приложение
     if (pixiApp) {
-        pixiApp.destroy(true, { children: true, texture: true, baseTexture: true });
-        pixiApp = null;
+        try {
+            pixiApp.destroy(true, { children: true, texture: true, baseTexture: true });
+            pixiApp = null;
+            console.log('✅ pixiApp уничтожен');
+        } catch (error) {
+            console.warn('⚠️ Ошибка при уничтожении pixiApp:', error);
+            pixiApp = null;
+        }
     }
-    
+
     // Сбрасываем все ссылки
     gridContainer = null;
     unitsContainer = null;
     effectsContainer = null;
     gridCells = [];
-    
+
     const container = document.getElementById('pixi-container');
     if (container) {
         container.innerHTML = '';
     }
-    
+
     console.log('✅ PixiJS уничтожен');
 }
 
