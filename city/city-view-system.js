@@ -123,7 +123,7 @@ function loadBuildingImageNew(faction, buildingId, container, zIndex) {
             z-index: ${zIndex + 1};
             cursor: pointer;
             transition: filter 0.3s ease;
-            pointer-events: auto;
+            pointer-events: none;
         `;
         
         console.log(`📱 Мобильный масштаб здания ${buildingId}: ${scaledWidth}px x ${scaledHeight}px`);
@@ -138,7 +138,7 @@ function loadBuildingImageNew(faction, buildingId, container, zIndex) {
             z-index: ${zIndex + 1};
             cursor: pointer;
             transition: filter 0.3s ease;
-            pointer-events: auto;
+            pointer-events: none;
         `;
         console.log(`🖥️ Desktop режим здания ${buildingId}: contain`);
     }
