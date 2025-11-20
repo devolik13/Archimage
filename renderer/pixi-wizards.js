@@ -93,7 +93,7 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             frameHeight: 256,
             frameCount: 8,
             animationSpeed: 0.15,
-            scale: 0.700 // В 2 раза больше гоблина - занимает 4 клетки (2x2)
+            scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
         },
         water_elemental: {
             idle: 'images/enemies/water_elemental/idle.png',
@@ -103,7 +103,7 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             frameHeight: 256,
             frameCount: 8,
             animationSpeed: 0.15,
-            scale: 0.700
+            scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
         },
         wind_elemental: {
             idle: 'images/enemies/wind_elemental/idle.png',
@@ -113,7 +113,7 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             frameHeight: 256,
             frameCount: 8,
             animationSpeed: 0.15,
-            scale: 0.700
+            scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
         },
         earth_elemental: {
             idle: 'images/enemies/earth_elemental/idle.png',
@@ -123,7 +123,7 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             frameHeight: 256,
             frameCount: 8,
             animationSpeed: 0.15,
-            scale: 0.700
+            scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
         }
     };
     
@@ -455,10 +455,30 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         sprite.x = cellData.x + cellData.width / 2;
         sprite.y = cellData.y + cellData.height / 2;
 
-        // ИСПРАВЛЕНИЕ: Опускаем элементалей вниз на 1.5 клетки (они слишком большие)
+        // ИСПРАВЛЕНИЕ: Позиционируем элементалей на 4 клетки (2x2)
         if (faction && faction.endsWith('_elemental')) {
-            sprite.y += cellData.height * 1.5;
-            console.log(`📐 Элементаль ${faction} опущен на 1.5 клетки вниз`);
+            // Элементаль занимает клетки: [col, row], [col, row+1], [col+1, row], [col+1, row+1]
+            // Позиционируем его в центре между этими 4 клетками
+
+            // Если элементаль враг (col = 0), центрируем между колонками 0 и 1
+            if (col === 0 && row === 0) {
+                // Получаем соседние клетки
+                const cell01 = gridCells?.[0]?.[1]; // col 0, row 1
+                const cell10 = gridCells?.[1]?.[0]; // col 1, row 0
+                const cell11 = gridCells?.[1]?.[1]; // col 1, row 1
+
+                if (cell01 && cell10 && cell11) {
+                    // Центр по X: между колонками 0 и 1
+                    sprite.x = (cellData.x + cell10.x + cellData.width / 2 + cell10.width / 2) / 2;
+
+                    // Центр по Y: между рядами 0 и 1
+                    sprite.y = (cellData.y + cell01.y + cellData.height / 2 + cell01.height / 2) / 2;
+
+                    console.log(`📐 Элементаль ${faction} позиционирован на 4 клетках (2x2)`);
+                    console.log(`   Позиция: [${col},${row}], [${col},${row+1}], [${col+1},${row}], [${col+1},${row+1}]`);
+                    console.log(`   Координаты: x=${sprite.x}, y=${sprite.y}`);
+                }
+            }
         }
 
         container.sprite = sprite;
