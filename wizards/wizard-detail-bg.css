@@ -30,8 +30,7 @@
     transform: translate(-50%, -50%);
     width: 768px;
     max-width: 95vw;
-    height: auto;
-    min-height: 512px;
+    height: 512px;
     max-height: 90vh;
     background-size: cover;
     background-position: center;
@@ -113,7 +112,8 @@
     grid-template-columns: 200px 1fr;
     gap: 20px;
     flex: 1;
-    overflow: hidden;
+    min-height: 0;
+    align-items: stretch;
 }
 
 /* ========================================
@@ -124,6 +124,8 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    height: 100%;
+    justify-content: flex-start;
 }
 
 /* Уровень мага */
@@ -222,6 +224,7 @@
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, 1fr);
     gap: 10px;
+    height: 100%;
 }
 
 /* Ячейка статов/заклинаний */
@@ -235,7 +238,7 @@
     justify-content: center;
     padding: 10px;
     transition: all 0.3s;
-    min-height: 100px;
+    min-height: 80px;
 }
 
 .wizard-bg-cell:hover {
@@ -402,7 +405,8 @@
     .wizard-bg-container {
         width: 95vw;
         padding: 15px;
-        min-height: auto;
+        height: auto;
+        min-height: 400px;
     }
 
     .wizard-bg-content-wrapper {
@@ -678,7 +682,7 @@
     }
 
     .wizard-bg-cell {
-        min-height: 110px;
+        min-height: 90px;
     }
 }
 
