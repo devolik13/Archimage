@@ -944,6 +944,15 @@ function checkBattleEnd() {
                         console.log(`💾 PvE: Сохранён опыт для ${originalWizard.name}: ${originalWizard.experience} exp, уровень ${originalWizard.level}`);
                     }
                 });
+
+                // КРИТИЧЕСКИ ВАЖНО: Сохраняем обновленные данные магов в базу данных
+                if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+                    window.dbManager.savePlayer(window.userData).then(() => {
+                        console.log('✅ Опыт магов сохранен в БД после PvE битвы');
+                    }).catch(err => {
+                        console.error('❌ Ошибка сохранения опыта магов:', err);
+                    });
+                }
             }
         }
 
