@@ -454,7 +454,13 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         
         sprite.x = cellData.x + cellData.width / 2;
         sprite.y = cellData.y + cellData.height / 2;
-        
+
+        // ИСПРАВЛЕНИЕ: Опускаем элементалей вниз на 1 клетку (они слишком большие)
+        if (faction && faction.endsWith('_elemental')) {
+            sprite.y += cellData.height;
+            console.log(`📐 Элементаль ${faction} опущен на 1 клетку вниз`);
+        }
+
         container.sprite = sprite;
         
         // HP бар

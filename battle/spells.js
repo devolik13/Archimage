@@ -137,16 +137,22 @@ function castSpell(wizard, spellId, position, casterType) {
             const spellLevel = wizard.spell_levels[spellId];
             console.log(`🔥 Создаем spellData для элементаля: ${spellId} уровень ${spellLevel}`);
 
-            // Получаем базовые данные заклинания
-            const baseSpellData = window.spellsData?.[spellId];
-            if (baseSpellData) {
-                spellData = {
-                    ...baseSpellData,
-                    id: spellId,
-                    level: spellLevel,
-                    name: baseSpellData.name
-                };
-            }
+            // ИСПРАВЛЕНИЕ: Создаем spellData используя глобальные функции и данные
+            const spellName = window.SPELL_NAMES?.[spellId] || spellId;
+            const baseDamage = window.SPELL_BASE_DAMAGE?.[spellId] || 10;
+            const spellType = window.getSpellType ? window.getSpellType(spellId) : 'single_target';
+            const damage = window.getSpellDamage ? window.getSpellDamage(spellId, spellLevel) : baseDamage;
+
+            spellData = {
+                id: spellId,
+                name: spellName,
+                level: spellLevel,
+                tier: Math.ceil(spellLevel / 1), // Примерный tier
+                damage: damage,
+                type: spellType
+            };
+
+            console.log(`✅ SpellData создан для ${spellId}:`, spellData);
         } else {
             // Для PvP врагов используем стандартный путь
             spellsSource = window.selectedOpponent?.spells;
