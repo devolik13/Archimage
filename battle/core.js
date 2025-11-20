@@ -1022,6 +1022,37 @@ function checkBattleEnd() {
 
         // Для PvE показываем простое сообщение
         if (isPvEBattle) {
+            // ИСПРАВЛЕНО: Сохраняем PvE прогресс при победе
+            if (battleResult === 'win' && window.currentPvELevel) {
+                if (!window.userData.pve_progress) {
+                    window.userData.pve_progress = {};
+                }
+
+                const currentLevel = window.currentPvELevel;
+                console.log(`💾 Сохраняем PvE прогресс: уровень ${currentLevel} пройден`);
+
+                // Сохраняем пройденный уровень
+                window.userData.pve_progress[`level_${currentLevel}`] = {
+                    completed: true,
+                    completedAt: new Date().toISOString()
+                };
+
+                // Обновляем максимальный пройденный уровень
+                const maxLevel = window.userData.pve_progress.maxLevel || 0;
+                if (currentLevel > maxLevel) {
+                    window.userData.pve_progress.maxLevel = currentLevel;
+                }
+
+                // Сохраняем в БД
+                if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+                    window.dbManager.savePlayer(window.userData).then(() => {
+                        console.log('✅ PvE прогресс сохранён в БД');
+                    }).catch(err => {
+                        console.error('❌ Ошибка сохранения PvE прогресса:', err);
+                    });
+                }
+            }
+
             // ИСПРАВЛЕНО: Увеличена задержка до 3500мс чтобы волк и анимация смерти успели завершиться
             setTimeout(() => {
                 if (battleResult === 'win') {
