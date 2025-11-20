@@ -389,19 +389,40 @@ function closeBattleFieldModal() {
     if (isPvP && isBattleActive) {
         console.warn('⚠️ Игрок закрывает незавершенный PvP бой - просчитываем до конца');
 
-        // Останавливаем анимации и интервалы
+        // КРИТИЧНО: Останавливаем PIXI полностью ПЕРЕД симуляцией
+        console.log('🛑 Останавливаем PIXI и анимации...');
+
+        // Останавливаем интервалы боя
         if (window.battleInterval) {
             clearInterval(window.battleInterval);
             window.battleInterval = null;
         }
+
+        // Останавливаем все анимации
         if (window.animationManager) {
             window.animationManager.clearAll();
         }
 
-        // Скрываем UI боя (но не удаляем данные)
+        // ВАЖНО: Полностью уничтожаем PIXI до симуляции (останавливает ticker)
+        if (window.destroyPixiBattle) {
+            window.destroyPixiBattle();
+        }
+
+        // Удаляем UI элементы боя
         const battleModal = document.getElementById("battle-field-modal");
         if (battleModal) {
-            battleModal.style.display = 'none';
+            battleModal.remove();
+            console.log("✅ battle-field-modal удален перед симуляцией");
+        }
+
+        const container = document.getElementById("battle-field-fullscreen-container");
+        if (container) {
+            container.remove();
+        }
+
+        const pixiContainer = document.getElementById("pixi-battle-container");
+        if (pixiContainer) {
+            pixiContainer.remove();
         }
 
         console.log('🤖 Симуляция боя до завершения без анимации...');
@@ -487,8 +508,8 @@ function closeBattleFieldModal() {
                 }
             }
 
-            // Очищаем ресурсы боя
-            cleanupBattleResources();
+            // Показываем город (ресурсы боя уже удалены выше)
+            returnToCity();
         }, 500);
 
         return; // Не закрываем сразу - сначала покажем результат
@@ -646,6 +667,8 @@ function addBattleFieldStyles() {
 // Экспорт
 window.renderBattleField = renderBattleField;
 window.closeBattleFieldModal = closeBattleFieldModal;
+window.cleanupBattleResources = cleanupBattleResources;
+window.returnToCity = returnToCity;
 window.togglePause = togglePause;
 window.toggleBattleSpeed = toggleBattleSpeed;
 window.toggleBattleLog = toggleBattleLog;
