@@ -5,10 +5,16 @@ console.log('✅ battle/spells.js загружен');
 // --- Главная функция использования заклинаний магом ---
 function useWizardSpells(wizard, position, casterType) {
     console.log(`🧙‍♂️ ${wizard.name} (${casterType}) использует заклинания на позиции ${position}`);
-    
+
     const spells = wizard.spells || [];
+    console.log(`   🔍 DEBUG wizard.spells:`, wizard.spells);
+    console.log(`   🔍 DEBUG spells:`, spells);
+    console.log(`   🔍 DEBUG wizard.spell_levels:`, wizard.spell_levels);
+    console.log(`   🔍 DEBUG wizard.isElemental:`, wizard.isElemental);
+
     const availableSpells = spells.filter(spell => spell !== null && spell !== undefined);
-    
+    console.log(`   🔍 DEBUG availableSpells после фильтра:`, availableSpells);
+
     if (availableSpells.length === 0) {
         console.log(`⚔️ ${wizard.name} не имеет заклинаний, использует базовую атаку`);
         castBasicAttack(wizard, position, casterType);
@@ -217,13 +223,13 @@ function castSpell(wizard, spellId, position, casterType) {
 // --- Базовая атака если нет заклинаний ---
 function castBasicAttack(wizard, position, casterType) {
     console.log(`⚔️ ${wizard.name} использует базовую атаку`);
-    
+
     // 🎬 АНИМАЦИЯ для базовой атаки тоже!
     const col = casterType === 'player' ? 5 : 0;
     const wizardKey = `${col}_${position}`;
-    
+
     console.log(`🎬 Запускаем анимацию базовой атаки для ${wizardKey}`);
-    
+
     if (typeof window.playWizardAttackAnimation === 'function') {
     	window.playWizardAttackAnimation(col, position, () => {
     	    console.log(`✅ Анимация базовой атаки завершена для ${wizard.name}`);
@@ -240,20 +246,36 @@ function castBasicAttack(wizard, position, casterType) {
         const baseDamage = 5 + (wizard.level || 1) * 1;
         console.log(`💥 Базовый урон: ${baseDamage}, наносим цели: ${target.wizard.name}`);
 
-        const finalDamage = window.applyFinalDamage ?
-            window.applyFinalDamage(wizard, target.wizard, baseDamage, 'basic_attack', 0, false) : baseDamage;
+        // ИСПРАВЛЕНИЕ: Используем систему многоуровневой защиты для базовой атаки
+        if (typeof window.applyDamageWithMultiLayerProtection === 'function') {
+            const result = window.applyDamageWithMultiLayerProtection(wizard, target, baseDamage, 'basic_attack', casterType);
 
-        target.wizard.hp -= finalDamage;
-        if (target.wizard.hp < 0) target.wizard.hp = 0;
+            if (result) {
+                console.log(`✅ Атака завершена через многоуровневую защиту: ${target.wizard.name} HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
 
-        console.log(`✅ Атака завершена: ${target.wizard.name} HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
+                if (typeof window.logSpellHit === 'function') {
+                    window.logSpellHit(wizard, target.wizard, result.finalDamage, 'Базовая атака');
+                } else if (typeof window.addToBattleLog === 'function') {
+                    window.addToBattleLog(`⚔️ ${wizard.name} атакует ${target.wizard.name} (${result.finalDamage} урона) (${target.wizard.hp}/${target.wizard.max_hp})`);
+                }
+            }
+        } else {
+            // Fallback на старую систему если многоуровневая защита не доступна
+            const finalDamage = window.applyFinalDamage ?
+                window.applyFinalDamage(wizard, target.wizard, baseDamage, 'basic_attack', 0, false) : baseDamage;
 
-        if (typeof window.logSpellHit === 'function') {
-            window.logSpellHit(wizard, target.wizard, finalDamage, 'Базовая атака');
-        } else if (Array.isArray(window.battleLog)) {
-            const logEntry = `⚔️ ${wizard.name} атакует ${target.wizard.name} (${finalDamage} урона) (${target.wizard.hp}/${target.wizard.max_hp})`;
-            window.battleLog.push(logEntry);
-            console.log(logEntry);
+            target.wizard.hp -= finalDamage;
+            if (target.wizard.hp < 0) target.wizard.hp = 0;
+
+            console.log(`✅ Атака завершена (старая система): ${target.wizard.name} HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
+
+            if (typeof window.logSpellHit === 'function') {
+                window.logSpellHit(wizard, target.wizard, finalDamage, 'Базовая атака');
+            } else if (Array.isArray(window.battleLog)) {
+                const logEntry = `⚔️ ${wizard.name} атакует ${target.wizard.name} (${finalDamage} урона) (${target.wizard.hp}/${target.wizard.max_hp})`;
+                window.battleLog.push(logEntry);
+                console.log(logEntry);
+            }
         }
     } else {
         console.warn(`⚠️ Цель НЕ НАЙДЕНА для ${wizard.name}!`);
