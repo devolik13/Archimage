@@ -79,9 +79,9 @@ function consumeBattleEnergy() {
     window.userData.battle_energy.current--;
     console.log(`⚡ Энергия потрачена: осталось ${window.userData.battle_energy.current}/${window.userData.battle_energy.max}`);
 
-    // Сохраняем изменения
+    // Сохраняем изменения НЕМЕДЛЕННО (критично для предотвращения эксплойтов)
     if (window.eventSaveManager) {
-        window.eventSaveManager.saveDebounced('battle_energy_consumed', 1000);
+        window.eventSaveManager.saveImmediate('battle_energy_consumed');
     }
 
     updateBattleEnergyUI();

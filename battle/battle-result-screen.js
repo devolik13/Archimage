@@ -12,7 +12,8 @@ function showBattleResult(result, battleData = {}) {
         opponentRating = 1000,
         ratingChange = 0,
         rewards = {},
-        battleDuration = 0
+        battleDuration = 0,
+        earlyExit = false // Флаг преждевременного выхода
     } = battleData;
 
     const isWin = result === 'win';
@@ -61,6 +62,25 @@ function showBattleResult(result, battleData = {}) {
                     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
                 ">${titleText}</h2>
             </div>
+
+            <!-- Предупреждение о преждевременном выходе -->
+            ${earlyExit ? `
+                <div style="
+                    background: rgba(255, 165, 0, 0.2);
+                    border: 2px solid #ffa500;
+                    padding: 12px;
+                    border-radius: 10px;
+                    margin-bottom: 15px;
+                    text-align: center;
+                ">
+                    <div style="font-size: 14px; color: #ffa500; font-weight: bold; margin-bottom: 5px;">
+                        ℹ️ Досрочный выход из боя
+                    </div>
+                    <div style="font-size: 12px; color: #ffd699; line-height: 1.4;">
+                        Бой был просчитан до конца автоматически. Результат соответствует реальному исходу сражения.
+                    </div>
+                </div>
+            ` : ''}
 
             <!-- Информация о противнике -->
             <div style="
@@ -228,8 +248,15 @@ function closeBattleResult() {
         window.currentBattleResultModal = null;
     }
 
-    // Закрываем поле боя если оно открыто
-    if (typeof window.closeBattleField === 'function') {
+    // Очищаем ресурсы боя если нужно
+    if (typeof window.cleanupBattleResources === 'function') {
+        window.cleanupBattleResources();
+    }
+
+    // Возвращаемся в город
+    if (typeof window.returnToCity === 'function') {
+        window.returnToCity();
+    } else if (typeof window.closeBattleField === 'function') {
         window.closeBattleField();
     }
 }

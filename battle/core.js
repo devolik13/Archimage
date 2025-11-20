@@ -1011,13 +1011,17 @@ function checkBattleEnd() {
                 opponentRating: opponent.rating || 1000,
                 ratingChange: ratingChange,
                 rewards: rewards,
-                battleDuration: 0 // TODO: добавить таймер боя если нужно
+                battleDuration: 0, // TODO: добавить таймер боя если нужно
+                earlyExit: window.battleEarlyExit || false // Флаг досрочного выхода
             };
 
-            // Показываем с небольшой задержкой для визуального эффекта
+            // Показываем с небольшой задержкой для визуального эффекта (или без задержки при earlyExit)
+            const delay = window.battleEarlyExit ? 0 : 1000;
             setTimeout(() => {
                 window.showBattleResult(battleResult, battleData);
-            }, 1000);
+                // Сбрасываем флаг после показа
+                window.battleEarlyExit = false;
+            }, delay);
         }
 
         // Для PvE показываем простое сообщение

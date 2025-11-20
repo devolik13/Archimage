@@ -381,71 +381,195 @@ function updateBattleField() {
 // Управление модальным окном
 function closeBattleFieldModal() {
     console.log("🚪 closeBattleFieldModal called");
-    
-    // Останавливаем бой
+
+    // КРИТИЧНО: Проверяем закрытие незавершенного PvP боя
+    const isPvP = !window.isPvEBattle && window.selectedOpponent;
+    const isBattleActive = window.battleState === 'active' || window.battleState === 'running';
+
+    if (isPvP && isBattleActive) {
+        console.warn('⚠️ Игрок закрывает незавершенный PvP бой - просчитываем до конца');
+
+        // Останавливаем анимации и интервалы
+        if (window.battleInterval) {
+            clearInterval(window.battleInterval);
+            window.battleInterval = null;
+        }
+        if (window.animationManager) {
+            window.animationManager.clearAll();
+        }
+
+        // Скрываем UI боя (но не удаляем данные)
+        const battleModal = document.getElementById("battle-field-modal");
+        if (battleModal) {
+            battleModal.style.display = 'none';
+        }
+
+        console.log('🤖 Симуляция боя до завершения без анимации...');
+
+        // Устанавливаем флаг досрочного выхода
+        window.battleEarlyExit = true;
+
+        // Функция быстрой симуляции боя до конца
+        const simulateBattleToEnd = () => {
+            const MAX_TURNS = 1000; // Защита от бесконечного цикла
+            let turnCount = 0;
+
+            // Запускаем симуляцию хода за ходом
+            while (window.battleState === 'active' && turnCount < MAX_TURNS) {
+                // Выполняем фазу боя без задержек
+                if (typeof window.executeBattlePhase === 'function') {
+                    window.executeBattlePhase();
+                }
+
+                // Проверяем окончание боя
+                if (typeof window.checkBattleEnd === 'function') {
+                    window.checkBattleEnd();
+                }
+
+                turnCount++;
+
+                // Если бой завершился, выходим из цикла
+                if (window.battleState === 'finished') {
+                    break;
+                }
+            }
+
+            if (turnCount >= MAX_TURNS) {
+                console.error('⚠️ Достигнут лимит ходов симуляции - засчитываем ничью');
+                window.battleState = 'finished';
+            }
+
+            console.log(`✅ Симуляция завершена за ${turnCount} ходов`);
+        };
+
+        // Запускаем симуляцию
+        try {
+            simulateBattleToEnd();
+        } catch (error) {
+            console.error('❌ Ошибка симуляции боя:', error);
+        }
+
+        // После симуляции checkBattleEnd уже вызвал onBattleCompleted и showBattleResult
+        // Но нужно добавить earlyExit флаг к уже показанному результату
+        // Подождем немного и если результат не показался, покажем вручную
+        setTimeout(() => {
+            const resultModal = document.getElementById('battle-result-modal');
+            if (!resultModal) {
+                console.warn('⚠️ Результат боя не показан после симуляции - принудительно показываем');
+                // Определяем победителя
+                const playerAlive = window.playerFormation?.some((wizardId) => {
+                    if (wizardId) {
+                        const wizard = window.playerWizards?.find(w => w.id === wizardId);
+                        return wizard && wizard.hp > 0;
+                    }
+                    return false;
+                });
+
+                const battleResult = playerAlive ? 'win' : 'loss';
+                const ratingChange = typeof window.calculateRatingChange === 'function' ?
+                    window.calculateRatingChange(window.userData?.rating || 1000, window.selectedOpponent?.rating || 1000, battleResult) :
+                    (battleResult === 'win' ? 25 : -25);
+
+                if (typeof window.onBattleCompleted === 'function') {
+                    window.onBattleCompleted(battleResult, { exp: 0 }, window.selectedOpponent?.level || 1, ratingChange);
+                }
+
+                if (typeof window.showBattleResult === 'function') {
+                    const battleData = {
+                        opponentName: window.selectedOpponent?.username || 'Противник',
+                        opponentRating: window.selectedOpponent?.rating || 1000,
+                        ratingChange: ratingChange,
+                        rewards: { exp: 0 },
+                        battleDuration: 0,
+                        earlyExit: true
+                    };
+                    window.showBattleResult(battleResult, battleData);
+                }
+            }
+
+            // Очищаем ресурсы боя
+            cleanupBattleResources();
+        }, 500);
+
+        return; // Не закрываем сразу - сначала покажем результат
+    }
+
+    // Для PvE или уже завершенных боев - обычное закрытие
     window.battleState = 'stopped';
-    
+    cleanupBattleResources();
+    returnToCity();
+}
+
+// Вспомогательная функция очистки ресурсов боя
+function cleanupBattleResources() {
+    console.log('🧹 Очистка ресурсов боя');
+
     // Очищаем PixiJS
     if (window.destroyPixiBattle) {
         window.destroyPixiBattle();
     }
-    
+
     if (window.battleInterval) {
         clearInterval(window.battleInterval);
         window.battleInterval = null;
     }
-    
-    // ЯВНО удаляем все элементы поля боя
+
+    if (window.animationManager) {
+        window.animationManager.clearAll();
+    }
+
+    // Удаляем элементы UI боя
     const battleModal = document.getElementById("battle-field-modal");
     if (battleModal) {
         battleModal.remove();
         console.log("✅ battle-field-modal удален");
     }
-    
+
     const container = document.getElementById("battle-field-fullscreen-container");
     if (container) {
         container.remove();
         console.log("✅ battle-field-fullscreen-container удален");
     }
-    
+
     const pixiContainer = document.getElementById("pixi-battle-container");
     if (pixiContainer) {
         pixiContainer.remove();
         console.log("✅ pixi-battle-container удален");
     }
-    
-    // Очищаем window.currentModal
+
     if (window.currentModal) {
         window.currentModal = null;
     }
-    
+}
+
+// Вспомогательная функция возврата в город
+function returnToCity() {
+    console.log("🏙️ Возврат в город");
+
     // Разблокируем скролл body
     document.body.style.overflow = '';
-    
-    // ВАЖНО: ПОКАЗЫВАЕМ город
-    console.log("🏙️ Показываем город обратно");
-    
+
     const gameArea = document.getElementById('game-area');
     if (gameArea) {
         gameArea.style.display = 'block';
         gameArea.style.visibility = 'visible';
         console.log("✅ game-area показан");
     }
-    
+
     const cityGrid = document.getElementById('city-grid');
     if (cityGrid) {
         cityGrid.style.display = 'block';
         cityGrid.style.visibility = 'visible';
         console.log("✅ city-grid показан");
     }
-    
+
     const cityView = document.getElementById('city-view');
     if (cityView) {
         cityView.style.display = 'block';
         cityView.style.visibility = 'visible';
         console.log("✅ city-view показан");
     }
-    
+
     // Перерисовываем город если нужно
     if (window.userData && window.userData.faction) {
         setTimeout(() => {
@@ -456,8 +580,8 @@ function closeBattleFieldModal() {
             }
         }, 100);
     }
-    
-    console.log("✅ Battle field closed, город должен быть виден");
+
+    console.log("✅ Возврат в город завершен");
 }
 
 // Поиск земляной стены в позиции (для совместимости)
