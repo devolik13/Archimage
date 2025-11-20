@@ -81,9 +81,9 @@ const ELEMENTALS = {
         hp: 400,
         armor: 150,
         faction: "fire",
-        spells: ['fire_arrow', 'fireball'],  // ID заклинаний
+        spells: ['firebolt', 'fireball'],  // ID заклинаний (ИСПРАВЛЕНО: fire_arrow → firebolt)
         spell_levels: {  // Уровни заклинаний
-            'fire_arrow': 5,
+            'firebolt': 5,  // ИСПРАВЛЕНО: fire_arrow → firebolt
             'fireball': 3
         },
         resistances: {
