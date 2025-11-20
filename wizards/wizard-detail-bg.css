@@ -1,0 +1,441 @@
+/* wizard-detail-bg.css - Окно мага с фоновым изображением (768x512) */
+
+/* ========================================
+   БАЗОВЫЙ КОНТЕЙНЕР С ФОНОМ
+   ======================================== */
+
+#wizard-detail-screen.with-background {
+    display: block;
+}
+
+.wizard-bg-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 768px;
+    height: 512px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 900;
+    /* Масштабирование для разных экранов */
+    max-width: 95vw;
+    max-height: 95vh;
+}
+
+/* Адаптивное масштабирование контейнера */
+@media (max-width: 800px) {
+    .wizard-bg-container {
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+}
+
+@media (max-width: 700px) {
+    .wizard-bg-container {
+        transform: translate(-50%, -50%) scale(0.85);
+    }
+}
+
+@media (max-width: 600px) {
+    .wizard-bg-container {
+        transform: translate(-50%, -50%) scale(0.75);
+    }
+}
+
+@media (max-width: 500px) {
+    .wizard-bg-container {
+        transform: translate(-50%, -50%) scale(0.65);
+    }
+}
+
+@media (max-height: 550px) {
+    .wizard-bg-container {
+        transform: translate(-50%, -50%) scale(0.7);
+    }
+}
+
+/* ========================================
+   КНОПКА ЗАКРЫТИЯ (Верхний правый угол)
+   ======================================== */
+
+.wizard-bg-close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #7289da;
+    color: #7289da;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.wizard-bg-close-button:hover {
+    background: #7289da;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* ========================================
+   ПОЗИЦИОНИРОВАННЫЕ ЭЛЕМЕНТЫ
+   ======================================== */
+
+/* Уровень мага: 110,217 : 110,247 : 212,247 : 212,217 */
+.wizard-bg-level {
+    position: absolute;
+    left: 110px;
+    top: 217px;
+    width: 102px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(114, 137, 218, 0.9);
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Полоса опыта: 110,261 : 110,288 : 288,288 : 288,261 */
+.wizard-bg-exp-bar {
+    position: absolute;
+    left: 110px;
+    top: 261px;
+    width: 178px;
+    height: 27px;
+}
+
+.wizard-bg-exp-progress {
+    width: 100%;
+    height: 100%;
+    background: rgba(26, 26, 42, 0.8);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid rgba(114, 137, 218, 0.5);
+}
+
+.wizard-bg-exp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7289da, #5b6eae);
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.wizard-bg-exp-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    z-index: 1;
+    width: 100%;
+    text-align: center;
+}
+
+/* Кнопка сопротивлений: 110,307 : 110,352 : 288,352 : 288,307 */
+.wizard-bg-resistance-button {
+    position: absolute;
+    left: 110px;
+    top: 307px;
+    width: 178px;
+    height: 45px;
+    background: rgba(61, 61, 92, 0.9);
+    border: 2px solid #7289da;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wizard-bg-resistance-button:hover {
+    background: rgba(114, 137, 218, 0.9);
+    transform: translateY(-2px);
+}
+
+/* Кнопка инвентаря: 110,370 : 110,411 : 288,411 : 288,370 */
+.wizard-bg-inventory-button {
+    position: absolute;
+    left: 110px;
+    top: 370px;
+    width: 178px;
+    height: 41px;
+    background: rgba(61, 61, 92, 0.9);
+    border: 2px solid #7289da;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wizard-bg-inventory-button:hover {
+    background: rgba(114, 137, 218, 0.9);
+    transform: translateY(-2px);
+}
+
+/* Имя мага: 236,134 : 236,175 : 673,175 : 673,134 */
+.wizard-bg-name {
+    position: absolute;
+    left: 236px;
+    top: 134px;
+    width: 437px;
+    height: 41px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.wizard-bg-name-edit {
+    margin-left: 10px;
+    background: transparent;
+    border: none;
+    color: #7289da;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.wizard-bg-name-edit:hover {
+    color: #fff;
+    transform: scale(1.2);
+}
+
+/* ========================================
+   СЕТКА 2x3 (309,191 : 309,390 : 670,390 : 670,191)
+   ======================================== */
+
+.wizard-bg-stats-grid {
+    position: absolute;
+    left: 309px;
+    top: 191px;
+    width: 361px;
+    height: 199px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 8px;
+}
+
+/* Ячейка статов/заклинаний */
+.wizard-bg-cell {
+    background: rgba(61, 61, 92, 0.85);
+    border: 2px solid rgba(114, 137, 218, 0.5);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    transition: all 0.3s;
+}
+
+.wizard-bg-cell:hover {
+    border-color: #7289da;
+    background: rgba(61, 61, 92, 0.95);
+}
+
+/* Ячейка заклинания */
+.wizard-bg-cell.spell {
+    cursor: pointer;
+}
+
+.wizard-bg-cell.spell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(114, 137, 218, 0.4);
+}
+
+.wizard-bg-cell.spell.empty {
+    border-style: dashed;
+    background: rgba(61, 61, 92, 0.5);
+}
+
+.wizard-bg-cell.spell.locked {
+    background: rgba(42, 42, 58, 0.7);
+    cursor: not-allowed;
+    border-color: #555;
+}
+
+/* Заголовок ячейки */
+.wizard-bg-cell-label {
+    font-size: 9px;
+    color: #aaa;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+/* Значение ячейки */
+.wizard-bg-cell-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 2px;
+}
+
+/* Бонусы */
+.wizard-bg-cell-bonus {
+    font-size: 8px;
+    color: #7289da;
+    margin-top: 2px;
+}
+
+/* Название заклинания */
+.wizard-bg-spell-name {
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    margin-bottom: 3px;
+}
+
+/* Информация о заклинании */
+.wizard-bg-spell-info {
+    font-size: 9px;
+    color: #aaa;
+    text-align: center;
+}
+
+/* Пустое заклинание */
+.wizard-bg-cell.spell.empty .wizard-bg-spell-name {
+    font-size: 13px;
+    color: #7289da;
+}
+
+/* Заблокировано */
+.wizard-bg-cell.spell.locked .wizard-bg-cell-value {
+    font-size: 32px;
+    color: #555;
+}
+
+/* ========================================
+   ЦВЕТА ПО ХАРАКТЕРИСТИКАМ
+   ======================================== */
+
+.wizard-bg-cell.health .wizard-bg-cell-value {
+    color: #4ade80;
+}
+
+.wizard-bg-cell.armor .wizard-bg-cell-value {
+    color: #95ffc4;
+}
+
+.wizard-bg-cell.damage .wizard-bg-cell-value {
+    color: #fbbf24;
+}
+
+/* ========================================
+   ФРАКЦИИ (фоновые изображения)
+   ======================================== */
+
+.wizard-bg-container.fire {
+    background-image: url('../images/wizards/fire/window-bg.webp');
+}
+
+.wizard-bg-container.water {
+    background-image: url('../images/wizards/water/window-bg.webp');
+}
+
+.wizard-bg-container.wind {
+    background-image: url('../images/wizards/wind/window-bg.webp');
+}
+
+.wizard-bg-container.earth {
+    background-image: url('../images/wizards/earth/window-bg.webp');
+}
+
+.wizard-bg-container.nature {
+    background-image: url('../images/wizards/nature/window-bg.webp');
+}
+
+.wizard-bg-container.poison {
+    background-image: url('../images/wizards/poison/window-bg.webp');
+}
+
+/* Fallback на PNG */
+.wizard-bg-container.fire {
+    background-image: url('../images/wizards/fire/window-bg.png'), url('../images/wizards/fire/window-bg.webp');
+}
+
+/* ========================================
+   ОВЕРЛЕЙ (затемнение фона)
+   ======================================== */
+
+.wizard-bg-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(3px);
+    z-index: 899;
+}
+
+/* ========================================
+   АНИМАЦИИ
+   ======================================== */
+
+@keyframes wizardBgFadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.wizard-bg-container {
+    animation: wizardBgFadeIn 0.3s ease-out;
+}
+
+/* ========================================
+   ОТКЛЮЧЕНИЕ ВЫДЕЛЕНИЯ
+   ======================================== */
+
+.wizard-bg-container * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+/* ========================================
+   ОЧЕНЬ МАЛЕНЬКИЕ ЭКРАНЫ
+   ======================================== */
+
+@media (max-width: 400px) {
+    .wizard-bg-container {
+        transform: translate(-50%, -50%) scale(0.55);
+    }
+}
+
+@media (max-height: 450px) {
+    .wizard-bg-container {
+        transform: translate(-50%, -50%) scale(0.6);
+    }
+}
