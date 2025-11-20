@@ -87,7 +87,7 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         },
         fire_elemental: {
             idle: 'images/enemies/fire_elemental/idle.png',
-            cast: 'images/enemies/fire_elemental/attack.png',
+            cast: 'images/enemies/fire_elemental/cast.png',
             death: 'images/enemies/fire_elemental/death.png',
             frameWidth: 256,
             frameHeight: 256,
@@ -97,7 +97,7 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         },
         water_elemental: {
             idle: 'images/enemies/water_elemental/idle.png',
-            cast: 'images/enemies/water_elemental/attack.png',
+            cast: 'images/enemies/water_elemental/cast.png',
             death: 'images/enemies/water_elemental/death.png',
             frameWidth: 256,
             frameHeight: 256,
@@ -107,7 +107,7 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         },
         wind_elemental: {
             idle: 'images/enemies/wind_elemental/idle.png',
-            cast: 'images/enemies/wind_elemental/attack.png',
+            cast: 'images/enemies/wind_elemental/cast.png',
             death: 'images/enemies/wind_elemental/death.png',
             frameWidth: 256,
             frameHeight: 256,
@@ -117,7 +117,7 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         },
         earth_elemental: {
             idle: 'images/enemies/earth_elemental/idle.png',
-            cast: 'images/enemies/earth_elemental/attack.png',
+            cast: 'images/enemies/earth_elemental/cast.png',
             death: 'images/enemies/earth_elemental/death.png',
             frameWidth: 256,
             frameHeight: 256,
