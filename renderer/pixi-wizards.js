@@ -714,44 +714,45 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 return w?.hp;
             })
         });
-    
+
         if (currentHash === lastUpdateHash) {
             return;
         }
         lastUpdateHash = currentHash;
-    
-        if (window.battleState !== 'active') {
+
+        // ИСПРАВЛЕНО: Разрешаем обновление когда battleState === 'finished' для запуска финальных анимаций смерти
+        if (window.battleState !== 'active' && window.battleState !== 'finished') {
             console.log('⏸️ Бой не активен, пропускаем обновление');
             return;
         }
-        
+
         if (!window.pixiCore) {
             return;
         }
-        
+
         // Инициализация если нужно
         if (!init()) {
             console.warn('⚠️ Не могу обновить магов');
             return;
         }
-        
+
         console.log('🧙 Обновляем магов');
-        
+
         // Обновляем врагов
         if (window.enemyFormation) {
             window.enemyFormation.forEach((enemy, index) => {
                 if (enemy) {
                     const key = `0_${index}`;
-                    
+
                     if (!wizardSprites[key]) {
                         createWizardSprite('enemy', 0, index);
                     } else {
                         const container = wizardSprites[key];
-                        
+
                         // Обновляем HP только для живых
                         if (!container.isDead) {
                             updateWizardHP(key, enemy.hp, enemy.max_hp || 100);
-                            
+
                             // Проверяем смерть и запускаем анимацию только один раз
                             if (enemy.hp <= 0 && !container.deathAnimationStarted) {
                                 container.deathAnimationStarted = true;
