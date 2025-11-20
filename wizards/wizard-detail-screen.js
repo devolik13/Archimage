@@ -556,9 +556,237 @@ function closeWizardDetailScreen() {
     console.log('✅ Город показан, окно мага закрыто');
 }
 
+function renderWizardDetailScreenWithBackground(wizardIndex) {
+    const wizardData = userData.wizards[wizardIndex];
+    if (!wizardData) return;
+
+    // Рассчитываем сопротивления
+    if (typeof window.getWizardResistances === 'function') {
+        wizardData.magicResistance = window.getWizardResistances(wizardData);
+    } else {
+        wizardData.magicResistance = {
+            fire: 0, water: 0, wind: 0, earth: 0, nature: 0, poison: 0
+        };
+    }
+
+    // Получаем активное благословение
+    const activeBlessing = window.getActiveBlessing ? window.getActiveBlessing() : null;
+    let blessingArmorBonus = 0;
+    let blessingDamageBonus = 0;
+    let blessingHealthBonus = 0;
+
+    if (activeBlessing && activeBlessing.expires_at > Date.now()) {
+        if (activeBlessing.effect.type === 'combined') {
+            activeBlessing.effect.effects.forEach(effect => {
+                switch(effect.type) {
+                    case 'armor_bonus':
+                        blessingArmorBonus = effect.value;
+                        break;
+                    case 'damage_bonus':
+                        blessingDamageBonus = effect.value;
+                        break;
+                    case 'health_bonus':
+                        blessingHealthBonus = effect.value;
+                        break;
+                }
+            });
+        } else {
+            switch(activeBlessing.effect.type) {
+                case 'armor_bonus':
+                    blessingArmorBonus = activeBlessing.effect.value;
+                    break;
+                case 'damage_bonus':
+                    blessingDamageBonus = activeBlessing.effect.value;
+                    break;
+                case 'health_bonus':
+                    blessingHealthBonus = activeBlessing.effect.value;
+                    break;
+            }
+        }
+    }
+
+    // Расчет характеристик
+    const baseHP = wizardData.original_max_hp || 100;
+    const towerLevel = window.getBuildingLevel ? window.getBuildingLevel('wizard_tower') : 1;
+    const healthMultiplier = window.applyWizardTowerHealthBonus ? window.applyWizardTowerHealthBonus() : 1.0;
+    const healthBonusPercent = Math.round((healthMultiplier - 1) * 100);
+
+    const level = wizardData.level || 1;
+    const levelBonus = level === 20 ? 2.0 : (1 + (Math.max(0, level - 1) * 0.05));
+    const levelBonusPercent = Math.round((levelBonus - 1) * 100);
+
+    const actualMaxHP = Math.floor(baseHP * levelBonus * healthMultiplier * (1 + blessingHealthBonus));
+    const blessingHealthPercent = Math.round(blessingHealthBonus * 100);
+
+    const baseArmor = wizardData.original_max_armor || wizardData.max_armor || 100;
+    const actualMaxArmor = baseArmor + blessingArmorBonus;
+
+    const towerDamageMultiplier = window.getWizardTowerDamageBonus ? window.getWizardTowerDamageBonus() : 1.0;
+    const totalDamageMultiplier = towerDamageMultiplier * (1 + blessingDamageBonus);
+    const towerDamageBonusPercent = Math.round((towerDamageMultiplier - 1) * 100);
+    const blessingDamageBonusPercent = Math.round(blessingDamageBonus * 100);
+    const totalDamageBonusPercent = Math.round((totalDamageMultiplier - 1) * 100);
+
+    const exp = wizardData.experience || 0;
+    const expToNext = wizardData.exp_to_next || 50;
+    const expPercent = (exp / expToNext) * 100;
+
+    // Получаем функции
+    const findSpellInUserData = window.findSpellInUserData || (() => null);
+    const MAX_SPELL_SLOTS = 2;
+
+    // Формируем HTML для сетки 2x3
+    let gridHTML = '';
+
+    // РЯД 0: Здоровье, Броня, Урон
+    // Здоровье
+    const healthBonusHTML = [
+        levelBonusPercent > 0 ? `+${levelBonusPercent}% ур.` : '',
+        healthBonusPercent > 0 ? `+${healthBonusPercent}% 🏰` : '',
+        blessingHealthPercent > 0 ? `+${blessingHealthPercent}% ✨` : ''
+    ].filter(b => b).join(' ');
+
+    gridHTML += `
+        <div class="wizard-bg-cell health">
+            <div class="wizard-bg-cell-label">Здоровье</div>
+            <div class="wizard-bg-cell-value">${actualMaxHP}</div>
+            ${healthBonusHTML ? `<div class="wizard-bg-cell-bonus">${healthBonusHTML}</div>` : ''}
+        </div>
+    `;
+
+    // Броня
+    gridHTML += `
+        <div class="wizard-bg-cell armor">
+            <div class="wizard-bg-cell-label">Броня</div>
+            <div class="wizard-bg-cell-value">${actualMaxArmor}</div>
+            ${blessingArmorBonus > 0 ? `<div class="wizard-bg-cell-bonus">+${blessingArmorBonus} ✨</div>` : ''}
+        </div>
+    `;
+
+    // Урон
+    const damageBonusHTML = [
+        towerDamageBonusPercent > 0 ? `🏰 +${towerDamageBonusPercent}%` : '',
+        blessingDamageBonusPercent > 0 ? `✨ +${blessingDamageBonusPercent}%` : ''
+    ].filter(b => b).join(' ') || 'Базовый';
+
+    gridHTML += `
+        <div class="wizard-bg-cell damage">
+            <div class="wizard-bg-cell-label">Урон</div>
+            <div class="wizard-bg-cell-value">+${totalDamageBonusPercent}%</div>
+            <div class="wizard-bg-cell-bonus">${damageBonusHTML}</div>
+        </div>
+    `;
+
+    // РЯД 1: Заклинания
+    for (let i = 0; i < 3; i++) {
+        if (i < MAX_SPELL_SLOTS) {
+            const spellId = wizardData.spells?.[i] || null;
+
+            if (spellId) {
+                const spellData = findSpellInUserData(spellId, userData.spells);
+                if (spellData) {
+                    const baseDamage = window.getSpellDamage ? window.getSpellDamage(spellId, spellData.level) : 0;
+                    const finalDamage = Math.floor(baseDamage * totalDamageMultiplier);
+                    const damageDisplay = totalDamageBonusPercent > 0 ?
+                        `${baseDamage} → ${finalDamage}💥` :
+                        `${finalDamage}💥`;
+
+                    gridHTML += `
+                        <div class="wizard-bg-cell spell" onclick="openSpellSelection(${wizardIndex}, ${i})">
+                            <div class="wizard-bg-spell-name">${spellData.name}</div>
+                            <div class="wizard-bg-spell-info">Ур.${spellData.level} • ${damageDisplay}</div>
+                        </div>
+                    `;
+                } else {
+                    gridHTML += `
+                        <div class="wizard-bg-cell spell" onclick="openSpellSelection(${wizardIndex}, ${i})">
+                            <div class="wizard-bg-spell-name">${spellId}</div>
+                        </div>
+                    `;
+                }
+            } else {
+                gridHTML += `
+                    <div class="wizard-bg-cell spell empty" onclick="openSpellSelection(${wizardIndex}, ${i})">
+                        <div class="wizard-bg-spell-name">➕ Выбрать</div>
+                    </div>
+                `;
+            }
+        } else {
+            gridHTML += `
+                <div class="wizard-bg-cell spell locked">
+                    <div class="wizard-bg-cell-value">🔒</div>
+                    <div class="wizard-bg-spell-info">Закрыто</div>
+                </div>
+            `;
+        }
+    }
+
+    // Создаем контейнер с фоном
+    const faction = wizardData.faction || 'fire';
+    const screenHTML = `
+        <div class="wizard-bg-overlay" onclick="closeWizardDetailScreen()"></div>
+        <div class="wizard-bg-container ${faction}">
+            <!-- Кнопка закрытия -->
+            <button class="wizard-bg-close-button" onclick="closeWizardDetailScreen()">
+                ← Назад
+            </button>
+
+            <!-- Имя мага -->
+            <div class="wizard-bg-name">
+                <span>${wizardData.name}</span>
+                <button class="wizard-bg-name-edit" onclick="startRenameWizard(${wizardIndex})" title="Переименовать">
+                    ✏️
+                </button>
+            </div>
+
+            <!-- Уровень -->
+            <div class="wizard-bg-level">
+                Уровень ${level}
+            </div>
+
+            <!-- Полоса опыта -->
+            <div class="wizard-bg-exp-bar">
+                <div class="wizard-bg-exp-text">${exp} / ${expToNext}</div>
+                <div class="wizard-bg-exp-progress">
+                    <div class="wizard-bg-exp-fill" style="width: ${expPercent}%"></div>
+                </div>
+            </div>
+
+            <!-- Кнопка сопротивлений -->
+            <button class="wizard-bg-resistance-button" onclick="showResistancesModal(${wizardIndex})">
+                🛡️ Сопротивления
+            </button>
+
+            <!-- Кнопка инвентаря -->
+            <button class="wizard-bg-inventory-button" onclick="showInventoryModalCompact(${wizardIndex})">
+                🎒 Инвентарь
+            </button>
+
+            <!-- Сетка 2x3 -->
+            <div class="wizard-bg-stats-grid">
+                ${gridHTML}
+            </div>
+        </div>
+    `;
+
+    // Создаем или обновляем экран
+    let screen = document.getElementById('wizard-detail-screen');
+    if (!screen) {
+        screen = document.createElement('div');
+        screen.id = 'wizard-detail-screen';
+        document.body.appendChild(screen);
+    }
+
+    screen.innerHTML = screenHTML;
+    screen.classList.add('active', 'with-background');
+
+    console.log('✅ Окно мага с фоном отрендерено');
+}
+
 // Экспорт функций
 window.showWizardDetailScreen = showWizardDetailScreen;
 window.closeWizardDetailScreen = closeWizardDetailScreen;
+window.renderWizardDetailScreenWithBackground = renderWizardDetailScreenWithBackground;
 window.updateWizardSpellSlots = updateWizardSpellSlots;
 window.showResistancesModal = showResistancesModal;
 window.closeResistancesModal = closeResistancesModal;
