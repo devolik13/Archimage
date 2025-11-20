@@ -739,32 +739,34 @@ function renderWizardDetailScreenWithBackground(wizardIndex) {
                 </button>
             </div>
 
-            <!-- Уровень -->
-            <div class="wizard-bg-level">
-                Уровень ${level}
-            </div>
+            <!-- Адаптивная сетка: левая колонка + правая сетка -->
+            <div class="wizard-bg-content-wrapper">
+                <!-- Левая колонка: уровень, опыт, кнопки -->
+                <div class="wizard-bg-left-column">
+                    <div class="wizard-bg-level">
+                        Уровень ${level}
+                    </div>
 
-            <!-- Полоса опыта -->
-            <div class="wizard-bg-exp-bar">
-                <div class="wizard-bg-exp-text">${exp} / ${expToNext}</div>
-                <div class="wizard-bg-exp-progress">
-                    <div class="wizard-bg-exp-fill" style="width: ${expPercent}%"></div>
+                    <div class="wizard-bg-exp-bar">
+                        <div class="wizard-bg-exp-text">${exp} / ${expToNext}</div>
+                        <div class="wizard-bg-exp-progress">
+                            <div class="wizard-bg-exp-fill" style="width: ${expPercent}%"></div>
+                        </div>
+                    </div>
+
+                    <button class="wizard-bg-resistance-button" onclick="showResistancesModal(${wizardIndex})">
+                        🛡️ Сопротивления
+                    </button>
+
+                    <button class="wizard-bg-inventory-button" onclick="showInventoryModalCompact(${wizardIndex})">
+                        🎒 Инвентарь
+                    </button>
                 </div>
-            </div>
 
-            <!-- Кнопка сопротивлений -->
-            <button class="wizard-bg-resistance-button" onclick="showResistancesModal(${wizardIndex})">
-                🛡️ Сопротивления
-            </button>
-
-            <!-- Кнопка инвентаря -->
-            <button class="wizard-bg-inventory-button" onclick="showInventoryModalCompact(${wizardIndex})">
-                🎒 Инвентарь
-            </button>
-
-            <!-- Сетка 2x3 -->
-            <div class="wizard-bg-stats-grid">
-                ${gridHTML}
+                <!-- Правая колонка: сетка 3x2 (или 2x3 на мобильных) -->
+                <div class="wizard-bg-stats-grid">
+                    ${gridHTML}
+                </div>
             </div>
         </div>
     `;

@@ -63,68 +63,70 @@
                         </button>
                     </div>
 
-                    <!-- Уровень -->
-                    <div class="wizard-bg-level">
-                        Уровень 15
-                    </div>
+                    <!-- Адаптивная сетка: левая колонка + правая сетка -->
+                    <div class="wizard-bg-content-wrapper">
+                        <!-- Левая колонка: уровень, опыт, кнопки -->
+                        <div class="wizard-bg-left-column">
+                            <div class="wizard-bg-level">
+                                Уровень 15
+                            </div>
 
-                    <!-- Полоса опыта -->
-                    <div class="wizard-bg-exp-bar">
-                        <div class="wizard-bg-exp-text">450 / 600</div>
-                        <div class="wizard-bg-exp-progress">
-                            <div class="wizard-bg-exp-fill" style="width: 75%"></div>
-                        </div>
-                    </div>
+                            <div class="wizard-bg-exp-bar">
+                                <div class="wizard-bg-exp-text">450 / 600</div>
+                                <div class="wizard-bg-exp-progress">
+                                    <div class="wizard-bg-exp-fill" style="width: 75%"></div>
+                                </div>
+                            </div>
 
-                    <!-- Кнопка сопротивлений -->
-                    <button class="wizard-bg-resistance-button" onclick="alert('Сопротивления')">
-                        🛡️ Сопротивления
-                    </button>
+                            <button class="wizard-bg-resistance-button" onclick="alert('Сопротивления')">
+                                🛡️ Сопротивления
+                            </button>
 
-                    <!-- Кнопка инвентаря -->
-                    <button class="wizard-bg-inventory-button" onclick="alert('Инвентарь')">
-                        🎒 Инвентарь
-                    </button>
-
-                    <!-- Сетка 2x3 -->
-                    <div class="wizard-bg-stats-grid">
-                        <!-- Здоровье -->
-                        <div class="wizard-bg-cell health">
-                            <div class="wizard-bg-cell-label">Здоровье</div>
-                            <div class="wizard-bg-cell-value">850</div>
-                            <div class="wizard-bg-cell-bonus">+70% ур. +20% 🏰</div>
+                            <button class="wizard-bg-inventory-button" onclick="alert('Инвентарь')">
+                                🎒 Инвентарь
+                            </button>
                         </div>
 
-                        <!-- Броня -->
-                        <div class="wizard-bg-cell armor">
-                            <div class="wizard-bg-cell-label">Броня</div>
-                            <div class="wizard-bg-cell-value">120</div>
-                            <div class="wizard-bg-cell-bonus">+20 ✨</div>
-                        </div>
+                        <!-- Правая колонка: сетка 3x2 (или 2x3 на мобильных) -->
+                        <div class="wizard-bg-stats-grid">
+                            <!-- Здоровье -->
+                            <div class="wizard-bg-cell health">
+                                <div class="wizard-bg-cell-label">Здоровье</div>
+                                <div class="wizard-bg-cell-value">850</div>
+                                <div class="wizard-bg-cell-bonus">+70% ур. +20% 🏰</div>
+                            </div>
 
-                        <!-- Урон -->
-                        <div class="wizard-bg-cell damage">
-                            <div class="wizard-bg-cell-label">Урон</div>
-                            <div class="wizard-bg-cell-value">+35%</div>
-                            <div class="wizard-bg-cell-bonus">🏰 +25% ✨ +10%</div>
-                        </div>
+                            <!-- Броня -->
+                            <div class="wizard-bg-cell armor">
+                                <div class="wizard-bg-cell-label">Броня</div>
+                                <div class="wizard-bg-cell-value">120</div>
+                                <div class="wizard-bg-cell-bonus">+20 ✨</div>
+                            </div>
 
-                        <!-- Заклинание 1 -->
-                        <div class="wizard-bg-cell spell" onclick="alert('Выбор заклинания 1')">
-                            <div class="wizard-bg-spell-name">Огненный шар</div>
-                            <div class="wizard-bg-spell-info">Ур.5 • 180 → 243💥</div>
-                        </div>
+                            <!-- Урон -->
+                            <div class="wizard-bg-cell damage">
+                                <div class="wizard-bg-cell-label">Урон</div>
+                                <div class="wizard-bg-cell-value">+35%</div>
+                                <div class="wizard-bg-cell-bonus">🏰 +25% ✨ +10%</div>
+                            </div>
 
-                        <!-- Заклинание 2 -->
-                        <div class="wizard-bg-cell spell" onclick="alert('Выбор заклинания 2')">
-                            <div class="wizard-bg-spell-name">Метеорит</div>
-                            <div class="wizard-bg-spell-info">Ур.3 • 120 → 162💥</div>
-                        </div>
+                            <!-- Заклинание 1 -->
+                            <div class="wizard-bg-cell spell" onclick="alert('Выбор заклинания 1')">
+                                <div class="wizard-bg-spell-name">Огненный шар</div>
+                                <div class="wizard-bg-spell-info">Ур.5 • 180 → 243💥</div>
+                            </div>
 
-                        <!-- Заблокировано -->
-                        <div class="wizard-bg-cell spell locked">
-                            <div class="wizard-bg-cell-value">🔒</div>
-                            <div class="wizard-bg-spell-info">Закрыто</div>
+                            <!-- Заклинание 2 -->
+                            <div class="wizard-bg-cell spell" onclick="alert('Выбор заклинания 2')">
+                                <div class="wizard-bg-spell-name">Метеорит</div>
+                                <div class="wizard-bg-spell-info">Ур.3 • 120 → 162💥</div>
+                            </div>
+
+                            <!-- Заблокировано -->
+                            <div class="wizard-bg-cell spell locked">
+                                <div class="wizard-bg-cell-value">🔒</div>
+                                <div class="wizard-bg-spell-info">Закрыто</div>
+                            </div>
                         </div>
                     </div>
                 </div>

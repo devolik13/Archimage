@@ -1,4 +1,19 @@
-/* wizard-detail-bg.css - Окно мага с фоновым изображением (768x512) */
+/* wizard-detail-bg.css - Адаптивное окно мага с фоновым изображением */
+
+/* ========================================
+   ОВЕРЛЕЙ (затемнение фона)
+   ======================================== */
+
+.wizard-bg-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(3px);
+    z-index: 899;
+}
 
 /* ========================================
    БАЗОВЫЙ КОНТЕЙНЕР С ФОНОМ
@@ -14,45 +29,22 @@
     left: 50%;
     transform: translate(-50%, -50%);
     width: 768px;
-    height: 512px;
+    max-width: 95vw;
+    height: auto;
+    min-height: 512px;
+    max-height: 90vh;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     z-index: 900;
-    /* Масштабирование для разных экранов */
-    max-width: 95vw;
-    max-height: 95vh;
-}
+    border-radius: 10px;
+    overflow: hidden;
 
-/* Адаптивное масштабирование контейнера */
-@media (max-width: 800px) {
-    .wizard-bg-container {
-        transform: translate(-50%, -50%) scale(0.95);
-    }
-}
-
-@media (max-width: 700px) {
-    .wizard-bg-container {
-        transform: translate(-50%, -50%) scale(0.85);
-    }
-}
-
-@media (max-width: 600px) {
-    .wizard-bg-container {
-        transform: translate(-50%, -50%) scale(0.75);
-    }
-}
-
-@media (max-width: 500px) {
-    .wizard-bg-container {
-        transform: translate(-50%, -50%) scale(0.65);
-    }
-}
-
-@media (max-height: 550px) {
-    .wizard-bg-container {
-        transform: translate(-50%, -50%) scale(0.7);
-    }
+    /* Flexbox раскладка вместо абсолютного позиционирования */
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 /* ========================================
@@ -82,123 +74,10 @@
 }
 
 /* ========================================
-   ПОЗИЦИОНИРОВАННЫЕ ЭЛЕМЕНТЫ
+   ИМЯ МАГА (вверху по центру)
    ======================================== */
 
-/* Уровень мага: 110,217 : 110,247 : 212,247 : 212,217 */
-.wizard-bg-level {
-    position: absolute;
-    left: 110px;
-    top: 217px;
-    width: 102px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(114, 137, 218, 0.9);
-    border-radius: 8px;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-/* Полоса опыта: 110,261 : 110,288 : 288,288 : 288,261 */
-.wizard-bg-exp-bar {
-    position: absolute;
-    left: 110px;
-    top: 261px;
-    width: 178px;
-    height: 27px;
-}
-
-.wizard-bg-exp-progress {
-    width: 100%;
-    height: 100%;
-    background: rgba(26, 26, 42, 0.8);
-    border-radius: 6px;
-    overflow: hidden;
-    border: 1px solid rgba(114, 137, 218, 0.5);
-}
-
-.wizard-bg-exp-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #7289da, #5b6eae);
-    transition: width 0.3s ease;
-    position: relative;
-}
-
-.wizard-bg-exp-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 11px;
-    color: white;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-    z-index: 1;
-    width: 100%;
-    text-align: center;
-}
-
-/* Кнопка сопротивлений: 110,307 : 110,352 : 288,352 : 288,307 */
-.wizard-bg-resistance-button {
-    position: absolute;
-    left: 110px;
-    top: 307px;
-    width: 178px;
-    height: 45px;
-    background: rgba(61, 61, 92, 0.9);
-    border: 2px solid #7289da;
-    color: white;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.wizard-bg-resistance-button:hover {
-    background: rgba(114, 137, 218, 0.9);
-    transform: translateY(-2px);
-}
-
-/* Кнопка инвентаря: 110,370 : 110,411 : 288,411 : 288,370 */
-.wizard-bg-inventory-button {
-    position: absolute;
-    left: 110px;
-    top: 370px;
-    width: 178px;
-    height: 41px;
-    background: rgba(61, 61, 92, 0.9);
-    border: 2px solid #7289da;
-    color: white;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.wizard-bg-inventory-button:hover {
-    background: rgba(114, 137, 218, 0.9);
-    transform: translateY(-2px);
-}
-
-/* Имя мага: 236,134 : 236,175 : 673,175 : 673,134 */
 .wizard-bg-name {
-    position: absolute;
-    left: 236px;
-    top: 134px;
-    width: 437px;
-    height: 41px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -206,6 +85,8 @@
     font-weight: bold;
     color: white;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    margin-bottom: 15px;
+    text-align: center;
 }
 
 .wizard-bg-name-edit {
@@ -224,19 +105,123 @@
 }
 
 /* ========================================
-   СЕТКА 2x3 (309,191 : 309,390 : 670,390 : 670,191)
+   ОСНОВНОЙ КОНТЕНТ (flexbox layout)
+   ======================================== */
+
+.wizard-bg-content-wrapper {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 20px;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ========================================
+   ЛЕВАЯ КОЛОНКА (Уровень, опыт, кнопки)
+   ======================================== */
+
+.wizard-bg-left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Уровень мага */
+.wizard-bg-level {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(114, 137, 218, 0.9);
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 10px;
+    text-align: center;
+}
+
+/* Полоса опыта */
+.wizard-bg-exp-bar {
+    position: relative;
+}
+
+.wizard-bg-exp-progress {
+    width: 100%;
+    height: 30px;
+    background: rgba(26, 26, 42, 0.8);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid rgba(114, 137, 218, 0.5);
+}
+
+.wizard-bg-exp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7289da, #5b6eae);
+    transition: width 0.3s ease;
+}
+
+.wizard-bg-exp-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    z-index: 1;
+    width: 100%;
+    text-align: center;
+}
+
+/* Кнопка сопротивлений */
+.wizard-bg-resistance-button {
+    background: rgba(61, 61, 92, 0.9);
+    border: 2px solid #7289da;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s;
+    padding: 12px;
+    text-align: center;
+}
+
+.wizard-bg-resistance-button:hover {
+    background: rgba(114, 137, 218, 0.9);
+    transform: translateY(-2px);
+}
+
+/* Кнопка инвентаря */
+.wizard-bg-inventory-button {
+    background: rgba(61, 61, 92, 0.9);
+    border: 2px solid #7289da;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s;
+    padding: 12px;
+    text-align: center;
+}
+
+.wizard-bg-inventory-button:hover {
+    background: rgba(114, 137, 218, 0.9);
+    transform: translateY(-2px);
+}
+
+/* ========================================
+   ПРАВАЯ КОЛОНКА (Сетка 2x3)
    ======================================== */
 
 .wizard-bg-stats-grid {
-    position: absolute;
-    left: 309px;
-    top: 191px;
-    width: 361px;
-    height: 199px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, 1fr);
-    gap: 8px;
+    gap: 10px;
 }
 
 /* Ячейка статов/заклинаний */
@@ -248,8 +233,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 8px;
+    padding: 10px;
     transition: all 0.3s;
+    min-height: 100px;
 }
 
 .wizard-bg-cell:hover {
@@ -300,6 +286,7 @@
     font-size: 8px;
     color: #7289da;
     margin-top: 2px;
+    text-align: center;
 }
 
 /* Название заклинания */
@@ -380,21 +367,6 @@
 }
 
 /* ========================================
-   ОВЕРЛЕЙ (затемнение фона)
-   ======================================== */
-
-.wizard-bg-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(3px);
-    z-index: 899;
-}
-
-/* ========================================
    АНИМАЦИИ
    ======================================== */
 
@@ -425,17 +397,323 @@
 }
 
 /* ========================================
-   ОЧЕНЬ МАЛЕНЬКИЕ ЭКРАНЫ
+   МОБИЛЬНАЯ АДАПТАЦИЯ (≤768px)
    ======================================== */
 
-@media (max-width: 400px) {
+@media (max-width: 768px) {
     .wizard-bg-container {
-        transform: translate(-50%, -50%) scale(0.55);
+        width: 95vw;
+        padding: 15px;
+        min-height: auto;
+    }
+
+    .wizard-bg-content-wrapper {
+        grid-template-columns: 160px 1fr;
+        gap: 15px;
+    }
+
+    .wizard-bg-name {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+
+    .wizard-bg-name-edit {
+        font-size: 16px;
+    }
+
+    .wizard-bg-level {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .wizard-bg-exp-progress {
+        height: 25px;
+    }
+
+    .wizard-bg-exp-text {
+        font-size: 10px;
+    }
+
+    .wizard-bg-resistance-button,
+    .wizard-bg-inventory-button {
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    .wizard-bg-stats-grid {
+        gap: 8px;
+    }
+
+    .wizard-bg-cell {
+        padding: 8px;
+        min-height: 85px;
+    }
+
+    .wizard-bg-cell-value {
+        font-size: 18px;
+    }
+
+    .wizard-bg-spell-name {
+        font-size: 10px;
+    }
+
+    .wizard-bg-spell-info {
+        font-size: 8px;
+    }
+
+    .wizard-bg-close-button {
+        padding: 6px 12px;
+        font-size: 12px;
     }
 }
 
-@media (max-height: 450px) {
+/* ========================================
+   МАЛЕНЬКИЕ ЭКРАНЫ (≤650px)
+   ======================================== */
+
+@media (max-width: 650px) {
     .wizard-bg-container {
-        transform: translate(-50%, -50%) scale(0.6);
+        padding: 12px;
+    }
+
+    .wizard-bg-content-wrapper {
+        grid-template-columns: 140px 1fr;
+        gap: 12px;
+    }
+
+    .wizard-bg-name {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .wizard-bg-level {
+        font-size: 13px;
+        padding: 7px;
+    }
+
+    .wizard-bg-exp-progress {
+        height: 22px;
+    }
+
+    .wizard-bg-exp-text {
+        font-size: 9px;
+    }
+
+    .wizard-bg-resistance-button,
+    .wizard-bg-inventory-button {
+        font-size: 11px;
+        padding: 9px;
+    }
+
+    .wizard-bg-stats-grid {
+        gap: 6px;
+    }
+
+    .wizard-bg-cell {
+        padding: 6px;
+        min-height: 75px;
+    }
+
+    .wizard-bg-cell-label {
+        font-size: 8px;
+    }
+
+    .wizard-bg-cell-value {
+        font-size: 16px;
+    }
+
+    .wizard-bg-cell-bonus {
+        font-size: 7px;
+    }
+
+    .wizard-bg-spell-name {
+        font-size: 9px;
+    }
+
+    .wizard-bg-spell-info {
+        font-size: 7px;
+    }
+}
+
+/* ========================================
+   ОЧЕНЬ МАЛЕНЬКИЕ ЭКРАНЫ (≤480px)
+   Одноколоночная раскладка
+   ======================================== */
+
+@media (max-width: 480px) {
+    .wizard-bg-container {
+        padding: 10px;
+        width: 100vw;
+        max-width: 100vw;
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        /* На телефонах убираем фон для производительности */
+        background-image: none !important;
+        background-color: #1a1a2e;
+    }
+
+    .wizard-bg-content-wrapper {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        overflow-y: auto;
+    }
+
+    .wizard-bg-left-column {
+        gap: 8px;
+    }
+
+    .wizard-bg-name {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .wizard-bg-level {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .wizard-bg-exp-progress {
+        height: 25px;
+    }
+
+    /* Сетка становится 2x3 вместо 3x2 */
+    .wizard-bg-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: auto;
+        gap: 8px;
+    }
+
+    .wizard-bg-cell {
+        min-height: 90px;
+        padding: 10px;
+    }
+
+    .wizard-bg-cell-label {
+        font-size: 9px;
+    }
+
+    .wizard-bg-cell-value {
+        font-size: 18px;
+    }
+
+    .wizard-bg-spell-name {
+        font-size: 11px;
+    }
+
+    .wizard-bg-spell-info {
+        font-size: 9px;
+    }
+
+    .wizard-bg-close-button {
+        top: 5px;
+        right: 5px;
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+}
+
+/* ========================================
+   НИЗКАЯ ВЫСОТА ЭКРАНА (≤500px)
+   ======================================== */
+
+@media (max-height: 500px) {
+    .wizard-bg-container {
+        max-height: 95vh;
+        padding: 8px;
+    }
+
+    .wizard-bg-content-wrapper {
+        gap: 8px;
+    }
+
+    .wizard-bg-left-column {
+        gap: 6px;
+    }
+
+    .wizard-bg-name {
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+    .wizard-bg-level {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    .wizard-bg-exp-progress {
+        height: 20px;
+    }
+
+    .wizard-bg-resistance-button,
+    .wizard-bg-inventory-button {
+        font-size: 11px;
+        padding: 8px;
+    }
+
+    .wizard-bg-stats-grid {
+        gap: 6px;
+    }
+
+    .wizard-bg-cell {
+        padding: 6px;
+        min-height: 70px;
+    }
+
+    .wizard-bg-cell-value {
+        font-size: 16px;
+    }
+}
+
+/* ========================================
+   ДЕСКТОП (≥769px)
+   ======================================== */
+
+@media (min-width: 769px) {
+    .wizard-bg-content-wrapper {
+        grid-template-columns: 220px 1fr;
+        gap: 25px;
+    }
+
+    .wizard-bg-stats-grid {
+        gap: 12px;
+    }
+
+    .wizard-bg-cell {
+        min-height: 110px;
+    }
+}
+
+/* ========================================
+   iOS ФИКСЫ
+   ======================================== */
+
+@supports (-webkit-touch-callout: none) {
+    .wizard-bg-container {
+        max-height: -webkit-fill-available;
+    }
+}
+
+/* ========================================
+   СКРОЛЛБАРЫ
+   ======================================== */
+
+.wizard-bg-content-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+
+.wizard-bg-content-wrapper::-webkit-scrollbar-track {
+    background: rgba(26, 26, 42, 0.5);
+    border-radius: 4px;
+}
+
+.wizard-bg-content-wrapper::-webkit-scrollbar-thumb {
+    background: #7289da;
+    border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+    .wizard-bg-content-wrapper::-webkit-scrollbar {
+        width: 4px;
     }
 }
