@@ -99,13 +99,12 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             } else {
                 protectionMessage = `${summonedCreature.name || 'Призванное существо'} защищает ${defendedName} и получает ${creatureDamage} урона`;
             }
-        
-            // Добавляем информацию об оставшемся HP существа
+
+            // Добавляем информацию об оставшемся HP существа (БЕЗ "погибает", чтобы не дублировать)
             if (summonedCreature.hp > 0) {
                 protectionMessage += ` (осталось ${summonedCreature.hp}/${summonedCreature.maxHP || summonedCreature.hp} HP)`;
-            } else {
-                protectionMessage += ` и погибает!`;
             }
+            // ИСПРАВЛЕНИЕ: Убрана фраза "и погибает!" - это логируется ниже отдельным сообщением
             
             protectionLayers.push(protectionMessage);
             remainingDamage = creatureRemainder;
@@ -147,22 +146,9 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
                 }
             }
             
-            // Если урон полностью поглощен
-            if (remainingDamage === 0) {
-                // Определяем имя защищаемого (не показываем "Пустота")
-                const defendedNameFull = (target.wizard.name && target.wizard.name !== 'Пустота') ?
-                    target.wizard.name : 'союзника';
-
-                const fullBlockMessage = summonedCreature.type === 'nature_wolf' ?
-                    `🐺 Волк полностью защитил ${defendedNameFull} от атаки!` :
-                    summonedCreature.type === 'nature_ent' ?
-                    `🌳 Энт полностью поглотил урон за ${defendedNameFull}!` :
-                    `${summonedCreature.name} полностью защитил ${defendedNameFull}!`;
-
-                if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(fullBlockMessage);
-                }
-            }
+            // ИСПРАВЛЕНИЕ: Убрано дублирующее сообщение "полностью защитил"
+            // Это и так видно из protectionMessage выше: "получает урон" + "осталось HP"
+            // Не нужно дополнительное сообщение
         }
     }
     
@@ -249,10 +235,18 @@ function logProtectionResult(caster, target, result, spellName) {
 
     if (!window.addToBattleLog || !result) return;
 
-    // ИСПРАВЛЕНИЕ: Не логируем если цель "Пустота" (виртуальная цель для пустой клетки)
+    // ИСПРАВЛЕНИЕ: Не логируем ТОЛЬКО если цель "Пустота" И НЕТ защитных слоев
+    // (Если есть защитные слои - значит волк/стена защищали, нужно это показать)
     if (target.wizard.name === 'Пустота') {
-        console.log('⏭️ Пропуск логирования для пустой цели');
-        return;
+        const hasProtection = result.protectionLayers && result.protectionLayers.length > 0 &&
+            result.protectionLayers.some(layer =>
+                layer.includes('🐺') || layer.includes('🌳') || layer.includes('🧱') || layer.includes('💨')
+            );
+
+        if (!hasProtection && result.finalDamage === 0) {
+            console.log('⏭️ Пропуск логирования: пустая цель без защиты и без урона');
+            return;
+        }
     }
 
     // Определяем уровень заклинания из названия
@@ -260,8 +254,15 @@ function logProtectionResult(caster, target, result, spellName) {
     const spellDisplayName = spellLevel ? `${spellName.replace(/\d+/, '').trim()} ${spellLevel}ур` : spellName;
 
     // Основная строка
-    const mainLog = `🎯 ${target.wizard.name} получает от ${caster.name} ${result.finalDamage} урона (${spellDisplayName})`;
-    window.addToBattleLog(mainLog);
+    // Если цель "Пустота" но есть защита - не показываем имя, покажем только защитные слои ниже
+    if (target.wizard.name !== 'Пустота') {
+        const mainLog = `🎯 ${target.wizard.name} получает от ${caster.name} ${result.finalDamage} урона (${spellDisplayName})`;
+        window.addToBattleLog(mainLog);
+    } else {
+        // Для виртуальной цели показываем кратко
+        const mainLog = `🎯 ${caster.name} использует ${spellDisplayName} → ${result.finalDamage} урона`;
+        window.addToBattleLog(mainLog);
+    }
     
     // Детальный расчёт с отступами
     // Показываем защитные слои
