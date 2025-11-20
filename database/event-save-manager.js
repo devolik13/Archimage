@@ -149,7 +149,30 @@ window.onBuildingUpgraded = function(buildingId, newLevel) {
 };
 
 window.onBattleCompleted = async function(result, rewards, opponentLevel, ratingChange) {
-    console.log('⚔️ Бой завершён:', result, `(рейтинг: ${ratingChange > 0 ? '+' : ''}${ratingChange})`);
+    console.log('⚔️ onBattleCompleted вызвана:', result, `(рейтинг: ${ratingChange > 0 ? '+' : ''}${ratingChange})`);
+    console.log('   Стек вызова:', new Error().stack);
+
+    // ЗАЩИТА ОТ ДУБЛИРОВАНИЯ: Проверяем, не был ли этот бой уже сохранен
+    const battleId = `${Date.now()}_${result}_${window.selectedOpponent?.id || 'unknown'}`;
+
+    if (window._lastSavedBattle === battleId) {
+        console.warn('⚠️ ПРЕДОТВРАЩЕНО дублирование сохранения боя!');
+        console.warn('   Этот бой уже был сохранен, пропускаем');
+        return;
+    }
+
+    // Дополнительная защита: если прошло меньше 1 секунды с последнего сохранения - игнорируем
+    const now = Date.now();
+    if (window._lastBattleSaveTime && (now - window._lastBattleSaveTime) < 1000) {
+        console.warn('⚠️ ПРЕДОТВРАЩЕНО дублирование: прошло меньше 1 сек с последнего сохранения');
+        return;
+    }
+
+    // Запоминаем этот бой
+    window._lastSavedBattle = battleId;
+    window._lastBattleSaveTime = now;
+
+    console.log('💾 Сохранение боя:', battleId);
 
     // Сначала сохраняем результат боя и обновляем статистику
     if (window.dbManager) {
@@ -158,6 +181,8 @@ window.onBattleCompleted = async function(result, rewards, opponentLevel, rating
 
     // Затем сохраняем текущее состояние игрока (опыт, маги и т.д.)
     await window.eventSaveManager.saveImmediate(`battle_${result}`);
+
+    console.log('✅ Бой успешно сохранен');
 };
 
 window.onWizardsGainedExperience = function(wizardIds, expGained) {
