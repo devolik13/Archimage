@@ -355,15 +355,21 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 sprite.scale.set(scale * (config.scale || 0.5));
                 sprite.loop = true; // Зацикливаем idle анимацию
                 sprite.play();
-                
+
+                // ИСПРАВЛЕНО: Сохраняем базовый scale для возврата после анимаций
+                sprite.baseScaleX = sprite.scale.x;
+                sprite.baseScaleY = sprite.scale.y;
+
                 // Зеркалим для игрока (смотрит влево)
                 if (type === 'player') {
                     sprite.scale.x *= -1;
+                    sprite.baseScaleX = sprite.scale.x; // Обновляем базовый scale после зеркалирования
                 }
-                
+
                 // Дополнительное отражение для фракции fire (спрайты смотрят в другую сторону)
                 if (faction === 'fire') {
                     sprite.scale.x *= -1;
+                    sprite.baseScaleX = sprite.scale.x; // Обновляем базовый scale после зеркалирования
                 }
                 
                 // Сохраняем кадры для анимаций
@@ -395,8 +401,13 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 sprite.loop = true; // Зацикливаем idle анимацию
                 sprite.play();
 
+                // ИСПРАВЛЕНО: Сохраняем базовый scale для возврата после анимаций
+                sprite.baseScaleX = sprite.scale.x;
+                sprite.baseScaleY = sprite.scale.y;
+
                 if (type === 'player') {
                     sprite.scale.x *= -1;
+                    sprite.baseScaleX = sprite.scale.x; // Обновляем базовый scale после зеркалирования
                 }
 
                 container.idleFrames = idleFrames;
@@ -575,15 +586,17 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 faction: container?.faction
             });
 
-            const originalScaleX = sprite.scale.x;
-            const originalScaleY = sprite.scale.y;
-            
+            // ИСПРАВЛЕНО: Используем сохраненный baseScale вместо текущего
+            const baseScaleX = sprite.baseScaleX || sprite.scale.x;
+            const baseScaleY = sprite.baseScaleY || sprite.scale.y;
+
             try {
-                sprite.scale.set(originalScaleX * 1.3, originalScaleY * 1.3);
-                
+                sprite.scale.set(baseScaleX * 1.3, baseScaleY * 1.3);
+
                 safeSetTimeout(() => {
                     if (isSpriteValid(sprite)) {
-                        sprite.scale.set(originalScaleX, originalScaleY);
+                        // Возвращаем к базовому scale, а не к текущему
+                        sprite.scale.set(baseScaleX, baseScaleY);
                     }
                     if (callback) callback();
                 }, 300);
@@ -1017,14 +1030,20 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             sprite.loop = true;
             sprite.play();
 
+            // ИСПРАВЛЕНО: Сохраняем базовый scale для возврата после анимаций
+            sprite.baseScaleX = sprite.scale.x;
+            sprite.baseScaleY = sprite.scale.y;
+
             // Зеркалим для игрока (смотрит влево)
             if (type === 'player') {
                 sprite.scale.x *= -1;
+                sprite.baseScaleX = sprite.scale.x; // Обновляем базовый scale после зеркалирования
             }
 
             // Дополнительное отражение для фракции fire
             if (faction === 'fire') {
                 sprite.scale.x *= -1;
+                sprite.baseScaleX = sprite.scale.x; // Обновляем базовый scale после зеркалирования
             }
 
             sprite.x = cellData.x + cellData.width / 2;
