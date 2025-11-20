@@ -2,7 +2,7 @@
 console.log('✅ battle-result-screen.js загружен');
 
 /**
- * Показать экран результатов боя
+ * Показать экран результатов боя используя ModalSystem
  * @param {string} result - 'win' или 'loss'
  * @param {object} battleData - Данные о бое
  */
@@ -10,7 +10,6 @@ function showBattleResult(result, battleData = {}) {
     console.log('🎬 showBattleResult вызвана!');
     console.log('   result:', result);
     console.log('   battleData:', battleData);
-    console.log('   Стек вызова:', new Error().stack);
 
     const {
         opponentName = 'Противник',
@@ -18,10 +17,8 @@ function showBattleResult(result, battleData = {}) {
         ratingChange = 0,
         rewards = {},
         battleDuration = 0,
-        earlyExit = false // Флаг преждевременного выхода
+        earlyExit = false
     } = battleData;
-
-    console.log('   earlyExit:', earlyExit);
 
     const isWin = result === 'win';
 
@@ -182,7 +179,7 @@ function showBattleResult(result, battleData = {}) {
 
             <!-- Кнопки -->
             <div style="display: flex; gap: 8px;">
-                <button class="battle-result-new-fight" style="
+                <button id="battle-result-new-fight" style="
                     flex: 1;
                     padding: 10px;
                     border: none;
@@ -199,7 +196,7 @@ function showBattleResult(result, battleData = {}) {
                     ⚔️ Новый бой
                 </button>
 
-                <button class="battle-result-return" style="
+                <button id="battle-result-return" style="
                     flex: 1;
                     padding: 10px;
                     border: 2px solid #7289da;
@@ -219,78 +216,43 @@ function showBattleResult(result, battleData = {}) {
         </div>
     `;
 
-    // Создаём модалку
-    const modal = document.createElement('div');
-    modal.innerHTML = modalContent;
-    modal.id = 'battle-result-modal';
-    modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2001;';
+    // Используем ModalSystem для показа
+    if (!window.modalSystem) {
+        console.error('❌ ModalSystem не найдена!');
+        return;
+    }
 
-    const overlay = document.createElement('div');
-    overlay.id = 'battle-result-overlay';
-    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 2000;';
+    // Показываем модалку через ModalSystem
+    window.modalSystem.show(modalContent, {
+        id: 'battle-result-modal',
+        overlayId: 'battle-result-overlay',
+        closeOnOverlay: false, // Нельзя закрыть кликом вне окна
+        closeOnEscape: false,   // Нельзя закрыть по Escape
+        onShow: (modal) => {
+            console.log('✅ Модальное окно результата показано через ModalSystem');
 
-    // Не закрываем по клику на оверлей - игрок должен выбрать действие
+            // Навешиваем обработчики на кнопки
+            const newFightBtn = document.getElementById('battle-result-new-fight');
+            const returnBtn = document.getElementById('battle-result-return');
 
-    document.body.appendChild(overlay);
-    document.body.appendChild(modal);
+            if (newFightBtn) {
+                newFightBtn.onclick = () => {
+                    console.log('🎮 Нажата кнопка "Новый бой"');
+                    closeBattleResult();
+                    if (typeof window.showOpponentSelection === 'function') {
+                        window.showOpponentSelection();
+                    }
+                };
+            }
 
-    console.log('🔍 Модальное окно добавлено в DOM');
-    console.log('   modal.children.length:', modal.children.length);
-    console.log('   modal.querySelector проверка...');
-
-    // ВАЖНО: Навешиваем обработчики событий после добавления в DOM
-    // Используем setTimeout чтобы дать браузеру время распарсить innerHTML
-    setTimeout(() => {
-        console.log('⏱️ setTimeout сработал, ищем кнопки...');
-
-        const newFightBtn = modal.querySelector('.battle-result-new-fight');
-        const returnBtn = modal.querySelector('.battle-result-return');
-        const allButtons = modal.querySelectorAll('button');
-
-        console.log('   Найдено кнопок всего:', allButtons.length);
-        console.log('   newFightBtn:', !!newFightBtn);
-        console.log('   returnBtn:', !!returnBtn);
-
-        if (newFightBtn) {
-            console.log('✅ Навешиваем обработчик на "Новый бой"');
-            newFightBtn.addEventListener('click', () => {
-                console.log('🎮 КЛИК по кнопке "Новый бой"');
-                window.closeBattleResult();
-                if (typeof window.showOpponentSelection === 'function') {
-                    window.showOpponentSelection();
-                }
-            });
-            // Тест - навешиваем еще и через onclick для надежности
-            newFightBtn.onclick = () => {
-                console.log('🎮 ONCLICK по кнопке "Новый бой"');
-                window.closeBattleResult();
-                if (typeof window.showOpponentSelection === 'function') {
-                    window.showOpponentSelection();
-                }
-            };
-        } else {
-            console.error('❌ Кнопка "Новый бой" не найдена!');
+            if (returnBtn) {
+                returnBtn.onclick = () => {
+                    console.log('🏠 Нажата кнопка "Вернуться"');
+                    closeBattleResult();
+                };
+            }
         }
-
-        if (returnBtn) {
-            console.log('✅ Навешиваем обработчик на "Вернуться"');
-            returnBtn.addEventListener('click', () => {
-                console.log('🏠 КЛИК по кнопке "Вернуться"');
-                window.closeBattleResult();
-            });
-            // Тест - навешиваем еще и через onclick для надежности
-            returnBtn.onclick = () => {
-                console.log('🏠 ONCLICK по кнопке "Вернуться"');
-                window.closeBattleResult();
-            };
-        } else {
-            console.error('❌ Кнопка "Вернуться" не найдена!');
-        }
-
-        console.log('✅ Обработчики событий навешены');
-    }, 100); // Даем время на рендер
-
-    window.currentBattleResultModal = { modal, overlay };
+    });
 
     console.log(`📊 Показан экран результатов: ${result}, рейтинг: ${ratingChangeText}`);
 }
@@ -300,32 +262,11 @@ function showBattleResult(result, battleData = {}) {
  */
 function closeBattleResult() {
     console.log('🚪 closeBattleResult вызван');
-    console.log('   Стек вызова:', new Error().stack);
 
     try {
-        const modal = document.getElementById('battle-result-modal');
-        const overlay = document.getElementById('battle-result-overlay');
-
-        console.log('   modal найден:', !!modal);
-        console.log('   overlay найден:', !!overlay);
-
-        if (modal) {
-            modal.remove();
-            console.log('✅ battle-result-modal удален');
-        } else {
-            console.warn('⚠️ battle-result-modal не найден в DOM');
-        }
-
-        if (overlay) {
-            overlay.remove();
-            console.log('✅ battle-result-overlay удален');
-        } else {
-            console.warn('⚠️ battle-result-overlay не найден в DOM');
-        }
-
-        if (window.currentBattleResultModal) {
-            window.currentBattleResultModal = null;
-            console.log('✅ currentBattleResultModal очищен');
+        // Закрываем через ModalSystem
+        if (window.modalSystem) {
+            window.modalSystem.close();
         }
 
         // ВАЖНО: Проверяем, нужна ли дополнительная очистка
@@ -340,28 +281,23 @@ function closeBattleResult() {
             console.log('🧹 Требуется очистка ресурсов боя');
             if (typeof window.cleanupBattleResources === 'function') {
                 window.cleanupBattleResources();
-            } else {
-                console.error('❌ cleanupBattleResources не найдена');
             }
         } else {
             console.log('✅ Ресурсы боя уже очищены (досрочный выход)');
         }
 
         // Возвращаемся в город
-        console.log('🏙️ Попытка вернуться в город...');
+        console.log('🏙️ Возврат в город...');
         if (typeof window.returnToCity === 'function') {
             window.returnToCity();
         } else if (typeof window.closeBattleField === 'function') {
-            console.log('   Используем closeBattleField вместо returnToCity');
+            console.log('   Используем closeBattleField');
             window.closeBattleField();
-        } else {
-            console.error('❌ Ни returnToCity, ни closeBattleField не найдены!');
         }
 
         console.log('✅ closeBattleResult завершен успешно');
     } catch (error) {
         console.error('❌ Ошибка в closeBattleResult:', error);
-        console.error('   Stack:', error.stack);
     }
 }
 
