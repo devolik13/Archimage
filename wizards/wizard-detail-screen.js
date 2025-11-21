@@ -693,30 +693,20 @@ function setupWizardUI(wizardIndex, wizardStats) {
     const overlay = document.getElementById('wizard-ui-overlay');
     if (!img || !overlay) return;
 
-    // Оригинальный размер фона 768x512 (как у города)
+    // Оригинальный размер фона 768x512
     const imageWidth = 768;
     const imageHeight = 512;
 
-    // Коэффициенты масштабирования (ТОЧНО как в city-clickable-system.js)
+    // ВАЖНО: Используем РЕАЛЬНЫЙ размер изображения для масштаба (как у города)
+    const scaleX = img.offsetWidth / imageWidth;   // реальная ширина / 768
+    const scaleY = img.offsetHeight / imageHeight; // реальная высота / 512
+
+    // Вычисляем смещение изображения в контейнере (для центрирования)
     const container = img.parentElement;
+    const imgRect = img.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
-    const containerAspect = containerRect.width / containerRect.height;
-    const imageAspect = imageWidth / imageHeight;
-
-    let scaleX, scaleY, offsetX = 0;
-
-    // Десктоп - изображения используют object-fit: contain
-    if (containerAspect > imageAspect) {
-        // Ограничено по высоте
-        scaleY = containerRect.height / imageHeight;
-        scaleX = scaleY;
-        offsetX = (containerRect.width - imageWidth * scaleX) / 2;
-    } else {
-        // Ограничено по ширине
-        scaleX = containerRect.width / imageWidth;
-        scaleY = scaleX;
-        offsetX = 0;
-    }
+    const offsetX = imgRect.left - containerRect.left;
+    const offsetY = imgRect.top - containerRect.top;
 
     // Overlay занимает ВЕСЬ контейнер (как SVG у города)
     overlay.style.width = '100%';
@@ -726,7 +716,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     overlay.innerHTML = '';
 
     // Оригинальные координаты для 768x512 (из первой версии)
-    // Применяем масштабирование ТОЧНО как у города: x = (originalX * scaleX) + offsetX, y = originalY * scaleY
+    // Применяем масштабирование: x = (originalX * scaleX) + offsetX, y = (originalY * scaleY) + offsetY
 
     // === КНОПКА ЗАКРЫТИЯ (верхний правый угол: 10px от верха, 10px от правого края) ===
     const closeBtn = document.createElement('button');
@@ -746,7 +736,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     nameDiv.className = 'wizard-bg-name';
     nameDiv.style.cssText = `
         left: ${(236 * scaleX) + offsetX}px;
-        top: ${134 * scaleY}px;
+        top: ${(134 * scaleY) + offsetY}px;
         width: ${437 * scaleX}px;
         height: ${41 * scaleY}px;
         font-size: ${22 * Math.min(scaleX, scaleY)}px;
@@ -767,7 +757,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     levelDiv.textContent = `Уровень ${wizardStats.level}`;
     levelDiv.style.cssText = `
         left: ${(110 * scaleX) + offsetX}px;
-        top: ${217 * scaleY}px;
+        top: ${(217 * scaleY) + offsetY}px;
         width: ${102 * scaleX}px;
         height: ${30 * scaleY}px;
         font-size: ${16 * Math.min(scaleX, scaleY)}px;
@@ -779,7 +769,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     expBar.className = 'wizard-bg-exp-bar';
     expBar.style.cssText = `
         left: ${(110 * scaleX) + offsetX}px;
-        top: ${261 * scaleY}px;
+        top: ${(261 * scaleY) + offsetY}px;
         width: ${178 * scaleX}px;
         height: ${27 * scaleY}px;
     `;
@@ -797,7 +787,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     resistBtn.textContent = '🛡️ Сопротивления';
     resistBtn.style.cssText = `
         left: ${(110 * scaleX) + offsetX}px;
-        top: ${307 * scaleY}px;
+        top: ${(307 * scaleY) + offsetY}px;
         width: ${178 * scaleX}px;
         height: ${45 * scaleY}px;
         font-size: ${13 * Math.min(scaleX, scaleY)}px;
@@ -811,7 +801,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     invBtn.textContent = '🎒 Инвентарь';
     invBtn.style.cssText = `
         left: ${(110 * scaleX) + offsetX}px;
-        top: ${370 * scaleY}px;
+        top: ${(370 * scaleY) + offsetY}px;
         width: ${178 * scaleX}px;
         height: ${41 * scaleY}px;
         font-size: ${13 * Math.min(scaleX, scaleY)}px;
@@ -870,7 +860,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
 
         cellDiv.style.cssText = `
             left: ${(x * scaleX) + offsetX}px;
-            top: ${y * scaleY}px;
+            top: ${(y * scaleY) + offsetY}px;
             width: ${cellWidth * scaleX}px;
             height: ${cellHeight * scaleY}px;
         `;
@@ -899,8 +889,9 @@ function setupWizardUI(wizardIndex, wizardStats) {
         scaleX,
         scaleY,
         offsetX,
-        containerAspect,
-        imageAspect,
+        offsetY,
+        imageWidth: img.offsetWidth,
+        imageHeight: img.offsetHeight,
         containerWidth: containerRect.width,
         containerHeight: containerRect.height
     });
