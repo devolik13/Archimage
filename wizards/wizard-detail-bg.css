@@ -38,10 +38,8 @@
 
 #wizard-detail-screen .wizard-bg-overlay-container {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    /* width и height устанавливаются через JS */
+    /* top, left, width, height устанавливаются через JS */
+    /* Не используем transform - он смещает координаты! */
 }
 
 /* ========================================
