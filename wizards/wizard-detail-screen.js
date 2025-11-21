@@ -684,7 +684,7 @@ function calculateWizardStats(wizardData) {
     };
 }
 
-// Создание UI с масштабированием (паттерн из city-clickable-system.js)
+// Создание UI с масштабированием (ТОЧНЫЙ паттерн из city-view-system.js и city-clickable-system.js)
 function setupWizardUI(wizardIndex, wizardStats) {
     const wizardData = userData.wizards[wizardIndex];
     if (!wizardData) return;
@@ -693,20 +693,78 @@ function setupWizardUI(wizardIndex, wizardStats) {
     const overlay = document.getElementById('wizard-ui-overlay');
     if (!img || !overlay) return;
 
+    const container = img.parentElement;
+
     // Оригинальный размер фона 768x512
     const imageWidth = 768;
     const imageHeight = 512;
 
-    // ВАЖНО: Используем РЕАЛЬНЫЙ размер изображения для масштаба (как у города)
-    const scaleX = img.offsetWidth / imageWidth;   // реальная ширина / 768
-    const scaleY = img.offsetHeight / imageHeight; // реальная высота / 512
+    // ВАЖНО: Применяем ТОЧНО ТОТ ЖЕ паттерн что и в city-view-system.js
+    const isMobile = typeof isMobileDevice === 'function' ? isMobileDevice() : false;
 
-    // Вычисляем смещение изображения в контейнере (для центрирования)
-    const container = img.parentElement;
-    const imgRect = img.getBoundingClientRect();
-    const containerRect = container.getBoundingClientRect();
-    const offsetX = imgRect.left - containerRect.left;
-    const offsetY = imgRect.top - containerRect.top;
+    if (isMobile) {
+        // МОБИЛЬНЫЙ: явные размеры как в city-view-system.js (строки 47-68)
+        const screenHeight = window.innerHeight;
+        const aspectRatio = imageWidth / imageHeight;
+        const scaledHeight = screenHeight;
+        const scaledWidth = scaledHeight * aspectRatio;
+
+        img.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 50% !important;
+            transform: translateX(-50%);
+            width: ${scaledWidth}px;
+            height: ${scaledHeight}px;
+            z-index: 0;
+        `;
+    } else {
+        // ДЕСКТОП: object-fit contain как в city-view-system.js (строки 69-79)
+        img.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            z-index: 0;
+        `;
+    }
+
+    // Расчет масштаба ТОЧНО как в city-clickable-system.js (строки 60-96)
+    let scaleX, scaleY, offsetX = 0;
+
+    if (isMobile) {
+        // МОБИЛЬНЫЙ: масштаб по высоте экрана
+        const screenHeight = window.innerHeight;
+        const aspectRatio = imageWidth / imageHeight;
+
+        const scaledHeight = screenHeight;
+        const scaledWidth = scaledHeight * aspectRatio;
+
+        scaleX = scaledWidth / imageWidth;
+        scaleY = scaledHeight / imageHeight;
+
+        // Смещение для центрирования
+        const containerWidth = container.getBoundingClientRect().width;
+        offsetX = (containerWidth - scaledWidth) / 2;
+    } else {
+        // ДЕСКТОП: object-fit contain
+        const containerRect = container.getBoundingClientRect();
+        const containerAspect = containerRect.width / containerRect.height;
+        const imageAspect = imageWidth / imageHeight;
+
+        if (containerAspect > imageAspect) {
+            // Ограничено по высоте
+            scaleY = containerRect.height / imageHeight;
+            scaleX = scaleY;
+            offsetX = (containerRect.width - imageWidth * scaleX) / 2;
+        } else {
+            // Ограничено по ширине
+            scaleX = containerRect.width / imageWidth;
+            scaleY = scaleX;
+        }
+    }
 
     // Overlay занимает ВЕСЬ контейнер (как SVG у города)
     overlay.style.width = '100%';
@@ -716,7 +774,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     overlay.innerHTML = '';
 
     // Оригинальные координаты для 768x512 (из первой версии)
-    // Применяем масштабирование: x = (originalX * scaleX) + offsetX, y = (originalY * scaleY) + offsetY
+    // Применяем масштабирование ТОЧНО КАК У ГОРОДА: x = (originalX * scaleX) + offsetX, y = originalY * scaleY
 
     // === КНОПКА ЗАКРЫТИЯ (верхний правый угол: 10px от верха, 10px от правого края) ===
     const closeBtn = document.createElement('button');
@@ -736,7 +794,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     nameDiv.className = 'wizard-bg-name';
     nameDiv.style.cssText = `
         left: ${(236 * scaleX) + offsetX}px;
-        top: ${(134 * scaleY) + offsetY}px;
+        top: ${134 * scaleY}px;
         width: ${437 * scaleX}px;
         height: ${41 * scaleY}px;
         font-size: ${22 * Math.min(scaleX, scaleY)}px;
@@ -757,7 +815,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     levelDiv.textContent = `Уровень ${wizardStats.level}`;
     levelDiv.style.cssText = `
         left: ${(110 * scaleX) + offsetX}px;
-        top: ${(217 * scaleY) + offsetY}px;
+        top: ${217 * scaleY}px;
         width: ${102 * scaleX}px;
         height: ${30 * scaleY}px;
         font-size: ${16 * Math.min(scaleX, scaleY)}px;
@@ -769,7 +827,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     expBar.className = 'wizard-bg-exp-bar';
     expBar.style.cssText = `
         left: ${(110 * scaleX) + offsetX}px;
-        top: ${(261 * scaleY) + offsetY}px;
+        top: ${261 * scaleY}px;
         width: ${178 * scaleX}px;
         height: ${27 * scaleY}px;
     `;
@@ -787,7 +845,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     resistBtn.textContent = '🛡️ Сопротивления';
     resistBtn.style.cssText = `
         left: ${(110 * scaleX) + offsetX}px;
-        top: ${(307 * scaleY) + offsetY}px;
+        top: ${307 * scaleY}px;
         width: ${178 * scaleX}px;
         height: ${45 * scaleY}px;
         font-size: ${13 * Math.min(scaleX, scaleY)}px;
@@ -801,7 +859,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     invBtn.textContent = '🎒 Инвентарь';
     invBtn.style.cssText = `
         left: ${(110 * scaleX) + offsetX}px;
-        top: ${(370 * scaleY) + offsetY}px;
+        top: ${370 * scaleY}px;
         width: ${178 * scaleX}px;
         height: ${41 * scaleY}px;
         font-size: ${13 * Math.min(scaleX, scaleY)}px;
@@ -860,7 +918,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
 
         cellDiv.style.cssText = `
             left: ${(x * scaleX) + offsetX}px;
-            top: ${(y * scaleY) + offsetY}px;
+            top: ${y * scaleY}px;
             width: ${cellWidth * scaleX}px;
             height: ${cellHeight * scaleY}px;
         `;
@@ -885,15 +943,12 @@ function setupWizardUI(wizardIndex, wizardStats) {
         overlay.appendChild(cellDiv);
     });
 
-    console.log('✅ UI окна мага настроено с масштабом (как у города)', {
+    console.log('✅ UI окна мага настроено с масштабом (ТОЧНЫЙ паттерн города)', {
         scaleX,
         scaleY,
         offsetX,
-        offsetY,
-        imageWidth: img.offsetWidth,
-        imageHeight: img.offsetHeight,
-        containerWidth: containerRect.width,
-        containerHeight: containerRect.height
+        isMobile,
+        formula: 'x = (origX * scaleX) + offsetX, y = origY * scaleY'
     });
 }
 
