@@ -707,16 +707,23 @@ function setupWizardUI(wizardIndex, wizardStats) {
 
     // Для центрирования элементов (если изображение не на всю ширину)
     const container = img.parentElement;
-    const containerWidth = container.offsetWidth;
-    const offsetX = (containerWidth - currentWidth) / 2;
+    const containerRect = container.getBoundingClientRect();
+    const imgRect = img.getBoundingClientRect();
 
-    // Устанавливаем размеры контейнера
+    // Вычисляем смещение изображения относительно контейнера
+    const offsetX = imgRect.left - containerRect.left;
+    const offsetY = imgRect.top - containerRect.top;
+
+    // Устанавливаем overlay точно над изображением
     overlay.style.width = currentWidth + 'px';
     overlay.style.height = currentHeight + 'px';
+    overlay.style.left = offsetX + 'px';
+    overlay.style.top = offsetY + 'px';
     overlay.innerHTML = '';
 
     // Оригинальные координаты для 768x512 (из первой версии)
-    // Применяем масштабирование как у города: scaledX = (x * scaleX) + offsetX, scaledY = y * scaleY
+    // Применяем масштабирование как у города: scaledX = originalX * scaleX, scaledY = originalY * scaleY
+    // offsetX теперь не нужен для элементов, так как сам overlay уже смещен
 
     // === КНОПКА ЗАКРЫТИЯ (верхний правый угол: 10px от верха, 10px от правого края) ===
     const closeBtn = document.createElement('button');
@@ -735,7 +742,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     const nameDiv = document.createElement('div');
     nameDiv.className = 'wizard-bg-name';
     nameDiv.style.cssText = `
-        left: ${(236 * scaleX) + offsetX}px;
+        left: ${236 * scaleX}px;
         top: ${134 * scaleY}px;
         width: ${437 * scaleX}px;
         height: ${41 * scaleY}px;
@@ -756,7 +763,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     levelDiv.className = 'wizard-bg-level';
     levelDiv.textContent = `Уровень ${wizardStats.level}`;
     levelDiv.style.cssText = `
-        left: ${(110 * scaleX) + offsetX}px;
+        left: ${110 * scaleX}px;
         top: ${217 * scaleY}px;
         width: ${102 * scaleX}px;
         height: ${30 * scaleY}px;
@@ -768,7 +775,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     const expBar = document.createElement('div');
     expBar.className = 'wizard-bg-exp-bar';
     expBar.style.cssText = `
-        left: ${(110 * scaleX) + offsetX}px;
+        left: ${110 * scaleX}px;
         top: ${261 * scaleY}px;
         width: ${178 * scaleX}px;
         height: ${27 * scaleY}px;
@@ -786,7 +793,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     resistBtn.className = 'wizard-bg-button';
     resistBtn.textContent = '🛡️ Сопротивления';
     resistBtn.style.cssText = `
-        left: ${(110 * scaleX) + offsetX}px;
+        left: ${110 * scaleX}px;
         top: ${307 * scaleY}px;
         width: ${178 * scaleX}px;
         height: ${45 * scaleY}px;
@@ -800,7 +807,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
     invBtn.className = 'wizard-bg-button';
     invBtn.textContent = '🎒 Инвентарь';
     invBtn.style.cssText = `
-        left: ${(110 * scaleX) + offsetX}px;
+        left: ${110 * scaleX}px;
         top: ${370 * scaleY}px;
         width: ${178 * scaleX}px;
         height: ${41 * scaleY}px;
@@ -859,7 +866,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
         const y = gridStartY + (cellHeight + gapY) * cell.row;
 
         cellDiv.style.cssText = `
-            left: ${(x * scaleX) + offsetX}px;
+            left: ${x * scaleX}px;
             top: ${y * scaleY}px;
             width: ${cellWidth * scaleX}px;
             height: ${cellHeight * scaleY}px;
@@ -885,7 +892,16 @@ function setupWizardUI(wizardIndex, wizardStats) {
         overlay.appendChild(cellDiv);
     });
 
-    console.log('✅ UI окна мага настроено с масштабом', {scaleX, scaleY});
+    console.log('✅ UI окна мага настроено с масштабом', {
+        scaleX,
+        scaleY,
+        currentWidth,
+        currentHeight,
+        offsetX,
+        offsetY,
+        imgLeft: imgRect.left,
+        containerLeft: containerRect.left
+    });
 }
 
 // Создание ячеек заклинаний
