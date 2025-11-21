@@ -684,7 +684,7 @@ function calculateWizardStats(wizardData) {
     };
 }
 
-// Создание UI с масштабированием (паттерн из library_ui.js)
+// Создание UI с масштабированием (паттерн из city-clickable-system.js)
 function setupWizardUI(wizardIndex, wizardStats) {
     const wizardData = userData.wizards[wizardIndex];
     if (!wizardData) return;
@@ -693,27 +693,32 @@ function setupWizardUI(wizardIndex, wizardStats) {
     const overlay = document.getElementById('wizard-ui-overlay');
     if (!img || !overlay) return;
 
-    // Оригинальный размер фона 768x512
-    const originalWidth = 768;
-    const originalHeight = 512;
+    // Оригинальный размер фона 768x512 (как у города)
+    const imageWidth = 768;
+    const imageHeight = 512;
 
     // Реальные размеры после масштабирования
     const currentWidth = img.offsetWidth;
     const currentHeight = img.offsetHeight;
 
-    // Коэффициенты масштабирования
-    const scaleX = currentWidth / originalWidth;
-    const scaleY = currentHeight / originalHeight;
+    // Коэффициенты масштабирования (как в city-clickable-system.js)
+    const scaleX = currentWidth / imageWidth;
+    const scaleY = currentHeight / imageHeight;
+
+    // Для центрирования элементов (если изображение не на всю ширину)
+    const container = img.parentElement;
+    const containerWidth = container.offsetWidth;
+    const offsetX = (containerWidth - currentWidth) / 2;
 
     // Устанавливаем размеры контейнера
     overlay.style.width = currentWidth + 'px';
     overlay.style.height = currentHeight + 'px';
     overlay.innerHTML = '';
 
-    // Координаты элементов для оригинального размера 768x512
-    // Вычислены вручную под дизайн фона
+    // Оригинальные координаты для 768x512 (из первой версии)
+    // Применяем масштабирование как у города: scaledX = (x * scaleX) + offsetX, scaledY = y * scaleY
 
-    // === КНОПКА ЗАКРЫТИЯ (верхний правый угол) ===
+    // === КНОПКА ЗАКРЫТИЯ (верхний правый угол: 10px от верха, 10px от правого края) ===
     const closeBtn = document.createElement('button');
     closeBtn.className = 'wizard-bg-close-button';
     closeBtn.textContent = '← Назад';
@@ -726,13 +731,14 @@ function setupWizardUI(wizardIndex, wizardStats) {
     closeBtn.onclick = closeWizardDetailScreen;
     overlay.appendChild(closeBtn);
 
-    // === ИМЯ МАГА (по центру вверху) ===
+    // === ИМЯ МАГА (left: 236px, top: 134px, width: 437px, height: 41px) ===
     const nameDiv = document.createElement('div');
     nameDiv.className = 'wizard-bg-name';
     nameDiv.style.cssText = `
-        top: ${20 * scaleY}px;
-        left: 50%;
-        transform: translateX(-50%);
+        left: ${(236 * scaleX) + offsetX}px;
+        top: ${134 * scaleY}px;
+        width: ${437 * scaleX}px;
+        height: ${41 * scaleY}px;
         font-size: ${22 * Math.min(scaleX, scaleY)}px;
     `;
     nameDiv.innerHTML = `
@@ -744,31 +750,28 @@ function setupWizardUI(wizardIndex, wizardStats) {
     overlay.appendChild(nameDiv);
 
     // === ЛЕВАЯ КОЛОНКА ===
-    const leftX = 30;
-    const leftY = 80;
-    const leftWidth = 180;
-
-    // Уровень
+    // Оригинальные координаты из первой версии
+    // Уровень: left: 110px, top: 217px, width: 102px, height: 30px
     const levelDiv = document.createElement('div');
     levelDiv.className = 'wizard-bg-level';
     levelDiv.textContent = `Уровень ${wizardStats.level}`;
     levelDiv.style.cssText = `
-        left: ${leftX * scaleX}px;
-        top: ${leftY * scaleY}px;
-        width: ${leftWidth * scaleX}px;
-        height: ${40 * scaleY}px;
+        left: ${(110 * scaleX) + offsetX}px;
+        top: ${217 * scaleY}px;
+        width: ${102 * scaleX}px;
+        height: ${30 * scaleY}px;
         font-size: ${16 * Math.min(scaleX, scaleY)}px;
     `;
     overlay.appendChild(levelDiv);
 
-    // Полоса опыта
+    // Полоса опыта: left: 110px, top: 261px, width: 178px, height: 27px
     const expBar = document.createElement('div');
     expBar.className = 'wizard-bg-exp-bar';
     expBar.style.cssText = `
-        left: ${leftX * scaleX}px;
-        top: ${(leftY + 50) * scaleY}px;
-        width: ${leftWidth * scaleX}px;
-        height: ${30 * scaleY}px;
+        left: ${(110 * scaleX) + offsetX}px;
+        top: ${261 * scaleY}px;
+        width: ${178 * scaleX}px;
+        height: ${27 * scaleY}px;
     `;
     expBar.innerHTML = `
         <div class="wizard-bg-exp-text" style="font-size: ${11 * Math.min(scaleX, scaleY)}px;">${wizardStats.exp} / ${wizardStats.expToNext}</div>
@@ -778,41 +781,47 @@ function setupWizardUI(wizardIndex, wizardStats) {
     `;
     overlay.appendChild(expBar);
 
-    // Кнопка сопротивлений
+    // Кнопка сопротивлений: left: 110px, top: 307px, width: 178px, height: 45px
     const resistBtn = document.createElement('button');
     resistBtn.className = 'wizard-bg-button';
     resistBtn.textContent = '🛡️ Сопротивления';
     resistBtn.style.cssText = `
-        left: ${leftX * scaleX}px;
-        top: ${(leftY + 90) * scaleY}px;
-        width: ${leftWidth * scaleX}px;
+        left: ${(110 * scaleX) + offsetX}px;
+        top: ${307 * scaleY}px;
+        width: ${178 * scaleX}px;
         height: ${45 * scaleY}px;
         font-size: ${13 * Math.min(scaleX, scaleY)}px;
     `;
     resistBtn.onclick = () => showResistancesModal(wizardIndex);
     overlay.appendChild(resistBtn);
 
-    // Кнопка инвентаря
+    // Кнопка инвентаря: left: 110px, top: 370px, width: 178px, height: 41px
     const invBtn = document.createElement('button');
     invBtn.className = 'wizard-bg-button';
     invBtn.textContent = '🎒 Инвентарь';
     invBtn.style.cssText = `
-        left: ${leftX * scaleX}px;
-        top: ${(leftY + 145) * scaleY}px;
-        width: ${leftWidth * scaleX}px;
-        height: ${45 * scaleY}px;
+        left: ${(110 * scaleX) + offsetX}px;
+        top: ${370 * scaleY}px;
+        width: ${178 * scaleX}px;
+        height: ${41 * scaleY}px;
         font-size: ${13 * Math.min(scaleX, scaleY)}px;
     `;
     invBtn.onclick = () => showInventoryModalCompact(wizardIndex);
     overlay.appendChild(invBtn);
 
     // === СЕТКА СТАТОВ 3x2 (правая часть) ===
-    const gridStartX = 230;
-    const gridStartY = 80;
-    const cellWidth = 170;
-    const cellHeight = 105;
+    // Оригинальная сетка: left: 309px, top: 191px, width: 361px, height: 199px
+    // Сетка 3 колонки x 2 ряда, внутри grid с gap
+    const gridStartX = 309;
+    const gridStartY = 191;
+    const gridTotalWidth = 361;
+    const gridTotalHeight = 199;
     const gapX = 10;
     const gapY = 10;
+
+    // Вычисляем размер ячейки: (общая ширина - (кол-во gaps)) / кол-во колонок
+    const cellWidth = (gridTotalWidth - (3 - 1) * gapX) / 3;  // ~113.67px
+    const cellHeight = (gridTotalHeight - (2 - 1) * gapY) / 2; // ~94.5px
 
     const cells = [
         // РЯД 0: Здоровье, Броня, Урон
@@ -850,7 +859,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
         const y = gridStartY + (cellHeight + gapY) * cell.row;
 
         cellDiv.style.cssText = `
-            left: ${x * scaleX}px;
+            left: ${(x * scaleX) + offsetX}px;
             top: ${y * scaleY}px;
             width: ${cellWidth * scaleX}px;
             height: ${cellHeight * scaleY}px;
