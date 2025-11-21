@@ -776,16 +776,16 @@ function setupWizardUI(wizardIndex, wizardStats) {
     // Оригинальные координаты для 768x512 (из первой версии)
     // Применяем масштабирование ТОЧНО КАК У ГОРОДА: x = (originalX * scaleX) + offsetX, y = originalY * scaleY
 
-    // === КНОПКА ЗАКРЫТИЯ (левый верхний угол: left: 10px, top: 10px, width: 200px, height: 70px) ===
+    // === КНОПКА ЗАКРЫТИЯ (левый верхний угол: left: 10px, top: 10px, width: 160px, height: 56px) ===
     const closeBtn = document.createElement('button');
     closeBtn.className = 'wizard-bg-close-button';
     closeBtn.textContent = '← Назад';
     closeBtn.style.cssText = `
         left: ${(10 * scaleX) + offsetX}px;
         top: ${10 * scaleY}px;
-        width: ${200 * scaleX}px;
-        height: ${70 * scaleY}px;
-        font-size: ${28 * Math.min(scaleX, scaleY)}px;
+        width: ${160 * scaleX}px;
+        height: ${56 * scaleY}px;
+        font-size: ${22 * Math.min(scaleX, scaleY)}px;
     `;
     closeBtn.onclick = closeWizardDetailScreen;
     overlay.appendChild(closeBtn);
