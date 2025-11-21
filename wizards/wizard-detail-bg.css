@@ -43,9 +43,35 @@
 }
 
 /* ========================================
-   КНОПКА ЗАКРЫТИЯ
+   КНОПКА ЗАКРЫТИЯ (фиксированная в правом верхнем углу)
    ======================================== */
 
+.wizard-bg-close-button-fixed {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid #7289da;
+    color: #7289da;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 10001;
+    white-space: nowrap;
+    padding: 10px 20px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.wizard-bg-close-button-fixed:hover {
+    background: #7289da;
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(114, 137, 218, 0.5);
+}
+
+/* Старый класс оставляем для совместимости */
 .wizard-bg-close-button {
     position: absolute;
     background: rgba(0, 0, 0, 0.8);

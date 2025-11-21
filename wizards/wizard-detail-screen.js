@@ -581,6 +581,8 @@ function renderWizardDetailScreenWithBackground(wizardIndex) {
         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
             <img class="wizard-bg-image" id="wizard-bg-image" src="${imagePath}" alt="Окно мага">
             <div class="wizard-bg-overlay-container" id="wizard-ui-overlay"></div>
+            <!-- Кнопка закрытия вне overlay, всегда в правом верхнем углу экрана -->
+            <button class="wizard-bg-close-button-fixed" onclick="closeWizardDetailScreen()">← Назад</button>
         </div>
     `;
 
@@ -775,19 +777,6 @@ function setupWizardUI(wizardIndex, wizardStats) {
 
     // Оригинальные координаты для 768x512 (из первой версии)
     // Применяем масштабирование ТОЧНО КАК У ГОРОДА: x = (originalX * scaleX) + offsetX, y = originalY * scaleY
-
-    // === КНОПКА ЗАКРЫТИЯ (верхний правый угол: 10px от верха, 10px от правого края) ===
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'wizard-bg-close-button';
-    closeBtn.textContent = '← Назад';
-    closeBtn.style.cssText = `
-        top: ${10 * scaleY}px;
-        right: ${10 * scaleX}px;
-        padding: ${8 * Math.min(scaleX, scaleY)}px ${16 * Math.min(scaleX, scaleY)}px;
-        font-size: ${14 * Math.min(scaleX, scaleY)}px;
-    `;
-    closeBtn.onclick = closeWizardDetailScreen;
-    overlay.appendChild(closeBtn);
 
     // === ИМЯ МАГА (left: 236px, top: 134px, width: 437px, height: 41px) ===
     const nameDiv = document.createElement('div');
