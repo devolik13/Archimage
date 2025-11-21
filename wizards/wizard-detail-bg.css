@@ -71,10 +71,10 @@
     box-shadow: 0 6px 12px rgba(114, 137, 218, 0.5);
 }
 
-/* Старый класс оставляем для совместимости */
+/* Кнопка закрытия внутри overlay (адаптируется с координатами) */
 .wizard-bg-close-button {
     position: absolute;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.9);
     border: 2px solid #7289da;
     color: #7289da;
     border-radius: 8px;
@@ -83,12 +83,17 @@
     transition: all 0.3s;
     z-index: 10;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 .wizard-bg-close-button:hover {
     background: #7289da;
     color: white;
     transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(114, 137, 218, 0.4);
 }
 
 /* ========================================
