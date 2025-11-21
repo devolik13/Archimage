@@ -255,7 +255,7 @@ function showSpellSelectionModal() {
         background: rgba(0, 0, 0, 0.8);
         padding: 15px;
         border-radius: 12px;
-        z-index: 1000;
+        z-index: 10001;
     `;
     const overlay = document.createElement('div');
     overlay.style.cssText = `
@@ -265,7 +265,7 @@ function showSpellSelectionModal() {
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
+        z-index: 10000;
     `;
     overlay.onclick = closeCurrentModal;
     document.body.appendChild(overlay);
