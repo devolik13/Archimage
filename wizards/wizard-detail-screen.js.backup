@@ -594,8 +594,8 @@ function renderWizardDetailScreenWithBackground(wizardIndex) {
 }
 
 // Расчет всех характеристик мага (вынесено в отдельную функцию)
-// Расчет всех характеристик мага (вынесено в отдельную функцию)
 function calculateWizardStats(wizardData) {
+
     // Рассчитываем сопротивления
     if (typeof window.getWizardResistances === 'function') {
         wizardData.magicResistance = window.getWizardResistances(wizardData);
@@ -643,6 +643,7 @@ function calculateWizardStats(wizardData) {
 
     // Расчет характеристик
     const baseHP = wizardData.original_max_hp || 100;
+    const towerLevel = window.getBuildingLevel ? window.getBuildingLevel('wizard_tower') : 1;
     const healthMultiplier = window.applyWizardTowerHealthBonus ? window.applyWizardTowerHealthBonus() : 1.0;
     const healthBonusPercent = Math.round((healthMultiplier - 1) * 100);
 
@@ -666,229 +667,54 @@ function calculateWizardStats(wizardData) {
     const expToNext = wizardData.exp_to_next || 50;
     const expPercent = (exp / expToNext) * 100;
 
-    return {
-        level, exp, expToNext, expPercent,
-        actualMaxHP, actualMaxArmor,
-        healthBonusHTML: [
-            levelBonusPercent > 0 ? `+${levelBonusPercent}% ур.` : '',
-            healthBonusPercent > 0 ? `+${healthBonusPercent}% 🏰` : '',
-            blessingHealthPercent > 0 ? `+${blessingHealthPercent}% ✨` : ''
-        ].filter(b => b).join(' '),
-        armorBonusHTML: blessingArmorBonus > 0 ? `+${blessingArmorBonus} ✨` : '',
-        damageBonusHTML: [
-            towerDamageBonusPercent > 0 ? `🏰 +${towerDamageBonusPercent}%` : '',
-            blessingDamageBonusPercent > 0 ? `✨ +${blessingDamageBonusPercent}%` : ''
-        ].filter(b => b).join(' ') || 'Базовый',
-        totalDamageBonusPercent,
-        totalDamageMultiplier
-    };
-}
-
-// Создание UI с масштабированием (паттерн из library_ui.js)
-function setupWizardUI(wizardIndex, wizardStats) {
-    const wizardData = userData.wizards[wizardIndex];
-    if (!wizardData) return;
-
-    const img = document.getElementById('wizard-bg-image');
-    const overlay = document.getElementById('wizard-ui-overlay');
-    if (!img || !overlay) return;
-
-    // Оригинальный размер фона 768x512
-    const originalWidth = 768;
-    const originalHeight = 512;
-
-    // Реальные размеры после масштабирования
-    const currentWidth = img.offsetWidth;
-    const currentHeight = img.offsetHeight;
-
-    // Коэффициенты масштабирования
-    const scaleX = currentWidth / originalWidth;
-    const scaleY = currentHeight / originalHeight;
-
-    // Устанавливаем размеры контейнера
-    overlay.style.width = currentWidth + 'px';
-    overlay.style.height = currentHeight + 'px';
-    overlay.innerHTML = '';
-
-    // Координаты элементов для оригинального размера 768x512
-    // Вычислены вручную под дизайн фона
-
-    // === КНОПКА ЗАКРЫТИЯ (верхний правый угол) ===
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'wizard-bg-close-button';
-    closeBtn.textContent = '← Назад';
-    closeBtn.style.cssText = `
-        top: ${10 * scaleY}px;
-        right: ${10 * scaleX}px;
-        padding: ${8 * Math.min(scaleX, scaleY)}px ${16 * Math.min(scaleX, scaleY)}px;
-        font-size: ${14 * Math.min(scaleX, scaleY)}px;
-    `;
-    closeBtn.onclick = closeWizardDetailScreen;
-    overlay.appendChild(closeBtn);
-
-    // === ИМЯ МАГА (по центру вверху) ===
-    const nameDiv = document.createElement('div');
-    nameDiv.className = 'wizard-bg-name';
-    nameDiv.style.cssText = `
-        top: ${20 * scaleY}px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: ${22 * Math.min(scaleX, scaleY)}px;
-    `;
-    nameDiv.innerHTML = `
-        <span>${wizardData.name}</span>
-        <button class="wizard-bg-name-edit" onclick="startRenameWizard(${wizardIndex})" title="Переименовать" style="font-size: ${18 * Math.min(scaleX, scaleY)}px;">
-            ✏️
-        </button>
-    `;
-    overlay.appendChild(nameDiv);
-
-    // === ЛЕВАЯ КОЛОНКА ===
-    const leftX = 30;
-    const leftY = 80;
-    const leftWidth = 180;
-
-    // Уровень
-    const levelDiv = document.createElement('div');
-    levelDiv.className = 'wizard-bg-level';
-    levelDiv.textContent = `Уровень ${wizardStats.level}`;
-    levelDiv.style.cssText = `
-        left: ${leftX * scaleX}px;
-        top: ${leftY * scaleY}px;
-        width: ${leftWidth * scaleX}px;
-        height: ${40 * scaleY}px;
-        font-size: ${16 * Math.min(scaleX, scaleY)}px;
-    `;
-    overlay.appendChild(levelDiv);
-
-    // Полоса опыта
-    const expBar = document.createElement('div');
-    expBar.className = 'wizard-bg-exp-bar';
-    expBar.style.cssText = `
-        left: ${leftX * scaleX}px;
-        top: ${(leftY + 50) * scaleY}px;
-        width: ${leftWidth * scaleX}px;
-        height: ${30 * scaleY}px;
-    `;
-    expBar.innerHTML = `
-        <div class="wizard-bg-exp-text" style="font-size: ${11 * Math.min(scaleX, scaleY)}px;">${wizardStats.exp} / ${wizardStats.expToNext}</div>
-        <div class="wizard-bg-exp-progress">
-            <div class="wizard-bg-exp-fill" style="width: ${wizardStats.expPercent}%"></div>
-        </div>
-    `;
-    overlay.appendChild(expBar);
-
-    // Кнопка сопротивлений
-    const resistBtn = document.createElement('button');
-    resistBtn.className = 'wizard-bg-button';
-    resistBtn.textContent = '🛡️ Сопротивления';
-    resistBtn.style.cssText = `
-        left: ${leftX * scaleX}px;
-        top: ${(leftY + 90) * scaleY}px;
-        width: ${leftWidth * scaleX}px;
-        height: ${45 * scaleY}px;
-        font-size: ${13 * Math.min(scaleX, scaleY)}px;
-    `;
-    resistBtn.onclick = () => showResistancesModal(wizardIndex);
-    overlay.appendChild(resistBtn);
-
-    // Кнопка инвентаря
-    const invBtn = document.createElement('button');
-    invBtn.className = 'wizard-bg-button';
-    invBtn.textContent = '🎒 Инвентарь';
-    invBtn.style.cssText = `
-        left: ${leftX * scaleX}px;
-        top: ${(leftY + 145) * scaleY}px;
-        width: ${leftWidth * scaleX}px;
-        height: ${45 * scaleY}px;
-        font-size: ${13 * Math.min(scaleX, scaleY)}px;
-    `;
-    invBtn.onclick = () => showInventoryModalCompact(wizardIndex);
-    overlay.appendChild(invBtn);
-
-    // === СЕТКА СТАТОВ 3x2 (правая часть) ===
-    const gridStartX = 230;
-    const gridStartY = 80;
-    const cellWidth = 170;
-    const cellHeight = 105;
-    const gapX = 10;
-    const gapY = 10;
-
-    const cells = [
-        // РЯД 0: Здоровье, Броня, Урон
-        {
-            type: 'health',
-            col: 0, row: 0,
-            label: 'Здоровье',
-            value: wizardStats.actualMaxHP,
-            bonus: wizardStats.healthBonusHTML
-        },
-        {
-            type: 'armor',
-            col: 1, row: 0,
-            label: 'Броня',
-            value: wizardStats.actualMaxArmor,
-            bonus: wizardStats.armorBonusHTML
-        },
-        {
-            type: 'damage',
-            col: 2, row: 0,
-            label: 'Урон',
-            value: `+${wizardStats.totalDamageBonusPercent}%`,
-            bonus: wizardStats.damageBonusHTML
-        },
-        // РЯД 1: Заклинания (3 слота)
-        ...createSpellCells(wizardData, wizardIndex, wizardStats.totalDamageMultiplier, wizardStats.totalDamageBonusPercent)
-    ];
-
-    cells.forEach(cell => {
-        const cellDiv = document.createElement('div');
-        cellDiv.className = `wizard-bg-cell ${cell.type}`;
-        if (cell.extraClass) cellDiv.classList.add(cell.extraClass);
-
-        const x = gridStartX + (cellWidth + gapX) * cell.col;
-        const y = gridStartY + (cellHeight + gapY) * cell.row;
-
-        cellDiv.style.cssText = `
-            left: ${x * scaleX}px;
-            top: ${y * scaleY}px;
-            width: ${cellWidth * scaleX}px;
-            height: ${cellHeight * scaleY}px;
-        `;
-
-        // Создаем контент ячейки
-        if (cell.label) {
-            // Ячейка стата
-            const fontSize = Math.max(10, 14 * Math.min(scaleX, scaleY));
-            cellDiv.innerHTML = `
-                <div class="wizard-bg-cell-label" style="font-size: ${fontSize * 0.65}px;">${cell.label}</div>
-                <div class="wizard-bg-cell-value" style="font-size: ${fontSize * 1.4}px;">${cell.value}</div>
-                ${cell.bonus ? `<div class="wizard-bg-cell-bonus" style="font-size: ${fontSize * 0.6}px;">${cell.bonus}</div>` : ''}
-            `;
-        } else {
-            // Ячейка заклинания
-            const fontSize = Math.max(10, 14 * Math.min(scaleX, scaleY));
-            cellDiv.innerHTML = cell.html.replace(/class="wizard-bg-spell-name"/g, `class="wizard-bg-spell-name" style="font-size: ${fontSize * 0.8}px;"`).replace(/class="wizard-bg-spell-info"/g, `class="wizard-bg-spell-info" style="font-size: ${fontSize * 0.65}px;"`).replace(/class="wizard-bg-cell-value"/g, `class="wizard-bg-cell-value" style="font-size: ${fontSize * 2}px;"`);
-        }
-
-        if (cell.onclick) cellDiv.onclick = cell.onclick;
-
-        overlay.appendChild(cellDiv);
-    });
-
-    console.log('✅ UI окна мага настроено с масштабом', {scaleX, scaleY});
-}
-
-// Создание ячеек заклинаний
-function createSpellCells(wizardData, wizardIndex, totalDamageMultiplier, totalDamageBonusPercent) {
+    // Получаем функции
     const findSpellInUserData = window.findSpellInUserData || (() => null);
     const MAX_SPELL_SLOTS = 2;
-    const cells = [];
 
+    // Формируем HTML для сетки 2x3
+    let gridHTML = '';
+
+    // РЯД 0: Здоровье, Броня, Урон
+    // Здоровье
+    const healthBonusHTML = [
+        levelBonusPercent > 0 ? `+${levelBonusPercent}% ур.` : '',
+        healthBonusPercent > 0 ? `+${healthBonusPercent}% 🏰` : '',
+        blessingHealthPercent > 0 ? `+${blessingHealthPercent}% ✨` : ''
+    ].filter(b => b).join(' ');
+
+    gridHTML += `
+        <div class="wizard-bg-cell health">
+            <div class="wizard-bg-cell-label">Здоровье</div>
+            <div class="wizard-bg-cell-value">${actualMaxHP}</div>
+            ${healthBonusHTML ? `<div class="wizard-bg-cell-bonus">${healthBonusHTML}</div>` : ''}
+        </div>
+    `;
+
+    // Броня
+    gridHTML += `
+        <div class="wizard-bg-cell armor">
+            <div class="wizard-bg-cell-label">Броня</div>
+            <div class="wizard-bg-cell-value">${actualMaxArmor}</div>
+            ${blessingArmorBonus > 0 ? `<div class="wizard-bg-cell-bonus">+${blessingArmorBonus} ✨</div>` : ''}
+        </div>
+    `;
+
+    // Урон
+    const damageBonusHTML = [
+        towerDamageBonusPercent > 0 ? `🏰 +${towerDamageBonusPercent}%` : '',
+        blessingDamageBonusPercent > 0 ? `✨ +${blessingDamageBonusPercent}%` : ''
+    ].filter(b => b).join(' ') || 'Базовый';
+
+    gridHTML += `
+        <div class="wizard-bg-cell damage">
+            <div class="wizard-bg-cell-label">Урон</div>
+            <div class="wizard-bg-cell-value">+${totalDamageBonusPercent}%</div>
+            <div class="wizard-bg-cell-bonus">${damageBonusHTML}</div>
+        </div>
+    `;
+
+    // РЯД 1: Заклинания
     for (let i = 0; i < 3; i++) {
-        const col = i;
-        const row = 1;
-
         if (i < MAX_SPELL_SLOTS) {
             const spellId = wizardData.spells?.[i] || null;
 
@@ -901,54 +727,104 @@ function createSpellCells(wizardData, wizardIndex, totalDamageMultiplier, totalD
                         `${baseDamage} → ${finalDamage}💥` :
                         `${finalDamage}💥`;
 
-                    cells.push({
-                        type: 'spell',
-                        col, row,
-                        html: `
+                    gridHTML += `
+                        <div class="wizard-bg-cell spell" onclick="openSpellSelection(${wizardIndex}, ${i})">
                             <div class="wizard-bg-spell-name">${spellData.name}</div>
                             <div class="wizard-bg-spell-info">Ур.${spellData.level} • ${damageDisplay}</div>
-                        `,
-                        onclick: () => openSpellSelection(wizardIndex, i)
-                    });
+                        </div>
+                    `;
                 } else {
-                    cells.push({
-                        type: 'spell',
-                        col, row,
-                        html: `<div class="wizard-bg-spell-name">${spellId}</div>`,
-                        onclick: () => openSpellSelection(wizardIndex, i)
-                    });
+                    gridHTML += `
+                        <div class="wizard-bg-cell spell" onclick="openSpellSelection(${wizardIndex}, ${i})">
+                            <div class="wizard-bg-spell-name">${spellId}</div>
+                        </div>
+                    `;
                 }
             } else {
-                cells.push({
-                    type: 'spell',
-                    extraClass: 'empty',
-                    col, row,
-                    html: `<div class="wizard-bg-spell-name">➕ Выбрать</div>`,
-                    onclick: () => openSpellSelection(wizardIndex, i)
-                });
+                gridHTML += `
+                    <div class="wizard-bg-cell spell empty" onclick="openSpellSelection(${wizardIndex}, ${i})">
+                        <div class="wizard-bg-spell-name">➕ Выбрать</div>
+                    </div>
+                `;
             }
         } else {
-            cells.push({
-                type: 'spell',
-                extraClass: 'locked',
-                col, row,
-                html: `
+            gridHTML += `
+                <div class="wizard-bg-cell spell locked">
                     <div class="wizard-bg-cell-value">🔒</div>
                     <div class="wizard-bg-spell-info">Закрыто</div>
-                `
-            });
+                </div>
+            `;
         }
     }
 
-    return cells;
+    // Создаем контейнер с фоном
+    const faction = wizardData.faction || 'fire';
+    const screenHTML = `
+        <div class="wizard-bg-overlay" onclick="closeWizardDetailScreen()"></div>
+        <div class="wizard-bg-container ${faction}">
+            <!-- Кнопка закрытия -->
+            <button class="wizard-bg-close-button" onclick="closeWizardDetailScreen()">
+                ← Назад
+            </button>
+
+            <!-- Имя мага -->
+            <div class="wizard-bg-name">
+                <span>${wizardData.name}</span>
+                <button class="wizard-bg-name-edit" onclick="startRenameWizard(${wizardIndex})" title="Переименовать">
+                    ✏️
+                </button>
+            </div>
+
+            <!-- Адаптивная сетка: левая колонка + правая сетка -->
+            <div class="wizard-bg-content-wrapper">
+                <!-- Левая колонка: уровень, опыт, кнопки -->
+                <div class="wizard-bg-left-column">
+                    <div class="wizard-bg-level">
+                        Уровень ${level}
+                    </div>
+
+                    <div class="wizard-bg-exp-bar">
+                        <div class="wizard-bg-exp-text">${exp} / ${expToNext}</div>
+                        <div class="wizard-bg-exp-progress">
+                            <div class="wizard-bg-exp-fill" style="width: ${expPercent}%"></div>
+                        </div>
+                    </div>
+
+                    <button class="wizard-bg-resistance-button" onclick="showResistancesModal(${wizardIndex})">
+                        🛡️ Сопротивления
+                    </button>
+
+                    <button class="wizard-bg-inventory-button" onclick="showInventoryModalCompact(${wizardIndex})">
+                        🎒 Инвентарь
+                    </button>
+                </div>
+
+                <!-- Правая колонка: сетка 3x2 (или 2x3 на мобильных) -->
+                <div class="wizard-bg-stats-grid">
+                    ${gridHTML}
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Создаем или обновляем экран
+    let screen = document.getElementById('wizard-detail-screen');
+    if (!screen) {
+        screen = document.createElement('div');
+        screen.id = 'wizard-detail-screen';
+        document.body.appendChild(screen);
+    }
+
+    screen.innerHTML = screenHTML;
+    screen.classList.add('active', 'with-background');
+
+    console.log('✅ Окно мага с фоном отрендерено');
 }
 
 // Экспорт функций
 window.showWizardDetailScreen = showWizardDetailScreen;
 window.closeWizardDetailScreen = closeWizardDetailScreen;
 window.renderWizardDetailScreenWithBackground = renderWizardDetailScreenWithBackground;
-window.calculateWizardStats = calculateWizardStats;
-window.setupWizardUI = setupWizardUI;
 window.updateWizardSpellSlots = updateWizardSpellSlots;
 window.showResistancesModal = showResistancesModal;
 window.closeResistancesModal = closeResistancesModal;
