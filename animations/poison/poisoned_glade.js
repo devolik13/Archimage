@@ -8,6 +8,8 @@ console.log('✅ poisoned_glade.js загружен');
     function playPoisonedGladeAnimation(params) {
         const { targetCol, targetRow, onComplete } = params;
 
+        console.log('🌿 Ядовитая поляна: вызов анимации на', targetCol, targetRow);
+
         // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
         if (window.fastSimulation) {
             console.log('⚡ Быстрая симуляция: пропуск анимации Ядовитая поляна');
@@ -17,33 +19,45 @@ console.log('✅ poisoned_glade.js загружен');
 
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
-        
+
+        console.log('🌿 Контейнеры:', { effectsContainer: !!effectsContainer, gridCells: !!gridCells });
+
         if (!effectsContainer || !gridCells) {
-            console.warn('Не могу создать поляну - нет контейнера');
+            console.warn('🌿 ❌ Не могу создать поляну - нет контейнера');
             if (onComplete) onComplete();
             return;
         }
-        
+
         const targetCell = gridCells[targetCol]?.[targetRow];
-        
+
+        console.log('🌿 Target cell:', targetCell ? 'найдена' : 'НЕ найдена');
+
         if (!targetCell) {
-            console.warn('Не найдена клетка для поляны');
+            console.warn('🌿 ❌ Не найдена клетка для поляны');
             if (onComplete) onComplete();
             return;
         }
-        
+
         const centerX = targetCell.x + targetCell.width / 2;
         const centerY = targetCell.y + targetCell.height / 2;
-        
+
+        console.log('🌿 Позиция:', centerX, centerY);
+
         // Загружаем текстуру спрайтшита
         const gladeTexturePath = 'images/spells/poison/poisoned_glade/glade_spritesheet.png';
-        
+
+        console.log('🌿 Загрузка текстуры:', gladeTexturePath);
+
         PIXI.Assets.load(gladeTexturePath).then(texture => {
+            console.log('🌿 Текстура загружена:', { valid: texture?.valid, width: texture?.width, height: texture?.height });
+
             if (!texture || !texture.valid) {
-                console.warn('Не удалось загрузить текстуру поляны');
+                console.warn('🌿 ❌ Не удалось загрузить текстуру поляны, fallback');
                 createFallbackGlade();
                 return;
             }
+
+            console.log('🌿 ✅ Текстура валидна, создаем анимацию');
             
             // Создаём кадры из спрайтшита 3×3 (768×768)
             const frameWidth = 256; // 768 / 3
@@ -77,26 +91,32 @@ console.log('✅ poisoned_glade.js загружен');
                 );
                 frames.push(new PIXI.Texture(texture.baseTexture, frame));
             });
-            
+
+            console.log('🌿 Создано кадров:', frames.length);
+
             // Создаём анимированный спрайт
             const gladeSprite = new PIXI.AnimatedSprite(frames);
             gladeSprite.x = centerX;
             gladeSprite.y = centerY;
             gladeSprite.anchor.set(0.5);
-            
+
             // Масштабируем до 80% клетки
             const targetSize = Math.min(targetCell.width, targetCell.height) * 0.8;
             const scale = targetSize / frameWidth;
             gladeSprite.scale.set(scale);
-            
+
+            console.log('🌿 Спрайт создан:', { x: gladeSprite.x, y: gladeSprite.y, scale: scale });
+
             // Настройки анимации
             gladeSprite.animationSpeed = 0.15; // ~80ms на кадр при 60 FPS
             gladeSprite.loop = false; // Один раз
-            
+
             effectsContainer.addChild(gladeSprite);
-            
+            console.log('🌿 Спрайт добавлен в контейнер');
+
             // Событие окончания анимации
             gladeSprite.onComplete = () => {
+                console.log('🌿 Анимация завершена');
                 // Оставляем последний кадр на короткое время
                 setTimeout(() => {
                     if (gladeSprite.parent) {
@@ -106,9 +126,11 @@ console.log('✅ poisoned_glade.js загружен');
                     if (onComplete) onComplete();
                 }, 200); // Задержка перед исчезновением
             };
-            
+
+            console.log('🌿 Запуск анимации (play)');
             gladeSprite.play();
             activeGlades.push(gladeSprite);
+            console.log('🌿 ✅ Анимация поляны запущена успешно');
             
         }).catch(err => {
             console.warn('Ошибка загрузки текстуры поляны:', err);
@@ -117,6 +139,7 @@ console.log('✅ poisoned_glade.js загружен');
         
         // Fallback - простая графика
         function createFallbackGlade() {
+            console.log('🌿 🔄 Запуск fallback анимации');
             const glade = new PIXI.Graphics();
             
             // Рисуем ядовитое пятно
@@ -139,7 +162,7 @@ console.log('✅ poisoned_glade.js загружен');
             const duration = 600;
             
             const animate = () => {
-                if (!window.pixiAnimUtils.isValid(toxicCloud)) return;
+                if (!window.pixiAnimUtils.isValid(glade)) return;
 
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
