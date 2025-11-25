@@ -1,0 +1,158 @@
+/* Дополнительные стили для прозрачности окон арены */
+
+/* Основные контейнеры в арене - делаем их прозрачными */
+#arena-ui-overlay > div {
+    background: rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+}
+
+/* Заголовки */
+#arena-ui-overlay h3,
+#arena-ui-overlay h4 {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.4);
+    padding: 8px 15px;
+    border-radius: 6px;
+    display: inline-block;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+
+/* Все внутренние блоки */
+#arena-ui-overlay > div > div {
+    background: transparent !important;
+}
+
+/* Карточки противников и игроков */
+#arena-ui-overlay .opponent-card,
+#arena-ui-overlay .player-card,
+#arena-ui-overlay > div > div > div[style*="background"] {
+    background: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(3px) !important;
+    -webkit-backdrop-filter: blur(3px) !important;
+    border: 2px solid rgba(114, 137, 218, 0.5) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Hover эффекты */
+#arena-ui-overlay > div > div > div[style*="background"]:hover {
+    background: rgba(114, 137, 218, 0.2) !important;
+    transform: scale(1.02);
+    border-color: rgba(114, 137, 218, 0.8) !important;
+}
+
+/* Кнопки */
+#arena-ui-overlay button {
+    background: rgba(114, 137, 218, 0.3) !important;
+    backdrop-filter: blur(3px) !important;
+    -webkit-backdrop-filter: blur(3px) !important;
+    border: 1px solid rgba(114, 137, 218, 0.6) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+    transition: all 0.2s;
+}
+
+#arena-ui-overlay button:hover {
+    background: rgba(114, 137, 218, 0.5) !important;
+    transform: scale(1.05);
+    border-color: #8ba0ff !important;
+}
+
+/* Кнопка назад */
+#arena-ui-overlay button[onclick*="showArenaMainMenu"] {
+    background: rgba(255, 0, 0, 0.2) !important;
+    border-color: rgba(255, 107, 107, 0.6) !important;
+}
+
+#arena-ui-overlay button[onclick*="showArenaMainMenu"]:hover {
+    background: rgba(255, 0, 0, 0.3) !important;
+    border-color: #ff6b6b !important;
+}
+
+/* Позиции расстановки войск */
+.formation-grid > div {
+    background: rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(2px) !important;
+    -webkit-backdrop-filter: blur(2px) !important;
+    border: 2px solid rgba(114, 137, 218, 0.5) !important;
+}
+
+/* Карточки магов */
+.wizard-card {
+    background: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(2px) !important;
+    -webkit-backdrop-filter: blur(2px) !important;
+}
+
+/* Топ игроков - особые цвета для медалистов */
+#arena-ui-overlay .top-1 {
+    background: rgba(255, 215, 0, 0.1) !important;
+    border-color: rgba(255, 215, 0, 0.6) !important;
+}
+
+#arena-ui-overlay .top-2 {
+    background: rgba(192, 192, 192, 0.1) !important;
+    border-color: rgba(192, 192, 192, 0.6) !important;
+}
+
+#arena-ui-overlay .top-3 {
+    background: rgba(205, 127, 50, 0.1) !important;
+    border-color: rgba(205, 127, 50, 0.6) !important;
+}
+
+/* Блок статистики игрока */
+#arena-ui-overlay .player-stats {
+    background: rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(3px) !important;
+    -webkit-backdrop-filter: blur(3px) !important;
+}
+
+/* Анимация появления */
+@keyframes fadeInBlur {
+    from {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+    to {
+        opacity: 1;
+        backdrop-filter: blur(5px);
+    }
+}
+
+#arena-ui-overlay > div {
+    animation: fadeInBlur 0.3s ease;
+}
+
+/* Текст на прозрачном фоне должен быть контрастным */
+#arena-ui-overlay {
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Скроллбар для прозрачных контейнеров */
+#arena-ui-overlay > div::-webkit-scrollbar {
+    width: 8px;
+}
+
+#arena-ui-overlay > div::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+#arena-ui-overlay > div::-webkit-scrollbar-thumb {
+    background: rgba(114, 137, 218, 0.5);
+    border-radius: 4px;
+}
+
+#arena-ui-overlay > div::-webkit-scrollbar-thumb:hover {
+    background: rgba(114, 137, 218, 0.7);
+}
+
+/* Важно: убираем любые непрозрачные фоны */
+#arena-ui-overlay * {
+    background-color: transparent !important;
+}
+
+/* Но сохраняем background с rgba */
+#arena-ui-overlay [style*="rgba"] {
+    /* Эти элементы сохраняют свой полупрозрачный фон */
+}

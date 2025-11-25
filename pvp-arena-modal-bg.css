@@ -1,0 +1,93 @@
+/* pvp-arena-modal-bg.css - Стили для PvP арены с фоновым изображением */
+
+/* Экран арены */
+.pvp-arena-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.pvp-arena-screen.active {
+    opacity: 1;
+}
+
+/* Фоновое изображение арены */
+.arena-bg-image {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    image-rendering: crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Оверлей для UI элементов */
+.arena-ui-overlay {
+    position: absolute;
+    pointer-events: none;
+}
+
+.arena-ui-overlay > * {
+    pointer-events: auto;
+}
+
+/* Анимация появления */
+@keyframes arenaFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.arena-bg-image {
+    animation: arenaFadeIn 0.3s ease;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+    .arena-bg-image {
+        max-width: 95vw;
+        max-height: 95vh;
+    }
+}
+
+@media (max-height: 600px) {
+    .arena-bg-image {
+        max-width: 95vw;
+        max-height: 95vh;
+    }
+}
+
+/* Предотвращаем выделение текста на кнопках */
+.arena-ui-overlay button {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Убираем outline при фокусе */
+.arena-ui-overlay button:focus {
+    outline: none;
+}
+
+/* Эффект нажатия на кнопку */
+.arena-ui-overlay button:active {
+    transform: scale(0.95) !important;
+}

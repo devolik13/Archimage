@@ -193,7 +193,7 @@ function renderWizardDetailScreen(wizardIndex) {
                     ← Назад
                 </button>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 18px; font-weight: bold; color: #7289da;">
+                    <span id="wizard-name-display" style="font-size: 18px; font-weight: bold; color: #7289da;">
                         🧙‍♂️ ${wizardData.name}
                     </span>
                     <button style="background: transparent; border: none; color: #7289da; font-size: 16px; cursor: pointer;" 
@@ -801,7 +801,7 @@ function setupWizardUI(wizardIndex, wizardStats) {
         font-size: ${22 * Math.min(scaleX, scaleY)}px;
     `;
     nameDiv.innerHTML = `
-        <span>${wizardData.name}</span>
+        <span id="wizard-name-display">${wizardData.name}</span>
         <button class="wizard-bg-name-edit" onclick="startRenameWizard(${wizardIndex})" title="Переименовать" style="font-size: ${18 * Math.min(scaleX, scaleY)}px;">
             ✏️
         </button>

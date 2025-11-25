@@ -42,6 +42,15 @@ console.log('✅ poisoned_glade.js загружен');
         const centerY = targetCell.y + targetCell.height / 2;
 
         console.log('🌿 Позиция:', centerX, centerY);
+        console.log('🌿 🔍 Размеры targetCell:', { 
+            x: targetCell.x, 
+            y: targetCell.y, 
+            width: targetCell.width, 
+            height: targetCell.height,
+            cellScale: targetCell.cellScale,
+            hasScale: 'cellScale' in targetCell,
+            allKeys: Object.keys(targetCell)
+        });
 
         // Загружаем текстуру спрайтшита
         const gladeTexturePath = 'images/spells/poison/poisoned_glade/glade_spritesheet.png';
@@ -100,12 +109,27 @@ console.log('✅ poisoned_glade.js загружен');
             gladeSprite.y = centerY;
             gladeSprite.anchor.set(0.5);
 
-            // Масштабируем до 80% клетки
-            const targetSize = Math.min(targetCell.width, targetCell.height) * 0.8;
-            const scale = targetSize / frameWidth;
+            // Используем cellScale как в других эффектах (foul-cloud)
+            const cellScale = targetCell.cellScale || 0.3; // Fallback на 0.3 если нет
+            const scale = (cellScale * 0.8) / 2.5; // Уменьшено в 2.5 раза
+            
+            console.log('🌿 🔍 Отладка масштаба:', {
+                hasCellScale: !!targetCell.cellScale,
+                cellScale: cellScale,
+                finalScale: scale,
+                frameWidth: frameWidth,
+                frameHeight: frameHeight
+            });
+
             gladeSprite.scale.set(scale);
 
-            console.log('🌿 Спрайт создан:', { x: gladeSprite.x, y: gladeSprite.y, scale: scale });
+            console.log('🌿 Спрайт создан:', { 
+                x: gladeSprite.x, 
+                y: gladeSprite.y, 
+                scale: scale,
+                scaleX: gladeSprite.scale.x,
+                scaleY: gladeSprite.scale.y
+            });
 
             // Настройки анимации
             gladeSprite.animationSpeed = 0.15; // ~80ms на кадр при 60 FPS

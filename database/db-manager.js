@@ -119,6 +119,7 @@ class DatabaseManager {
                 settings: playerData.settings || { sound: true, language: 'ru', battle_speed: 'normal' },
                 welcome_shown: playerData.welcome_shown || false,
                 daily_login: playerData.daily_login || { day: 1, last_login_date: null, last_reward_date: null, total_logins: 0 }, // НОВОЕ: Ежедневные награды
+                battle_energy: playerData.battle_energy || { current: 12, max: 12, last_regen: Date.now() }, // НОВОЕ: Энергия боев
                 last_login: new Date().toISOString() // Обновляем время последнего входа
             };
 
@@ -135,7 +136,8 @@ class DatabaseManager {
                 spells: Object.keys(updateData.spells).length,
                 buildings: Object.keys(updateData.buildings).length - 1, // -1 для _active_constructions
                 constructions: (updateData.buildings._active_constructions || []).length,
-                time_currency: updateData.time_currency
+                time_currency: updateData.time_currency,
+                battle_energy: updateData.battle_energy ? `${updateData.battle_energy.current}/${updateData.battle_energy.max}` : "не задано"
             });
             return true;
 
@@ -290,7 +292,8 @@ class DatabaseManager {
                     pve_progress: window.userData.pve_progress,
                     settings: window.userData.settings,
                     welcome_shown: window.userData.welcome_shown,
-                    daily_login: window.userData.daily_login
+                    daily_login: window.userData.daily_login,
+                    battle_energy: window.userData.battle_energy
                 };
                 await this.savePlayer(playerData);
             }
@@ -328,7 +331,8 @@ class DatabaseManager {
                     pve_progress: window.userData.pve_progress,
                     settings: window.userData.settings,
                     welcome_shown: window.userData.welcome_shown,
-                    daily_login: window.userData.daily_login
+                    daily_login: window.userData.daily_login,
+                    battle_energy: window.userData.battle_energy
                 };
                 await this.savePlayer(playerData);
             }

@@ -411,7 +411,7 @@ function startRenameWizard(wizardIndex) {
         background: rgba(0, 0, 0, 0.9);
         padding: 15px;
         border-radius: 12px;
-        z-index: 2000;
+        z-index: 10000;
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
     `;
     const renameOverlay = document.createElement('div');
@@ -422,7 +422,7 @@ function startRenameWizard(wizardIndex) {
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.7);
-        z-index: 1999;
+        z-index: 9999;
     `;
     document.body.appendChild(renameOverlay);
     document.body.appendChild(renameModal);
@@ -470,6 +470,15 @@ async function renameWizard(wizardIndex, newName) {
             nameDisplay.textContent = trimmedName;
         }
         updateWizardsList();
+        
+        // Обновляем окно мага если оно открыто
+        if (document.getElementById('wizard-detail-screen')) {
+            if (typeof renderWizardDetailScreen === 'function') {
+                renderWizardDetailScreen(wizardIndex);
+            } else if (typeof renderWizardDetailScreenWithBackground === 'function') {
+                renderWizardDetailScreenWithBackground(wizardIndex);
+            }
+        }
 
         // Сохраняем изменения через event-save-manager
         if (window.eventSaveManager) {
