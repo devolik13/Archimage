@@ -277,11 +277,11 @@ function showPlayerProfile() {
 
         container.innerHTML = `
             <!-- Заголовок: имя и уровень -->
-            <div style="text-align: center; margin-bottom: ${12 * scaleY}px;">
-                <div style="color: white; font-size: ${Math.max(18, 24 * scaleY)}px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+            <div style="text-align: center; margin-bottom: ${10 * scaleY}px;">
+                <div style="color: white; font-size: ${Math.max(22, 29 * scaleY)}px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
                     ${userData.username || 'Игрок'}
                 </div>
-                <div style="color: #ffa500; font-size: ${Math.max(14, 18 * scaleY)}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                <div style="color: #ffa500; font-size: ${Math.max(17, 22 * scaleY)}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
                     ⭐ Уровень ${level} • ${factionIcon} ${factionName}
                 </div>
             </div>
@@ -289,23 +289,23 @@ function showPlayerProfile() {
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: ${10 * scaleX}px;">
                 <!-- Левая колонка - Статистика боев -->
                 <div style="background: rgba(0, 0, 0, 0.5); padding: ${10 * scaleY}px; border-radius: 8px; backdrop-filter: blur(5px);">
-                    <h4 style="margin: 0 0 ${8 * scaleY}px 0; color: #7289da; font-size: ${Math.max(13, 16 * scaleY)}px;">⚔️ Статистика боев</h4>
-                    <div style="font-size: ${Math.max(12, 14 * scaleY)}px; line-height: 1.5;">
+                    <h4 style="margin: 0 0 ${6 * scaleY}px 0; color: #7289da; font-size: ${Math.max(16, 19 * scaleY)}px;">⚔️ Статистика боев</h4>
+                    <div style="font-size: ${Math.max(14, 17 * scaleY)}px; line-height: 1.4;">
                         <div>🎯 Рейтинг: <strong style="color: #ffa500;">${leagueInfo}</strong></div>
                         <div>📊 Боев: <strong>${totalBattles}</strong></div>
-                        <div>🏆 Побед: <strong style="color: #4CAF50;">${wins}</strong> / 💀 <strong style="color: #f44336;">${losses}</strong></div>
+                        <div>🏆 <strong style="color: #4CAF50;">${wins}</strong> / 💀 <strong style="color: #f44336;">${losses}</strong></div>
                         <div>📈 Винрейт: <strong>${winRate}%</strong></div>
                     </div>
                 </div>
 
                 <!-- Правая колонка - Прогресс -->
                 <div style="background: rgba(0, 0, 0, 0.5); padding: ${10 * scaleY}px; border-radius: 8px; backdrop-filter: blur(5px);">
-                    <h4 style="margin: 0 0 ${8 * scaleY}px 0; color: #7289da; font-size: ${Math.max(13, 16 * scaleY)}px;">📚 Прогресс</h4>
-                    <div style="font-size: ${Math.max(12, 14 * scaleY)}px; line-height: 1.5;">
+                    <h4 style="margin: 0 0 ${6 * scaleY}px 0; color: #7289da; font-size: ${Math.max(16, 19 * scaleY)}px;">📚 Прогресс</h4>
+                    <div style="font-size: ${Math.max(14, 17 * scaleY)}px; line-height: 1.4;">
                         <div>📖 Заклинания: <strong>${breakdown.spells}</strong></div>
                         <div>🏛️ Здания: <strong>${breakdown.buildings}</strong></div>
                         <div>🧙‍♂️ Маги: <strong>${breakdown.wizards}</strong></div>
-                        <div style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: ${6 * scaleY}px; padding-top: ${6 * scaleY}px;">
+                        <div style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: ${5 * scaleY}px; padding-top: ${5 * scaleY}px;">
                             📊 Всего: <strong style="color: #ffa500;">${level}</strong> очков
                         </div>
                     </div>
