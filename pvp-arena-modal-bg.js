@@ -402,16 +402,21 @@ function closePvPArenaModalBg() {
     if (screen) {
         screen.remove();
     }
-    
+
     // Восстанавливаем видимость города если нужно
     const cityView = document.getElementById('city-view');
     if (cityView) {
         cityView.style.visibility = 'visible';
     }
-    
+
     const bottomPanel = document.getElementById('bottom-control-panel');
     if (bottomPanel) {
         bottomPanel.style.visibility = 'visible';
+    }
+
+    // Пересоздаём аватар игрока
+    if (typeof window.createPlayerAvatarUI === 'function') {
+        window.createPlayerAvatarUI();
     }
 }
 

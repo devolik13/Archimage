@@ -643,6 +643,11 @@ function returnToCity() {
             } else if (typeof window.initCityViewSystem === 'function') {
                 window.initCityViewSystem();
             }
+
+            // Пересоздаём аватар игрока
+            if (typeof window.createPlayerAvatarUI === 'function') {
+                window.createPlayerAvatarUI();
+            }
         }, 100);
     }
 

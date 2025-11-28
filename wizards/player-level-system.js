@@ -149,8 +149,10 @@ function createPlayerAvatarUI() {
     console.log('✅ Аватар игрока добавлен');
 }
 
-// Показать профиль игрока
+// Показать профиль игрока с фоном как у башни магов
 function showPlayerProfile() {
+    console.log('👤 Открытие профиля игрока с фоном');
+
     const level = calculatePlayerLevel();
     const breakdown = getPointsBreakdown();
 
@@ -167,31 +169,237 @@ function showPlayerProfile() {
         leagueInfo = window.formatRating(rating);
     }
 
-    const modalContent = `
-        <div style="padding: 15px; max-width: 90vw; width: 600px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin: 0 0 15px 0; color: #7289da; text-align: center;">👤 Профиль игрока</h3>
+    // Определяем фракцию игрока для фона
+    const faction = window.userData?.faction || 'fire';
+    const imagePath = `assets/ui/window/tower_${faction}.webp`;
+
+    // Закрываем предыдущие модалки
+    if (typeof window.closeCurrentModal === 'function') {
+        window.closeCurrentModal();
+    }
+
+    // Удаляем старый экран если есть
+    const existingScreen = document.getElementById('player-profile-screen');
+    if (existingScreen) {
+        existingScreen.remove();
+    }
+
+    // Создаем экран с фоном
+    const screen = document.createElement('div');
+    screen.id = 'player-profile-screen';
+
+    screen.innerHTML = `
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <img class="profile-bg-image" id="profile-bg-image" src="${imagePath}" alt="Профиль" style="
+                max-width: 90vw;
+                max-height: 90vh;
+                object-fit: contain;
+            ">
+            <div class="profile-ui-overlay" id="profile-ui-overlay"></div>
+        </div>
+    `;
+
+    screen.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 10002;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+
+    document.body.appendChild(screen);
+
+    const img = document.getElementById('profile-bg-image');
+
+    // Функция настройки UI после загрузки изображения
+    const setupProfileUI = () => {
+        const overlay = document.getElementById('profile-ui-overlay');
+        if (!img || !overlay) return;
+
+        const rect = img.getBoundingClientRect();
+
+        overlay.style.cssText = `
+            position: absolute;
+            left: ${rect.left}px;
+            top: ${rect.top}px;
+            width: ${rect.width}px;
+            height: ${rect.height}px;
+            pointer-events: none;
+        `;
+
+        // Масштаб для координат (базовый размер 768x512)
+        const scaleX = rect.width / 768;
+        const scaleY = rect.height / 512;
+
+        // Контентная область
+        const contentArea = {
+            x: 115 * scaleX,
+            y: 80 * scaleY,
+            width: (655 - 115) * scaleX,
+            height: (420 - 80) * scaleY
+        };
+
+        // Создаём контейнер для контента
+        const container = document.createElement('div');
+        container.style.cssText = `
+            position: absolute;
+            left: ${contentArea.x}px;
+            top: ${contentArea.y}px;
+            width: ${contentArea.width}px;
+            height: ${contentArea.height}px;
+            overflow-y: auto;
+            padding: 15px;
+            box-sizing: border-box;
+            pointer-events: auto;
+            color: white;
+        `;
+
+        container.innerHTML = `
+            <h3 style="margin: 0 0 15px 0; color: #7289da; text-align: center; font-size: ${Math.max(14, 18 * scaleY)}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+                👤 Профиль игрока
+            </h3>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <!-- Левая колонка: Аватар + Имя + Статистика боев -->
+                <!-- Левая колонка -->
                 <div>
                     <div style="text-align: center; margin-bottom: 15px;">
                         <div style="
-                            width: 60px;
-                            height: 60px;
+                            width: ${Math.max(40, 60 * scaleX)}px;
+                            height: ${Math.max(40, 60 * scaleX)}px;
                             border-radius: 50%;
                             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            font-size: 30px;
+                            font-size: ${Math.max(20, 30 * scaleX)}px;
                             margin: 0 auto 8px;
-                        ">
-                            👤
+                            border: 2px solid #7289da;
+                        ">👤</div>
+                        <h4 style="color: white; margin: 5px 0; font-size: ${Math.max(12, 14 * scaleY)}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                            ${userData.username || 'Игрок'}
+                        </h4>
+                        <div style="color: #ffa500; font-size: ${Math.max(14, 16 * scaleY)}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                            ⭐ Уровень ${level}
                         </div>
+                    </div>
+
+                    <div style="background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 8px; backdrop-filter: blur(5px);">
+                        <h4 style="margin: 0 0 8px 0; color: #7289da; font-size: ${Math.max(11, 13 * scaleY)}px;">⚔️ Статистика боев:</h4>
+                        <div style="font-size: ${Math.max(10, 11 * scaleY)}px; line-height: 1.6;">
+                            <div>🎯 Рейтинг: <strong style="color: #ffa500;">${leagueInfo}</strong></div>
+                            <div>📊 Всего: <strong>${totalBattles}</strong></div>
+                            <div>🏆 Побед: <strong style="color: #4CAF50;">${wins}</strong></div>
+                            <div>💀 Поражений: <strong style="color: #f44336;">${losses}</strong></div>
+                            <div>📈 Винрейт: <strong>${winRate}%</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Правая колонка -->
+                <div>
+                    <div style="background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 8px; backdrop-filter: blur(5px);">
+                        <h4 style="margin: 0 0 8px 0; color: #7289da; font-size: ${Math.max(11, 13 * scaleY)}px;">📚 Прогресс:</h4>
+                        <div style="font-size: ${Math.max(10, 11 * scaleY)}px; line-height: 1.6;">
+                            <div>📖 Заклинания: <strong>${breakdown.spells}</strong> очков</div>
+                            <div>🏛️ Здания: <strong>${breakdown.buildings}</strong> очков</div>
+                            <div>🧙‍♂️ Маги: <strong>${breakdown.wizards}</strong> очков</div>
+                            <hr style="border: 1px solid rgba(255,255,255,0.2); margin: 8px 0;">
+                            <div>📊 Всего: <strong style="color: #ffa500;">${level}</strong> очков</div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 8px; backdrop-filter: blur(5px); margin-top: 10px;">
+                        <h4 style="margin: 0 0 8px 0; color: #7289da; font-size: ${Math.max(11, 13 * scaleY)}px;">🏰 Фракция:</h4>
+                        <div style="font-size: ${Math.max(12, 14 * scaleY)}px; text-transform: capitalize; color: #ffa500;">
+                            ${faction === 'fire' ? '🔥 Огонь' :
+                              faction === 'water' ? '💧 Вода' :
+                              faction === 'wind' ? '💨 Ветер' :
+                              faction === 'earth' ? '🪨 Земля' :
+                              faction === 'nature' ? '🌿 Природа' :
+                              faction === 'poison' ? '☠️ Яд' : faction}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        overlay.appendChild(container);
+
+        // Кнопка закрытия
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '← Закрыть';
+        closeBtn.style.cssText = `
+            position: absolute;
+            left: ${115 * scaleX}px;
+            top: ${430 * scaleY}px;
+            width: ${(655 - 115) * scaleX}px;
+            height: ${40 * scaleY}px;
+            background: rgba(114, 137, 218, 0.9);
+            border: none;
+            border-radius: ${6 * Math.min(scaleX, scaleY)}px;
+            color: white;
+            font-size: ${Math.max(12, 14 * Math.min(scaleX, scaleY))}px;
+            font-weight: bold;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: all 0.2s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        `;
+
+        closeBtn.onmouseover = () => {
+            closeBtn.style.background = 'rgba(90, 110, 189, 0.95)';
+            closeBtn.style.transform = 'scale(1.02)';
+        };
+        closeBtn.onmouseout = () => {
+            closeBtn.style.background = 'rgba(114, 137, 218, 0.9)';
+            closeBtn.style.transform = 'scale(1)';
+        };
+        closeBtn.onclick = () => {
+            screen.remove();
+        };
+
+        overlay.appendChild(closeBtn);
+    };
+
+    // Настройка UI после загрузки изображения
+    img.onload = setupProfileUI;
+    if (img.complete) setupProfileUI();
+
+    // Обработка ошибки загрузки
+    img.onerror = () => {
+        console.error('❌ Не удалось загрузить фон профиля, используем fallback');
+        screen.remove();
+        showPlayerProfileFallback(level, breakdown, totalBattles, wins, losses, rating, winRate, leagueInfo);
+    };
+
+    // Закрытие по клику на фон
+    screen.onclick = (e) => {
+        if (e.target === screen || e.target === screen.firstElementChild) {
+            screen.remove();
+        }
+    };
+
+    window.currentModal = { modal: screen, overlay: screen };
+}
+
+// Fallback профиль без фона
+function showPlayerProfileFallback(level, breakdown, totalBattles, wins, losses, rating, winRate, leagueInfo) {
+    const modalContent = `
+        <div style="padding: 15px; max-width: 90vw; width: 600px; background: #2c2c3d; border-radius: 10px; color: white;">
+            <h3 style="margin: 0 0 15px 0; color: #7289da; text-align: center;">👤 Профиль игрока</h3>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 8px;">👤</div>
                         <h4 style="color: white; margin: 5px 0; font-size: 14px;">${userData.username || 'Игрок'}</h4>
                         <div style="color: #ffa500; font-size: 16px;">⭐ Уровень ${level}</div>
                     </div>
-
                     <div style="background: #3d3d5c; padding: 10px; border-radius: 8px;">
                         <h4 style="margin: 0 0 8px 0; color: #7289da; font-size: 13px;">⚔️ Статистика боев:</h4>
                         <div style="font-size: 11px; line-height: 1.6;">
@@ -203,8 +411,6 @@ function showPlayerProfile() {
                         </div>
                     </div>
                 </div>
-
-                <!-- Правая колонка: Прогресс -->
                 <div>
                     <div style="background: #3d3d5c; padding: 10px; border-radius: 8px;">
                         <h4 style="margin: 0 0 8px 0; color: #7289da; font-size: 13px;">📚 Прогресс:</h4>
@@ -218,47 +424,24 @@ function showPlayerProfile() {
                     </div>
                 </div>
             </div>
-
             <button style="width: 100%; padding: 8px; margin-top: 15px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 13px;"
-                    onclick="closeCurrentModal()">
+                    onclick="this.parentElement.parentElement.remove(); document.getElementById('profile-fallback-overlay')?.remove();">
                 Закрыть
             </button>
         </div>
     `;
-    
-    // Показываем модалку
-    if (typeof window.closeCurrentModal === 'function') {
-        window.closeCurrentModal();
-    }
-    
+
     const modal = document.createElement('div');
     modal.innerHTML = modalContent;
-    modal.style.position = 'fixed';
-    modal.style.top = '50%';
-    modal.style.left = '50%';
-    modal.style.transform = 'translate(-50%, -50%)';
-    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-    modal.style.padding = '20px';
-    modal.style.borderRadius = '12px';
-    modal.style.zIndex = '1000';
-    
+    modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10002;';
+
     const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.top = '0';
-    overlay.style.left = '0';
-    overlay.style.width = '100%';
-    overlay.style.height = '100%';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    overlay.style.zIndex = '999';
-    overlay.onclick = () => {
-        modal.remove();
-        overlay.remove();
-    };
-    
+    overlay.id = 'profile-fallback-overlay';
+    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 10001;';
+    overlay.onclick = () => { modal.remove(); overlay.remove(); };
+
     document.body.appendChild(overlay);
     document.body.appendChild(modal);
-    
-    window.currentModal = { modal, overlay };
 }
 
 // Получить разбивку очков
