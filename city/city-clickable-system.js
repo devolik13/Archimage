@@ -207,6 +207,9 @@ function setupPolygonEvents(polygon, position, buildingData, key) {
 
 // Исправленная обработка клика по зданию - используем правильные функции
 function handleBuildingClick(buildingId, buildingData) {
+    // Скрываем tooltip при клике
+    hideBuildingTooltip();
+
     if (buildingData && buildingData.level > 0) {
         console.log(`🏢 Клик по зданию: ${buildingId}`);
         
@@ -356,9 +359,12 @@ function hideBuildingTooltip() {
 
 // Стандартное окно информации о здании
 function showBuildingInfoModal(buildingId, buildingData) {
+    // Скрываем tooltip
+    hideBuildingTooltip();
+
     const config = window.BUILDINGS_CONFIG[buildingId];
     if (!config) return;
-    
+
     // Закрываем предыдущие модальные окна
     closeAllModals();
     
