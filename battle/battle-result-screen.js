@@ -11,6 +11,18 @@ function showBattleResult(result, battleData = {}) {
     console.log('   result:', result);
     console.log('   battleData:', battleData);
 
+    // Предотвращаем двойной показ результата
+    if (window.battleResultShown) {
+        console.log('⚠️ Результат уже показан, пропускаем повторный вызов');
+        return;
+    }
+    window.battleResultShown = true;
+
+    // Сбрасываем флаг через 2 секунды (на случай следующего боя)
+    setTimeout(() => {
+        window.battleResultShown = false;
+    }, 2000);
+
     // Используем новое окно арены с фоном если доступно
     if (typeof window.showArenaResult === 'function') {
         console.log('✅ Используем showArenaResult с фоном арены');

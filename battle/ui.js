@@ -8,7 +8,14 @@ window.battleSpeedMode = 'normal'; // 'normal' или 'fast'
 // --- Отображение поля боя (ПОЛНОЭКРАННОЕ) ---
 function renderBattleField() {
     console.log('🎨 Рендер полноэкранного поля боя');
-    
+
+    // Скрываем аватар игрока при входе в бой
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'none';
+        console.log('👤 Аватар скрыт на время боя');
+    }
+
     if (!document.getElementById('battle-field-styles')) {
         console.warn('⚠️ Battle field styles not loaded, loading now...');
         addBattleFieldStyles();

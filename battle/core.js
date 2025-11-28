@@ -185,6 +185,9 @@ function startBattle() {
     // ЭНЕРГИЯ УЖЕ СПИСАНА при выборе противника в opponent-selection.js
     // Это предотвращает эксплойт с отменой боя
 
+    // Сбрасываем флаг показа результата для нового боя
+    window.battleResultShown = false;
+
     window.battleState = 'active';
     window.battleLog = [];
     window.playerMageIndex = 0;
