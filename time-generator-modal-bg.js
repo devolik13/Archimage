@@ -102,12 +102,12 @@ function setupGeneratorUI() {
         height: 60 * scaleY
     };
     
-    // ЗОНА 2: КОНТЕНТ (внутри указанной области 115-655 x 115-400)
+    // ЗОНА 2: КОНТЕНТ (поднята выше)
     const contentArea = {
         x: 115 * scaleX,
-        y: 115 * scaleY,
+        y: 75 * scaleY,
         width: (655 - 115) * scaleX,
-        height: (400 - 115) * scaleY
+        height: (400 - 75) * scaleY
     };
     
     // ЗОНА 3: КНОПКА ЗАКРЫТЬ (самый низ фона)
@@ -341,14 +341,14 @@ function showGeneratorUpgradeConfirm(currentLevel, upgradeTime) {
     const newProduction = 60 + currentLevel * 30;
     const newStorage = 1440 + currentLevel * 720;
     
-    // Контентная область
+    // Контентная область (поднята выше)
     const contentArea = {
         x: 115 * scaleX,
-        y: 115 * scaleY,
+        y: 75 * scaleY,
         width: (655 - 115) * scaleX,
-        height: (400 - 115) * scaleY
+        height: (400 - 75) * scaleY
     };
-    
+
     // Создаем контейнер подтверждения
     const confirmContainer = document.createElement('div');
     confirmContainer.id = 'generator-upgrade-confirm';

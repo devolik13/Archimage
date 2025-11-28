@@ -308,12 +308,12 @@ function showConstructionModal(constructionIndex) {
         const titleFontSize = Math.max(16, 22 * Math.min(scaleX, scaleY));
         const smallFontSize = Math.max(10, 13 * Math.min(scaleX, scaleY));
 
-        // Контентная область
+        // Контентная область (поднята выше на высоту кнопки)
         const contentArea = {
             x: 115 * scaleX,
-            y: 70 * scaleY,
+            y: 30 * scaleY,
             width: (655 - 115) * scaleX,
-            height: (440 - 70) * scaleY
+            height: (400 - 30) * scaleY
         };
 
         // Создаём контейнер для контента

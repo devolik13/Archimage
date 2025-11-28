@@ -102,12 +102,12 @@ function setupLabUI() {
         height: 60 * scaleY
     };
     
-    // ЗОНА 2: КОНТЕНТ (внутри указанной области 115-655 x 115-400)
+    // ЗОНА 2: КОНТЕНТ (поднята выше)
     const contentArea = {
         x: 115 * scaleX,
-        y: 115 * scaleY,
+        y: 75 * scaleY,
         width: (655 - 115) * scaleX,
-        height: (400 - 115) * scaleY
+        height: (400 - 75) * scaleY
     };
     
     // ЗОНА 3: КНОПКА ЗАКРЫТЬ (самый низ фона)
@@ -294,14 +294,14 @@ function showLabUpgradeConfirm(currentLevel, upgradeTime) {
     const nextBonus = Math.min(nextLevel * 2, 30);
     const bonusInfo = `-${nextBonus}% времени на изучение`;
     
-    // Контентная область
+    // Контентная область (поднята выше)
     const contentArea = {
         x: 115 * scaleX,
-        y: 115 * scaleY,
+        y: 75 * scaleY,
         width: (655 - 115) * scaleX,
-        height: (400 - 115) * scaleY
+        height: (400 - 75) * scaleY
     };
-    
+
     // Создаем контейнер подтверждения
     const confirmContainer = document.createElement('div');
     confirmContainer.id = 'lab-upgrade-confirm';
