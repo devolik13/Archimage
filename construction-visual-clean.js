@@ -1,408 +1,310 @@
-// construction-visual-clean.js - Патч для молоточков БЕЗ rotation (только landscape)
-console.log('🔨 construction-visual-clean.js загружен');
+// construction-visual-clean.js - Компактные значки активных процессов рядом с аватаром
+console.log('🔨 construction-visual-clean.js загружен (v2 - панель рядом с аватаром)');
 
 (function() {
-    // Хранилище для визуализаций
+    // Хранилище для визуализаций (для совместимости)
     if (!window.activeConstructionVisuals) {
         window.activeConstructionVisuals = new Map();
     }
     if (!window.activeUpgradeVisuals) {
         window.activeUpgradeVisuals = new Map();
     }
-    
-    // Ждем загрузки overlay системы
+
+    // Ждем загрузки систем
     const waitForSystems = setInterval(() => {
-        if (!window.OverlayClickableZones) return;
-        
+        if (!window.userData) return;
+
         clearInterval(waitForSystems);
-        console.log('✅ Инициализация чистой системы молотков (landscape only)');
-        
-        // === ПАТЧ: ВИЗУАЛИЗАЦИЯ МОЛОТКОВ (БЕЗ ROTATION) ===
-        window.addConstructionVisualization = function(buildingId) {
-            console.log('🔨 Создаем молоток для', buildingId);
-            
-            const faction = window.userData?.faction;
-            const container = document.getElementById('city-background-container');
-            if (!container || !faction) {
-                console.error('❌ Нет контейнера или фракции');
-                return;
+        console.log('✅ Инициализация панели активных процессов');
+
+        // === ОСНОВНАЯ ПАНЕЛЬ АКТИВНЫХ ПРОЦЕССОВ ===
+        function createProcessPanel() {
+            // Удаляем старую панель если есть
+            const oldPanel = document.getElementById('active-processes-panel');
+            if (oldPanel) {
+                oldPanel.remove();
             }
-            
-            // Координаты из системы зон
-            const zonesConfig = window.OverlayClickableZones?.zones?.[faction];
-            if (!zonesConfig || !zonesConfig[buildingId]) {
-                console.error('❌ Нет конфигурации зоны для', buildingId);
-                return;
-            }
-            
-            const zone = zonesConfig[buildingId];
-            
-            // Получаем или создаем overlay контейнер
-            let overlayContainer = document.getElementById('overlay-zones-container');
-            if (!overlayContainer) {
-                overlayContainer = document.createElement('div');
-                overlayContainer.id = 'overlay-zones-container';
-                overlayContainer.style.cssText = `
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    pointer-events: none;
-                    z-index: 500;
-                `;
-                container.appendChild(overlayContainer);
-            }
-            
-            // Удаляем старый молоток если есть
-            const oldConstruction = document.getElementById(`construction-${buildingId}`);
-            if (oldConstruction) {
-                oldConstruction.remove();
-                window.activeConstructionVisuals.delete(buildingId);
-            }
-            
-            // Создаем элемент молотка
-            const constructionDiv = document.createElement('div');
-            constructionDiv.id = `construction-${buildingId}`;
-            constructionDiv.className = 'construction-visualization';
-            constructionDiv.dataset.buildingId = buildingId;
-            constructionDiv.dataset.x = zone.x;
-            constructionDiv.dataset.y = zone.y;
-            constructionDiv.dataset.w = zone.w;
-            constructionDiv.dataset.h = zone.h;
-            
-            // Временный стиль (позиция обновится через updatePosition)
-            constructionDiv.style.cssText = `
-                position: absolute;
-                cursor: pointer;
-                pointer-events: auto;
-                z-index: 600;
+
+            const panel = document.createElement('div');
+            panel.id = 'active-processes-panel';
+            panel.style.cssText = `
+                position: fixed;
+                top: 10px;
+                left: 180px;
+                display: flex;
+                gap: 8px;
+                z-index: 10001;
+                flex-wrap: nowrap;
             `;
-            
-            // Найти конструкцию для получения времени
-            const construction = window.userData?.constructions?.find(
-                c => c.building_id === buildingId && !c.is_upgrade
-            );
-            
-            const timeRemaining = construction ? construction.time_remaining : 0;
-            
-            // Молоток в 3 раза меньше (как было раньше)
-            constructionDiv.innerHTML = `
-                <div style="
-                    background: rgba(0, 0, 0, 0.9);
-                    border: 2px solid #ffa500;
-                    border-radius: 8px;
-                    padding: 6px;
-                    color: white;
-                    text-align: center;
-                    min-width: 60px;
-                    animation: pulse 2s infinite;
-                    box-shadow: 0 0 10px rgba(255,165,0,0.4);
-                ">
-                    <div style="font-size: 20px; animation: hammer 1s infinite;">🔨</div>
-                    <div style="font-size: 10px; color: #ffa500; font-weight: bold; margin-top: 2px;">
-                        ${window.formatTimeCurrency ? window.formatTimeCurrency(timeRemaining) : timeRemaining}
-                    </div>
-                </div>
-            `;
-            
-            // Клик по молотку
-            constructionDiv.onclick = (e) => {
-                e.stopPropagation();
-                console.log('🖱️ Клик по молотку:', buildingId);
-                
-                const constructionIndex = window.userData?.constructions?.findIndex(
-                    c => c.building_id === buildingId && !c.is_upgrade
-                );
-                
-                if (constructionIndex !== -1 && window.showConstructionModal) {
-                    window.showConstructionModal(constructionIndex);
-                }
-            };
-            
-            overlayContainer.appendChild(constructionDiv);
-            window.activeConstructionVisuals.set(buildingId, constructionDiv);
-            
-            // Обновляем позицию
-            updateConstructionPosition(constructionDiv);
-            
-            console.log('✅ Молоток создан и добавлен');
-        };
-        
-        // === ПАТЧ: ВИЗУАЛИЗАЦИЯ ШЕСТЕРЕНОК (БЕЗ ROTATION) ===
-        window.addUpgradeVisualization = function(buildingId) {
-            console.log('⚙️ Создаем шестеренку для', buildingId);
-            
-            const faction = window.userData?.faction;
-            const container = document.getElementById('city-background-container');
-            if (!container || !faction) return;
-            
-            const zonesConfig = window.OverlayClickableZones?.zones?.[faction];
-            if (!zonesConfig || !zonesConfig[buildingId]) {
-                console.error('❌ Нет конфигурации зоны для', buildingId);
-                return;
-            }
-            
-            const zone = zonesConfig[buildingId];
-            
-            let overlayContainer = document.getElementById('overlay-zones-container');
-            if (!overlayContainer) {
-                overlayContainer = document.createElement('div');
-                overlayContainer.id = 'overlay-zones-container';
-                overlayContainer.style.cssText = `
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    pointer-events: none;
-                    z-index: 500;
-                `;
-                container.appendChild(overlayContainer);
-            }
-            
-            const oldUpgrade = document.getElementById(`upgrade-${buildingId}`);
-            if (oldUpgrade) {
-                oldUpgrade.remove();
-                window.activeUpgradeVisuals.delete(buildingId);
-            }
-            
-            const upgradeDiv = document.createElement('div');
-            upgradeDiv.id = `upgrade-${buildingId}`;
-            upgradeDiv.className = 'upgrade-visualization';
-            upgradeDiv.dataset.buildingId = buildingId;
-            upgradeDiv.dataset.x = zone.x;
-            upgradeDiv.dataset.y = zone.y;
-            upgradeDiv.dataset.w = zone.w;
-            upgradeDiv.dataset.h = zone.h;
-            
-            upgradeDiv.style.cssText = `
-                position: absolute;
-                cursor: pointer;
-                pointer-events: auto;
-                z-index: 600;
-            `;
-            
-            const construction = window.userData?.constructions?.find(
-                c => c.building_id === buildingId && c.is_upgrade
-            );
-            
-            const timeRemaining = construction ? construction.time_remaining : 0;
-            
-            upgradeDiv.innerHTML = `
-                <div style="
-                    background: rgba(0, 0, 0, 0.9);
-                    border: 2px solid #4CAF50;
-                    border-radius: 8px;
-                    padding: 6px;
-                    color: white;
-                    text-align: center;
-                    min-width: 60px;
-                    animation: pulse 2s infinite;
-                    box-shadow: 0 0 10px rgba(76,175,80,0.4);
-                ">
-                    <div style="font-size: 20px; animation: rotate 2s linear infinite;">⚙️</div>
-                    <div style="font-size: 10px; color: #4CAF50; font-weight: bold; margin-top: 2px;">
-                        ${window.formatTimeCurrency ? window.formatTimeCurrency(timeRemaining) : timeRemaining}
-                    </div>
-                </div>
-            `;
-            
-            upgradeDiv.onclick = (e) => {
-                e.stopPropagation();
-                console.log('🖱️ Клик по шестеренке:', buildingId);
-                
-                const constructionIndex = window.userData?.constructions?.findIndex(
-                    c => c.building_id === buildingId && c.is_upgrade
-                );
-                
-                if (constructionIndex !== -1 && window.showConstructionModal) {
-                    window.showConstructionModal(constructionIndex);
-                }
-            };
-            
-            overlayContainer.appendChild(upgradeDiv);
-            window.activeUpgradeVisuals.set(buildingId, upgradeDiv);
-            
-            updateConstructionPosition(upgradeDiv);
-            
-            console.log('✅ Шестеренка создана');
-        };
-        
-        // === ФУНКЦИЯ ОБНОВЛЕНИЯ ПОЗИЦИИ (LANDSCAPE ONLY) ===
-        function updateConstructionPosition(element) {
-            const container = document.getElementById('city-background-container');
-            if (!container) return;
-            
-            // Находим любое изображение города для масштаба
-            const anyBuildingImg = container.querySelector('img.city-building') || 
-                                  container.querySelector('.city-background-img');
-            
-            if (!anyBuildingImg) {
-                console.log('⏳ Изображения еще не загружены');
-                return;
-            }
-            
-            const imgRect = anyBuildingImg.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
-            
-            // Масштаб изображения (768x512 оригинал)
-            const scaleX = imgRect.width / 768;
-            const scaleY = imgRect.height / 512;
-            
-            // Смещение изображения
-            const offsetX = imgRect.left - containerRect.left;
-            const offsetY = imgRect.top - containerRect.top;
-            
-            // Координаты из dataset
-            const x = parseInt(element.dataset.x);
-            const y = parseInt(element.dataset.y);
-            const w = parseInt(element.dataset.w);
-            const h = parseInt(element.dataset.h);
-            
-            // Центр зоны
-            const centerX = x + w / 2;
-            const centerY = y + h / 2;
-            
-            // Применяем масштаб и смещение
-            const scaledX = (centerX * scaleX) + offsetX;
-            const scaledY = (centerY * scaleY) + offsetY;
-            
-            // Позиционируем элемент по центру зоны
-            element.style.left = scaledX + 'px';
-            element.style.top = scaledY + 'px';
-            element.style.transform = 'translate(-50%, -50%)';
+
+            document.body.appendChild(panel);
+            return panel;
         }
-        
-        // === ОБНОВЛЕНИЕ ВСЕХ ВИЗУАЛИЗАЦИЙ ===
-        function updateAllConstructionPositions() {
-            window.activeConstructionVisuals.forEach(element => {
-                updateConstructionPosition(element);
-            });
-            window.activeUpgradeVisuals.forEach(element => {
-                updateConstructionPosition(element);
-            });
+
+        // Получаем или создаем панель
+        function getProcessPanel() {
+            let panel = document.getElementById('active-processes-panel');
+            if (!panel) {
+                panel = createProcessPanel();
+            }
+            return panel;
         }
-        
-        // Слушаем resize для обновления позиций
-        window.addEventListener('resize', () => {
-            setTimeout(updateAllConstructionPositions, 100);
-        });
-        
-        // Периодическое обновление
-        setInterval(updateAllConstructionPositions, 100);
-        
-        // === ПРОВЕРКА АКТИВНЫХ СТРОЕК ===
-        window.checkActiveConstructions = function() {
+
+        // === ОБНОВЛЕНИЕ ПОЗИЦИИ ПАНЕЛИ ===
+        function updatePanelPosition() {
+            const panel = document.getElementById('active-processes-panel');
+            const avatar = document.getElementById('player-avatar-container');
+
+            if (panel && avatar) {
+                const avatarRect = avatar.getBoundingClientRect();
+                panel.style.left = (avatarRect.right + 10) + 'px';
+                panel.style.top = avatarRect.top + 'px';
+            }
+        }
+
+        // === СОЗДАНИЕ ЗНАЧКА ПРОЦЕССА ===
+        function createProcessIcon(type, data) {
+            const icon = document.createElement('div');
+            icon.className = 'process-icon';
+            icon.dataset.type = type;
+            icon.dataset.id = data.id || '';
+
+            let emoji, color, timeRemaining, clickHandler;
+
+            switch (type) {
+                case 'building':
+                    emoji = '🔨';
+                    color = '#ffa500';
+                    timeRemaining = data.time_remaining;
+                    clickHandler = () => {
+                        const idx = window.userData?.constructions?.findIndex(
+                            c => c.building_id === data.id && !c.is_upgrade
+                        );
+                        if (idx !== -1 && window.showConstructionModal) {
+                            window.showConstructionModal(idx);
+                        }
+                    };
+                    break;
+
+                case 'upgrade':
+                    emoji = '⚙️';
+                    color = '#4CAF50';
+                    timeRemaining = data.time_remaining;
+                    clickHandler = () => {
+                        const idx = window.userData?.constructions?.findIndex(
+                            c => c.building_id === data.id && c.is_upgrade
+                        );
+                        if (idx !== -1 && window.showConstructionModal) {
+                            window.showConstructionModal(idx);
+                        }
+                    };
+                    break;
+
+                case 'spell':
+                    emoji = '📖';
+                    color = '#7289da';
+                    timeRemaining = data.time_remaining;
+                    clickHandler = () => {
+                        const idx = window.userData?.constructions?.findIndex(
+                            c => c.type === 'spell'
+                        );
+                        if (idx !== -1 && window.showConstructionModal) {
+                            window.showConstructionModal(idx);
+                        }
+                    };
+                    break;
+
+                case 'wizard':
+                    emoji = '🧙';
+                    color = '#9b59b6';
+                    timeRemaining = data.time_remaining;
+                    clickHandler = () => {
+                        const idx = window.userData?.constructions?.findIndex(
+                            c => c.type === 'wizard'
+                        );
+                        if (idx !== -1 && window.showConstructionModal) {
+                            window.showConstructionModal(idx);
+                        }
+                    };
+                    break;
+            }
+
+            icon.style.cssText = `
+                background: rgba(0, 0, 0, 0.7);
+                border: 2px solid ${color};
+                border-radius: 10px;
+                padding: 5px 8px;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                cursor: pointer;
+                backdrop-filter: blur(5px);
+                transition: all 0.2s;
+                animation: pulse 2s infinite;
+            `;
+
+            icon.innerHTML = `
+                <span style="font-size: 16px;">${emoji}</span>
+                <span class="process-timer" style="
+                    font-size: 11px;
+                    color: ${color};
+                    font-weight: bold;
+                    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+                    min-width: 40px;
+                ">${window.formatTimeCurrency ? window.formatTimeCurrency(timeRemaining) : timeRemaining}</span>
+            `;
+
+            icon.onclick = clickHandler;
+
+            icon.onmouseover = () => {
+                icon.style.transform = 'scale(1.1)';
+                icon.style.boxShadow = `0 0 15px ${color}`;
+            };
+            icon.onmouseout = () => {
+                icon.style.transform = 'scale(1)';
+                icon.style.boxShadow = 'none';
+            };
+
+            return icon;
+        }
+
+        // === ОБНОВЛЕНИЕ ПАНЕЛИ ПРОЦЕССОВ ===
+        function updateProcessPanel() {
+            const panel = getProcessPanel();
+            const avatar = document.getElementById('player-avatar-container');
+
+            // Если аватар скрыт - скрываем и панель
+            if (!avatar || avatar.style.display === 'none') {
+                panel.style.display = 'none';
+                return;
+            }
+
+            panel.style.display = 'flex';
+            panel.innerHTML = ''; // Очищаем
+
             const constructions = window.userData?.constructions || [];
-            
+
             constructions.forEach(construction => {
-                if (construction.type === 'building' && construction.time_remaining > 0) {
-                    if (!construction.is_upgrade) {
-                        // Проверяем есть ли молоток
-                        if (!window.activeConstructionVisuals.has(construction.building_id)) {
-                            console.log('🔨 Восстанавливаем молоток для', construction.building_id);
-                            window.addConstructionVisualization(construction.building_id);
-                        }
+                if (construction.time_remaining <= 0) return;
+
+                let icon;
+
+                if (construction.type === 'building') {
+                    if (construction.is_upgrade) {
+                        icon = createProcessIcon('upgrade', {
+                            id: construction.building_id,
+                            time_remaining: construction.time_remaining
+                        });
                     } else {
-                        // Проверяем есть ли шестеренка
-                        if (!window.activeUpgradeVisuals.has(construction.building_id)) {
-                            console.log('⚙️ Восстанавливаем шестеренку для', construction.building_id);
-                            window.addUpgradeVisualization(construction.building_id);
-                        }
+                        icon = createProcessIcon('building', {
+                            id: construction.building_id,
+                            time_remaining: construction.time_remaining
+                        });
                     }
+                } else if (construction.type === 'spell') {
+                    icon = createProcessIcon('spell', {
+                        id: construction.spell_id,
+                        time_remaining: construction.time_remaining
+                    });
+                } else if (construction.type === 'wizard') {
+                    icon = createProcessIcon('wizard', {
+                        id: construction.wizard_index,
+                        time_remaining: construction.time_remaining
+                    });
+                }
+
+                if (icon) {
+                    panel.appendChild(icon);
                 }
             });
-        };
-        
+
+            // Обновляем позицию
+            updatePanelPosition();
+        }
+
         // === ОБНОВЛЕНИЕ ТАЙМЕРОВ ===
-        window.updateConstructionTimers = function() {
-            // Обновляем таймеры в молотках
-            window.activeConstructionVisuals.forEach((element, buildingId) => {
-                const construction = window.userData?.constructions?.find(
-                    c => c.building_id === buildingId && !c.is_upgrade
-                );
-                
-                if (construction) {
-                    const timerDiv = element.querySelector('div > div:last-child');
-                    if (timerDiv && window.formatTimeCurrency) {
-                        timerDiv.textContent = window.formatTimeCurrency(construction.time_remaining);
+        function updateTimers() {
+            const panel = document.getElementById('active-processes-panel');
+            if (!panel) return;
+
+            const icons = panel.querySelectorAll('.process-icon');
+            const constructions = window.userData?.constructions || [];
+
+            icons.forEach((icon, index) => {
+                if (constructions[index]) {
+                    const timer = icon.querySelector('.process-timer');
+                    if (timer && window.formatTimeCurrency) {
+                        timer.textContent = window.formatTimeCurrency(constructions[index].time_remaining);
                     }
                 }
             });
-            
-            // Обновляем таймеры в шестеренках
-            window.activeUpgradeVisuals.forEach((element, buildingId) => {
-                const construction = window.userData?.constructions?.find(
-                    c => c.building_id === buildingId && c.is_upgrade
-                );
-                
-                if (construction) {
-                    const timerDiv = element.querySelector('div > div:last-child');
-                    if (timerDiv && window.formatTimeCurrency) {
-                        timerDiv.textContent = window.formatTimeCurrency(construction.time_remaining);
-                    }
-                }
-            });
+        }
+
+        // === ФУНКЦИИ ДЛЯ СОВМЕСТИМОСТИ (заглушки) ===
+        // Эти функции вызываются из других мест, но теперь не создают элементы на здании
+        window.addConstructionVisualization = function(buildingId) {
+            console.log('🔨 Визуализация строительства:', buildingId, '(панель рядом с аватаром)');
+            window.activeConstructionVisuals.set(buildingId, true);
+            updateProcessPanel();
         };
-        
-        // Запускаем периодическое обновление таймеров
+
+        window.addUpgradeVisualization = function(buildingId) {
+            console.log('⚙️ Визуализация улучшения:', buildingId, '(панель рядом с аватаром)');
+            window.activeUpgradeVisuals.set(buildingId, true);
+            updateProcessPanel();
+        };
+
+        window.addSpellResearchVisualization = function() {
+            console.log('📖 Визуализация изучения заклинания (панель рядом с аватаром)');
+            updateProcessPanel();
+        };
+
+        window.addWizardHireVisualization = function() {
+            console.log('🧙 Визуализация найма мага (панель рядом с аватаром)');
+            updateProcessPanel();
+        };
+
+        // === ОБНОВЛЕНИЕ ВСЕЙ ПАНЕЛИ ===
+        window.updateProcessPanel = updateProcessPanel;
+        window.updateConstructionTimers = updateTimers;
+
+        // === ПЕРИОДИЧЕСКОЕ ОБНОВЛЕНИЕ ===
         setInterval(() => {
-            if (window.updateConstructionTimers) {
-                window.updateConstructionTimers();
-            }
+            updateProcessPanel();
         }, 1000);
-        
-        // Запускаем проверку активных строек
-        setTimeout(() => {
-            if (window.checkActiveConstructions) {
-                window.checkActiveConstructions();
-            }
-            if (window.checkActiveUpgrades) {
-                window.checkActiveUpgrades();
-            }
-            if (window.checkActiveSpellResearch) {
-                window.checkActiveSpellResearch();
-            }
-        }, 1000);
-        
+
+        // === СЛУШАТЕЛИ СОБЫТИЙ ===
+        window.addEventListener('resize', updatePanelPosition);
+
         // === CSS АНИМАЦИИ ===
-        if (!document.getElementById('construction-animations-clean')) {
+        if (!document.getElementById('process-panel-animations')) {
             const style = document.createElement('style');
-            style.id = 'construction-animations-clean';
+            style.id = 'process-panel-animations';
             style.textContent = `
                 @keyframes pulse {
                     0%, 100% { opacity: 0.9; }
                     50% { opacity: 1; }
                 }
-                
-                @keyframes hammer {
-                    0%, 100% { transform: rotate(0deg); }
-                    25% { transform: rotate(-20deg); }
-                    75% { transform: rotate(20deg); }
-                }
-                
-                @keyframes rotate {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-                
-                .construction-visualization,
-                .upgrade-visualization {
+
+                .process-icon {
                     user-select: none;
                     -webkit-user-select: none;
-                    transition: none !important;
-                    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
                 }
             `;
             document.head.appendChild(style);
         }
-        
-        console.log('✅ construction-visual-clean активирован');
+
+        // Первоначальная инициализация
+        setTimeout(() => {
+            createProcessPanel();
+            updateProcessPanel();
+            console.log('✅ Панель активных процессов инициализирована');
+        }, 500);
+
+        console.log('✅ construction-visual-clean v2 активирован');
         console.log('📦 Функции:');
-        console.log('  - Молотки и шестеренки для landscape режима');
-        console.log('  - Автоматическая синхронизация с зонами');
-        console.log('  - Обновление таймеров каждую секунду');
-        console.log('  - Восстановление после перезагрузки');
+        console.log('  - Компактные значки рядом с аватаром');
+        console.log('  - 🔨 строительство, ⚙️ улучшение, 📖 заклинание, 🧙 маг');
+        console.log('  - Автоматическое обновление таймеров');
     }, 100);
 })();

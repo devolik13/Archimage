@@ -181,10 +181,18 @@ async function startWizardHire(currentWizardCount) {
         window.userData.constructions = [];
     }
     window.userData.constructions.push(construction);
-    
+
+    // Добавляем визуализацию найма мага
+    if (window.addWizardHireVisualization && timeRequired > 0) {
+        console.log('🧙 Добавляем визуализацию найма мага');
+        setTimeout(() => {
+            window.addWizardHireVisualization();
+        }, 100);
+    }
+
     updateConstructionUI();
     await saveConstruction();
-    
+
     // Если время = 0 (первый маг), сразу завершаем
     if (timeRequired === 0) {
         console.log('⚡ Мгновенный найм первого мага');
