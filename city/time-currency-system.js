@@ -84,7 +84,7 @@ function createTimeCurrencyUI() {
             cursor: pointer;
             transition: all 0.3s;
         "
-        onclick="if(typeof window.showTimeGeneratorModal === 'function') { window.showTimeGeneratorModal(); }"
+        onclick="if(typeof window.showTimeGeneratorModalBg === 'function') { window.showTimeGeneratorModalBg(); } else if(typeof window.showTimeGeneratorModal === 'function') { window.showTimeGeneratorModal(); }"
         onmouseover="this.style.background='rgba(0, 0, 0, 0.6)'; this.style.borderColor='rgba(255, 165, 0, 0.8)';"
         onmouseout="this.style.background='rgba(0, 0, 0, 0.4)'; this.style.borderColor='rgba(255, 165, 0, 0.5)';"
         title="Лимит офлайн: ${window.formatTimeCurrency(maxStorage)}">
