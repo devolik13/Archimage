@@ -233,7 +233,9 @@ function handleBuildingClick(buildingId, buildingData) {
                 break;
                 
             case 'wizard_tower':
-                if (window.showWizardHireModal) {
+                if (window.showWizardTowerModalBg) {
+                    window.showWizardTowerModalBg();
+                } else if (window.showWizardHireModal) {
                     window.showWizardHireModal();
                 } else {
                     console.error('Функция showWizardHireModal не найдена');
@@ -261,7 +263,9 @@ function handleBuildingClick(buildingId, buildingData) {
                 break;
                 
             case 'blessing_tower':
-                if (window.showBlessingTowerModal) {
+                if (window.showBlessingTowerModalBg) {
+                    window.showBlessingTowerModalBg();
+                } else if (window.showBlessingTowerModal) {
                     window.showBlessingTowerModal();
                 } else {
                     showBuildingInfoModal(buildingId, buildingData);
@@ -269,7 +273,9 @@ function handleBuildingClick(buildingId, buildingData) {
                 break;
                 
             case 'time_generator':
-                if (window.showTimeGeneratorModal) {
+                if (window.showTimeGeneratorModalBg) {
+                    window.showTimeGeneratorModalBg();
+                } else if (window.showTimeGeneratorModal) {
                     window.showTimeGeneratorModal();
                 } else {
                     showBuildingInfoModal(buildingId, buildingData);
@@ -277,7 +283,9 @@ function handleBuildingClick(buildingId, buildingData) {
                 break;
                 
             case 'arcane_lab':
-                if (window.showArcaneLabModal) {
+                if (window.showArcaneLabModalBg) {
+                    window.showArcaneLabModalBg();
+                } else if (window.showArcaneLabModal) {
                     window.showArcaneLabModal();
                 } else {
                     showBuildingInfoModal(buildingId, buildingData);

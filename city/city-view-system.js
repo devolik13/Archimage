@@ -864,8 +864,8 @@ function onBuildingClick(buildingId) {
             break;
             
         case 'wizard_tower':
-            if (window.showWizardHireModal) {
-                window.showWizardHireModal();
+            if (window.showWizardTowerModalBg) {
+    		window.showWizardTowerModalBg();
             } else {
                 showBuildingInfo(buildingId, 'Башня мага', 'Здесь можно нанимать новых магов');
             }
@@ -890,7 +890,14 @@ function onBuildingClick(buildingId) {
             break;
             
         case 'blessing_tower':
-            if (window.showBlessingTowerModal) {
+            console.log("🙏 Клик по башне благословения");
+            console.log("showBlessingTowerModalBg:", typeof window.showBlessingTowerModalBg);
+            console.log("showBlessingTowerModal:", typeof window.showBlessingTowerModal);
+                console.log("✅ Вызываем НОВУЮ функцию с фоном");
+            if (window.showBlessingTowerModalBg) {
+                window.showBlessingTowerModalBg();
+                console.log("⚠️ Вызываем старую функцию");
+            } else if (window.showBlessingTowerModal) {
                 window.showBlessingTowerModal();
             } else {
                 showBuildingInfo(buildingId, 'Башня благословения', 'Временные бонусы для города');
@@ -898,7 +905,9 @@ function onBuildingClick(buildingId) {
             break;
             
         case 'arcane_lab':
-            if (window.showArcaneLabModal) {
+            if (window.showArcaneLabModalBg) {
+                window.showArcaneLabModalBg();
+            } else if (window.showArcaneLabModal) {
                 window.showArcaneLabModal();
             } else {
                 showBuildingInfo(buildingId, 'Арканный лаборатория', 'Исследование новых технологий');

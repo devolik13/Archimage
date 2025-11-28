@@ -1,0 +1,100 @@
+/* blessing-tower-modal-bg.css - Стили для Арканской башни благословенияи с фоновым изображением */
+
+/* Экран башни благословенияи */
+.blessing-tower-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.blessing-tower-screen.active {
+    opacity: 1;
+}
+
+/* Фоновое изображение башни благословенияи */
+.blessing-bg-image {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    image-rendering: crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Оверлей для UI элементов */
+.blessing-ui-overlay {
+    position: absolute;
+    pointer-events: none;
+}
+
+.blessing-ui-overlay > * {
+    pointer-events: auto;
+}
+
+/* Анимация появления */
+@keyframes blessingFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.blessing-bg-image {
+    animation: blessingFadeIn 0.3s ease;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+    .blessing-bg-image {
+        max-width: 95vw;
+        max-height: 95vh;
+    }
+}
+
+@media (max-height: 600px) {
+    .blessing-bg-image {
+        max-width: 95vw;
+        max-height: 95vh;
+    }
+}
+
+/* Предотвращаем выделение текста на кнопках */
+.blessing-ui-overlay button {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Убираем outline при фокусе */
+.blessing-ui-overlay button:focus {
+    outline: none;
+}
+
+/* Эффект нажатия на кнопку */
+.blessing-ui-overlay button:active {
+    transform: scale(0.95) !important;
+}
+
+/* Hover эффекты для кнопок */
+.blessing-ui-overlay button:not(:disabled):hover {
+    filter: brightness(1.2);
+    transform: scale(1.02);
+    transition: all 0.2s;
+}

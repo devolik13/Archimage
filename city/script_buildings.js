@@ -263,14 +263,24 @@ async function hireNewWizard() {
         return;
     }
 
-    // ВСЕ наймы идут только через систему времени
+// ВСЕ наймы идут только через систему времени
     if (typeof window.startWizardHire === 'function') {
         const success = await window.startWizardHire(wizards.length);
         if (success) {
             // Найм запущен через систему конструкций
-            closeAllModals();
+            if (typeof closeWizardTowerModalBg === 'function') {
+                closeWizardTowerModalBg();
+            } else {
+                closeAllModals();
+            }
             showNotification('🧙‍♂️ Начат найм мага');
-            setTimeout(() => showWizardHireModal(), 100);
+            setTimeout(() => {
+                if (typeof showWizardTowerModalBg === 'function') {
+                    showWizardTowerModalBg();
+                } else {
+                    showWizardHireModal();
+                }
+            }, 100);
         } else {
             // Ошибка при запуске найма
             showNotification('❌ Не удалось начать найм');
@@ -540,10 +550,19 @@ async function upgradeWizardTower() {
         showNotification(`⚠️ Башня магов уже максимального уровня (${maxLevel})`);
         return;
     }
-    closeAllModals();
+    
+    // Закрываем только окно башни магов (новое с фоном или старое)
+    if (typeof closeWizardTowerModalBg === 'function') {
+        closeWizardTowerModalBg();
+    } else {
+        closeAllModals();
+    }
+    
     // Показываем модальное окно с информацией о бонусах
     showUpgradeModal('wizard_tower', currentLevel, maxLevel);
 }
+
+
 
 // Модалка кузницы
 function showForgeModal() {
