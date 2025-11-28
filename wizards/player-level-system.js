@@ -236,12 +236,12 @@ function showPlayerProfile() {
         const scaleX = rect.width / 768;
         const scaleY = rect.height / 512;
 
-        // Контентная область
+        // Контентная область (расширена для большего текста)
         const contentArea = {
             x: 115 * scaleX,
-            y: 80 * scaleY,
+            y: 60 * scaleY,
             width: (655 - 115) * scaleX,
-            height: (420 - 80) * scaleY
+            height: (430 - 60) * scaleY
         };
 
         // Создаём контейнер для контента
@@ -253,7 +253,7 @@ function showPlayerProfile() {
             width: ${contentArea.width}px;
             height: ${contentArea.height}px;
             overflow-y: auto;
-            padding: 15px;
+            padding: 12px;
             box-sizing: border-box;
             pointer-events: auto;
             color: white;
@@ -276,20 +276,20 @@ function showPlayerProfile() {
 
         container.innerHTML = `
             <!-- Заголовок: имя и уровень -->
-            <div style="text-align: center; margin-bottom: ${8 * scaleY}px;">
-                <div style="color: white; font-size: ${Math.max(14, 18 * scaleY)}px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+            <div style="text-align: center; margin-bottom: ${12 * scaleY}px;">
+                <div style="color: white; font-size: ${Math.max(18, 24 * scaleY)}px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
                     ${userData.username || 'Игрок'}
                 </div>
-                <div style="color: #ffa500; font-size: ${Math.max(12, 14 * scaleY)}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                <div style="color: #ffa500; font-size: ${Math.max(14, 18 * scaleY)}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
                     ⭐ Уровень ${level} • ${factionIcon} ${factionName}
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: ${8 * scaleX}px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: ${10 * scaleX}px;">
                 <!-- Левая колонка - Статистика боев -->
-                <div style="background: rgba(0, 0, 0, 0.5); padding: ${8 * scaleY}px; border-radius: 8px; backdrop-filter: blur(5px);">
-                    <h4 style="margin: 0 0 ${6 * scaleY}px 0; color: #7289da; font-size: ${Math.max(10, 12 * scaleY)}px;">⚔️ Статистика боев</h4>
-                    <div style="font-size: ${Math.max(9, 11 * scaleY)}px; line-height: 1.4;">
+                <div style="background: rgba(0, 0, 0, 0.5); padding: ${10 * scaleY}px; border-radius: 8px; backdrop-filter: blur(5px);">
+                    <h4 style="margin: 0 0 ${8 * scaleY}px 0; color: #7289da; font-size: ${Math.max(13, 16 * scaleY)}px;">⚔️ Статистика боев</h4>
+                    <div style="font-size: ${Math.max(12, 14 * scaleY)}px; line-height: 1.5;">
                         <div>🎯 Рейтинг: <strong style="color: #ffa500;">${leagueInfo}</strong></div>
                         <div>📊 Боев: <strong>${totalBattles}</strong></div>
                         <div>🏆 Побед: <strong style="color: #4CAF50;">${wins}</strong> / 💀 <strong style="color: #f44336;">${losses}</strong></div>
@@ -298,13 +298,13 @@ function showPlayerProfile() {
                 </div>
 
                 <!-- Правая колонка - Прогресс -->
-                <div style="background: rgba(0, 0, 0, 0.5); padding: ${8 * scaleY}px; border-radius: 8px; backdrop-filter: blur(5px);">
-                    <h4 style="margin: 0 0 ${6 * scaleY}px 0; color: #7289da; font-size: ${Math.max(10, 12 * scaleY)}px;">📚 Прогресс</h4>
-                    <div style="font-size: ${Math.max(9, 11 * scaleY)}px; line-height: 1.4;">
+                <div style="background: rgba(0, 0, 0, 0.5); padding: ${10 * scaleY}px; border-radius: 8px; backdrop-filter: blur(5px);">
+                    <h4 style="margin: 0 0 ${8 * scaleY}px 0; color: #7289da; font-size: ${Math.max(13, 16 * scaleY)}px;">📚 Прогресс</h4>
+                    <div style="font-size: ${Math.max(12, 14 * scaleY)}px; line-height: 1.5;">
                         <div>📖 Заклинания: <strong>${breakdown.spells}</strong></div>
                         <div>🏛️ Здания: <strong>${breakdown.buildings}</strong></div>
                         <div>🧙‍♂️ Маги: <strong>${breakdown.wizards}</strong></div>
-                        <div style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: ${4 * scaleY}px; padding-top: ${4 * scaleY}px;">
+                        <div style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: ${6 * scaleY}px; padding-top: ${6 * scaleY}px;">
                             📊 Всего: <strong style="color: #ffa500;">${level}</strong> очков
                         </div>
                     </div>
@@ -388,18 +388,18 @@ function showPlayerProfileFallback(level, breakdown, totalBattles, wins, losses,
                         faction === 'poison' ? 'Яд' : faction;
 
     const modalContent = `
-        <div style="padding: 15px; max-width: 90vw; width: 400px; background: #2c2c3d; border-radius: 10px; color: white;">
+        <div style="padding: 15px; max-width: 90vw; width: 420px; background: #2c2c3d; border-radius: 10px; color: white;">
             <!-- Заголовок: имя и уровень -->
-            <div style="text-align: center; margin-bottom: 12px;">
-                <div style="color: white; font-size: 18px; font-weight: bold;">${userData.username || 'Игрок'}</div>
-                <div style="color: #ffa500; font-size: 14px;">⭐ Уровень ${level} • ${factionIcon} ${factionName}</div>
+            <div style="text-align: center; margin-bottom: 15px;">
+                <div style="color: white; font-size: 22px; font-weight: bold;">${userData.username || 'Игрок'}</div>
+                <div style="color: #ffa500; font-size: 16px;">⭐ Уровень ${level} • ${factionIcon} ${factionName}</div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                 <!-- Левая колонка -->
-                <div style="background: #3d3d5c; padding: 10px; border-radius: 8px;">
-                    <h4 style="margin: 0 0 6px 0; color: #7289da; font-size: 12px;">⚔️ Статистика боев</h4>
-                    <div style="font-size: 11px; line-height: 1.4;">
+                <div style="background: #3d3d5c; padding: 12px; border-radius: 8px;">
+                    <h4 style="margin: 0 0 8px 0; color: #7289da; font-size: 15px;">⚔️ Статистика боев</h4>
+                    <div style="font-size: 14px; line-height: 1.5;">
                         <div>🎯 Рейтинг: <strong style="color: #ffa500;">${leagueInfo}</strong></div>
                         <div>📊 Боев: <strong>${totalBattles}</strong></div>
                         <div>🏆 Побед: <strong style="color: #4CAF50;">${wins}</strong> / 💀 <strong style="color: #f44336;">${losses}</strong></div>
@@ -407,17 +407,17 @@ function showPlayerProfileFallback(level, breakdown, totalBattles, wins, losses,
                     </div>
                 </div>
                 <!-- Правая колонка -->
-                <div style="background: #3d3d5c; padding: 10px; border-radius: 8px;">
-                    <h4 style="margin: 0 0 6px 0; color: #7289da; font-size: 12px;">📚 Прогресс</h4>
-                    <div style="font-size: 11px; line-height: 1.4;">
+                <div style="background: #3d3d5c; padding: 12px; border-radius: 8px;">
+                    <h4 style="margin: 0 0 8px 0; color: #7289da; font-size: 15px;">📚 Прогресс</h4>
+                    <div style="font-size: 14px; line-height: 1.5;">
                         <div>📖 Заклинания: <strong>${breakdown.spells}</strong></div>
                         <div>🏛️ Здания: <strong>${breakdown.buildings}</strong></div>
                         <div>🧙‍♂️ Маги: <strong>${breakdown.wizards}</strong></div>
-                        <div style="border-top: 1px solid #555; margin-top: 4px; padding-top: 4px;">📊 Всего: <strong style="color: #ffa500;">${level}</strong></div>
+                        <div style="border-top: 1px solid #555; margin-top: 6px; padding-top: 6px;">📊 Всего: <strong style="color: #ffa500;">${level}</strong></div>
                     </div>
                 </div>
             </div>
-            <button style="width: 100%; padding: 8px; margin-top: 12px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 13px;"
+            <button style="width: 100%; padding: 10px; margin-top: 15px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 15px;"
                     onclick="this.parentElement.parentElement.remove(); document.getElementById('profile-fallback-overlay')?.remove();">
                 Закрыть
             </button>
