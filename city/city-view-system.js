@@ -855,7 +855,7 @@ function setupBuildingSelectionUI() {
         box-sizing: border-box;
     `;
 
-    // Стили для скроллбара
+    // Стили для скроллбара и анимаций
     contentContainer.innerHTML = `
         <style>
             #building-selection-overlay .building-list::-webkit-scrollbar {
@@ -869,9 +869,16 @@ function setupBuildingSelectionUI() {
                 background: rgba(114, 137, 218, 0.6);
                 border-radius: 4px;
             }
+            @keyframes pulse {
+                0%, 100% { opacity: 0.9; }
+                50% { opacity: 1; box-shadow: 0 0 10px rgba(255, 165, 0, 0.3); }
+            }
         </style>
     `;
     contentContainer.className = 'building-list';
+
+    // Получаем список активных строек
+    const constructions = window.userData?.constructions || [];
 
     // Генерируем список зданий
     buildableBuildings.forEach((building, index) => {
@@ -880,10 +887,35 @@ function setupBuildingSelectionUI() {
         const maxLevel = typeof getBuildingMaxLevel === 'function' ? getBuildingMaxLevel(building.id) : 1;
         const isMaxLevel = currentLevel >= maxLevel;
 
-        // Определяем статус и цвет
-        let statusText, statusColor, buttonText, buttonColor, isClickable;
+        // Проверяем активное строительство/улучшение
+        const activeConstruction = constructions.find(c =>
+            c.type === 'building' && c.building_id === building.id && c.time_remaining > 0
+        );
+        const isUnderConstruction = activeConstruction && !activeConstruction.is_upgrade;
+        const isUnderUpgrade = activeConstruction && activeConstruction.is_upgrade;
 
-        if (!isBuilt) {
+        // Определяем статус и цвет
+        let statusText, statusColor, buttonText, buttonColor, isClickable, constructionIdx = -1;
+
+        if (isUnderConstruction) {
+            // Здание строится
+            const timeStr = window.formatTimeCurrency ? window.formatTimeCurrency(activeConstruction.time_remaining) : activeConstruction.time_remaining;
+            statusText = `🔨 Строится: ${timeStr}`;
+            statusColor = '#ffa500';
+            buttonText = 'Ускорить';
+            buttonColor = 'linear-gradient(145deg, #ffa500, #cc8400)';
+            isClickable = true;
+            constructionIdx = constructions.indexOf(activeConstruction);
+        } else if (isUnderUpgrade) {
+            // Здание улучшается
+            const timeStr = window.formatTimeCurrency ? window.formatTimeCurrency(activeConstruction.time_remaining) : activeConstruction.time_remaining;
+            statusText = `⚙️ Улучшается: ${timeStr}`;
+            statusColor = '#4CAF50';
+            buttonText = 'Ускорить';
+            buttonColor = 'linear-gradient(145deg, #4CAF50, #388E3C)';
+            isClickable = true;
+            constructionIdx = constructions.indexOf(activeConstruction);
+        } else if (!isBuilt) {
             statusText = 'Не построено';
             statusColor = '#888';
             buttonText = 'Построить';
@@ -903,10 +935,16 @@ function setupBuildingSelectionUI() {
             isClickable = true;
         }
 
+        // Определяем стиль рамки
+        let borderColor = '#555';
+        if (isUnderConstruction) borderColor = '#ffa500';
+        else if (isUnderUpgrade) borderColor = '#4CAF50';
+        else if (isClickable) borderColor = '#7289da';
+
         const buildingItem = document.createElement('div');
         buildingItem.style.cssText = `
             background: rgba(0, 0, 0, 0.5);
-            border: 1px solid ${isClickable ? '#7289da' : '#555'};
+            border: 1px solid ${borderColor};
             border-radius: 8px;
             padding: 8px 12px;
             margin-bottom: 6px;
@@ -915,6 +953,7 @@ function setupBuildingSelectionUI() {
             justify-content: space-between;
             gap: 10px;
             backdrop-filter: blur(5px);
+            ${(isUnderConstruction || isUnderUpgrade) ? 'animation: pulse 2s infinite;' : ''}
         `;
 
         buildingItem.innerHTML = `
@@ -925,7 +964,7 @@ function setupBuildingSelectionUI() {
                     <div style="color: ${statusColor}; font-size: ${smallFontSize}px;">${statusText}</div>
                 </div>
             </div>
-            <button class="building-action-btn" data-building="${building.id}" data-action="${isBuilt ? 'upgrade' : 'build'}" style="
+            <button class="building-action-btn" data-building="${building.id}" data-action="${isBuilt ? 'upgrade' : 'build'}" data-construction-idx="${constructionIdx}" style="
                 padding: 6px 12px;
                 background: ${buttonColor};
                 border: none;
@@ -946,7 +985,13 @@ function setupBuildingSelectionUI() {
         const btn = buildingItem.querySelector('.building-action-btn');
         if (isClickable && btn) {
             btn.onclick = () => {
-                if (isBuilt) {
+                if (constructionIdx >= 0) {
+                    // Открываем окно ускорения строительства
+                    closeBuildingModal();
+                    if (typeof window.showConstructionModal === 'function') {
+                        window.showConstructionModal(constructionIdx);
+                    }
+                } else if (isBuilt) {
                     // Улучшение - открываем модальное окно здания
                     closeBuildingModal();
                     openBuildingModal(building.id);
