@@ -4,7 +4,13 @@ console.log('✅ wizard-detail-screen.js загружен');
 // Открыть полноэкранное окно мага
 function showWizardDetailScreen(wizard) {
     console.log('🎭 Открытие полноэкранного окна мага:', wizard.name);
-    
+
+    // Скрываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'none';
+    }
+
     // Проверяем, не открыто ли уже окно мага
     const existingScreen = document.getElementById('wizard-detail-screen');
     if (existingScreen) {
@@ -16,7 +22,7 @@ function showWizardDetailScreen(wizard) {
         }
         return;
     }
-    
+
     // Закрываем ВСЕ модалки через централизованную систему
     if (window.Modal && window.Modal.closeAll) {
         window.Modal.closeAll();
@@ -542,7 +548,13 @@ function closeWizardDetailScreen() {
             console.log(`✅ Восстановлен элемент: ${elementId}`);
         }
     });
-    
+
+    // Показываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'flex';
+    }
+
     // Перерисовываем город с небольшой задержкой для плавности
     if (window.userData && window.userData.faction) {
         requestAnimationFrame(() => {
