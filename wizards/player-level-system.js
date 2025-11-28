@@ -126,7 +126,7 @@ function createPlayerAvatarUI() {
             border: 2px solid #7289da;
             cursor: pointer;
             transition: all 0.3s;
-            z-index: 100;
+            z-index: 10001;
         " onclick="showPlayerProfile()">
             ${avatarContent}
             <div>

@@ -11,6 +11,9 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
     // Хранилище активных анимаций
     const activeAnimations = new Set();
     const activeTimeouts = new Set();
+
+    // Хранилище позиций в процессе создания (для предотвращения race condition)
+    const creatingSprites = new Set();
     
     // Конфигурация спрайтов по фракциям
     const FACTION_SPRITES_CONFIG = {
@@ -315,18 +318,37 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
     
     // Создание спрайта мага с учетом фракции
     async function createWizardSprite(type, col, row) {
+        const key = `${col}_${row}`;
+
+        // Проверяем, не создаётся ли уже спрайт на этой позиции (защита от race condition)
+        if (creatingSprites.has(key)) {
+            console.log(`⏳ Спрайт ${key} уже создаётся, пропускаем дублирование`);
+            return null;
+        }
+
+        // Если спрайт уже существует - не создаём повторно
+        if (wizardSprites[key]) {
+            console.log(`⚠️ Спрайт ${key} уже существует, пропускаем`);
+            return wizardSprites[key];
+        }
+
+        // Помечаем что начали создание
+        creatingSprites.add(key);
+
         // Проверяем инициализацию
         if (!gridCells) {
             init();
             if (!gridCells) {
                 console.error('gridCells не инициализирован');
+                creatingSprites.delete(key);
                 return null;
             }
         }
-        
+
         const cellData = gridCells?.[col]?.[row];
         if (!cellData) {
             console.error(`Не найдена ячейка для позиции ${col}_${row}`);
+            creatingSprites.delete(key);
             return null;
         }
         
@@ -508,11 +530,13 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             unitsContainer.addChild(hpBar);
         }
         
-        const key = `${col}_${row}`;
         wizardSprites[key] = container;
-        
+
+        // Убираем флаг создания
+        creatingSprites.delete(key);
+
         console.log(`✅ Маг создан на позиции ${key}`);
-        
+
         return container;
     }
     
@@ -769,9 +793,10 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 if (enemy) {
                     const key = `0_${index}`;
 
-                    if (!wizardSprites[key]) {
+                    // Проверяем что спрайт не существует И не создаётся сейчас
+                    if (!wizardSprites[key] && !creatingSprites.has(key)) {
                         createWizardSprite('enemy', 0, index);
-                    } else {
+                    } else if (wizardSprites[key]) {
                         const container = wizardSprites[key];
 
                         // Обновляем HP только для живых
@@ -796,10 +821,11 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                     const wizard = window.playerWizards.find(w => w.id === wizardId);
                     if (wizard) {
                         const key = `5_${index}`;
-                        
-                        if (!wizardSprites[key]) {
+
+                        // Проверяем что спрайт не существует И не создаётся сейчас
+                        if (!wizardSprites[key] && !creatingSprites.has(key)) {
                             createWizardSprite('player', 5, index);
-                        } else {
+                        } else if (wizardSprites[key]) {
                             const container = wizardSprites[key];
                             
                             // Обновляем HP только для живых
@@ -859,7 +885,10 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         
         // Отменяем все активные анимации
         activeAnimations.clear();
-        
+
+        // Очищаем флаги создания
+        creatingSprites.clear();
+
         // Отменяем все таймауты
         activeTimeouts.forEach(id => clearTimeout(id));
         activeTimeouts.clear();
