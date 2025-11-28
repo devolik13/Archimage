@@ -608,45 +608,7 @@ function showForgeModal() {
     window.currentModal = { modal, overlay };
 }
 
-// Уведомления
-function showNotification(message) {
-    const oldNotif = document.getElementById('game-notification');
-    if (oldNotif) oldNotif.remove();
-    const notification = document.createElement('div');
-    notification.id = 'game-notification';
-    notification.innerHTML = `
-        <div style="
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #2c2c3d;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            z-index: 2000;
-            max-width: 300px;
-            animation: slideIn 0.3s ease;
-        ">
-            ${message}
-        </div>
-    `;
-    if (!document.getElementById('notification-styles')) {
-        const style = document.createElement('style');
-        style.id = 'notification-styles';
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    document.body.appendChild(notification);
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
-}
+// Примечание: showNotification теперь в core/helpers.js
 
 // Вспомогательные функции
 function getBuildingMaxLevel(buildingId) {

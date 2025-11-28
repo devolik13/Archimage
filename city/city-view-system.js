@@ -617,72 +617,8 @@ function createEmptySlot() {
     
     return slot;
 }
-
-// Вспомогательная функция для получения цвета фракции
-function getFactionColor(faction) {
-    const colors = {
-        fire: 'linear-gradient(145deg, #ff6b6b, #ff5252)',
-        water: 'linear-gradient(145deg, #4d96ff, #3a85f0)',
-        wind: 'linear-gradient(145deg, #95ffc4, #7ae5b0)',
-        earth: 'linear-gradient(145deg, #96ceb4, #82b8a0)',
-        nature: 'linear-gradient(145deg, #4ade80, #22c55e)',
-        poison: 'linear-gradient(145deg, #84cc16, #4ade80)'
-    };
-    return colors[faction] || '#333';
-}
-
-// Получение эмодзи фракции
-function getFactionEmoji(faction) {
-    const emojis = {
-        fire: '🔥',
-        water: '💧',
-        wind: '🌬️',
-        earth: '🌍',
-        nature: '🌿',
-        poison: '☠️'
-    };
-    return emojis[faction] || '🏯';
-}
-
-// Получение названия фракции
-function getFactionName(faction) {
-    const names = {
-        fire: 'Огонь',
-        water: 'Вода',
-        wind: 'Ветер',
-        earth: 'Земля',
-        nature: 'Природа',
-        poison: 'Яд'
-    };
-    return names[faction] || 'Неизвестно';
-}
-
-// Показ уведомления
-function showNotification(message) {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        z-index: 10000;
-        max-width: 300px;
-        text-align: center;
-        animation: fadeIn 0.3s ease;
-    `;
-    notification.innerHTML = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'fadeOut 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    }, 2000);
-}
+// Примечание: getFactionColor, getFactionEmoji, getFactionName, showNotification
+// теперь в core/helpers.js
 
 // Показ меню выбора места для строительства с фоном башни
 function showBuildingSelectionMenu() {

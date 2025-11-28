@@ -19,40 +19,7 @@ let currentSpellSlotIndex = -1;
 // === КОНСТАНТЫ ===
 const MAX_SPELL_SLOTS = 2;
 const MAX_NAME_LENGTH = 20;
-const FACTION_EMOJIS = {
-    fire: '🔥',
-    water: '💧', 
-    wind: '🌬️',
-    earth: '🪨',
-    nature: '🌿',
-    poison: '☠️'
-};
-// === УТИЛИТЫ ===
-function getFactionEmoji(faction) {
-    return FACTION_EMOJIS[faction] || '✨';
-}
-function getFactionName(faction) {
-    const names = {
-        fire: 'Огонь',
-        water: 'Вода',
-        wind: 'Ветер',
-        earth: 'Земля',
-        nature: 'Природа',
-        poison: 'Яд'
-    };
-    return names[faction] || faction;
-}
-function getSchoolColor(school) {
-    const colors = {
-        fire: '#ff6b6b',
-        water: '#4d96ff',
-        wind: '#95ffc4',
-        earth: '#8b7355',
-        nature: '#4ade80',
-        poison: '#84cc16'
-    };
-    return colors[school] || '#777';
-}
+// Примечание: getFactionEmoji, getFactionName, getSchoolColor теперь в core/helpers.js
 function findSpellInUserData(spellId, userSpells) {
     if (!userSpells) return null;
     for (const faction in userSpells) {
@@ -513,18 +480,7 @@ async function saveWizardSpells(wizardIndex) {
         alert('❌ Ошибка сохранения');
     }
 }
-// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-function closeCurrentModal() {
-    if (window.currentModal) {
-        if (window.currentModal.modal) {
-            window.currentModal.modal.remove();
-        }
-        if (window.currentModal.overlay) {
-            window.currentModal.overlay.remove();
-        }
-        window.currentModal = null;
-    }
-}
+// Примечание: closeCurrentModal теперь в core/helpers.js
 function showInlineNotification(message) {
     const notification = document.getElementById('save-notification');
     if (notification) {

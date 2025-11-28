@@ -631,19 +631,7 @@ function closeBuildingInfoModal() {
     overlays.forEach(overlay => overlay.remove());
 }
 
-// Закрыть все модальные окна
-function closeAllModals() {
-    // Закрываем стандартные модальные окна
-    closeBuildingInfoModal();
-    closeConstructionModal();
-    
-    // Закрываем специфичные окна зданий если они открыты
-    const modals = document.querySelectorAll('[id*="modal"]');
-    modals.forEach(modal => modal.remove());
-    
-    const overlays = document.querySelectorAll('[id*="overlay"]:not(#overlay-zones-container)');
-    overlays.forEach(overlay => overlay.remove());
-}
+// Примечание: closeAllModals теперь в core/helpers.js
 
 // Модифицируем функцию switchToCityView чтобы добавить кликабельные зоны
 const originalSwitchToCityView = window.switchToCityView;
