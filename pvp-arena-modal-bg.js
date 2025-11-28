@@ -1303,6 +1303,273 @@ async function showArenaLeaderboard() {
     }
 }
 
+// Показать результаты боя внутри окна арены
+function showArenaResult(result, battleData = {}) {
+    console.log('🏆 showArenaResult вызвана с фоном арены');
+    console.log('   result:', result);
+    console.log('   battleData:', battleData);
+
+    const {
+        opponentName = 'Противник',
+        opponentRating = 1000,
+        ratingChange = 0,
+        rewards = {},
+        battleDuration = 0,
+        earlyExit = false
+    } = battleData;
+
+    const isWin = result === 'win';
+
+    // Определяем цвета и иконки
+    const titleColor = isWin ? '#4CAF50' : '#f44336';
+    const titleIcon = isWin ? '🏆' : '💀';
+    const titleText = isWin ? 'Вы выиграли!' : 'Вы проиграли!';
+
+    // Форматируем изменение рейтинга
+    const ratingChangeText = ratingChange > 0 ? `+${ratingChange}` : ratingChange;
+    const ratingColor = ratingChange > 0 ? '#4CAF50' : ratingChange < 0 ? '#f44336' : '#aaa';
+
+    // Новый рейтинг
+    const currentRating = window.userData?.rating || 1000;
+    const newRating = currentRating + ratingChange;
+
+    // Лига
+    let leagueInfo = `⭐ ${newRating}`;
+    if (typeof window.formatRating === 'function') {
+        leagueInfo = window.formatRating(newRating);
+    }
+
+    // Опыт для магов (если есть)
+    const expGained = rewards.exp || 0;
+
+    // Сначала открываем окно арены с фоном
+    showPvPArenaModalBg();
+
+    // Даём время на загрузку фона, потом показываем результат
+    setTimeout(() => {
+        const overlay = document.getElementById('arena-ui-overlay');
+        if (!overlay) {
+            console.error('❌ arena-ui-overlay не найден');
+            return;
+        }
+
+        overlay.innerHTML = ''; // Очищаем
+
+        // Создаем контейнер для результатов
+        const container = document.createElement('div');
+        container.style.cssText = `
+            position: absolute;
+            top: 5%;
+            left: 10%;
+            width: 80%;
+            height: 85%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 2px solid ${isWin ? 'rgba(76, 175, 80, 0.8)' : 'rgba(244, 67, 54, 0.8)'};
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            color: white;
+            pointer-events: auto;
+            box-shadow: 0 0 30px ${isWin ? 'rgba(76, 175, 80, 0.4)' : 'rgba(244, 67, 54, 0.4)'};
+        `;
+
+        container.innerHTML = `
+            <!-- Заголовок -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 56px; margin-bottom: 10px;">${titleIcon}</div>
+                <h2 style="
+                    margin: 0;
+                    font-size: 28px;
+                    color: ${titleColor};
+                    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+                ">${titleText}</h2>
+            </div>
+
+            <!-- Предупреждение о преждевременном выходе -->
+            ${earlyExit ? `
+                <div style="
+                    background: rgba(255, 165, 0, 0.2);
+                    border: 2px solid #ffa500;
+                    padding: 12px;
+                    border-radius: 10px;
+                    margin-bottom: 15px;
+                    text-align: center;
+                ">
+                    <div style="font-size: 14px; color: #ffa500; font-weight: bold; margin-bottom: 5px;">
+                        ℹ️ Досрочный выход из боя
+                    </div>
+                    <div style="font-size: 12px; color: #ffd699; line-height: 1.4;">
+                        Бой был просчитан до конца автоматически.
+                    </div>
+                </div>
+            ` : ''}
+
+            <!-- Информация о противнике -->
+            <div style="
+                background: rgba(0, 0, 0, 0.3);
+                padding: 12px;
+                border-radius: 10px;
+                margin-bottom: 15px;
+                text-align: center;
+            ">
+                <div style="font-size: 12px; color: #aaa; margin-bottom: 3px;">Противник</div>
+                <div style="font-size: 18px; font-weight: bold; color: white;">${opponentName}</div>
+                <div style="font-size: 12px; color: #aaa; margin-top: 3px;">Рейтинг: ${opponentRating}</div>
+            </div>
+
+            <!-- Изменение рейтинга -->
+            <div style="
+                background: rgba(0, 0, 0, 0.3);
+                padding: 15px;
+                border-radius: 10px;
+                margin-bottom: 15px;
+            ">
+                <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 15px; align-items: center;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 11px; color: #aaa; margin-bottom: 3px;">Было</div>
+                        <div style="font-size: 20px; color: #7289da; font-weight: bold;">${currentRating}</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 28px; color: ${ratingColor}; font-weight: bold;">
+                            ${ratingChangeText}
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 11px; color: #aaa; margin-bottom: 3px;">Стало</div>
+                        <div style="font-size: 20px; color: ${titleColor}; font-weight: bold;">${newRating}</div>
+                    </div>
+                </div>
+                <div style="
+                    text-align: center;
+                    margin-top: 12px;
+                    padding: 10px;
+                    background: rgba(0, 0, 0, 0.2);
+                    border-radius: 8px;
+                ">
+                    <div style="font-size: 14px; color: #ffa500;">${leagueInfo}</div>
+                </div>
+            </div>
+
+            ${expGained > 0 ? `
+                <div style="
+                    background: rgba(255, 165, 0, 0.15);
+                    padding: 12px;
+                    border-radius: 10px;
+                    margin-bottom: 15px;
+                    text-align: center;
+                    border: 1px solid rgba(255, 165, 0, 0.4);
+                ">
+                    <div style="font-size: 12px; color: #ffa500; margin-bottom: 3px;">Опыт получен</div>
+                    <div style="font-size: 20px; color: #ffa500; font-weight: bold;">+${expGained} XP</div>
+                </div>
+            ` : ''}
+
+            <!-- Статистика -->
+            <div style="
+                background: rgba(0, 0, 0, 0.2);
+                padding: 12px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+            ">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center;">
+                    <div>
+                        <div style="font-size: 11px; color: #aaa;">Побед</div>
+                        <div style="color: #4CAF50; font-size: 20px; font-weight: bold;">${window.userData?.wins || 0}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: #aaa;">Поражений</div>
+                        <div style="color: #f44336; font-size: 20px; font-weight: bold;">${window.userData?.losses || 0}</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: #aaa;">Всего боёв</div>
+                        <div style="color: #7289da; font-size: 20px; font-weight: bold;">${window.userData?.total_battles || 0}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопки -->
+            <div style="display: flex; gap: 12px; justify-content: center;">
+                <button id="arena-result-new-fight" style="
+                    flex: 1;
+                    max-width: 200px;
+                    padding: 12px 20px;
+                    border: none;
+                    border-radius: 8px;
+                    background: #7289da;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-weight: bold;
+                    transition: all 0.2s;
+                    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+                ">
+                    ⚔️ Новый бой
+                </button>
+
+                <button id="arena-result-return" style="
+                    flex: 1;
+                    max-width: 200px;
+                    padding: 12px 20px;
+                    border: 2px solid #7289da;
+                    border-radius: 8px;
+                    background: rgba(0, 0, 0, 0.3);
+                    color: white;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-weight: bold;
+                    transition: all 0.2s;
+                    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+                ">
+                    🏠 Вернуться
+                </button>
+            </div>
+        `;
+
+        overlay.appendChild(container);
+
+        // Навешиваем обработчики на кнопки
+        const newFightBtn = document.getElementById('arena-result-new-fight');
+        const returnBtn = document.getElementById('arena-result-return');
+
+        if (newFightBtn) {
+            newFightBtn.onmouseover = () => {
+                newFightBtn.style.background = '#5a6ebd';
+                newFightBtn.style.transform = 'scale(1.05)';
+            };
+            newFightBtn.onmouseout = () => {
+                newFightBtn.style.background = '#7289da';
+                newFightBtn.style.transform = 'scale(1)';
+            };
+            newFightBtn.onclick = () => {
+                console.log('🎮 Нажата кнопка "Новый бой" в окне арены');
+                // Показываем выбор противника в том же окне арены
+                showArenaOpponentSelection();
+            };
+        }
+
+        if (returnBtn) {
+            returnBtn.onmouseover = () => {
+                returnBtn.style.background = 'rgba(255, 0, 0, 0.2)';
+                returnBtn.style.borderColor = '#ff6b6b';
+                returnBtn.style.transform = 'scale(1.05)';
+            };
+            returnBtn.onmouseout = () => {
+                returnBtn.style.background = 'rgba(0, 0, 0, 0.3)';
+                returnBtn.style.borderColor = '#7289da';
+                returnBtn.style.transform = 'scale(1)';
+            };
+            returnBtn.onclick = () => {
+                console.log('🏠 Нажата кнопка "Вернуться" в окне арены');
+                closePvPArenaModalBg();
+            };
+        }
+
+        console.log('✅ Результаты боя показаны в окне арены с фоном');
+    }, 100);
+}
+
 // Экспортируем функции
 window.showPvPArenaModalBg = showPvPArenaModalBg;
 window.closePvPArenaModalBg = closePvPArenaModalBg;
@@ -1314,3 +1581,4 @@ window.showArenaFormation = showArenaFormation;
 window.showArenaOpponentSelection = showArenaOpponentSelection;
 window.showArenaLeaderboard = showArenaLeaderboard;
 window.showArenaMainMenu = showArenaMainMenu;
+window.showArenaResult = showArenaResult;

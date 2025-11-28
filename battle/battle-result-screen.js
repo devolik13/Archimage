@@ -2,7 +2,7 @@
 console.log('✅ battle-result-screen.js загружен');
 
 /**
- * Показать экран результатов боя используя ModalSystem
+ * Показать экран результатов боя используя окно арены с фоном
  * @param {string} result - 'win' или 'loss'
  * @param {object} battleData - Данные о бое
  */
@@ -10,6 +10,16 @@ function showBattleResult(result, battleData = {}) {
     console.log('🎬 showBattleResult вызвана!');
     console.log('   result:', result);
     console.log('   battleData:', battleData);
+
+    // Используем новое окно арены с фоном если доступно
+    if (typeof window.showArenaResult === 'function') {
+        console.log('✅ Используем showArenaResult с фоном арены');
+        window.showArenaResult(result, battleData);
+        return;
+    }
+
+    // Fallback на старое модальное окно если showArenaResult недоступна
+    console.log('⚠️ showArenaResult недоступна, используем fallback');
 
     const {
         opponentName = 'Противник',
@@ -239,7 +249,15 @@ function showBattleResult(result, battleData = {}) {
                 newFightBtn.onclick = () => {
                     console.log('🎮 Нажата кнопка "Новый бой"');
                     closeBattleResult();
-                    if (typeof window.showOpponentSelection === 'function') {
+                    // Используем новое окно арены с фоном
+                    if (typeof window.showPvPArenaModalBg === 'function') {
+                        window.showPvPArenaModalBg();
+                        setTimeout(() => {
+                            if (typeof window.showArenaOpponentSelection === 'function') {
+                                window.showArenaOpponentSelection();
+                            }
+                        }, 150);
+                    } else if (typeof window.showOpponentSelection === 'function') {
                         window.showOpponentSelection();
                     }
                 };
