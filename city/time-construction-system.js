@@ -196,27 +196,276 @@ async function startWizardHire(currentWizardCount) {
     return true;
 }
 
-// Обновленное модальное окно с кнопкой разработчика
+// Модальное окно строительства с фоном башни
 function showConstructionModal(constructionIndex) {
     // Проверяем флаг блокировки
     if (blockConstructionModalReopen) {
         console.log('🚫 Открытие модалки заблокировано (blockConstructionModalReopen = true)');
         return;
     }
-    
+
     const construction = window.userData.constructions[constructionIndex];
     if (!construction) return;
-    
+
     const timeRemaining = construction.time_remaining;
     const currentTimeCurrency = window.getTimeCurrency();
     const canAffordSpeedup = currentTimeCurrency >= timeRemaining;
-    
-    const itemName = construction.type === 'spell' ? 
-        `Заклинание: ${construction.spell_id}` : 
-        (construction.type === 'wizard' ? 
-            `Маг ${construction.wizard_index}` : 
+
+    const itemName = construction.type === 'spell' ?
+        `Заклинание: ${construction.spell_id}` :
+        (construction.type === 'wizard' ?
+            `Маг ${construction.wizard_index}` :
             getBuildingName(construction.building_id));
-    
+
+    let operationType = '';
+    let operationIcon = '';
+    if (construction.type === 'spell') {
+        operationType = 'Изучение заклинания';
+        operationIcon = '📖';
+    } else if (construction.type === 'wizard') {
+        operationType = 'Найм мага';
+        operationIcon = '🧙';
+    } else if (construction.is_upgrade) {
+        operationType = 'Улучшение здания';
+        operationIcon = '🔧';
+    } else {
+        operationType = 'Строительство здания';
+        operationIcon = '🏗️';
+    }
+
+    // Определяем фракцию для фона
+    const faction = window.userData?.faction || 'fire';
+    const imagePath = `assets/ui/window/tower_${faction}.webp`;
+
+    // Удаляем старый экран если есть
+    const existingScreen = document.getElementById('construction-modal-screen');
+    if (existingScreen) {
+        existingScreen.remove();
+    }
+
+    // Создаем новый экран
+    const screen = document.createElement('div');
+    screen.id = 'construction-modal-screen';
+
+    screen.innerHTML = `
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <img class="construction-bg-image" id="construction-bg-image" src="${imagePath}" alt="Строительство"
+                 style="max-width: 95vw; max-height: 90vh; object-fit: contain; border-radius: 10px; box-shadow: 0 0 30px rgba(0,0,0,0.8);">
+            <div class="construction-ui-overlay" id="construction-ui-overlay"></div>
+        </div>
+    `;
+
+    screen.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 3000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+
+    document.body.appendChild(screen);
+
+    const img = document.getElementById('construction-bg-image');
+
+    const setupUI = () => {
+        const overlay = document.getElementById('construction-ui-overlay');
+        if (!img || !overlay) return;
+
+        const rect = img.getBoundingClientRect();
+
+        overlay.style.cssText = `
+            position: absolute;
+            left: ${rect.left}px;
+            top: ${rect.top}px;
+            width: ${rect.width}px;
+            height: ${rect.height}px;
+            pointer-events: none;
+        `;
+
+        const scaleX = rect.width / 768;
+        const scaleY = rect.height / 512;
+
+        const baseFontSize = Math.max(12, 16 * Math.min(scaleX, scaleY));
+        const titleFontSize = Math.max(16, 22 * Math.min(scaleX, scaleY));
+        const smallFontSize = Math.max(10, 13 * Math.min(scaleX, scaleY));
+
+        // Контентная область
+        const contentArea = {
+            x: 115 * scaleX,
+            y: 70 * scaleY,
+            width: (655 - 115) * scaleX,
+            height: (440 - 70) * scaleY
+        };
+
+        // Создаём контейнер для контента
+        const container = document.createElement('div');
+        container.style.cssText = `
+            position: absolute;
+            left: ${contentArea.x}px;
+            top: ${contentArea.y}px;
+            width: ${contentArea.width}px;
+            height: ${contentArea.height}px;
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            box-sizing: border-box;
+        `;
+
+        const progress = ((construction.time_required - timeRemaining) / construction.time_required * 100);
+
+        container.innerHTML = `
+            <!-- Заголовок -->
+            <div style="text-align: center; margin-bottom: ${10 * scaleY}px;">
+                <div style="font-size: ${titleFontSize * 1.2}px;">${operationIcon}</div>
+                <h3 style="margin: ${5 * scaleY}px 0; color: #FFD700; font-size: ${titleFontSize}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.9);">
+                    ${operationType}
+                </h3>
+                <div style="color: white; font-size: ${baseFontSize}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                    ${itemName}${construction.target_level ? ` → Ур. ${construction.target_level}` : ''}
+                </div>
+            </div>
+
+            <!-- Прогресс -->
+            <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 165, 0, 0.5); backdrop-filter: blur(5px); padding: ${12 * scaleY}px; border-radius: 8px; margin-bottom: ${10 * scaleY}px;">
+                <div style="text-align: center; margin-bottom: ${8 * scaleY}px;">
+                    <div style="font-size: ${smallFontSize}px; color: #aaa; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">Осталось времени:</div>
+                    <div style="font-size: ${titleFontSize}px; color: #ffa500; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+                        ${formatTimeCurrency(timeRemaining)}
+                    </div>
+                </div>
+
+                <div style="width: 100%; background: rgba(0, 0, 0, 0.5); height: ${16 * scaleY}px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="
+                        width: ${progress}%;
+                        height: 100%;
+                        background: linear-gradient(90deg, rgba(74, 222, 128, 0.8) 0%, rgba(34, 197, 94, 0.8) 100%);
+                        transition: width 0.3s;
+                        box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+                    "></div>
+                </div>
+                <div style="text-align: center; margin-top: ${4 * scaleY}px; font-size: ${smallFontSize * 0.9}px; color: #4ade80; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                    ${Math.round(progress)}% завершено
+                </div>
+            </div>
+
+            <!-- Кнопки -->
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: ${8 * scaleY}px;">
+                ${DEV_MODE ? `
+                    <button onclick="devInstantComplete(${constructionIndex}); closeConstructionModalBg();" style="
+                        width: 100%;
+                        padding: ${10 * scaleY}px;
+                        border: 1px solid rgba(147, 51, 234, 0.6);
+                        border-radius: 6px;
+                        background: rgba(147, 51, 234, 0.3);
+                        backdrop-filter: blur(3px);
+                        color: white;
+                        cursor: pointer;
+                        font-weight: bold;
+                        font-size: ${baseFontSize}px;
+                        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+                    ">
+                        🚀 [DEV] Завершить мгновенно
+                    </button>
+                ` : ''}
+
+                <button
+                    onclick="speedupConstruction(${constructionIndex})"
+                    style="
+                        width: 100%;
+                        padding: ${10 * scaleY}px;
+                        border: 1px solid ${canAffordSpeedup ? 'rgba(255, 165, 0, 0.6)' : 'rgba(100, 100, 100, 0.6)'};
+                        border-radius: 6px;
+                        background: ${canAffordSpeedup ? 'rgba(255, 165, 0, 0.3)' : 'rgba(60, 60, 60, 0.3)'};
+                        backdrop-filter: blur(3px);
+                        color: white;
+                        cursor: ${canAffordSpeedup ? 'pointer' : 'not-allowed'};
+                        font-weight: bold;
+                        font-size: ${baseFontSize}px;
+                        text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+                        opacity: ${canAffordSpeedup ? '1' : '0.6'};
+                    "
+                    ${!canAffordSpeedup ? 'disabled' : ''}
+                >
+                    ⚡ Ускорить за ${formatTimeCurrency(timeRemaining)}
+                    <div style="font-size: ${smallFontSize * 0.9}px; margin-top: 3px; opacity: 0.9;">
+                        У вас: ${formatTimeCurrency(currentTimeCurrency)}
+                    </div>
+                </button>
+
+                <button onclick="cancelConstruction(${constructionIndex}); closeConstructionModalBg();" style="
+                    width: 100%;
+                    padding: ${10 * scaleY}px;
+                    border: 1px solid rgba(255, 82, 82, 0.6);
+                    border-radius: 6px;
+                    background: rgba(255, 82, 82, 0.3);
+                    backdrop-filter: blur(3px);
+                    color: white;
+                    cursor: pointer;
+                    font-size: ${baseFontSize}px;
+                    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+                ">
+                    ❌ Отменить (вернет 50%)
+                </button>
+
+                <button onclick="closeConstructionModalBg()" style="
+                    width: 100%;
+                    padding: ${8 * scaleY}px;
+                    border: 1px solid rgba(114, 137, 218, 0.5);
+                    border-radius: 6px;
+                    background: transparent;
+                    color: #7289da;
+                    cursor: pointer;
+                    font-size: ${baseFontSize}px;
+                    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+                ">
+                    ← Закрыть
+                </button>
+            </div>
+        `;
+
+        overlay.appendChild(container);
+    };
+
+    img.onload = setupUI;
+    if (img.complete) setupUI();
+
+    img.onerror = () => {
+        console.error('❌ Не удалось загрузить фон');
+        screen.remove();
+        // Fallback на старую модалку
+        showConstructionModalFallback(constructionIndex);
+    };
+}
+
+// Закрыть модальное окно строительства с фоном
+function closeConstructionModalBg() {
+    const screen = document.getElementById('construction-modal-screen');
+    if (screen) {
+        screen.remove();
+    }
+}
+
+// Fallback версия модального окна (без фона)
+function showConstructionModalFallback(constructionIndex) {
+    const construction = window.userData.constructions[constructionIndex];
+    if (!construction) return;
+
+    const timeRemaining = construction.time_remaining;
+    const currentTimeCurrency = window.getTimeCurrency();
+    const canAffordSpeedup = currentTimeCurrency >= timeRemaining;
+
+    const itemName = construction.type === 'spell' ?
+        `Заклинание: ${construction.spell_id}` :
+        (construction.type === 'wizard' ?
+            `Маг ${construction.wizard_index}` :
+            getBuildingName(construction.building_id));
+
     let operationType = '';
     if (construction.type === 'spell') {
         operationType = '📖 Изучение заклинания';
@@ -227,26 +476,26 @@ function showConstructionModal(constructionIndex) {
     } else {
         operationType = '🏗️ Строительство здания';
     }
-    
+
     const modalContent = `
         <div style="padding: 20px; max-width: 400px; background: #2c2c3d; border-radius: 10px; color: white;">
             <h3 style="margin-top: 0; color: #7289da;">
                 ${operationType}
             </h3>
-            
+
             <div style="background: #3d3d5c; padding: 15px; border-radius: 8px; margin: 15px 0;">
                 <div style="font-size: 16px; margin-bottom: 10px;">
                     <strong>${itemName}</strong>
                     ${construction.target_level ? ` → Уровень ${construction.target_level}` : ''}
                 </div>
-                
+
                 <div style="margin: 10px 0;">
                     <div style="font-size: 14px; color: #aaa; margin-bottom: 5px;">Осталось времени:</div>
                     <div style="font-size: 20px; color: #ffa500; font-weight: bold;">
                         ${formatTimeCurrency(timeRemaining)}
                     </div>
                 </div>
-                
+
                 <div style="width: 100%; background: #2a2a3a; height: 20px; border-radius: 10px; overflow: hidden; margin-top: 10px;">
                     <div style="
                         width: ${((construction.time_required - timeRemaining) / construction.time_required * 100)}%;
@@ -256,36 +505,16 @@ function showConstructionModal(constructionIndex) {
                     "></div>
                 </div>
             </div>
-            
-            ${DEV_MODE ? `
-                <button onclick="devInstantComplete(${constructionIndex})" style="
-                    width: 100%;
-                    margin-bottom: 10px;
-                    padding: 12px;
-                    border: none;
-                    border-radius: 6px;
-                    background: linear-gradient(90deg, #9333ea 0%, #c026d3 100%);
-                    color: white;
-                    cursor: pointer;
-                    font-weight: bold;
-                    font-size: 16px;
-                ">
-                    🚀 [DEV] Завершить мгновенно
-                </button>
-            ` : ''}
-            
-            <!-- Кнопка ускорения -->
-            <button 
-                onclick="speedupConstruction(${constructionIndex})" 
+
+            <button
+                onclick="speedupConstruction(${constructionIndex})"
                 style="
                     width: 100%;
                     margin-bottom: 10px;
                     padding: 12px;
                     border: none;
                     border-radius: 6px;
-                    background: ${canAffordSpeedup ? 
-                        'linear-gradient(90deg, #ffa500 0%, #ff8c00 100%)' : 
-                        '#666'};
+                    background: ${canAffordSpeedup ? 'linear-gradient(90deg, #ffa500 0%, #ff8c00 100%)' : '#666'};
                     color: white;
                     cursor: ${canAffordSpeedup ? 'pointer' : 'not-allowed'};
                     font-weight: bold;
@@ -299,24 +528,22 @@ function showConstructionModal(constructionIndex) {
                     У вас: ${formatTimeCurrency(currentTimeCurrency)}
                 </div>
             </button>
-            
-            <div style="display: flex; gap: 10px;">
-                <button onclick="cancelConstruction(${constructionIndex})" style="
-                    flex: 1;
-                    padding: 10px;
-                    border: none;
-                    border-radius: 6px;
-                    background: #ff5252;
-                    color: white;
-                    cursor: pointer;
-                ">
-                    ❌ Отменить (вернет 50%)
-                </button>
-            </div>
-            
+
+            <button onclick="cancelConstruction(${constructionIndex})" style="
+                width: 100%;
+                margin-bottom: 10px;
+                padding: 10px;
+                border: none;
+                border-radius: 6px;
+                background: #ff5252;
+                color: white;
+                cursor: pointer;
+            ">
+                ❌ Отменить (вернет 50%)
+            </button>
+
             <button onclick="closeCurrentModal()" style="
                 width: 100%;
-                margin-top: 10px;
                 padding: 8px;
                 border: 1px solid #7289da;
                 border-radius: 6px;
@@ -328,7 +555,7 @@ function showConstructionModal(constructionIndex) {
             </button>
         </div>
     `;
-    
+
     showModal(modalContent);
 }
 
@@ -343,6 +570,7 @@ function speedupConstruction(constructionIndex) {
     blockConstructionModalReopen = true;
     
     // Закрываем модалку СРАЗУ
+    closeConstructionModalBg(); // Новое окно с фоном
     if (window.Modal && window.Modal.close) {
         window.Modal.close(false);
     }
@@ -865,6 +1093,7 @@ window.cancelConstruction = cancelConstruction;
 window.saveConstruction = saveConstructionsToServer;
 // formatTimeCurrency используется из utilities.js
 window.showConstructionModal = showConstructionModal;
+window.closeConstructionModalBg = closeConstructionModalBg;
 window.speedupConstruction = speedupConstruction;
 window.startConstruction = startConstruction;
 window.startSpellLearning = startSpellLearning;
