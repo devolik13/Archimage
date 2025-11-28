@@ -412,7 +412,7 @@ function showConstructionModal(constructionIndex) {
                     </div>
                 </button>
 
-                <button onclick="cancelConstruction(${constructionIndex}); closeConstructionModalBg();" style="
+                <button onclick="showCancelConfirmation(${constructionIndex});" style="
                     width: 100%;
                     padding: ${10 * scaleY}px;
                     border: 1px solid rgba(255, 82, 82, 0.6);
@@ -549,7 +549,7 @@ function showConstructionModalFallback(constructionIndex) {
                 </div>
             </button>
 
-            <button onclick="cancelConstruction(${constructionIndex})" style="
+            <button onclick="showCancelConfirmation(${constructionIndex})" style="
                 width: 100%;
                 margin-bottom: 10px;
                 padding: 10px;
@@ -1083,33 +1083,145 @@ async function saveConstructionsToServer() {
     */
 }
 
+// Показать диалог подтверждения отмены
+function showCancelConfirmation(constructionIndex) {
+    const construction = window.userData.constructions[constructionIndex];
+    if (!construction) return;
+
+    // Рассчитываем возврат
+    const refund = Math.floor((construction.time_required - construction.time_remaining) * 0.5);
+
+    // Удаляем старый диалог если есть
+    const oldDialog = document.getElementById('cancel-confirm-dialog');
+    if (oldDialog) oldDialog.remove();
+
+    // Создаем overlay для диалога
+    const overlay = document.createElement('div');
+    overlay.id = 'cancel-confirm-dialog';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100002;
+        animation: fadeIn 0.2s ease;
+    `;
+
+    // Создаем диалог
+    const dialog = document.createElement('div');
+    dialog.style.cssText = `
+        background: linear-gradient(135deg, #2c2c3d 0%, #1a1a2e 100%);
+        border: 2px solid #ff5252;
+        border-radius: 12px;
+        padding: 20px;
+        max-width: 320px;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(255, 82, 82, 0.3);
+        animation: scaleIn 0.2s ease;
+    `;
+
+    dialog.innerHTML = `
+        <style>
+            @keyframes scaleIn {
+                from { transform: scale(0.8); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+        </style>
+        <div style="font-size: 32px; margin-bottom: 10px;">⚠️</div>
+        <h3 style="color: #ff5252; margin: 0 0 15px 0; font-size: 18px;">Отменить строительство?</h3>
+        <p style="color: #ccc; margin: 0 0 15px 0; font-size: 14px; line-height: 1.4;">
+            Вы уверены, что хотите отменить?<br>
+            Вам вернется <span style="color: #ffa500; font-weight: bold;">${formatTimeCurrency(refund)}</span>
+        </p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button id="confirm-cancel-yes" style="
+                padding: 10px 25px;
+                border: none;
+                border-radius: 8px;
+                background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
+                color: white;
+                font-weight: bold;
+                font-size: 14px;
+                cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s;
+            ">
+                Да, отменить
+            </button>
+            <button id="confirm-cancel-no" style="
+                padding: 10px 25px;
+                border: 2px solid #7289da;
+                border-radius: 8px;
+                background: transparent;
+                color: #7289da;
+                font-weight: bold;
+                font-size: 14px;
+                cursor: pointer;
+                transition: transform 0.2s, box-shadow 0.2s;
+            ">
+                Нет
+            </button>
+        </div>
+    `;
+
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+
+    // Обработчики кнопок
+    document.getElementById('confirm-cancel-yes').onclick = function() {
+        overlay.remove();
+        cancelConstruction(constructionIndex);
+    };
+
+    document.getElementById('confirm-cancel-no').onclick = function() {
+        overlay.remove();
+    };
+
+    // Закрытие по клику на overlay
+    overlay.onclick = function(e) {
+        if (e.target === overlay) {
+            overlay.remove();
+        }
+    };
+}
+
 // Отмена строительства (возврат 50% времени)
 function cancelConstruction(constructionIndex) {
     const construction = window.userData.constructions[constructionIndex];
     if (!construction) return;
-    
+
     // Возвращаем 50% потраченного времени
     const refund = Math.floor((construction.time_required - construction.time_remaining) * 0.5);
     if (refund > 0) {
         addTimeCurrency(refund);
     }
-    
+
     // Удаляем из очереди
     window.userData.constructions.splice(constructionIndex, 1);
-    
+
     closeCurrentModal();
+    closeConstructionModalBg();
     // updateBuildingsGrid();
     updateConstructionUI();
     saveConstructionsToServer();
-    
+
     // Используем глобальную функцию showNotification из script_buildings.js
     if (typeof window.showNotification === 'function') {
-        window.showNotification(`Строительство отменено. Возвращено ${formatTimeCurrency(refund)}`);
+        window.showNotification(`Строительство отменено. Возвращено ${formatTimeCurrency(refund)}`, 'warning');
     }
 }
 window.startWizardHire = startWizardHire;
 window.WIZARD_HIRE_TIME = WIZARD_HIRE_TIME;
 window.cancelConstruction = cancelConstruction;
+window.showCancelConfirmation = showCancelConfirmation;
 window.saveConstruction = saveConstructionsToServer;
 // formatTimeCurrency используется из utilities.js
 window.showConstructionModal = showConstructionModal;
