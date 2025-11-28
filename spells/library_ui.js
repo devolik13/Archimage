@@ -97,16 +97,29 @@ function setupLibraryClickableZones() {
             justify-content: center;
         `;
 
-        // Добавляем текст "Назад" прямо в кнопку
-        if (zone.id === 'back') {
-            const fontSize = Math.max(16, 20 * Math.min(scaleX, scaleY));
+        // Добавляем текст на каждую кнопку
+        const fontSize = Math.max(14, 18 * Math.min(scaleX, scaleY));
+        const schoolNames = {
+            'fire': { name: 'Огонь', icon: '🔥', color: '#ff6b35' },
+            'water': { name: 'Вода', icon: '💧', color: '#4da6ff' },
+            'wind': { name: 'Ветер', icon: '💨', color: '#a0d8ef' },
+            'earth': { name: 'Земля', icon: '🪨', color: '#8b7355' },
+            'nature': { name: 'Природа', icon: '🌿', color: '#4ade80' },
+            'poison': { name: 'Яд', icon: '☠️', color: '#9b59b6' },
+            'back': { name: 'Назад', icon: '←', color: '#FFFFFF' }
+        };
+
+        const schoolInfo = schoolNames[zone.id];
+        if (schoolInfo) {
             zoneDiv.innerHTML = `<div style="
                 font-size: ${fontSize}px;
-                color: #FFFFFF;
-                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+                color: ${schoolInfo.color};
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.8);
                 font-weight: bold;
                 pointer-events: none;
-            ">Назад</div>`;
+                text-align: center;
+                line-height: 1.2;
+            ">${zone.id !== 'back' ? schoolInfo.icon + '<br>' : ''}${schoolInfo.name}</div>`;
         }
 
         // DEV: Подсветка кликабельных зон
