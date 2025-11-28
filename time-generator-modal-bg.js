@@ -4,7 +4,13 @@ console.log('✅ time-generator-modal-bg.js загружен');
 // Открыть окно Генератора времени
 function showTimeGeneratorModalBg() {
     console.log('🧪 Открытие окна Генератора времени с фоном');
-    
+
+    // Скрываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'none';
+    }
+
     // Закрываем предыдущие модальные окна
     if (typeof closeAllModals === 'function') {
         closeAllModals();
@@ -477,6 +483,12 @@ function closeTimeGeneratorModalBg() {
     const screen = document.getElementById('time-generator-screen');
     if (screen) {
         screen.remove();
+    }
+
+    // Показываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'flex';
     }
 }
 

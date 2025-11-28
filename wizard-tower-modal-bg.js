@@ -4,7 +4,13 @@ console.log('✅ wizard-tower-modal-bg.js загружен');
 // Показать окно башни магов с фоном
 function showWizardTowerModalBg() {
     console.log('🧙‍♂️ Открытие башни магов с фоном');
-    
+
+    // Скрываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'none';
+    }
+
     // Закрываем предыдущие модальные окна
     if (typeof closeAllModals === 'function') {
         closeAllModals();
@@ -477,6 +483,12 @@ function closeWizardTowerModalBg() {
     const screen = document.getElementById('wizard-tower-screen');
     if (screen) {
         screen.remove();
+    }
+
+    // Показываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'flex';
     }
 }
 

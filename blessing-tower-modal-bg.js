@@ -4,7 +4,13 @@ console.log('✅ blessing-tower-modal-bg.js загружен');
 // Открыть окно Башни благословения
 function showBlessingTowerModalBg() {
     console.log('🙏 Открытие окна Башни благословения с фоном');
-    
+
+    // Скрываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'none';
+    }
+
     // Закрываем предыдущие модальные окна
     if (typeof closeAllModals === 'function') {
         closeAllModals();
@@ -475,6 +481,12 @@ function closeBlessingTowerModalBg() {
     const screen = document.getElementById('blessing-tower-screen');
     if (screen) {
         screen.remove();
+    }
+
+    // Показываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'flex';
     }
 }
 

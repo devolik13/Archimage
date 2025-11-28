@@ -4,7 +4,13 @@ console.log('✅ pvp-arena-modal-bg.js загружен');
 // Показать окно PvP арены с фоном
 function showPvPArenaModalBg() {
     console.log('🎮 Открытие PvP арены с фоном');
-    
+
+    // Скрываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'none';
+    }
+
     // Закрываем предыдущие модальные окна
     if (typeof closeCurrentModal === 'function') {
         closeCurrentModal();
@@ -414,8 +420,12 @@ function closePvPArenaModalBg() {
         bottomPanel.style.visibility = 'visible';
     }
 
-    // Пересоздаём аватар игрока
-    if (typeof window.createPlayerAvatarUI === 'function') {
+    // Показываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'flex';
+    } else if (typeof window.createPlayerAvatarUI === 'function') {
+        // Пересоздаём аватар если не существует
         window.createPlayerAvatarUI();
     }
 }

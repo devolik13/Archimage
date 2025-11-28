@@ -4,7 +4,13 @@ console.log('✅ arcane-lab-modal-bg.js загружен');
 // Открыть окно Арканской лаборатории
 function showArcaneLabModalBg() {
     console.log('🧪 Открытие окна Арканской лаборатории с фоном');
-    
+
+    // Скрываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'none';
+    }
+
     // Закрываем предыдущие модальные окна
     if (typeof closeAllModals === 'function') {
         closeAllModals();
@@ -421,6 +427,12 @@ function closeArcaneLabModalBg() {
     const screen = document.getElementById('arcane-lab-screen');
     if (screen) {
         screen.remove();
+    }
+
+    // Показываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'flex';
     }
 }
 

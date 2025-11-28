@@ -7,7 +7,13 @@ let libraryUpdateInterval = null;
 // ========== ГЛАВНЫЙ ЭКРАН: 6 ШКОЛ ==========
 function showLibrary() {
     console.log('📚 Открытие библиотеки');
-    
+
+    // Скрываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'none';
+    }
+
     const cityView = document.getElementById('city-view');
     if (cityView) cityView.style.display = 'none';
     
@@ -119,7 +125,7 @@ function setupLibraryClickableZones() {
                 pointer-events: none;
                 text-align: center;
                 line-height: 1.2;
-            ">${zone.id !== 'back' ? schoolInfo.icon + '<br>' : ''}${schoolInfo.name}</div>`;
+            ">${schoolInfo.name}</div>`;
         }
 
         // DEV: Подсветка кликабельных зон
@@ -515,6 +521,12 @@ function closeLibrary() {
 
     const cityView = document.getElementById('city-view');
     if (cityView) cityView.style.display = 'block';
+
+    // Показываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'flex';
+    }
 
     // ВАЖНО: Показываем таймер исследования если есть активное изучение
     if (window.addSpellResearchVisualization) {

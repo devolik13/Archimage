@@ -154,6 +154,12 @@ function createPlayerAvatarUI() {
 function showPlayerProfile() {
     console.log('👤 Открытие профиля игрока с фоном');
 
+    // Скрываем аватар игрока (сам себя)
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'none';
+    }
+
     const level = calculatePlayerLevel();
     const breakdown = getPointsBreakdown();
 
@@ -288,9 +294,9 @@ function showPlayerProfile() {
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: ${10 * scaleX}px;">
                 <!-- Левая колонка - Статистика боев -->
-                <div style="background: rgba(0, 0, 0, 0.5); padding: ${10 * scaleY}px; border-radius: 8px; backdrop-filter: blur(5px);">
-                    <h4 style="margin: 0 0 ${6 * scaleY}px 0; color: #7289da; font-size: ${Math.max(16, 19 * scaleY)}px;">⚔️ Статистика боев</h4>
-                    <div style="font-size: ${Math.max(14, 17 * scaleY)}px; line-height: 1.4;">
+                <div style="padding: ${10 * scaleY}px;">
+                    <h4 style="margin: 0 0 ${6 * scaleY}px 0; color: #7289da; font-size: ${Math.max(16, 19 * scaleY)}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.9);">⚔️ Статистика боев</h4>
+                    <div style="font-size: ${Math.max(14, 17 * scaleY)}px; line-height: 1.4; text-shadow: 2px 2px 4px rgba(0,0,0,0.9);">
                         <div>🎯 Рейтинг: <strong style="color: #ffa500;">${leagueInfo}</strong></div>
                         <div>📊 Боев: <strong>${totalBattles}</strong></div>
                         <div>🏆 <strong style="color: #4CAF50;">${wins}</strong> / 💀 <strong style="color: #f44336;">${losses}</strong></div>
@@ -299,13 +305,13 @@ function showPlayerProfile() {
                 </div>
 
                 <!-- Правая колонка - Прогресс -->
-                <div style="background: rgba(0, 0, 0, 0.5); padding: ${10 * scaleY}px; border-radius: 8px; backdrop-filter: blur(5px);">
-                    <h4 style="margin: 0 0 ${6 * scaleY}px 0; color: #7289da; font-size: ${Math.max(16, 19 * scaleY)}px;">📚 Прогресс</h4>
-                    <div style="font-size: ${Math.max(14, 17 * scaleY)}px; line-height: 1.4;">
+                <div style="padding: ${10 * scaleY}px;">
+                    <h4 style="margin: 0 0 ${6 * scaleY}px 0; color: #7289da; font-size: ${Math.max(16, 19 * scaleY)}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.9);">📚 Прогресс</h4>
+                    <div style="font-size: ${Math.max(14, 17 * scaleY)}px; line-height: 1.4; text-shadow: 2px 2px 4px rgba(0,0,0,0.9);">
                         <div>📖 Заклинания: <strong>${breakdown.spells}</strong></div>
                         <div>🏛️ Здания: <strong>${breakdown.buildings}</strong></div>
                         <div>🧙‍♂️ Маги: <strong>${breakdown.wizards}</strong></div>
-                        <div style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: ${5 * scaleY}px; padding-top: ${5 * scaleY}px;">
+                        <div style="border-top: 1px solid rgba(255,255,255,0.3); margin-top: ${5 * scaleY}px; padding-top: ${5 * scaleY}px;">
                             📊 Всего: <strong style="color: #ffa500;">${level}</strong> очков
                         </div>
                     </div>
@@ -346,6 +352,11 @@ function showPlayerProfile() {
         };
         closeBtn.onclick = () => {
             screen.remove();
+            // Показываем аватар игрока
+            const avatar = document.getElementById('player-avatar-container');
+            if (avatar) {
+                avatar.style.display = 'flex';
+            }
         };
 
         overlay.appendChild(closeBtn);
@@ -359,6 +370,11 @@ function showPlayerProfile() {
     img.onerror = () => {
         console.error('❌ Не удалось загрузить фон профиля, используем fallback');
         screen.remove();
+        // Показываем аватар при ошибке
+        const avatar = document.getElementById('player-avatar-container');
+        if (avatar) {
+            avatar.style.display = 'flex';
+        }
         showPlayerProfileFallback(level, breakdown, totalBattles, wins, losses, rating, winRate, leagueInfo);
     };
 
@@ -366,6 +382,11 @@ function showPlayerProfile() {
     screen.onclick = (e) => {
         if (e.target === screen || e.target === screen.firstElementChild) {
             screen.remove();
+            // Показываем аватар игрока
+            const avatar = document.getElementById('player-avatar-container');
+            if (avatar) {
+                avatar.style.display = 'flex';
+            }
         }
     };
 

@@ -204,6 +204,12 @@ function showConstructionModal(constructionIndex) {
         return;
     }
 
+    // Скрываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'none';
+    }
+
     const construction = window.userData.constructions[constructionIndex];
     if (!construction) return;
 
@@ -448,6 +454,12 @@ function closeConstructionModalBg() {
     const screen = document.getElementById('construction-modal-screen');
     if (screen) {
         screen.remove();
+    }
+
+    // Показываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'flex';
     }
 }
 
