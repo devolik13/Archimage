@@ -684,9 +684,353 @@ function showNotification(message) {
     }, 2000);
 }
 
-// Показ меню выбора места для строительства
+// Показ меню выбора места для строительства с фоном башни
 function showBuildingSelectionMenu() {
-    // Создаём модальное окно для выбора здания
+    console.log('🏗️ Открытие меню строительства с фоном');
+
+    // Скрываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'none';
+    }
+
+    // Скрываем tooltip
+    if (typeof hideBuildingTooltip === 'function') {
+        hideBuildingTooltip();
+    }
+
+    // Определяем фракцию игрока
+    const faction = window.userData?.faction || 'fire';
+    const imagePath = `assets/ui/window/tower_${faction}.webp`;
+
+    // Удаляем старый экран если есть
+    const existingScreen = document.getElementById('building-selection-screen');
+    if (existingScreen) {
+        existingScreen.remove();
+    }
+
+    // Создаем новый экран
+    const screen = document.createElement('div');
+    screen.id = 'building-selection-screen';
+    screen.className = 'building-selection-screen active';
+
+    // Создаем HTML структуру
+    screen.innerHTML = `
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <img class="tower-bg-image" id="building-selection-bg" src="${imagePath}" alt="Меню строительства">
+            <div class="tower-ui-overlay" id="building-selection-overlay"></div>
+        </div>
+    `;
+
+    // Стили для экрана
+    screen.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 3000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+
+    document.body.appendChild(screen);
+
+    const img = document.getElementById('building-selection-bg');
+
+    // Настройка UI после загрузки изображения
+    img.onload = () => setupBuildingSelectionUI();
+    if (img.complete) setupBuildingSelectionUI();
+
+    // Обработка ошибки загрузки изображения
+    img.onerror = () => {
+        console.error('❌ Не удалось загрузить фон, используем стандартное окно');
+        screen.remove();
+        showBuildingSelectionMenuFallback();
+    };
+}
+
+// Настройка UI меню строительства
+function setupBuildingSelectionUI() {
+    const img = document.getElementById('building-selection-bg');
+    const overlay = document.getElementById('building-selection-overlay');
+
+    if (!img || !overlay) return;
+
+    const rect = img.getBoundingClientRect();
+
+    // Устанавливаем размеры overlay по размеру изображения
+    overlay.style.cssText = `
+        position: absolute;
+        left: ${rect.left}px;
+        top: ${rect.top}px;
+        width: ${rect.width}px;
+        height: ${rect.height}px;
+        pointer-events: none;
+    `;
+
+    // Масштаб для координат (базовый размер 768x512)
+    const scaleX = rect.width / 768;
+    const scaleY = rect.height / 512;
+
+    // ЗОНА 1: ЗАГОЛОВОК
+    const headerArea = {
+        x: 115 * scaleX,
+        y: 20 * scaleY,
+        width: (655 - 115) * scaleX,
+        height: 50 * scaleY
+    };
+
+    // ЗОНА 2: КОНТЕНТ (список зданий)
+    const contentArea = {
+        x: 115 * scaleX,
+        y: 70 * scaleY,
+        width: (655 - 115) * scaleX,
+        height: (410 - 70) * scaleY
+    };
+
+    // ЗОНА 3: КНОПКА ЗАКРЫТЬ
+    const footerArea = {
+        x: 115 * scaleX,
+        y: 420 * scaleY,
+        width: (655 - 115) * scaleX,
+        height: 60 * scaleY
+    };
+
+    // Адаптивные размеры шрифтов
+    const titleFontSize = Math.max(16, 22 * Math.min(scaleX, scaleY));
+    const baseFontSize = Math.max(12, 14 * Math.min(scaleX, scaleY));
+    const smallFontSize = Math.max(10, 12 * Math.min(scaleX, scaleY));
+
+    // Конфигурация зданий
+    const buildableBuildings = [
+        { id: 'library', name: 'Библиотека', description: 'Изучение заклинаний', icon: '📚' },
+        { id: 'wizard_tower', name: 'Башня мага', description: 'Найм новых магов', icon: '🏯' },
+        { id: 'forge', name: 'Кузница', description: 'Улучшение снаряжения', icon: '⚔️' },
+        { id: 'pvp_arena', name: 'Арена', description: 'PvP сражения', icon: '🏟️' },
+        { id: 'blessing_tower', name: 'Башня благословения', description: 'Временные бонусы', icon: '🙏' },
+        { id: 'arcane_lab', name: 'Лаборатория', description: 'Ускорение изучения', icon: '🔬' },
+        { id: 'time_generator', name: 'Генератор времени', description: 'Производство времени', icon: '⏳' }
+    ];
+
+    // === ЗАГОЛОВОК ===
+    const headerContainer = document.createElement('div');
+    headerContainer.style.cssText = `
+        position: absolute;
+        left: ${headerArea.x}px;
+        top: ${headerArea.y}px;
+        width: ${headerArea.width}px;
+        height: ${headerArea.height}px;
+        pointer-events: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+
+    headerContainer.innerHTML = `
+        <div style="
+            color: #ffd700;
+            font-size: ${titleFontSize}px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            text-align: center;
+        ">Управление зданиями</div>
+    `;
+    overlay.appendChild(headerContainer);
+
+    // === КОНТЕНТ: СПИСОК ЗДАНИЙ ===
+    const contentContainer = document.createElement('div');
+    contentContainer.style.cssText = `
+        position: absolute;
+        left: ${contentArea.x}px;
+        top: ${contentArea.y}px;
+        width: ${contentArea.width}px;
+        height: ${contentArea.height}px;
+        pointer-events: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 5px;
+        box-sizing: border-box;
+    `;
+
+    // Стили для скроллбара
+    contentContainer.innerHTML = `
+        <style>
+            #building-selection-overlay .building-list::-webkit-scrollbar {
+                width: 8px;
+            }
+            #building-selection-overlay .building-list::-webkit-scrollbar-track {
+                background: rgba(0,0,0,0.3);
+                border-radius: 4px;
+            }
+            #building-selection-overlay .building-list::-webkit-scrollbar-thumb {
+                background: rgba(114, 137, 218, 0.6);
+                border-radius: 4px;
+            }
+        </style>
+    `;
+    contentContainer.className = 'building-list';
+
+    // Генерируем список зданий
+    buildableBuildings.forEach((building, index) => {
+        const isBuilt = window.userData?.buildings?.[building.id];
+        const currentLevel = isBuilt ? (window.userData.buildings[building.id].level || 1) : 0;
+        const maxLevel = typeof getBuildingMaxLevel === 'function' ? getBuildingMaxLevel(building.id) : 1;
+        const isMaxLevel = currentLevel >= maxLevel;
+
+        // Определяем статус и цвет
+        let statusText, statusColor, buttonText, buttonColor, isClickable;
+
+        if (!isBuilt) {
+            statusText = 'Не построено';
+            statusColor = '#888';
+            buttonText = 'Построить';
+            buttonColor = 'linear-gradient(145deg, #7289da, #5b6eae)';
+            isClickable = true;
+        } else if (isMaxLevel) {
+            statusText = `Уровень ${currentLevel}/${maxLevel}`;
+            statusColor = '#4ade80';
+            buttonText = 'Макс. уровень';
+            buttonColor = '#555';
+            isClickable = false;
+        } else {
+            statusText = `Уровень ${currentLevel}/${maxLevel}`;
+            statusColor = '#ffa500';
+            buttonText = 'Улучшить';
+            buttonColor = 'linear-gradient(145deg, #ffa500, #cc8400)';
+            isClickable = true;
+        }
+
+        const buildingItem = document.createElement('div');
+        buildingItem.style.cssText = `
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid ${isClickable ? '#7289da' : '#555'};
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            backdrop-filter: blur(5px);
+        `;
+
+        buildingItem.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                <span style="font-size: ${baseFontSize + 4}px;">${building.icon}</span>
+                <div>
+                    <div style="color: white; font-size: ${baseFontSize}px; font-weight: bold;">${building.name}</div>
+                    <div style="color: ${statusColor}; font-size: ${smallFontSize}px;">${statusText}</div>
+                </div>
+            </div>
+            <button class="building-action-btn" data-building="${building.id}" data-action="${isBuilt ? 'upgrade' : 'build'}" style="
+                padding: 6px 12px;
+                background: ${buttonColor};
+                border: none;
+                border-radius: 6px;
+                color: white;
+                font-size: ${smallFontSize}px;
+                font-weight: bold;
+                cursor: ${isClickable ? 'pointer' : 'default'};
+                opacity: ${isClickable ? '1' : '0.6'};
+                white-space: nowrap;
+                transition: all 0.2s;
+            " ${isClickable ? '' : 'disabled'}>${buttonText}</button>
+        `;
+
+        contentContainer.appendChild(buildingItem);
+
+        // Добавляем обработчик клика
+        const btn = buildingItem.querySelector('.building-action-btn');
+        if (isClickable && btn) {
+            btn.onclick = () => {
+                if (isBuilt) {
+                    // Улучшение - открываем модальное окно здания
+                    closeBuildingModal();
+                    openBuildingModal(building.id);
+                } else {
+                    // Строительство
+                    buildBuilding(building.id);
+                }
+            };
+            btn.onmouseover = () => {
+                btn.style.transform = 'scale(1.05)';
+                btn.style.boxShadow = '0 0 10px rgba(114, 137, 218, 0.5)';
+            };
+            btn.onmouseout = () => {
+                btn.style.transform = 'scale(1)';
+                btn.style.boxShadow = 'none';
+            };
+        }
+    });
+
+    overlay.appendChild(contentContainer);
+
+    // === КНОПКА ЗАКРЫТЬ ===
+    const footerContainer = document.createElement('div');
+    footerContainer.style.cssText = `
+        position: absolute;
+        left: ${footerArea.x}px;
+        top: ${footerArea.y}px;
+        width: ${footerArea.width}px;
+        height: ${footerArea.height}px;
+        pointer-events: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = 'Закрыть';
+    closeBtn.style.cssText = `
+        padding: 10px 40px;
+        background: rgba(0, 0, 0, 0.6);
+        border: 2px solid #7289da;
+        border-radius: 10px;
+        color: #7289da;
+        font-size: ${baseFontSize}px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    `;
+    closeBtn.onclick = closeBuildingModal;
+    closeBtn.onmouseover = () => {
+        closeBtn.style.background = 'rgba(114, 137, 218, 0.3)';
+        closeBtn.style.transform = 'scale(1.05)';
+    };
+    closeBtn.onmouseout = () => {
+        closeBtn.style.background = 'rgba(0, 0, 0, 0.6)';
+        closeBtn.style.transform = 'scale(1)';
+    };
+
+    footerContainer.appendChild(closeBtn);
+    overlay.appendChild(footerContainer);
+}
+
+// Открыть модальное окно здания для улучшения
+function openBuildingModal(buildingId) {
+    const modalFunctions = {
+        'library': 'showLibrary',
+        'wizard_tower': 'showWizardTowerModalBg',
+        'forge': 'showForgeModal',
+        'pvp_arena': 'showPvPArenaModalBg',
+        'blessing_tower': 'showBlessingTowerModalBg',
+        'arcane_lab': 'showArcaneLabModalBg',
+        'time_generator': 'showTimeGeneratorModalBg'
+    };
+
+    const funcName = modalFunctions[buildingId];
+    if (funcName && typeof window[funcName] === 'function') {
+        window[funcName]();
+    } else {
+        console.log('⚠️ Модальное окно для', buildingId, 'не найдено');
+    }
+}
+
+// Резервное простое меню (если изображение не загрузилось)
+function showBuildingSelectionMenuFallback() {
     const modal = document.createElement('div');
     modal.id = 'building-selection-modal';
     modal.style.cssText = `
@@ -703,67 +1047,21 @@ function showBuildingSelectionMenu() {
         color: white;
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
     `;
-    
-    // Получаем конфигурацию зданий
-    const buildableBuildings = [
-    	{ id: 'library', name: '📚 Библиотека', description: 'Изучение заклинаний' },
-    	{ id: 'wizard_tower', name: '🏯 Башня мага', description: 'Найм новых магов' },
-    	{ id: 'forge', name: '⚔️ Кузница', description: 'Улучшение снаряжения' },
-    	{ id: 'pvp_arena', name: '⚔️ Арена', description: 'PvP сражения' },
-    	{ id: 'blessing_tower', name: '🙏 Башня благословения', description: 'Временные бонусы' },
-    	{ id: 'arcane_lab', name: '🔬 Лаборатория', description: 'Исследования' },
-    	{ id: 'time_generator', name: '⏳ Генератор времени', description: 'Производство временной валюты' }
-    ];
-    
-    let modalContent = `
-        <h3 style="margin-top: 0; color: #7289da;">🏗️ Выберите здание для постройки</h3>
-        <div style="max-height: 400px; overflow-y: auto;">
-    `;
-    
-    buildableBuildings.forEach(building => {
-        // Проверяем, построено ли уже здание
-        const isBuilt = window.userData?.buildings?.[building.id];
-        
-        modalContent += `
-            <button style="
-                width: 100%;
-                margin: 10px 0;
-                padding: 15px;
-                background: ${isBuilt ? '#555' : 'linear-gradient(145deg, #7289da, #5b6eae)'};
-                border: none;
-                border-radius: 10px;
-                color: white;
-                text-align: left;
-                cursor: ${isBuilt ? 'not-allowed' : 'pointer'};
-                opacity: ${isBuilt ? '0.6' : '1'};
-                transition: all 0.3s;
-            " 
-            onclick="${isBuilt ? '' : `buildBuilding('${building.id}')`}"
-            ${isBuilt ? 'disabled' : ''}>
-                <div style="font-size: 20px; margin-bottom: 5px;">${building.name}</div>
-                <div style="font-size: 12px; opacity: 0.8;">${building.description}</div>
-                ${isBuilt ? '<div style="font-size: 11px; color: #ffa500; margin-top: 5px;">✅ Уже построено</div>' : ''}
-            </button>
-        `;
-    });
-    
-    modalContent += `
-        </div>
+
+    modal.innerHTML = `
+        <h3 style="margin-top: 0; color: #7289da;">Управление зданиями</h3>
+        <p style="color: #888;">Не удалось загрузить интерфейс</p>
         <button onclick="closeBuildingModal()" style="
             width: 100%;
-            margin-top: 15px;
             padding: 10px;
-            background: transparent;
-            border: 1px solid #7289da;
-            border-radius: 10px;
-            color: #7289da;
+            background: #7289da;
+            border: none;
+            border-radius: 8px;
+            color: white;
             cursor: pointer;
         ">Закрыть</button>
     `;
-    
-    modal.innerHTML = modalContent;
-    
-    // Создаём оверлей
+
     const overlay = document.createElement('div');
     overlay.id = 'modal-overlay';
     overlay.style.cssText = `
@@ -776,19 +1074,30 @@ function showBuildingSelectionMenu() {
         z-index: 1999;
     `;
     overlay.onclick = closeBuildingModal;
-    
+
     document.body.appendChild(overlay);
     document.body.appendChild(modal);
 }
 
 // Закрыть модальное окно строительства
 function closeBuildingModal() {
+    // Удаляем новый экран с фоном
+    const screen = document.getElementById('building-selection-screen');
+    if (screen) screen.remove();
+
+    // Удаляем старое модальное окно (для fallback)
     const modal = document.getElementById('building-selection-modal');
     if (modal) modal.remove();
 
     // ИСПРАВЛЕНИЕ: Удаляем ВСЕ overlay-и с id='modal-overlay', а не только первый
     const overlays = document.querySelectorAll('[id="modal-overlay"]');
     overlays.forEach(overlay => overlay.remove());
+
+    // Показываем аватар игрока
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) {
+        playerAvatar.style.display = 'flex';
+    }
 }
 
 // Построить здание - ОБНОВЛЁННАЯ ВЕРСИЯ
