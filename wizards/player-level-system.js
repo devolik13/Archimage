@@ -120,20 +120,21 @@ function createPlayerAvatarUI() {
             display: flex;
             align-items: center;
             gap: 10px;
-            background: rgba(44, 44, 61, 0.95);
+            background: rgba(0, 0, 0, 0.4);
             padding: 8px 12px;
             border-radius: 25px;
-            border: 2px solid #7289da;
+            border: 1px solid rgba(114, 137, 218, 0.5);
             cursor: pointer;
             transition: all 0.3s;
             z-index: 10001;
+            backdrop-filter: blur(5px);
         " onclick="showPlayerProfile()">
             ${avatarContent}
             <div>
-                <div style="color: white; font-size: 14px; font-weight: bold;">
+                <div style="color: white; font-size: 14px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
                     ${window.userData.username || 'Игрок'}
                 </div>
-                <div style="color: #ffa500; font-size: 12px;">
+                <div style="color: #ffa500; font-size: 12px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
                     ⭐ Уровень ${playerLevel}
                 </div>
             </div>
