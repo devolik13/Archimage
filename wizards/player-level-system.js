@@ -259,69 +259,53 @@ function showPlayerProfile() {
             color: white;
         `;
 
+        // Иконка фракции
+        const factionIcon = faction === 'fire' ? '🔥' :
+                            faction === 'water' ? '💧' :
+                            faction === 'wind' ? '💨' :
+                            faction === 'earth' ? '🪨' :
+                            faction === 'nature' ? '🌿' :
+                            faction === 'poison' ? '☠️' : '⭐';
+
+        const factionName = faction === 'fire' ? 'Огонь' :
+                            faction === 'water' ? 'Вода' :
+                            faction === 'wind' ? 'Ветер' :
+                            faction === 'earth' ? 'Земля' :
+                            faction === 'nature' ? 'Природа' :
+                            faction === 'poison' ? 'Яд' : faction;
+
         container.innerHTML = `
-            <h3 style="margin: 0 0 15px 0; color: #7289da; text-align: center; font-size: ${Math.max(14, 18 * scaleY)}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
-                👤 Профиль игрока
-            </h3>
+            <!-- Заголовок: имя и уровень -->
+            <div style="text-align: center; margin-bottom: ${8 * scaleY}px;">
+                <div style="color: white; font-size: ${Math.max(14, 18 * scaleY)}px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+                    ${userData.username || 'Игрок'}
+                </div>
+                <div style="color: #ffa500; font-size: ${Math.max(12, 14 * scaleY)}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                    ⭐ Уровень ${level} • ${factionIcon} ${factionName}
+                </div>
+            </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <!-- Левая колонка -->
-                <div>
-                    <div style="text-align: center; margin-bottom: 15px;">
-                        <div style="
-                            width: ${Math.max(40, 60 * scaleX)}px;
-                            height: ${Math.max(40, 60 * scaleX)}px;
-                            border-radius: 50%;
-                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: ${Math.max(20, 30 * scaleX)}px;
-                            margin: 0 auto 8px;
-                            border: 2px solid #7289da;
-                        ">👤</div>
-                        <h4 style="color: white; margin: 5px 0; font-size: ${Math.max(12, 14 * scaleY)}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
-                            ${userData.username || 'Игрок'}
-                        </h4>
-                        <div style="color: #ffa500; font-size: ${Math.max(14, 16 * scaleY)}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
-                            ⭐ Уровень ${level}
-                        </div>
-                    </div>
-
-                    <div style="background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 8px; backdrop-filter: blur(5px);">
-                        <h4 style="margin: 0 0 8px 0; color: #7289da; font-size: ${Math.max(11, 13 * scaleY)}px;">⚔️ Статистика боев:</h4>
-                        <div style="font-size: ${Math.max(10, 11 * scaleY)}px; line-height: 1.6;">
-                            <div>🎯 Рейтинг: <strong style="color: #ffa500;">${leagueInfo}</strong></div>
-                            <div>📊 Всего: <strong>${totalBattles}</strong></div>
-                            <div>🏆 Побед: <strong style="color: #4CAF50;">${wins}</strong></div>
-                            <div>💀 Поражений: <strong style="color: #f44336;">${losses}</strong></div>
-                            <div>📈 Винрейт: <strong>${winRate}%</strong></div>
-                        </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: ${8 * scaleX}px;">
+                <!-- Левая колонка - Статистика боев -->
+                <div style="background: rgba(0, 0, 0, 0.5); padding: ${8 * scaleY}px; border-radius: 8px; backdrop-filter: blur(5px);">
+                    <h4 style="margin: 0 0 ${6 * scaleY}px 0; color: #7289da; font-size: ${Math.max(10, 12 * scaleY)}px;">⚔️ Статистика боев</h4>
+                    <div style="font-size: ${Math.max(9, 11 * scaleY)}px; line-height: 1.4;">
+                        <div>🎯 Рейтинг: <strong style="color: #ffa500;">${leagueInfo}</strong></div>
+                        <div>📊 Боев: <strong>${totalBattles}</strong></div>
+                        <div>🏆 Побед: <strong style="color: #4CAF50;">${wins}</strong> / 💀 <strong style="color: #f44336;">${losses}</strong></div>
+                        <div>📈 Винрейт: <strong>${winRate}%</strong></div>
                     </div>
                 </div>
 
-                <!-- Правая колонка -->
-                <div>
-                    <div style="background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 8px; backdrop-filter: blur(5px);">
-                        <h4 style="margin: 0 0 8px 0; color: #7289da; font-size: ${Math.max(11, 13 * scaleY)}px;">📚 Прогресс:</h4>
-                        <div style="font-size: ${Math.max(10, 11 * scaleY)}px; line-height: 1.6;">
-                            <div>📖 Заклинания: <strong>${breakdown.spells}</strong> очков</div>
-                            <div>🏛️ Здания: <strong>${breakdown.buildings}</strong> очков</div>
-                            <div>🧙‍♂️ Маги: <strong>${breakdown.wizards}</strong> очков</div>
-                            <hr style="border: 1px solid rgba(255,255,255,0.2); margin: 8px 0;">
-                            <div>📊 Всего: <strong style="color: #ffa500;">${level}</strong> очков</div>
-                        </div>
-                    </div>
-
-                    <div style="background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 8px; backdrop-filter: blur(5px); margin-top: 10px;">
-                        <h4 style="margin: 0 0 8px 0; color: #7289da; font-size: ${Math.max(11, 13 * scaleY)}px;">🏰 Фракция:</h4>
-                        <div style="font-size: ${Math.max(12, 14 * scaleY)}px; text-transform: capitalize; color: #ffa500;">
-                            ${faction === 'fire' ? '🔥 Огонь' :
-                              faction === 'water' ? '💧 Вода' :
-                              faction === 'wind' ? '💨 Ветер' :
-                              faction === 'earth' ? '🪨 Земля' :
-                              faction === 'nature' ? '🌿 Природа' :
-                              faction === 'poison' ? '☠️ Яд' : faction}
+                <!-- Правая колонка - Прогресс -->
+                <div style="background: rgba(0, 0, 0, 0.5); padding: ${8 * scaleY}px; border-radius: 8px; backdrop-filter: blur(5px);">
+                    <h4 style="margin: 0 0 ${6 * scaleY}px 0; color: #7289da; font-size: ${Math.max(10, 12 * scaleY)}px;">📚 Прогресс</h4>
+                    <div style="font-size: ${Math.max(9, 11 * scaleY)}px; line-height: 1.4;">
+                        <div>📖 Заклинания: <strong>${breakdown.spells}</strong></div>
+                        <div>🏛️ Здания: <strong>${breakdown.buildings}</strong></div>
+                        <div>🧙‍♂️ Маги: <strong>${breakdown.wizards}</strong></div>
+                        <div style="border-top: 1px solid rgba(255,255,255,0.2); margin-top: ${4 * scaleY}px; padding-top: ${4 * scaleY}px;">
+                            📊 Всего: <strong style="color: #ffa500;">${level}</strong> очков
                         </div>
                     </div>
                 </div>
@@ -389,42 +373,51 @@ function showPlayerProfile() {
 
 // Fallback профиль без фона
 function showPlayerProfileFallback(level, breakdown, totalBattles, wins, losses, rating, winRate, leagueInfo) {
-    const modalContent = `
-        <div style="padding: 15px; max-width: 90vw; width: 600px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin: 0 0 15px 0; color: #7289da; text-align: center;">👤 Профиль игрока</h3>
+    const faction = window.userData?.faction || 'fire';
+    const factionIcon = faction === 'fire' ? '🔥' :
+                        faction === 'water' ? '💧' :
+                        faction === 'wind' ? '💨' :
+                        faction === 'earth' ? '🪨' :
+                        faction === 'nature' ? '🌿' :
+                        faction === 'poison' ? '☠️' : '⭐';
+    const factionName = faction === 'fire' ? 'Огонь' :
+                        faction === 'water' ? 'Вода' :
+                        faction === 'wind' ? 'Ветер' :
+                        faction === 'earth' ? 'Земля' :
+                        faction === 'nature' ? 'Природа' :
+                        faction === 'poison' ? 'Яд' : faction;
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div>
-                    <div style="text-align: center; margin-bottom: 15px;">
-                        <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 8px;">👤</div>
-                        <h4 style="color: white; margin: 5px 0; font-size: 14px;">${userData.username || 'Игрок'}</h4>
-                        <div style="color: #ffa500; font-size: 16px;">⭐ Уровень ${level}</div>
-                    </div>
-                    <div style="background: #3d3d5c; padding: 10px; border-radius: 8px;">
-                        <h4 style="margin: 0 0 8px 0; color: #7289da; font-size: 13px;">⚔️ Статистика боев:</h4>
-                        <div style="font-size: 11px; line-height: 1.6;">
-                            <div>🎯 Рейтинг: <strong style="color: #ffa500;">${leagueInfo}</strong></div>
-                            <div>📊 Всего: <strong>${totalBattles}</strong></div>
-                            <div>🏆 Побед: <strong style="color: #4CAF50;">${wins}</strong></div>
-                            <div>💀 Поражений: <strong style="color: #f44336;">${losses}</strong></div>
-                            <div>📈 Винрейт: <strong>${winRate}%</strong></div>
-                        </div>
+    const modalContent = `
+        <div style="padding: 15px; max-width: 90vw; width: 400px; background: #2c2c3d; border-radius: 10px; color: white;">
+            <!-- Заголовок: имя и уровень -->
+            <div style="text-align: center; margin-bottom: 12px;">
+                <div style="color: white; font-size: 18px; font-weight: bold;">${userData.username || 'Игрок'}</div>
+                <div style="color: #ffa500; font-size: 14px;">⭐ Уровень ${level} • ${factionIcon} ${factionName}</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <!-- Левая колонка -->
+                <div style="background: #3d3d5c; padding: 10px; border-radius: 8px;">
+                    <h4 style="margin: 0 0 6px 0; color: #7289da; font-size: 12px;">⚔️ Статистика боев</h4>
+                    <div style="font-size: 11px; line-height: 1.4;">
+                        <div>🎯 Рейтинг: <strong style="color: #ffa500;">${leagueInfo}</strong></div>
+                        <div>📊 Боев: <strong>${totalBattles}</strong></div>
+                        <div>🏆 Побед: <strong style="color: #4CAF50;">${wins}</strong> / 💀 <strong style="color: #f44336;">${losses}</strong></div>
+                        <div>📈 Винрейт: <strong>${winRate}%</strong></div>
                     </div>
                 </div>
-                <div>
-                    <div style="background: #3d3d5c; padding: 10px; border-radius: 8px;">
-                        <h4 style="margin: 0 0 8px 0; color: #7289da; font-size: 13px;">📚 Прогресс:</h4>
-                        <div style="font-size: 11px; line-height: 1.6;">
-                            <div>📖 Заклинания: <strong>${breakdown.spells}</strong> очков</div>
-                            <div>🏛️ Здания: <strong>${breakdown.buildings}</strong> очков</div>
-                            <div>🧙‍♂️ Маги: <strong>${breakdown.wizards}</strong> очков</div>
-                            <hr style="border: 1px solid #555; margin: 8px 0;">
-                            <div>📊 Всего: <strong style="color: #ffa500;">${level}</strong> очков</div>
-                        </div>
+                <!-- Правая колонка -->
+                <div style="background: #3d3d5c; padding: 10px; border-radius: 8px;">
+                    <h4 style="margin: 0 0 6px 0; color: #7289da; font-size: 12px;">📚 Прогресс</h4>
+                    <div style="font-size: 11px; line-height: 1.4;">
+                        <div>📖 Заклинания: <strong>${breakdown.spells}</strong></div>
+                        <div>🏛️ Здания: <strong>${breakdown.buildings}</strong></div>
+                        <div>🧙‍♂️ Маги: <strong>${breakdown.wizards}</strong></div>
+                        <div style="border-top: 1px solid #555; margin-top: 4px; padding-top: 4px;">📊 Всего: <strong style="color: #ffa500;">${level}</strong></div>
                     </div>
                 </div>
             </div>
-            <button style="width: 100%; padding: 8px; margin-top: 15px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 13px;"
+            <button style="width: 100%; padding: 8px; margin-top: 12px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 13px;"
                     onclick="this.parentElement.parentElement.remove(); document.getElementById('profile-fallback-overlay')?.remove();">
                 Закрыть
             </button>
