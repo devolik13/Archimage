@@ -272,19 +272,18 @@ function castPoisonedGlade(wizard, spellData, position, casterType) {
 function castFoulCloud(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
     
-    // Урон по уровням
-    const baseDamage = level === 1 ? 30 : (level === 3 ? 40 : 50);
+    // Урон по уровням (1-2: 30, 3-4: 40, 5: 50)
+    const baseDamage = level <= 2 ? 30 : (level <= 4 ? 40 : 50);
     
-    // Определяем колонки для атаки
+    // Определяем колонки для атаки (уровни 1-2: 1 колонка, 3-4: 2 колонки, 5: 3 колонки)
     const columnsToAttack = [];
-    if (level === 1) {
-        columnsToAttack.push(casterType === 'player' ? 0 : 5); // Только колонка магов
-    } else if (level === 3) {
-        columnsToAttack.push(casterType === 'player' ? 0 : 5); // Колонка магов
+    // Первая колонка - всегда
+    columnsToAttack.push(casterType === 'player' ? 0 : 5); // Колонка магов
+
+    if (level >= 3) {
         columnsToAttack.push(casterType === 'player' ? 1 : 4); // Колонка призванных
-    } else if (level === 5) {
-        columnsToAttack.push(casterType === 'player' ? 0 : 5); // Колонка магов
-        columnsToAttack.push(casterType === 'player' ? 1 : 4); // Колонка призванных
+    }
+    if (level >= 5) {
         columnsToAttack.push(casterType === 'player' ? 2 : 3); // Третья колонка
     }
     
