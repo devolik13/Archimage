@@ -47,7 +47,7 @@ function showTimeGeneratorModalBg() {
         width: 100vw;
         height: 100vh;
         background: rgba(0, 0, 0, 0.9);
-        z-index: 3000;
+        z-index: 9000;
         display: flex;
         align-items: center;
         justify-content: center;
