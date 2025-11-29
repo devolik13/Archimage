@@ -19,31 +19,39 @@ console.log('✅ epidemic.js загружен');
 
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
-        
+
+        console.log('💀 Проверка контейнеров:', { effectsContainer: !!effectsContainer, gridCells: !!gridCells });
+
         if (!effectsContainer || !gridCells) {
-            console.warn('Не могу создать эпидемию - нет контейнера');
+            console.warn('💀 Не могу создать эпидемию - нет контейнера');
             if (onComplete) onComplete();
             return;
         }
-        
+
         const targetCell = gridCells[targetCol]?.[targetRow];
-        
+
         if (!targetCell) {
-            console.warn('Не найдена клетка для эпидемии');
+            console.warn('💀 Не найдена клетка для эпидемии:', { targetCol, targetRow });
             if (onComplete) onComplete();
             return;
         }
-        
+
+        console.log('💀 Клетка найдена:', { x: targetCell.x, y: targetCell.y, width: targetCell.width, height: targetCell.height });
+
         const centerX = targetCell.x + targetCell.width / 2;
         // КЛЮЧЕВОЕ ОТЛИЧИЕ: пузырь появляется НАД головой (выше центра клетки)
         const centerY = targetCell.y + targetCell.height * 0.2; // 20% от верха клетки
-        
+
         // Загружаем текстуру спрайтшита
         const epidemicTexturePath = 'images/spells/poison/epidemic/epidemic_spritesheet.png';
-        
+
+        console.log('💀 Загружаем текстуру:', epidemicTexturePath);
+
         PIXI.Assets.load(epidemicTexturePath).then(texture => {
+            console.log('💀 Текстура загружена:', { valid: texture?.valid, width: texture?.width, height: texture?.height });
+
             if (!texture || !texture.valid) {
-                console.warn('Не удалось загрузить текстуру эпидемии');
+                console.warn('💀 Не удалось загрузить текстуру эпидемии, используем fallback');
                 createFallbackBubble();
                 return;
             }
@@ -121,9 +129,12 @@ console.log('✅ epidemic.js загружен');
             }
             
             effectsContainer.addChild(bubbleSprite);
-            
+
+            console.log('💀 Спрайт добавлен в контейнер:', { x: bubbleSprite.x, y: bubbleSprite.y, scale: scale, frames: frames.length });
+
             // Событие окончания анимации
             bubbleSprite.onComplete = () => {
+                console.log('💀 Анимация пузыря завершена');
                 // Короткая задержка перед исчезновением
                 setTimeout(() => {
                     if (bubbleSprite.parent) {
@@ -133,8 +144,9 @@ console.log('✅ epidemic.js загружен');
                     if (onComplete) onComplete();
                 }, isMegaExplosion ? 300 : 150); // МЕГА взрыв держится дольше
             };
-            
+
             bubbleSprite.play();
+            console.log('💀 Анимация пузыря запущена');
             activeBubbles.push(bubbleSprite);
             
         }).catch(err => {
