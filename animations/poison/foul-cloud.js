@@ -100,20 +100,24 @@ console.log('✅ foul-cloud.js загружен');
     // Загрузка спрайт-листа облака
     function loadCloudSprite(container, scale) {
         // Пытаемся создать анимированный спрайт из атласа
-        const cloudTexturePath = '/images/spells/poison/foul_cloud/cloud.png';
+        const cloudTexturePath = 'images/spells/poison/foul_cloud/cloud.png';
+
+        console.log('☠️ Загрузка текстуры облака:', cloudTexturePath);
 
         // Создаем спрайт-лист программно
         PIXI.Assets.load(cloudTexturePath).then(texture => {
-            if (!texture || !texture.baseTexture) {
-                console.warn('Не удалось загрузить текстуру облака, используем fallback');
+            console.log('☠️ Текстура загружена:', { valid: texture?.valid, width: texture?.width, height: texture?.height });
+
+            if (!texture || !texture.valid) {
+                console.warn('☠️ Не удалось загрузить текстуру облака, используем fallback');
                 createFallbackCloud(container, scale);
                 return;
             }
 
-            // Изображение 500x500, делим на сетку 3x3 (166x166 с небольшим запасом)
+            // Изображение 500x500, делим на сетку 3x3
             const frames = [];
-            const frameWidth = Math.floor(texture.width / 3);
-            const frameHeight = Math.floor(texture.height / 3);
+            const frameWidth = Math.floor(500 / 3);  // ~166
+            const frameHeight = Math.floor(500 / 3); // ~166
 
             for (let row = 0; row < 3; row++) {
                 for (let col = 0; col < 3; col++) {
@@ -130,6 +134,8 @@ console.log('✅ foul-cloud.js загружен');
                 }
             }
 
+            console.log('☠️ Создано кадров:', frames.length);
+
             // Создаем анимированный спрайт
             const cloudSprite = new PIXI.AnimatedSprite(frames);
             cloudSprite.anchor.set(0.5);
@@ -145,7 +151,7 @@ console.log('✅ foul-cloud.js загружен');
 
             console.log('☠️ Спрайт облака загружен и анимирован');
         }).catch(err => {
-            console.warn('Ошибка загрузки спрайта облака:', err);
+            console.warn('☠️ Ошибка загрузки спрайта облака:', err);
             createFallbackCloud(container, scale);
         });
     }
