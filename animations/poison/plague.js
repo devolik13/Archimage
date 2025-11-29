@@ -39,15 +39,19 @@ console.log('✅ plague.js загружен');
         const targetCellWidth = targetCell.cellWidth || targetCell.width || 60;
         const targetCellHeight = targetCell.cellHeight || targetCell.height || 60;
 
-        const startX = casterCell.x + casterCellWidth / 2;
-        const startY = casterCell.y + casterCellHeight / 2;
-        const endX = targetCell.x + targetCellWidth / 2;
-        const endY = targetCell.y + targetCellHeight / 2;
+        // Получаем точную позицию спрайтов магов (если доступны)
+        const casterSprite = window.wizardSprites?.[`${casterCol}_${casterRow}`];
+        const targetSprite = window.wizardSprites?.[`${targetCol}_${targetRow}`];
+
+        const startX = casterSprite?.x || (casterCell.x + casterCellWidth / 2);
+        const startY = casterSprite?.y || (casterCell.y + casterCellHeight / 2);
+        const endX = targetSprite?.x || (targetCell.x + targetCellWidth / 2);
+        const endY = targetSprite?.y || (targetCell.y + targetCellHeight / 2);
         
         // ФАЗА 1: Зелёный шарик летит к цели
         createFlyingOrb(startX, startY, endX, endY, () => {
             // ФАЗА 2: Анимация заражения на цели
-            createPlagueEffect(targetCell, targetWizardId, onComplete);
+            createPlagueEffect(targetCell, targetCol, targetRow, targetWizardId, onComplete);
         });
     }
     
@@ -113,15 +117,17 @@ console.log('✅ plague.js загружен');
     }
     
     // Фаза 2: Эффект заражения на цели (длительный)
-    function createPlagueEffect(targetCell, targetWizardId, onComplete) {
+    function createPlagueEffect(targetCell, targetCol, targetRow, targetWizardId, onComplete) {
         const effectsContainer = window.pixiCore?.getEffectsContainer();
 
         // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
         const cellWidth = targetCell.cellWidth || targetCell.width || 60;
         const cellHeight = targetCell.cellHeight || targetCell.height || 60;
 
-        const centerX = targetCell.x + cellWidth / 2;
-        const centerY = targetCell.y + cellHeight / 2;
+        // Получаем точную позицию спрайта мага
+        const targetSprite = window.wizardSprites?.[`${targetCol}_${targetRow}`];
+        const centerX = targetSprite?.x || (targetCell.x + cellWidth / 2);
+        const centerY = targetSprite?.y || (targetCell.y + cellHeight / 2);
         
         // Удаляем старый эффект чумы если есть
         if (activePlagueEffects.has(targetWizardId)) {

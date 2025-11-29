@@ -36,9 +36,12 @@ console.log('✅ epidemic.js загружен');
         const cellWidth = targetCell.cellWidth || targetCell.width || 60;
         const cellHeight = targetCell.cellHeight || targetCell.height || 60;
 
-        const centerX = targetCell.x + cellWidth / 2;
-        // КЛЮЧЕВОЕ ОТЛИЧИЕ: пузырь появляется НАД головой (выше центра клетки)
-        const centerY = targetCell.y + cellHeight * 0.2; // 20% от верха клетки
+        // Получаем точную позицию спрайта мага
+        const targetSprite = window.wizardSprites?.[`${targetCol}_${targetRow}`];
+        const centerX = targetSprite?.x || (targetCell.x + cellWidth / 2);
+        // КЛЮЧЕВОЕ ОТЛИЧИЕ: пузырь появляется НАД головой (выше спрайта мага)
+        const wizardY = targetSprite?.y || (targetCell.y + cellHeight / 2);
+        const centerY = wizardY - cellHeight * 0.3; // Выше центра мага
         
         // Загружаем текстуру спрайтшита
         const epidemicTexturePath = 'images/spells/poison/epidemic/epidemic_spritesheet.png';
