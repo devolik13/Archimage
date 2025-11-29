@@ -81,21 +81,25 @@ console.log('✅ stone-spike.js загружен');
                     console.warn(`Не найдена ячейка [${pos.col}][${pos.row}]`);
                     return;
                 }
-                
+
+                // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+                const cellWidth = targetCell.cellWidth || targetCell.width || 60;
+                const cellHeight = targetCell.cellHeight || targetCell.height || 60;
+
                 setTimeout(() => {
                     // Эффект тряски земли
                     createGroundShake(targetCell, effectsContainer);
-                    
+
                     // Шип через 200мс после тряски
                     setTimeout(() => {
                         const spike = new PIXI.AnimatedSprite(spikeTextures);
-                        spike.x = targetCell.x + targetCell.width / 2;
-                        spike.y = targetCell.y + targetCell.height * 0.8;
+                        spike.x = targetCell.x + cellWidth / 2;
+                        spike.y = targetCell.y + cellHeight * 0.8;
                         spike.anchor.set(0.5, 0.8);
-                        
-                        const scale = (targetCell.width * 0.8) / frameWidth;
-                        spike.scale.set(scale * (targetCell.cellScale || 1));
-                        
+
+                        const scale = (cellWidth * 0.8) / frameWidth;
+                        spike.scale.set(scale);
+
                         spike.animationSpeed = 0.25;
                         spike.loop = false;
                         spike.onComplete = () => {
@@ -106,13 +110,13 @@ console.log('✅ stone-spike.js загружен');
                                 }
                             }, 300);
                         };
-                        
+
                         effectsContainer.addChild(spike);
                         spike.play();
-                        
+
                         // Осколки
-                        createDebris(targetCell.x + targetCell.width / 2, 
-                                   targetCell.y + targetCell.height * 0.8, 
+                        createDebris(targetCell.x + cellWidth / 2,
+                                   targetCell.y + cellHeight * 0.8,
                                    targetCell.cellScale || 1);
                         
                         console.log(`🗿 Шип создан в [${pos.col}][${pos.row}]`);
@@ -135,7 +139,11 @@ console.log('✅ stone-spike.js загружен');
             spikePositions.forEach(pos => {
                 const targetCell = gridCells[pos.col]?.[pos.row];
                 if (!targetCell) return;
-                
+
+                // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+                const cellWidth = targetCell.cellWidth || targetCell.width || 60;
+                const cellHeight = targetCell.cellHeight || targetCell.height || 60;
+
                 setTimeout(() => {
                     const spike = new PIXI.Graphics();
                     spike.beginFill(0x554433, 1);
@@ -144,22 +152,22 @@ console.log('✅ stone-spike.js загружен');
                     spike.lineTo(15, 0);
                     spike.closePath();
                     spike.endFill();
-                    
-                    spike.x = targetCell.x + targetCell.width / 2;
-                    spike.y = targetCell.y + targetCell.height;
+
+                    spike.x = targetCell.x + cellWidth / 2;
+                    spike.y = targetCell.y + cellHeight;
                     spike.scale.set(0, 0);
-                    
+
                     effectsContainer.addChild(spike);
-                    
+
                     const startTime = Date.now();
                     const growDuration = 300;
-                    
+
                     const grow = () => {
                         const progress = Math.min((Date.now() - startTime) / growDuration, 1);
                         const easeOut = 1 - Math.pow(1 - progress, 3);
-                        
+
                         spike.scale.set(easeOut * 2);
-                        spike.y = targetCell.y + targetCell.height - (easeOut * 30);
+                        spike.y = targetCell.y + cellHeight - (easeOut * 30);
                         
                         if (progress < 1) {
                             requestAnimationFrame(grow);
@@ -182,9 +190,13 @@ console.log('✅ stone-spike.js загружен');
     
     // Эффект тряски земли
     function createGroundShake(cell, container) {
+        // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+        const cellWidth = cell.cellWidth || cell.width || 60;
+        const cellHeight = cell.cellHeight || cell.height || 60;
+
         const shake = new PIXI.Graphics();
         shake.lineStyle(2, 0x664433, 0.5);
-        shake.drawRect(cell.x + 5, cell.y + 5, cell.width - 10, cell.height - 10);
+        shake.drawRect(cell.x + 5, cell.y + 5, cellWidth - 10, cellHeight - 10);
         container.addChild(shake);
         
         const startTime = Date.now();
