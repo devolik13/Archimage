@@ -188,6 +188,31 @@ function checkBattleEnergyBeforeFight() {
     return true;
 }
 
+// Восстановить все попытки (для тестирования/отладки)
+function restoreBattleEnergy() {
+    if (!window.userData) {
+        console.warn('❌ userData не найден');
+        return false;
+    }
+
+    if (!window.userData.battle_energy) {
+        initBattleEnergy(window.userData);
+    }
+
+    window.userData.battle_energy.current = window.BATTLE_ENERGY.MAX;
+    window.userData.battle_energy.last_regen = Date.now();
+
+    console.log(`⚡ Попытки восстановлены: ${window.userData.battle_energy.current}/${window.userData.battle_energy.max}`);
+
+    // Сохраняем изменения
+    if (window.eventSaveManager) {
+        window.eventSaveManager.saveImmediate('battle_energy_restored');
+    }
+
+    updateBattleEnergyUI();
+    return true;
+}
+
 // Экспорт
 window.initBattleEnergy = initBattleEnergy;
 window.regenerateBattleEnergy = regenerateBattleEnergy;
@@ -198,5 +223,6 @@ window.getTimeToNextRegen = getTimeToNextRegen;
 window.updateBattleEnergyUI = updateBattleEnergyUI;
 window.initBattleEnergyUI = initBattleEnergyUI;
 window.checkBattleEnergyBeforeFight = checkBattleEnergyBeforeFight;
+window.restoreBattleEnergy = restoreBattleEnergy;
 
 console.log('⚡ Система энергии боев готова');
