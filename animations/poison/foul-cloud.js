@@ -101,24 +101,24 @@ console.log('✅ foul-cloud.js загружен');
     function loadCloudSprite(container, scale) {
         // Пытаемся создать анимированный спрайт из атласа
         const cloudTexturePath = '/images/spells/poison/foul_cloud/cloud.png';
-        
+
         // Создаем спрайт-лист программно
-        PIXI.Assets.load(cloudTexturePath).then(baseTexture => {
-            if (!baseTexture) {
+        PIXI.Assets.load(cloudTexturePath).then(texture => {
+            if (!texture || !texture.baseTexture) {
                 console.warn('Не удалось загрузить текстуру облака, используем fallback');
                 createFallbackCloud(container, scale);
                 return;
             }
-            
-            // Создаем кадры из спрайт-листа (3x3 сетка, 166x166 каждый кадр)
+
+            // Изображение 500x500, делим на сетку 3x3 (166x166 с небольшим запасом)
             const frames = [];
-            const frameWidth = 166;
-            const frameHeight = 166;
-            
+            const frameWidth = Math.floor(texture.width / 3);
+            const frameHeight = Math.floor(texture.height / 3);
+
             for (let row = 0; row < 3; row++) {
                 for (let col = 0; col < 3; col++) {
                     const frame = new PIXI.Texture(
-                        baseTexture,
+                        texture.baseTexture,
                         new PIXI.Rectangle(
                             col * frameWidth,
                             row * frameHeight,
@@ -129,7 +129,7 @@ console.log('✅ foul-cloud.js загружен');
                     frames.push(frame);
                 }
             }
-            
+
             // Создаем анимированный спрайт
             const cloudSprite = new PIXI.AnimatedSprite(frames);
             cloudSprite.anchor.set(0.5);
@@ -140,9 +140,9 @@ console.log('✅ foul-cloud.js загружен');
             cloudSprite.alpha = 0.6;
             cloudSprite.tint = 0x669900;
             cloudSprite.play();
-            
+
             container.addChild(cloudSprite);
-            
+
             console.log('☠️ Спрайт облака загружен и анимирован');
         }).catch(err => {
             console.warn('Ошибка загрузки спрайта облака:', err);
