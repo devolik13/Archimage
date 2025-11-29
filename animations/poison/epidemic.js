@@ -36,11 +36,15 @@ console.log('✅ epidemic.js загружен');
             return;
         }
 
-        console.log('💀 Клетка найдена:', { x: targetCell.x, y: targetCell.y, width: targetCell.width, height: targetCell.height });
+        // Fallback размеры если клетка имеет нулевые размеры
+        const cellWidth = targetCell.width || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
+        const cellHeight = targetCell.height || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
 
-        const centerX = targetCell.x + targetCell.width / 2;
+        console.log('💀 Клетка найдена:', { x: targetCell.x, y: targetCell.y, width: cellWidth, height: cellHeight, cellScale: targetCell.cellScale });
+
+        const centerX = targetCell.x + cellWidth / 2;
         // КЛЮЧЕВОЕ ОТЛИЧИЕ: пузырь появляется НАД головой (выше центра клетки)
-        const centerY = targetCell.y + targetCell.height * 0.2; // 20% от верха клетки
+        const centerY = targetCell.y + cellHeight * 0.2; // 20% от верха клетки
 
         // Загружаем текстуру спрайтшита
         const epidemicTexturePath = 'images/spells/poison/epidemic/epidemic_spritesheet.png';
@@ -87,7 +91,7 @@ console.log('✅ epidemic.js загружен');
             // Масштабируем пузырь
             // Обычный пузырь - 70% клетки, МЕГА взрыв (5 lvl) - 120% клетки
             const sizeMultiplier = isMegaExplosion ? 1.2 : 0.7;
-            const targetSize = Math.min(targetCell.width, targetCell.height) * sizeMultiplier;
+            const targetSize = Math.min(cellWidth, cellHeight) * sizeMultiplier;
             const scale = targetSize / frameWidth;
             bubbleSprite.scale.set(scale);
             

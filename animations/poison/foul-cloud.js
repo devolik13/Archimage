@@ -31,16 +31,21 @@ console.log('✅ foul-cloud.js загружен');
     	    const targetCell = gridCells[targetCol]?.[row];
     	    if (!targetCell) continue;
         
-    	    console.log('☠️ Создаем мерзкое облако на позиции', targetCol, row);
-        
+    	    // Fallback размеры если клетка имеет нулевые размеры
+    	    const cellWidth = targetCell.width || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
+    	    const cellHeight = targetCell.height || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
+    	    const cellScale = targetCell.cellScale || 0.8;
+
+    	    console.log('☠️ Создаем мерзкое облако на позиции', targetCol, row, { cellWidth, cellHeight, cellScale });
+
     	    // Контейнер для облака в этой клетке
     	    const cloudContainer = new PIXI.Container();
-    	    cloudContainer.x = targetCell.x + targetCell.width / 2;
-    	    cloudContainer.y = targetCell.y + targetCell.height / 2;
-        
+    	    cloudContainer.x = targetCell.x + cellWidth / 2;
+    	    cloudContainer.y = targetCell.y + cellHeight / 2;
+
     	    // Загружаем спрайт и частицы
-    	    loadCloudSprite(cloudContainer, targetCell.cellScale);
-    	    createPoisonParticles(cloudContainer, targetCell.cellScale);
+    	    loadCloudSprite(cloudContainer, cellScale);
+    	    createPoisonParticles(cloudContainer, cellScale);
         
     	    effectsContainer.addChild(cloudContainer);
     	    
