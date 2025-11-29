@@ -196,12 +196,14 @@ function drawBattleGrid() {
             cell.y = topPadding + row * PIXI_CONFIG.cellHeight * 0.8;
             
             // Сохраняем данные ячейки (это важно!)
-            // ВАЖНО: используем кастомные свойства, т.к. PIXI.Graphics.width/height - это вычисляемые свойства
             cell.gridCol = col;
             cell.gridRow = row;
             cell.cellScale = scale;
-            cell.cellWidth = cellWidth;
-            cell.cellHeight = cellHeight;
+            // Сохраняем размеры (перезаписывают геттеры PIXI.Graphics)
+            cell.width = cellWidth;
+            cell.height = cellHeight;
+            cell.cellWidth = cellWidth;   // Алиас для совместимости
+            cell.cellHeight = cellHeight; // Алиас для совместимости
             
             battleContainer.addChild(cell);
             gridCells[col][row] = cell;
