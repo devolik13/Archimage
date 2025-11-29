@@ -81,23 +81,27 @@ console.log('✅ earth-wall.js загружен');
                     console.warn(`🧱 Не найдена клетка [${wallColumn}][${row}]`);
                     return;
             	}
-	        console.log(`🧱 Клетка [${wallColumn}][${row}]: размер ${cell.width}x${cell.height}`);
+
+	        // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+	        const cellWidth = cell.cellWidth || cell.width || 60;
+	        const cellHeight = cell.cellHeight || cell.height || 60;
+	        console.log(`🧱 Клетка [${wallColumn}][${row}]: размер ${cellWidth}x${cellHeight}`);
 
 	        setTimeout(() => {
 	            // Эффект поднятия земли
 	            createGroundRise(cell, effectsContainer);
-	            
+
 	            setTimeout(() => {
 	                // Создаём анимированный спрайт для вибрации
 	                const wallSprite = new PIXI.AnimatedSprite(wallTextures);
-	                wallSprite.x = cell.x + cell.width / 2;
-	                wallSprite.y = cell.y + cell.height / 2;
+	                wallSprite.x = cell.x + cellWidth / 2;
+	                wallSprite.y = cell.y + cellHeight / 2;
 	                wallSprite.anchor.set(0.5);
 
 			wallSprite.rotation = Math.PI / 2;
-	                
+
 	                // Масштабируем под размер клетки
-	                const baseScale = (cell.height * 0.8) / frameWidth;
+	                const baseScale = (cellHeight * 0.8) / frameWidth;
 			const thickness = 3;  // Множитель толщины (1 = тонкая, 2 = средняя, 3 = толстая)
 			wallSprite.scale.set(baseScale, baseScale * thickness);
 
@@ -139,20 +143,24 @@ console.log('✅ earth-wall.js загружен');
         // Fallback версия
         function createFallbackWall() {
             const wallSprites = [];
-            
+
             wallRows.forEach((row, index) => {
                 const cell = gridCells[wallColumn]?.[row];
                 if (!cell) return;
-                
+
+                // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+                const cellWidth = cell.cellWidth || cell.width || 60;
+                const cellHeight = cell.cellHeight || cell.height || 60;
+
                 setTimeout(() => {
                     const wall = new PIXI.Graphics();
                     wall.beginFill(0x8B7355, 0.9);
-                    wall.drawRect(-cell.width/2 + 5, -cell.height/2 + 5, 
-                                  cell.width - 10, cell.height - 10);
+                    wall.drawRect(-cellWidth/2 + 5, -cellHeight/2 + 5,
+                                  cellWidth - 10, cellHeight - 10);
                     wall.endFill();
-                    
-                    wall.x = cell.x + cell.width / 2;
-                    wall.y = cell.y + cell.height / 2;
+
+                    wall.x = cell.x + cellWidth / 2;
+                    wall.y = cell.y + cellHeight / 2;
                     wall.scale.set(1, 0);
                     
                     effectsContainer.addChild(wall);
@@ -188,9 +196,13 @@ console.log('✅ earth-wall.js загружен');
     
     // Эффект поднятия земли
     function createGroundRise(cell, container) {
+        // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+        const cellWidth = cell.cellWidth || cell.width || 60;
+        const cellHeight = cell.cellHeight || cell.height || 60;
+
         const dust = new PIXI.Graphics();
         dust.beginFill(0x998877, 0.4);
-        dust.drawCircle(cell.x + cell.width/2, cell.y + cell.height - 10, 20);
+        dust.drawCircle(cell.x + cellWidth/2, cell.y + cellHeight - 10, 20);
         dust.endFill();
         
         container.addChild(dust);

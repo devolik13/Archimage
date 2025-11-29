@@ -74,16 +74,20 @@ console.log('✅ storm-cloud.js загружен');
                     
                     const targetCell = gridCells[randomCol]?.[randomRow];
                     if (!targetCell) return;
-                    
+
+                    // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+                    const cellWidth = targetCell.cellWidth || targetCell.width || 60;
+                    const cellHeight = targetCell.cellHeight || targetCell.height || 60;
+
                     // Создаем молнию
                     const lightning = new PIXI.AnimatedSprite(lightningTextures);
-                    lightning.x = targetCell.x + targetCell.width / 2;
-                    lightning.y = targetCell.y - targetCell.height; // Сверху
+                    lightning.x = targetCell.x + cellWidth / 2;
+                    lightning.y = targetCell.y - cellHeight; // Сверху
                     lightning.anchor.set(0.5, 0);
-                    
+
                     // Масштабируем - молния должна быть высокой
-                    const targetHeight = targetCell.height * 2.5;
-                    const scale = targetHeight / frameHeight;
+                    const targetHeight = cellHeight * 2.5;
+                    const scale = Math.max(targetHeight / frameHeight, 0.5);
                     lightning.scale.set(scale);
                     
                     lightning.animationSpeed = 0.4;
@@ -107,7 +111,7 @@ console.log('✅ storm-cloud.js загружен');
                     lightning.play();
                     
                     // Вспышка при ударе
-                    createLightningFlash(targetCell.x + targetCell.width / 2, targetCell.y + targetCell.height / 2, effectsContainer, scale);
+                    createLightningFlash(targetCell.x + cellWidth / 2, targetCell.y + cellHeight / 2, effectsContainer, scale);
                     
                     console.log(`⚡ Молния ${i + 1} ударила в клетку [${randomCol}][${randomRow}]`);
                     
@@ -277,15 +281,19 @@ console.log('✅ storm-cloud.js загружен');
                     if (strikesCompleted === strikeCount && onComplete) onComplete();
                     return;
                 }
-                
+
+                // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+                const cellWidth = targetCell.cellWidth || targetCell.width || 60;
+                const cellHeight = targetCell.cellHeight || targetCell.height || 60;
+
                 // Простая молния
                 const lightning = new PIXI.Graphics();
                 lightning.lineStyle(4, 0xCCFFFF, 1);
-                
-                const startX = targetCell.x + targetCell.width / 2;
-                const startY = targetCell.y - targetCell.height;
+
+                const startX = targetCell.x + cellWidth / 2;
+                const startY = targetCell.y - cellHeight;
                 const endX = startX;
-                const endY = targetCell.y + targetCell.height / 2;
+                const endY = targetCell.y + cellHeight / 2;
                 
                 lightning.moveTo(startX, startY);
                 

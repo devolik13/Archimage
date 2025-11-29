@@ -82,16 +82,20 @@ console.log('✅ blizzard.js загружен');
             affectedRows.forEach(row => {
                 const cellData = gridCells[targetColumn]?.[row];
                 if (!cellData) return;
-                
+
+                // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+                const cellWidth = cellData.cellWidth || cellData.width || 60;
+                const cellHeight = cellData.cellHeight || cellData.height || 60;
+
                 // Анимированный спрайт метели
                 const blizzardSprite = new PIXI.AnimatedSprite(blizzardTextures);
-                blizzardSprite.x = cellData.x + cellData.width / 2;
-                blizzardSprite.y = cellData.y + cellData.height / 2;
+                blizzardSprite.x = cellData.x + cellWidth / 2;
+                blizzardSprite.y = cellData.y + cellHeight / 2;
                 blizzardSprite.anchor.set(0.5);
-                
+
                 // Масштабируем под размер клетки
-                const scale = (cellData.width * 1.05) / frameWidth;
-                blizzardSprite.scale.set(scale * cellData.cellScale);
+                const scale = (cellWidth * 1.5) / frameWidth;
+                blizzardSprite.scale.set(scale);
                 
                 blizzardSprite.animationSpeed = 0.15;
                 blizzardSprite.loop = true;
@@ -130,14 +134,18 @@ console.log('✅ blizzard.js загружен');
             affectedRows.forEach(row => {
                 const cellData = gridCells[targetColumn]?.[row];
                 if (!cellData) return;
-                
+
+                // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+                const cellWidth = cellData.cellWidth || cellData.width || 60;
+                const cellHeight = cellData.cellHeight || cellData.height || 60;
+
                 // Создаем туман
                 const fog = new PIXI.Graphics();
                 fog.beginFill(0xDDEEFF, 0.3);
-                fog.drawCircle(0, 0, cellData.width * 0.5);
+                fog.drawCircle(0, 0, cellWidth * 0.7);
                 fog.endFill();
-                fog.x = cellData.x + cellData.width / 2;
-                fog.y = cellData.y + cellData.height / 2;
+                fog.x = cellData.x + cellWidth / 2;
+                fog.y = cellData.y + cellHeight / 2;
                 fog.blendMode = PIXI.BLEND_MODES.ADD;
                 
                 effectsContainer.addChild(fog);
@@ -174,53 +182,56 @@ console.log('✅ blizzard.js загружен');
     
     // Создание частиц снега
     function createSnowParticles(cellData, container) {
-    	const particleCount = 15;
-    
-    	for (let i = 0; i < particleCount; i++) {
-    	    setTimeout(() => {
-    	        const snowflake = new PIXI.Graphics();
-    	        snowflake.beginFill(0xFFFFFF, 0.8);
-    	        snowflake.drawCircle(0, 0, 2);
-    	        snowflake.endFill();
-            
-    	        snowflake.x = cellData.x + Math.random() * cellData.width;
-    	        snowflake.y = cellData.y - 20;
-    	        
-    	        container.addChild(snowflake);
-    	        
-    	        const speed = 0.5 + Math.random() * 1;
-    	        const drift = (Math.random() - 0.5) * 0.5;
-    	        
-    	        const animateSnow = () => {
-    	            if (!window.pixiAnimUtils.isValid(snowflake)) {
-    	                if (snowflake && snowflake.parent) {
-    	                    try {
-    	                        container.removeChild(snowflake);
-    	                    } catch (e) {}
-    	                }
-    	                return;
-    	            }
-    	            
-    	            snowflake.y += speed;
-        	    snowflake.x += drift;
-                    snowflake.alpha = 0.8 - (snowflake.y - cellData.y) / cellData.height;
-                
-            	    if (snowflake.y < cellData.y + cellData.height) {
-            	        requestAnimationFrame(animateSnow);
-            	    } else {
-            	        // Достигли дна - удаляем
-            	        if (snowflake.parent) {
-            	            try {
-            	                container.removeChild(snowflake);
-            	            } catch (e) {
-            	                // Игнорируем ошибку
-            	            }
-            	        }
-            	    }
-            	};
-            	animateSnow();
+        // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+        const cellWidth = cellData.cellWidth || cellData.width || 60;
+        const cellHeight = cellData.cellHeight || cellData.height || 60;
+        const particleCount = 15;
+
+        for (let i = 0; i < particleCount; i++) {
+            setTimeout(() => {
+                const snowflake = new PIXI.Graphics();
+                snowflake.beginFill(0xFFFFFF, 0.8);
+                snowflake.drawCircle(0, 0, 2);
+                snowflake.endFill();
+
+                snowflake.x = cellData.x + Math.random() * cellWidth;
+                snowflake.y = cellData.y - 20;
+
+                container.addChild(snowflake);
+
+                const speed = 0.5 + Math.random() * 1;
+                const drift = (Math.random() - 0.5) * 0.5;
+
+                const animateSnow = () => {
+                    if (!window.pixiAnimUtils.isValid(snowflake)) {
+                        if (snowflake && snowflake.parent) {
+                            try {
+                                container.removeChild(snowflake);
+                            } catch (e) {}
+                        }
+                        return;
+                    }
+
+                    snowflake.y += speed;
+                    snowflake.x += drift;
+                    snowflake.alpha = 0.8 - (snowflake.y - cellData.y) / cellHeight;
+
+                    if (snowflake.y < cellData.y + cellHeight) {
+                        requestAnimationFrame(animateSnow);
+                    } else {
+                        // Достигли дна - удаляем
+                        if (snowflake.parent) {
+                            try {
+                                container.removeChild(snowflake);
+                            } catch (e) {
+                                // Игнорируем ошибку
+                            }
+                        }
+                    }
+                };
+                animateSnow();
             }, Math.random() * 2000);
-    	}
+        }
     }
     
     // Обновление зон (удаление неактивных)

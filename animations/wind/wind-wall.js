@@ -85,18 +85,20 @@ console.log('✅ wind-wall.js загружен');
                 
                 // Создаем анимированный спрайт ветра
                 const windSprite = new PIXI.AnimatedSprite(windTextures);
-                windSprite.x = cellData.x + cellData.width / 2;
-                windSprite.y = cellData.y + cellData.height / 2;
+                // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+                const cellWidth = cellData.cellWidth || cellData.width || 60;
+                const cellHeight = cellData.cellHeight || cellData.height || 60;
+                windSprite.x = cellData.x + cellWidth / 2;
+                windSprite.y = cellData.y + cellHeight / 2;
                 windSprite.anchor.set(0.5);
-                
+
                 // Масштабируем с учетом размера ячейки
                 // Высота кадра 384px, ширина 153.6px
-                // Подгоняем под размер ячейки (примерно 60px)
-                const targetHeight = cellData.height * 1.5; // Немного выше ячейки
-                const scale = targetHeight / frameHeight;
+                const targetHeight = cellHeight * 2.5; // Выше ячейки для видимости
+                const scale = Math.max(targetHeight / frameHeight, 0.5);
                 windSprite.scale.set(scale);
-                
-                windSprite.animationSpeed = 0.15; // Плавная анимация ветра
+
+                windSprite.animationSpeed = 0.1; // Плавная анимация ветра
                 windSprite.loop = true;
                 windSprite.alpha = 0.7; // Полупрозрачность для ветра
                 windSprite.play();
@@ -131,23 +133,25 @@ console.log('✅ wind-wall.js загружен');
         positions.forEach(row => {
             const cellData = gridCells[targetColumn]?.[row];
             if (!cellData) return;
-            
+
+            const cellWidth = cellData.cellWidth || cellData.width || 60;
+            const cellHeight = cellData.cellHeight || cellData.height || 60;
             const container = new PIXI.Container();
-            container.x = cellData.x + cellData.width / 2;
-            container.y = cellData.y + cellData.height / 2;
-            
+            container.x = cellData.x + cellWidth / 2;
+            container.y = cellData.y + cellHeight / 2;
+
             // Рисуем волнистые линии ветра
             const windLines = new PIXI.Graphics();
             const lineCount = 5;
-            const lineHeight = cellData.height / lineCount;
-            
+            const lineHeight = cellHeight / lineCount;
+
             for (let i = 0; i < lineCount; i++) {
                 windLines.lineStyle(2, 0xCCFFFF, 0.6);
-                const y = -cellData.height / 2 + i * lineHeight;
-                
+                const y = -cellHeight / 2 + i * lineHeight;
+
                 // Волнистая линия
-                windLines.moveTo(-cellData.width / 2, y);
-                for (let x = -cellData.width / 2; x < cellData.width / 2; x += 5) {
+                windLines.moveTo(-cellWidth / 2, y);
+                for (let x = -cellWidth / 2; x < cellWidth / 2; x += 5) {
                     const waveY = y + Math.sin(x * 0.1) * 3;
                     windLines.lineTo(x, waveY);
                 }
@@ -166,10 +170,10 @@ console.log('✅ wind-wall.js загружен');
                 
                 for (let i = 0; i < lineCount; i++) {
                     windLines.lineStyle(2, 0xCCFFFF, 0.5 + Math.sin(time + i) * 0.2);
-                    const y = -cellData.height / 2 + i * lineHeight;
-                    
-                    windLines.moveTo(-cellData.width / 2, y);
-                    for (let x = -cellData.width / 2; x < cellData.width / 2; x += 5) {
+                    const y = -cellHeight / 2 + i * lineHeight;
+
+                    windLines.moveTo(-cellWidth / 2, y);
+                    for (let x = -cellWidth / 2; x < cellWidth / 2; x += 5) {
                         const waveY = y + Math.sin(x * 0.1 + time) * 3;
                         windLines.lineTo(x, waveY);
                     }
