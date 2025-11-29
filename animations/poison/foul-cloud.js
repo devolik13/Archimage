@@ -8,6 +8,8 @@ console.log('✅ foul-cloud.js загружен');
     function playFoulCloudAnimation(params) {
     	const { casterCol, casterRow, targetCol, targetRow, damage, duration = 8000 } = params;
 
+        console.log('☠️ playFoulCloudAnimation ВЫЗВАНА с параметрами:', params);
+
     	// КРИТИЧНО: При быстрой симуляции пропускаем анимацию
     	if (window.fastSimulation) {
     	    console.log('⚡ Быстрая симуляция: пропуск анимации Мерзкое облако');
@@ -16,11 +18,13 @@ console.log('✅ foul-cloud.js загружен');
 
     	const effectsContainer = window.pixiCore?.getEffectsContainer();
     	const gridCells = window.pixiCore?.getGridCells();
-    
+
     	if (!effectsContainer || !gridCells) {
-    	    console.warn('Не могу создать мерзкое облако - нет контейнера или сетки');
+    	    console.warn('☠️ Не могу создать мерзкое облако - нет контейнера или сетки', { effectsContainer: !!effectsContainer, gridCells: !!gridCells });
     	    return;
     	}
+
+        console.log('☠️ Контейнеры найдены, создаем облака для колонки', targetCol);
     
     	// ИЗМЕНЕНО: Создаём облако для всех клеток в колонке
     	for (let row = 0; row < 5; row++) {
