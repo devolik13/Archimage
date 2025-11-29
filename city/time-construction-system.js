@@ -809,9 +809,9 @@ async function completeConstruction(constructionIndex) {
         
         console.log(`✅ Заклинание ${spellName} улучшено до уровня ${target_level}`);
 
-        // Обновляем UI библиотеки
-        if (typeof window.renderLibraryUI === 'function') {
-            window.renderLibraryUI();
+        // Обновляем UI библиотеки (если открыта)
+        if (typeof window.updateLibraryContent === 'function') {
+            window.updateLibraryContent();
         }
 
         // Триггер сохранения
