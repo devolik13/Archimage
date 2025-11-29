@@ -64,13 +64,10 @@ console.log('✅ ice-rain.js загружен');
                 
                 for (let i = 0; i < dropsCount; i++) {
                     setTimeout(() => {
-                        // Используем cellWidth/cellHeight вместо width/height (PIXI getter bug)
-                        const cellWidth = cell.cellWidth || cell.width || 60;
-                        const cellHeight = cell.cellHeight || cell.height || 60;
                         createIceDrop(
-                            cell.x + cellWidth / 2 + (Math.random() - 0.5) * cellWidth * 0.6,
+                            cell.x + cell.width / 2 + (Math.random() - 0.5) * cell.width * 0.6,
                             cell.y - 100 - Math.random() * 200, // Стартуют выше экрана
-                            cell.y + cellHeight / 2,
+                            cell.y + cell.height / 2,
                             dropTextures,
                             cell.cellScale || 1
                         );
@@ -173,11 +170,9 @@ console.log('✅ ice-rain.js загружен');
         
         // Эффект замерзшей земли
         function createFrostGround(cell) {
-            const cellWidth = cell.cellWidth || cell.width || 60;
-            const cellHeight = cell.cellHeight || cell.height || 60;
             const frost = new PIXI.Graphics();
             frost.beginFill(0x88ccff, 0.3);
-            frost.drawRect(cell.x, cell.y, cellWidth, cellHeight);
+            frost.drawRect(cell.x, cell.y, cell.width, cell.height);
             frost.endFill();
             
             effectsContainer.addChild(frost);
@@ -210,27 +205,25 @@ console.log('✅ ice-rain.js загружен');
                     const targetCol = casterType === 'player' ? 0 : 5;
                     const cell = gridCells[targetCol]?.[position];
                     if (cell) {
-                        const cellWidth = cell.cellWidth || cell.width || 60;
-                        const cellHeight = cell.cellHeight || cell.height || 60;
                         for (let i = 0; i < 3; i++) {
                             setTimeout(() => {
                                 const drop = new PIXI.Graphics();
                                 drop.beginFill(0x4488ff, 0.8);
                                 drop.drawCircle(0, 0, 8);
                                 drop.endFill();
-
-                                drop.x = cell.x + cellWidth / 2 + (Math.random() - 0.5) * 30;
+                                
+                                drop.x = cell.x + cell.width / 2 + (Math.random() - 0.5) * 30;
                                 drop.y = cell.y - 50;
-
+                                
                                 effectsContainer.addChild(drop);
-
+                                
                                 // Падение
                                 const startTime = Date.now();
                                 const animate = () => {
                                     if (!window.pixiAnimUtils.isValid(drop)) return;
 
                                     const progress = Math.min((Date.now() - startTime) / 600, 1);
-                                    drop.y = cell.y - 50 + (cellHeight + 50) * progress;
+                                    drop.y = cell.y - 50 + (cell.height + 50) * progress;
 
                                     if (progress < 1) {
                                         requestAnimationFrame(animate);

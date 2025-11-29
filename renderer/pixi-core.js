@@ -199,11 +199,8 @@ function drawBattleGrid() {
             cell.gridCol = col;
             cell.gridRow = row;
             cell.cellScale = scale;
-            // Сохраняем размеры (перезаписывают геттеры PIXI.Graphics)
             cell.width = cellWidth;
             cell.height = cellHeight;
-            cell.cellWidth = cellWidth;   // Алиас для совместимости
-            cell.cellHeight = cellHeight; // Алиас для совместимости
             
             battleContainer.addChild(cell);
             gridCells[col][row] = cell;

@@ -74,11 +74,8 @@ console.log('✅ fire-wall.js загружен');
                 
                 // Создаем анимированный спрайт огня
                 const fireSprite = new PIXI.AnimatedSprite(fireTextures);
-                // Используем cellWidth/cellHeight (PIXI getter bug: width/height возвращают 0)
-                const cellWidth = cellData.cellWidth || cellData.width || 60;
-                const cellHeight = cellData.cellHeight || cellData.height || 60;
-                fireSprite.x = cellData.x + cellWidth / 2;
-                fireSprite.y = cellData.y + cellHeight / 2;
+                fireSprite.x = cellData.x + cellData.width / 2;
+                fireSprite.y = cellData.y + cellData.height / 2;
                 fireSprite.anchor.set(0.5);
                 
                 // Масштабируем спрайт под размер ячейки
@@ -130,11 +127,9 @@ console.log('✅ fire-wall.js загружен');
             if (!cellData) return;
             
             const container = new PIXI.Container();
-            const cellWidth = cellData.cellWidth || cellData.width || 60;
-            const cellHeight = cellData.cellHeight || cellData.height || 60;
-            container.x = cellData.x + cellWidth / 2;
-            container.y = cellData.y + cellHeight / 2;
-
+            container.x = cellData.x + cellData.width / 2;
+            container.y = cellData.y + cellData.height / 2;
+            
             // Создаем пламя из частиц
             const flameCount = 8;
             const flames = [];

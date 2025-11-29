@@ -74,47 +74,40 @@ console.log('✅ storm-cloud.js загружен');
                     
                     const targetCell = gridCells[randomCol]?.[randomRow];
                     if (!targetCell) return;
-
-                    // Используем helper для корректного позиционирования
-                    const cellInfo = window.pixiAnimUtils?.getCellInfo(targetCell) || {
-                        x: targetCell.x, y: targetCell.y,
-                        centerX: targetCell.x + 30, centerY: targetCell.y + 30,
-                        width: 60, height: 60
-                    };
-
+                    
                     // Создаем молнию
                     const lightning = new PIXI.AnimatedSprite(lightningTextures);
-                    lightning.x = cellInfo.centerX;
-                    lightning.y = cellInfo.y - cellInfo.height; // Сверху
+                    lightning.x = targetCell.x + targetCell.width / 2;
+                    lightning.y = targetCell.y - targetCell.height; // Сверху
                     lightning.anchor.set(0.5, 0);
-
-                    // Масштабируем - молния должна быть высокой и видимой
-                    const targetHeight = cellInfo.height * 4; // Увеличено для видимости
-                    const scale = Math.max(targetHeight / frameHeight, 0.6); // Минимум 0.6
+                    
+                    // Масштабируем - молния должна быть высокой
+                    const targetHeight = targetCell.height * 2.5;
+                    const scale = targetHeight / frameHeight;
                     lightning.scale.set(scale);
-
-                    lightning.animationSpeed = 0.25; // Замедлено для видимости
+                    
+                    lightning.animationSpeed = 0.4;
                     lightning.loop = false;
                     lightning.tint = 0xCCFFFF;
                     lightning.blendMode = PIXI.BLEND_MODES.ADD;
-
+                    
                     lightning.onComplete = () => {
                         if (lightning.parent) {
                             effectsContainer.removeChild(lightning);
                             lightning.destroy();
                         }
-
+                        
                         strikesCompleted++;
                         if (strikesCompleted === strikeCount && onComplete) {
                             onComplete();
                         }
                     };
-
+                    
                     effectsContainer.addChild(lightning);
                     lightning.play();
-
+                    
                     // Вспышка при ударе
-                    createLightningFlash(cellInfo.centerX, cellInfo.centerY, effectsContainer, scale);
+                    createLightningFlash(targetCell.x + targetCell.width / 2, targetCell.y + targetCell.height / 2, effectsContainer, scale);
                     
                     console.log(`⚡ Молния ${i + 1} ударила в клетку [${randomCol}][${randomRow}]`);
                     
@@ -130,39 +123,31 @@ console.log('✅ storm-cloud.js загружен');
     // Создание тучи над полем
     function createStormCloud(targetColumns, container, gridCells) {
         const cloudContainer = new PIXI.Container();
-
+        
         // Позиция тучи - над центром целевой территории
         const leftCol = targetColumns[0];
         const rightCol = targetColumns[targetColumns.length - 1];
         const topCell = gridCells[leftCol]?.[0];
         const bottomCell = gridCells[rightCol]?.[4];
-
+        
         if (!topCell || !bottomCell) return;
-
-        // Используем helper для корректного позиционирования
-        const topCellInfo = window.pixiAnimUtils?.getCellInfo(topCell) || {
-            x: topCell.x, y: topCell.y, width: 60
-        };
-        const bottomCellInfo = window.pixiAnimUtils?.getCellInfo(bottomCell) || {
-            x: bottomCell.x, width: 60
-        };
-
-        const centerX = (topCellInfo.x + bottomCellInfo.x + bottomCellInfo.width) / 2;
-        const centerY = topCellInfo.y - 60; // Немного выше
+        
+        const centerX = (topCell.x + bottomCell.x + bottomCell.width) / 2;
+        const centerY = topCell.y - 50;
         
         cloudContainer.x = centerX;
         cloudContainer.y = centerY;
         
-        // Рисуем тучу (увеличенный размер)
+        // Рисуем тучу
         const cloud = new PIXI.Graphics();
         cloud.beginFill(0x333333, 0.8);
-
-        // Несколько кругов для формы тучи - увеличенные размеры
-        cloud.drawCircle(-60, 0, 40);
-        cloud.drawCircle(-30, -15, 50);
-        cloud.drawCircle(0, -8, 55);
-        cloud.drawCircle(30, -15, 50);
-        cloud.drawCircle(60, 0, 40);
+        
+        // Несколько кругов для формы тучи
+        cloud.drawCircle(-40, 0, 30);
+        cloud.drawCircle(-20, -10, 35);
+        cloud.drawCircle(0, -5, 40);
+        cloud.drawCircle(20, -10, 35);
+        cloud.drawCircle(40, 0, 30);
         cloud.endFill();
         
         cloudContainer.addChild(cloud);
@@ -280,34 +265,27 @@ console.log('✅ storm-cloud.js загружен');
     // Fallback - простая анимация
     function createFallbackLightning(targetColumns, strikeCount, container, gridCells, onComplete) {
         let strikesCompleted = 0;
-
+        
         for (let i = 0; i < strikeCount; i++) {
             setTimeout(() => {
                 const randomCol = targetColumns[Math.floor(Math.random() * targetColumns.length)];
                 const randomRow = Math.floor(Math.random() * 5);
-
+                
                 const targetCell = gridCells[randomCol]?.[randomRow];
                 if (!targetCell) {
                     strikesCompleted++;
                     if (strikesCompleted === strikeCount && onComplete) onComplete();
                     return;
                 }
-
-                // Используем helper для корректного позиционирования
-                const cellInfo = window.pixiAnimUtils?.getCellInfo(targetCell) || {
-                    x: targetCell.x, y: targetCell.y,
-                    centerX: targetCell.x + 30, centerY: targetCell.y + 30,
-                    width: 60, height: 60
-                };
-
+                
                 // Простая молния
                 const lightning = new PIXI.Graphics();
                 lightning.lineStyle(4, 0xCCFFFF, 1);
-
-                const startX = cellInfo.centerX;
-                const startY = cellInfo.y - cellInfo.height;
+                
+                const startX = targetCell.x + targetCell.width / 2;
+                const startY = targetCell.y - targetCell.height;
                 const endX = startX;
-                const endY = cellInfo.centerY;
+                const endY = targetCell.y + targetCell.height / 2;
                 
                 lightning.moveTo(startX, startY);
                 

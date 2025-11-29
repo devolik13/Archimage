@@ -26,31 +26,22 @@ console.log('✅ plague.js загружен');
         
         const casterCell = gridCells[casterCol]?.[casterRow];
         const targetCell = gridCells[targetCol]?.[targetRow];
-
+        
         if (!casterCell || !targetCell) {
             console.warn('Не найдены клетки для чумы');
             if (onComplete) onComplete();
             return;
         }
-
-        // Используем helper для корректного позиционирования
-        const casterInfo = window.pixiAnimUtils?.getCellInfo(casterCell) || {
-            centerX: casterCell.x + 30, centerY: casterCell.y + 30
-        };
-        const targetInfo = window.pixiAnimUtils?.getCellInfo(targetCell) || {
-            centerX: targetCell.x + 30, centerY: targetCell.y + 30,
-            width: 60, height: 60, scale: 0.8
-        };
-
-        const startX = casterInfo.centerX;
-        const startY = casterInfo.centerY;
-        const endX = targetInfo.centerX;
-        const endY = targetInfo.centerY;
-
+        
+        const startX = casterCell.x + casterCell.width / 2;
+        const startY = casterCell.y + casterCell.height / 2;
+        const endX = targetCell.x + targetCell.width / 2;
+        const endY = targetCell.y + targetCell.height / 2;
+        
         // ФАЗА 1: Зелёный шарик летит к цели
         createFlyingOrb(startX, startY, endX, endY, () => {
             // ФАЗА 2: Анимация заражения на цели
-            createPlagueEffect(targetInfo, targetWizardId, onComplete);
+            createPlagueEffect(targetCell, targetWizardId, onComplete);
         });
     }
     
@@ -116,12 +107,11 @@ console.log('✅ plague.js загружен');
     }
     
     // Фаза 2: Эффект заражения на цели (длительный)
-    // targetInfo - объект с centerX, centerY, width, height из getCellInfo
-    function createPlagueEffect(targetInfo, targetWizardId, onComplete) {
+    function createPlagueEffect(targetCell, targetWizardId, onComplete) {
         const effectsContainer = window.pixiCore?.getEffectsContainer();
-
-        const centerX = targetInfo.centerX;
-        const centerY = targetInfo.centerY;
+        
+        const centerX = targetCell.x + targetCell.width / 2;
+        const centerY = targetCell.y + targetCell.height / 2;
         
         // Удаляем старый эффект чумы если есть
         if (activePlagueEffects.has(targetWizardId)) {
@@ -184,7 +174,7 @@ console.log('✅ plague.js загружен');
             plagueSprite.anchor.set(0.5);
             
             // Масштабируем до размера цели
-            const targetSize = Math.min(targetInfo.width, targetInfo.height) * 1.2;
+            const targetSize = Math.min(targetCell.width, targetCell.height) * 1.2;
             const scale = targetSize / frameWidth;
             plagueSprite.scale.set(scale);
             
@@ -214,14 +204,14 @@ console.log('✅ plague.js загружен');
         // Fallback - простая графика
         function createFallbackPlague() {
 	    const plague = new PIXI.Graphics();
-
+    
 	    // Зелёное мерцающее облако
 	    plague.beginFill(0x33CC33, 0.5);
-	    plague.drawCircle(0, 0, targetInfo.width * 0.6);
+	    plague.drawCircle(0, 0, targetCell.width * 0.6);
 	    plague.endFill();
-
+	    
 	    plague.beginFill(0x228822, 0.3);
-	    plague.drawCircle(0, 0, targetInfo.width * 0.4);
+	    plague.drawCircle(0, 0, targetCell.width * 0.4);
 	    plague.endFill();
     
 	    plague.x = centerX;

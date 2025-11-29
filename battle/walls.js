@@ -813,14 +813,14 @@ function applyAbsoluteZeroDamage() {
             if (zone.casterType === 'player') {
                 const targetWizard = window.enemyFormation[row];
                 if (targetWizard && targetWizard.hp > 0) {
-                    applyAbsoluteZeroEffectToTarget(caster, targetWizard, zone, 'enemy', row);
+                    applyAbsoluteZeroEffect(caster, targetWizard, zone, 'enemy', row);
                 }
             } else {
                 const wizardId = window.playerFormation[row];
                 if (wizardId) {
                     const targetWizard = window.playerWizards.find(w => w.id === wizardId);
                     if (targetWizard && targetWizard.hp > 0) {
-                        applyAbsoluteZeroEffectToTarget(caster, targetWizard, zone, 'player', row);
+                        applyAbsoluteZeroEffect(caster, targetWizard, zone, 'player', row);
                     }
                 }
             }
@@ -830,7 +830,7 @@ function applyAbsoluteZeroDamage() {
             if (typeof window.findSummonedCreatureAt === 'function') {
                 const summoned = window.findSummonedCreatureAt(summonCol, row);
                 if (summoned && summoned.hp > 0) {
-                    applyAbsoluteZeroEffectToTarget(caster, summoned, zone, 'summon', row);
+                    applyAbsoluteZeroEffect(caster, summoned, zone, 'summon', row);
                 }
             }
         }
@@ -838,7 +838,7 @@ function applyAbsoluteZeroDamage() {
 }
 
 // --- Применение эффекта Абсолютного Ноля к цели ---
-function applyAbsoluteZeroEffectToTarget(caster, target, zone, targetType, row) {
+function applyAbsoluteZeroEffect(caster, target, zone, targetType, row) {
     const finalDamage = typeof window.applyFinalDamage === 'function' ?
         window.applyFinalDamage(caster, target, zone.damage, 'absolute_zero', 0, true) : zone.damage;
 
@@ -850,32 +850,25 @@ function applyAbsoluteZeroEffectToTarget(caster, target, zone, targetType, row) 
     }
 
     // Логирование смерти от абсолютного ноля
-    if (target.hp <= 0) {
-        if (window.battleLogger) {
-            window.battleLogger.logDeath(target, targetType, 'absolute_zero');
-        }
+    if (target.hp <= 0 && window.battleLogger) {
+        window.battleLogger.logDeath(target, targetType, 'absolute_zero');
 
         // Анимация смерти только для обычных магов (не призванных)
         if (targetType === 'player' || targetType === 'enemy') {
             const col = targetType === 'player' ? 5 : 0;
-            const key = `${col}_${row}`;
 
-            // Обновляем HP бар
             if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
+                const key = `${col}_${row}`;
                 window.pixiWizards.updateHP(key, 0, target.max_hp);
             }
 
-            // Анимация смерти - проверяем разные способы получить контейнер
             if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
-                // Проверяем, не запущена ли уже анимация
-                const container = window.wizardSprites?.[key] || window.pixiWizards?.getSprite?.(key);
-                const alreadyStarted = container?.deathAnimationStarted || target.deathAnimationStarted;
-
-                if (!alreadyStarted) {
-                    if (container) container.deathAnimationStarted = true;
-                    target.deathAnimationStarted = true;
+                const key = `${col}_${row}`;
+                const container = window.wizardSprites?.[key];
+                if (container && !container.deathAnimationStarted) {
+                    container.deathAnimationStarted = true;
                     window.pixiWizards.playDeath(col, row);
-                    console.log(`🎬 Анимация смерти от Абсолютного Ноля для ${target.name} на ${key}`);
+                    console.log(`🎬 Анимация смерти от абсолютного ноля для ${target.name} на ${key}`);
                 }
             }
         }
@@ -973,5 +966,5 @@ window.processBlizzardsForCaster = processBlizzardsForCaster;
 window.createOrUpdateAbsoluteZeroZone = createOrUpdateAbsoluteZeroZone;
 window.isWizardInAbsoluteZero = isWizardInAbsoluteZero;
 window.applyAbsoluteZeroDamage = applyAbsoluteZeroDamage;
-window.applyAbsoluteZeroEffectToTarget = applyAbsoluteZeroEffectToTarget;
+window.applyAbsoluteZeroEffect = applyAbsoluteZeroEffect;
 window.findWindWallAt = findWindWallAt;

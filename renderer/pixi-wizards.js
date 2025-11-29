@@ -474,13 +474,8 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             sprite.endFill();
         }
         
-        // Используем helper для корректного позиционирования (cellData.width/height могут быть 0)
-        const cellInfo = window.pixiAnimUtils?.getCellInfo(cellData) || {
-            centerX: cellData.x + (cellData.cellWidth || 30),
-            centerY: cellData.y + (cellData.cellHeight || 30)
-        };
-        sprite.x = cellInfo.centerX;
-        sprite.y = cellInfo.centerY;
+        sprite.x = cellData.x + cellData.width / 2;
+        sprite.y = cellData.y + cellData.height / 2;
 
         // ИСПРАВЛЕНИЕ: Позиционируем элементалей на 4 клетки (2x2)
         // Элементаль занимает клетки: [0,1], [0,2], [1,1], [1,2] (ряды 1-2, колонки 0-1)
@@ -494,16 +489,11 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 const cell12 = gridCells?.[1]?.[2]; // col 1, row 2
 
                 if (cell01 && cell02 && cell11 && cell12) {
-                    // Используем getCellInfo для элементалей тоже
-                    const info01 = window.pixiAnimUtils?.getCellInfo(cell01) || { centerX: cell01.x + 30, centerY: cell01.y + 30 };
-                    const info02 = window.pixiAnimUtils?.getCellInfo(cell02) || { centerX: cell02.x + 30, centerY: cell02.y + 30 };
-                    const info11 = window.pixiAnimUtils?.getCellInfo(cell11) || { centerX: cell11.x + 30, centerY: cell11.y + 30 };
-
                     // Центр по X: между колонками 0 и 1
-                    sprite.x = (info01.centerX + info11.centerX) / 2;
+                    sprite.x = (cell01.x + cell11.x + cell01.width / 2 + cell11.width / 2) / 2;
 
                     // Центр по Y: между рядами 1 и 2
-                    sprite.y = (info01.centerY + info02.centerY) / 2;
+                    sprite.y = (cell01.y + cell02.y + cell01.height / 2 + cell02.height / 2) / 2;
 
                     console.log(`📐 Элементаль ${faction} позиционирован на 4 клетках (2x2)`);
                     console.log(`   Позиция: [0,1], [0,2], [1,1], [1,2]`);
@@ -1111,14 +1101,8 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 sprite.baseScaleX = sprite.scale.x; // Обновляем базовый scale после зеркалирования
             }
 
-            // Используем helper для корректного позиционирования
-            const cellInfo = window.pixiAnimUtils?.getCellInfo(cellData) || {
-                centerX: cellData.x + (cellData.cellWidth || 30),
-                centerY: cellData.y + (cellData.cellHeight || 30),
-                height: cellData.cellHeight || 60
-            };
-            sprite.x = cellInfo.centerX;
-            sprite.y = cellInfo.centerY;
+            sprite.x = cellData.x + cellData.width / 2;
+            sprite.y = cellData.y + cellData.height / 2;
 
             // Сохраняем текстуры для анимаций
             sprite.userData = {
@@ -1145,8 +1129,8 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
 
             hpBarContainer.addChild(hpBarBg);
             hpBarContainer.addChild(hpBarFill);
-            hpBarContainer.x = cellInfo.centerX;
-            hpBarContainer.y = cellData.y + cellInfo.height * 0.2; // Над головой
+            hpBarContainer.x = cellData.x + cellData.width / 2;
+            hpBarContainer.y = cellData.y + cellData.height * 0.2; // Над головой
 
             container.addChild(sprite);
             unitsContainer.addChild(container);

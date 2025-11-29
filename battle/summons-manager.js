@@ -340,11 +340,9 @@ class SummonsManager {
             }
             
             // Создаем анимированный спрайт
-            const cellWidth = cell.cellWidth || cell.width || 60;
-            const cellHeight = cell.cellHeight || cell.height || 60;
             const sprite = new PIXI.AnimatedSprite(frames);
-            sprite.x = cell.x + cellWidth / 2;
-            sprite.y = cell.y + cellHeight * config.yOffset;
+            sprite.x = cell.x + cell.width / 2;
+            sprite.y = cell.y + cell.height * config.yOffset;
             sprite.anchor.set(0.5, 0.5);
             
             // Масштаб и направление
@@ -399,10 +397,8 @@ class SummonsManager {
         graphics.endFill();
         
         // Позиционирование
-        const cellWidth = cell.cellWidth || cell.width || 60;
-        const cellHeight = cell.cellHeight || cell.height || 60;
-        graphics.x = cell.x + cellWidth / 2;
-        graphics.y = cell.y + cellHeight * (config.yOffset || 0.7);
+        graphics.x = cell.x + cell.width / 2;
+        graphics.y = cell.y + cell.height * (config.yOffset || 0.7);
         graphics.alpha = 0;
         
         container.addChild(graphics);

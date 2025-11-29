@@ -48,51 +48,11 @@ function areAllValid(objects) {
     return objects.every(obj => isPixiObjectValid(obj));
 }
 
-/**
- * Получает центр и размеры ячейки с fallback значениями
- * Решает проблему когда cell.width/height = 0 (PIXI.Graphics getter override)
- *
- * @param {Object} cell - Объект ячейки из gridCells
- * @returns {Object} - { x, y, width, height, centerX, centerY, scale }
- */
-function getCellInfo(cell) {
-    if (!cell) return null;
-
-    const scale = cell.cellScale || 0.8;
-    const baseSize = 60; // Базовый размер клетки
-
-    // Приоритет: cellWidth/cellHeight > width/height > вычисленное из scale
-    const width = cell.cellWidth || cell.width || (scale * baseSize);
-    const height = cell.cellHeight || cell.height || (scale * baseSize);
-
-    return {
-        x: cell.x,
-        y: cell.y,
-        width: width,
-        height: height,
-        centerX: cell.x + width / 2,
-        centerY: cell.y + height / 2,
-        scale: scale
-    };
-}
-
-/**
- * Получает центр ячейки (сокращённая версия)
- * @param {Object} cell - Объект ячейки из gridCells
- * @returns {Object} - { x, y } центра ячейки
- */
-function getCellCenter(cell) {
-    const info = getCellInfo(cell);
-    return info ? { x: info.centerX, y: info.centerY } : null;
-}
-
 // Экспорт в глобальную область
 window.pixiAnimUtils = {
     isValid: isPixiObjectValid,
     safeAnimate: safeAnimate,
-    areAllValid: areAllValid,
-    getCellInfo: getCellInfo,
-    getCellCenter: getCellCenter
+    areAllValid: areAllValid
 };
 
 console.log('🔧 PIXI Animation Utils готовы к использованию');
