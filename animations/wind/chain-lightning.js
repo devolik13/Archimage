@@ -320,32 +320,38 @@ console.log('✅ chain-lightning.js загружен');
             
             const target = targets[currentIndex];
             const cell = gridCells[target.col]?.[target.row];
-            
+
             if (!cell) {
                 currentIndex++;
                 setTimeout(strikeNext, 100);
                 return;
             }
-            
+
+            // Используем cellWidth/cellHeight (PIXI getter bug)
+            const cellWidth = cell.cellWidth || cell.width || 60;
+            const cellHeight = cell.cellHeight || cell.height || 60;
+
             let startX, startY;
-            
+
             if (currentIndex === 0) {
-                startX = cell.x + cell.width / 2;
+                startX = cell.x + cellWidth / 2;
                 startY = -50;
             } else {
                 const prevTarget = targets[currentIndex - 1];
                 const prevCell = gridCells[prevTarget.col]?.[prevTarget.row];
-                startX = prevCell ? prevCell.x + prevCell.width / 2 : cell.x + cell.width / 2;
-                startY = prevCell ? prevCell.y + prevCell.height / 2 : -50;
+                const prevCellWidth = prevCell?.cellWidth || prevCell?.width || 60;
+                const prevCellHeight = prevCell?.cellHeight || prevCell?.height || 60;
+                startX = prevCell ? prevCell.x + prevCellWidth / 2 : cell.x + cellWidth / 2;
+                startY = prevCell ? prevCell.y + prevCellHeight / 2 : -50;
             }
-            
-            const endX = cell.x + cell.width / 2;
-            const endY = cell.y + cell.height / 2;
-            
+
+            const endX = cell.x + cellWidth / 2;
+            const endY = cell.y + cellHeight / 2;
+
             // Простой светящийся круг
             const ball = new PIXI.Graphics();
             ball.beginFill(0xCCFFFF, 1);
-            ball.drawCircle(0, 0, cell.width * 0.3);
+            ball.drawCircle(0, 0, cellWidth * 0.3);
             ball.endFill();
             ball.x = startX;
             ball.y = startY;

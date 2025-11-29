@@ -79,8 +79,11 @@ console.log('✅ fire-tsunami.js загружен');
                 if (!cellData) continue;
                 
                 const wave = new PIXI.AnimatedSprite(frames);
-                wave.x = cellData.x + cellData.width / 2;
-                wave.y = cellData.y + cellData.height / 2;
+                // Используем cellWidth/cellHeight (PIXI getter bug)
+                const cellWidth = cellData.cellWidth || cellData.width || 60;
+                const cellHeight = cellData.cellHeight || cellData.height || 60;
+                wave.x = cellData.x + cellWidth / 2;
+                wave.y = cellData.y + cellHeight / 2;
                 wave.anchor.set(0.5);
                 
                 // Масштаб - адаптивный к размеру клетки
@@ -164,11 +167,13 @@ console.log('✅ fire-tsunami.js загружен');
                 wave.drawCircle(0, -10, 10);
                 wave.endFill();
                 
-                wave.x = cellData.x + cellData.width / 2;
-                wave.y = cellData.y + cellData.height / 2;
-                
+                const fallbackCellWidth = cellData.cellWidth || cellData.width || 60;
+                const fallbackCellHeight = cellData.cellHeight || cellData.height || 60;
+                wave.x = cellData.x + fallbackCellWidth / 2;
+                wave.y = cellData.y + fallbackCellHeight / 2;
+
                 effectsContainer.addChild(wave);
-                
+
                 // Анимация покачивания
                 const baseY = wave.y;
                 const animate = () => {
@@ -218,7 +223,8 @@ console.log('✅ fire-tsunami.js загружен');
             
             if (!targetCell || !sprite.parent) return;
             
-            const targetX = targetCell.x + targetCell.width / 2;
+            const targetCellWidth = targetCell.cellWidth || targetCell.width || 60;
+            const targetX = targetCell.x + targetCellWidth / 2;
             const startX = sprite.x;
             const duration = 600;
             const startTime = Date.now();

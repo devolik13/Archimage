@@ -52,9 +52,11 @@ console.log('✅ burning-ground.js загружен');
             }
             
             // Создаем анимированный спрайт
+            const cellWidth = cell.cellWidth || cell.width || 60;
+            const cellHeight = cell.cellHeight || cell.height || 60;
             const burningGround = new PIXI.AnimatedSprite(frames);
-            burningGround.x = cell.x + cell.width / 2;
-            burningGround.y = cell.y + cell.height * 0.8; // Ближе к низу клетки
+            burningGround.x = cell.x + cellWidth / 2;
+            burningGround.y = cell.y + cellHeight * 0.8; // Ближе к низу клетки
             burningGround.anchor.set(0.5, 0.5);
             
             // Масштаб под размер клетки
@@ -92,14 +94,16 @@ console.log('✅ burning-ground.js загружен');
     function createFallbackGround(cell, groundId) {
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         if (!effectsContainer) return;
-        
+
+        const cellWidth = cell.cellWidth || cell.width || 60;
+        const cellHeight = cell.cellHeight || cell.height || 60;
         const ground = new PIXI.Graphics();
         ground.beginFill(0xFF4400, 0.4);
-        ground.drawEllipse(0, 0, cell.width * 0.4, cell.height * 0.2);
+        ground.drawEllipse(0, 0, cellWidth * 0.4, cellHeight * 0.2);
         ground.endFill();
         
-        ground.x = cell.x + cell.width / 2;
-        ground.y = cell.y + cell.height * 0.8;
+        ground.x = cell.x + cellWidth / 2;
+        ground.y = cell.y + cellHeight * 0.8;
         ground.blendMode = PIXI.BLEND_MODES.ADD;
         
         effectsContainer.addChild(ground);
