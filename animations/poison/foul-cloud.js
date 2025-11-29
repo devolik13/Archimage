@@ -31,9 +31,9 @@ console.log('✅ foul-cloud.js загружен');
     	    const targetCell = gridCells[targetCol]?.[row];
     	    if (!targetCell) continue;
         
-    	    // Fallback размеры если клетка имеет нулевые размеры
-    	    const cellWidth = targetCell.width || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
-    	    const cellHeight = targetCell.height || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
+    	    // Используем кастомные свойства cellWidth/cellHeight из pixi-core.js
+    	    const cellWidth = targetCell.cellWidth || targetCell.width || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
+    	    const cellHeight = targetCell.cellHeight || targetCell.height || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
     	    const cellScale = targetCell.cellScale || 0.8;
 
     	    console.log('☠️ Создаем мерзкое облако на позиции', targetCol, row, { cellWidth, cellHeight, cellScale });

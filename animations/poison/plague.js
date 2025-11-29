@@ -33,11 +33,11 @@ console.log('✅ plague.js загружен');
             return;
         }
         
-        // Fallback размеры если клетка имеет нулевые размеры
-        const casterCellWidth = casterCell.width || (casterCell.cellScale ? casterCell.cellScale * 100 : 80);
-        const casterCellHeight = casterCell.height || (casterCell.cellScale ? casterCell.cellScale * 100 : 80);
-        const targetCellWidth = targetCell.width || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
-        const targetCellHeight = targetCell.height || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
+        // Используем кастомные свойства cellWidth/cellHeight из pixi-core.js
+        const casterCellWidth = casterCell.cellWidth || casterCell.width || (casterCell.cellScale ? casterCell.cellScale * 100 : 80);
+        const casterCellHeight = casterCell.cellHeight || casterCell.height || (casterCell.cellScale ? casterCell.cellScale * 100 : 80);
+        const targetCellWidth = targetCell.cellWidth || targetCell.width || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
+        const targetCellHeight = targetCell.cellHeight || targetCell.height || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
 
         const startX = casterCell.x + casterCellWidth / 2;
         const startY = casterCell.y + casterCellHeight / 2;

@@ -36,9 +36,9 @@ console.log('✅ epidemic.js загружен');
             return;
         }
 
-        // Fallback размеры если клетка имеет нулевые размеры
-        const cellWidth = targetCell.width || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
-        const cellHeight = targetCell.height || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
+        // Используем кастомные свойства cellWidth/cellHeight из pixi-core.js
+        const cellWidth = targetCell.cellWidth || targetCell.width || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
+        const cellHeight = targetCell.cellHeight || targetCell.height || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
 
         console.log('💀 Клетка найдена:', { x: targetCell.x, y: targetCell.y, width: cellWidth, height: cellHeight, cellScale: targetCell.cellScale });
 
