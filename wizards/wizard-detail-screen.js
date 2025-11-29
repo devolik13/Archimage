@@ -312,9 +312,9 @@ function renderWizardDetailScreen(wizardIndex) {
 // Обновить только заклинания (без перерисовки всего окна)
 function updateWizardSpellSlots() {
     if (typeof window.currentWizardDetailIndex === 'undefined') return;
-    
-    // Просто перерисовываем окно
-    renderWizardDetailScreen(window.currentWizardDetailIndex);
+
+    // Перерисовываем окно с фоном
+    renderWizardDetailScreenWithBackground(window.currentWizardDetailIndex);
 }
 
 // Показать модалку сопротивлений
