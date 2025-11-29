@@ -474,8 +474,8 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             sprite.endFill();
         }
         
-        sprite.x = cellData.x + (cellData.cellWidth || cellData.width) / 2;
-        sprite.y = cellData.y + (cellData.cellHeight || cellData.height) / 2;
+        sprite.x = cellData.x + cellData.width / 2;
+        sprite.y = cellData.y + cellData.height / 2;
 
         // ИСПРАВЛЕНИЕ: Позиционируем элементалей на 4 клетки (2x2)
         // Элементаль занимает клетки: [0,1], [0,2], [1,1], [1,2] (ряды 1-2, колонки 0-1)
@@ -490,10 +490,10 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
 
                 if (cell01 && cell02 && cell11 && cell12) {
                     // Центр по X: между колонками 0 и 1
-                    sprite.x = (cell01.x + cell11.x + (cell01.cellWidth || cell01.width) / 2 + (cell11.cellWidth || cell11.width) / 2) / 2;
+                    sprite.x = (cell01.x + cell11.x + cell01.width / 2 + cell11.width / 2) / 2;
 
                     // Центр по Y: между рядами 1 и 2
-                    sprite.y = (cell01.y + cell02.y + (cell01.cellHeight || cell01.height) / 2 + (cell02.cellHeight || cell02.height) / 2) / 2;
+                    sprite.y = (cell01.y + cell02.y + cell01.height / 2 + cell02.height / 2) / 2;
 
                     console.log(`📐 Элементаль ${faction} позиционирован на 4 клетках (2x2)`);
                     console.log(`   Позиция: [0,1], [0,2], [1,1], [1,2]`);
@@ -1101,8 +1101,8 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 sprite.baseScaleX = sprite.scale.x; // Обновляем базовый scale после зеркалирования
             }
 
-            sprite.x = cellData.x + (cellData.cellWidth || cellData.width) / 2;
-            sprite.y = cellData.y + (cellData.cellHeight || cellData.height) / 2;
+            sprite.x = cellData.x + cellData.width / 2;
+            sprite.y = cellData.y + cellData.height / 2;
 
             // Сохраняем текстуры для анимаций
             sprite.userData = {
@@ -1129,8 +1129,8 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
 
             hpBarContainer.addChild(hpBarBg);
             hpBarContainer.addChild(hpBarFill);
-            hpBarContainer.x = cellData.x + (cellData.cellWidth || cellData.width) / 2;
-            hpBarContainer.y = cellData.y + (cellData.cellHeight || cellData.height) * 0.2; // Над головой
+            hpBarContainer.x = cellData.x + cellData.width / 2;
+            hpBarContainer.y = cellData.y + cellData.height * 0.2; // Над головой
 
             container.addChild(sprite);
             unitsContainer.addChild(container);

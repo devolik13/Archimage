@@ -19,43 +19,31 @@ console.log('✅ epidemic.js загружен');
 
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
-
-        console.log('💀 Проверка контейнеров:', { effectsContainer: !!effectsContainer, gridCells: !!gridCells });
-
+        
         if (!effectsContainer || !gridCells) {
-            console.warn('💀 Не могу создать эпидемию - нет контейнера');
+            console.warn('Не могу создать эпидемию - нет контейнера');
             if (onComplete) onComplete();
             return;
         }
-
+        
         const targetCell = gridCells[targetCol]?.[targetRow];
-
+        
         if (!targetCell) {
-            console.warn('💀 Не найдена клетка для эпидемии:', { targetCol, targetRow });
+            console.warn('Не найдена клетка для эпидемии');
             if (onComplete) onComplete();
             return;
         }
-
-        // Используем кастомные свойства cellWidth/cellHeight из pixi-core.js
-        const cellWidth = targetCell.cellWidth || targetCell.width || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
-        const cellHeight = targetCell.cellHeight || targetCell.height || (targetCell.cellScale ? targetCell.cellScale * 100 : 80);
-
-        console.log('💀 Клетка найдена:', { x: targetCell.x, y: targetCell.y, width: cellWidth, height: cellHeight, cellScale: targetCell.cellScale });
-
-        const centerX = targetCell.x + cellWidth / 2;
+        
+        const centerX = targetCell.x + targetCell.width / 2;
         // КЛЮЧЕВОЕ ОТЛИЧИЕ: пузырь появляется НАД головой (выше центра клетки)
-        const centerY = targetCell.y + cellHeight * 0.2; // 20% от верха клетки
-
+        const centerY = targetCell.y + targetCell.height * 0.2; // 20% от верха клетки
+        
         // Загружаем текстуру спрайтшита
         const epidemicTexturePath = 'images/spells/poison/epidemic/epidemic_spritesheet.png';
-
-        console.log('💀 Загружаем текстуру:', epidemicTexturePath);
-
+        
         PIXI.Assets.load(epidemicTexturePath).then(texture => {
-            console.log('💀 Текстура загружена:', { valid: texture?.valid, width: texture?.width, height: texture?.height });
-
             if (!texture || !texture.valid) {
-                console.warn('💀 Не удалось загрузить текстуру эпидемии, используем fallback');
+                console.warn('Не удалось загрузить текстуру эпидемии');
                 createFallbackBubble();
                 return;
             }
@@ -91,7 +79,7 @@ console.log('✅ epidemic.js загружен');
             // Масштабируем пузырь
             // Обычный пузырь - 70% клетки, МЕГА взрыв (5 lvl) - 120% клетки
             const sizeMultiplier = isMegaExplosion ? 1.2 : 0.7;
-            const targetSize = Math.min(cellWidth, cellHeight) * sizeMultiplier;
+            const targetSize = Math.min(targetCell.width, targetCell.height) * sizeMultiplier;
             const scale = targetSize / frameWidth;
             bubbleSprite.scale.set(scale);
             
@@ -133,12 +121,9 @@ console.log('✅ epidemic.js загружен');
             }
             
             effectsContainer.addChild(bubbleSprite);
-
-            console.log('💀 Спрайт добавлен в контейнер:', { x: bubbleSprite.x, y: bubbleSprite.y, scale: scale, frames: frames.length });
-
+            
             // Событие окончания анимации
             bubbleSprite.onComplete = () => {
-                console.log('💀 Анимация пузыря завершена');
                 // Короткая задержка перед исчезновением
                 setTimeout(() => {
                     if (bubbleSprite.parent) {
@@ -148,9 +133,8 @@ console.log('✅ epidemic.js загружен');
                     if (onComplete) onComplete();
                 }, isMegaExplosion ? 300 : 150); // МЕГА взрыв держится дольше
             };
-
+            
             bubbleSprite.play();
-            console.log('💀 Анимация пузыря запущена');
             activeBubbles.push(bubbleSprite);
             
         }).catch(err => {
