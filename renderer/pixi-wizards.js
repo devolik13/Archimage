@@ -474,8 +474,12 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             sprite.endFill();
         }
         
-        sprite.x = cellData.x + cellData.width / 2;
-        sprite.y = cellData.y + cellData.height / 2;
+        // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+        const cellWidth = cellData.cellWidth || cellData.width || 60;
+        const cellHeight = cellData.cellHeight || cellData.height || 60;
+
+        sprite.x = cellData.x + cellWidth / 2;
+        sprite.y = cellData.y + cellHeight / 2;
 
         // ИСПРАВЛЕНИЕ: Позиционируем элементалей на 4 клетки (2x2)
         // Элементаль занимает клетки: [0,1], [0,2], [1,1], [1,2] (ряды 1-2, колонки 0-1)
@@ -489,11 +493,17 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 const cell12 = gridCells?.[1]?.[2]; // col 1, row 2
 
                 if (cell01 && cell02 && cell11 && cell12) {
+                    // Используем cellWidth/cellHeight для элементалей тоже
+                    const cell01Width = cell01.cellWidth || cell01.width || 60;
+                    const cell01Height = cell01.cellHeight || cell01.height || 60;
+                    const cell02Height = cell02.cellHeight || cell02.height || 60;
+                    const cell11Width = cell11.cellWidth || cell11.width || 60;
+
                     // Центр по X: между колонками 0 и 1
-                    sprite.x = (cell01.x + cell11.x + cell01.width / 2 + cell11.width / 2) / 2;
+                    sprite.x = (cell01.x + cell11.x + cell01Width / 2 + cell11Width / 2) / 2;
 
                     // Центр по Y: между рядами 1 и 2
-                    sprite.y = (cell01.y + cell02.y + cell01.height / 2 + cell02.height / 2) / 2;
+                    sprite.y = (cell01.y + cell02.y + cell01Height / 2 + cell02Height / 2) / 2;
 
                     console.log(`📐 Элементаль ${faction} позиционирован на 4 клетках (2x2)`);
                     console.log(`   Позиция: [0,1], [0,2], [1,1], [1,2]`);
