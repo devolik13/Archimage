@@ -30,17 +30,22 @@ console.log('✅ foul-cloud.js загружен');
     	for (let row = 0; row < 5; row++) {
     	    const targetCell = gridCells[targetCol]?.[row];
     	    if (!targetCell) continue;
-        
+
+            // Используем helper для корректного позиционирования
+            const cellInfo = window.pixiAnimUtils?.getCellInfo(targetCell) || {
+                centerX: targetCell.x + 30, centerY: targetCell.y + 30, scale: 0.8
+            };
+
     	    console.log('☠️ Создаем мерзкое облако на позиции', targetCol, row);
-        
+
     	    // Контейнер для облака в этой клетке
     	    const cloudContainer = new PIXI.Container();
-    	    cloudContainer.x = targetCell.x + targetCell.width / 2;
-    	    cloudContainer.y = targetCell.y + targetCell.height / 2;
-        
+    	    cloudContainer.x = cellInfo.centerX;
+    	    cloudContainer.y = cellInfo.centerY;
+
     	    // Загружаем спрайт и частицы
-    	    loadCloudSprite(cloudContainer, targetCell.cellScale);
-    	    createPoisonParticles(cloudContainer, targetCell.cellScale);
+    	    loadCloudSprite(cloudContainer, cellInfo.scale);
+    	    createPoisonParticles(cloudContainer, cellInfo.scale);
         
     	    effectsContainer.addChild(cloudContainer);
     	    
