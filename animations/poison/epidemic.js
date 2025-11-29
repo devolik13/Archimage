@@ -32,15 +32,11 @@ console.log('✅ epidemic.js загружен');
             return;
         }
 
-        // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
-        const cellWidth = targetCell.cellWidth || targetCell.width || 60;
-        const cellHeight = targetCell.cellHeight || targetCell.height || 60;
-
-        // Рассчитываем позицию от клетки (центр клетки = центр мага)
-        const centerX = targetCell.x + cellWidth / 2;
+        // Используем ту же формулу что и pixi-wizards.js для совпадения позиций
+        const centerX = targetCell.x + targetCell.width / 2;
         // КЛЮЧЕВОЕ ОТЛИЧИЕ: пузырь появляется НАД головой (выше центра мага)
-        const wizardY = targetCell.y + cellHeight / 2;
-        const centerY = wizardY - cellHeight * 0.3; // Выше центра мага
+        const wizardY = targetCell.y + targetCell.height / 2;
+        const centerY = wizardY - (targetCell.height || 60) * 0.3; // Выше центра мага
         
         // Загружаем текстуру спрайтшита
         const epidemicTexturePath = 'images/spells/poison/epidemic/epidemic_spritesheet.png';
@@ -83,7 +79,8 @@ console.log('✅ epidemic.js загружен');
             // Масштабируем пузырь
             // Обычный пузырь - 70% клетки, МЕГА взрыв (5 lvl) - 120% клетки
             const sizeMultiplier = isMegaExplosion ? 1.2 : 0.7;
-            const targetSize = Math.min(cellWidth, cellHeight) * sizeMultiplier;
+            const cellSize = targetCell.cellWidth || targetCell.width || 60;
+            const targetSize = cellSize * sizeMultiplier;
             const scale = targetSize / frameWidth;
             bubbleSprite.scale.set(scale);
             
@@ -149,8 +146,8 @@ console.log('✅ epidemic.js загружен');
         // Fallback - простая графика пузыря
         function createFallbackBubble() {
             const bubble = new PIXI.Graphics();
-
-            const bubbleRadius = cellWidth * (isMegaExplosion ? 0.6 : 0.35);
+            const fallbackSize = targetCell.cellWidth || targetCell.width || 60;
+            const bubbleRadius = fallbackSize * (isMegaExplosion ? 0.6 : 0.35);
             
             // Внешний контур пузыря
             bubble.lineStyle(3, 0x33FF33, 0.8);
