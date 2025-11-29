@@ -148,33 +148,50 @@ console.log('✅ firebolt.js загружен');
             const targetY = targetCell.y + targetCell.height / 2;
             const duration = 800;
             const startTime = Date.now();
-            
+            const startX = casterCell.x + casterCell.width / 2;
+            const startY = casterCell.y + casterCell.height / 2;
+
             const animate = () => {
+                // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
+                if (!arrow || arrow.destroyed || !arrow.transform || !arrow.parent) {
+                    completedArrows++;
+                    checkComplete();
+                    return;
+                }
+
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                
-                arrow.x = casterCell.x + casterCell.width / 2 + 
-                         (targetX - (casterCell.x + casterCell.width / 2)) * progress;
-                arrow.y = casterCell.y + casterCell.height / 2 + 
-                         (targetY - (casterCell.y + casterCell.height / 2)) * progress;
-                
+
+                try {
+                    arrow.x = startX + (targetX - startX) * progress;
+                    arrow.y = startY + (targetY - startY) * progress;
+                } catch (e) {
+                    completedArrows++;
+                    checkComplete();
+                    return;
+                }
+
                 if (progress < 1) {
                     requestAnimationFrame(animate);
                 } else {
-                    effectsContainer.removeChild(arrow);
-                    arrow.destroy();
+                    if (arrow.parent) {
+                        effectsContainer.removeChild(arrow);
+                    }
+                    if (!arrow.destroyed) {
+                        arrow.destroy();
+                    }
                     createImpact(targetX, targetY);
-                    
+
                     // ВЫЗЫВАЕМ CALLBACK для применения урона и эффектов
                     if (onArrowHit) {
                         onArrowHit(index);
                     }
-                    
+
                     completedArrows++;
                     checkComplete();
                 }
             };
-            
+
             animate();
         }
         
@@ -222,22 +239,28 @@ console.log('✅ firebolt.js загружен');
                     const duration = 800;
                     const startTime = Date.now();
                     
+                    const startX = casterCell.x + casterCell.width / 2;
+                    const startY = casterCell.y + casterCell.height / 2;
+
                     const animate = () => {
-                	// ПРОВЕРКА: если стрела уничтожена - прерываем анимацию
-                	if (!arrow || arrow.destroyed || !arrow.transform) {
-                	    console.warn('Стрела была уничтожена, прерываем анимацию');
-                	    completedArrows++;
-                	    checkComplete();
-                	    return;
-                	}
-                
-                	const elapsed = Date.now() - startTime;
-                	const progress = Math.min(elapsed / duration, 1);
-                	
-                	arrow.x = casterCell.x + casterCell.width / 2 + 
-                	         (targetX - (casterCell.x + casterCell.width / 2)) * progress;
-                	arrow.y = casterCell.y + casterCell.height / 2 + 
-                	         (targetY - (casterCell.y + casterCell.height / 2)) * progress;
+                        // ПРОВЕРКА: если стрела уничтожена - прерываем анимацию
+                        if (!arrow || arrow.destroyed || !arrow.transform || !arrow.parent) {
+                            completedArrows++;
+                            checkComplete();
+                            return;
+                        }
+
+                        const elapsed = Date.now() - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+
+                        try {
+                            arrow.x = startX + (targetX - startX) * progress;
+                            arrow.y = startY + (targetY - startY) * progress;
+                        } catch (e) {
+                            completedArrows++;
+                            checkComplete();
+                            return;
+                        }
                 	
                 	if (progress < 1) {
                 	    requestAnimationFrame(animate);
@@ -371,16 +394,29 @@ console.log('✅ firebolt.js загружен');
                 const targetY = targetCell.y + targetCell.height / 2;
                 const duration = 800;
                 const startTime = Date.now();
-                
+                const startX = casterCell.x + casterCell.width / 2;
+                const startY = casterCell.y + casterCell.height / 2;
+
                 const animate = () => {
+                    // ПРОВЕРКА: если стрела уничтожена - прерываем анимацию
+                    if (!arrow || arrow.destroyed || !arrow.transform || !arrow.parent) {
+                        completedArrows++;
+                        if (completedArrows >= arrowCount && onComplete) onComplete();
+                        return;
+                    }
+
                     const elapsed = Date.now() - startTime;
                     const progress = Math.min(elapsed / duration, 1);
-                    
-                    arrow.x = casterCell.x + casterCell.width / 2 + 
-                             (targetX - (casterCell.x + casterCell.width / 2)) * progress;
-                    arrow.y = casterCell.y + casterCell.height / 2 + 
-                             (targetY - (casterCell.y + casterCell.height / 2)) * progress;
-                    
+
+                    try {
+                        arrow.x = startX + (targetX - startX) * progress;
+                        arrow.y = startY + (targetY - startY) * progress;
+                    } catch (e) {
+                        completedArrows++;
+                        if (completedArrows >= arrowCount && onComplete) onComplete();
+                        return;
+                    }
+
                     if (progress < 1) {
                         requestAnimationFrame(animate);
                     } else {

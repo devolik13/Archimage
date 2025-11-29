@@ -98,30 +98,36 @@ console.log('✅ chain-lightning.js загружен');
             }, 100);
             return;
         }
-        
+
+        // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+        const cellWidth = currentCell.cellWidth || currentCell.width || 60;
+        const cellHeight = currentCell.cellHeight || currentCell.height || 60;
+
         // Определяем начальную позицию
         let startX, startY;
-        
+
         if (currentIndex === 0) {
             // Первый шар - с верха экрана
-            startX = currentCell.x + currentCell.width / 2;
+            startX = currentCell.x + cellWidth / 2;
             startY = -50; // Чуть выше экрана
         } else {
             // Последующие шары - от предыдущей цели
             const prevTarget = targets[currentIndex - 1];
             const prevCell = gridCells[prevTarget.col]?.[prevTarget.row];
             if (prevCell) {
-                startX = prevCell.x + prevCell.width / 2;
-                startY = prevCell.y + prevCell.height / 2;
+                const prevCellWidth = prevCell.cellWidth || prevCell.width || 60;
+                const prevCellHeight = prevCell.cellHeight || prevCell.height || 60;
+                startX = prevCell.x + prevCellWidth / 2;
+                startY = prevCell.y + prevCellHeight / 2;
             } else {
-                startX = currentCell.x + currentCell.width / 2;
+                startX = currentCell.x + cellWidth / 2;
                 startY = -50;
             }
         }
-        
-        const endX = currentCell.x + currentCell.width / 2;
-        const endY = currentCell.y + currentCell.height / 2;
-        
+
+        const endX = currentCell.x + cellWidth / 2;
+        const endY = currentCell.y + cellHeight / 2;
+
         // Создаем анимированный спрайт шара
         const ball = new PIXI.AnimatedSprite(frames);
         ball.anchor.set(0.5);
@@ -129,9 +135,9 @@ console.log('✅ chain-lightning.js загружен');
         ball.y = startY;
         ball.animationSpeed = 0.2; // Скорость анимации кадров (было 0.3)
         ball.play();
-        
+
         // Размер шара
-        const ballSize = currentCell.width * 0.6;
+        const ballSize = cellWidth * 0.6;
         const scale = ballSize / frames[0].width;
         ball.scale.set(scale);
         
@@ -320,32 +326,43 @@ console.log('✅ chain-lightning.js загружен');
             
             const target = targets[currentIndex];
             const cell = gridCells[target.col]?.[target.row];
-            
+
             if (!cell) {
                 currentIndex++;
                 setTimeout(strikeNext, 100);
                 return;
             }
-            
+
+            // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+            const cellWidth = cell.cellWidth || cell.width || 60;
+            const cellHeight = cell.cellHeight || cell.height || 60;
+
             let startX, startY;
-            
+
             if (currentIndex === 0) {
-                startX = cell.x + cell.width / 2;
+                startX = cell.x + cellWidth / 2;
                 startY = -50;
             } else {
                 const prevTarget = targets[currentIndex - 1];
                 const prevCell = gridCells[prevTarget.col]?.[prevTarget.row];
-                startX = prevCell ? prevCell.x + prevCell.width / 2 : cell.x + cell.width / 2;
-                startY = prevCell ? prevCell.y + prevCell.height / 2 : -50;
+                if (prevCell) {
+                    const prevCellWidth = prevCell.cellWidth || prevCell.width || 60;
+                    const prevCellHeight = prevCell.cellHeight || prevCell.height || 60;
+                    startX = prevCell.x + prevCellWidth / 2;
+                    startY = prevCell.y + prevCellHeight / 2;
+                } else {
+                    startX = cell.x + cellWidth / 2;
+                    startY = -50;
+                }
             }
-            
-            const endX = cell.x + cell.width / 2;
-            const endY = cell.y + cell.height / 2;
-            
+
+            const endX = cell.x + cellWidth / 2;
+            const endY = cell.y + cellHeight / 2;
+
             // Простой светящийся круг
             const ball = new PIXI.Graphics();
             ball.beginFill(0xCCFFFF, 1);
-            ball.drawCircle(0, 0, cell.width * 0.3);
+            ball.drawCircle(0, 0, cellWidth * 0.3);
             ball.endFill();
             ball.x = startX;
             ball.y = startY;

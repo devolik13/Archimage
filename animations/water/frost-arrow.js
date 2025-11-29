@@ -227,26 +227,32 @@ console.log('✅ frost-arrow.js загружен');
         }
         
         function continueAnimation(frames, frameWidth, frameHeight) {
+            // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+            const startCellWidth = startCell.cellWidth || startCell.width || 60;
+            const startCellHeight = startCell.cellHeight || startCell.height || 60;
+            const endCellWidth = endCell.cellWidth || endCell.width || 60;
+            const endCellHeight = endCell.cellHeight || endCell.height || 60;
+
             // Создаем анимированный спрайт
             const arrow = new PIXI.AnimatedSprite(frames);
             arrow.animationSpeed = 0.3; // Скорость анимации кадров
             arrow.loop = true;
             arrow.play();
-            
+
             // Устанавливаем якорь в центр
             arrow.anchor.set(0.5);
-            
+
             // Масштабируем под размер клетки (примерно)
-            const targetScale = (startCell.width * 0.8) / frameWidth;
+            const targetScale = (startCellWidth * 0.8) / frameWidth;
             arrow.scale.set(targetScale);
-            
+
             // Начальная позиция
-            arrow.x = startCell.x + startCell.width / 2;
-            arrow.y = startCell.y + startCell.height / 2;
-            
+            arrow.x = startCell.x + startCellWidth / 2;
+            arrow.y = startCell.y + startCellHeight / 2;
+
             // Рассчитываем угол поворота к цели
-            const targetX = endCell.x + endCell.width / 2;
-            const targetY = endCell.y + endCell.height / 2;
+            const targetX = endCell.x + endCellWidth / 2;
+            const targetY = endCell.y + endCellHeight / 2;
             const angle = Math.atan2(targetY - arrow.y, targetX - arrow.x);
             arrow.rotation = angle;
             
@@ -280,10 +286,10 @@ console.log('✅ frost-arrow.js загружен');
                 
                 // Интерполяция позиции
                 try {
-                    arrow.x = startCell.x + startCell.width / 2 + 
-                             (targetX - (startCell.x + startCell.width / 2)) * progress;
-                    arrow.y = startCell.y + startCell.height / 2 + 
-                             (targetY - (startCell.y + startCell.height / 2)) * progress;
+                    arrow.x = startCell.x + startCellWidth / 2 +
+                             (targetX - (startCell.x + startCellWidth / 2)) * progress;
+                    arrow.y = startCell.y + startCellHeight / 2 +
+                             (targetY - (startCell.y + startCellHeight / 2)) * progress;
                     
                     // Ледяной след (реже чем у искры)
                     if (Math.random() > 0.8) {

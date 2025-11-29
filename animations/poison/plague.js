@@ -109,9 +109,13 @@ console.log('✅ plague.js загружен');
     // Фаза 2: Эффект заражения на цели (длительный)
     function createPlagueEffect(targetCell, targetWizardId, onComplete) {
         const effectsContainer = window.pixiCore?.getEffectsContainer();
-        
-        const centerX = targetCell.x + targetCell.width / 2;
-        const centerY = targetCell.y + targetCell.height / 2;
+
+        // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+        const cellWidth = targetCell.cellWidth || targetCell.width || 60;
+        const cellHeight = targetCell.cellHeight || targetCell.height || 60;
+
+        const centerX = targetCell.x + cellWidth / 2;
+        const centerY = targetCell.y + cellHeight / 2;
         
         // Удаляем старый эффект чумы если есть
         if (activePlagueEffects.has(targetWizardId)) {
@@ -174,7 +178,7 @@ console.log('✅ plague.js загружен');
             plagueSprite.anchor.set(0.5);
             
             // Масштабируем до размера цели
-            const targetSize = Math.min(targetCell.width, targetCell.height) * 1.2;
+            const targetSize = Math.min(cellWidth, cellHeight) * 1.2;
             const scale = targetSize / frameWidth;
             plagueSprite.scale.set(scale);
             
@@ -203,16 +207,16 @@ console.log('✅ plague.js загружен');
         
         // Fallback - простая графика
         function createFallbackPlague() {
-	    const plague = new PIXI.Graphics();
-    
-	    // Зелёное мерцающее облако
-	    plague.beginFill(0x33CC33, 0.5);
-	    plague.drawCircle(0, 0, targetCell.width * 0.6);
-	    plague.endFill();
-	    
-	    plague.beginFill(0x228822, 0.3);
-	    plague.drawCircle(0, 0, targetCell.width * 0.4);
-	    plague.endFill();
+            const plague = new PIXI.Graphics();
+
+            // Зелёное мерцающее облако
+            plague.beginFill(0x33CC33, 0.5);
+            plague.drawCircle(0, 0, cellWidth * 0.6);
+            plague.endFill();
+
+            plague.beginFill(0x228822, 0.3);
+            plague.drawCircle(0, 0, cellWidth * 0.4);
+            plague.endFill();
     
 	    plague.x = centerX;
 	    plague.y = centerY;
