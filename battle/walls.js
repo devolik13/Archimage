@@ -813,14 +813,14 @@ function applyAbsoluteZeroDamage() {
             if (zone.casterType === 'player') {
                 const targetWizard = window.enemyFormation[row];
                 if (targetWizard && targetWizard.hp > 0) {
-                    applyAbsoluteZeroEffect(caster, targetWizard, zone, 'enemy', row);
+                    applyAbsoluteZeroEffectToTarget(caster, targetWizard, zone, 'enemy', row);
                 }
             } else {
                 const wizardId = window.playerFormation[row];
                 if (wizardId) {
                     const targetWizard = window.playerWizards.find(w => w.id === wizardId);
                     if (targetWizard && targetWizard.hp > 0) {
-                        applyAbsoluteZeroEffect(caster, targetWizard, zone, 'player', row);
+                        applyAbsoluteZeroEffectToTarget(caster, targetWizard, zone, 'player', row);
                     }
                 }
             }
@@ -830,7 +830,7 @@ function applyAbsoluteZeroDamage() {
             if (typeof window.findSummonedCreatureAt === 'function') {
                 const summoned = window.findSummonedCreatureAt(summonCol, row);
                 if (summoned && summoned.hp > 0) {
-                    applyAbsoluteZeroEffect(caster, summoned, zone, 'summon', row);
+                    applyAbsoluteZeroEffectToTarget(caster, summoned, zone, 'summon', row);
                 }
             }
         }
@@ -838,7 +838,7 @@ function applyAbsoluteZeroDamage() {
 }
 
 // --- Применение эффекта Абсолютного Ноля к цели ---
-function applyAbsoluteZeroEffect(caster, target, zone, targetType, row) {
+function applyAbsoluteZeroEffectToTarget(caster, target, zone, targetType, row) {
     const finalDamage = typeof window.applyFinalDamage === 'function' ?
         window.applyFinalDamage(caster, target, zone.damage, 'absolute_zero', 0, true) : zone.damage;
 
@@ -966,5 +966,5 @@ window.processBlizzardsForCaster = processBlizzardsForCaster;
 window.createOrUpdateAbsoluteZeroZone = createOrUpdateAbsoluteZeroZone;
 window.isWizardInAbsoluteZero = isWizardInAbsoluteZero;
 window.applyAbsoluteZeroDamage = applyAbsoluteZeroDamage;
-window.applyAbsoluteZeroEffect = applyAbsoluteZeroEffect;
+window.applyAbsoluteZeroEffectToTarget = applyAbsoluteZeroEffectToTarget;
 window.findWindWallAt = findWindWallAt;
