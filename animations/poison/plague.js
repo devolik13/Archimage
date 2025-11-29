@@ -26,17 +26,23 @@ console.log('✅ plague.js загружен');
         
         const casterCell = gridCells[casterCol]?.[casterRow];
         const targetCell = gridCells[targetCol]?.[targetRow];
-        
+
         if (!casterCell || !targetCell) {
             console.warn('Не найдены клетки для чумы');
             if (onComplete) onComplete();
             return;
         }
-        
-        const startX = casterCell.x + casterCell.width / 2;
-        const startY = casterCell.y + casterCell.height / 2;
-        const endX = targetCell.x + targetCell.width / 2;
-        const endY = targetCell.y + targetCell.height / 2;
+
+        // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+        const casterCellWidth = casterCell.cellWidth || casterCell.width || 60;
+        const casterCellHeight = casterCell.cellHeight || casterCell.height || 60;
+        const targetCellWidth = targetCell.cellWidth || targetCell.width || 60;
+        const targetCellHeight = targetCell.cellHeight || targetCell.height || 60;
+
+        const startX = casterCell.x + casterCellWidth / 2;
+        const startY = casterCell.y + casterCellHeight / 2;
+        const endX = targetCell.x + targetCellWidth / 2;
+        const endY = targetCell.y + targetCellHeight / 2;
         
         // ФАЗА 1: Зелёный шарик летит к цели
         createFlyingOrb(startX, startY, endX, endY, () => {

@@ -25,16 +25,20 @@ console.log('✅ epidemic.js загружен');
         }
         
         const targetCell = gridCells[targetCol]?.[targetRow];
-        
+
         if (!targetCell) {
             console.warn('Не найдена клетка для эпидемии');
             if (onComplete) onComplete();
             return;
         }
-        
-        const centerX = targetCell.x + targetCell.width / 2;
+
+        // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
+        const cellWidth = targetCell.cellWidth || targetCell.width || 60;
+        const cellHeight = targetCell.cellHeight || targetCell.height || 60;
+
+        const centerX = targetCell.x + cellWidth / 2;
         // КЛЮЧЕВОЕ ОТЛИЧИЕ: пузырь появляется НАД головой (выше центра клетки)
-        const centerY = targetCell.y + targetCell.height * 0.2; // 20% от верха клетки
+        const centerY = targetCell.y + cellHeight * 0.2; // 20% от верха клетки
         
         // Загружаем текстуру спрайтшита
         const epidemicTexturePath = 'images/spells/poison/epidemic/epidemic_spritesheet.png';
@@ -77,7 +81,7 @@ console.log('✅ epidemic.js загружен');
             // Масштабируем пузырь
             // Обычный пузырь - 70% клетки, МЕГА взрыв (5 lvl) - 120% клетки
             const sizeMultiplier = isMegaExplosion ? 1.2 : 0.7;
-            const targetSize = Math.min(targetCell.width, targetCell.height) * sizeMultiplier;
+            const targetSize = Math.min(cellWidth, cellHeight) * sizeMultiplier;
             const scale = targetSize / frameWidth;
             bubbleSprite.scale.set(scale);
             
@@ -143,8 +147,8 @@ console.log('✅ epidemic.js загружен');
         // Fallback - простая графика пузыря
         function createFallbackBubble() {
             const bubble = new PIXI.Graphics();
-            
-            const bubbleRadius = targetCell.width * (isMegaExplosion ? 0.6 : 0.35);
+
+            const bubbleRadius = cellWidth * (isMegaExplosion ? 0.6 : 0.35);
             
             // Внешний контур пузыря
             bubble.lineStyle(3, 0x33FF33, 0.8);
@@ -171,7 +175,7 @@ console.log('✅ epidemic.js загружен');
             const totalDuration = inflateDuration + holdDuration + explodeDuration;
             
             const animate = () => {
-                if (!window.pixiAnimUtils.isValid(bubbleSprite)) return;
+                if (!window.pixiAnimUtils.isValid(bubble)) return;
 
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / totalDuration, 1);
