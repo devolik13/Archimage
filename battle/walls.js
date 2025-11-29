@@ -850,25 +850,32 @@ function applyAbsoluteZeroEffectToTarget(caster, target, zone, targetType, row) 
     }
 
     // Логирование смерти от абсолютного ноля
-    if (target.hp <= 0 && window.battleLogger) {
-        window.battleLogger.logDeath(target, targetType, 'absolute_zero');
+    if (target.hp <= 0) {
+        if (window.battleLogger) {
+            window.battleLogger.logDeath(target, targetType, 'absolute_zero');
+        }
 
         // Анимация смерти только для обычных магов (не призванных)
         if (targetType === 'player' || targetType === 'enemy') {
             const col = targetType === 'player' ? 5 : 0;
+            const key = `${col}_${row}`;
 
+            // Обновляем HP бар
             if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
-                const key = `${col}_${row}`;
                 window.pixiWizards.updateHP(key, 0, target.max_hp);
             }
 
+            // Анимация смерти - проверяем разные способы получить контейнер
             if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
-                const key = `${col}_${row}`;
-                const container = window.wizardSprites?.[key];
-                if (container && !container.deathAnimationStarted) {
-                    container.deathAnimationStarted = true;
+                // Проверяем, не запущена ли уже анимация
+                const container = window.wizardSprites?.[key] || window.pixiWizards?.getSprite?.(key);
+                const alreadyStarted = container?.deathAnimationStarted || target.deathAnimationStarted;
+
+                if (!alreadyStarted) {
+                    if (container) container.deathAnimationStarted = true;
+                    target.deathAnimationStarted = true;
                     window.pixiWizards.playDeath(col, row);
-                    console.log(`🎬 Анимация смерти от абсолютного ноля для ${target.name} на ${key}`);
+                    console.log(`🎬 Анимация смерти от Абсолютного Ноля для ${target.name} на ${key}`);
                 }
             }
         }
