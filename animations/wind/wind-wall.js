@@ -91,12 +91,13 @@ console.log('✅ wind-wall.js загружен');
                 
                 // Масштабируем с учетом размера ячейки
                 // Высота кадра 384px, ширина 153.6px
-                // Подгоняем под размер ячейки (примерно 60px)
-                const targetHeight = cellData.height * 1.5; // Немного выше ячейки
-                const scale = targetHeight / frameHeight;
+                const cellWidth = cellData.cellWidth || cellData.width || 60;
+                const cellHeight = cellData.cellHeight || cellData.height || 60;
+                const targetHeight = cellHeight * 2.5; // Выше ячейки для видимости
+                const scale = Math.max(targetHeight / frameHeight, 0.5); // Минимум 0.5
                 windSprite.scale.set(scale);
-                
-                windSprite.animationSpeed = 0.15; // Плавная анимация ветра
+
+                windSprite.animationSpeed = 0.1; // Плавная анимация ветра
                 windSprite.loop = true;
                 windSprite.alpha = 0.7; // Полупрозрачность для ветра
                 windSprite.play();

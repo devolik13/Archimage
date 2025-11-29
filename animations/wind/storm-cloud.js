@@ -77,16 +77,18 @@ console.log('✅ storm-cloud.js загружен');
                     
                     // Создаем молнию
                     const lightning = new PIXI.AnimatedSprite(lightningTextures);
-                    lightning.x = targetCell.x + targetCell.width / 2;
-                    lightning.y = targetCell.y - targetCell.height; // Сверху
+                    const cellWidth = targetCell.cellWidth || targetCell.width || 60;
+                    const cellHeight = targetCell.cellHeight || targetCell.height || 60;
+                    lightning.x = targetCell.x + cellWidth / 2;
+                    lightning.y = targetCell.y - cellHeight; // Сверху
                     lightning.anchor.set(0.5, 0);
-                    
-                    // Масштабируем - молния должна быть высокой
-                    const targetHeight = targetCell.height * 2.5;
-                    const scale = targetHeight / frameHeight;
+
+                    // Масштабируем - молния должна быть высокой и видимой
+                    const targetHeight = cellHeight * 4; // Увеличено для видимости
+                    const scale = Math.max(targetHeight / frameHeight, 0.6); // Минимум 0.6
                     lightning.scale.set(scale);
-                    
-                    lightning.animationSpeed = 0.4;
+
+                    lightning.animationSpeed = 0.25; // Замедлено для видимости
                     lightning.loop = false;
                     lightning.tint = 0xCCFFFF;
                     lightning.blendMode = PIXI.BLEND_MODES.ADD;
@@ -107,7 +109,7 @@ console.log('✅ storm-cloud.js загружен');
                     lightning.play();
                     
                     // Вспышка при ударе
-                    createLightningFlash(targetCell.x + targetCell.width / 2, targetCell.y + targetCell.height / 2, effectsContainer, scale);
+                    createLightningFlash(targetCell.x + cellWidth / 2, targetCell.y + cellHeight / 2, effectsContainer, scale);
                     
                     console.log(`⚡ Молния ${i + 1} ударила в клетку [${randomCol}][${randomRow}]`);
                     
@@ -131,23 +133,24 @@ console.log('✅ storm-cloud.js загружен');
         const bottomCell = gridCells[rightCol]?.[4];
         
         if (!topCell || !bottomCell) return;
-        
-        const centerX = (topCell.x + bottomCell.x + bottomCell.width) / 2;
-        const centerY = topCell.y - 50;
+
+        const bottomCellWidth = bottomCell.cellWidth || bottomCell.width || 60;
+        const centerX = (topCell.x + bottomCell.x + bottomCellWidth) / 2;
+        const centerY = topCell.y - 60; // Немного выше
         
         cloudContainer.x = centerX;
         cloudContainer.y = centerY;
         
-        // Рисуем тучу
+        // Рисуем тучу (увеличенный размер)
         const cloud = new PIXI.Graphics();
         cloud.beginFill(0x333333, 0.8);
-        
-        // Несколько кругов для формы тучи
-        cloud.drawCircle(-40, 0, 30);
-        cloud.drawCircle(-20, -10, 35);
-        cloud.drawCircle(0, -5, 40);
-        cloud.drawCircle(20, -10, 35);
-        cloud.drawCircle(40, 0, 30);
+
+        // Несколько кругов для формы тучи - увеличенные размеры
+        cloud.drawCircle(-60, 0, 40);
+        cloud.drawCircle(-30, -15, 50);
+        cloud.drawCircle(0, -8, 55);
+        cloud.drawCircle(30, -15, 50);
+        cloud.drawCircle(60, 0, 40);
         cloud.endFill();
         
         cloudContainer.addChild(cloud);
