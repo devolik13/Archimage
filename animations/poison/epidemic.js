@@ -8,6 +8,8 @@ console.log('✅ epidemic.js загружен');
     function playEpidemicAnimation(params) {
         const { targetCol, targetRow, onComplete, isMegaExplosion = false } = params;
 
+        console.log('💀 playEpidemicAnimation ВЫЗВАНА:', { targetCol, targetRow, isMegaExplosion });
+
         // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
         if (window.fastSimulation) {
             console.log('⚡ Быстрая симуляция: пропуск анимации Эпидемия');
@@ -217,9 +219,11 @@ console.log('✅ epidemic.js загружен');
     
     // Массовое применение на всех врагов
     function playMassEpidemic(enemyPositions, megaExplosionTarget = null) {
+        console.log('💀 playMassEpidemic ВЫЗВАНА, целей:', enemyPositions.length);
+
         let completedCount = 0;
         const totalTargets = enemyPositions.length;
-        
+
         enemyPositions.forEach((pos, index) => {
             // Задержка между пузырями для волнового эффекта
             setTimeout(() => {
