@@ -177,7 +177,7 @@ function loadBuiltBuildingsNew(faction, container) {
     const userBuildings = window.userData.buildings || {};
     
     // Фильтруем и упорядочиваем здания (wizard_tower первым)
-    const validBuildings = ['wizard_tower', 'library', 'forge', 'pvp_arena', 'blessing_tower', 'arcane_lab', 'time_generator'];
+    const validBuildings = ['wizard_tower', 'library', 'guild', 'pvp_arena', 'blessing_tower', 'arcane_lab', 'time_generator'];
     const buildingsToLoad = validBuildings.filter(buildingId => userBuildings[buildingId]);
     
     if (buildingsToLoad.length === 0) {
@@ -744,7 +744,7 @@ function setupBuildingSelectionUI() {
     const buildableBuildings = [
         { id: 'library', name: 'Библиотека', description: 'Изучение заклинаний', icon: '📚' },
         { id: 'wizard_tower', name: 'Башня мага', description: 'Найм новых магов', icon: '🏯' },
-        { id: 'forge', name: 'Кузница', description: 'Улучшение снаряжения', icon: '⚔️' },
+        { id: 'guild', name: 'Гильдия', description: 'Объединение игроков', icon: '🏰' },
         { id: 'pvp_arena', name: 'Арена', description: 'PvP сражения', icon: '🏟️' },
         { id: 'blessing_tower', name: 'Башня благословения', description: 'Временные бонусы', icon: '🙏' },
         { id: 'arcane_lab', name: 'Лаборатория', description: 'Ускорение изучения', icon: '🔬' },
@@ -995,7 +995,7 @@ function openBuildingModal(buildingId) {
     const modalFunctions = {
         'library': 'showLibrary',
         'wizard_tower': 'showWizardTowerModalBg',
-        'forge': 'showForgeModal',
+        'guild': 'openGuildModal',
         'pvp_arena': 'showPvPArenaModalBg',
         'blessing_tower': 'showBlessingTowerModalBg',
         'arcane_lab': 'showArcaneLabModalBg',
@@ -1171,11 +1171,13 @@ function onBuildingClick(buildingId) {
             }
             break;
             
-        case 'forge':
-            if (window.showForgeModal) {
-                window.showForgeModal();
+        case 'guild':
+            if (window.openGuildModal) {
+                window.openGuildModal();
+            } else if (window.showGuildModal) {
+                window.showGuildModal();
             } else {
-                showBuildingInfo(buildingId, 'Кузница', 'Улучшение снаряжения магов');
+                showBuildingInfo(buildingId, 'Гильдия', 'Объединение игроков для бонусов');
             }
             break;
             

@@ -256,10 +256,12 @@ function handleBuildingClick(buildingId, buildingData) {
                 }
                 break;
                 
-            case 'forge':
-                // Исправляем для кузницы
-                if (window.showForgeModal) {
-                    window.showForgeModal();
+            case 'guild':
+                // Модалка гильдии
+                if (window.showGuildModal) {
+                    window.showGuildModal();
+                } else if (window.openGuildModal) {
+                    window.openGuildModal();
                 } else {
                     showBuildingInfoModal(buildingId, buildingData);
                 }
@@ -305,13 +307,13 @@ function handleBuildingClick(buildingId, buildingData) {
 }
 function hasSpecialModal(buildingId) {
     const specialBuildings = [
-        'library', 
-        'wizard_tower', 
-        'pvp_arena', 
+        'library',
+        'wizard_tower',
+        'pvp_arena',
         'blessing_tower',
         'time_generator',
         'arcane_lab',
-        'forge',
+        'guild',
     ];
     return specialBuildings.includes(buildingId);
 }
@@ -448,7 +450,7 @@ function getBuildingFunctionality(buildingId) {
         'blessing_tower': 'Временные усиления для магов',
         'time_generator': 'Производство временной валюты',
         'pvp_arena': 'PvP сражения с другими игроками',
-        'forge': 'Создание и улучшение снаряжения',
+        'guild': 'Объединение с игроками для бонусов',
         'arcane_lab': 'Ускорение исследований'
     };
     return functionality[buildingId] || 'Функционал в разработке';

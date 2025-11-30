@@ -132,7 +132,7 @@ function createPlayerAvatarUI() {
             ${avatarContent}
             <div>
                 <div style="color: white; font-size: 14px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
-                    ${window.userData.username || 'Игрок'}
+                    ${typeof window.getCurrentPlayerDisplayName === 'function' ? window.getCurrentPlayerDisplayName() : (window.userData.username || 'Игрок')}
                 </div>
                 <div style="color: #ffa500; font-size: 12px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
                     ⭐ Уровень ${playerLevel}
@@ -285,7 +285,7 @@ function showPlayerProfile() {
             <!-- Заголовок: имя и уровень -->
             <div style="text-align: center; margin-bottom: ${10 * scaleY}px;">
                 <div style="color: white; font-size: ${Math.max(22, 29 * scaleY)}px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
-                    ${userData.username || 'Игрок'}
+                    ${typeof window.getCurrentPlayerDisplayName === 'function' ? window.getCurrentPlayerDisplayName() : (userData.username || 'Игрок')}
                 </div>
                 <div style="color: #ffa500; font-size: ${Math.max(17, 22 * scaleY)}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
                     ⭐ Уровень ${level} • ${factionIcon} ${factionName}
@@ -413,7 +413,7 @@ function showPlayerProfileFallback(level, breakdown, totalBattles, wins, losses,
         <div style="padding: 15px; max-width: 90vw; width: 420px; background: #2c2c3d; border-radius: 10px; color: white;">
             <!-- Заголовок: имя и уровень -->
             <div style="text-align: center; margin-bottom: 15px;">
-                <div style="color: white; font-size: 22px; font-weight: bold;">${userData.username || 'Игрок'}</div>
+                <div style="color: white; font-size: 22px; font-weight: bold;">${typeof window.getCurrentPlayerDisplayName === 'function' ? window.getCurrentPlayerDisplayName() : (userData.username || 'Игрок')}</div>
                 <div style="color: #ffa500; font-size: 16px;">⭐ Уровень ${level} • ${factionIcon} ${factionName}</div>
             </div>
 

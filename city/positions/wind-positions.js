@@ -23,8 +23,8 @@ window.CITY_POSITIONS.wind = {
             {x: 360, y: 360}
         ]
     },
-    forge: { // Кузница
-        buildingId: 'forge',
+    guild: { // Гильдия
+        buildingId: 'guild',
         points: [
             {x: 250, y: 360},
             {x: 350, y: 360},

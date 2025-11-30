@@ -85,12 +85,30 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     	    const levelBonus = window.getDamageBonusFromLevel(caster);
     	    finalDamage = Math.floor(finalDamage * levelBonus);
     	}
-        
+
+    	// ГИЛЬДИЯ: Бонус урона от гильдии
+    	if (caster.casterType === 'player' && window.guildManager?.currentGuild) {
+    	    const guildBonuses = window.guildManager.getGuildBonuses();
+    	    if (guildBonuses && guildBonuses.damageBonus > 0) {
+    	        const guildDamageMultiplier = 1 + (guildBonuses.damageBonus / 100);
+    	        finalDamage = Math.floor(finalDamage * guildDamageMultiplier);
+    	    }
+    	}
+
+    	// ГИЛЬДИЯ: Сопротивление от гильдии (уменьшение входящего урона)
+    	if (target.guildResistances) {
+    	    const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
+    	    if (spellSchool && target.guildResistances[spellSchool] > 0) {
+    	        const resistMultiplier = 1 - (target.guildResistances[spellSchool] / 100);
+    	        finalDamage = Math.floor(finalDamage * resistMultiplier);
+    	    }
+    	}
+
         // Начисляем опыт за урон (используем базовый урон)
         if (typeof window.trackDamageExp === 'function' && baseDamage > 0) {
             window.trackDamageExp(caster, baseDamage);
         }
-        
+
         return finalDamage;
     }
     
@@ -153,7 +171,28 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
             console.log(`⭐ Бонус уровня ${caster.level}: урон ×${levelBonus.toFixed(2)}`);
         }
     }
-    
+
+    // ГИЛЬДИЯ: Бонус урона от гильдии
+    if (caster.casterType === 'player' && window.guildManager?.currentGuild) {
+        const guildBonuses = window.guildManager.getGuildBonuses();
+        if (guildBonuses && guildBonuses.damageBonus > 0) {
+            const guildDamageMultiplier = 1 + (guildBonuses.damageBonus / 100);
+            finalDamage = Math.floor(finalDamage * guildDamageMultiplier);
+            console.log(`🏰 Гильдия: урон +${guildBonuses.damageBonus}%`);
+        }
+    }
+
+    // ГИЛЬДИЯ: Сопротивление от гильдии (уменьшение входящего урона)
+    if (target?.guildResistances) {
+        const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
+        if (spellSchool && target.guildResistances[spellSchool] > 0) {
+            const resistPercent = target.guildResistances[spellSchool];
+            const resistMultiplier = 1 - (resistPercent / 100);
+            finalDamage = Math.floor(finalDamage * resistMultiplier);
+            console.log(`🛡️ Гильдия: сопротивление ${spellSchool} -${resistPercent}% урона`);
+        }
+    }
+
     // Проверка на Энта — перехват урона (только для single target)
     if (target && !isAOE) {
         const ent = typeof window.findProtectingEnt === 'function' ? 

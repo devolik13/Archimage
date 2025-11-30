@@ -5,8 +5,8 @@ window.CITY_POSITIONS = window.CITY_POSITIONS || {};
 
 // Координаты в пикселях для изображения 768x512
 window.CITY_POSITIONS.nature = {
-    forge: { // 1 - Кузница
-        buildingId: 'forge',
+    guild: { // 1 - Гильдия
+        buildingId: 'guild',
         points: [
             {x: 1, y: 346},
             {x: 124, y: 346},

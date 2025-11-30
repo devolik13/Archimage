@@ -5,8 +5,8 @@ window.CITY_POSITIONS = window.CITY_POSITIONS || {};
 
 // Координаты в пикселях для изображения 768x512
 window.CITY_POSITIONS.earth = {
-    forge: { // Кузница
-        buildingId: 'forge',
+    guild: { // Гильдия
+        buildingId: 'guild',
         points: [
             {x: 27, y: 506},
             {x: 256, y: 506},

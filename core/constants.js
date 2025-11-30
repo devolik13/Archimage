@@ -29,7 +29,7 @@ window.CONSTRUCTION_TIME = {
     blessing_tower: 1440 * window.TIME_MULTIPLIER,
     time_generator: 1440 * window.TIME_MULTIPLIER,
     pvp_arena: 1440 * window.TIME_MULTIPLIER,
-    forge: 1440 * window.TIME_MULTIPLIER,
+    guild: 1440 * window.TIME_MULTIPLIER,
     arcane_lab: 1440 * window.TIME_MULTIPLIER,
     
     // Время улучшения (прогрессивное)

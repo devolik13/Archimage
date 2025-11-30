@@ -23,8 +23,8 @@ window.CITY_POSITIONS.poison = {
             {x: 26, y: 109}
         ]
     },
-    forge: { // Кузница
-        buildingId: 'forge',
+    guild: { // Гильдия
+        buildingId: 'guild',
         points: [
             {x: 206, y: 210},
             {x: 331, y: 212},

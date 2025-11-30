@@ -20,21 +20,26 @@ function calculateExpToNext(level) {
 // Добавление опыта магу
 function addExperienceToWizard(wizard, expAmount) {
     if (!wizard || wizard.level >= EXP_CONFIG.MAX_LEVEL) return;
-    
+
     wizard.experience = (wizard.experience || 0) + expAmount;
-    
+
     // Проверка повышения уровня
     while (wizard.experience >= wizard.exp_to_next && wizard.level < EXP_CONFIG.MAX_LEVEL) {
         wizard.experience -= wizard.exp_to_next;
         wizard.level++;
         wizard.exp_to_next = calculateExpToNext(wizard.level);
-        
+
         // Применяем бонусы уровня
         applyLevelBonuses(wizard);
-        
+
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`⭐ ${wizard.name} достиг ${wizard.level} уровня!`);
         }
+    }
+
+    // Добавляем опыт гильдии (если игрок в гильдии)
+    if (window.userData?.guild_id && window.guildManager?.currentGuild) {
+        window.guildManager.addGuildExperience(expAmount);
     }
 }
 

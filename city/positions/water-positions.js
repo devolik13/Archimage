@@ -32,8 +32,8 @@ window.CITY_POSITIONS.water = {
             {x: 640, y: 70}
         ]
     },
-    forge: { // Кузница
-        buildingId: 'forge',
+    guild: { // Гильдия
+        buildingId: 'guild',
         points: [
             {x: 415, y: 240},
             {x: 520, y: 240},

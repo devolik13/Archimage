@@ -228,7 +228,7 @@ function createBattleInfoTop() {
                 border: 2px solid #4CAF50;
             ">👤</div>
             <div>
-                <div style="font-size: 10px; color: #4CAF50; font-weight: bold;">${window.userData?.username || 'Игрок'}</div>
+                <div style="font-size: 10px; color: #4CAF50; font-weight: bold;">${typeof window.getCurrentPlayerDisplayName === 'function' ? window.getCurrentPlayerDisplayName() : (window.userData?.username || 'Игрок')}</div>
                 <div style="font-size: 9px; color: #ffa500;">⭐ Ур. ${playerLevel}</div>
             </div>
         </div>

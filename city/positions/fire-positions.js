@@ -28,9 +28,9 @@ window.CITY_POSITIONS.fire = {
         ]
     },
     
-    // Кузница
-    forge: {
-        buildingId: 'forge',
+    // Гильдия
+    guild: {
+        buildingId: 'guild',
         points: [
             {x: 160, y: 243},
             {x: 231, y: 243},

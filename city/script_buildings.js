@@ -557,55 +557,28 @@ async function upgradeWizardTower() {
     } else {
         closeAllModals();
     }
-    
+
     // Показываем модальное окно с информацией о бонусах
     showUpgradeModal('wizard_tower', currentLevel, maxLevel);
 }
 
 
-
-// Модалка кузницы
-function showForgeModal() {
+// Модалка гильдии (основная логика в guild-modal.js)
+function showGuildModal() {
     closeAllModals();
-    const forgeLevel = getBuildingLevel('forge');
-    const canCreateArmor = forgeLevel >= 1;
-    let contentHTML = '';
-    if (!canCreateArmor) {
-        contentHTML = '<p style="color: #aaa; text-align: center;">Кузница ещё не построена</p>';
-    } else {
-        contentHTML = `
-            <p>Уровень кузницы: ${forgeLevel}</p>
-            <div style="margin: 20px 0;">
-                <button style="padding: 12px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 16px; width: 100%;"
-                        onclick="showNotification('Система брони в разработке')">
-                    ⚔️ Создать броню
-                </button>
-                <button style="padding: 12px; border: none; border-radius: 6px; background: #555; color: white; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px;"
-                        onclick="showNotification('Система улучшения в разработке')">
-                    📈 Улучшить броню
-                </button>
-            </div>
-        `;
+    const guildLevel = getBuildingLevel('guild');
+
+    if (guildLevel < 1) {
+        showNotification('Сначала постройте здание Гильдии');
+        return;
     }
-    const modalContent = `
-        <div style="padding: 20px; max-width: 350px; background: #2c2c3d; border-radius: 10px; color: white;">
-            <h3 style="margin-top: 0; color: #7289da;">⚒️ Кузница</h3>
-            ${contentHTML}
-            <button style="margin-top: 10px; padding: 8px 15px; width: 100%; border: 1px solid #7289da; border-radius: 6px; background: transparent; color: #7289da; cursor: pointer;"
-                    onclick="closeCurrentModal()">
-                ❌ Закрыть
-            </button>
-        </div>
-    `;
-    const modal = document.createElement('div');
-    modal.innerHTML = modalContent;
-    modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.8); padding: 20px; border-radius: 12px; z-index: 1000;';
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;';
-    overlay.onclick = closeCurrentModal;
-    document.body.appendChild(overlay);
-    document.body.appendChild(modal);
-    window.currentModal = { modal, overlay };
+
+    // Вызываем полноценную модалку гильдии
+    if (typeof window.openGuildModal === 'function') {
+        window.openGuildModal();
+    } else {
+        showNotification('Система гильдий загружается...');
+    }
 }
 
 // Примечание: showNotification теперь в core/helpers.js
@@ -618,7 +591,7 @@ function getBuildingMaxLevel(buildingId) {
         "blessing_tower": 5,
         "time_generator": 20,
         "pvp_arena": 1,
-        "forge": 10,
+        "guild": 1,  // Гильдия - уровень здания не влияет, только уровень самой гильдии
         "arcane_lab": 15
     };
     return maxLevels[buildingId] || 1;

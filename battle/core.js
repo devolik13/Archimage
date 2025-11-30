@@ -302,6 +302,20 @@ function initializeWizardHealth() {
             console.log(`🏰 Башня магов ур.${window.getBuildingLevel('wizard_tower')}: HP ${wizard.original_hp} → ${wizard.hp}`);
         }
 
+        // ГИЛЬДИЯ: Применяем бонус HP от гильдии
+        if (window.guildManager?.currentGuild) {
+            const guildBonuses = window.guildManager.getGuildBonuses();
+            if (guildBonuses && guildBonuses.hpBonus > 0) {
+                const guildHpMultiplier = 1 + (guildBonuses.hpBonus / 100);
+                const hpBefore = wizard.hp;
+                wizard.max_hp = Math.floor(wizard.max_hp * guildHpMultiplier);
+                wizard.hp = Math.floor(wizard.hp * guildHpMultiplier);
+                console.log(`🏰 Гильдия ур.${window.guildManager.currentGuild.level}: HP ${hpBefore} → ${wizard.hp} (+${guildBonuses.hpBonus}%)`);
+            }
+            // Сохраняем сопротивления гильдии для использования в бою
+            wizard.guildResistances = guildBonuses?.resistances || {};
+        }
+
         // НОВОЕ: Применение эффектов благословений
         if (wizard.blessingEffects) {
             console.log(`🙏 Применение благословений к ${wizard.name}:`, wizard.blessingEffects);
