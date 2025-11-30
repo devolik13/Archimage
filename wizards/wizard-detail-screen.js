@@ -699,6 +699,11 @@ function calculateWizardStats(wizardData) {
         }
     }
 
+    // Бонусы гильдии
+    const guildBonuses = window.guildManager?.currentGuild ? window.guildManager.getGuildBonuses() : null;
+    const guildHpBonusPercent = guildBonuses?.hpBonus || 0;
+    const guildDamageBonusPercent = guildBonuses?.damageBonus || 0;
+
     // Расчет характеристик
     const baseHP = wizardData.original_max_hp || 100;
     const healthMultiplier = window.applyWizardTowerHealthBonus ? window.applyWizardTowerHealthBonus() : 1.0;
@@ -708,17 +713,44 @@ function calculateWizardStats(wizardData) {
     const levelBonus = level === 20 ? 2.0 : (1 + (Math.max(0, level - 1) * 0.05));
     const levelBonusPercent = Math.round((levelBonus - 1) * 100);
 
-    const actualMaxHP = Math.floor(baseHP * levelBonus * healthMultiplier * (1 + blessingHealthBonus));
+    // HP с учетом гильдии
+    const guildHpMultiplier = 1 + (guildHpBonusPercent / 100);
+    const actualMaxHP = Math.floor(baseHP * levelBonus * healthMultiplier * (1 + blessingHealthBonus) * guildHpMultiplier);
     const blessingHealthPercent = Math.round(blessingHealthBonus * 100);
 
     const baseArmor = wizardData.original_max_armor || wizardData.max_armor || 100;
     const actualMaxArmor = baseArmor + blessingArmorBonus;
 
+    // Урон с учетом гильдии
     const towerDamageMultiplier = window.getWizardTowerDamageBonus ? window.getWizardTowerDamageBonus() : 1.0;
-    const totalDamageMultiplier = towerDamageMultiplier * (1 + blessingDamageBonus);
+    const guildDamageMultiplier = 1 + (guildDamageBonusPercent / 100);
+    const totalDamageMultiplier = towerDamageMultiplier * (1 + blessingDamageBonus) * guildDamageMultiplier;
     const towerDamageBonusPercent = Math.round((towerDamageMultiplier - 1) * 100);
     const blessingDamageBonusPercent = Math.round(blessingDamageBonus * 100);
     const totalDamageBonusPercent = Math.round((totalDamageMultiplier - 1) * 100);
+
+    // Сохраняем данные для попапов статов
+    window.currentWizardStats = {
+        hp: {
+            base: baseHP,
+            final: actualMaxHP,
+            levelBonus: levelBonusPercent,
+            towerBonus: healthBonusPercent,
+            guildBonus: guildHpBonusPercent,
+            blessingBonus: blessingHealthPercent
+        },
+        armor: {
+            base: baseArmor,
+            final: actualMaxArmor,
+            blessingBonus: blessingArmorBonus
+        },
+        damage: {
+            final: totalDamageBonusPercent,
+            towerBonus: towerDamageBonusPercent,
+            guildBonus: guildDamageBonusPercent,
+            blessingBonus: blessingDamageBonusPercent
+        }
+    };
 
     const exp = wizardData.experience || 0;
     const expToNext = wizardData.exp_to_next || 50;
@@ -729,12 +761,14 @@ function calculateWizardStats(wizardData) {
         actualMaxHP, actualMaxArmor,
         healthBonusHTML: [
             levelBonusPercent > 0 ? `+${levelBonusPercent}% ур.` : '',
-            healthBonusPercent > 0 ? `+${healthBonusPercent}% 🏰` : '',
+            healthBonusPercent > 0 ? `+${healthBonusPercent}% 🏯` : '',
+            guildHpBonusPercent > 0 ? `+${guildHpBonusPercent}% 🏰` : '',
             blessingHealthPercent > 0 ? `+${blessingHealthPercent}% ✨` : ''
         ].filter(b => b).join(' '),
         armorBonusHTML: blessingArmorBonus > 0 ? `+${blessingArmorBonus} ✨` : '',
         damageBonusHTML: [
-            towerDamageBonusPercent > 0 ? `🏰 +${towerDamageBonusPercent}%` : '',
+            towerDamageBonusPercent > 0 ? `🏯 +${towerDamageBonusPercent}%` : '',
+            guildDamageBonusPercent > 0 ? `🏰 +${guildDamageBonusPercent}%` : '',
             blessingDamageBonusPercent > 0 ? `✨ +${blessingDamageBonusPercent}%` : ''
         ].filter(b => b).join(' ') || 'Базовый',
         totalDamageBonusPercent,
