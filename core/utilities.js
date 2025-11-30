@@ -125,15 +125,11 @@ function calculateResearchTime(baseTime) {
     return finalTime;
 }
 
-// ============ ФУНКЦИИ КОВКИ ============
+// ============ ФУНКЦИИ КОВКИ (УСТАРЕЛО - кузница заменена на гильдию) ============
 
-// Получить множитель скорости ковки
+// Получить множитель скорости ковки (возвращает 1, т.к. кузницы больше нет)
 function getForgingSpeedMultiplier() {
-    const forgeLevel = getBuildingLevel('forge');
-    if (forgeLevel === 0) return 1;
-    
-    // Каждый уровень даёт +15% к скорости
-    return 1 + (forgeLevel * 0.15);
+    return 1;
 }
 
 // Расчёт времени ковки с учётом бонусов

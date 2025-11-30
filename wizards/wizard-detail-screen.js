@@ -439,7 +439,7 @@ function showInventoryModalCompact(wizardIndex) {
                 </div>
             </div>
             <p style="text-align: center; color: #aaa; font-size: 11px; margin-bottom: 15px;">
-                🔨 Откроется когда построишь Кузницу
+                ⏳ Система снаряжения в разработке
             </p>
             <button onclick="closeCurrentModal()" style="
                 width: 100%;
