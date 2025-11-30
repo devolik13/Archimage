@@ -388,65 +388,82 @@ function showResistancesModal(wizardIndex) {
         </div>
     ` : '';
 
-    const modalContent = `
-        <div style="
-            max-width: 400px;
-            background: linear-gradient(145deg, #2c2c3d, #1f1f2e);
-            border-radius: 15px;
-            padding: 20px;
-            color: white;
-        ">
-            <h3 style="margin: 0 0 15px 0; color: #7289da; text-align: center;">🛡️ Сопротивления магии</h3>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-                ${resistancesHTML}
-            </div>
-            ${guildResistHTML}
-            <button onclick="closeCurrentModal()" style="
-                width: 100%;
-                padding: 12px;
-                margin-top: 15px;
-                background: #7289da;
+    // Используем фон мага
+    const faction = wizard.faction || 'fire';
+    const imagePath = `images/wizards/${faction}/window-bg.webp`;
+
+    // Создаём модалку с фоном как у окна мага
+    const modal = document.createElement('div');
+    modal.id = 'resistances-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+
+    modal.innerHTML = `
+        <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+            <img src="${imagePath}" style="
+                max-width: 90vw;
+                max-height: 90vh;
+                width: auto;
+                height: auto;
+            " id="resist-modal-bg">
+            <div id="resist-modal-overlay" style="
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
                 color: white;
-                border: none;
-                border-radius: 8px;
-                font-size: 14px;
-                font-weight: bold;
-                cursor: pointer;
-            ">Закрыть</button>
+            ">
+                <h3 style="margin: 0 0 15px 0; color: #7289da; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">🛡️ Сопротивления магии</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 350px;">
+                    ${resistancesHTML}
+                </div>
+                ${guildResistHTML}
+                <button onclick="closeResistancesModal()" style="
+                    width: 200px;
+                    padding: 12px;
+                    margin-top: 15px;
+                    background: rgba(114, 137, 218, 0.9);
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+                ">← Назад</button>
+            </div>
         </div>
     `;
-    
-    // Используем централизованную систему модалок
-    if (window.Modal && window.Modal.show) {
-        window.Modal.show(modalContent);
-    } else {
-        // Фолбэк на старую систему если Modal недоступен
-        const modalHTML = `
-            <div style="
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                z-index: 1001;
-            ">
-                ${modalContent}
-            </div>
-            <div onclick="closeResistancesModal()" style="
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.5);
-                z-index: 1000;
-            "></div>
-        `;
-        
-        const modalContainer = document.createElement('div');
-        modalContainer.id = 'resistances-modal';
-        modalContainer.innerHTML = modalHTML;
-        document.body.appendChild(modalContainer);
-    }
+
+    // Закрытие по клику на фон
+    modal.onclick = (e) => {
+        if (e.target === modal) closeResistancesModal();
+    };
+
+    document.body.appendChild(modal);
+
+    // Позиционируем overlay после загрузки изображения
+    const img = document.getElementById('resist-modal-bg');
+    const overlay = document.getElementById('resist-modal-overlay');
+    const setupOverlay = () => {
+        const rect = img.getBoundingClientRect();
+        overlay.style.width = rect.width + 'px';
+        overlay.style.height = rect.height + 'px';
+    };
+    img.onload = setupOverlay;
+    if (img.complete) setupOverlay();
 }
 
 function closeResistancesModal() {
@@ -868,13 +885,13 @@ function setupWizardUI(wizardIndex, wizardStats) {
     // Оригинальные координаты для 768x512 (из первой версии)
     // Применяем масштабирование ТОЧНО КАК У ГОРОДА: x = (originalX * scaleX) + offsetX, y = originalY * scaleY
 
-    // === КНОПКА ЗАКРЫТИЯ (левый верхний угол: left: 10px, top: 10px, width: 160px, height: 56px) ===
+    // === КНОПКА ЗАКРЫТИЯ (внизу: left: 10px, bottom area, width: 160px, height: 56px) ===
     const closeBtn = document.createElement('button');
     closeBtn.className = 'wizard-bg-close-button';
     closeBtn.textContent = '← Назад';
     closeBtn.style.cssText = `
         left: ${(10 * scaleX) + offsetX}px;
-        top: ${10 * scaleY}px;
+        top: ${(512 - 66) * scaleY}px;
         width: ${160 * scaleX}px;
         height: ${56 * scaleY}px;
         font-size: ${22 * Math.min(scaleX, scaleY)}px;
@@ -975,27 +992,30 @@ function setupWizardUI(wizardIndex, wizardStats) {
     const cellHeight = (gridTotalHeight - (2 - 1) * gapY) / 2; // ~94.5px
 
     const cells = [
-        // РЯД 0: Здоровье, Броня, Урон
+        // РЯД 0: Здоровье, Броня, Урон (кликабельные для деталей)
         {
             type: 'health',
             col: 0, row: 0,
             label: 'Здоровье',
             value: wizardStats.actualMaxHP,
-            bonus: wizardStats.healthBonusHTML
+            bonus: wizardStats.healthBonusHTML,
+            onclick: () => showStatBreakdown('hp')
         },
         {
             type: 'armor',
             col: 1, row: 0,
             label: 'Броня',
             value: wizardStats.actualMaxArmor,
-            bonus: wizardStats.armorBonusHTML
+            bonus: wizardStats.armorBonusHTML,
+            onclick: () => showStatBreakdown('armor')
         },
         {
             type: 'damage',
             col: 2, row: 0,
             label: 'Урон',
             value: `+${wizardStats.totalDamageBonusPercent}%`,
-            bonus: wizardStats.damageBonusHTML
+            bonus: wizardStats.damageBonusHTML,
+            onclick: () => showStatBreakdown('damage')
         },
         // РЯД 1: Заклинания (3 слота)
         ...createSpellCells(wizardData, wizardIndex, wizardStats.totalDamageMultiplier, wizardStats.totalDamageBonusPercent)
