@@ -3,25 +3,33 @@
 // Конфигурация гильдий
 const GUILD_CONFIG = {
     MAX_LEVEL: 30,
-    HP_BONUS_PER_LEVEL: 10,        // +10% HP за уровень
-    DAMAGE_BONUS_PER_LEVEL: 1,     // +1% урона за уровень
-    BASE_CAPACITY: 10,              // Стартовая вместимость
+    HP_BONUS_PER_LEVEL: 10,         // +10% HP за уровень
+    DAMAGE_BONUS_PER_LEVEL: 1,      // +1% урона за уровень
+    BASE_CAPACITY: 10,               // Стартовая вместимость
     CAPACITY_BONUS_LEVELS: [5, 10, 15, 20, 25, 30], // Уровни когда +5 вместимость
-    CAPACITY_BONUS: 5,              // +5 человек на этих уровнях
-    RESISTANCE_PER_POINT: 0.5,      // 0.5% сопротивления за 1 очко
-    MAX_RESISTANCE_POINTS: 30,      // Макс очков на школу
-    INACTIVE_DAYS_FOR_TRANSFER: 7,  // Дней неактивности для передачи лидерства
+    CAPACITY_BONUS: 5,               // +5 человек на этих уровнях
+    CAPACITY_EXP_MULTIPLIER: 0.03,   // +3% опыта за каждого доп. игрока сверх базы
+    RESISTANCE_PER_POINT: 0.5,       // 0.5% сопротивления за 1 очко
+    MAX_RESISTANCE_POINTS: 30,       // Макс очков на школу
+    INACTIVE_DAYS_FOR_TRANSFER: 7,   // Дней неактивности для передачи лидерства
     SCHOOLS: ['fire', 'water', 'earth', 'wind', 'poison'] // Школы для исследований
 };
 
-// Прогрессия опыта гильдии (квадратичная)
+// Прогрессия опыта гильдии (квадратичная с учетом вместимости)
 function getExpToNextLevel(level) {
     if (level > GUILD_CONFIG.MAX_LEVEL) {
         // После 30 уровня - фиксированное значение для получения очков исследований
         return 10000;
     }
-    // Квадратичная прогрессия: 100 + level^2 * 50
-    return 100 + (level * level * 50);
+    // Базовая квадратичная прогрессия: 100 + level^2 * 50
+    const baseExp = 100 + (level * level * 50);
+
+    // Множитель на основе вместимости: +3% за каждого игрока сверх базы
+    const capacity = getGuildCapacity(level);
+    const extraPlayers = capacity - GUILD_CONFIG.BASE_CAPACITY;
+    const capacityMultiplier = 1 + (extraPlayers * GUILD_CONFIG.CAPACITY_EXP_MULTIPLIER);
+
+    return Math.floor(baseExp * capacityMultiplier);
 }
 
 // Получить вместимость гильдии по уровню
