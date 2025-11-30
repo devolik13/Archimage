@@ -475,27 +475,41 @@
         }
 
         container.sprite = sprite;
-        
+
         // HP бар
         const hpBar = new PIXI.Container();
         const hpBarBg = new PIXI.Graphics();
         hpBarBg.beginFill(0x000000, 0.5);
         hpBarBg.drawRect(-20, 0, 40, 5);
         hpBarBg.endFill();
-        
+
         const hpBarFill = new PIXI.Graphics();
         hpBarFill.beginFill(0x4ade80);
         hpBarFill.drawRect(-20, 0, 40, 5);
         hpBarFill.endFill();
-        
+
+        // HP текст
+        const hpText = new PIXI.Text('', {
+            fontFamily: 'Arial',
+            fontSize: 10 * scale,
+            fill: 0xffffff,
+            stroke: 0x000000,
+            strokeThickness: 2,
+            fontWeight: 'bold'
+        });
+        hpText.anchor.set(0.5, 1);
+        hpText.y = -2;
+
         hpBar.addChild(hpBarBg);
         hpBar.addChild(hpBarFill);
+        hpBar.addChild(hpText);
         hpBar.x = sprite.x;
         hpBar.y = sprite.y + 25 * scale;
-        
+
         container.hpBar = hpBar;
         container.hpBarFill = hpBarFill;
-        
+        container.hpText = hpText;
+
         // Добавляем в контейнер
         if (unitsContainer) {
             unitsContainer.addChild(sprite);
@@ -826,6 +840,11 @@
             container.hpBarFill.beginFill(color);
             container.hpBarFill.drawRect(-20, 0, 40 * hpPercent, 5);
             container.hpBarFill.endFill();
+        }
+
+        // Обновляем HP текст
+        if (container.hpText && window.pixiAnimUtils.isValid(container.hpText)) {
+            container.hpText.text = `${Math.floor(hp)}/${Math.floor(maxHp)}`;
         }
 
         if (container.hpBar && window.pixiAnimUtils.isValid(container.hpBar)) {

@@ -856,18 +856,13 @@ function applyAbsoluteZeroDamageToTarget(caster, target, zone, targetType, row) 
         if (targetType === 'player' || targetType === 'enemy') {
             const col = targetType === 'player' ? 5 : 0;
 
-            if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
-                const key = `${col}_${row}`;
-                window.pixiWizards.updateHP(key, 0, target.max_hp);
-            }
-
+            // Запускаем анимацию смерти напрямую (без проверки wizardSprites)
             if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
-                const key = `${col}_${row}`;
-                const container = window.wizardSprites?.[key];
-                if (container && !container.deathAnimationStarted) {
-                    container.deathAnimationStarted = true;
+                // Помечаем цель как мёртвую чтобы избежать повторной анимации
+                if (!target.deathAnimationStarted) {
+                    target.deathAnimationStarted = true;
                     window.pixiWizards.playDeath(col, row);
-                    console.log(`🎬 Анимация смерти от абсолютного ноля для ${target.name} на ${key}`);
+                    console.log(`🎬 Анимация смерти от Абсолютного Ноля: ${target.name} [${col},${row}]`);
                 }
             }
         }
