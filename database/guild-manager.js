@@ -17,15 +17,14 @@ const GUILD_CONFIG = {
 
 // Прогрессия опыта гильдии (квадратичная с учетом вместимости)
 function getExpToNextLevel(level) {
-    if (level > GUILD_CONFIG.MAX_LEVEL) {
-        // После 30 уровня - фиксированное значение для получения очков исследований
-        return 10000;
-    }
-    // Базовая квадратичная прогрессия: 100 + level^2 * 50
-    const baseExp = 100 + (level * level * 50);
+    // После макс уровня - используем формулу как для уровня 31
+    const calcLevel = level > GUILD_CONFIG.MAX_LEVEL ? (GUILD_CONFIG.MAX_LEVEL + 1) : level;
+
+    // Базовая квадратичная прогрессия: (100 + level^2 * 50) * 3
+    const baseExp = (100 + (calcLevel * calcLevel * 50)) * 3;
 
     // Множитель на основе вместимости: +3% за каждого игрока сверх базы
-    const capacity = getGuildCapacity(level);
+    const capacity = getGuildCapacity(Math.min(level, GUILD_CONFIG.MAX_LEVEL));
     const extraPlayers = capacity - GUILD_CONFIG.BASE_CAPACITY;
     const capacityMultiplier = 1 + (extraPlayers * GUILD_CONFIG.CAPACITY_EXP_MULTIPLIER);
 

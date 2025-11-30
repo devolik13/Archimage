@@ -242,12 +242,22 @@ function startBattle() {
 // Инициализация здоровья магов
 function initializeWizardHealth() {
     window.playerWizards.forEach(wizard => {
-        if (!wizard.original_hp) {
-            wizard.original_hp = wizard.hp;
-            wizard.original_max_hp = wizard.max_hp;
-        }
-        wizard.hp = wizard.original_hp;
-        wizard.max_hp = wizard.original_max_hp;
+        // Используем original_max_hp как истинную базу (если есть)
+        // Это значение устанавливается при создании мага и не включает бонусы
+        const trueBaseHp = wizard.original_max_hp || wizard.max_hp || 100;
+        const trueBaseArmor = wizard.original_max_armor || wizard.max_armor || 100;
+
+        // Сохраняем/обновляем оригинальные значения
+        wizard.original_hp = trueBaseHp;
+        wizard.original_max_hp = trueBaseHp;
+        wizard.original_armor = trueBaseArmor;
+        wizard.original_max_armor = trueBaseArmor;
+
+        // Начинаем с базовых значений
+        wizard.hp = trueBaseHp;
+        wizard.max_hp = trueBaseHp;
+        wizard.armor = trueBaseArmor;
+        wizard.max_armor = trueBaseArmor;
         wizard.effects = {};
         wizard.armorBonus = 0;
         wizard.armorBonuses = {};
@@ -361,19 +371,26 @@ function initializeWizardHealth() {
 
     // То же самое для врагов
     window.enemyWizards.forEach(wizard => {
-        if (!wizard.original_hp) {
-            wizard.original_hp = wizard.hp;
-            wizard.original_max_hp = wizard.max_hp;
-        }
-        wizard.hp = wizard.original_hp;
-        wizard.max_hp = wizard.original_max_hp;
+        // Используем original_max_hp как истинную базу (если есть)
+        const trueBaseHp = wizard.original_max_hp || wizard.max_hp || 100;
+        const trueBaseArmor = wizard.original_max_armor || wizard.max_armor || 100;
+
+        wizard.original_hp = trueBaseHp;
+        wizard.original_max_hp = trueBaseHp;
+        wizard.original_armor = trueBaseArmor;
+        wizard.original_max_armor = trueBaseArmor;
+
+        wizard.hp = trueBaseHp;
+        wizard.max_hp = trueBaseHp;
+        wizard.armor = trueBaseArmor;
+        wizard.max_armor = trueBaseArmor;
 
         // Враги тоже получают бонус от Башни магов (для баланса)
         let healthMultiplier = 1.0;
         if (typeof window.applyWizardTowerHealthBonus === 'function') {
             healthMultiplier = window.applyWizardTowerHealthBonus();
-            wizard.max_hp = Math.floor(wizard.original_max_hp * healthMultiplier);
-            wizard.hp = Math.floor(wizard.original_hp * healthMultiplier);
+            wizard.max_hp = Math.floor(wizard.max_hp * healthMultiplier);
+            wizard.hp = Math.floor(wizard.hp * healthMultiplier);
         }
 
         wizard.effects = {};
