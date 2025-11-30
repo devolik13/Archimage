@@ -540,10 +540,15 @@ function renderGuildMembers(container) {
     const members = window.guildManager.guildMembers;
     const guild = window.guildManager.currentGuild;
 
+    // Сортируем участников по вкладу (от большего к меньшему)
+    const sortedMembers = [...members].sort((a, b) => {
+        return (b.guild_contribution || 0) - (a.guild_contribution || 0);
+    });
+
     container.innerHTML = `
         <h4 style="color: #ffd700; margin: 0 0 15px 0;">Участники (${members.length})</h4>
         <div style="display: flex; flex-direction: column; gap: 8px;">
-            ${members.map((m, i) => `
+            ${sortedMembers.map((m, i) => `
                 <div style="
                     background: rgba(255,255,255,0.05);
                     padding: 12px;
