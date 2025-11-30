@@ -16,9 +16,9 @@ const GUILD_CONFIG = {
 
 // Прогрессия опыта гильдии (квадратичная)
 function getExpToNextLevel(level) {
-    if (level >= GUILD_CONFIG.MAX_LEVEL) {
-        // После 30 уровня - фиксированное значение для получения очков
-        return 10000; // Фиксированное значение
+    if (level > GUILD_CONFIG.MAX_LEVEL) {
+        // После 30 уровня - фиксированное значение для получения очков исследований
+        return 10000;
     }
     // Квадратичная прогрессия: 100 + level^2 * 50
     return 100 + (level * level * 50);
