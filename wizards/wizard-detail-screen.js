@@ -144,6 +144,29 @@ function renderWizardDetailScreen(wizardIndex) {
     const blessingDamageBonusPercent = Math.round(blessingDamageBonus * 100);
     const totalDamageBonusPercent = Math.round((totalDamageMultiplier - 1) * 100);
 
+    // Сохраняем данные для попапов статов
+    window.currentWizardStats = {
+        hp: {
+            base: baseHP,
+            final: actualMaxHP,
+            levelBonus: levelBonusPercent,
+            towerBonus: healthBonusPercent,
+            guildBonus: guildHpBonusPercent,
+            blessingBonus: blessingHealthPercent
+        },
+        armor: {
+            base: baseArmor,
+            final: actualMaxArmor,
+            blessingBonus: blessingArmorBonus
+        },
+        damage: {
+            final: totalDamageBonusPercent,
+            towerBonus: towerDamageBonusPercent,
+            guildBonus: guildDamageBonusPercent,
+            blessingBonus: blessingDamageBonusPercent
+        }
+    };
+
     // Получаем функции из script_wizards.js
     const getFactionName = window.getFactionName || ((f) => f);
     const getFactionEmoji = window.getFactionEmoji || ((f) => '✨');
@@ -255,32 +278,20 @@ function renderWizardDetailScreen(wizardIndex) {
                     <div>
                         <div class="section-compact-title">⚔️ Характеристики</div>
                         <div class="compact-stats-grid">
-                            <div class="compact-stat-box">
-                                <div style="font-size: 9px; color: #aaa; margin-bottom: 3px;">ЗДОРОВЬЕ</div>
-                                <div style="font-size: 18px; font-weight: bold; color: #4ade80;">${actualMaxHP}</div>
-                                <div style="font-size: 8px; color: #7289da; margin-top: 2px;">
-                                    ${levelBonusPercent > 0 ? `+${levelBonusPercent}% ур.` : ''}
-                                    ${healthBonusPercent > 0 ? ` +${healthBonusPercent}% 🏯` : ''}
-                                    ${guildHpBonusPercent > 0 ? ` +${guildHpBonusPercent}% 🏰` : ''}
-                                    ${blessingHealthPercent > 0 ? ` +${blessingHealthPercent}% ✨` : ''}
-                                </div>
+                            <div class="compact-stat-box" onclick="showStatBreakdown('hp')" style="cursor: pointer;">
+                                <div style="font-size: 9px; color: #aaa; margin-bottom: 3px;">❤️ ЗДОРОВЬЕ</div>
+                                <div style="font-size: 20px; font-weight: bold; color: #4ade80;">${actualMaxHP}</div>
+                                <div style="font-size: 8px; color: #666; margin-top: 2px;">нажми для деталей</div>
                             </div>
-                            <div class="compact-stat-box">
-                                <div style="font-size: 9px; color: #aaa; margin-bottom: 3px;">БРОНЯ</div>
-                                <div style="font-size: 18px; font-weight: bold; color: #95ffc4;">${actualMaxArmor}</div>
-                                <div style="font-size: 8px; color: #7289da; margin-top: 2px;">
-                                    ${blessingArmorBonus > 0 ? `+${blessingArmorBonus} ✨` : 'Защита'}
-                                </div>
+                            <div class="compact-stat-box" onclick="showStatBreakdown('armor')" style="cursor: pointer;">
+                                <div style="font-size: 9px; color: #aaa; margin-bottom: 3px;">🛡️ БРОНЯ</div>
+                                <div style="font-size: 20px; font-weight: bold; color: #95ffc4;">${actualMaxArmor}</div>
+                                <div style="font-size: 8px; color: #666; margin-top: 2px;">нажми для деталей</div>
                             </div>
-                            <div class="compact-stat-box">
-                                <div style="font-size: 9px; color: #aaa; margin-bottom: 3px;">УРОН</div>
-                                <div style="font-size: 18px; font-weight: bold; color: #fbbf24;">+${totalDamageBonusPercent}%</div>
-                                <div style="font-size: 8px; color: #7289da; margin-top: 2px;">
-                                    ${towerDamageBonusPercent > 0 ? `🏯 +${towerDamageBonusPercent}%` : ''}
-                                    ${guildDamageBonusPercent > 0 ? ` 🏰 +${guildDamageBonusPercent}%` : ''}
-                                    ${blessingDamageBonusPercent > 0 ? ` ✨ +${blessingDamageBonusPercent}%` : ''}
-                                    ${(towerDamageBonusPercent === 0 && guildDamageBonusPercent === 0 && blessingDamageBonusPercent === 0) ? 'Базовый' : ''}
-                                </div>
+                            <div class="compact-stat-box" onclick="showStatBreakdown('damage')" style="cursor: pointer;">
+                                <div style="font-size: 9px; color: #aaa; margin-bottom: 3px;">⚔️ УРОН</div>
+                                <div style="font-size: 20px; font-weight: bold; color: #fbbf24;">+${totalDamageBonusPercent}%</div>
+                                <div style="font-size: 8px; color: #666; margin-top: 2px;">нажми для деталей</div>
                             </div>
                         </div>
                         ${blessingName ? `
@@ -1063,6 +1074,217 @@ function createSpellCells(wizardData, wizardIndex, totalDamageMultiplier, totalD
     return cells;
 }
 
+// Показать разбивку характеристики
+function showStatBreakdown(statType) {
+    const stats = window.currentWizardStats;
+    if (!stats) return;
+
+    let title = '';
+    let content = '';
+    let color = '';
+
+    if (statType === 'hp') {
+        title = '❤️ Здоровье';
+        color = '#4ade80';
+        const s = stats.hp;
+        content = `
+            <div class="stat-breakdown-row">
+                <span>Базовое HP</span>
+                <span style="color: white;">${s.base}</span>
+            </div>
+            ${s.levelBonus > 0 ? `
+            <div class="stat-breakdown-row">
+                <span>⭐ Уровень мага</span>
+                <span style="color: #ffa500;">+${s.levelBonus}%</span>
+            </div>` : ''}
+            ${s.towerBonus > 0 ? `
+            <div class="stat-breakdown-row">
+                <span>🏯 Башня магов</span>
+                <span style="color: #7289da;">+${s.towerBonus}%</span>
+            </div>` : ''}
+            ${s.guildBonus > 0 ? `
+            <div class="stat-breakdown-row">
+                <span>🏰 Гильдия</span>
+                <span style="color: #ffa500;">+${s.guildBonus}%</span>
+            </div>` : ''}
+            ${s.blessingBonus > 0 ? `
+            <div class="stat-breakdown-row">
+                <span>✨ Благословение</span>
+                <span style="color: #a855f7;">+${s.blessingBonus}%</span>
+            </div>` : ''}
+            <div class="stat-breakdown-total">
+                <span>Итого</span>
+                <span style="color: ${color}; font-size: 18px;">${s.final}</span>
+            </div>
+        `;
+    } else if (statType === 'armor') {
+        title = '🛡️ Броня';
+        color = '#95ffc4';
+        const s = stats.armor;
+        content = `
+            <div class="stat-breakdown-row">
+                <span>Базовая броня</span>
+                <span style="color: white;">${s.base}</span>
+            </div>
+            ${s.blessingBonus > 0 ? `
+            <div class="stat-breakdown-row">
+                <span>✨ Благословение</span>
+                <span style="color: #a855f7;">+${s.blessingBonus}</span>
+            </div>` : ''}
+            <div class="stat-breakdown-total">
+                <span>Итого</span>
+                <span style="color: ${color}; font-size: 18px;">${s.final}</span>
+            </div>
+            <div class="stat-breakdown-note">
+                Броня поглощает урон до того, как он затронет здоровье
+            </div>
+        `;
+    } else if (statType === 'damage') {
+        title = '⚔️ Бонус к урону';
+        color = '#fbbf24';
+        const s = stats.damage;
+        content = `
+            <div class="stat-breakdown-row">
+                <span>Базовый урон</span>
+                <span style="color: white;">100%</span>
+            </div>
+            ${s.towerBonus > 0 ? `
+            <div class="stat-breakdown-row">
+                <span>🏯 Башня магов</span>
+                <span style="color: #7289da;">+${s.towerBonus}%</span>
+            </div>` : ''}
+            ${s.guildBonus > 0 ? `
+            <div class="stat-breakdown-row">
+                <span>🏰 Гильдия</span>
+                <span style="color: #ffa500;">+${s.guildBonus}%</span>
+            </div>` : ''}
+            ${s.blessingBonus > 0 ? `
+            <div class="stat-breakdown-row">
+                <span>✨ Благословение</span>
+                <span style="color: #a855f7;">+${s.blessingBonus}%</span>
+            </div>` : ''}
+            <div class="stat-breakdown-total">
+                <span>Множитель урона</span>
+                <span style="color: ${color}; font-size: 18px;">+${s.final}%</span>
+            </div>
+            <div class="stat-breakdown-note">
+                Увеличивает урон всех заклинаний мага
+            </div>
+        `;
+    }
+
+    const modalHTML = `
+        <div class="stat-breakdown-modal" onclick="event.stopPropagation()">
+            <div class="stat-breakdown-header" style="color: ${color};">${title}</div>
+            <div class="stat-breakdown-content">
+                ${content}
+            </div>
+            <button class="stat-breakdown-close" onclick="closeStatBreakdown()">Закрыть</button>
+        </div>
+    `;
+
+    // Создаем оверлей
+    const overlay = document.createElement('div');
+    overlay.id = 'stat-breakdown-overlay';
+    overlay.className = 'stat-breakdown-overlay';
+    overlay.onclick = closeStatBreakdown;
+    overlay.innerHTML = modalHTML;
+
+    document.body.appendChild(overlay);
+
+    // Добавляем стили если их нет
+    if (!document.getElementById('stat-breakdown-styles')) {
+        const styles = document.createElement('style');
+        styles.id = 'stat-breakdown-styles';
+        styles.textContent = `
+            .stat-breakdown-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+            }
+            .stat-breakdown-modal {
+                background: linear-gradient(145deg, #2c2c3d, #1f1f2e);
+                border-radius: 12px;
+                padding: 20px;
+                min-width: 280px;
+                max-width: 320px;
+                border: 2px solid #7289da;
+            }
+            .stat-breakdown-header {
+                font-size: 18px;
+                font-weight: bold;
+                text-align: center;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #444;
+            }
+            .stat-breakdown-content {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .stat-breakdown-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px 10px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 6px;
+                color: #aaa;
+                font-size: 13px;
+            }
+            .stat-breakdown-total {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px 10px;
+                background: rgba(114, 137, 218, 0.15);
+                border-radius: 6px;
+                color: white;
+                font-weight: bold;
+                font-size: 14px;
+                margin-top: 5px;
+                border: 1px solid rgba(114, 137, 218, 0.3);
+            }
+            .stat-breakdown-note {
+                font-size: 11px;
+                color: #666;
+                text-align: center;
+                margin-top: 10px;
+                font-style: italic;
+            }
+            .stat-breakdown-close {
+                width: 100%;
+                padding: 12px;
+                margin-top: 15px;
+                background: #7289da;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+            .stat-breakdown-close:hover {
+                background: #5b6eae;
+            }
+        `;
+        document.head.appendChild(styles);
+    }
+}
+
+function closeStatBreakdown() {
+    const overlay = document.getElementById('stat-breakdown-overlay');
+    if (overlay) overlay.remove();
+}
+
 // Экспорт функций
 window.showWizardDetailScreen = showWizardDetailScreen;
 window.closeWizardDetailScreen = closeWizardDetailScreen;
@@ -1074,4 +1296,6 @@ window.showResistancesModal = showResistancesModal;
 window.closeResistancesModal = closeResistancesModal;
 window.showInventoryModalCompact = showInventoryModalCompact;
 window.closeInventoryModalCompact = closeInventoryModalCompact;
+window.showStatBreakdown = showStatBreakdown;
+window.closeStatBreakdown = closeStatBreakdown;
 
