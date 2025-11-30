@@ -381,55 +381,53 @@ function renderGuildView(container) {
     const expPercent = Math.min((guild.experience / expToNext) * 100, 100);
 
     container.innerHTML = `
-        <div style="padding: 15px; height: 100%; display: flex; flex-direction: column; pointer-events: auto;">
+        <div style="padding: 10px; height: 100%; display: flex; flex-direction: column; pointer-events: auto;">
             <!-- Заголовок -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <div>
-                    <h2 style="margin: 0; color: #ffd700; font-size: 20px;">[${guild.tag}] ${guild.name}</h2>
-                    <div style="color: #aaa; font-size: 12px;">Уровень ${guild.level}</div>
+                    <h2 style="margin: 0; color: #ffd700; font-size: 18px;">[${guild.tag}] ${guild.name}</h2>
+                    <div style="color: #aaa; font-size: 11px;">Уровень ${guild.level}</div>
                 </div>
                 <button onclick="closeGuildModal()" style="
                     background: rgba(255,255,255,0.1);
                     border: none;
                     color: white;
-                    font-size: 20px;
+                    font-size: 18px;
                     cursor: pointer;
-                    padding: 5px 12px;
+                    padding: 4px 10px;
                     border-radius: 8px;
                 ">X</button>
             </div>
 
             <!-- Прогресс опыта -->
-            <div style="margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; color: #aaa; font-size: 11px; margin-bottom: 3px;">
+            <div style="margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; color: #aaa; font-size: 10px; margin-bottom: 2px;">
                     <span>Опыт</span>
                     <span>${guild.experience} / ${expToNext}</span>
                 </div>
-                <div style="background: rgba(0,0,0,0.5); border-radius: 10px; height: 12px; overflow: hidden;">
+                <div style="background: rgba(0,0,0,0.5); border-radius: 8px; height: 10px; overflow: hidden;">
                     <div style="background: linear-gradient(90deg, #ffd700, #f59e0b); height: 100%; width: ${expPercent}%; transition: width 0.3s;"></div>
                 </div>
             </div>
 
             <!-- Табы -->
-            <div style="display: flex; gap: 5px; margin-bottom: 15px;">
+            <div style="display: flex; gap: 4px; margin-bottom: 8px;">
                 <button onclick="switchGuildTab('info')" id="tab-info" class="guild-tab active" style="
-                    flex: 1; padding: 10px; border: none; border-radius: 8px;
-                    background: #3b82f6; color: white; cursor: pointer; font-size: 12px;
+                    flex: 1; padding: 8px; border: none; border-radius: 6px;
+                    background: #3b82f6; color: white; cursor: pointer; font-size: 11px;
                 ">Инфо</button>
                 <button onclick="switchGuildTab('members')" id="tab-members" class="guild-tab" style="
-                    flex: 1; padding: 10px; border: none; border-radius: 8px;
-                    background: rgba(255,255,255,0.1); color: #aaa; cursor: pointer; font-size: 12px;
+                    flex: 1; padding: 8px; border: none; border-radius: 6px;
+                    background: rgba(255,255,255,0.1); color: #aaa; cursor: pointer; font-size: 11px;
                 ">Участники</button>
                 <button onclick="switchGuildTab('research')" id="tab-research" class="guild-tab" style="
-                    flex: 1; padding: 10px; border: none; border-radius: 8px;
-                    background: rgba(255,255,255,0.1); color: #aaa; cursor: pointer; font-size: 12px;
-                ">Исследования</button>
-                ${isLeader ? `
+                    flex: 1; padding: 8px; border: none; border-radius: 6px;
+                    background: rgba(255,255,255,0.1); color: #aaa; cursor: pointer; font-size: 11px;
+                ">Исслед.</button>
                 <button onclick="switchGuildTab('settings')" id="tab-settings" class="guild-tab" style="
-                    flex: 1; padding: 10px; border: none; border-radius: 8px;
-                    background: rgba(255,255,255,0.1); color: #aaa; cursor: pointer; font-size: 12px;
-                ">Настройки</button>
-                ` : ''}
+                    padding: 8px 12px; border: none; border-radius: 6px;
+                    background: rgba(255,255,255,0.1); color: #aaa; cursor: pointer; font-size: 11px;
+                ">⚙️</button>
             </div>
 
             <!-- Контент -->
@@ -437,21 +435,21 @@ function renderGuildView(container) {
                 flex: 1;
                 overflow-y: auto;
                 background: rgba(0,0,0,0.3);
-                border-radius: 15px;
-                padding: 15px;
+                border-radius: 10px;
+                padding: 10px;
             "></div>
 
-            <!-- Кнопка выхода -->
-            <button onclick="confirmLeaveGuild()" style="
-                margin-top: 15px;
-                padding: 12px;
-                background: rgba(239, 68, 68, 0.2);
-                border: 1px solid #ef4444;
-                border-radius: 8px;
-                color: #ef4444;
+            <!-- Кнопка назад -->
+            <button onclick="closeGuildModal()" style="
+                margin-top: 8px;
+                padding: 8px;
+                background: rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.2);
+                border-radius: 6px;
+                color: white;
                 cursor: pointer;
-                font-size: 14px;
-            ">Покинуть гильдию</button>
+                font-size: 13px;
+            ">← Назад</button>
         </div>
     `;
 
@@ -652,67 +650,88 @@ async function spendResearchPoint(school) {
     }
 }
 
-// === ТАБ НАСТРОЙКИ (ТОЛЬКО ЛИДЕР) ===
+// === ТАБ НАСТРОЙКИ ===
 function renderGuildSettings(container) {
     const guild = window.guildManager.currentGuild;
+    const isLeader = window.guildManager.isLeader();
     const requests = guild.join_requests || [];
 
-    container.innerHTML = `
-        <h4 style="color: #ffd700; margin: 0 0 15px 0;">Настройки гильдии</h4>
+    let leaderSettingsHTML = '';
+    if (isLeader) {
+        leaderSettingsHTML = `
+            <h4 style="color: #ffd700; margin: 0 0 15px 0;">Настройки гильдии</h4>
 
-        <!-- Режим вступления -->
-        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-            <div style="color: white; margin-bottom: 10px;">Режим вступления</div>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="setJoinMode('free')" style="
-                    flex: 1; padding: 10px;
-                    background: ${guild.join_mode === 'free' ? '#4ade80' : 'rgba(255,255,255,0.1)'};
-                    border: none; border-radius: 8px;
-                    color: ${guild.join_mode === 'free' ? 'white' : '#aaa'};
-                    cursor: pointer;
-                ">Свободный</button>
-                <button onclick="setJoinMode('request')" style="
-                    flex: 1; padding: 10px;
-                    background: ${guild.join_mode === 'request' ? '#4ade80' : 'rgba(255,255,255,0.1)'};
-                    border: none; border-radius: 8px;
-                    color: ${guild.join_mode === 'request' ? 'white' : '#aaa'};
-                    cursor: pointer;
-                ">По заявке</button>
+            <!-- Режим вступления -->
+            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <div style="color: white; margin-bottom: 10px;">Режим вступления</div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="setJoinMode('free')" style="
+                        flex: 1; padding: 10px;
+                        background: ${guild.join_mode === 'free' ? '#4ade80' : 'rgba(255,255,255,0.1)'};
+                        border: none; border-radius: 8px;
+                        color: ${guild.join_mode === 'free' ? 'white' : '#aaa'};
+                        cursor: pointer;
+                    ">Свободный</button>
+                    <button onclick="setJoinMode('request')" style="
+                        flex: 1; padding: 10px;
+                        background: ${guild.join_mode === 'request' ? '#4ade80' : 'rgba(255,255,255,0.1)'};
+                        border: none; border-radius: 8px;
+                        color: ${guild.join_mode === 'request' ? 'white' : '#aaa'};
+                        cursor: pointer;
+                    ">По заявке</button>
+                </div>
             </div>
-        </div>
 
-        <!-- Заявки -->
-        ${requests.length > 0 ? `
-            <h4 style="color: #ffd700; margin: 0 0 10px 0;">Заявки (${requests.length})</h4>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                ${requests.map(r => `
-                    <div style="
-                        background: rgba(255,255,255,0.05);
-                        padding: 12px;
-                        border-radius: 10px;
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                    ">
-                        <span style="color: white;">${r.username}</span>
-                        <div style="display: flex; gap: 8px;">
-                            <button onclick="handleRequest(${r.player_id}, true)" style="
-                                padding: 6px 12px;
-                                background: #4ade80;
-                                border: none; border-radius: 6px;
-                                color: white; cursor: pointer;
-                            ">Принять</button>
-                            <button onclick="handleRequest(${r.player_id}, false)" style="
-                                padding: 6px 12px;
-                                background: #ef4444;
-                                border: none; border-radius: 6px;
-                                color: white; cursor: pointer;
-                            ">Отклонить</button>
+            <!-- Заявки -->
+            ${requests.length > 0 ? `
+                <h4 style="color: #ffd700; margin: 0 0 10px 0;">Заявки (${requests.length})</h4>
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
+                    ${requests.map(r => `
+                        <div style="
+                            background: rgba(255,255,255,0.05);
+                            padding: 12px;
+                            border-radius: 10px;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                        ">
+                            <span style="color: white;">${r.username}</span>
+                            <div style="display: flex; gap: 8px;">
+                                <button onclick="handleRequest(${r.player_id}, true)" style="
+                                    padding: 6px 12px;
+                                    background: #4ade80;
+                                    border: none; border-radius: 6px;
+                                    color: white; cursor: pointer;
+                                ">Принять</button>
+                                <button onclick="handleRequest(${r.player_id}, false)" style="
+                                    padding: 6px 12px;
+                                    background: #ef4444;
+                                    border: none; border-radius: 6px;
+                                    color: white; cursor: pointer;
+                                ">Отклонить</button>
+                            </div>
                         </div>
-                    </div>
-                `).join('')}
-            </div>
-        ` : '<p style="color: #666;">Нет заявок на вступление</p>'}
+                    `).join('')}
+                </div>
+            ` : ''}
+        `;
+    }
+
+    container.innerHTML = `
+        ${leaderSettingsHTML}
+
+        <!-- Кнопка выхода из гильдии -->
+        <button onclick="confirmLeaveGuild()" style="
+            width: 100%;
+            padding: 12px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            border-radius: 8px;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 14px;
+            ${isLeader ? '' : 'margin-top: 0;'}
+        ">🚪 Покинуть гильдию</button>
     `;
 }
 
