@@ -1001,13 +1001,6 @@ function setupWizardUI(wizardIndex, wizardStats) {
 
         overlay.appendChild(cellDiv);
     });
-
-        scaleX,
-        scaleY,
-        offsetX,
-        isMobile,
-        formula: 'x = (origX * scaleX) + offsetX, y = origY * scaleY'
-    });
 }
 
 // Создание ячеек заклинаний

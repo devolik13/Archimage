@@ -130,13 +130,6 @@ class DatabaseManager {
             if (error) throw error;
 
             this.hasUnsavedChanges = false;
-                wizards: updateData.wizards.length,
-                spells: Object.keys(updateData.spells).length,
-                buildings: Object.keys(updateData.buildings).length - 1, // -1 для _active_constructions
-                constructions: (updateData.buildings._active_constructions || []).length,
-                time_currency: updateData.time_currency,
-                battle_energy: updateData.battle_energy ? `${updateData.battle_energy.current}/${updateData.battle_energy.max}` : "не задано"
-            });
             return true;
 
         } catch (error) {

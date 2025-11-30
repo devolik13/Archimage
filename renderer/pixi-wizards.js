@@ -235,12 +235,7 @@
         
         // Сохраняем в кэш
         factionTextures[faction] = textures;
-        
-            idle: textures.idle?.length || 0,
-            cast: textures.cast?.length || 0,
-            death: textures.death?.length || 0
-        });
-        
+
         return textures;
     }
     

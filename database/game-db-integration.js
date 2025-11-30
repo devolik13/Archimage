@@ -76,15 +76,6 @@ async function initGameWithDatabase() {
     window.userData.guild_contribution = player.guild_contribution || 0;
     window.userData.guild_last_active = player.guild_last_active || null;
 
-        faction: window.userData.faction,
-        wizards: window.userData.wizards.length,
-        spells: Object.keys(window.userData.spells).length,
-        constructions: window.userData.constructions.length,
-        buildings: Object.keys(window.userData.buildings).length,
-        battle_energy: window.userData.battle_energy?.current + '/' + window.userData.battle_energy?.max,
-        guild_id: window.userData.guild_id
-    });
-
     // КРИТИЧНО: Проверяем есть ли фракция
     if (!player.faction || player.faction === null) {
         // Новый игрок - показываем выбор фракции

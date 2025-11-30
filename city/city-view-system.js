@@ -1295,14 +1295,7 @@ window.addEventListener('resize', () => {
     const container = document.getElementById('city-background-container');
     if (container) {
         const isMobile = isMobileDevice();
-        
-            width: window.innerWidth,
-            height: window.innerHeight,
-            isMobile: isMobile,
-            orientation: window.orientation,
-            devicePixelRatio: window.devicePixelRatio
-        });
-        
+
         if (isMobile) {
             // Полноэкранный режим на мобильных...
             container.style.cssText = `

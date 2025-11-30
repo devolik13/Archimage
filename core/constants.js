@@ -84,8 +84,3 @@ window.WIZARD_HIRE_TIME = {
         return day * 1440 * window.TIME_MULTIPLIER;
     }
 };
-
-    BETA_MODE: window.BETA_MODE,
-    DEV_MODE: window.DEV_MODE,
-    TIME_MULTIPLIER: window.TIME_MULTIPLIER
-});
