@@ -279,6 +279,8 @@ function initializeWizardHealth() {
         // ПОТОМ применяем бонусы уровней к HP
         if (typeof window.applyLevelBonuses === 'function') {
             window.applyLevelBonuses(wizard);
+            // ВАЖНО: После применения бонусов уровня устанавливаем hp = max_hp
+            wizard.hp = wizard.max_hp;
         }
 
         // И ТОЛЬКО ПОТОМ применяем бонус от Башни магов
@@ -630,16 +632,7 @@ function executeSingleMageAttack(wizard, position, casterType) {
         }
     }
 
-    // ❄️ ПРОВЕРКА ПРЕРЫВАНИЯ ОТ АБСОЛЮТНОГО НОЛЯ
-    if (typeof window.checkAbsoluteZeroInterrupt === 'function') {
-        const interrupted = window.checkAbsoluteZeroInterrupt(wizard, casterType);
-        if (interrupted) {
-            if (typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`❄️ ${wizard.name} не может использовать заклинание из-за Абсолютного Ноля!`);
-            }
-            return true; // Ход пропущен, но маг жив
-        }
-    }
+    // Прерывание от Абсолютного Ноля проверяется в spells.js для каждого заклинания отдельно
 
     // ИСПОЛЬЗОВАНИЕ ЗАКЛИНАНИЙ
     if (typeof window.useWizardSpells === 'function') {
