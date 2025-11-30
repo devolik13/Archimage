@@ -5,7 +5,7 @@ let currentGuildTab = 'info';
 
 // Открыть модалку гильдии
 async function openGuildModal() {
-    console.log('Открытие модалки гильдии');
+    console.log('🏰 Открытие модалки гильдии');
 
     // Закрываем предыдущие модальные окна
     if (typeof closeCurrentModal === 'function') {
@@ -21,39 +21,110 @@ async function openGuildModal() {
         await window.guildManager.loadPlayerGuild();
     }
 
+    // Определяем фон по фракции
+    const faction = window.userData?.faction || 'fire';
+    const imagePath = `assets/ui/guild/guild_${faction}.webp`;
+
     // Создаём экран
     let screen = document.getElementById('guild-screen');
     if (screen) screen.remove();
 
     screen = document.createElement('div');
     screen.id = 'guild-screen';
+    screen.className = 'guild-screen active';
+
+    // Создаём HTML структуру по паттерну арены
+    screen.innerHTML = `
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <img class="guild-bg-image" id="guild-bg-image" src="${imagePath}" alt="Гильдия">
+            <div class="guild-ui-overlay" id="guild-ui-overlay"></div>
+        </div>
+    `;
+
+    // Стили для экрана
     screen.style.cssText = `
         position: fixed;
         top: 0;
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        background: rgba(0, 0, 0, 0.9);
         z-index: 9000;
         display: flex;
-        flex-direction: column;
-        overflow: hidden;
+        align-items: center;
+        justify-content: center;
     `;
 
     document.body.appendChild(screen);
 
-    // Рендерим контент
+    const img = document.getElementById('guild-bg-image');
+
+    // Настройка UI после загрузки изображения
+    img.onload = () => setupGuildUI();
+    if (img.complete) setupGuildUI();
+
+    // Обработка ошибки загрузки изображения - используем fallback
+    img.onerror = () => {
+        console.error('❌ Не удалось загрузить фон гильдии, используем fallback');
+        setupGuildUIFallback(screen);
+    };
+}
+
+// Настройка UI гильдии поверх изображения
+function setupGuildUI() {
+    const img = document.getElementById('guild-bg-image');
+    const overlay = document.getElementById('guild-ui-overlay');
+
+    if (!img || !overlay) return;
+
+    const rect = img.getBoundingClientRect();
+
+    // Устанавливаем размеры overlay по размеру изображения
+    overlay.style.cssText = `
+        position: absolute;
+        left: ${rect.left}px;
+        top: ${rect.top}px;
+        width: ${rect.width}px;
+        height: ${rect.height}px;
+        pointer-events: none;
+        overflow-y: auto;
+        overflow-x: hidden;
+    `;
+
+    // Рендерим контент в overlay
     if (window.userData?.guild_id && window.guildManager?.currentGuild) {
-        renderGuildView(screen);
+        renderGuildView(overlay);
     } else {
-        renderNoGuildView(screen);
+        renderNoGuildView(overlay);
+    }
+}
+
+// Fallback UI без фонового изображения
+function setupGuildUIFallback(screen) {
+    screen.innerHTML = '';
+    screen.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)';
+
+    const container = document.createElement('div');
+    container.style.cssText = `
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    `;
+    screen.appendChild(container);
+
+    if (window.userData?.guild_id && window.guildManager?.currentGuild) {
+        renderGuildView(container);
+    } else {
+        renderNoGuildView(container);
     }
 }
 
 // === ВИД КОГДА НЕТ ГИЛЬДИИ ===
 function renderNoGuildView(container) {
     container.innerHTML = `
-        <div style="padding: 20px; height: 100%; display: flex; flex-direction: column;">
+        <div style="padding: 20px; height: 100%; display: flex; flex-direction: column; pointer-events: auto;">
             <!-- Заголовок -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="margin: 0; color: #ffd700; font-size: 24px;">Гильдия</h2>
@@ -310,7 +381,7 @@ function renderGuildView(container) {
     const expPercent = Math.min((guild.experience / expToNext) * 100, 100);
 
     container.innerHTML = `
-        <div style="padding: 15px; height: 100%; display: flex; flex-direction: column;">
+        <div style="padding: 15px; height: 100%; display: flex; flex-direction: column; pointer-events: auto;">
             <!-- Заголовок -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <div>
