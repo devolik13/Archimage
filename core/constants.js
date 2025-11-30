@@ -1,5 +1,4 @@
 // core/constants.js - Все игровые константы в одном месте
-console.log('✅ core/constants.js загружен');
 
 // ============ РЕЖИМЫ ============
 // DEV_MODE - управляет видимостью отладочных элементов:
@@ -86,7 +85,6 @@ window.WIZARD_HIRE_TIME = {
     }
 };
 
-console.log('📊 Константы загружены:', {
     BETA_MODE: window.BETA_MODE,
     DEV_MODE: window.DEV_MODE,
     TIME_MULTIPLIER: window.TIME_MULTIPLIER

@@ -1,5 +1,4 @@
 // battle/renderer/animations/fire/fire-tsunami.js - Анимация заклинания "Огненное цунами"
-console.log('✅ fire-tsunami.js загружен');
 
 (function() {
     // Хранилище активных визуалов цунами по ID

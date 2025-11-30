@@ -1,5 +1,4 @@
 // config/spells/animations-config.js - Конфигурация анимаций для PixiJS
-console.log('✅ config/spells/animations-config.js загружен');
 
 const SPELL_ANIMATIONS = {
     // ===== ШКОЛА ОГНЯ =====

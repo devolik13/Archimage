@@ -1,5 +1,4 @@
 // config/spells/school-config.js - Конфигурация школ магии
-console.log('✅ config/spells/school-config.js загружен');
 
 const SCHOOL_CONFIG = {
     "fire": {

@@ -1,5 +1,4 @@
 // battle/renderer/animations/poison/poisoned_glade.js - Анимация заклинания "Ядовитая поляна"
-console.log('✅ poisoned_glade.js загружен');
 
 (function() {
     // Хранилище активных полян
@@ -58,7 +57,6 @@ console.log('✅ poisoned_glade.js загружен');
         console.log('🌿 Загрузка текстуры:', gladeTexturePath);
 
         PIXI.Assets.load(gladeTexturePath).then(texture => {
-            console.log('🌿 Текстура загружена:', { valid: texture?.valid, width: texture?.width, height: texture?.height });
 
             if (!texture || !texture.valid) {
                 console.warn('🌿 ❌ Не удалось загрузить текстуру поляны, fallback');
@@ -66,7 +64,6 @@ console.log('✅ poisoned_glade.js загружен');
                 return;
             }
 
-            console.log('🌿 ✅ Текстура валидна, создаем анимацию');
             
             // Создаём кадры из спрайтшита 3×3 (768×768)
             const frameWidth = 256; // 768 / 3
@@ -154,7 +151,6 @@ console.log('✅ poisoned_glade.js загружен');
             console.log('🌿 Запуск анимации (play)');
             gladeSprite.play();
             activeGlades.push(gladeSprite);
-            console.log('🌿 ✅ Анимация поляны запущена успешно');
             
         }).catch(err => {
             console.warn('Ошибка загрузки текстуры поляны:', err);
@@ -163,7 +159,6 @@ console.log('✅ poisoned_glade.js загружен');
         
         // Fallback - простая графика
         function createFallbackGlade() {
-            console.log('🌿 🔄 Запуск fallback анимации');
             const glade = new PIXI.Graphics();
             
             // Рисуем ядовитое пятно

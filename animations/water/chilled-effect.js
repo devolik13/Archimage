@@ -1,5 +1,4 @@
 // battle/renderer/animations/water/chilled-effect.js
-console.log('✅ chilled-effect.js загружен');
 
 (function() {
     // Хранилище активных эффектов охлаждения

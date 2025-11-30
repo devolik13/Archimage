@@ -1,6 +1,5 @@
 // renderer/pixi-dragon.js - Система рендеринга дракона для демо-боя (ИСПРАВЛЕННАЯ ВЕРСИЯ)
 // Версия с двумя отдельными спрайтами и корректным масштабированием
-console.log('✅ pixi-dragon.js загружен');
 
 (function() {
     let dragonSprite = null;
@@ -90,7 +89,6 @@ console.log('✅ pixi-dragon.js загружен');
                 deathFrames.push(new PIXI.Texture(deathTexture.baseTexture, deathRect));
             }
 
-            console.log('✅ Текстуры дракона загружены:', idleFrames.length, 'кадров');
             return { idle: idleFrames, cast: castFrames, death: deathFrames };
 
         } catch (error) {
@@ -101,7 +99,6 @@ console.log('✅ pixi-dragon.js загружен');
 
     // Создание placeholder дракона (заглушка)
     function createPlaceholderDragonGraphics() {
-        console.log('🎨 Создание placeholder дракона...');
 
         const graphics = new PIXI.Graphics();
 
@@ -257,7 +254,6 @@ console.log('✅ pixi-dragon.js загружен');
 
         dragonSprite = idleSprite;
 
-        console.log('✅ Дракон создан на позиции', centerX, centerY);
         return dragonContainer;
     }
 

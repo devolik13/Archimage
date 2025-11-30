@@ -1,5 +1,4 @@
 // battle/renderer/animations/water/blizzard.js - Анимация заклинания "Снежная буря"
-console.log('✅ blizzard.js загружен');
 
 (function() {
     // Хранилище активных зон метели

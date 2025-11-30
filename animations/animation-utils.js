@@ -1,5 +1,4 @@
 // animations/animation-utils.js - Утилиты для безопасных PIXI анимаций
-console.log('✅ animation-utils.js загружен');
 
 /**
  * Проверяет валидность PIXI объекта перед обращением к его свойствам

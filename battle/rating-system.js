@@ -1,5 +1,4 @@
 // battle/rating-system.js - Система рейтинга для PvP боев
-console.log('✅ rating-system.js загружен');
 
 /**
  * Конфигурация рейтинговой системы
@@ -242,6 +241,5 @@ window.getLeagueProgress = getLeagueProgress;
 window.formatRating = formatRating;
 window.findOpponentByRating = findOpponentByRating;
 
-console.log('💡 Рейтинговая система готова!');
 console.log(`   Начальный рейтинг: ${RATING_CONFIG.STARTING_RATING}`);
 console.log(`   Лиги: ${LEAGUES.length} (${LEAGUES.map(l => l.name).join(', ')})`);

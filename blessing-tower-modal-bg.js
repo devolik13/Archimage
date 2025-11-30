@@ -1,5 +1,4 @@
 // blessing-tower-modal-bg.js - Полноэкранное окно Башни благословения с фоном webp
-console.log('✅ blessing-tower-modal-bg.js загружен');
 
 // Открыть окно Башни благословения
 function showBlessingTowerModalBg() {
@@ -497,4 +496,3 @@ window.showBlessingUpgradeConfirm = showBlessingUpgradeConfirm;
 window.confirmBlessingUpgrade = confirmBlessingUpgrade;
 window.cancelBlessingUpgrade = cancelBlessingUpgrade;
 
-console.log('✅ Функции окна Башни благословения экспортированы');

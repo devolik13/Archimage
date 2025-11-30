@@ -1,6 +1,5 @@
 // portrait-blocker.js - Блокировка portrait режима для мобильных устройств
 (function() {
-    console.log('🚫 portrait-blocker.js загружен');
     
     // Функция определения мобильного устройства через Telegram
     function isMobileDevice() {
@@ -82,7 +81,6 @@
         const overlay = document.getElementById('portrait-blocker-overlay');
         if (overlay) {
             overlay.remove();
-            console.log('✅ Overlay блокировки удален');
         }
     }
     
@@ -91,7 +89,6 @@
         const container = document.querySelector('.container');
         if (container) {
             container.style.display = show ? 'block' : 'none';
-            console.log(show ? '✅ Игровой контент показан' : '🚫 Игровой контент скрыт');
         }
     }
     
@@ -118,13 +115,11 @@
             wasPortrait = true;
         } else if (isMobile && transitionToLandscape) {
             // Переход portrait → landscape = RELOAD
-            console.log('🔄 ПЕРЕХОД portrait → landscape: Перезагрузка страницы...');
             setTimeout(() => {
                 window.location.reload();
             }, 500);
         } else {
             // Десктоп ИЛИ горизонтально = ОК
-            console.log('✅ ОК: Можно играть');
             removeBlockerOverlay();
             toggleGameContent(true);
             wasPortrait = false;
@@ -149,7 +144,6 @@
             setTimeout(checkOrientation, 300);
         });
         
-        console.log('✅ portrait-blocker инициализирован');
     }
     
     // Запускаем когда DOM готов

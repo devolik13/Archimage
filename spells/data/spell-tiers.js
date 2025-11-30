@@ -1,5 +1,4 @@
 // config/spells/spell-tiers.js - Порядок заклинаний по школам и ступеням
-console.log('✅ config/spells/spell-tiers.js загружен');
 
 // Порядок заклинаний по школам (tier 1-5)
 const SPELL_TIERS = {

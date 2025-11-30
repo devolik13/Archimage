@@ -1,5 +1,4 @@
 // battle/summons/summons-manager.js
-console.log('✅ summons-manager.js загружен');
 
 // ========================================
 // ГЛАВНЫЙ МЕНЕДЖЕР ПРИЗВАННЫХ СУЩЕСТВ
@@ -836,4 +835,3 @@ window.createEntSummon = function(wizard, casterType, position, level, linkedWiz
     });
 };
 
-console.log('🎭 Менеджер призванных существ инициализирован');

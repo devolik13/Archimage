@@ -1,19 +1,16 @@
 // battle/ui.js - Интерфейс боя (полноэкранный для Telegram)...
 
-console.log('✅ battle/ui.js загружен');
 
 // Глобальные переменные для управления скоростью
 window.battleSpeedMode = 'normal'; // 'normal' или 'fast'
 
 // --- Отображение поля боя (ПОЛНОЭКРАННОЕ) ---
 function renderBattleField() {
-    console.log('🎨 Рендер полноэкранного поля боя');
 
     // Скрываем аватар игрока при входе в бой
     const playerAvatar = document.getElementById('player-avatar-container');
     if (playerAvatar) {
         playerAvatar.style.display = 'none';
-        console.log('👤 Аватар скрыт на время боя');
     }
 
     if (!document.getElementById('battle-field-styles')) {
@@ -314,7 +311,6 @@ function toggleBattleSpeed() {
         }
     }
     
-    console.log(`⚡ Скорость боя: ${window.battleSpeedMode} (${window.battleSpeed}ms)`);
 }
 
 // Улучшенная функция паузы
@@ -333,7 +329,6 @@ function togglePause() {
             pauseButton.title = 'Продолжить';
             pauseButton.style.background = '#4CAF50';
         }
-        console.log('⏸️ Бой на паузе');
     } else {
         if (window.battleInterval) {
             clearInterval(window.battleInterval);
@@ -344,7 +339,6 @@ function togglePause() {
             pauseButton.title = 'Пауза';
             pauseButton.style.background = '#555';
         }
-        console.log('▶️ Бой продолжается');
     }
 }
 
@@ -368,7 +362,6 @@ function toggleBattleLog() {
 
 // --- Обновление интерфейса ---
 function updateBattleField() {
-    console.log('🔄 updateBattleField called');
     
     const battleLog = window.battleLog || [];
     
@@ -382,12 +375,10 @@ function updateBattleField() {
         logElement.scrollTop = logElement.scrollHeight;
     }
 
-    console.log('✅ updateBattleField completed');
 }
 
 // Управление модальным окном
 function closeBattleFieldModal() {
-    console.log("🚪 closeBattleFieldModal called");
 
     // КРИТИЧНО: Проверяем закрытие незавершенного PvP боя
     const isPvP = !window.isPvEBattle && window.selectedOpponent;
@@ -397,7 +388,6 @@ function closeBattleFieldModal() {
         console.warn('⚠️ Игрок закрывает незавершенный PvP бой - просчитываем до конца');
 
         // КРИТИЧНО: Останавливаем PIXI полностью ПЕРЕД симуляцией
-        console.log('🛑 Останавливаем PIXI и анимации...');
 
         // Останавливаем интервалы боя
         if (window.battleInterval) {
@@ -419,7 +409,6 @@ function closeBattleFieldModal() {
         const battleModal = document.getElementById("battle-field-modal");
         if (battleModal) {
             battleModal.remove();
-            console.log("✅ battle-field-modal удален перед симуляцией");
         }
 
         const container = document.getElementById("battle-field-fullscreen-container");
@@ -432,13 +421,11 @@ function closeBattleFieldModal() {
             pixiContainer.remove();
         }
 
-        console.log('🤖 Симуляция боя до завершения без анимации...');
 
         // Устанавливаем флаги досрочного выхода и быстрой симуляции
         window.battleEarlyExit = true;
         window.fastSimulation = true; // КРИТИЧНО: отключает setTimeout в фазах боя
 
-        console.log('⚡ Быстрая симуляция ВКЛЮЧЕНА (без анимаций)');
 
         // Функция быстрой симуляции боя до конца
         const simulateBattleToEnd = () => {
@@ -463,7 +450,6 @@ function closeBattleFieldModal() {
                         return sum + (wizard?.hp || 0);
                     }, 0);
 
-                    console.log(`🔍 Ход ${turnCount}: Игрок HP=${playerHP}, Враг HP=${enemyHP}`);
 
                     // Если HP не меняется 200 ходов - принудительно завершаем
                     if (turnCount >= 200 && playerHP === lastPlayerHP && enemyHP === lastEnemyHP) {
@@ -507,7 +493,6 @@ function closeBattleFieldModal() {
                 }
             }
 
-            console.log(`✅ Симуляция завершена за ${turnCount} ходов`);
         };
 
         // Запускаем симуляцию
@@ -518,7 +503,6 @@ function closeBattleFieldModal() {
         } finally {
             // ВАЖНО: Отключаем быструю симуляцию после завершения
             window.fastSimulation = false;
-            console.log('⚡ Быстрая симуляция ВЫКЛЮЧЕНА');
         }
 
         // После симуляции checkBattleEnd уже вызвал onBattleCompleted и showBattleResult
@@ -574,7 +558,6 @@ function closeBattleFieldModal() {
 
 // Вспомогательная функция очистки ресурсов боя
 function cleanupBattleResources() {
-    console.log('🧹 Очистка ресурсов боя');
 
     // Очищаем PixiJS
     if (window.destroyPixiBattle) {
@@ -594,19 +577,16 @@ function cleanupBattleResources() {
     const battleModal = document.getElementById("battle-field-modal");
     if (battleModal) {
         battleModal.remove();
-        console.log("✅ battle-field-modal удален");
     }
 
     const container = document.getElementById("battle-field-fullscreen-container");
     if (container) {
         container.remove();
-        console.log("✅ battle-field-fullscreen-container удален");
     }
 
     const pixiContainer = document.getElementById("pixi-battle-container");
     if (pixiContainer) {
         pixiContainer.remove();
-        console.log("✅ pixi-battle-container удален");
     }
 
     if (window.currentModal) {
@@ -616,7 +596,6 @@ function cleanupBattleResources() {
 
 // Вспомогательная функция возврата в город
 function returnToCity() {
-    console.log("🏙️ Возврат в город");
 
     // Разблокируем скролл body
     document.body.style.overflow = '';
@@ -625,21 +604,18 @@ function returnToCity() {
     if (gameArea) {
         gameArea.style.display = 'block';
         gameArea.style.visibility = 'visible';
-        console.log("✅ game-area показан");
     }
 
     const cityGrid = document.getElementById('city-grid');
     if (cityGrid) {
         cityGrid.style.display = 'block';
         cityGrid.style.visibility = 'visible';
-        console.log("✅ city-grid показан");
     }
 
     const cityView = document.getElementById('city-view');
     if (cityView) {
         cityView.style.display = 'block';
         cityView.style.visibility = 'visible';
-        console.log("✅ city-view показан");
     }
 
     // Перерисовываем город если нужно
@@ -658,7 +634,6 @@ function returnToCity() {
         }, 100);
     }
 
-    console.log("✅ Возврат в город завершен");
 }
 
 // Поиск земляной стены в позиции (для совместимости)
@@ -736,4 +711,3 @@ window.updateWindWalls = updateWindWalls;
 window.setWeatherDisplay = setWeatherDisplay;
 window.createBattleInfoTop = createBattleInfoTop;
 
-console.log('✅ UI (полноэкранный режим) готов');

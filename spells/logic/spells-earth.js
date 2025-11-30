@@ -1,6 +1,5 @@
 // battle/spells/spells-earth.js- Заклинания школы земли (адаптированная под новую структуру)
 
-console.log('✅ battle/spells/spells-earth.js загружен');
 
 function castEarthSpell(wizard, spellId, spellData, position, casterType) {
     console.log(`🌿 Casting earth spell: ${spellId}`);
@@ -86,7 +85,6 @@ function castPebble(wizard, spellData, position, casterType) {
         
         // Callback после завершения
         onComplete: (finalResult) => {
-            console.log(`✅ Камешек завершён. Финальный урон: ${finalResult.finalDamage}`);
             
             // ЭФФЕКТ 5 УРОВНЯ: 50% шанс бросить ещё один камешек
             if (level === 5 && Math.random() < 0.5) {
@@ -143,7 +141,6 @@ function castPebbleSecondary(wizard, spellData, position, casterType, target) {
         applyEffects: null,
         
         onComplete: () => {
-            console.log('✅ Вторичный камешек завершён');
         }
     });
 }

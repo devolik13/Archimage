@@ -70,4 +70,3 @@ window.CITY_POSITIONS.wind = {
     }
 };
 
-console.log('💨 Город Воздуха: загружено зданий -', Object.keys(window.CITY_POSITIONS.wind).length);

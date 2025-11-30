@@ -1,4 +1,3 @@
-console.log('✅ battle/walls/walls.js загружен');
 
 // Инициализация
 if (!window.activeWalls) window.activeWalls = [];

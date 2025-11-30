@@ -1,5 +1,4 @@
 // offline-notifications-system.js - Система уведомлений о завершенных событиях во время оффлайна
-console.log('✅ offline-notifications-system.js загружен');
 
 /**
  * Проверяет события которые завершились пока игрок был оффлайн
@@ -312,4 +311,3 @@ function formatOfflineTime(ms) {
 window.checkOfflineEvents = checkOfflineEvents;
 window.closeOfflineNotificationModal = closeOfflineNotificationModal;
 
-console.log('✅ Система оффлайн уведомлений готова');

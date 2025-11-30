@@ -1,5 +1,4 @@
 // battle/battle-logger.js - Детальное логирование боя
-console.log('✅ battle-logger.js загружен');
 
 // Детальный лог боя
 let detailedBattleLog = {
@@ -225,12 +224,10 @@ function saveBattleLog() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        console.log(`💾 Лог боя сохранен: ${filename}`);
 
         // Также сохраняем в localStorage для быстрого доступа
         try {
             localStorage.setItem('lastBattleLog', logJson);
-            console.log('💾 Лог боя сохранен в localStorage');
         } catch (e) {
             console.warn('Не удалось сохранить в localStorage:', e);
         }

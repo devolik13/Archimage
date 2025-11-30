@@ -1,5 +1,4 @@
 // blessing-tower-system.js - Система благословений Башни благословений
-console.log('✅ blessing-tower-system.js загружен');
 
 // Флаг блокировки автоматического открытия модалки (используется при DEV-ускорении)
 let blockBlessingModalReopen = false;
@@ -446,7 +445,6 @@ function initBlessingSystem() {
     updateBlessingStatus();
     startBlessingTimer();
     
-    console.log('🙏 Система благословений инициализирована');
 }
 async function upgradeBlessingTower() {
     const currentLevel = window.getBuildingLevel('blessing_tower');

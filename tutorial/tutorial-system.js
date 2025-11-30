@@ -1,5 +1,4 @@
 // tutorial/tutorial-system.js - Система обучения новых игроков
-console.log('✅ tutorial-system.js загружен');
 
 /**
  * Система обучения
@@ -100,7 +99,6 @@ class TutorialSystem {
      * Шаг 4: Финальное модальное окно
      */
     step4_FinalModal() {
-        console.log('✅ Шаг 4: Финальное модальное окно');
 
         this.currentStep = 4;
         window.userData.tutorial_step = 4;
@@ -520,4 +518,3 @@ window.tutorialSystem = new TutorialSystem();
 // Экспортируем для удобства
 window.startTutorial = () => window.tutorialSystem.start();
 
-console.log('✅ Система обучения готова');

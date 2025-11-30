@@ -1,5 +1,4 @@
 // time-generator-modal-bg.js - Полноэкранное окно Генератора времени с фоном webp
-console.log('✅ time-generator-modal-bg.js загружен');
 
 // Открыть окно Генератора времени
 function showTimeGeneratorModalBg() {
@@ -499,4 +498,3 @@ window.showGeneratorUpgradeConfirm = showGeneratorUpgradeConfirm;
 window.confirmGeneratorUpgrade = confirmGeneratorUpgrade;
 window.cancelGeneratorUpgrade = cancelGeneratorUpgrade;
 
-console.log('✅ Функции окна Генератора времени экспортированы');

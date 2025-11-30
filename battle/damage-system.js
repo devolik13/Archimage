@@ -1,5 +1,4 @@
 // battle/systems/damage-system.js - Централизованная система урона с благословениями и Метеокинезом
-console.log('✅ battle/systems/damage-system.js (С БЛАГОСЛОВЕНИЯМИ И МЕТЕОКИНЕЗОМ) загружен');
 
 // Временная функция определения школы заклинания (если основная не загружена)
 if (!window.getSpellSchoolFallback) {
@@ -33,7 +32,6 @@ if (!window.getSpellSchoolFallback) {
         
         return null;
     };
-    console.log('✅ Fallback функция getSpellSchoolFallback создана');
 }
 
 // --- ОСНОВНАЯ ФУНКЦИЯ ПРИМЕНЕНИЯ УРОНА ---

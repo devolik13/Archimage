@@ -1,4 +1,3 @@
-console.log('✅ battle/systems/targeting-utils.js загружен');
 
 // --- Поиск цели для атаки ---
 function findTarget(position, attackerType) {

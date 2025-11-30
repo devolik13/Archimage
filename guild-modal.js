@@ -1,5 +1,4 @@
 // guild-modal.js - UI модальное окно гильдии
-console.log('guild-modal.js загружен');
 
 // Текущий таб в модалке
 let currentGuildTab = 'info';
@@ -723,4 +722,3 @@ window.handleRequest = handleRequest;
 window.confirmLeaveGuild = confirmLeaveGuild;
 window.leaveGuild = leaveGuild;
 
-console.log('Guild Modal UI загружен');

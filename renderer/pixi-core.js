@@ -1,5 +1,4 @@
 // battle/renderer/pixi-core.js - Ядро PIXI рендерера
-console.log('✅ pixi-core.js загружен');
 
 // Глобальные переменные рендерера
 let pixiApp = null;
@@ -60,7 +59,6 @@ function initPixiBattle() {
     if (container) {
         container.innerHTML = ''; // Очищаем перед добавлением
         container.appendChild(pixiApp.view);
-        console.log('✅ Canvas добавлен в контейнер');
 
         // Добавляем обработчик клика на canvas для закрытия лога боя
         pixiApp.view.addEventListener('click', () => {
@@ -72,7 +70,6 @@ function initPixiBattle() {
                 }
             }
         });
-        console.log('✅ Обработчик клика на canvas добавлен (закрытие лога)');
     } else {
         console.error('❌ Контейнер для PIXI не найден');
         return;
@@ -118,7 +115,6 @@ function initPixiBattle() {
     
     console.log('📐 Адаптивные сдвиги:', shiftX.toFixed(1), 'x', shiftY.toFixed(1));
 
-    console.log('📦 Контейнеры созданы');
     
     updatePixiCoreAPI();
     
@@ -132,7 +128,6 @@ function initPixiBattle() {
         setTimeout(() => {
             console.log('🧙 Инициализация pixi-wizards...');
             if (window.pixiWizards.init()) {
-                console.log('✅ pixi-wizards готов');
                 window.pixiWizards.update();
             } else {
                 console.error('❌ pixi-wizards не инициализировался');
@@ -151,12 +146,10 @@ function updatePixiCoreAPI() {
         destroy: destroyPixiBattle
     };
     
-    console.log('📦 pixiCore API обновлен');
 }
 
 // Функция инициализации без загрузки атласов
 function loadAtlases() {
-    console.log('📦 Атласы больше не используются, инициализация магов...');
     
     updatePixiCoreAPI();
     
@@ -207,12 +200,10 @@ function drawBattleGrid() {
         }
     }
     
-    console.log('✅ Невидимая сетка создана');
 }
 
 // Синхронизация обновлений
 function startBattleSync() {
-    console.log('🔄 Запуск синхронизации');
     
     updateInterval = setInterval(() => {
         if (window.battleState === 'active') {
@@ -276,7 +267,6 @@ function destroyPixiBattle() {
         try {
             battleContainer.destroy({ children: true, texture: true, baseTexture: true });
             battleContainer = null;
-            console.log('✅ battleContainer уничтожен');
         } catch (error) {
             console.warn('⚠️ Ошибка при уничтожении battleContainer:', error);
             battleContainer = null;
@@ -288,7 +278,6 @@ function destroyPixiBattle() {
         try {
             pixiApp.destroy(true, { children: true, texture: true, baseTexture: true });
             pixiApp = null;
-            console.log('✅ pixiApp уничтожен');
         } catch (error) {
             console.warn('⚠️ Ошибка при уничтожении pixiApp:', error);
             pixiApp = null;
@@ -306,7 +295,6 @@ function destroyPixiBattle() {
         container.innerHTML = '';
     }
 
-    console.log('✅ PixiJS уничтожен');
 }
 
 // Экспорт API
@@ -323,7 +311,6 @@ window.pixiCore = {
 };
 
 function loadBattleFieldBackground() {
-    console.log('🎨 Загрузка фона поля боя...');
     
     // Массив доступных фонов
     const backgrounds = [
@@ -402,7 +389,6 @@ function loadBattleFieldBackground() {
             // Можно добавить дополнительную логику для ультрашироких мониторов
         }
         
-        console.log('✅ Адаптивный фон загружен (режим COVER)');
         console.log('📐 Итоговый размер:', fieldBg.width.toFixed(0), 'x', fieldBg.height.toFixed(0));
         console.log('📍 Позиция:', fieldBg.x.toFixed(0), 'x', fieldBg.y.toFixed(0));
         console.log('🔍 Масштаб:', scale.toFixed(2), `(${scale > 1 ? 'увеличение' : 'уменьшение'})`);
@@ -433,7 +419,6 @@ function loadBattleFieldBackground() {
         fallbackBg.endFill();
         
         battleContainer.addChildAt(fallbackBg, 0);
-        console.log('🎨 Используется fallback градиентный фон');
     });
 }
 

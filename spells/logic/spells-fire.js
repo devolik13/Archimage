@@ -1,6 +1,5 @@
 // battle/spells/spells-fire.js - Заклинания школы огня (адаптированная под новую структуру)
 
-console.log('✅ battle/spells/spells-fire.js загружен');
 
 function castFireSpell(wizard, spellId, spellData, position, casterType) {
     console.log(`🔥 Casting fire spell: ${spellId}`);
@@ -90,7 +89,6 @@ function castSpark(wizard, spellData, position, casterType) {
         
         // Callback после завершения всей цепочки
         onComplete: (finalResult) => {
-            console.log(`✅ Искра завершена. Финальный урон: ${finalResult.finalDamage}`);
             
             // ЭФФЕКТ 5 УРОВНЯ: 50% шанс повторной атаки
             if (level === 5 && Math.random() < 0.5) {
@@ -143,7 +141,6 @@ function castSparkSecondary(wizard, spellData, position, casterType, target) {
         },
         
         onComplete: () => {
-            console.log('✅ Вторичная атака завершена');
         }
     });
 }

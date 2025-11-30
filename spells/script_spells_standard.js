@@ -1,5 +1,4 @@
 // script_spells_standard.js - Стандартные заклинания
-console.log('✅ script_spells_standard.js загружен');
 
 // --- Изучить заклинание ---
 async function learnSpell(spellId, faction) {

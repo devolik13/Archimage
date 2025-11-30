@@ -1,5 +1,4 @@
 // battle/renderer/animations/nature/leaf-canopy.js
-console.log('✅ leaf-canopy.js загружен');
 
 (function() {
     // Хранилище активных эффектов листвы

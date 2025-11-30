@@ -1,5 +1,4 @@
 // faction-selection-system.js - Fullscreen система с rotation
-console.log('✅ faction-selection-system.js загружен');
 
 // Описания фракций с бонусами
 const FACTION_DESCRIPTIONS = {
@@ -48,7 +47,6 @@ window.FactionSelection = {
     },
 
     init: function() {
-    	console.log('🎨 Инициализация fullscreen выбора фракции');
     
     	const container = document.getElementById('faction-selection');
     	if (!container) return;
@@ -61,7 +59,6 @@ window.FactionSelection = {
 
     	// Проверяем CSS rotation
     	const isRotated = window.cssRotationActive === true;
-    	console.log('🔄 CSS Rotation активен:', isRotated);
 
     	container.style.cssText = `
     	    position: fixed;
@@ -109,7 +106,6 @@ window.FactionSelection = {
     	        }
     	    `;
     	    document.head.appendChild(style);
-    	    console.log('✅ Rotation style применен (-90deg)');
     	}
 
     	// Фоновое изображение КАК У ГОРОДА (position: absolute!)
@@ -155,12 +151,10 @@ window.FactionSelection = {
     	container.appendChild(bgContainer);
 	
     	bgImage.onload = () => {
-    	    console.log('✅ Фон загружен');
     	    this.createZones(overlay, bgImage);
     	    this.startTracking(overlay, bgImage);
     	};
 	
-	console.log('✅ Fullscreen фон создан (как у города)');
     },
 
     createZones: function(overlay, bgImage) {
@@ -278,7 +272,6 @@ window.FactionSelection = {
 
     handleClick: function(factionId, isActive) {
         if (isActive) {
-            console.log('✅ Клик на фракцию:', factionId);
             this.showFactionPanel(factionId);
         } else {
             console.log('⏳ Фракция в разработке:', factionId);
@@ -457,7 +450,6 @@ window.FactionSelection = {
     },
 
     confirmFactionSelection: function(factionId) {
-        console.log('✅ Подтверждён выбор фракции:', factionId);
 
         // Закрываем панель
         this.hideFactionPanel();
@@ -483,7 +475,6 @@ window.FactionSelection = {
 
 // Переопределяем showFactionSelection
 window.showFactionSelection = function() {
-    console.log('🎨 Показываем fullscreen выбор фракции');
     
     const gameArea = document.getElementById('game-area');
     if (gameArea) {

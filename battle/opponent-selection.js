@@ -1,5 +1,4 @@
 // battle/opponent-selection.js - Система выбора противника
-console.log('✅ opponent-selection.js загружен');
 
 /**
  * Получить список противников для выбора
@@ -65,7 +64,6 @@ async function getOpponentsList(playerRating, count = 4) {
             }
         }
 
-        console.log(`✅ Найдено ${opponents.length} противников для рейтинга ${playerRating}`);
         return opponents.slice(0, count);
 
     } catch (error) {
@@ -243,7 +241,6 @@ function selectOpponent(index) {
 
     const opponent = window.currentOpponentsList[index];
     console.log(`⚔️ Выбран противник: ${opponent.username} (${opponent.rating})`);
-    console.log('📦 Данные противника:', opponent);
 
     // КРИТИЧЕСКИ ВАЖНО: Списываем энергию СРАЗУ при выборе противника
     // Это предотвращает эксплойт с отменой боя
@@ -295,4 +292,3 @@ window.showOpponentSelection = showOpponentSelection;
 window.selectOpponent = selectOpponent;
 window.closeOpponentSelection = closeOpponentSelection;
 
-console.log('💡 Система выбора противника готова!');

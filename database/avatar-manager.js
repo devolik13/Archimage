@@ -1,5 +1,4 @@
 // avatar-manager.js - Управление аватарами игроков
-console.log('✅ avatar-manager.js загружен');
 
 // Конфигурация кэширования
 const AVATAR_CACHE_TIME = 24 * 60 * 60 * 1000; // 24 часа
@@ -122,4 +121,3 @@ window.updatePlayerAvatar = updatePlayerAvatar;
 window.initPlayerAvatar = initPlayerAvatar;
 window.forceUpdateAvatar = forceUpdateAvatar;
 
-console.log('✅ Менеджер аватаров готов');

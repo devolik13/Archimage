@@ -1,5 +1,4 @@
 // arcane-lab-modal-bg.js - Полноэкранное окно Арканской лаборатории с фоном webp
-console.log('✅ arcane-lab-modal-bg.js загружен');
 
 // Открыть окно Арканской лаборатории
 function showArcaneLabModalBg() {
@@ -443,4 +442,3 @@ window.showLabUpgradeConfirm = showLabUpgradeConfirm;
 window.confirmLabUpgrade = confirmLabUpgrade;
 window.cancelLabUpgrade = cancelLabUpgrade;
 
-console.log('✅ Функции окна Арканской лаборатории экспортированы');

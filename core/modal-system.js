@@ -1,5 +1,4 @@
 // modal-system.js - Централизованная система модальных окон
-console.log('✅ modal-system.js загружен');
 
 // ============ ОСНОВНОЙ КЛАСС МОДАЛЬНОЙ СИСТЕМЫ ============
 class ModalSystem {
@@ -271,7 +270,6 @@ class ModalSystem {
         // 6. Убираем класс блокировки скролла
         document.body.classList.remove('modal-open');
         
-        console.log('✅ Все модалки закрыты');
     }
     
     // ============ СПЕЦИАЛИЗИРОВАННЫЕ МОДАЛКИ ============

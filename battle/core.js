@@ -1,5 +1,4 @@
 // battle/core.js - Основная логика боя (с интеграцией благословений)...
-console.log('✅ battle/core.js загружен');
 
 // Глобальные переменные (остаются без изменений)
 let playerFormation = [];
@@ -22,7 +21,6 @@ let currentPlayerTurn = 0;
 
 // --- Показать поле боя ---
 async function showBattleField() {
-    console.log('⚔️ showBattleField called');
 
     // ✅ ЗАКРЫВАЕМ ВСЕ МОДАЛКИ ПЕРЕД БОЕМ
     if (window.Modal && window.Modal.closeAll) {
@@ -63,15 +61,9 @@ async function showBattleField() {
 
         // НОВОЕ: Для PvE данные игрока уже настроены (копии) в pve-ui.js, не перезаписываем
         if (window.isPvEBattle && window.playerFormation && window.playerWizards && window.playerWizards.length > 0) {
-            console.log('✅ PvE бой: данные игрока уже настроены (копии), пропускаем загрузку');
-            console.log('⚔️ Расстановка игрока:', window.playerFormation);
-            console.log('🧙 Маги игрока:', window.playerWizards.length);
         } else {
-            console.log('📦 Загрузка расстановки из userData:', window.userData.formation);
             window.playerFormation = window.userData.formation || [null, null, null, null, null];
             window.playerWizards = window.userData.wizards || [];
-            console.log('⚔️ Расстановка игрока:', window.playerFormation);
-            console.log('🧙 Маги игрока:', window.playerWizards.length);
         }
 
         // Генерация расстановки противника
@@ -91,12 +83,9 @@ async function showBattleField() {
 }
 
 function generateEnemyFormation() {
-    console.log('🤖 Генерация расстановки противника');
 
     // НОВОЕ: Для PvE враги уже настроены в pve-ui.js, не перезаписываем их
     if (window.isPvEBattle && window.enemyFormation && window.enemyWizards && window.enemyWizards.length > 0) {
-        console.log('✅ PvE бой: враги уже настроены, пропускаем генерацию');
-        console.log(`   Враги: ${window.enemyWizards.length} шт.`);
         return;
     }
 
@@ -105,9 +94,6 @@ function generateEnemyFormation() {
 
     // Проверяем наличие выбранного противника из базы данных
     if (window.selectedOpponent && window.selectedOpponent.wizards && window.selectedOpponent.formation) {
-        console.log('✅ Загрузка реального противника из БД:', window.selectedOpponent.username);
-        console.log('📦 Маги противника:', window.selectedOpponent.wizards);
-        console.log('📋 Расстановка противника:', window.selectedOpponent.formation);
 
         const opponentWizards = window.selectedOpponent.wizards || [];
         const opponentFormation = window.selectedOpponent.formation || [null, null, null, null, null];
@@ -124,13 +110,11 @@ function generateEnemyFormation() {
                         spells: opponentWizard.spells || [],
                         effects: {}
                     };
-                    console.log(`   Позиция ${position}: ${opponentWizard.name} (${opponentWizard.spells?.length || 0} заклинаний)`);
                 }
             }
         });
 
         window.enemyWizards = window.enemyFormation.filter(w => w !== null);
-        console.log(`✅ Загружено ${window.enemyWizards.length} магов противника из БД`);
 
     } else {
         // FALLBACK: Создаем зеркало игрока (для тестирования)
@@ -157,7 +141,6 @@ function generateEnemyFormation() {
             }
         }
         window.enemyWizards = window.enemyFormation.filter(w => w !== null);
-        console.log(`⚠️ Создано ${window.enemyWizards.length} зеркальных магов`);
     }
 }
 
@@ -175,12 +158,10 @@ function cleanupOldWalls() {
         }
         return true;
     });
-    console.log('🧱 Очистка устаревших стен завершена');
 }
 
 // --- Начало боя ---
 function startBattle() {
-    console.log('🔥 Начало боя');
 
     // ЭНЕРГИЯ УЖЕ СПИСАНА при выборе противника в opponent-selection.js
     // Это предотвращает эксплойт с отменой боя
@@ -256,7 +237,6 @@ function startBattle() {
         clearInterval(window.battleInterval);
     }
     //window.battleInterval = setInterval(executeBattlePhase, window.battleSpeed);
-    console.log('🔄 Интервал боя запущен');
 }
 
 // Инициализация здоровья магов
@@ -299,7 +279,6 @@ function initializeWizardHealth() {
             wizard.hp = Math.floor(wizard.hp * healthMultiplier);
         }
         if (healthMultiplier > 1.0) {
-            console.log(`🏰 Башня магов ур.${window.getBuildingLevel('wizard_tower')}: HP ${wizard.original_hp} → ${wizard.hp}`);
         }
 
         // ГИЛЬДИЯ: Применяем бонус HP от гильдии
@@ -310,7 +289,6 @@ function initializeWizardHealth() {
                 const hpBefore = wizard.hp;
                 wizard.max_hp = Math.floor(wizard.max_hp * guildHpMultiplier);
                 wizard.hp = Math.floor(wizard.hp * guildHpMultiplier);
-                console.log(`🏰 Гильдия ур.${window.guildManager.currentGuild.level}: HP ${hpBefore} → ${wizard.hp} (+${guildBonuses.hpBonus}%)`);
             }
             // Сохраняем сопротивления гильдии для использования в бою
             wizard.guildResistances = guildBonuses?.resistances || {};
@@ -318,12 +296,10 @@ function initializeWizardHealth() {
 
         // НОВОЕ: Применение эффектов благословений
         if (wizard.blessingEffects) {
-            console.log(`🙏 Применение благословений к ${wizard.name}:`, wizard.blessingEffects);
 
             // Бонус брони
             if (wizard.blessingEffects.armorBonus) {
                 wizard.armorBonus = (wizard.armorBonus || 0) + wizard.blessingEffects.armorBonus;
-                console.log(`🙏 Благословение: +${wizard.blessingEffects.armorBonus} брони для ${wizard.name} (итого: ${wizard.armor + wizard.armorBonus})`);
             }
 
             // Множитель здоровья
@@ -332,7 +308,6 @@ function initializeWizardHealth() {
                 const oldHp = wizard.hp;
                 wizard.max_hp = Math.floor(wizard.max_hp * wizard.blessingEffects.healthMultiplier);
                 wizard.hp = Math.floor(wizard.hp * wizard.blessingEffects.healthMultiplier);
-                console.log(`🙏 Благословение: HP ×${wizard.blessingEffects.healthMultiplier} для ${wizard.name} (${oldHp}/${oldMaxHp} → ${wizard.hp}/${wizard.max_hp})`);
             }
 
             // Регенерация
@@ -342,7 +317,6 @@ function initializeWizardHealth() {
                     amount: Math.floor(wizard.max_hp * wizard.blessingEffects.regeneration),
                     source: 'blessing'
                 };
-                console.log(`🙏 Благословение: регенерация ${wizard.effects.blessing_regeneration.amount} HP/ход для ${wizard.name}`);
             }
         }
 
@@ -482,7 +456,6 @@ function processBlessingRegeneration(wizard) {
 }
 
 function executeBattlePhase() {
-    console.log('🔄 executeBattlePhase called');
     if (window.battleState !== 'active' || window.isPaused) {
         return;
     }
@@ -508,10 +481,8 @@ function executeBattlePhase() {
     if (window.globalTurnCounter === 0) {
         // Первый ход - 1 маг атакующего
         if (window.isPlayerAttacker) {
-            console.log('🎯 Первый ход: Игрок атакует (1 маг)');
             executePlayerPhase(1);
         } else {
-            console.log('🤖 Первый ход: Враг атакует (1 маг)');
             executeEnemyPhase(1);
         }
     } else {
@@ -679,7 +650,6 @@ function executeSingleMageAttack(wizard, position, casterType) {
 
 // --- Фаза игрока ---
 function executePlayerPhase(mageCount) {
-    console.log(`⚔️ Игрок использует заклинания ${mageCount} магом(ами)`);
     // Проверка на Чуму
     if (typeof window.processPlagueEffects === 'function') {
         window.processPlagueEffects('player');
@@ -696,7 +666,6 @@ function executePlayerPhase(mageCount) {
             const wizard = window.playerWizards.find(w => w.id === wizardId);
             if (wizard && wizard.hp > 0) {
                 magesToAttack.push({ wizard, position: currentPos });
-                console.log(`   Добавлен ${wizard.name} с позиции ${currentPos}`);
             }
         }
         currentPos = (currentPos + 1) % 5;
@@ -745,12 +714,10 @@ function executePlayerPhase(mageCount) {
             skipCount++;
         }
     }
-    console.log(`   Новый playerMageIndex: ${window.playerMageIndex}`);
 }
 
 // --- Фаза противника ---
 function executeEnemyPhase(mageCount) {
-    console.log(`🤖 Противник использует заклинания ${mageCount} магом(ами)`);
     // Проверка на Чуму
     if (typeof window.processPlagueEffects === 'function') {
         window.processPlagueEffects('enemy');
@@ -765,7 +732,6 @@ function executeEnemyPhase(mageCount) {
         const wizard = window.enemyFormation[currentPos];
         if (wizard && wizard.hp > 0) {
             magesToAttack.push({ wizard, position: currentPos });
-            console.log(`   Добавлен ${wizard.name} с позиции ${currentPos}`);
         }
         currentPos = (currentPos + 1) % 5;
         positionsChecked++;
@@ -817,7 +783,6 @@ function executeEnemyPhase(mageCount) {
             skipCount++;
         }
     }
-    console.log(`   Новый enemyMageIndex: ${window.enemyMageIndex}`);
 }
 
 // --- Проверка окончания боя ---
@@ -858,7 +823,6 @@ function checkBattleEnd() {
         if (window.battleInterval) {
             clearInterval(window.battleInterval);
             window.battleInterval = null;
-            console.log('⏹️ Боевой интервал остановлен (бой завершён)');
         }
 
         // Останавливаем через battle-timer-manager если используется
@@ -988,14 +952,12 @@ function checkBattleEnd() {
                         originalWizard.experience = battleWizard.experience || 0;
                         originalWizard.level = battleWizard.level || 1;
                         originalWizard.exp_to_next = battleWizard.exp_to_next || (typeof window.calculateExpToNext === 'function' ? window.calculateExpToNext(battleWizard.level) : 50);
-                        console.log(`💾 PvE: Сохранён опыт для ${originalWizard.name}: ${originalWizard.experience} exp, уровень ${originalWizard.level}`);
                     }
                 });
 
                 // КРИТИЧЕСКИ ВАЖНО: Сохраняем обновленные данные магов в базу данных
                 if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
                     window.dbManager.savePlayer(window.userData).then(() => {
-                        console.log('✅ Опыт магов сохранен в БД после PvE битвы');
                     }).catch(err => {
                         console.error('❌ Ошибка сохранения опыта магов:', err);
                     });
@@ -1024,8 +986,6 @@ function checkBattleEnd() {
             const opponentRating = window.selectedOpponent?.rating || playerRating;
 
             ratingChange = window.calculateRatingChange(playerRating, opponentRating, battleResult);
-            console.log(`📊 Изменение рейтинга: ${playerRating} → ${playerRating + ratingChange} (${ratingChange > 0 ? '+' : ''}${ratingChange})`);
-            console.log(`   Противник: ${window.selectedOpponent?.username || 'AI'} (${opponentRating})`);
         }
 
         // Триггер события завершения боя ТОЛЬКО ДЛЯ PvP (вызовет немедленное сохранение)
@@ -1080,7 +1040,6 @@ function checkBattleEnd() {
                 }
 
                 const currentLevel = window.currentPvELevel;
-                console.log(`💾 Сохраняем PvE прогресс: уровень ${currentLevel} пройден`);
 
                 // Сохраняем пройденный уровень
                 window.userData.pve_progress[`level_${currentLevel}`] = {
@@ -1097,7 +1056,6 @@ function checkBattleEnd() {
                 // Сохраняем в БД
                 if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
                     window.dbManager.savePlayer(window.userData).then(() => {
-                        console.log('✅ PvE прогресс сохранён в БД');
                     }).catch(err => {
                         console.error('❌ Ошибка сохранения PvE прогресса:', err);
                     });

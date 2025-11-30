@@ -1,5 +1,4 @@
 // time-construction-system.js - Система строительства с временной валютой (БЕТА)
-console.log('✅ time-construction-system.js загружен (БЕТА-РЕЖИМ)');
 
 
 // Флаг для блокировки автоматического открытия модалки после программного закрытия
@@ -807,7 +806,6 @@ async function completeConstruction(constructionIndex) {
             }
         }
         
-        console.log(`✅ Заклинание ${spellName} улучшено до уровня ${target_level}`);
 
         // Обновляем UI библиотеки
         if (typeof window.renderLibraryUI === 'function') {
@@ -859,7 +857,6 @@ async function completeConstruction(constructionIndex) {
             window.updatePlayerLevel();
         }
         
-        console.log('✅ Маг добавлен локально:', newWizard);
 
         // Триггер сохранения
         if (typeof window.onWizardHired === 'function') {

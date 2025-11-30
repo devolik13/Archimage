@@ -1,5 +1,4 @@
 // battle/renderer/animations/wind/wind-blade.js - Анимация заклинания "Ветрорез"
-console.log('✅ wind-blade.js загружен');
 
 (function() {
     // Хранилище активных лезвий

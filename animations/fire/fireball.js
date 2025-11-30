@@ -1,5 +1,4 @@
 // battle/renderer/animations/fire/fireball.js
-console.log('✅ fireball.js загружен');
 
 (function() {
     function playFireballAnimation(params) {

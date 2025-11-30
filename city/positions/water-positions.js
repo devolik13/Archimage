@@ -70,4 +70,3 @@ window.CITY_POSITIONS.water = {
     }
 };
 
-console.log('💧 Город Воды: загружено зданий -', Object.keys(window.CITY_POSITIONS.water).length);

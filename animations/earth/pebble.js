@@ -1,5 +1,4 @@
 // battle/renderer/animations/earth/pebble.js - Анимация заклинания "Камешек" с защитой от ошибок
-console.log('✅ pebble.js загружен');
 
 (function() {
     // Хранилище активных снарядов и анимаций

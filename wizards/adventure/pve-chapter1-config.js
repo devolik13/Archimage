@@ -1,5 +1,4 @@
 // wizards/adventure/pve-chapter1-config.js
-console.log('✅ pve-chapter1-config.js загружен');
 
 /**
  * ГЛАВА 1: "Испытание Стихий"
@@ -352,4 +351,3 @@ window.generateEnemyForLevel = generateEnemyForLevel;
 window.getEnemyCountForLevel = getEnemyCountForLevel;
 window.TIME_REWARDS = TIME_REWARDS;
 
-console.log(`📖 Глава 1 загружена: ${CHAPTER_1_LEVELS.length} уровней`);

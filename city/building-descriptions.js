@@ -1,5 +1,4 @@
 // city/building-descriptions.js - Описания зданий и их бонусов
-console.log('✅ building-descriptions.js загружен');
 
 /**
  * Конфигурация описаний зданий
@@ -272,4 +271,3 @@ window.BUILDING_DESCRIPTIONS = BUILDING_DESCRIPTIONS;
 window.getBuildingModalData = getBuildingModalData;
 window.showBuildingInfoModal = showBuildingInfoModal;
 
-console.log('✅ Описания зданий загружены');

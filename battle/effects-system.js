@@ -1,4 +1,3 @@
-console.log('✅ battle/systems/effects-system.js загружен');
 
 // Счетчики эффектов для отладки
 let effectCounters = {

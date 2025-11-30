@@ -1,5 +1,4 @@
 // daily-login-rewards.js - Система ежедневных наград
-console.log('✅ daily-login-rewards.js загружен');
 
 // Конфигурация наград
 const DAILY_REWARD_CONFIG = {
@@ -242,4 +241,3 @@ window.initDailyLoginData = initDailyLoginData;
 window.checkDailyLoginReward = checkDailyLoginReward;
 window.showDailyRewardModal = showDailyRewardModal;
 
-console.log('✅ Система ежедневных наград готова');

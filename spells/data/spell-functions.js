@@ -1,5 +1,4 @@
 // config/spells/spell-functions.js - Функции для работы с заклинаниями
-console.log('✅ config/spells/spell-functions.js загружен');
 
 // ============ БАЗОВЫЕ ФУНКЦИИ ============
 
@@ -183,7 +182,6 @@ function validateSpellTiers() {
         return false;
     }
     
-    console.log('✅ Структура всех 6 школ заклинаний валидна');
     return true;
 }
 

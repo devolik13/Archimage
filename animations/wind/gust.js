@@ -1,5 +1,4 @@
 // battle/renderer/animations/wind/gust.js - Анимация заклинания "Порыв ветра"
-console.log('✅ gust.js загружен');
 
 (function() {
     // Хранилище активных снарядов

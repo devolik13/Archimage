@@ -1,5 +1,4 @@
 // battle/renderer/animations/water/absolute_zero.js - Анимация "Абсолютный Ноль"
-console.log('✅ absolute_zero.js загружен');
 
 (function() {
     // Хранилище активных зон Абсолютного Ноля

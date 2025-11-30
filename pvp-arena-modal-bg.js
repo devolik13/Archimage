@@ -1,5 +1,4 @@
 // pvp-arena-modal-bg.js - PvP арена с фоновым изображением
-console.log('✅ pvp-arena-modal-bg.js загружен');
 
 // Показать окно PvP арены с фоном
 function showPvPArenaModalBg() {
@@ -1581,7 +1580,6 @@ function showArenaResult(result, battleData = {}) {
             };
         }
 
-        console.log('✅ Результаты боя показаны в окне арены с фоном');
     }, 100);
 }
 

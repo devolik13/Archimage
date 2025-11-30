@@ -1,5 +1,4 @@
 // wizards/adventure/pve-ui.js
-console.log('✅ pve-ui.js загружен');
 
 /**
  * Показывает меню выбора глав PvE
@@ -329,7 +328,6 @@ function startPvELevel(levelId) {
     window.playerWizards = originalWizards.map(wizard => ({...wizard}));
     window.playerFormation = [...originalFormation];
 
-    console.log('🎮 Формация игрока загружена для PvE (КОПИЯ):');
     console.log('  - playerFormation:', window.playerFormation);
     console.log('  - playerWizards:', window.playerWizards.map(w => ({id: w.id, name: w.name, hp: w.hp})));
 
@@ -391,4 +389,3 @@ window.loadPvEProgress = loadPvEProgress;
 window.savePvEProgress = savePvEProgress;
 window.startPvELevel = startPvELevel;
 
-console.log('✅ PvE UI система готова');

@@ -1,5 +1,4 @@
 // animations/faction-speech-bubble.js - Речевые пузыри для фракционных бонусов
-console.log('✅ faction-speech-bubble.js загружен');
 
 (function() {
     // Глобальная переменная для хранения информации о текущем кастере
@@ -193,5 +192,4 @@ console.log('✅ faction-speech-bubble.js загружен');
     // Экспорт
     window.showFactionSpeechBubble = showSpeechBubble;
 
-    console.log('✅ Система речевых пузырей готова');
 })();

@@ -1,5 +1,4 @@
 // script_buildings.js - Работа со зданиями...
-console.log('✅ script_buildings.js загружен');
 
 // Модальное окно PvP арены
 function showPvPArenaModal() {

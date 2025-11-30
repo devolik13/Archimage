@@ -1,5 +1,4 @@
 // battle/renderer/animations/fire/burning-effect.js
-console.log('✅ burning-effect.js загружен');
 
 (function() {
     // Хранилище активных эффектов горения

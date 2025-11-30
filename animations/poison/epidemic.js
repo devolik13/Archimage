@@ -1,5 +1,4 @@
 // battle/renderer/animations/poison/epidemic.js - Анимация заклинания "Эпидемия"
-console.log('✅ epidemic.js загружен');
 
 (function() {
     // Хранилище активных пузырей эпидемии

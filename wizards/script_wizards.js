@@ -1,5 +1,4 @@
 // script_wizards/script_wizards.js - Полная и исправленная версия v3.3
-console.log('✅ script_wizards.js (v3.3 FIXED) загружен');
 // Проверяем наличие глобальных переменных
 if (typeof API_BASE_URL === 'undefined') {
     console.warn('⚠️  API_BASE_URL не определен, используем пустую строку');

@@ -1,5 +1,4 @@
 // battle/renderer/animations/fire/firebolt.js - ОБНОВЛЁННАЯ ВЕРСИЯ
-console.log('✅ firebolt.js загружен');
 
 (function() {
     function playFireboltAnimation(params) {

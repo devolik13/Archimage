@@ -1,5 +1,4 @@
 // battle/targeting.js - Система поиска целей
-console.log('✅ battle/targeting.js загружен');
 
 // --- Поиск цели для атаки ---
 function findTarget(position, attackerType) {

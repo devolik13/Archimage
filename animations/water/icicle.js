@@ -1,5 +1,4 @@
 // battle/renderer/animations/water/icicle.js - Анимация заклинания "Ледышка"
-console.log('✅ icicle.js загружен');
 
 (function() {
     function playIcicleAnimation(params) {

@@ -1,5 +1,4 @@
 // battle/renderer/animations/wind/wind-wall.js - Анимация заклинания "Стена ветра"
-console.log('✅ wind-wall.js загружен');
 
 (function() {
     // Хранилище активных ветряных стен

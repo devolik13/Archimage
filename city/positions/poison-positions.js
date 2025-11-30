@@ -70,4 +70,3 @@ window.CITY_POSITIONS.poison = {
     }
 };
 
-console.log('☠️ Город Яда: загружено зданий -', Object.keys(window.CITY_POSITIONS.poison).length);

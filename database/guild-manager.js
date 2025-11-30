@@ -1,5 +1,4 @@
 // database/guild-manager.js - Менеджер гильдий
-console.log('guild-manager.js загружен');
 
 // Конфигурация гильдий
 const GUILD_CONFIG = {
@@ -157,7 +156,6 @@ class GuildManager {
             this.currentGuild = guild;
             await this.loadGuildMembers();
 
-            console.log('Гильдия загружена:', guild);
             return guild;
 
         } catch (error) {
@@ -701,4 +699,3 @@ window.getExpToNextLevel = getExpToNextLevel;
 window.formatPlayerName = formatPlayerName;
 window.getCurrentPlayerDisplayName = getCurrentPlayerDisplayName;
 
-console.log('GuildManager инициализирован');

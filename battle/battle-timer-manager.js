@@ -1,5 +1,4 @@
 // battle-timer-manager.js - Централизованное управление таймерами боя
-console.log('✅ battle-timer-manager.js загружен');
 
 class BattleTimerManager {
     constructor() {
@@ -12,7 +11,6 @@ class BattleTimerManager {
         // Слушаем событие закрытия/перехода
         window.addEventListener('beforeunload', () => this.cleanup());
         
-        console.log('⏱️ BattleTimerManager инициализирован');
     }
     
     // Запуск основного цикла боя
@@ -121,7 +119,6 @@ class BattleTimerManager {
         });
         this.activeTimeouts.clear();
         
-        console.log('✅ Все таймеры очищены');
     }
     
     // Статус для отладки
@@ -248,5 +245,4 @@ window.battleTimerStatus = function() {
     return status;
 };
 
-console.log('✅ Безопасная система таймеров активирована');
 console.log('💡 Используйте battleTimerStatus() для проверки состояния');

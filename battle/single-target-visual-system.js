@@ -1,5 +1,4 @@
 // battle/systems/single-target-visual-system.js - Система визуализации single-target заклинаний
-console.log('✅ single-target-visual-system.js загружен');
 
 /**
  * Универсальная система для single-target заклинаний

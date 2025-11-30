@@ -1,5 +1,4 @@
 // shared/magic-resistance.js - ИСПРАВЛЕННАЯ система сопротивления магии
-console.log('✅ shared/magic-resistance.js (ИСПРАВЛЕННАЯ ВЕРСИЯ) загружен');
 
 // Функция расчета сопротивления к школе магии
 function calculateMagicResistance(wizard, spellSchool) {
@@ -156,7 +155,6 @@ function testMagicResistanceSystem() {
     const hybridTest = getSpellSchool('hybrid_fire_water_tier1');
     console.log(`   hybrid: hybrid_fire_water_tier1 → ${hybridTest}`);
     
-    console.log('✅ Тест завершен');
 }
 
 // Экспорт функций

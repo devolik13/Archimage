@@ -1,5 +1,4 @@
 // battle/renderer/animations/poison/poisoned_blade.js - Анимация заклинания "Ядовитый клинок"
-console.log('✅ poisoned_blade.js загружен');
 
 (function() {
     // Хранилище активных клинков

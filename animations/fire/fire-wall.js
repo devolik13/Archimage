@@ -1,5 +1,4 @@
 // battle/renderer/animations/fire/fire-wall.js - Анимация заклинания "Огненная стена"
-console.log('✅ fire-wall.js загружен');
 
 (function() {
     // Хранилище активных огненных стен

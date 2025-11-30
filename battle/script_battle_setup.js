@@ -1,6 +1,5 @@
 // web/script_battle/script_battle_setup.js - Система расстановки войск...
 
-console.log('✅ script_battle_setup.js загружен');
 
 
 
@@ -45,13 +44,11 @@ async function showBattleSetup() {
 
         const formation = window.userData.formation || [null, null, null, null, null];
 
-        console.log('✅ Получена расстановка:', formation);
 
         
 
         currentBattleFormation = [...formation];
 
-        console.log('🔄 Текущая расстановка обновлена:', currentBattleFormation);
 
         
 
@@ -153,7 +150,6 @@ function findSpellInUserData(spellId, userSpells) {
 
 function renderBattleSetupModal() {
 
-    console.log('🔄 renderBattleSetupModal called with formation:', currentBattleFormation);
 
     const wizards = userData.wizards || [];
 
@@ -355,7 +351,6 @@ function renderBattleSetupModal() {
 
     
 
-    console.log('📦 Создание модального окна');
 
     
 
@@ -427,7 +422,6 @@ function renderBattleSetupModal() {
 
     window.currentModal = { modal, overlay };
 
-    console.log('✅ Модальное окно создано и добавлено в DOM');
 
 }
 
@@ -453,7 +447,6 @@ function closeBattleSetupModal() {
 
         modalContainer.remove();
 
-        console.log('✅ Modal container удален по ID');
 
     }
 
@@ -463,7 +456,6 @@ function closeBattleSetupModal() {
 
         overlay.remove();
 
-        console.log('✅ Overlay удален по ID');
 
     }
 
@@ -477,7 +469,6 @@ function closeBattleSetupModal() {
 
             window.currentModal.modal.parentNode.removeChild(window.currentModal.modal);
 
-            console.log('✅ Modal удален через currentModal');
 
         }
 
@@ -485,7 +476,6 @@ function closeBattleSetupModal() {
 
             window.currentModal.overlay.parentNode.removeChild(window.currentModal.overlay);
 
-            console.log('✅ Overlay удален через currentModal');
 
         }
 
@@ -513,7 +503,6 @@ function closeBattleSetupModal() {
 
     
 
-    console.log('✅ Модальное окно закрыто');
 
 }
 
@@ -586,7 +575,6 @@ function placeWizardInFormation(wizardId, position) {
 
     console.log('📍 placeWizardInFormation:', wizardId, 'на позицию:', position);
 
-    console.log('🔄 Текущая расстановка до изменений:', [...currentBattleFormation]);
 
     
 
@@ -596,7 +584,6 @@ function placeWizardInFormation(wizardId, position) {
 
     if (existingPosition !== -1) {
 
-        console.log('🔄 Удаление мага с позиции:', existingPosition);
 
         // Удаляем с предыдущей позиции
 
@@ -612,7 +599,6 @@ function placeWizardInFormation(wizardId, position) {
 
     if (occupyingWizard) {
 
-        console.log('🔄 Освобождение позиции:', position, 'маг:', occupyingWizard);
 
         // Удаляем мага с целевой позиции
 
@@ -626,7 +612,6 @@ function placeWizardInFormation(wizardId, position) {
 
     currentBattleFormation[position] = wizardId;
 
-    console.log('✅ Маг размещен. Новая расстановка:', [...currentBattleFormation]);
 
     
 
@@ -660,7 +645,6 @@ function clearSlot(position) {
 
 async function saveBattleFormation() {
 
-    console.log('💾 saveBattleFormation called with formation:', currentBattleFormation);
 
     
 

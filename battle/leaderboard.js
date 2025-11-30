@@ -1,5 +1,4 @@
 // battle/leaderboard.js - Система таблицы лидеров
-console.log('✅ leaderboard.js загружен');
 
 /**
  * Показать таблицу лидеров
@@ -164,7 +163,6 @@ async function getTopPlayers(limit = 5) {
             return getMockTopPlayers(limit);
         }
 
-        console.log('✅ Топ игроков загружен:', data);
         return data || [];
 
     } catch (error) {
@@ -191,4 +189,3 @@ window.showLeaderboard = showLeaderboard;
 window.closeLeaderboard = closeLeaderboard;
 window.getTopPlayers = getTopPlayers;
 
-console.log('💡 Таблица лидеров готова!');

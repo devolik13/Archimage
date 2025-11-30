@@ -1,5 +1,4 @@
 // battle/renderer/animations/fire/burning-ground.js
-console.log('✅ burning-ground.js загружен');
 
 (function() {
     // Хранилище активных зон горящей земли

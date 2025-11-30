@@ -1,5 +1,4 @@
 // adventure/adventure-system.js
-console.log('✅ adventure-system.js загружен');
 
 const ADVENTURE_LEVELS = [
     {

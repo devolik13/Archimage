@@ -1,4 +1,3 @@
-console.log('✅ battle/walls/wall-blocking.js загружен');
 
 // --- Локальная функция определения типа заклинания (без конфликтов) ---
 function getSpellTypeForWalls(spellId) {

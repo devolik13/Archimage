@@ -1,5 +1,4 @@
 // time-currency-system.js - Система временной валюты
-console.log('✅ time-currency-system.js загружен');
 
 // Конфигурация временной валюты
 const TIME_CURRENCY_CONFIG = {
@@ -336,4 +335,3 @@ window.calculateOfflineEarnings = calculateOfflineEarnings;
 window.showOfflineEarningsNotification = showOfflineEarningsNotification;
 window.initTimeCurrency = initTimeCurrency;
 
-console.log('💰 Система временной валюты инициализирована (с офлайн накоплением)');

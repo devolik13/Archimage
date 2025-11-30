@@ -1,5 +1,4 @@
 // wizard-tower-modal-bg.js - Башня магов с фоновым изображением
-console.log('✅ wizard-tower-modal-bg.js загружен');
 
 // Показать окно башни магов с фоном
 function showWizardTowerModalBg() {

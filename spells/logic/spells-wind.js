@@ -1,6 +1,5 @@
 // battle/spells/spells-wind.js - Заклинания школы ветра (адаптированная под новую структуру)
 
-console.log('✅ battle/spells/spells-wind.js загружен');
 
 function castWindSpell(wizard, spellId, spellData, position, casterType) {
     console.log(`🌪️ Casting wind spell: ${spellId}`);
@@ -107,7 +106,6 @@ function castGust(wizard, spellData, position, casterType) {
         
         // Callback после завершения
         onComplete: (finalResult) => {
-            console.log(`✅ Порыв завершён. Финальный урон: ${finalResult.finalDamage}`);
         }
     });
 }
@@ -466,7 +464,6 @@ function castChainLightning(wizard, spellData, position, casterType) {
     
     // ЗАПУСКАЕМ АНИМАЦИЮ
     if (window.spellAnimations?.chain_lightning?.play) {
-        console.log('✅ Анимация цепной молнии найдена, запускаем');
         console.log('🎯 Цели:', shuffledTargets);
         
         let currentDamage = baseDamage;

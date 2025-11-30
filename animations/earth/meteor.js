@@ -1,6 +1,5 @@
 // battle/renderer/animations/earth/meteor.js - Анимация метеорита
 
-console.log('✅ meteor.js загружен');
 
 (function() {
     // Хранилище активных метеоритов

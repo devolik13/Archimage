@@ -52,7 +52,6 @@ class DatabaseManager {
             }
 
             this.currentPlayer = data;
-            console.log('✅ Игрок загружен:', data);
             return data;
 
         } catch (error) {
@@ -131,7 +130,6 @@ class DatabaseManager {
             if (error) throw error;
 
             this.hasUnsavedChanges = false;
-            console.log('💾 Игрок сохранён:', {
                 wizards: updateData.wizards.length,
                 spells: Object.keys(updateData.spells).length,
                 buildings: Object.keys(updateData.buildings).length - 1, // -1 для _active_constructions
@@ -243,7 +241,6 @@ class DatabaseManager {
                     if (opponentError) {
                         console.error('⚠️ Ошибка обновления рейтинга противника:', opponentError);
                     } else {
-                        console.log(`✅ Рейтинг противника УСПЕШНО обновлён в БД!`);
                         console.log(`   ${window.selectedOpponent.username}: ${currentOpponentRating} → ${newOpponentRating} (${opponentRatingChange > 0 ? '+' : ''}${opponentRatingChange})`);
                     }
                 } else {
@@ -274,7 +271,6 @@ class DatabaseManager {
         
         this.autoSaveInterval = setInterval(async () => {
             if (this.hasUnsavedChanges && window.userData) {
-                console.log('💾 Автосохранение...');
                 const playerData = {
                     timeCurrency: window.userData.time_currency,
                     level: window.userData.level,

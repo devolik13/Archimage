@@ -1,5 +1,4 @@
 // battle/renderer/animations/spell-registry.js - Система регистрации анимаций заклинаний
-console.log('✅ spell-registry.js загружен');
 
 // Реестр всех анимаций заклинаний
 const SPELL_ANIMATIONS_REGISTRY = {

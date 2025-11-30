@@ -1,5 +1,4 @@
 // battle/spells/spells-poison.js - Заклинания школы Яд (ИСПРАВЛЕННАЯ ВЕРСИЯ)
-console.log('✅ battle/spells/spells-poison.js загружен');
 
 function castPoisonSpell(wizard, spellId, spellData, position, casterType) {
     console.log(`☠️ Casting poison spell: ${spellId}`);
@@ -101,7 +100,6 @@ function castPoisonedBlade(wizard, spellData, position, casterType) {
         
         // Callback после завершения
         onComplete: (finalResult) => {
-            console.log(`✅ Отравленный клинок завершён. Финальный урон: ${finalResult.finalDamage}`);
         }
     });
 }

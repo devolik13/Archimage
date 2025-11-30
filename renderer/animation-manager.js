@@ -1,5 +1,4 @@
 // battle/renderer/animation-manager.js - Улучшенная версия с защитой от ошибок
-console.log('✅ animation-manager.js загружен');
 
 class AnimationManager {
     constructor() {
@@ -193,7 +192,6 @@ class AnimationManager {
             });
         }
         
-        console.log('✅ Очистка завершена');
     }
 }
 
@@ -225,5 +223,4 @@ window.cleanupBattleAnimations = function() {
     }
 };
 
-console.log('✅ AnimationManager готов к работе');
 console.log('💡 Используйте window.safeAnimate() для безопасных анимаций');

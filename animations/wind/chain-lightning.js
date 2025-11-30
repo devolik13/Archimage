@@ -1,5 +1,4 @@
 // battle/renderer/animations/wind/chain-lightning.js - Анимация заклинания "Цепная молния"
-console.log('✅ chain-lightning.js загружен');
 
 (function() {
     function playChainLightningAnimation(params) {
@@ -35,7 +34,6 @@ console.log('✅ chain-lightning.js загружен');
                 return;
             }
             
-            console.log('⚡ Текстура шара молнии загружена');
             
             // Создаем массив текстур из spritesheet (3x3 = 9 кадров)
             const frames = [];

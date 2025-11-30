@@ -1,6 +1,5 @@
 // battle/spells.js - Система заклинаний для боя (адаптированная под новую структуру)
 
-console.log('✅ battle/spells.js загружен');
 
 // --- Главная функция использования заклинаний магом ---
 function useWizardSpells(wizard, position, casterType) {
@@ -113,7 +112,6 @@ function castSpell(wizard, spellId, position, casterType) {
     // Проверяем наличие функции анимации
     if (typeof window.pixiWizards?.playAttack === 'function') {
     	window.pixiWizards.playAttack(col, position, () => {
-    	    console.log(`✅ Анимация атаки завершена для ${wizard.name}`);
     	});
     } else {
     	console.warn('⚠️ playAttack недоступна');
@@ -152,7 +150,6 @@ function castSpell(wizard, spellId, position, casterType) {
                 type: spellType
             };
 
-            console.log(`✅ SpellData создан для ${spellId}:`, spellData);
         } else {
             // Для PvP врагов используем стандартный путь
             spellsSource = window.selectedOpponent?.spells;
@@ -238,7 +235,6 @@ function castBasicAttack(wizard, position, casterType) {
 
     if (typeof window.playWizardAttackAnimation === 'function') {
     	window.playWizardAttackAnimation(col, position, () => {
-    	    console.log(`✅ Анимация базовой атаки завершена для ${wizard.name}`);
     	});
     }
     console.log(`🎯 Ищем цель для ${wizard.name} (позиция: ${position}, тип: ${casterType})`);
@@ -257,7 +253,6 @@ function castBasicAttack(wizard, position, casterType) {
             const result = window.applyDamageWithMultiLayerProtection(wizard, target, baseDamage, 'basic_attack', casterType);
 
             if (result) {
-                console.log(`✅ Атака завершена через многоуровневую защиту: ${target.wizard.name} HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
 
                 if (typeof window.logSpellHit === 'function') {
                     window.logSpellHit(wizard, target.wizard, result.finalDamage, 'Базовая атака');
@@ -273,7 +268,6 @@ function castBasicAttack(wizard, position, casterType) {
             target.wizard.hp -= finalDamage;
             if (target.wizard.hp < 0) target.wizard.hp = 0;
 
-            console.log(`✅ Атака завершена (старая система): ${target.wizard.name} HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
 
             if (typeof window.logSpellHit === 'function') {
                 window.logSpellHit(wizard, target.wizard, finalDamage, 'Базовая атака');

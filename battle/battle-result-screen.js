@@ -1,5 +1,4 @@
 // battle/battle-result-screen.js - Экран результатов боя
-console.log('✅ battle-result-screen.js загружен');
 
 /**
  * Показать экран результатов боя используя окно арены с фоном
@@ -25,7 +24,6 @@ function showBattleResult(result, battleData = {}) {
 
     // Используем новое окно арены с фоном если доступно
     if (typeof window.showArenaResult === 'function') {
-        console.log('✅ Используем showArenaResult с фоном арены');
         window.showArenaResult(result, battleData);
         return;
     }
@@ -251,7 +249,6 @@ function showBattleResult(result, battleData = {}) {
         closeOnOverlay: false, // Нельзя закрыть кликом вне окна
         closeOnEscape: false,   // Нельзя закрыть по Escape
         onShow: (modal) => {
-            console.log('✅ Модальное окно результата показано через ModalSystem');
 
             // Навешиваем обработчики на кнопки
             const newFightBtn = document.getElementById('battle-result-new-fight');
@@ -313,7 +310,6 @@ function closeBattleResult() {
                 window.cleanupBattleResources();
             }
         } else {
-            console.log('✅ Ресурсы боя уже очищены (досрочный выход)');
         }
 
         // Возвращаемся в город
@@ -325,7 +321,6 @@ function closeBattleResult() {
             window.closeBattleField();
         }
 
-        console.log('✅ closeBattleResult завершен успешно');
     } catch (error) {
         console.error('❌ Ошибка в closeBattleResult:', error);
     }
@@ -335,4 +330,3 @@ function closeBattleResult() {
 window.showBattleResult = showBattleResult;
 window.closeBattleResult = closeBattleResult;
 
-console.log('💡 Система результатов боя готова!');

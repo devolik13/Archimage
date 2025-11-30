@@ -1,5 +1,4 @@
 // player-level-system.js - Система общего уровня игрока
-console.log('✅ player-level-system.js загружен');
 
 // Конфигурация очков за достижения
 const PLAYER_LEVEL_CONFIG = {
@@ -147,7 +146,6 @@ function createPlayerAvatarUI() {
 
     // Добавляем в body (fixed позиционирование)
     document.body.insertAdjacentHTML('beforeend', avatarHTML);
-    console.log('✅ Аватар игрока добавлен');
 }
 
 // Показать профиль игрока с фоном как у башни магов

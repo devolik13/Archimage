@@ -1,5 +1,4 @@
 // battle/demo-battle.js - Кинематографическая сцена с драконом
-console.log('🐉 demo-battle.js загружен');
 
 // Конфигурация кинематографической сцены
 const CINEMATIC_CONFIG = {
@@ -63,7 +62,6 @@ async function startDemoBattle(faction) {
         dragon.hpBar.visible = false;
     }
 
-    console.log('✅ Дракон создан');
 
     // Создаём магов
     await createCinematicWizards();
@@ -90,7 +88,6 @@ async function initCinematicBattle() {
     window.playerFormation = [];
 
     await window.pixiCore.init();
-    console.log('✅ PIXI поле боя инициализировано');
 }
 
 // Создание магов
@@ -126,7 +123,6 @@ async function createCinematicWizards() {
             }
 
             cinematicData.wizards.push(wizard);
-            console.log(`✅ ${names[i]} создан`);
         }
     }
 }
@@ -437,7 +433,6 @@ function showWelcomeMessage() {
 
     // Проверяем CSS rotation (мобильные устройства)
     const isRotated = window.cssRotationActive === true;
-    console.log('🔄 Welcome - CSS Rotation активен:', isRotated);
 
     // ROTATION через style (как у города!)
     if (isRotated) {
@@ -460,7 +455,6 @@ function showWelcomeMessage() {
             }
         `;
         document.head.appendChild(style);
-        console.log('✅ Welcome rotation style применен (-90deg)');
     }
 
     // Контент - ГОРИЗОНТАЛЬНЫЙ LAYOUT
@@ -596,4 +590,3 @@ window.demo = function(faction = 'fire') {
     window.startDemoBattle(faction);
 };
 
-console.log('✅ Кинематографическая сцена готова!');

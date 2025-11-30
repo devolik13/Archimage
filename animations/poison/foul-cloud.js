@@ -1,5 +1,4 @@
 // battle/renderer/animations/poison/foul-cloud.js - Анимация заклинания "Мерзкое облако"
-console.log('✅ foul-cloud.js загружен');
 
 (function() {
     // Хранилище активных облаков
@@ -110,7 +109,6 @@ console.log('✅ foul-cloud.js загружен');
 
         // Создаем спрайт-лист программно
         PIXI.Assets.load(cloudTexturePath).then(texture => {
-            console.log('☠️ Текстура загружена:', { valid: texture?.valid, width: texture?.width, height: texture?.height });
 
             if (!texture || !texture.valid) {
                 console.warn('☠️ Не удалось загрузить текстуру облака, используем fallback');
@@ -153,7 +151,6 @@ console.log('✅ foul-cloud.js загружен');
 
             container.addChild(cloudSprite);
 
-            console.log('☠️ Спрайт облака загружен и анимирован');
         }).catch(err => {
             console.warn('☠️ Ошибка загрузки спрайта облака:', err);
             createFallbackCloud(container, scale);

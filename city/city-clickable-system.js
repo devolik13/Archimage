@@ -1,5 +1,4 @@
 // city-clickable-system.js - Система кликабельных зданий с полигонами
-console.log('✅ city-clickable-system.js загружен');
 
 // Динамическая загрузка конфигурации позиций для фракции
 function loadCityPositions(faction) {
@@ -14,7 +13,6 @@ function loadCityPositions(faction) {
         const script = document.createElement('script');
         script.src = `city/positions/${faction}-positions.js`;
         script.onload = () => {
-            console.log(`✅ Загружена конфигурация позиций для ${faction}`);
             resolve(window.CITY_POSITIONS[faction]);
         };
         script.onerror = () => {

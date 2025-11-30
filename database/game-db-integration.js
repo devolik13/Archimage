@@ -2,7 +2,6 @@
 
 // Инициализация при загрузке игры
 async function initGameWithDatabase() {
-    console.log('🔄 Инициализация игры с базой данных...');
     
     // КРИТИЧНО: Сразу скрываем ОБЕ зоны чтобы не мелькали
     const factionSelection = document.getElementById('faction-selection');
@@ -18,7 +17,6 @@ async function initGameWithDatabase() {
         return;
     }
 
-    console.log('✅ Игрок загружен из Supabase:', player);
 
     // Применяем данные к window.userData
     if (!window.userData) {
@@ -62,10 +60,8 @@ async function initGameWithDatabase() {
     // КРИТИЧНО: Извлекаем constructions из buildings._active_constructions
     if (player.buildings && player.buildings._active_constructions) {
         window.userData.constructions = player.buildings._active_constructions;
-        console.log('📦 Активные стройки извлечены из buildings:', window.userData.constructions);
     } else {
         window.userData.constructions = [];
-        console.log('📦 Constructions инициализирована пустым массивом');
     }
 
     // Инициализация энергии боев (если нет в БД)
@@ -73,7 +69,6 @@ async function initGameWithDatabase() {
         window.userData.battle_energy = player.battle_energy;
     } else if (typeof window.initBattleEnergy === 'function') {
         window.initBattleEnergy(window.userData);
-        console.log('⚡ Энергия боев инициализирована');
     }
 
     // Данные гильдии
@@ -81,7 +76,6 @@ async function initGameWithDatabase() {
     window.userData.guild_contribution = player.guild_contribution || 0;
     window.userData.guild_last_active = player.guild_last_active || null;
 
-    console.log('📦 Данные применены к window.userData:', {
         faction: window.userData.faction,
         wizards: window.userData.wizards.length,
         spells: Object.keys(window.userData.spells).length,
@@ -94,7 +88,6 @@ async function initGameWithDatabase() {
     // КРИТИЧНО: Проверяем есть ли фракция
     if (!player.faction || player.faction === null) {
         // Новый игрок - показываем выбор фракции
-        console.log('🆕 Новый игрок - показываем onboarding');
         if (typeof window.showFactionSelection === 'function') {
             window.showFactionSelection();
         } else {
@@ -106,7 +99,6 @@ async function initGameWithDatabase() {
         }
     } else {
         // Существующий игрок - показываем игру
-        console.log('👤 Существующий игрок - загружаем игру');
         
         // Показываем игровую зону
         const factionSelection = document.getElementById('faction-selection');
@@ -136,7 +128,6 @@ async function initGameWithDatabase() {
         // Загружаем гильдию если игрок в ней состоит
         if (window.userData.guild_id && window.guildManager) {
             window.guildManager.loadPlayerGuild().then(() => {
-                console.log('🏰 Гильдия загружена:', window.guildManager.currentGuild?.name);
             }).catch(err => {
                 console.warn('⚠️ Не удалось загрузить гильдию:', err);
             });
@@ -190,7 +181,6 @@ async function initGameWithDatabase() {
     window.dbManager.startAutoSave();
     window.dbManager.setupBeforeUnload();
 
-    console.log('✅ Игра инициализирована с данными из Supabase');
 }
 
 // Хуки для сохранения при событиях

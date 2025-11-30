@@ -1,5 +1,4 @@
 // battle/renderer/animations/wind/storm-cloud.js - Анимация заклинания "Грозовая туча"
-console.log('✅ storm-cloud.js загружен');
 
 (function() {
     function playStormCloudAnimation(params) {

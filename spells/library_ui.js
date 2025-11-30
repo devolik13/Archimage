@@ -1,5 +1,4 @@
 // spells/library_ui.js - Полноэкранная библиотека v6.0 (с таймерами)
-console.log('✅ library_ui.js v6.0 - с таймерами изучения');
 
 let currentLibrarySchool = null;
 let libraryUpdateInterval = null;
@@ -538,7 +537,6 @@ function closeLibrary() {
 
 // Обновление контента библиотеки после изучения/улучшения
 function updateLibraryContent() {
-    console.log('🔄 Обновление библиотеки');
     
     // Если открыта школа - перерисовываем экран школы
     if (currentLibrarySchool) {
@@ -723,4 +721,3 @@ window.updateLibraryContent = updateLibraryContent;
 window.renderLibrary = renderLibrary;
 window.showSpellInfoModal = showSpellInfoModal;
 
-console.log('📚 Библиотека с таймерами готова!');

@@ -1,5 +1,4 @@
 // config/spells/spell-basic-data.js - Базовые данные заклинаний (названия, урон, типы)
-console.log('✅ config/spells/spell-basic-data.js загружен');
 
 // Названия заклинаний
 const SPELL_NAMES = {

@@ -1,5 +1,4 @@
 // battle/renderer/animations/poison/plague.js - Анимация заклинания "Чума"
-console.log('✅ plague.js загружен');
 
 (function() {
     // Хранилище активных эффектов чумы на целях

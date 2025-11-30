@@ -1,5 +1,4 @@
 // config/buildings-config.js - Конфигурация всех зданий
-console.log('✅ config/buildings-config.js загружен');
 
 window.BUILDINGS_CONFIG = {
     "library": {

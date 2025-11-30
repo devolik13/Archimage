@@ -1,5 +1,4 @@
 // battle/renderer/animations/nature/ent-visual.js
-console.log('✅ ent-visual.js загружен');
 
 (function() {
     const activeEnts = new Map();

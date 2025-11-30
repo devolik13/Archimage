@@ -1,5 +1,4 @@
 // wizard-detail-screen.js - Полноэкранное окно мага (финальная версия)
-console.log('✅ wizard-detail-screen.js загружен');
 
 // Открыть полноэкранное окно мага
 function showWizardDetailScreen(wizard) {
@@ -316,7 +315,6 @@ function renderWizardDetailScreen(wizardIndex) {
     screen.innerHTML = screenHTML;
     screen.classList.add('active');
     
-    console.log('✅ Окно мага отрендерено');
 }
 
 // Обновить только заклинания (без перерисовки всего окна)
@@ -562,7 +560,6 @@ function closeWizardDetailScreen() {
         
         setTimeout(() => {
             screen.remove();
-            console.log('✅ wizard-detail-screen удален');
         }, 300);
     }
     
@@ -587,7 +584,6 @@ function closeWizardDetailScreen() {
         if (element) {
             element.style.display = 'block';
             element.style.visibility = 'visible';
-            console.log(`✅ Восстановлен элемент: ${elementId}`);
         }
     });
 
@@ -602,12 +598,10 @@ function closeWizardDetailScreen() {
         requestAnimationFrame(() => {
             if (typeof window.switchToCityView === 'function') {
                 window.switchToCityView(window.userData.faction);
-                console.log('✅ Город перерисован');
             }
         });
     }
     
-    console.log('✅ Город показан, окно мага закрыто');
 }
 
 function renderWizardDetailScreenWithBackground(wizardIndex) {
@@ -644,7 +638,6 @@ function renderWizardDetailScreenWithBackground(wizardIndex) {
     img.onload = () => setupWizardUI(wizardIndex, wizardStats);
     if (img.complete) setupWizardUI(wizardIndex, wizardStats);
 
-    console.log('✅ Окно мага с фоном создано');
 }
 
 // Расчет всех характеристик мага (вынесено в отдельную функцию)
@@ -998,7 +991,6 @@ function setupWizardUI(wizardIndex, wizardStats) {
         overlay.appendChild(cellDiv);
     });
 
-    console.log('✅ UI окна мага настроено с масштабом (ТОЧНЫЙ паттерн города)', {
         scaleX,
         scaleY,
         offsetX,
@@ -1083,4 +1075,3 @@ window.closeResistancesModal = closeResistancesModal;
 window.showInventoryModalCompact = showInventoryModalCompact;
 window.closeInventoryModalCompact = closeInventoryModalCompact;
 
-console.log('✅ Функции полноэкранного окна мага экспортированы');

@@ -1,5 +1,4 @@
 // battle/spells/spells-nature.js - Заклинания школы Природа
-console.log('✅ battle/spells/spells-nature.js загружен');
 
 function castNatureSpell(wizard, spellId, spellData, position, casterType) {
     console.log(`🌿 Casting nature spell: ${spellId}`);

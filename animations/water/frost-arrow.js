@@ -1,5 +1,4 @@
 // battle/renderer/animations/water/frost-arrow.js - Анимация заклинания "Ледяная стрела"
-console.log('✅ frost-arrow.js загружен');
 
 (function() {
     // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (вынесены на уровень модуля) =====
@@ -195,7 +194,6 @@ console.log('✅ frost-arrow.js загружен');
         // Ждем загрузки текстуры чтобы узнать реальный размер
         if (!baseTexture.valid) {
             baseTexture.on('loaded', () => {
-                console.log(`❄️ Frost Arrow текстура загружена: ${baseTexture.width}x${baseTexture.height}`);
                 createArrowSprite(baseTexture);
             });
             return;

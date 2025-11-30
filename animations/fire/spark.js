@@ -1,5 +1,4 @@
 // battle/renderer/animations/fire/spark.js - Анимация заклинания "Искра"
-console.log('✅ spark.js загружен');
 
 (function() {
     // Изолированный модуль для Искры

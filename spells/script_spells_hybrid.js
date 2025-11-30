@@ -1,5 +1,4 @@
 // script_spells_hybrid.js - Гибридные заклинания (новая логика)
-console.log('✅ script_spells_hybrid.js загружен');
 
 // --- Вкладка "Гибридные" ---
 function renderHybridTab() {

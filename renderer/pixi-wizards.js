@@ -1,5 +1,4 @@
 // battle/renderer/pixi-wizards.js - Отображение магов с уникальными спрайтами для каждой фракции
-console.log('✅ pixi-wizards.js загружен (версия с фракциями)');
 
 (function() {
     // Хранилище спрайтов магов
@@ -157,7 +156,6 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
     // Загрузка спрайт-листа и создание кадров
     async function loadSpriteSheet(path, frameWidth, frameHeight, frameCount) {
         try {
-            console.log(`📥 Загружаем спрайт-лист: ${path}`);
             
             // Загружаем текстуру
             const texture = await PIXI.Assets.load(path);
@@ -180,7 +178,6 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 frames.push(frame);
             }
             
-            console.log(`✅ Загружено ${frames.length} кадров из ${path}`);
             return frames;
             
         } catch (error) {
@@ -201,7 +198,6 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             return null; // Используем атлас для этой фракции
         }
         
-        console.log(`🎨 Загружаем текстуры для фракции ${faction}`);
         
         const textures = {
             idle: null,
@@ -240,7 +236,6 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         // Сохраняем в кэш
         factionTextures[faction] = textures;
         
-        console.log(`✅ Текстуры фракции ${faction} загружены:`, {
             idle: textures.idle?.length || 0,
             cast: textures.cast?.length || 0,
             death: textures.death?.length || 0
@@ -260,19 +255,16 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 // Если это элементаль-босс - используем специальные спрайты
                 if (enemyWizard && enemyWizard.isElemental) {
                     const elementalType = `${enemyWizard.faction}_elemental`;
-                    console.log(`🔥 Элементаль обнаружен: ${enemyWizard.name}, используем спрайты ${elementalType}`);
                     return elementalType;
                 }
 
                 // Если это обычный PVE враг - используем спрайты гоблинов/орков/троллей
                 if (enemyWizard && enemyWizard.isAdventureEnemy) {
-                    console.log(`🎯 PvE враг обнаружен: ${enemyWizard.name}, используем спрайты гоблина`);
                     return 'goblin';
                 }
 
                 // Иначе используем фракцию врага (PvP)
                 if (enemy.faction) {
-                    console.log(`🎯 PvP враг с фракцией: ${enemy.faction}`);
                     return enemy.faction;
                 }
             }
@@ -312,7 +304,6 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             return false;
         }
         
-        console.log('✅ pixi-wizards инициализирован');
         return true;
     }
     
@@ -322,13 +313,11 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
 
         // Проверяем, не создаётся ли уже спрайт на этой позиции (защита от race condition)
         if (creatingSprites.has(key)) {
-            console.log(`⏳ Спрайт ${key} уже создаётся, пропускаем дублирование`);
             return null;
         }
 
         // Если спрайт уже существует - не создаём повторно
         if (wizardSprites[key]) {
-            console.log(`⚠️ Спрайт ${key} уже существует, пропускаем`);
             return wizardSprites[key];
         }
 
@@ -356,7 +345,6 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         const faction = getWizardFaction(col, row);
         const config = FACTION_SPRITES_CONFIG[faction];
         
-        console.log(`🧙 Создаем мага фракции ${faction} на позиции ${col}_${row}`);
         
         const container = new PIXI.Container();
         const scale = cellData.cellScale || 1;
@@ -400,16 +388,13 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                 container.deathFrames = textures.death;
                 container.faction = faction;
 
-                console.log(`✅ Создан маг ${faction} с анимациями:`, {
                     idle: textures.idle?.length || 0,
                     attack: textures.cast?.length || 0,
                     death: textures.death?.length || 0
                 });
-                console.log(`   🎬 Attack frames загружены из: ${config.cast}`);
             }
         } else if (fireAtlas) {
             // Используем старую систему с атласом для других фракций
-            console.log('📦 Используем атлас для фракции', faction);
             
             const idleFrames = Object.keys(fireAtlas.textures)
                 .filter(key => key.includes('IDLE'))
@@ -448,7 +433,6 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         
         // Fallback на простую графику
         if (!sprite) {
-            console.log('⚠️ Используем fallback спрайт');
             sprite = new PIXI.Graphics();
             
             // Цвет зависит от фракции
@@ -495,9 +479,7 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                     // Центр по Y: между рядами 1 и 2
                     sprite.y = (cell01.y + cell02.y + cell01.height / 2 + cell02.height / 2) / 2;
 
-                    console.log(`📐 Элементаль ${faction} позиционирован на 4 клетках (2x2)`);
                     console.log(`   Позиция: [0,1], [0,2], [1,1], [1,2]`);
-                    console.log(`   Координаты: x=${sprite.x}, y=${sprite.y}`);
                 }
             }
         }
@@ -535,22 +517,16 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         // Убираем флаг создания
         creatingSprites.delete(key);
 
-        console.log(`✅ Маг создан на позиции ${key}`);
 
         return container;
     }
     
     // Анимация атаки мага
     function playWizardAttackAnimation(wizardCol, wizardRow, callback) {
-        console.log('⚔️⚔️⚔️ playWizardAttackAnimation ВЫЗВАНА для позиции:', wizardCol, wizardRow);
-        console.log('   Все спрайты магов:', Object.keys(wizardSprites));
 
         const wizardKey = `${wizardCol}_${wizardRow}`;
         const container = wizardSprites[wizardKey];
 
-        console.log(`   Ищем спрайт: ${wizardKey}`);
-        console.log(`   Найден контейнер:`, !!container);
-        console.log(`   Есть sprite в контейнере:`, !!container?.sprite);
 
         if (!container || !container.sprite) {
             console.warn(`⚠️ Маг не найден на позиции ${wizardCol}_${wizardRow}`);
@@ -569,7 +545,6 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         
         // Если есть кадры атаки
         if (sprite instanceof PIXI.AnimatedSprite && container.attackFrames && container.attackFrames.length > 0) {
-            console.log(`🎬 Запуск анимации атаки для ${container.faction || 'unknown'} (${container.attackFrames.length} кадров)`);
             console.log(`   Позиция: ${wizardCol}_${wizardRow}`);
 
             // Сохраняем текущее состояние
@@ -593,7 +568,6 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                     if (!activeAnimations.has(animationId)) return;
                     activeAnimations.delete(animationId);
                     
-                    console.log('✅ Анимация атаки завершена');
                     
                     if (!isSpriteValid(sprite)) {
                         if (callback) callback();
@@ -613,7 +587,6 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                             // ИСПРАВЛЕНО: Сразу запускаем анимацию без задержки
                             sprite.gotoAndPlay(0);
 
-                            console.log('✅ Маг вернулся к idle анимации');
                         }
                     } catch (err) {
                         console.error('Ошибка при возврате к idle:', err);
@@ -704,7 +677,6 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
                     if (!activeAnimations.has(animationId)) return;
                     activeAnimations.delete(animationId);
                     
-                    console.log('✅ Анимация смерти завершена');
                     
                     // ВАЖНО: НЕ скрываем спрайт, оставляем на последнем кадре
                     if (isSpriteValid(sprite)) {
@@ -771,7 +743,6 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
 
         // ИСПРАВЛЕНО: Разрешаем обновление когда battleState === 'finished' для запуска финальных анимаций смерти
         if (window.battleState !== 'active' && window.battleState !== 'finished') {
-            console.log('⏸️ Бой не активен, пропускаем обновление');
             return;
         }
 
@@ -785,7 +756,6 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
             return;
         }
 
-        console.log('🧙 Обновляем магов');
 
         // Обновляем врагов
         if (window.enemyFormation) {
@@ -945,7 +915,6 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
         
         // НЕ очищаем кэш текстур фракций - они могут пригодиться
         
-        console.log('✅ Очистка магов завершена');
     }
     
     // Анимация каста для отдельного спрайта (для демо-боя)
@@ -1223,5 +1192,4 @@ console.log('✅ pixi-wizards.js загружен (версия с фракци�
     // КРИТИЧЕСКИ ВАЖНО: Прямой экспорт для базовой атаки!
     window.playWizardAttackAnimation = playWizardAttackAnimation;
 
-    console.log('✅ pixi-wizards готов (поддержка фракций)');
 })();

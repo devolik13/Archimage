@@ -1,5 +1,4 @@
 // auth/onboarding.js - Логика выбора фракции и регистрации
-console.log('✅ auth/onboarding.js загружен');
 
 function showFactionSelection() {
     console.log("Показ формы выбора фракции (auth/onboarding.js)");
@@ -106,7 +105,6 @@ async function selectFaction(faction) {
 
             if (error) throw error;
 
-            console.log('✅ Начальные данные сохранены в БД');
 
             // Обновляем локальные данные
             window.dbManager.currentPlayer.faction = faction;

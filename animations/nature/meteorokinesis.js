@@ -1,4 +1,3 @@
-console.log('✅ meteorokinesis.js (улучшенный) загружен');
 
 (function() {
     let activeMeteoEffect = null;

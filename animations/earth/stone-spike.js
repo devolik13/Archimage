@@ -1,5 +1,4 @@
 // battle/renderer/animations/earth/stone-spike.js - Анимация заклинания "Каменный шип"
-console.log('✅ stone-spike.js загружен');
 
 (function() {
     function playStoneSpikeAnimation(params) {

@@ -1,5 +1,4 @@
 // battle/renderer/animations/earth/stone-grotto.js
-console.log('✅ stone-grotto.js загружен');
 
 (function() {
     // Хранилище активных каменных гротов

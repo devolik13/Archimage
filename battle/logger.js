@@ -1,4 +1,3 @@
-console.log('✅ battle/systems/logger.js загружен');
 
 
 const MAX_LOG_ENTRIES = 3000; // Максимум записей в логе (увеличено с 1000)

@@ -1,5 +1,4 @@
 // battle/renderer/animations/earth/earth-wall.js - Анимация заклинания "Земляная стена"
-console.log('✅ earth-wall.js загружен');
 
 (function() {
     // Хранилище активных стен
@@ -43,7 +42,6 @@ console.log('✅ earth-wall.js загружен');
         const wallTexturePath = 'images/spells/earth/earth_wall/wall_sprite.png';
         
         PIXI.Assets.load(wallTexturePath).then(texture => {
-	    console.log('🧱 Текстура загружена:', texture);
             console.log('🧱 Текстура валидна:', texture?.valid);
             console.log('🧱 Размер текстуры:', texture?.width, 'x', texture?.height);
         

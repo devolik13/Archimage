@@ -1,4 +1,3 @@
-console.log('✅ battle/projectiles/projectiles.js загружен');
 
 // Инициализация
 if (!window.activeProjectiles) window.activeProjectiles = [];
@@ -40,7 +39,6 @@ function createWindBladeProjectile(caster, initialTarget, damage, rounds, caster
     
     // Запуск анимации
     if (window.spellAnimations?.wind_blade?.play) {
-        console.log('✅ Запускаем анимацию Ветрореза');
         window.spellAnimations.wind_blade.play({
             projectileId: windBladeProjectile.id,
             casterType: casterType,

@@ -1,5 +1,4 @@
 // config/spells/spell-full-data.js - Полные данные заклинаний с описаниями
-console.log('✅ config/spells/spell-full-data.js загружен');
 
 const SPELL_FULL_DATA = {
     // ============ ОГОНЬ ============

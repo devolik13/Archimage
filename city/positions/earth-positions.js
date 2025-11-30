@@ -70,4 +70,3 @@ window.CITY_POSITIONS.earth = {
     }
 };
 
-console.log('⛰️ Город Земли: загружено зданий -', Object.keys(window.CITY_POSITIONS.earth).length);

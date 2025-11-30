@@ -1,5 +1,4 @@
 // battle/renderer/animations/nature/call-wolf.js
-console.log('✅ call-wolf.js загружен');
 
 (function() {
     // Хранилище активных визуалов волков по ID

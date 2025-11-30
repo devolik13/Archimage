@@ -1,5 +1,4 @@
 // core/state-manager.js - Централизованное управление состоянием игры
-console.log('✅ core/state-manager.js загружен');
 
 class StateManager {
     constructor() {
@@ -136,7 +135,6 @@ class StateManager {
         
     	    if (response.ok) {
     	        this.state.lastSaved = Date.now();
-    	        console.log('💾 Состояние сохранено');
     	    }
     	} catch (error) {
     	    console.error('❌ Ошибка сохранения:', error);
@@ -176,4 +174,3 @@ window.getState = () => window.stateManager.getState();
 window.getUserData = () => window.stateManager.getUserData();
 window.updateState = (path, value) => window.stateManager.updateUserData(path, value);
 
-console.log('🎯 State Manager инициализирован');

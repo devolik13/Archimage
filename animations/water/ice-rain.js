@@ -1,5 +1,4 @@
 // battle/renderer/animations/water/ice-rain.js
-console.log('✅ ice-rain.js загружен');
 
 (function() {
     

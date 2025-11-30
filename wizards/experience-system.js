@@ -1,6 +1,5 @@
 // battle/systems/experience-system.js - Обновленная система опыта
 
-console.log('✅ experience-system.js загружен');
 
 // Константы системы опыта
 const EXP_CONFIG = {

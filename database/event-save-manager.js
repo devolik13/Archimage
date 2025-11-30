@@ -1,5 +1,4 @@
 // database/event-save-manager.js - Event-driven saving system
-console.log('✅ event-save-manager.js загружен');
 
 /**
  * Event-driven Save Manager
@@ -18,10 +17,8 @@ class EventSaveManager {
      * 🔴 CRITICAL: Save immediately (battle end, building complete, etc.)
      */
     async saveImmediate(reason) {
-        console.log(`💾 [IMMEDIATE] Сохранение: ${reason}`);
 
         if (this.saveInProgress) {
-            console.log('⏳ Сохранение уже в процессе, ждём...');
             this.pendingSave = true;
             return;
         }
@@ -31,7 +28,6 @@ class EventSaveManager {
         const timeSinceLastSave = now - this.lastSaveTime;
         if (timeSinceLastSave < this.minSaveInterval) {
             const delay = this.minSaveInterval - timeSinceLastSave;
-            console.log(`⏱️ Откладываем сохранение на ${delay}ms`);
             setTimeout(() => this.saveImmediate(reason), delay);
             return;
         }
@@ -43,7 +39,6 @@ class EventSaveManager {
      * 🟡 DEBOUNCED: Save after delay (formation changes, minor updates)
      */
     saveDebounced(reason, delay = 2000) {
-        console.log(`💾 [DEBOUNCED] Планируем сохранение через ${delay}ms: ${reason}`);
 
         // Отменяем предыдущий таймер для этого типа события
         if (this.debounceTimers[reason]) {
@@ -94,7 +89,6 @@ class EventSaveManager {
             const success = await window.dbManager.savePlayer(playerData);
 
             if (success) {
-                console.log(`✅ Сохранено (причина: ${reason})`);
                 window.dbManager.hasUnsavedChanges = false;
             } else {
                 console.error(`❌ Ошибка сохранения (причина: ${reason})`);
@@ -140,18 +134,14 @@ window.eventSaveManager = new EventSaveManager();
 // 🔴 КРИТИЧЕСКИЕ СОБЫТИЯ (сохранение немедленно)
 
 window.onBuildingCompleted = function(buildingId) {
-    console.log('🏗️ Здание построено:', buildingId);
     window.eventSaveManager.saveImmediate(`building_completed:${buildingId}`);
 };
 
 window.onBuildingUpgraded = function(buildingId, newLevel) {
-    console.log('⬆️ Здание улучшено:', buildingId, 'до уровня', newLevel);
     window.eventSaveManager.saveImmediate(`building_upgraded:${buildingId}:${newLevel}`);
 };
 
 window.onBattleCompleted = async function(result, rewards, opponentLevel, ratingChange) {
-    console.log('⚔️ onBattleCompleted вызвана:', result, `(рейтинг: ${ratingChange > 0 ? '+' : ''}${ratingChange})`);
-    console.log('   Стек вызова:', new Error().stack);
 
     // ЗАЩИТА ОТ ДУБЛИРОВАНИЯ: Проверяем, не был ли этот бой уже сохранен
     const battleId = `${Date.now()}_${result}_${window.selectedOpponent?.id || 'unknown'}`;
@@ -173,7 +163,6 @@ window.onBattleCompleted = async function(result, rewards, opponentLevel, rating
     window._lastSavedBattle = battleId;
     window._lastBattleSaveTime = now;
 
-    console.log('💾 Сохранение боя:', battleId);
 
     // Сначала сохраняем результат боя и обновляем статистику
     if (window.dbManager) {
@@ -183,46 +172,35 @@ window.onBattleCompleted = async function(result, rewards, opponentLevel, rating
     // Затем сохраняем текущее состояние игрока (опыт, маги и т.д.)
     await window.eventSaveManager.saveImmediate(`battle_${result}`);
 
-    console.log('✅ Бой успешно сохранен');
 };
 
 window.onWizardsGainedExperience = function(wizardIds, expGained) {
-    console.log('⭐ Маги получили опыт:', wizardIds, '+', expGained);
     window.eventSaveManager.saveImmediate('wizards_experience');
 };
 
 window.onSpellLearned = function(spellId, level) {
-    console.log('📖 Заклинание изучено:', spellId, 'уровень', level);
     window.eventSaveManager.saveImmediate(`spell_learned:${spellId}:${level}`);
 };
 
 window.onSpellUpgraded = function(spellId, newLevel) {
-    console.log('📈 Заклинание улучшено:', spellId, 'до уровня', newLevel);
     window.eventSaveManager.saveImmediate(`spell_upgraded:${spellId}:${newLevel}`);
 };
 
 window.onWizardHired = function(wizardId) {
-    console.log('🧙 Маг нанят:', wizardId);
     window.eventSaveManager.saveImmediate(`wizard_hired:${wizardId}`);
 };
 
 // 🟡 ОТЛОЖЕННЫЕ СОБЫТИЯ (debounced)
 
 window.onFormationChanged = function(formation) {
-    console.log('⚔️ Расстановка изменена');
     window.eventSaveManager.saveDebounced('formation_changed', 2000);
 };
 
 window.onTimeCurrencyChanged = function(amount) {
-    console.log('⏰ Валюта времени изменена:', amount);
     // Не сохраняем отдельно, сохранится при следующем важном событии
     window.dbManager.markChanged();
 };
 
-console.log('💡 Event-driven saving готов!');
-console.log('💡 Доступные триггеры:');
-console.log('  - onBuildingCompleted(buildingId)');
-console.log('  - onBuildingUpgraded(buildingId, level)');
 console.log('  - onBattleCompleted(result, rewards, opponentLevel)');
 console.log('  - onWizardsGainedExperience(wizardIds, exp)');
 console.log('  - onSpellLearned(spellId, level)');

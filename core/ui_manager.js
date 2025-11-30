@@ -1,5 +1,4 @@
 // ui_manager.js - Управление основным UI...
-console.log('✅ ui_manager.js загружен');
 
 // --- Обновление интерфейса ---
 function updateUI() {
@@ -98,7 +97,6 @@ async function loadUserData() {
         console.log('📥 Загрузка данных пользователя...');
 
         // ИСПРАВЛЕНИЕ: Используем правильную инициализацию через game-db-integration
-        console.log('✅ Используем Supabase для управления данными');
         if (typeof window.initGameWithDatabase === 'function') {
             await window.initGameWithDatabase();
         } else {

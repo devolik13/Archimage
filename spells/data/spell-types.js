@@ -1,5 +1,4 @@
 // shared/spell-types.js - Система типов заклинаний
-console.log('✅ shared/spell-types.js загружен');
 
 // Типы заклинаний
 const SPELL_TYPES = {

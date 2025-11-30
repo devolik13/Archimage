@@ -1,6 +1,5 @@
 // battle/spells/spells-water.js - Заклинания школы воды (адаптированная под новую структуру)
 
-console.log('✅ battle/spells/spells-water.js загружен');
 
 function castWaterSpell(wizard, spellId, spellData, position, casterType) {
     console.log(`💧 Casting water spell: ${spellId}`);
@@ -96,7 +95,6 @@ function castIcicle(wizard, spellData, position, casterType) {
         
         // Callback после завершения
         onComplete: (finalResult) => {
-            console.log(`✅ Ледышка завершена. Финальный урон: ${finalResult.finalDamage}`);
         }
     });
 }

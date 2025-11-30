@@ -1,5 +1,4 @@
 // city-view-system.js - Новая система отображения городов с фонами
-console.log('✅ city-view-system.js загружен');
 
 // Конфигурация путей к изображениям
 const CITY_IMAGES_CONFIG = {
@@ -80,7 +79,6 @@ function loadCityBackgroundNew(faction, container) {
     }
     
     backgroundImg.onload = () => {
-        console.log('✅ Фон города загружен (NEW)');
     };
     
     backgroundImg.onerror = () => {
@@ -159,7 +157,6 @@ function loadBuildingImageNew(faction, buildingId, container, zIndex) {
     };
     
     buildingImg.onload = () => {
-        console.log(`✅ Здание ${buildingId} загружено (NEW)`);
     };
     
     buildingImg.onerror = () => {
@@ -231,7 +228,6 @@ function initializeDefaultBuildings() {
 
 // Переключение на вид города с фоном
 function switchToCityView(faction) {
-    console.log(`🎨 Переключение на вид города для фракции: ${faction}`);
     
     // Находим контейнер с сеткой
     const cityGrid = document.getElementById('city-grid');
@@ -383,7 +379,6 @@ function createBottomControlPanel() {
     
     if (needsRotation) {
         // При вертикальной загрузке: панель ВНУТРИ повёрнутого контейнера
-        console.log('🔄 Панель: внутри повёрнутого контейнера');
         panel.style.cssText = `
             position: absolute;
             bottom: 0;
@@ -404,7 +399,6 @@ function createBottomControlPanel() {
         const cityContainer = document.getElementById('city-background-container');
         if (cityContainer) {
             cityContainer.appendChild(panel);
-            console.log('✅ Панель внутри контейнера');
         } else {
             document.body.appendChild(panel);
         }
@@ -1139,7 +1133,6 @@ function buildNewBuilding(buildingId) {
 
 // Обработчик клика на здание
 function onBuildingClick(buildingId) {
-    console.log(`🏯 Клик на здание: ${buildingId}`);
     
     const buildingInfo = window.userData?.buildings?.[buildingId];
     
@@ -1185,7 +1178,6 @@ function onBuildingClick(buildingId) {
             console.log("🙏 Клик по башне благословения");
             console.log("showBlessingTowerModalBg:", typeof window.showBlessingTowerModalBg);
             console.log("showBlessingTowerModal:", typeof window.showBlessingTowerModal);
-                console.log("✅ Вызываем НОВУЮ функцию с фоном");
             if (window.showBlessingTowerModalBg) {
                 window.showBlessingTowerModalBg();
                 console.log("⚠️ Вызываем старую функцию");
@@ -1291,14 +1283,11 @@ function closeBuildingInfoModal() {
 
     if (modal) {
         modal.remove();
-        console.log('   ✅ Модальное окно удалено');
     }
     if (overlay) {
         overlay.remove();
-        console.log('   ✅ Оверлей удален');
     }
 
-    console.log('✅ Закрытие завершено');
 }
 
 // Обработка изменения размера окна (поворот телефона)
@@ -1307,7 +1296,6 @@ window.addEventListener('resize', () => {
     if (container) {
         const isMobile = isMobileDevice();
         
-        console.log('🔄 RESIZE EVENT:', {
             width: window.innerWidth,
             height: window.innerHeight,
             isMobile: isMobile,

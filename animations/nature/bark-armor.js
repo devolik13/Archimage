@@ -1,5 +1,4 @@
 // battle/renderer/animations/nature/bark-armor.js
-console.log('✅ bark-armor.js загружен');
 
 (function() {
     // Хранилище активных эффектов коры

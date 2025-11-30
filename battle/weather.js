@@ -1,6 +1,5 @@
 // battle/weather.js - Система погоды (адаптированная)
 
-console.log('✅ battle/weather.js загружен');
 
 let currentWeather = null;
 
