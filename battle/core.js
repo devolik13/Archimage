@@ -558,6 +558,14 @@ function executeSingleMageAttack(wizard, position, casterType) {
         }
     }
 
+    // ❄️ ОБРАБОТКА УРОНА ОТ АБСОЛЮТНОГО НОЛЯ В НАЧАЛЕ ХОДА МАГА
+    if (typeof window.processAbsoluteZeroForWizard === 'function') {
+        const azResult = window.processAbsoluteZeroForWizard(wizard, position, casterType);
+        if (azResult && azResult.died) {
+            return false; // Маг погиб от Абсолютного Ноля
+        }
+    }
+
     // 🌃 ОБРАБОТКА РЕГЕНЕРАЦИИ (включая благословения)
     if (wizard.effects && wizard.effects.leaf_canopy && typeof window.processRegenerationForWizard === 'function') {
         window.processRegenerationForWizard(wizard);
@@ -619,6 +627,17 @@ function executeSingleMageAttack(wizard, position, casterType) {
                 window.battleLogger.logDeath(wizard, casterType, 'fire_wall');
             }
             return false;
+        }
+    }
+
+    // ❄️ ПРОВЕРКА ПРЕРЫВАНИЯ ОТ АБСОЛЮТНОГО НОЛЯ
+    if (typeof window.checkAbsoluteZeroInterrupt === 'function') {
+        const interrupted = window.checkAbsoluteZeroInterrupt(wizard, casterType);
+        if (interrupted) {
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`❄️ ${wizard.name} не может использовать заклинание из-за Абсолютного Ноля!`);
+            }
+            return true; // Ход пропущен, но маг жив
         }
     }
 

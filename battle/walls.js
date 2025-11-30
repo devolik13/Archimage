@@ -876,6 +876,82 @@ function applyAbsoluteZeroDamageToTarget(caster, target, zone, targetType, row) 
     }
 }
 
+// --- Обработка Абсолютного Ноля для конкретного мага (вызывается в его ход) ---
+function processAbsoluteZeroForWizard(wizard, position, wizardType) {
+    if (!window.activeEffectZones) return { died: false };
+
+    // Находим активную зону Абсолютного Ноля, которая накрывает этого мага
+    const zone = window.activeEffectZones.find(z =>
+        z.type === 'absolute_zero_zone' &&
+        z.isActive &&
+        ((z.casterType === 'player' && wizardType === 'enemy') ||
+         (z.casterType === 'enemy' && wizardType === 'player'))
+    );
+
+    if (!zone) return { died: false };
+
+    // Находим кастера
+    const caster = findCaster(zone.casterId, zone.casterType);
+    if (!caster || caster.hp <= 0) {
+        zone.isActive = false;
+        return { died: false };
+    }
+
+    // Наносим урон
+    const finalDamage = typeof window.applyFinalDamage === 'function' ?
+        window.applyFinalDamage(caster, wizard, zone.damage, 'absolute_zero', 0, true) : zone.damage;
+
+    wizard.hp -= finalDamage;
+    if (wizard.hp < 0) wizard.hp = 0;
+
+    if (typeof window.addToBattleLog === 'function') {
+        window.addToBattleLog(`❄️ ${wizard.name} получает ${finalDamage} урона от Абсолютного Ноля (${wizard.hp}/${wizard.max_hp})`);
+    }
+
+    // Проверяем смерть
+    if (wizard.hp <= 0) {
+        if (window.battleLogger) {
+            window.battleLogger.logDeath(wizard, wizardType, 'absolute_zero');
+        }
+
+        // Анимация смерти
+        const col = wizardType === 'player' ? 5 : 0;
+        if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
+            if (!wizard.deathAnimationStarted) {
+                wizard.deathAnimationStarted = true;
+                window.pixiWizards.playDeath(col, position);
+            }
+        }
+
+        return { died: true };
+    }
+
+    return { died: false, zone: zone };
+}
+
+// --- Проверка прерывания каста от Абсолютного Ноля ---
+function checkAbsoluteZeroInterrupt(wizard, wizardType) {
+    if (!window.activeEffectZones) return false;
+
+    // Находим активную зону Абсолютного Ноля
+    const zone = window.activeEffectZones.find(z =>
+        z.type === 'absolute_zero_zone' &&
+        z.isActive &&
+        ((z.casterType === 'player' && wizardType === 'enemy') ||
+         (z.casterType === 'enemy' && wizardType === 'player'))
+    );
+
+    if (!zone) return false;
+
+    // Проверяем шанс прерывания
+    const roll = Math.random() * 100;
+    if (roll < zone.interruptChance) {
+        return true; // Прервано!
+    }
+
+    return false;
+}
+
 // --- Обработка всех стен ---
 function processWalls() {
     processEffectZones();
@@ -897,11 +973,8 @@ function processWalls() {
 }
 
 function processEffectZones() {
-    // Обработка Абсолютного Ноля
-    if (typeof window.applyAbsoluteZeroDamage === 'function') {
-        window.applyAbsoluteZeroDamage();
-    }
-    
+    // Абсолютный Ноль теперь обрабатывается в ход каждого мага (processAbsoluteZeroForWizard)
+
     if (!window.activeEffectZones || window.activeEffectZones.length === 0) return;
     
     for (let i = window.activeEffectZones.length - 1; i >= 0; i--) {
@@ -961,4 +1034,6 @@ window.createOrUpdateAbsoluteZeroZone = createOrUpdateAbsoluteZeroZone;
 window.isWizardInAbsoluteZero = isWizardInAbsoluteZero;
 window.applyAbsoluteZeroDamage = applyAbsoluteZeroDamage;
 window.applyAbsoluteZeroDamageToTarget = applyAbsoluteZeroDamageToTarget;
+window.processAbsoluteZeroForWizard = processAbsoluteZeroForWizard;
+window.checkAbsoluteZeroInterrupt = checkAbsoluteZeroInterrupt;
 window.findWindWallAt = findWindWallAt;
