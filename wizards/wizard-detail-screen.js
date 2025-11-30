@@ -117,22 +117,30 @@ function renderWizardDetailScreen(wizardIndex) {
     const towerLevel = window.getBuildingLevel ? window.getBuildingLevel('wizard_tower') : 1;
     const healthMultiplier = window.applyWizardTowerHealthBonus ? window.applyWizardTowerHealthBonus() : 1.0;
     const healthBonusPercent = Math.round((healthMultiplier - 1) * 100);
-    
+
     const level = wizardData.level || 1;
     const levelBonus = level === 20 ? 2.0 : (1 + (Math.max(0, level - 1) * 0.05));
     const levelBonusPercent = Math.round((levelBonus - 1) * 100);
-    
-    // Применяем все бонусы к HP
-    const actualMaxHP = Math.floor(baseHP * levelBonus * healthMultiplier * (1 + blessingHealthBonus));
+
+    // Бонусы гильдии
+    const guildBonuses = window.guildManager?.currentGuild ? window.guildManager.getGuildBonuses() : null;
+    const guildHpBonusPercent = guildBonuses?.hpBonus || 0;
+    const guildDamageBonusPercent = guildBonuses?.damageBonus || 0;
+    const guildResistances = guildBonuses?.resistances || {};
+
+    // Применяем все бонусы к HP (включая гильдию)
+    const guildHpMultiplier = 1 + (guildHpBonusPercent / 100);
+    const actualMaxHP = Math.floor(baseHP * levelBonus * healthMultiplier * (1 + blessingHealthBonus) * guildHpMultiplier);
     const blessingHealthPercent = Math.round(blessingHealthBonus * 100);
     
     // Расчет брони с учетом благословения  
     const baseArmor = wizardData.original_max_armor || wizardData.max_armor || 100;
     const actualMaxArmor = baseArmor + blessingArmorBonus;
     
-    // Расчет бонуса к урону от башни и благословения
+    // Расчет бонуса к урону от башни, благословения и гильдии
     const towerDamageMultiplier = window.getWizardTowerDamageBonus ? window.getWizardTowerDamageBonus() : 1.0;
-    const totalDamageMultiplier = towerDamageMultiplier * (1 + blessingDamageBonus);
+    const guildDamageMultiplier = 1 + (guildDamageBonusPercent / 100);
+    const totalDamageMultiplier = towerDamageMultiplier * (1 + blessingDamageBonus) * guildDamageMultiplier;
     const towerDamageBonusPercent = Math.round((towerDamageMultiplier - 1) * 100);
     const blessingDamageBonusPercent = Math.round(blessingDamageBonus * 100);
     const totalDamageBonusPercent = Math.round((totalDamageMultiplier - 1) * 100);
@@ -253,7 +261,8 @@ function renderWizardDetailScreen(wizardIndex) {
                                 <div style="font-size: 18px; font-weight: bold; color: #4ade80;">${actualMaxHP}</div>
                                 <div style="font-size: 8px; color: #7289da; margin-top: 2px;">
                                     ${levelBonusPercent > 0 ? `+${levelBonusPercent}% ур.` : ''}
-                                    ${healthBonusPercent > 0 ? ` +${healthBonusPercent}% 🏰` : ''}
+                                    ${healthBonusPercent > 0 ? ` +${healthBonusPercent}% 🏯` : ''}
+                                    ${guildHpBonusPercent > 0 ? ` +${guildHpBonusPercent}% 🏰` : ''}
                                     ${blessingHealthPercent > 0 ? ` +${blessingHealthPercent}% ✨` : ''}
                                 </div>
                             </div>
@@ -268,9 +277,10 @@ function renderWizardDetailScreen(wizardIndex) {
                                 <div style="font-size: 9px; color: #aaa; margin-bottom: 3px;">УРОН</div>
                                 <div style="font-size: 18px; font-weight: bold; color: #fbbf24;">+${totalDamageBonusPercent}%</div>
                                 <div style="font-size: 8px; color: #7289da; margin-top: 2px;">
-                                    ${towerDamageBonusPercent > 0 ? `🏰 +${towerDamageBonusPercent}%` : ''}
+                                    ${towerDamageBonusPercent > 0 ? `🏯 +${towerDamageBonusPercent}%` : ''}
+                                    ${guildDamageBonusPercent > 0 ? ` 🏰 +${guildDamageBonusPercent}%` : ''}
                                     ${blessingDamageBonusPercent > 0 ? ` ✨ +${blessingDamageBonusPercent}%` : ''}
-                                    ${(towerDamageBonusPercent === 0 && blessingDamageBonusPercent === 0) ? 'Базовый' : ''}
+                                    ${(towerDamageBonusPercent === 0 && guildDamageBonusPercent === 0 && blessingDamageBonusPercent === 0) ? 'Базовый' : ''}
                                 </div>
                             </div>
                         </div>
@@ -321,24 +331,54 @@ function updateWizardSpellSlots() {
 function showResistancesModal(wizardIndex) {
     const wizard = userData.wizards[wizardIndex];
     if (!wizard) return;
-    
+
     const resistances = wizard.magicResistance || {};
     const getFactionEmoji = window.getFactionEmoji || ((f) => '✨');
     const getSchoolColor = window.getSchoolColor || ((s) => '#777');
-    
-    const resistancesHTML = Object.entries(resistances).map(([school, value]) => `
+
+    // Получаем сопротивления от гильдии
+    const guildBonuses = window.guildManager?.currentGuild ? window.guildManager.getGuildBonuses() : null;
+    const guildResistances = guildBonuses?.resistances || {};
+    const hasGuildResistances = Object.values(guildResistances).some(v => v > 0);
+
+    const schoolNames = {
+        fire: 'Огонь', water: 'Вода', wind: 'Ветер',
+        earth: 'Земля', nature: 'Природа', poison: 'Яд'
+    };
+
+    const resistancesHTML = Object.entries(resistances).map(([school, value]) => {
+        const guildValue = guildResistances[school] || 0;
+        const totalValue = value + guildValue;
+        return `
         <div style="
-            padding: 15px;
+            padding: 12px;
             background: ${getSchoolColor(school)}20;
             border-radius: 8px;
             text-align: center;
         ">
-            <div style="font-size: 32px; margin-bottom: 5px;">${getFactionEmoji(school)}</div>
-            <div style="font-size: 14px; color: white; font-weight: bold;">${value}%</div>
-            <div style="font-size: 11px; color: #aaa; text-transform: capitalize;">${school}</div>
+            <div style="font-size: 28px; margin-bottom: 3px;">${getFactionEmoji(school)}</div>
+            <div style="font-size: 16px; color: white; font-weight: bold;">${totalValue}%</div>
+            <div style="font-size: 10px; color: #aaa;">${schoolNames[school] || school}</div>
+            ${guildValue > 0 ? `<div style="font-size: 9px; color: #ffa500; margin-top: 2px;">🏰 +${guildValue}%</div>` : ''}
         </div>
-    `).join('');
-    
+    `}).join('');
+
+    // Секция гильдейских сопротивлений
+    const guildResistHTML = hasGuildResistances ? `
+        <div style="margin-top: 15px; padding: 12px; background: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.3); border-radius: 8px;">
+            <div style="font-size: 12px; color: #ffa500; font-weight: bold; text-align: center; margin-bottom: 8px;">
+                🏰 Бонусы гильдии
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
+                ${Object.entries(guildResistances).filter(([_, v]) => v > 0).map(([school, value]) => `
+                    <div style="padding: 4px 8px; background: ${getSchoolColor(school)}30; border-radius: 4px; font-size: 11px;">
+                        ${getFactionEmoji(school)} +${value}%
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    ` : '';
+
     const modalContent = `
         <div style="
             max-width: 400px;
@@ -348,12 +388,14 @@ function showResistancesModal(wizardIndex) {
             color: white;
         ">
             <h3 style="margin: 0 0 15px 0; color: #7289da; text-align: center;">🛡️ Сопротивления магии</h3>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
                 ${resistancesHTML}
             </div>
+            ${guildResistHTML}
             <button onclick="closeCurrentModal()" style="
                 width: 100%;
                 padding: 12px;
+                margin-top: 15px;
                 background: #7289da;
                 color: white;
                 border: none;
