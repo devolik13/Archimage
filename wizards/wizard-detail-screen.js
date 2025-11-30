@@ -360,29 +360,25 @@ function showResistancesModal(wizardIndex) {
         const totalValue = value + guildValue;
         return `
         <div style="
-            padding: 12px;
+            padding: 6px 4px;
             background: ${getSchoolColor(school)}20;
-            border-radius: 8px;
+            border-radius: 6px;
             text-align: center;
+            min-width: 50px;
         ">
-            <div style="font-size: 28px; margin-bottom: 3px;">${getFactionEmoji(school)}</div>
+            <div style="font-size: 9px; color: #aaa; margin-bottom: 2px;">${getFactionEmoji(school)} ${schoolNames[school] || school}</div>
             <div style="font-size: 16px; color: white; font-weight: bold;">${totalValue}%</div>
-            <div style="font-size: 10px; color: #aaa;">${schoolNames[school] || school}</div>
-            ${guildValue > 0 ? `<div style="font-size: 9px; color: #ffa500; margin-top: 2px;">🏰 +${guildValue}%</div>` : ''}
+            ${guildValue > 0 ? `<div style="font-size: 8px; color: #ffa500; margin-top: 1px;">🏰+${guildValue}%</div>` : ''}
         </div>
     `}).join('');
 
-    // Секция гильдейских сопротивлений
+    // Секция гильдейских сопротивлений (компактная)
     const guildResistHTML = hasGuildResistances ? `
-        <div style="margin-top: 15px; padding: 12px; background: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.3); border-radius: 8px;">
-            <div style="font-size: 12px; color: #ffa500; font-weight: bold; text-align: center; margin-bottom: 8px;">
-                🏰 Бонусы гильдии
-            </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
+        <div style="margin-top: 8px; padding: 6px 10px; background: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.3); border-radius: 6px;">
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center;">
+                <span style="font-size: 9px; color: #ffa500;">🏰</span>
                 ${Object.entries(guildResistances).filter(([_, v]) => v > 0).map(([school, value]) => `
-                    <div style="padding: 4px 8px; background: ${getSchoolColor(school)}30; border-radius: 4px; font-size: 11px;">
-                        ${getFactionEmoji(school)} +${value}%
-                    </div>
+                    <span style="font-size: 9px; color: #ffa500;">${getFactionEmoji(school)}+${value}%</span>
                 `).join('')}
             </div>
         </div>
@@ -422,26 +418,24 @@ function showResistancesModal(wizardIndex) {
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                padding: 20px;
+                padding: 10px;
                 color: white;
             ">
-                <h3 style="margin: 0 0 15px 0; color: #7289da; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">🛡️ Сопротивления магии</h3>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 350px;">
+                <div style="font-size: 12px; color: #7289da; font-weight: bold; margin-bottom: 8px; text-shadow: 0 1px 3px rgba(0,0,0,0.8);">🛡️ Сопротивления</div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-width: 280px;">
                     ${resistancesHTML}
                 </div>
                 ${guildResistHTML}
                 <button onclick="closeResistancesModal()" style="
-                    width: 200px;
-                    padding: 12px;
-                    margin-top: 15px;
+                    padding: 8px 20px;
+                    margin-top: 10px;
                     background: rgba(114, 137, 218, 0.9);
                     color: white;
                     border: none;
-                    border-radius: 8px;
-                    font-size: 14px;
+                    border-radius: 6px;
+                    font-size: 11px;
                     font-weight: bold;
                     cursor: pointer;
-                    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
                 ">← Назад</button>
             </div>
         </div>
