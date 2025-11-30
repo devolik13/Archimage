@@ -382,11 +382,6 @@
                 container.attackFrames = textures.cast;
                 container.deathFrames = textures.death;
                 container.faction = faction;
-
-                    idle: textures.idle?.length || 0,
-                    attack: textures.cast?.length || 0,
-                    death: textures.death?.length || 0
-                });
             }
         } else if (fireAtlas) {
             // Используем старую систему с атласом для других фракций
