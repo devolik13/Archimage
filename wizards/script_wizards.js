@@ -439,10 +439,8 @@ async function renameWizard(wizardIndex, newName) {
         
         // Обновляем окно мага если оно открыто
         if (document.getElementById('wizard-detail-screen')) {
-            if (typeof renderWizardDetailScreen === 'function') {
-                renderWizardDetailScreen(wizardIndex);
-            } else if (typeof renderWizardDetailScreenWithBackground === 'function') {
-                renderWizardDetailScreenWithBackground(wizardIndex);
+            if (typeof window.renderWizardDetailScreenWithBackground === 'function') {
+                window.renderWizardDetailScreenWithBackground(wizardIndex);
             }
         }
 
