@@ -5,8 +5,8 @@ function calculateMagicResistance(wizard, spellSchool) {
     if (!spellSchool) return 0;
 
     // ИСПРАВЛЕНО: Для PvE врагов используем их кастомные сопротивления из конфига
-    // Проверяем все флаги: isPvEEnemy, isElemental, isBoss, isFinalBoss
-    const isPvETarget = wizard && (wizard.isPvEEnemy || wizard.isElemental || wizard.isBoss || wizard.isFinalBoss);
+    // Проверяем все флаги: isPvEEnemy, isAdventureEnemy, isElemental, isBoss, isFinalBoss
+    const isPvETarget = wizard && (wizard.isPvEEnemy || wizard.isAdventureEnemy || wizard.isElemental || wizard.isBoss || wizard.isFinalBoss);
     if (isPvETarget && wizard.resistances) {
         return wizard.resistances[spellSchool] || 0;
     }
@@ -95,8 +95,8 @@ function applyMagicResistance(target, spellId, damage) {
     let totalResistance = 0;
 
     // ИСПРАВЛЕНО: Проверяем кастомные сопротивления для PvE врагов
-    // Используем все флаги: isPvEEnemy, isElemental, isBoss, isFinalBoss
-    const isPvETarget = target.isPvEEnemy || target.isElemental || target.isBoss || target.isFinalBoss;
+    // Используем все флаги: isPvEEnemy, isAdventureEnemy, isElemental, isBoss, isFinalBoss
+    const isPvETarget = target.isPvEEnemy || target.isAdventureEnemy || target.isElemental || target.isBoss || target.isFinalBoss;
     if (target.resistances && isPvETarget) {
         // Для PvE врагов используем кастомные сопротивления из конфига
         if (Array.isArray(spellSchool)) {

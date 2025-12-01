@@ -4,7 +4,7 @@
  * Конфигурация рейтинговой системы
  */
 const RATING_CONFIG = {
-    STARTING_RATING: 1000,
+    STARTING_RATING: 0,
     MIN_RATING: 0,
     MAX_RATING: 9999,
 

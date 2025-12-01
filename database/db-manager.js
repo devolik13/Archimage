@@ -113,7 +113,7 @@ class DatabaseManager {
                 total_battles: playerData.total_battles || 0,
                 wins: playerData.wins || 0,
                 losses: playerData.losses || 0,
-                rating: playerData.rating || 1000,
+                rating: playerData.rating || 0,
                 pve_progress: playerData.pve_progress || {},
                 settings: playerData.settings || { sound: true, language: 'ru', battle_speed: 'normal' },
                 welcome_shown: playerData.welcome_shown || false,
