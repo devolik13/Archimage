@@ -119,6 +119,8 @@ class DatabaseManager {
                 welcome_shown: playerData.welcome_shown || false,
                 daily_login: playerData.daily_login || { day: 1, last_login_date: null, last_reward_date: null, total_logins: 0 }, // НОВОЕ: Ежедневные награды
                 battle_energy: playerData.battle_energy || { current: 12, max: 12, last_regen: Date.now() }, // НОВОЕ: Энергия боев
+                active_blessing: playerData.active_blessing || null, // Активное благословение
+                blessing_last_used: playerData.blessing_last_used || null, // Время последнего использования благословения
                 last_login: new Date().toISOString() // Обновляем время последнего входа
             };
 

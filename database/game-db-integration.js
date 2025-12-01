@@ -76,6 +76,10 @@ async function initGameWithDatabase() {
     window.userData.guild_contribution = player.guild_contribution || 0;
     window.userData.guild_last_active = player.guild_last_active || null;
 
+    // Данные благословения
+    window.userData.active_blessing = player.active_blessing || null;
+    window.userData.blessing_last_used = player.blessing_last_used || null;
+
     // КРИТИЧНО: Проверяем есть ли фракция
     if (!player.faction || player.faction === null) {
         // Новый игрок - показываем выбор фракции
@@ -157,6 +161,11 @@ async function initGameWithDatabase() {
         
         if (typeof window.renderCityGrid === 'function') {
             window.renderCityGrid();
+        }
+
+        // Инициализация системы благословений
+        if (typeof window.initBlessingSystem === 'function') {
+            window.initBlessingSystem();
         }
     }
 

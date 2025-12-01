@@ -160,14 +160,19 @@ async function activateBlessing(blessingLevel) {
     // Запускаем таймер обновления
     startBlessingTimer();
     updateBlessingIndicator();
-    
+
+    // Сохраняем в БД
+    if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+        window.dbManager.savePlayer(window.userData);
+    }
+
     // Закрываем модалку полностью через Modal.closeAll
     if (window.Modal && window.Modal.closeAll) {
         window.Modal.closeAll();
     } else if (typeof window.closeCurrentModal === 'function') {
         window.closeCurrentModal();
     }
-    
+
     return true;
 }
 
