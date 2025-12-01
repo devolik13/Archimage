@@ -161,13 +161,23 @@ function logBattleEnd(winner, totalTurns = window.battleTurnCounter, duration = 
     addToBattleLog(`═══════════════════════════════`);
 }
 
-// --- Логирование попадания заклинания (с отступами) ---
+// --- Логирование попадания заклинания (с отступами и подробностями) ---
 function logSpellHit(caster, target, damage, spellName, bonuses = []) {
-    const damageDescription = `${damage} урона`;
     const bonusText = bonuses.length > 0 ? ` ${bonuses.join(' ')}` : '';
-    
-    const logEntry = `🎯 ${caster.name} использует ${spellName} на ${target.name} (${damageDescription}) (${target.hp}/${target.max_hp})${bonusText}`;
+
+    // Многострочный лог с подробностями расчёта урона
+    const logEntry = `🎯 ${spellName} → ${target.name} (${damage} урона)${bonusText}`;
     addToBattleLogWithIndent(logEntry);
+
+    // Выводим шаги расчёта урона если они есть
+    const damageSteps = target._lastDamageSteps || [];
+    if (damageSteps.length > 0) {
+        damageSteps.forEach(step => {
+            addToBattleLogWithIndent(`    ├─ ${step}`);
+        });
+    }
+    addToBattleLogWithIndent(`    └─ HP: ${target.hp}/${target.max_hp}`);
+    delete target._lastDamageSteps;
 }
 
 // --- Остальные функции логирования (оптимизированные) ---

@@ -114,7 +114,16 @@ function processActiveProjectiles() {
             if (target.wizard.hp < 0) target.wizard.hp = 0;
             
             if (typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`🌀 Снаряд → ${target.wizard.name} (${finalDamage} урона) (${target.wizard.hp}/${target.wizard.max_hp})`);
+                // Многострочный лог как у Искры
+                window.addToBattleLog(`🌀 Лезвие ветра → ${target.wizard.name} (${finalDamage} урона)`);
+                const damageSteps = target.wizard._lastDamageSteps || [];
+                if (damageSteps.length > 0) {
+                    damageSteps.forEach(step => {
+                        window.addToBattleLog(`    ├─ ${step}`);
+                    });
+                }
+                window.addToBattleLog(`    └─ HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
+                delete target.wizard._lastDamageSteps;
             }
         } else {
             if (typeof window.addToBattleLog === 'function') {
