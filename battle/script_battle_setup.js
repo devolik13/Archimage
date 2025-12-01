@@ -647,18 +647,15 @@ async function saveBattleFormation() {
     // DEBUG: Логируем что пытаемся сохранить
     console.log('💾 saveBattleFormation вызвана');
 
-    // ИСПРАВЛЕНИЕ: Синхронизируем с window.userData.formation (для арены)
-    // Арена модифицирует userData.formation напрямую, а эта функция использует currentBattleFormation
+    // ИСПРАВЛЕНИЕ: ВСЕГДА берём данные из window.userData.formation
+    // Арена модифицирует userData.formation напрямую, а эта функция использовала отдельную переменную
     const userDataFormation = window.userData?.formation || [null, null, null, null, null];
-    const isCurrentEmpty = currentBattleFormation.every(id => id === null);
-    const isUserDataFilled = userDataFormation.some(id => id !== null);
+    console.log('💾 userData.formation:', JSON.stringify(userDataFormation));
+    console.log('💾 currentBattleFormation (до синхр):', JSON.stringify(currentBattleFormation));
 
-    if (isCurrentEmpty && isUserDataFilled) {
-        console.log('💾 currentBattleFormation пустой, берём из userData.formation');
-        currentBattleFormation = [...userDataFormation];
-    }
-
-    console.log('💾 currentBattleFormation:', JSON.stringify(currentBattleFormation));
+    // Всегда синхронизируем - userData.formation это актуальные данные
+    currentBattleFormation = [...userDataFormation];
+    console.log('💾 currentBattleFormation (после синхр):', JSON.stringify(currentBattleFormation));
 
     try {
         // Сохраняем КОПИЮ в window.userData (не ссылку!)
