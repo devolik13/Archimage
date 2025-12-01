@@ -425,22 +425,51 @@ function createBottomControlPanel() {
         document.body.appendChild(panel);
     }
     
-    // Кнопка гильдии
-    const guildButton = createControlButton('🏰', 'Гильдия', () => {
+    // Вертикальный контейнер для гильдии (сверху) и стройки (снизу)
+    const buildGuildStack = document.createElement('div');
+    buildGuildStack.style.cssText = `
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: center;
+    `;
+
+    // Кнопка гильдии (маленькая, сверху)
+    const guildButton = document.createElement('button');
+    guildButton.style.cssText = `
+        width: 60px;
+        height: 28px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        background: linear-gradient(145deg, rgba(50, 50, 70, 0.9), rgba(30, 30, 45, 0.9));
+        color: white;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    `;
+    guildButton.innerHTML = '🏰';
+    guildButton.title = 'Гильдия';
+    guildButton.onclick = () => {
         console.log('🏰 Открыть окно гильдии');
         if (typeof window.openGuildModal === 'function') {
             window.openGuildModal();
         } else {
             showNotification('Гильдия пока недоступна');
         }
-    });
+    };
 
-    // Кнопка строить
+    // Кнопка строить (основная, снизу)
     const buildButton = createControlButton('🏗️', 'Строить', () => {
         console.log('🏗️ Открыть меню строительства');
-        // Показываем меню выбора ячейки для строительства
         showBuildingSelectionMenu();
     });
+
+    // Собираем стек: гильдия сверху, стройка снизу
+    buildGuildStack.appendChild(guildButton);
+    buildGuildStack.appendChild(buildButton);
 
     // Кнопка заклинаний
     const spellsButton = createControlButton('📖', 'Заклинания', () => {
@@ -465,8 +494,7 @@ function createBottomControlPanel() {
     });
     
     // Добавляем кнопки
-    panel.appendChild(guildButton);
-    panel.appendChild(buildButton);
+    panel.appendChild(buildGuildStack); // Стек: гильдия сверху, стройка снизу
     panel.appendChild(spellsButton);
     panel.appendChild(arenaButton);
     
