@@ -232,24 +232,24 @@ function removeBlessingEffects() {
 function updateBlessingStatus() {
     const activeBlessing = getActiveBlessing();
     if (!activeBlessing) {
-        updateBlessingIndicator(); // Уберет индикатор
+        updateBlessingIndicator(); // Покажет кулдаун если есть
         return;
     }
-    
+
     const now = Date.now();
     if (now >= activeBlessing.expires_at) {
         // Благословение истекло
         removeBlessingEffects();
         window.userData.active_blessing = null;
-        
+
         if (typeof window.showNotification === 'function') {
             window.showNotification(`Благословение "${activeBlessing.name}" истекло`);
         }
-        
-        updateBlessingIndicator(); // Уберет индикатор
+
+        updateBlessingIndicator(); // Покажет индикатор кулдауна
         updateBlessingTowerUI();
     } else {
-        updateBlessingIndicator(); // Обновит таймер
+        updateBlessingIndicator(); // Обновит таймер активного благословения
     }
 }
 
@@ -471,61 +471,109 @@ async function upgradeBlessingTower() {
 // Создание UI элемента индикатора благословения
 function createBlessingIndicatorUI() {
     const activeBlessing = getActiveBlessing();
-    
-    if (!activeBlessing || activeBlessing.expires_at <= Date.now()) {
-        // Убираем индикатор если благословение неактивно
-        const oldIndicator = document.getElementById('blessing-indicator-container');
-        if (oldIndicator) oldIndicator.remove();
-        return;
-    }
-    
-    const remainingTime = Math.ceil((activeBlessing.expires_at - Date.now()) / (60 * 1000));
-    const totalTime = Math.ceil((activeBlessing.expires_at - activeBlessing.activated_at) / (60 * 1000));
-    const progressPercent = ((totalTime - remainingTime) / totalTime * 100);
-    
-    const indicatorHTML = `
-        <div id="blessing-indicator-container" style="
-            position: fixed;
-            top: 70px;
-            right: 10px;
-            background: rgba(76, 175, 80, 0.95);
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: 2px solid #4CAF50;
-            color: white;
-            font-size: 14px;
-            z-index: 100;
-            min-width: 180px;
-            cursor: pointer;
-        " onclick="showBlessingTowerModal()">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
-                <span style="font-size: 20px;">${activeBlessing.icon}</span>
-                <div>
-                    <div style="font-weight: bold; color: white;">
-                        ${activeBlessing.name}
-                    </div>
-                    <div style="font-size: 11px; color: #e8f5e8;">
-                        Осталось: ${window.formatTimeCurrency(remainingTime)}
-                    </div>
-                </div>
-            </div>
-            <div style="width: 100%; background: rgba(255,255,255,0.3); height: 6px; border-radius: 3px; overflow: hidden;">
-                <div style="
-                    width: ${progressPercent}%;
-                    height: 100%;
-                    background: linear-gradient(90deg, #81c784 0%, #4caf50 100%);
-                    transition: width 0.3s;
-                "></div>
-            </div>
-        </div>
-    `;
-    
-    // Удаляем старый если есть
+    const now = Date.now();
+
+    // Удаляем старый индикатор если есть
     const oldIndicator = document.getElementById('blessing-indicator-container');
     if (oldIndicator) oldIndicator.remove();
-    
-    // Добавляем новый
-    document.body.insertAdjacentHTML('beforeend', indicatorHTML);
+
+    // Проверяем активное благословение
+    if (activeBlessing && activeBlessing.expires_at > now) {
+        // Показываем активное благословение
+        const remainingTime = Math.ceil((activeBlessing.expires_at - now) / (60 * 1000));
+        const totalTime = Math.ceil((activeBlessing.expires_at - activeBlessing.activated_at) / (60 * 1000));
+        const progressPercent = ((totalTime - remainingTime) / totalTime * 100);
+
+        const indicatorHTML = `
+            <div id="blessing-indicator-container" style="
+                position: fixed;
+                top: 70px;
+                right: 10px;
+                background: rgba(76, 175, 80, 0.95);
+                padding: 10px 15px;
+                border-radius: 8px;
+                border: 2px solid #4CAF50;
+                color: white;
+                font-size: 14px;
+                z-index: 100;
+                min-width: 180px;
+                cursor: pointer;
+            " onclick="showBlessingTowerModal()">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                    <span style="font-size: 20px;">${activeBlessing.icon}</span>
+                    <div>
+                        <div style="font-weight: bold; color: white;">
+                            ${activeBlessing.name}
+                        </div>
+                        <div style="font-size: 11px; color: #e8f5e8;">
+                            Осталось: ${window.formatTimeCurrency(remainingTime)}
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 100%; background: rgba(255,255,255,0.3); height: 6px; border-radius: 3px; overflow: hidden;">
+                    <div style="
+                        width: ${progressPercent}%;
+                        height: 100%;
+                        background: linear-gradient(90deg, #81c784 0%, #4caf50 100%);
+                        transition: width 0.3s;
+                    "></div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', indicatorHTML);
+        return;
+    }
+
+    // Проверяем кулдаун
+    const lastUsed = window.userData?.blessing_last_used || 0;
+    const cooldownEnd = lastUsed + (BLESSING_TOWER_CONFIG.COOLDOWN_DURATION * 60 * 1000);
+
+    if (lastUsed > 0 && now < cooldownEnd) {
+        // Показываем индикатор кулдауна
+        const remainingCooldown = Math.ceil((cooldownEnd - now) / (60 * 1000));
+        const totalCooldown = BLESSING_TOWER_CONFIG.COOLDOWN_DURATION;
+        const cooldownProgress = ((totalCooldown - remainingCooldown) / totalCooldown * 100);
+
+        const cooldownHTML = `
+            <div id="blessing-indicator-container" style="
+                position: fixed;
+                top: 70px;
+                right: 10px;
+                background: rgba(100, 100, 100, 0.95);
+                padding: 10px 15px;
+                border-radius: 8px;
+                border: 2px solid #666;
+                color: white;
+                font-size: 14px;
+                z-index: 100;
+                min-width: 180px;
+                cursor: pointer;
+            " onclick="showBlessingTowerModal()">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                    <span style="font-size: 20px;">⏳</span>
+                    <div>
+                        <div style="font-weight: bold; color: #aaa;">
+                            Благословение
+                        </div>
+                        <div style="font-size: 11px; color: #ffa500;">
+                            Кулдаун: ${window.formatTimeCurrency(remainingCooldown)}
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 100%; background: rgba(255,255,255,0.2); height: 6px; border-radius: 3px; overflow: hidden;">
+                    <div style="
+                        width: ${cooldownProgress}%;
+                        height: 100%;
+                        background: linear-gradient(90deg, #666 0%, #888 100%);
+                        transition: width 0.3s;
+                    "></div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', cooldownHTML);
+    }
 }
 
 // Обновление индикатора (вызывается при изменении статуса)

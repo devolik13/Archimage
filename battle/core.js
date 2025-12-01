@@ -313,7 +313,11 @@ function initializeWizardHealth() {
         }
 
         // НОВОЕ: Применение эффектов благословений
-        if (wizard.blessingEffects) {
+        // Проверяем что благословение ещё активно (не истекло)
+        const activeBlessing = window.userData?.active_blessing;
+        const blessingStillActive = activeBlessing && activeBlessing.expires_at > Date.now();
+
+        if (wizard.blessingEffects && blessingStillActive) {
 
             // Бонус брони
             if (wizard.blessingEffects.armorBonus) {
