@@ -4,8 +4,10 @@
 function calculateMagicResistance(wizard, spellSchool) {
     if (!spellSchool) return 0;
 
-    // НОВОЕ: Для PvE врагов используем их кастомные сопротивления из конфига
-    if (wizard && wizard.isPvEEnemy && wizard.resistances) {
+    // ИСПРАВЛЕНО: Для PvE врагов используем их кастомные сопротивления из конфига
+    // Проверяем все флаги: isPvEEnemy, isElemental, isBoss, isFinalBoss
+    const isPvETarget = wizard && (wizard.isPvEEnemy || wizard.isElemental || wizard.isBoss || wizard.isFinalBoss);
+    if (isPvETarget && wizard.resistances) {
         return wizard.resistances[spellSchool] || 0;
     }
 
@@ -92,8 +94,10 @@ function applyMagicResistance(target, spellId, damage) {
     const spellSchool = getSpellSchool(spellId);
     let totalResistance = 0;
 
-    // НОВОЕ: Проверяем кастомные сопротивления для PvE врагов
-    if (target.resistances && target.isPvEEnemy) {
+    // ИСПРАВЛЕНО: Проверяем кастомные сопротивления для PvE врагов
+    // Используем все флаги: isPvEEnemy, isElemental, isBoss, isFinalBoss
+    const isPvETarget = target.isPvEEnemy || target.isElemental || target.isBoss || target.isFinalBoss;
+    if (target.resistances && isPvETarget) {
         // Для PvE врагов используем кастомные сопротивления из конфига
         if (Array.isArray(spellSchool)) {
             // Для гибридных заклинаний берем среднее сопротивление

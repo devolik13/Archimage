@@ -226,13 +226,16 @@ function applyFireWallInstantDamage(casterId, casterType, positions, damage) {
             }
 
             if (typeof window.addToBattleLog === 'function') {
-                // Формируем детальный лог урона
-                let damageDetails = `База ${damage}`;
+                // Многострочный лог как у Искры
+                window.addToBattleLog(`🔥 Огненная стена → ${target.name} (${finalDamage} урона)`);
                 const damageSteps = target._lastDamageSteps || [];
                 if (damageSteps.length > 0) {
-                    damageDetails = damageSteps.join(' → ');
+                    damageSteps.forEach(step => {
+                        window.addToBattleLog(`    ├─ ${step}`);
+                    });
                 }
-                window.addToBattleLog(`🔥 Огненная стена → ${target.name}: ${damageDetails} = ${finalDamage} урона (${target.hp}/${target.max_hp})`);
+                window.addToBattleLog(`    └─ HP: ${target.hp}/${target.max_hp}`);
+                delete target._lastDamageSteps;
             }
         }
     });
@@ -273,13 +276,16 @@ function processFireWallsForWizard(wizard, wizardType) {
                     }
 
                     if (typeof window.addToBattleLog === 'function') {
-                        // Формируем детальный лог урона
-                        let damageDetails = `База ${zone.damage}`;
+                        // Многострочный лог как у Искры
+                        window.addToBattleLog(`🔥 Огненная стена (в ход) → ${wizard.name} (${finalDamage} урона)`);
                         const damageSteps = wizard._lastDamageSteps || [];
                         if (damageSteps.length > 0) {
-                            damageDetails = damageSteps.join(' → ');
+                            damageSteps.forEach(step => {
+                                window.addToBattleLog(`    ├─ ${step}`);
+                            });
                         }
-                        window.addToBattleLog(`🔥 Огненная стена (в ход) → ${wizard.name}: ${damageDetails} = ${finalDamage} урона (${wizard.hp}/${wizard.max_hp})`);
+                        window.addToBattleLog(`    └─ HP: ${wizard.hp}/${wizard.max_hp}`);
+                        delete wizard._lastDamageSteps;
                     }
 
                     // Логирование смерти от огненной стены

@@ -407,13 +407,16 @@ function castIceRain(wizard, spellData, position, casterType) {
                 if (target.wizard.hp < 0) target.wizard.hp = 0;
 
                 if (typeof window.addToBattleLog === 'function') {
-                    // Формируем детальный лог урона
-                    let damageDetails = `База ${baseDamage}`;
+                    // Многострочный лог как у Искры
+                    window.addToBattleLog(`❄️ Ледяной дождь [${col}] → ${target.wizard.name} (${finalDamage} урона)`);
                     const damageSteps = target.wizard._lastDamageSteps || [];
                     if (damageSteps.length > 0) {
-                        damageDetails = damageSteps.join(' → ');
+                        damageSteps.forEach(step => {
+                            window.addToBattleLog(`    ├─ ${step}`);
+                        });
                     }
-                    window.addToBattleLog(`❄️ Ледяной дождь [${col}] → ${target.wizard.name}: ${damageDetails} = ${finalDamage} урона (${target.wizard.hp}/${target.wizard.max_hp})`);
+                    window.addToBattleLog(`    └─ HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
+                    delete target.wizard._lastDamageSteps;
                 }
                 targetsHit.push(target.wizard);
             }
