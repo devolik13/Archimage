@@ -644,14 +644,14 @@ function clearSlot(position) {
 // Сохранение расстановки - ИСПРАВЛЕННАЯ ВЕРСИЯ
 
 async function saveBattleFormation() {
-
-
-    
+    // DEBUG: Логируем что пытаемся сохранить
+    console.log('💾 saveBattleFormation вызвана');
+    console.log('💾 currentBattleFormation:', JSON.stringify(currentBattleFormation));
 
     try {
-
         // Сохраняем КОПИЮ в window.userData (не ссылку!)
         const formationCopy = [...currentBattleFormation];
+        console.log('💾 formationCopy:', JSON.stringify(formationCopy));
         window.userData.formation = formationCopy;
 
 

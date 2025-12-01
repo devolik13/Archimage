@@ -140,7 +140,13 @@ class DatabaseManager {
 
     // Сохранить расстановку войск
     async saveFormation(formation) {
-        if (!this.currentPlayer) return false;
+        console.log('💾 dbManager.saveFormation вызвана с:', JSON.stringify(formation));
+        console.log('💾 currentPlayer.id:', this.currentPlayer?.id);
+
+        if (!this.currentPlayer) {
+            console.error('❌ currentPlayer не существует!');
+            return false;
+        }
 
         try {
             const { error } = await this.supabase
@@ -152,7 +158,7 @@ class DatabaseManager {
 
             if (error) throw error;
 
-            console.log('⚔️ Расстановка сохранена:', formation);
+            console.log('⚔️ Расстановка успешно сохранена в Supabase:', formation);
             return true;
 
         } catch (error) {
