@@ -81,9 +81,10 @@
                     return;
                 }
 
-                // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
-                const cellWidth = targetCell.cellWidth || targetCell.width || 60;
-                const cellHeight = targetCell.cellHeight || targetCell.height || 60;
+                // Используем ту же формулу что и poisoned_glade для совпадения позиций
+                const centerX = targetCell.x + targetCell.width / 2;
+                const centerY = targetCell.y + targetCell.height / 2;
+                const cellSize = targetCell.width || 60;
 
                 setTimeout(() => {
                     // Эффект тряски земли
@@ -92,11 +93,11 @@
                     // Шип через 200мс после тряски
                     setTimeout(() => {
                         const spike = new PIXI.AnimatedSprite(spikeTextures);
-                        spike.x = targetCell.x + cellWidth / 2;
-                        spike.y = targetCell.y + cellHeight / 2;  // Центр клетки как у поляны
-                        spike.anchor.set(0.5, 0.5);  // Центрированный якорь
+                        spike.x = centerX;
+                        spike.y = centerY;
+                        spike.anchor.set(0.5, 0.5);
 
-                        const scale = (cellWidth * 0.8) / frameWidth;
+                        const scale = (cellSize * 0.8) / frameWidth;
                         spike.scale.set(scale);
 
                         spike.animationSpeed = 0.25;
@@ -114,11 +115,9 @@
                         spike.play();
 
                         // Осколки - в центре клетки
-                        createDebris(targetCell.x + cellWidth / 2,
-                                   targetCell.y + cellHeight / 2,
-                                   targetCell.cellScale || 1);
-                        
-                        console.log(`🗿 Шип создан в [${pos.col}][${pos.row}]`);
+                        createDebris(centerX, centerY, targetCell.cellScale || 1);
+
+                        console.log(`🗿 Шип создан в [${pos.col}][${pos.row}] x=${centerX} y=${centerY}`);
                     }, 200);
                 }, pos.delay);
             });
@@ -139,9 +138,9 @@
                 const targetCell = gridCells[pos.col]?.[pos.row];
                 if (!targetCell) return;
 
-                // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
-                const cellWidth = targetCell.cellWidth || targetCell.width || 60;
-                const cellHeight = targetCell.cellHeight || targetCell.height || 60;
+                // Используем ту же формулу что и poisoned_glade
+                const centerX = targetCell.x + targetCell.width / 2;
+                const centerY = targetCell.y + targetCell.height / 2;
 
                 setTimeout(() => {
                     const spike = new PIXI.Graphics();
@@ -152,8 +151,8 @@
                     spike.closePath();
                     spike.endFill();
 
-                    spike.x = targetCell.x + cellWidth / 2;
-                    spike.y = targetCell.y + cellHeight / 2;  // Центр клетки
+                    spike.x = centerX;
+                    spike.y = centerY;
                     spike.scale.set(0, 0);
 
                     effectsContainer.addChild(spike);
