@@ -319,20 +319,59 @@ function showPlayerProfile() {
 
         overlay.appendChild(container);
 
+        // Кнопка реферальной ссылки
+        const referralBtn = document.createElement('button');
+        referralBtn.innerHTML = '🔗 Пригласить друга';
+        referralBtn.style.cssText = `
+            position: absolute;
+            left: ${115 * scaleX}px;
+            top: ${430 * scaleY}px;
+            width: ${((655 - 115) / 2 - 5) * scaleX}px;
+            height: ${40 * scaleY}px;
+            background: rgba(74, 222, 128, 0.9);
+            border: none;
+            border-radius: ${6 * Math.min(scaleX, scaleY)}px;
+            color: white;
+            font-size: ${Math.max(11, 13 * Math.min(scaleX, scaleY))}px;
+            font-weight: bold;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: all 0.2s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        `;
+
+        referralBtn.onmouseover = () => {
+            referralBtn.style.background = 'rgba(60, 200, 110, 0.95)';
+            referralBtn.style.transform = 'scale(1.02)';
+        };
+        referralBtn.onmouseout = () => {
+            referralBtn.style.background = 'rgba(74, 222, 128, 0.9)';
+            referralBtn.style.transform = 'scale(1)';
+        };
+        referralBtn.onclick = () => {
+            if (window.referralManager && typeof window.referralManager.showReferralUI === 'function') {
+                window.referralManager.showReferralUI();
+            } else {
+                alert('Реферальная система загружается...');
+            }
+        };
+
+        overlay.appendChild(referralBtn);
+
         // Кнопка закрытия
         const closeBtn = document.createElement('button');
         closeBtn.innerHTML = '← Закрыть';
         closeBtn.style.cssText = `
             position: absolute;
-            left: ${115 * scaleX}px;
+            left: ${(115 + (655 - 115) / 2 + 5) * scaleX}px;
             top: ${430 * scaleY}px;
-            width: ${(655 - 115) * scaleX}px;
+            width: ${((655 - 115) / 2 - 5) * scaleX}px;
             height: ${40 * scaleY}px;
             background: rgba(114, 137, 218, 0.9);
             border: none;
             border-radius: ${6 * Math.min(scaleX, scaleY)}px;
             color: white;
-            font-size: ${Math.max(12, 14 * Math.min(scaleX, scaleY))}px;
+            font-size: ${Math.max(11, 13 * Math.min(scaleX, scaleY))}px;
             font-weight: bold;
             cursor: pointer;
             pointer-events: auto;
