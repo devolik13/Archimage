@@ -331,7 +331,6 @@ function generateBots() {
                 buildings: buildings,
                 pve_progress: {},
                 settings: { sound: true, language: 'ru', battle_speed: 'normal' },
-                tutorial_completed: true,
                 welcome_shown: true,
                 created_at: new Date(Date.now() - random(30, 180) * 24 * 60 * 60 * 1000).toISOString()
             });
@@ -389,7 +388,7 @@ function generateSQL(bots, guildAssignments) {
         sql += `    telegram_id, username, rating, wins, losses, total_battles,\n`;
         sql += `    faction, level, experience, time_currency,\n`;
         sql += `    wizards, spells, formation, buildings,\n`;
-        sql += `    pve_progress, settings, tutorial_completed, welcome_shown, created_at\n`;
+        sql += `    pve_progress, settings, welcome_shown, created_at\n`;
         sql += `) VALUES (\n`;
         sql += `    ${bot.telegram_id},\n`;
         sql += `    '${bot.username.replace(/'/g, "''")}',\n`;
@@ -407,7 +406,6 @@ function generateSQL(bots, guildAssignments) {
         sql += `    '${JSON.stringify(bot.buildings).replace(/'/g, "''")}'::jsonb,\n`;
         sql += `    '${JSON.stringify(bot.pve_progress)}'::jsonb,\n`;
         sql += `    '${JSON.stringify(bot.settings)}'::jsonb,\n`;
-        sql += `    ${bot.tutorial_completed},\n`;
         sql += `    ${bot.welcome_shown},\n`;
         sql += `    '${bot.created_at}'\n`;
         sql += `);\n\n`;
