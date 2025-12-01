@@ -416,6 +416,10 @@ function renderGuildView(container) {
                     flex: 1; padding: 8px; border: none; border-radius: 6px;
                     background: #3b82f6; color: white; cursor: pointer; font-size: 11px;
                 ">Инфо</button>
+                <button onclick="switchGuildTab('top')" id="tab-top" class="guild-tab" style="
+                    flex: 1; padding: 8px; border: none; border-radius: 6px;
+                    background: rgba(255,255,255,0.1); color: #aaa; cursor: pointer; font-size: 11px;
+                ">🏆 Топ</button>
                 <button onclick="switchGuildTab('members')" id="tab-members" class="guild-tab" style="
                     flex: 1; padding: 8px; border: none; border-radius: 6px;
                     background: rgba(255,255,255,0.1); color: #aaa; cursor: pointer; font-size: 11px;
@@ -475,6 +479,7 @@ function switchGuildTab(tab) {
 
     switch (tab) {
         case 'info': renderGuildInfo(content); break;
+        case 'top': renderGuildTop(content); break;
         case 'members': renderGuildMembers(content); break;
         case 'research': renderGuildResearch(content); break;
         case 'settings': renderGuildSettings(content); break;
@@ -533,6 +538,113 @@ function renderGuildInfo(container) {
             </div>
         </div>
     `;
+}
+
+// === ТАБ ТОП ГИЛЬДИЙ ===
+async function renderGuildTop(container) {
+    container.innerHTML = `
+        <div style="text-align: center; padding: 20px;">
+            <div style="font-size: 24px;">⏳</div>
+            <div style="color: #aaa; margin-top: 10px;">Загрузка рейтинга...</div>
+        </div>
+    `;
+
+    try {
+        // Загружаем топ-5 гильдий по опыту
+        const { data: topGuilds, error } = await window.supabaseClient
+            .from('guilds')
+            .select('id, name, tag, level, experience, leader_id')
+            .order('experience', { ascending: false })
+            .limit(5);
+
+        if (error) throw error;
+
+        // Текущая гильдия игрока
+        const currentGuild = window.guildManager?.currentGuild;
+        let currentGuildRank = null;
+
+        // Если текущая гильдия не в топ-5, найдём её позицию
+        if (currentGuild && !topGuilds.find(g => g.id === currentGuild.id)) {
+            const { data: allGuilds, error: rankError } = await window.supabaseClient
+                .from('guilds')
+                .select('id, experience')
+                .order('experience', { ascending: false });
+
+            if (!rankError && allGuilds) {
+                currentGuildRank = allGuilds.findIndex(g => g.id === currentGuild.id) + 1;
+            }
+        }
+
+        // Рендерим топ
+        const rankEmojis = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+
+        container.innerHTML = `
+            <h4 style="color: #ffd700; margin: 0 0 15px 0; text-align: center;">🏆 Топ гильдий</h4>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${topGuilds.map((guild, i) => {
+                    const isCurrentGuild = currentGuild && guild.id === currentGuild.id;
+                    return `
+                        <div style="
+                            background: ${isCurrentGuild ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255,255,255,0.05)'};
+                            padding: 12px;
+                            border-radius: 10px;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            ${isCurrentGuild ? 'border: 2px solid #3b82f6;' : ''}
+                        ">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="font-size: 20px; width: 30px; text-align: center;">${rankEmojis[i]}</div>
+                                <div>
+                                    <div style="color: white; font-weight: bold;">
+                                        [${guild.tag}] ${guild.name}
+                                        ${isCurrentGuild ? '<span style="color: #3b82f6; font-size: 10px;"> (ваша)</span>' : ''}
+                                    </div>
+                                    <div style="color: #aaa; font-size: 11px;">
+                                        Уровень ${guild.level}
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="color: #ffd700; font-weight: bold;">${guild.experience.toLocaleString()}</div>
+                                <div style="color: #666; font-size: 10px;">опыта</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+
+            ${currentGuild && currentGuildRank ? `
+                <div style="
+                    margin-top: 15px;
+                    padding: 12px;
+                    background: rgba(59, 130, 246, 0.2);
+                    border: 1px solid rgba(59, 130, 246, 0.5);
+                    border-radius: 10px;
+                    text-align: center;
+                ">
+                    <div style="color: #aaa; font-size: 12px;">Ваша гильдия</div>
+                    <div style="color: white; font-weight: bold; margin: 5px 0;">
+                        [${currentGuild.tag}] ${currentGuild.name}
+                    </div>
+                    <div style="color: #ffd700; font-size: 18px; font-weight: bold;">
+                        #${currentGuildRank} место
+                    </div>
+                    <div style="color: #aaa; font-size: 11px;">
+                        ${currentGuild.experience.toLocaleString()} опыта
+                    </div>
+                </div>
+            ` : ''}
+        `;
+
+    } catch (error) {
+        console.error('Ошибка загрузки топа гильдий:', error);
+        container.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: #f44336;">
+                ❌ Ошибка загрузки рейтинга
+            </div>
+        `;
+    }
 }
 
 // === ТАБ УЧАСТНИКИ ===
