@@ -7,8 +7,9 @@ function calculateMagicResistance(wizard, spellSchool) {
     // ИСПРАВЛЕНО: Для PvE врагов используем их кастомные сопротивления из конфига
     // Проверяем все флаги: isPvEEnemy, isAdventureEnemy, isElemental, isBoss, isFinalBoss
     const isPvETarget = wizard && (wizard.isPvEEnemy || wizard.isAdventureEnemy || wizard.isElemental || wizard.isBoss || wizard.isFinalBoss);
-    if (isPvETarget && wizard.resistances) {
-        return wizard.resistances[spellSchool] || 0;
+    if (isPvETarget) {
+        // PvE враги используют только свои resistances (или 0 если не заданы)
+        return wizard.resistances ? (wizard.resistances[spellSchool] || 0) : 0;
     }
 
     // Для обычных магов считаем по изученным заклинаниям из userData
@@ -97,30 +98,30 @@ function applyMagicResistance(target, spellId, damage) {
     // ИСПРАВЛЕНО: Проверяем кастомные сопротивления для PvE врагов
     // Используем все флаги: isPvEEnemy, isAdventureEnemy, isElemental, isBoss, isFinalBoss
     const isPvETarget = target.isPvEEnemy || target.isAdventureEnemy || target.isElemental || target.isBoss || target.isFinalBoss;
-    if (target.resistances && isPvETarget) {
-        // Для PvE врагов используем кастомные сопротивления из конфига
-        if (Array.isArray(spellSchool)) {
-            // Для гибридных заклинаний берем среднее сопротивление
-            let resistanceSum = 0;
-            spellSchool.forEach(school => {
-                resistanceSum += (target.resistances[school] || 0);
-            });
-            totalResistance = resistanceSum / spellSchool.length;
-        } else if (spellSchool) {
-            // Для обычных заклинаний
-            totalResistance = target.resistances[spellSchool] || 0;
+
+    if (isPvETarget) {
+        // PvE враги: используем только их resistances (или 0 если не заданы)
+        if (target.resistances) {
+            if (Array.isArray(spellSchool)) {
+                let resistanceSum = 0;
+                spellSchool.forEach(school => {
+                    resistanceSum += (target.resistances[school] || 0);
+                });
+                totalResistance = resistanceSum / spellSchool.length;
+            } else if (spellSchool) {
+                totalResistance = target.resistances[spellSchool] || 0;
+            }
         }
+        // Если resistances не заданы - totalResistance остается 0
     } else {
         // Для обычных магов используем расчет по изученным заклинаниям
         if (Array.isArray(spellSchool)) {
-            // Для гибридных заклинаний берем среднее сопротивление
             let resistanceSum = 0;
             spellSchool.forEach(school => {
                 resistanceSum += calculateMagicResistance(target, school);
             });
             totalResistance = resistanceSum / spellSchool.length;
         } else if (spellSchool) {
-            // Для обычных заклинаний
             totalResistance = calculateMagicResistance(target, spellSchool);
         }
     }
