@@ -863,7 +863,16 @@ function applyAbsoluteZeroDamageToTarget(caster, target, zone, targetType, row) 
     if (target.hp < 0) target.hp = 0;
 
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`❄️ ${target.name} получает ${finalDamage} урона от Абсолютного Ноля (${target.hp}/${target.max_hp})`);
+        // Многострочный лог как у Искры
+        window.addToBattleLog(`❄️ Абсолютный Ноль → ${target.name} (${finalDamage} урона)`);
+        const damageSteps = target._lastDamageSteps || [];
+        if (damageSteps.length > 0) {
+            damageSteps.forEach(step => {
+                window.addToBattleLog(`    ├─ ${step}`);
+            });
+        }
+        window.addToBattleLog(`    └─ HP: ${target.hp}/${target.max_hp}`);
+        delete target._lastDamageSteps;
     }
 
     // Логирование смерти от абсолютного ноля
@@ -923,7 +932,16 @@ function processAbsoluteZeroForWizard(wizard, position, wizardType) {
     if (wizard.hp < 0) wizard.hp = 0;
 
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`❄️ ${wizard.name} получает ${finalDamage} урона от Абсолютного Ноля (${wizard.hp}/${wizard.max_hp})`);
+        // Многострочный лог как у Искры
+        window.addToBattleLog(`❄️ Абсолютный Ноль → ${wizard.name} (${finalDamage} урона)`);
+        const damageSteps = wizard._lastDamageSteps || [];
+        if (damageSteps.length > 0) {
+            damageSteps.forEach(step => {
+                window.addToBattleLog(`    ├─ ${step}`);
+            });
+        }
+        window.addToBattleLog(`    └─ HP: ${wizard.hp}/${wizard.max_hp}`);
+        delete wizard._lastDamageSteps;
     }
 
     // Проверяем смерть

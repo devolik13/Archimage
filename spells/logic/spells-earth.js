@@ -279,13 +279,17 @@ function castStoneSpike(wizard, spellData, position, casterType) {
             targetInfo.target.wizard.hp -= finalDamage;
             if (targetInfo.target.wizard.hp < 0) targetInfo.target.wizard.hp = 0;
 
-            if (typeof window.logSpellHit === 'function') {
-                window.logSpellHit(
-                    wizard, 
-                    targetInfo.target.wizard, 
-                    finalDamage, 
-                    `Каменный шип (${window.getDirectionNameSimple(targetInfo.direction, level)})`
-                );
+            if (typeof window.addToBattleLog === 'function') {
+                // Многострочный лог как у Искры
+                window.addToBattleLog(`🗿 Каменный шип (${window.getDirectionNameSimple(targetInfo.direction, level)}) → ${targetInfo.target.wizard.name} (${finalDamage} урона)`);
+                const damageSteps = targetInfo.target.wizard._lastDamageSteps || [];
+                if (damageSteps.length > 0) {
+                    damageSteps.forEach(step => {
+                        window.addToBattleLog(`    ├─ ${step}`);
+                    });
+                }
+                window.addToBattleLog(`    └─ HP: ${targetInfo.target.wizard.hp}/${targetInfo.target.wizard.max_hp}`);
+                delete targetInfo.target.wizard._lastDamageSteps;
             }
         });
     }
