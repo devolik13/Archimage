@@ -349,37 +349,13 @@ function showPlayerProfile() {
             referralBtn.style.transform = 'scale(1)';
         };
         referralBtn.onclick = () => {
-            // Генерируем ссылку и копируем сразу
-            const telegramId = window.dbManager?.currentPlayer?.telegram_id;
-            if (!telegramId) {
+            if (window.referralManager && typeof window.referralManager.showReferralUI === 'function') {
+                window.referralManager.showReferralUI();
+            } else {
                 if (typeof showInlineNotification === 'function') {
-                    showInlineNotification('❌ Ошибка: данные не загружены');
+                    showInlineNotification('❌ Реферальная система загружается...');
                 }
-                return;
             }
-
-            const botUsername = window.TELEGRAM_BOT_USERNAME || 'ArchiMageBot';
-            const appName = window.TELEGRAM_APP_NAME || 'app';
-            const link = `https://t.me/${botUsername}/${appName}?startapp=ref_${telegramId}`;
-
-            navigator.clipboard.writeText(link).then(() => {
-                if (typeof showInlineNotification === 'function') {
-                    showInlineNotification('✅ Ссылка скопирована! Отправь другу - оба получите +1 день!');
-                }
-            }).catch(() => {
-                // Fallback
-                const textArea = document.createElement('textarea');
-                textArea.value = link;
-                textArea.style.position = 'fixed';
-                textArea.style.opacity = '0';
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                if (typeof showInlineNotification === 'function') {
-                    showInlineNotification('✅ Ссылка скопирована! Отправь другу - оба получите +1 день!');
-                }
-            });
         };
 
         overlay.appendChild(referralBtn);

@@ -160,7 +160,7 @@ class ReferralManager {
 
         const modalHTML = `
             <div style="padding: 20px; text-align: center; max-width: 350px;">
-                <h3 style="color: #7289da; margin-top: 0;">🔗 Пригласи друга!</h3>
+                <h3 style="color: #4ade80; margin-top: 0;">🎁 Пригласи друга!</h3>
                 <p style="font-size: 13px; color: #ccc; margin: 15px 0;">
                     Поделись ссылкой с друзьями.<br>
                     Вы оба получите <span style="color: #4ade80; font-weight: bold;">1 день</span> игрового времени!
@@ -180,7 +180,7 @@ class ReferralManager {
                 <button onclick="window.referralManager.copyReferralLink()" style="
                     width: 100%;
                     padding: 12px;
-                    background: linear-gradient(135deg, #7289da, #5865f2);
+                    background: linear-gradient(135deg, #4ade80, #22c55e);
                     border: none;
                     border-radius: 8px;
                     color: white;
@@ -200,40 +200,54 @@ class ReferralManager {
                     font-size: 14px;
                     font-weight: bold;
                     cursor: pointer;
+                    margin-bottom: 10px;
                 ">📤 Поделиться в Telegram</button>
+
+                <button onclick="window.referralManager.closeReferralUI()" style="
+                    width: 100%;
+                    padding: 12px;
+                    background: rgba(114, 137, 218, 0.9);
+                    border: none;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: 14px;
+                    font-weight: bold;
+                    cursor: pointer;
+                ">← Назад</button>
             </div>
         `;
 
-        if (window.Modal && window.Modal.open) {
-            window.Modal.open(modalHTML, { closeOnOverlay: true });
-        } else {
-            // Fallback для старой системы модалок
-            const overlay = document.createElement('div');
-            overlay.id = 'referral-modal-overlay';
-            overlay.style.cssText = `
-                position: fixed;
-                top: 0; left: 0;
-                width: 100%; height: 100%;
-                background: rgba(0,0,0,0.8);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 10000;
-            `;
-            overlay.onclick = (e) => {
-                if (e.target === overlay) overlay.remove();
-            };
+        // Всегда используем свою модалку с высоким z-index
+        const overlay = document.createElement('div');
+        overlay.id = 'referral-modal-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        `;
 
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                background: #2c2c3d;
-                border-radius: 12px;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-            `;
-            modal.innerHTML = modalHTML;
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            background: #2c2c3d;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        `;
+        modal.innerHTML = modalHTML;
 
-            overlay.appendChild(modal);
-            document.body.appendChild(overlay);
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+    }
+
+    // Закрыть окно реферальной ссылки
+    closeReferralUI() {
+        const overlay = document.getElementById('referral-modal-overlay');
+        if (overlay) {
+            overlay.remove();
         }
     }
 
