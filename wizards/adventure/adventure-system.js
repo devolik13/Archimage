@@ -33,11 +33,20 @@ const ADVENTURE_LEVELS = [
 ];
 
 function loadAdventureProgress() {
-    return JSON.parse(localStorage.getItem('adventureProgress') || '{}');
+    // Используем БД через window.userData вместо localStorage
+    return window.userData?.pve_progress || {};
 }
 
 function saveAdventureProgress(progress) {
-    localStorage.setItem('adventureProgress', JSON.stringify(progress));
+    // Сохраняем в userData и в БД
+    if (window.userData) {
+        window.userData.pve_progress = progress;
+
+        // Сохраняем в БД
+        if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+            window.dbManager.savePlayer(window.userData);
+        }
+    }
 }
 
 function startAdventure(levelId) {
