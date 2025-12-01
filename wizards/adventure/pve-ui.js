@@ -283,12 +283,13 @@ function closePvEModal() {
 }
 
 /**
- * Загружает прогресс PvE из localStorage
+ * Загружает прогресс PvE из БД (через window.userData)
  */
 function loadPvEProgress() {
-    const saved = localStorage.getItem('pveProgress');
-    if (saved) {
-        return JSON.parse(saved);
+    // Используем БД через window.userData вместо localStorage
+    const progress = window.userData?.pve_progress;
+    if (progress && Object.keys(progress).length > 0) {
+        return progress;
     }
     return {
         chapter1: {
@@ -299,10 +300,18 @@ function loadPvEProgress() {
 }
 
 /**
- * Сохраняет прогресс PvE в localStorage
+ * Сохраняет прогресс PvE в БД
  */
 function savePvEProgress(progress) {
-    localStorage.setItem('pveProgress', JSON.stringify(progress));
+    // Сохраняем в userData и в БД
+    if (window.userData) {
+        window.userData.pve_progress = progress;
+
+        // Сохраняем в БД
+        if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+            window.dbManager.savePlayer(window.userData);
+        }
+    }
 }
 
 /**
