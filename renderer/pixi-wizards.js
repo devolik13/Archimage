@@ -87,6 +87,16 @@
             animationSpeed: 0.15,
             scale: 0.245 // Уменьшено на 30% (0.350 * 0.7)
         },
+        orc: {
+            idle: 'images/enemies/orc/idle.png',
+            cast: 'images/enemies/orc/attack.png',
+            death: 'images/enemies/orc/death.png',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            animationSpeed: 0.12, // Чуть медленнее - орки массивнее
+            scale: 0.30 // Орки крупнее гоблинов
+        },
         fire_elemental: {
             idle: 'images/enemies/fire_elemental/idle.png',
             cast: 'images/enemies/fire_elemental/cast.png',
@@ -253,9 +263,15 @@
                     return elementalType;
                 }
 
-                // Если это обычный PVE враг - используем спрайты гоблинов/орков/троллей
+                // Если это обычный PVE враг - используем спрайты по типу (goblin/orc/troll/etc)
                 if (enemyWizard && enemyWizard.isAdventureEnemy) {
-                    return 'goblin';
+                    // Используем spriteSheet из конфига врага, иначе goblin по умолчанию
+                    const enemySprite = enemyWizard.spriteSheet || 'goblin';
+                    // Проверяем, есть ли такой спрайт в конфиге
+                    if (spriteConfig[enemySprite]) {
+                        return enemySprite;
+                    }
+                    return 'goblin'; // fallback
                 }
 
                 // Иначе используем фракцию врага (PvP)

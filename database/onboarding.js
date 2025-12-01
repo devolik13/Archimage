@@ -138,6 +138,22 @@ async function selectFaction(faction) {
                 factionElement.textContent = getFactionName(faction);
             }
 
+            // Обрабатываем реферал (если есть)
+            if (window.referralManager) {
+                const referralResult = await window.referralManager.processReferral(
+                    window.dbManager.currentPlayer.id,
+                    window.dbManager.currentPlayer.telegram_id
+                );
+                if (referralResult) {
+                    // Обновляем UI с новым временем
+                    setTimeout(() => {
+                        if (typeof showInlineNotification === 'function') {
+                            showInlineNotification(`🎁 Бонус за приглашение: +1 день!`);
+                        }
+                    }, 2000);
+                }
+            }
+
             // Инициализируем все системы игры (нужны для демо батла)
             if (typeof window.updateUI === 'function') {
                 window.updateUI();

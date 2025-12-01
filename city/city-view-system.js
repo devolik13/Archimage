@@ -425,13 +425,23 @@ function createBottomControlPanel() {
         document.body.appendChild(panel);
     }
     
+    // Кнопка гильдии
+    const guildButton = createControlButton('🏰', 'Гильдия', () => {
+        console.log('🏰 Открыть окно гильдии');
+        if (typeof window.openGuildModal === 'function') {
+            window.openGuildModal();
+        } else {
+            showNotification('Гильдия пока недоступна');
+        }
+    });
+
     // Кнопка строить
     const buildButton = createControlButton('🏗️', 'Строить', () => {
         console.log('🏗️ Открыть меню строительства');
         // Показываем меню выбора ячейки для строительства
         showBuildingSelectionMenu();
     });
-    
+
     // Кнопка заклинаний
     const spellsButton = createControlButton('📖', 'Заклинания', () => {
         console.log('📖 Открыть библиотеку заклинаний');
@@ -455,6 +465,7 @@ function createBottomControlPanel() {
     });
     
     // Добавляем кнопки
+    panel.appendChild(guildButton);
     panel.appendChild(buildButton);
     panel.appendChild(spellsButton);
     panel.appendChild(arenaButton);
