@@ -400,14 +400,20 @@ function castIceRain(wizard, spellData, position, casterType) {
                     processedTargets.add(target.wizard.id);
                 }
                 
-                const finalDamage = window.applyFinalDamage ? 
+                const finalDamage = window.applyFinalDamage ?
                     window.applyFinalDamage(wizard, target.wizard, baseDamage, 'ice_rain', 0, true) : baseDamage;
-                    
+
                 target.wizard.hp -= finalDamage;
                 if (target.wizard.hp < 0) target.wizard.hp = 0;
-                
+
                 if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`❄️ Ледяной дождь обрушивается на ${target.wizard.name} [${col}] (${finalDamage} урона, игнорирует препятствия) (${target.wizard.hp}/${target.wizard.max_hp})`);
+                    // Формируем детальный лог урона
+                    let damageDetails = `База ${baseDamage}`;
+                    const damageSteps = target.wizard._lastDamageSteps || [];
+                    if (damageSteps.length > 0) {
+                        damageDetails = damageSteps.join(' → ');
+                    }
+                    window.addToBattleLog(`❄️ Ледяной дождь [${col}] → ${target.wizard.name}: ${damageDetails} = ${finalDamage} урона (${target.wizard.hp}/${target.wizard.max_hp})`);
                 }
                 targetsHit.push(target.wizard);
             }
@@ -425,10 +431,10 @@ function castIceRain(wizard, spellData, position, casterType) {
         }
     });
 
-    // Общий лог
+    // Общий лог (в начале, а не в конце - для правильного порядка)
     const areaDescription = getIceRainAreaDescription(level);
-    if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`❄️ ${wizard.name} вызывает Ледяной дождь (${areaDescription}, ${baseDamage} урона, игнорирует препятствия)`);
+    if (typeof window.addToBattleLog === 'function' && targetsHit.length > 0) {
+        window.addToBattleLog(`❄️ ${wizard.name} вызывает Ледяной дождь Ур.${level} (${areaDescription}, поражено ${targetsHit.length} целей)`);
     }
 }
 

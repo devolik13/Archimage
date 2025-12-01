@@ -2,12 +2,19 @@
 
 // Функция расчета сопротивления к школе магии
 function calculateMagicResistance(wizard, spellSchool) {
-    // Берем данные об изученных заклинаниях из userData
+    if (!spellSchool) return 0;
+
+    // НОВОЕ: Для PvE врагов используем их кастомные сопротивления из конфига
+    if (wizard && wizard.isPvEEnemy && wizard.resistances) {
+        return wizard.resistances[spellSchool] || 0;
+    }
+
+    // Для обычных магов считаем по изученным заклинаниям из userData
     const userSpells = window.userData?.spells;
-    if (!userSpells || !spellSchool) return 0;
-    
+    if (!userSpells) return 0;
+
     let resistance = 0;
-    
+
     // Стандартные заклинания данной школы
     if (userSpells[spellSchool]) {
         for (const [spellId, spellData] of Object.entries(userSpells[spellSchool])) {
@@ -16,7 +23,7 @@ function calculateMagicResistance(wizard, spellSchool) {
             }
         }
     }
-    
+
     // Гибридные заклинания
     if (userSpells.hybrid) {
         for (const [hybridId, spellData] of Object.entries(userSpells.hybrid)) {
@@ -25,7 +32,7 @@ function calculateMagicResistance(wizard, spellSchool) {
             }
         }
     }
-    
+
     return resistance;
 }
 
