@@ -533,6 +533,60 @@ class GuildManager {
         }
     }
 
+    // === КИК ЧЛЕНА ГИЛЬДИИ (ТОЛЬКО ЛИДЕР) ===
+    async kickMember(playerId) {
+        if (!this.currentGuild) {
+            return { success: false, error: 'Гильдия не загружена' };
+        }
+
+        const leaderId = window.dbManager.currentPlayer.id;
+        if (this.currentGuild.leader_id !== leaderId) {
+            return { success: false, error: 'Только глава может исключать членов' };
+        }
+
+        // Нельзя кикнуть себя
+        if (playerId === leaderId) {
+            return { success: false, error: 'Нельзя исключить себя из гильдии' };
+        }
+
+        try {
+            // Проверяем что игрок в нашей гильдии
+            const { data: player, error: playerError } = await this.supabase
+                .from('players')
+                .select('id, username, guild_id')
+                .eq('id', playerId)
+                .single();
+
+            if (playerError) throw playerError;
+
+            if (player.guild_id !== this.currentGuild.id) {
+                return { success: false, error: 'Игрок не состоит в вашей гильдии' };
+            }
+
+            // Исключаем игрока
+            const { error } = await this.supabase
+                .from('players')
+                .update({
+                    guild_id: null,
+                    guild_contribution: 0,
+                    guild_last_active: null
+                })
+                .eq('id', playerId);
+
+            if (error) throw error;
+
+            // Обновляем локальный список членов
+            this.guildMembers = this.guildMembers.filter(m => m.id !== playerId);
+
+            console.log(`👢 Игрок ${player.username} исключён из гильдии`);
+            return { success: true, message: `${player.username} исключён из гильдии` };
+
+        } catch (error) {
+            console.error('Ошибка исключения игрока:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
     // === ОДОБРЕНИЕ/ОТКЛОНЕНИЕ ЗАЯВКИ (ТОЛЬКО ЛИДЕР) ===
     async handleJoinRequest(playerId, approve) {
         if (!this.currentGuild) {

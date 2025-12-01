@@ -651,6 +651,7 @@ async function renderGuildTop(container) {
 function renderGuildMembers(container) {
     const members = window.guildManager.guildMembers;
     const guild = window.guildManager.currentGuild;
+    const isLeader = window.guildManager.isLeader();
 
     // Сортируем участников по вкладу (от большего к меньшему)
     const sortedMembers = [...members].sort((a, b) => {
@@ -678,14 +679,47 @@ function renderGuildMembers(container) {
                             Ур. ${m.level} | Рейтинг: ${m.rating || 1000}
                         </div>
                     </div>
-                    <div style="text-align: right;">
-                        <div style="color: #ffd700; font-weight: bold;">${m.guild_contribution || 0}</div>
-                        <div style="color: #666; font-size: 10px;">вклад</div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="text-align: right;">
+                            <div style="color: #ffd700; font-weight: bold;">${m.guild_contribution || 0}</div>
+                            <div style="color: #666; font-size: 10px;">вклад</div>
+                        </div>
+                        ${isLeader && m.id !== guild.leader_id ? `
+                            <button onclick="confirmKickMember(${m.id}, '${m.username}')" style="
+                                padding: 6px 10px;
+                                background: rgba(239, 68, 68, 0.3);
+                                border: 1px solid #ef4444;
+                                border-radius: 6px;
+                                color: #ef4444;
+                                cursor: pointer;
+                                font-size: 11px;
+                            ">👢</button>
+                        ` : ''}
                     </div>
                 </div>
             `).join('')}
         </div>
     `;
+}
+
+// === КИК УЧАСТНИКА ===
+function confirmKickMember(playerId, username) {
+    if (confirm(`Исключить ${username} из гильдии?`)) {
+        kickMember(playerId);
+    }
+}
+
+async function kickMember(playerId) {
+    if (!window.guildManager) return;
+
+    const result = await window.guildManager.kickMember(playerId);
+
+    if (result.success) {
+        showNotification(result.message);
+        renderGuildMembers(document.getElementById('guild-tab-content'));
+    } else {
+        showNotification(result.error);
+    }
 }
 
 // === ТАБ ИССЛЕДОВАНИЯ ===
@@ -928,4 +962,6 @@ window.setJoinMode = setJoinMode;
 window.handleRequest = handleRequest;
 window.confirmLeaveGuild = confirmLeaveGuild;
 window.leaveGuild = leaveGuild;
+window.confirmKickMember = confirmKickMember;
+window.kickMember = kickMember;
 
