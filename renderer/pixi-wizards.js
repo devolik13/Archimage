@@ -268,7 +268,7 @@
                     // Используем spriteSheet из конфига врага, иначе goblin по умолчанию
                     const enemySprite = enemyWizard.spriteSheet || 'goblin';
                     // Проверяем, есть ли такой спрайт в конфиге
-                    if (spriteConfig[enemySprite]) {
+                    if (FACTION_SPRITES_CONFIG[enemySprite]) {
                         return enemySprite;
                     }
                     return 'goblin'; // fallback
