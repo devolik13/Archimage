@@ -232,12 +232,21 @@ function castFrostArrow(wizard, spellData, position, casterType) {
                         if (splashTarget.wizard.hp < 0) splashTarget.wizard.hp = 0;
                         
                         if (typeof window.addToBattleLog === 'function') {
-                            window.addToBattleLog(`❄️ Осколок [${col}] поражает ${splashTarget.wizard.name} (${splashFinalDamage} урона, взрыв игнорирует препятствия) (${splashTarget.wizard.hp}/${splashTarget.wizard.max_hp})`);
+                            // Многострочный лог как у Искры
+                            window.addToBattleLog(`❄️ Осколок [${col}] → ${splashTarget.wizard.name} (${splashFinalDamage} урона)`);
+                            const damageSteps = splashTarget.wizard._lastDamageSteps || [];
+                            if (damageSteps.length > 0) {
+                                damageSteps.forEach(step => {
+                                    window.addToBattleLog(`    ├─ ${step}`);
+                                });
+                            }
+                            window.addToBattleLog(`    └─ HP: ${splashTarget.wizard.hp}/${splashTarget.wizard.max_hp}`);
+                            delete splashTarget.wizard._lastDamageSteps;
                         }
                         targetsHit.push(splashTarget.wizard);
                     } else {
                         if (typeof window.addToBattleLog === 'function') {
-                            window.addToBattleLog(`❄️ Осколок [${col}] → пусто (урон рассеивается)`);
+                            window.addToBattleLog(`❄️ Осколок [${col}] → пусто`);
                         }
                     }
                 });

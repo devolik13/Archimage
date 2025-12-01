@@ -407,7 +407,15 @@ function castStormCloud(wizard, spellData, position, casterType) {
             // Логируем попадание
             const targetName = targetType === 'wall' ? 'Стена' : targetWizard.name;
             if (typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`⛈️ Удар ${index + 1} [${row}][${col}] → ${targetName} (${finalDamage} урона)${bonusLog}`);
+                window.addToBattleLog(`⛈️ Грозовое облако [${row}][${col}] → ${targetName} (${finalDamage} урона)${bonusLog}`);
+                const damageSteps = targetWizard._lastDamageSteps || [];
+                if (damageSteps.length > 0) {
+                    damageSteps.forEach(step => {
+                        window.addToBattleLog(`    ├─ ${step}`);
+                    });
+                }
+                window.addToBattleLog(`    └─ HP: ${targetWizard.hp}/${targetWizard.max_hp}`);
+                delete targetWizard._lastDamageSteps;
             }
             
             // На 5 уровне — 5% шанс оглушить мага
@@ -497,10 +505,16 @@ function castChainLightning(wizard, spellData, position, casterType) {
                 if (target.hp < 0) target.hp = 0;
                 
                 // Логируем урон
-                if (typeof window.logSpellHit === 'function') {
-                    window.logSpellHit(wizard, target, finalDamage, `Цепная молния [${index + 1}]`);
-                } else if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`⚡ Удар ${index + 1}: ${target.name} (${finalDamage} урона)${bonusLog}`);
+                if (typeof window.addToBattleLog === 'function') {
+                    window.addToBattleLog(`⚡ Цепная молния [${index + 1}] → ${target.name} (${finalDamage} урона)${bonusLog}`);
+                    const damageSteps = target._lastDamageSteps || [];
+                    if (damageSteps.length > 0) {
+                        damageSteps.forEach(step => {
+                            window.addToBattleLog(`    ├─ ${step}`);
+                        });
+                    }
+                    window.addToBattleLog(`    └─ HP: ${target.hp}/${target.max_hp}`);
+                    delete target._lastDamageSteps;
                 }
                 
                 // На 5 уровне — 5% шанс оглушить
@@ -545,10 +559,16 @@ function castChainLightning(wizard, spellData, position, casterType) {
             if (target.hp < 0) target.hp = 0;
             
             // Логируем
-            if (typeof window.logSpellHit === 'function') {
-                window.logSpellHit(wizard, target, finalDamage, `Цепная молния [${index + 1}]`);
-            } else if (typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`⚡ Удар ${index + 1}: ${target.name} (${finalDamage} урона)${bonusLog}`);
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`⚡ Цепная молния [${index + 1}] → ${target.name} (${finalDamage} урона)${bonusLog}`);
+                const damageSteps = target._lastDamageSteps || [];
+                if (damageSteps.length > 0) {
+                    damageSteps.forEach(step => {
+                        window.addToBattleLog(`    ├─ ${step}`);
+                    });
+                }
+                window.addToBattleLog(`    └─ HP: ${target.hp}/${target.max_hp}`);
+                delete target._lastDamageSteps;
             }
             
             // На 5 уровне — 5% шанс оглушить

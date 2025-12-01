@@ -527,10 +527,16 @@ function castMeteorShower(wizard, spellData, position, casterType) {
                         target.wizard.hp -= finalDamage;
                         if (target.wizard.hp < 0) target.wizard.hp = 0;
                         
-                        if (typeof window.logSpellHit === 'function') {
-                            window.logSpellHit(wizard, target.wizard, finalDamage, `Метеорит ${i + 1}`);
-                        } else if (typeof window.addToBattleLog === 'function') {
-                            window.addToBattleLog(`☄️ Метеорит ${i + 1} поражает ${target.wizard.name} (${finalDamage} урона) (${target.wizard.hp}/${target.wizard.max_hp})`);
+                        if (typeof window.addToBattleLog === 'function') {
+                            window.addToBattleLog(`☄️ Метеорит ${i + 1} → ${target.wizard.name} (${finalDamage} урона)`);
+                            const damageSteps = target.wizard._lastDamageSteps || [];
+                            if (damageSteps.length > 0) {
+                                damageSteps.forEach(step => {
+                                    window.addToBattleLog(`    ├─ ${step}`);
+                                });
+                            }
+                            window.addToBattleLog(`    └─ HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
+                            delete target.wizard._lastDamageSteps;
                         }
                     }
                 });
@@ -542,8 +548,16 @@ function castMeteorShower(wizard, spellData, position, casterType) {
                 target.wizard.hp -= finalDamage;
                 if (target.wizard.hp < 0) target.wizard.hp = 0;
                 
-                if (typeof window.logSpellHit === 'function') {
-                    window.logSpellHit(wizard, target.wizard, finalDamage, `Метеорит ${i + 1}`);
+                if (typeof window.addToBattleLog === 'function') {
+                    window.addToBattleLog(`☄️ Метеорит ${i + 1} → ${target.wizard.name} (${finalDamage} урона)`);
+                    const damageSteps = target.wizard._lastDamageSteps || [];
+                    if (damageSteps.length > 0) {
+                        damageSteps.forEach(step => {
+                            window.addToBattleLog(`    ├─ ${step}`);
+                        });
+                    }
+                    window.addToBattleLog(`    └─ HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
+                    delete target.wizard._lastDamageSteps;
                 }
             }
             

@@ -220,7 +220,15 @@ function castPoisonedGlade(wizard, spellData, position, casterType) {
                             if (targetObj.wizard.hp < 0) targetObj.wizard.hp = 0;
                             
                             if (typeof window.addToBattleLog === 'function') {
-                                window.addToBattleLog(`☠️ Ядовитая поляна поражает ${targetObj.wizard.name} на позиции ${row + 1} (${finalDamage} урона + яд)`);
+                                window.addToBattleLog(`☠️ Ядовитая поляна → ${targetObj.wizard.name} (${finalDamage} урона + яд)`);
+                                const damageSteps = targetObj.wizard._lastDamageSteps || [];
+                                if (damageSteps.length > 0) {
+                                    damageSteps.forEach(step => {
+                                        window.addToBattleLog(`    ├─ ${step}`);
+                                    });
+                                }
+                                window.addToBattleLog(`    └─ HP: ${targetObj.wizard.hp}/${targetObj.wizard.max_hp}`);
+                                delete targetObj.wizard._lastDamageSteps;
                             }
                             
                             // Накладываем яд
@@ -249,7 +257,15 @@ function castPoisonedGlade(wizard, spellData, position, casterType) {
                     if (targetObj.wizard.hp < 0) targetObj.wizard.hp = 0;
                     
                     if (typeof window.addToBattleLog === 'function') {
-                        window.addToBattleLog(`☠️ Ядовитая поляна поражает ${targetObj.wizard.name} на позиции ${row + 1} (${finalDamage} урона + яд)`);
+                        window.addToBattleLog(`☠️ Ядовитая поляна → ${targetObj.wizard.name} (${finalDamage} урона + яд)`);
+                        const damageSteps = targetObj.wizard._lastDamageSteps || [];
+                        if (damageSteps.length > 0) {
+                            damageSteps.forEach(step => {
+                                window.addToBattleLog(`    ├─ ${step}`);
+                            });
+                        }
+                        window.addToBattleLog(`    └─ HP: ${targetObj.wizard.hp}/${targetObj.wizard.max_hp}`);
+                        delete targetObj.wizard._lastDamageSteps;
                     }
                     
                     applyPoisonEffect(targetObj.wizard, 1);
@@ -319,9 +335,16 @@ function castFoulCloud(wizard, spellData, position, casterType) {
         targetInfo.wizard.hp -= finalDamage;
         if (targetInfo.wizard.hp < 0) targetInfo.wizard.hp = 0;
         
-        const targetType = targetInfo.isSummoned ? 'призванное существо' : 'маг';
         if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`☠️ Мерзкое облако накрывает ${targetInfo.wizard.name} (${finalDamage} урона + яд)`);
+            window.addToBattleLog(`☠️ Мерзкое облако → ${targetInfo.wizard.name} (${finalDamage} урона + яд)`);
+            const damageSteps = targetInfo.wizard._lastDamageSteps || [];
+            if (damageSteps.length > 0) {
+                damageSteps.forEach(step => {
+                    window.addToBattleLog(`    ├─ ${step}`);
+                });
+            }
+            window.addToBattleLog(`    └─ HP: ${targetInfo.wizard.hp}/${targetInfo.wizard.max_hp}`);
+            delete targetInfo.wizard._lastDamageSteps;
         }
         
         // Накладываем яд (только на магов, не на призванных)
@@ -687,10 +710,16 @@ function castEpidemic(wizard, spellData, position, casterType) {
             target.hp -= finalDamage;
             if (target.hp < 0) target.hp = 0;
             
-            if (typeof window.logSpellHit === 'function') {
-                window.logSpellHit(wizard, target, finalDamage, 'Эпидемия');
-            } else if (typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`☠️ ${target.name} получает ${finalDamage} урона от Эпидемии (${target.hp}/${target.max_hp})`);
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`☠️ Эпидемия → ${target.name} (${finalDamage} урона)`);
+                const damageSteps = target._lastDamageSteps || [];
+                if (damageSteps.length > 0) {
+                    damageSteps.forEach(step => {
+                        window.addToBattleLog(`    ├─ ${step}`);
+                    });
+                }
+                window.addToBattleLog(`    └─ HP: ${target.hp}/${target.max_hp}`);
+                delete target._lastDamageSteps;
             }
             
             // 50% шанс наложить яд
