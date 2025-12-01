@@ -319,9 +319,9 @@ function showPlayerProfile() {
 
         overlay.appendChild(container);
 
-        // Кнопка реферальной ссылки
+        // Кнопка реферальной ссылки - сразу копирует
         const referralBtn = document.createElement('button');
-        referralBtn.innerHTML = '🔗 Пригласить друга';
+        referralBtn.innerHTML = '🎁 Пригласи друга - получи награду!';
         referralBtn.style.cssText = `
             position: absolute;
             left: ${115 * scaleX}px;
@@ -332,7 +332,7 @@ function showPlayerProfile() {
             border: none;
             border-radius: ${6 * Math.min(scaleX, scaleY)}px;
             color: white;
-            font-size: ${Math.max(11, 13 * Math.min(scaleX, scaleY))}px;
+            font-size: ${Math.max(9, 11 * Math.min(scaleX, scaleY))}px;
             font-weight: bold;
             cursor: pointer;
             pointer-events: auto;
@@ -349,11 +349,37 @@ function showPlayerProfile() {
             referralBtn.style.transform = 'scale(1)';
         };
         referralBtn.onclick = () => {
-            if (window.referralManager && typeof window.referralManager.showReferralUI === 'function') {
-                window.referralManager.showReferralUI();
-            } else {
-                alert('Реферальная система загружается...');
+            // Генерируем ссылку и копируем сразу
+            const telegramId = window.dbManager?.currentPlayer?.telegram_id;
+            if (!telegramId) {
+                if (typeof showInlineNotification === 'function') {
+                    showInlineNotification('❌ Ошибка: данные не загружены');
+                }
+                return;
             }
+
+            const botUsername = window.TELEGRAM_BOT_USERNAME || 'ArchiMageBot';
+            const appName = window.TELEGRAM_APP_NAME || 'app';
+            const link = `https://t.me/${botUsername}/${appName}?startapp=ref_${telegramId}`;
+
+            navigator.clipboard.writeText(link).then(() => {
+                if (typeof showInlineNotification === 'function') {
+                    showInlineNotification('✅ Ссылка скопирована! Отправь другу - оба получите +1 день!');
+                }
+            }).catch(() => {
+                // Fallback
+                const textArea = document.createElement('textarea');
+                textArea.value = link;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                if (typeof showInlineNotification === 'function') {
+                    showInlineNotification('✅ Ссылка скопирована! Отправь другу - оба получите +1 день!');
+                }
+            });
         };
 
         overlay.appendChild(referralBtn);
