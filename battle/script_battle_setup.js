@@ -646,6 +646,18 @@ function clearSlot(position) {
 async function saveBattleFormation() {
     // DEBUG: Логируем что пытаемся сохранить
     console.log('💾 saveBattleFormation вызвана');
+
+    // ИСПРАВЛЕНИЕ: Синхронизируем с window.userData.formation (для арены)
+    // Арена модифицирует userData.formation напрямую, а эта функция использует currentBattleFormation
+    const userDataFormation = window.userData?.formation || [null, null, null, null, null];
+    const isCurrentEmpty = currentBattleFormation.every(id => id === null);
+    const isUserDataFilled = userDataFormation.some(id => id !== null);
+
+    if (isCurrentEmpty && isUserDataFilled) {
+        console.log('💾 currentBattleFormation пустой, берём из userData.formation');
+        currentBattleFormation = [...userDataFormation];
+    }
+
     console.log('💾 currentBattleFormation:', JSON.stringify(currentBattleFormation));
 
     try {
