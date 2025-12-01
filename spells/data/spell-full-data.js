@@ -89,7 +89,7 @@ const SPELL_FULL_DATA = {
         school: "water",
         tier: 3,
         type: "aoe",
-        base_damage: 38,
+        base_damage: 8,
         unlock_condition: "frost_arrow_level_5"
     },
     "blizzard": {

@@ -241,7 +241,13 @@ function startBattle() {
 
 // Инициализация здоровья магов
 function initializeWizardHealth() {
-    window.playerWizards.forEach(wizard => {
+    // Получаем только магов, которые в расстановке (не все маги игрока!)
+    const wizardsInFormation = window.playerFormation
+        .filter(id => id !== null)
+        .map(id => window.playerWizards.find(w => w.id === id))
+        .filter(w => w !== undefined);
+
+    wizardsInFormation.forEach(wizard => {
         // Используем original_max_hp как истинную базу (если есть)
         // Это значение устанавливается при создании мага и не включает бонусы
         const trueBaseHp = wizard.original_max_hp || wizard.max_hp || 100;

@@ -650,17 +650,22 @@ async function saveBattleFormation() {
 
     try {
 
-        // Сохраняем в window.userData
+        // Сохраняем КОПИЮ в window.userData (не ссылку!)
+        const formationCopy = [...currentBattleFormation];
+        window.userData.formation = formationCopy;
 
-        window.userData.formation = currentBattleFormation;
 
-        
 
         // Сохраняем в Supabase
 
         if (window.dbManager) {
 
-            const success = await window.dbManager.saveFormation(currentBattleFormation);
+            const success = await window.dbManager.saveFormation(formationCopy);
+
+            // Синхронизируем с currentPlayer для консистентности
+            if (success && window.dbManager.currentPlayer) {
+                window.dbManager.currentPlayer.formation = formationCopy;
+            }
 
 
 
