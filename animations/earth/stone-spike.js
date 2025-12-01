@@ -93,8 +93,8 @@
                     setTimeout(() => {
                         const spike = new PIXI.AnimatedSprite(spikeTextures);
                         spike.x = targetCell.x + cellWidth / 2;
-                        spike.y = targetCell.y + cellHeight * 0.8;
-                        spike.anchor.set(0.5, 0.8);
+                        spike.y = targetCell.y + cellHeight / 2;  // Центр клетки как у поляны
+                        spike.anchor.set(0.5, 0.5);  // Центрированный якорь
 
                         const scale = (cellWidth * 0.8) / frameWidth;
                         spike.scale.set(scale);
@@ -113,9 +113,9 @@
                         effectsContainer.addChild(spike);
                         spike.play();
 
-                        // Осколки
+                        // Осколки - в центре клетки
                         createDebris(targetCell.x + cellWidth / 2,
-                                   targetCell.y + cellHeight * 0.8,
+                                   targetCell.y + cellHeight / 2,
                                    targetCell.cellScale || 1);
                         
                         console.log(`🗿 Шип создан в [${pos.col}][${pos.row}]`);
@@ -153,7 +153,7 @@
                     spike.endFill();
 
                     spike.x = targetCell.x + cellWidth / 2;
-                    spike.y = targetCell.y + cellHeight;
+                    spike.y = targetCell.y + cellHeight / 2;  // Центр клетки
                     spike.scale.set(0, 0);
 
                     effectsContainer.addChild(spike);
@@ -166,7 +166,7 @@
                         const easeOut = 1 - Math.pow(1 - progress, 3);
 
                         spike.scale.set(easeOut * 2);
-                        spike.y = targetCell.y + cellHeight - (easeOut * 30);
+                        // Шип растёт из центра
                         
                         if (progress < 1) {
                             requestAnimationFrame(grow);
@@ -187,15 +187,15 @@
         }
     }
     
-    // Эффект тряски земли
+    // Эффект тряски земли (трясём саму клетку, без видимого квадрата)
     function createGroundShake(cell, container) {
         // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
         const cellWidth = cell.cellWidth || cell.width || 60;
         const cellHeight = cell.cellHeight || cell.height || 60;
 
+        // Невидимый контейнер для тряски (без отрисовки квадрата)
         const shake = new PIXI.Graphics();
-        shake.lineStyle(2, 0x664433, 0.5);
-        shake.drawRect(cell.x + 5, cell.y + 5, cellWidth - 10, cellHeight - 10);
+        // Убран видимый прямоугольник - теперь только эффект тряски
         container.addChild(shake);
         
         const startTime = Date.now();
