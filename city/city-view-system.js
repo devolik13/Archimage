@@ -384,13 +384,13 @@ function createBottomControlPanel() {
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 80px;
+            height: 140px;
             background: transparent;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-end;
             gap: 8px;
-            padding: 0 10px;
+            padding: 0 10px 10px 10px;
             box-sizing: border-box;
             z-index: 1001;
         `;
@@ -410,13 +410,13 @@ function createBottomControlPanel() {
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 80px;
+            height: 140px;
             background: transparent;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-end;
             gap: 8px;
-            padding: 0 10px;
+            padding: 0 10px 10px 10px;
             box-sizing: border-box;
             z-index: 1001;
         `;
@@ -434,32 +434,15 @@ function createBottomControlPanel() {
         align-items: center;
     `;
 
-    // Кнопка гильдии (маленькая, сверху)
-    const guildButton = document.createElement('button');
-    guildButton.style.cssText = `
-        width: 60px;
-        height: 28px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 8px;
-        background: linear-gradient(145deg, rgba(50, 50, 70, 0.9), rgba(30, 30, 45, 0.9));
-        color: white;
-        font-size: 14px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-    `;
-    guildButton.innerHTML = '🏰';
-    guildButton.title = 'Гильдия';
-    guildButton.onclick = () => {
+    // Кнопка гильдии (такого же размера как стройка, сверху)
+    const guildButton = createControlButton('🏰', 'Гильдия', () => {
         console.log('🏰 Открыть окно гильдии');
         if (typeof window.openGuildModal === 'function') {
             window.openGuildModal();
         } else {
             showNotification('Гильдия пока недоступна');
         }
-    };
+    });
 
     // Кнопка строить (основная, снизу)
     const buildButton = createControlButton('🏗️', 'Строить', () => {
