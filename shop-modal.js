@@ -69,15 +69,15 @@ const SHOP_CONFIG = {
         }
     ],
 
-    // Premium товары (за реальные деньги)
+    // Premium товары (за Telegram Stars)
     premium: [
         {
             id: 'time_pack_small',
             name: 'Пакет времени (малый)',
             description: '+1 день времени',
             icon: '⏰',
-            price: 0.99,
-            currency: 'usd',
+            price: 50,
+            currency: 'stars',
             action: 'buyTimePack',
             amount: 1440 // 1 день в минутах
         },
@@ -86,8 +86,8 @@ const SHOP_CONFIG = {
             name: 'Пакет времени (средний)',
             description: '+7 дней времени',
             icon: '⏰⏰',
-            price: 4.99,
-            currency: 'usd',
+            price: 250,
+            currency: 'stars',
             action: 'buyTimePack',
             amount: 10080 // 7 дней (бонус ~30%)
         },
@@ -96,8 +96,8 @@ const SHOP_CONFIG = {
             name: 'Пакет времени (большой)',
             description: '+30 дней времени',
             icon: '⏰⏰⏰',
-            price: 14.99,
-            currency: 'usd',
+            price: 750,
+            currency: 'stars',
             action: 'buyTimePack',
             amount: 43200 // 30 дней (бонус ~50%)
         },
@@ -106,8 +106,8 @@ const SHOP_CONFIG = {
             name: 'Смена фракции',
             description: 'Изменить школу магии',
             icon: '🔄',
-            price: 9.99,
-            currency: 'usd',
+            price: 500,
+            currency: 'stars',
             action: 'changeFaction',
             amount: 1,
             checkFree: true // Проверить бесплатную смену
@@ -125,9 +125,9 @@ function showShopModal() {
     const playerAvatar = document.getElementById('player-avatar-container');
     if (playerAvatar) playerAvatar.style.display = 'none';
 
-    // Определяем фон по фракции
+    // Определяем фон по фракции (используем фоны гильдии)
     const faction = window.userData?.faction || 'fire';
-    const imagePath = `assets/ui/shop/shop_${faction}.webp`;
+    const imagePath = `assets/ui/guild/guild_${faction}.webp`;
 
     // Удаляем старый экран
     let screen = document.getElementById('shop-screen');
@@ -309,8 +309,8 @@ function renderShopItems(tab, scale) {
         if (item.currency === 'time') {
             canBuy = timeCurrency >= item.price;
             priceText = window.formatTimeCurrency ? window.formatTimeCurrency(item.price) : `${item.price} мин`;
-        } else if (item.currency === 'usd') {
-            priceText = `$${item.price}`;
+        } else if (item.currency === 'stars') {
+            priceText = `⭐ ${item.price}`;
             btnClass += ' premium';
 
             // Проверяем бесплатную смену фракции
@@ -598,12 +598,85 @@ function closeWizardSelectDialog() {
 }
 
 /**
- * Покупка пакета времени (Premium)
+ * Покупка пакета времени (Premium) через Telegram Stars
  */
-function buyTimePack(item) {
-    // TODO: Интеграция с платежной системой
-    showShopNotification('💎 Платежная система в разработке', 'info');
-    console.log('Premium purchase:', item);
+async function buyTimePack(item) {
+    // Проверяем доступность Telegram WebApp
+    if (!window.Telegram?.WebApp) {
+        showShopNotification('⚠️ Доступно только в Telegram', 'warning');
+        return;
+    }
+
+    try {
+        // Создаём invoice для Telegram Stars
+        const invoiceData = {
+            title: item.name,
+            description: item.description,
+            payload: JSON.stringify({
+                item_id: item.id,
+                amount: item.amount,
+                user_id: window.userData?.id
+            }),
+            currency: 'XTR', // Telegram Stars
+            prices: [{ label: item.name, amount: item.price }]
+        };
+
+        console.log('🌟 Создание платежа Stars:', invoiceData);
+
+        // Открываем окно оплаты Telegram
+        // Примечание: для реальной работы нужен бэкенд который создаёт invoice
+        window.Telegram.WebApp.openInvoice(
+            await createStarsInvoice(item),
+            (status) => {
+                if (status === 'paid') {
+                    // Успешная оплата
+                    window.userData.time_currency = (window.userData.time_currency || 0) + item.amount;
+
+                    if (window.eventSaveManager) {
+                        window.eventSaveManager.saveImmediate('shop_stars_purchase');
+                    }
+
+                    showShopNotification(`⏰ +${formatTimePurchase(item.amount)} времени!`, 'success');
+                    refreshShopUI();
+
+                    if (typeof window.updateTimeCurrencyDisplay === 'function') {
+                        window.updateTimeCurrencyDisplay();
+                    }
+                } else if (status === 'cancelled') {
+                    showShopNotification('Покупка отменена', 'info');
+                } else if (status === 'failed') {
+                    showShopNotification('❌ Ошибка оплаты', 'error');
+                }
+            }
+        );
+    } catch (error) {
+        console.error('❌ Ошибка Stars платежа:', error);
+        showShopNotification('⚠️ Платёжная система временно недоступна', 'warning');
+    }
+}
+
+/**
+ * Создание invoice для Telegram Stars (заглушка - нужен бэкенд)
+ */
+async function createStarsInvoice(item) {
+    // TODO: Реализовать на бэкенде через Telegram Bot API
+    // POST /createInvoiceLink с параметрами:
+    // - title, description, payload, currency: "XTR", prices
+
+    // Пока возвращаем заглушку
+    console.log('⚠️ Нужен бэкенд для создания invoice');
+    throw new Error('Backend not implemented');
+}
+
+/**
+ * Форматирование времени для покупки
+ */
+function formatTimePurchase(minutes) {
+    if (minutes >= 1440) {
+        const days = Math.floor(minutes / 1440);
+        return `${days} ${days === 1 ? 'день' : days < 5 ? 'дня' : 'дней'}`;
+    }
+    return `${minutes} минут`;
 }
 
 /**
@@ -611,12 +684,6 @@ function buyTimePack(item) {
  */
 function showChangeFactionDialog(item) {
     const isFree = !window.userData?.faction_changed;
-
-    if (!isFree) {
-        // TODO: Интеграция с платежной системой
-        showShopNotification('💎 Платежная система в разработке', 'info');
-        return;
-    }
 
     // Показываем выбор фракции
     const factions = ['fire', 'water', 'earth', 'wind', 'nature', 'poison'];
@@ -702,15 +769,54 @@ function showChangeFactionDialog(item) {
 /**
  * Подтверждение смены фракции
  */
-function confirmFactionChange(newFaction) {
+async function confirmFactionChange(newFaction) {
     const isFree = !window.userData?.faction_changed;
 
     if (!isFree) {
-        showShopNotification('💎 Платежная система в разработке', 'info');
-        closeFactionChangeDialog();
+        // Платная смена через Stars
+        if (!window.Telegram?.WebApp) {
+            showShopNotification('⚠️ Доступно только в Telegram', 'warning');
+            closeFactionChangeDialog();
+            return;
+        }
+
+        try {
+            // Открываем оплату Stars
+            window.Telegram.WebApp.openInvoice(
+                await createStarsInvoice({
+                    id: 'faction_change',
+                    name: 'Смена фракции',
+                    description: 'Изменить школу магии',
+                    price: 500
+                }),
+                (status) => {
+                    if (status === 'paid') {
+                        applyFactionChange(newFaction);
+                    } else if (status === 'cancelled') {
+                        showShopNotification('Покупка отменена', 'info');
+                    } else {
+                        showShopNotification('❌ Ошибка оплаты', 'error');
+                    }
+                    closeFactionChangeDialog();
+                }
+            );
+        } catch (error) {
+            console.error('❌ Ошибка Stars платежа:', error);
+            showShopNotification('⚠️ Платёжная система временно недоступна', 'warning');
+            closeFactionChangeDialog();
+        }
         return;
     }
 
+    // Бесплатная первая смена
+    applyFactionChange(newFaction);
+    closeFactionChangeDialog();
+}
+
+/**
+ * Применить смену фракции
+ */
+function applyFactionChange(newFaction) {
     // Меняем фракцию
     window.userData.faction = newFaction;
     window.userData.faction_changed = true;
@@ -734,7 +840,6 @@ function confirmFactionChange(newFaction) {
     };
 
     showShopNotification(`🔄 Фракция изменена на ${factionNames[newFaction]}!`, 'success');
-    closeFactionChangeDialog();
     closeShopModal();
 
     // Перезагружаем город
