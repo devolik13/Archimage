@@ -301,9 +301,21 @@ async function showSearchGuilds() {
                 ">Найти</button>
             </div>
 
-            <div id="guild-search-results" style="max-height: 400px; overflow-y: auto;">
+            <div id="guild-search-results" style="max-height: 350px; overflow-y: auto;">
                 <p style="color: #aaa; text-align: center;">Введите запрос для поиска</p>
             </div>
+
+            <button onclick="renderNoGuildView(document.getElementById('guild-no-guild-content'))" style="
+                margin-top: 20px;
+                padding: 12px 24px;
+                width: 100%;
+                background: #4a4a6a;
+                border: none;
+                border-radius: 8px;
+                color: white;
+                cursor: pointer;
+                font-size: 14px;
+            ">← Назад</button>
         </div>
     `;
 
