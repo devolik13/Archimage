@@ -51,21 +51,30 @@ function castGust(wizard, spellData, position, casterType) {
     
     // Рассчитываем бонусы ЗАРАНЕЕ
     let totalMultiplier = 1.0;
-    
+    let bonusMessages = [];
+
+    // Создаём casterInfo для баббла
+    const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
+
     if (wizard.faction === 'wind' && window.checkFactionDoubleDamage) {
-        const isFactionDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind');
+        const isFactionDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind', casterInfo);
         if (isFactionDouble) {
             totalMultiplier *= 2.0;
-            console.log('💨 Фракционный бонус x2!');
+            bonusMessages.push('💨 Двойной урон!');
         }
     }
-    
+
     if (level === 5 && window.checkCriticalHit) {
         const isCritical = window.checkCriticalHit(50);
         if (isCritical) {
             totalMultiplier *= 1.5;
-            console.log('🔥 КРИТ x1.5!');
+            bonusMessages.push('⚡ Крит!');
         }
+    }
+
+    // Логируем бонусы
+    if (bonusMessages.length > 0 && typeof window.addToBattleLog === 'function') {
+        window.addToBattleLog(`   ${bonusMessages.join(' ')}`);
     }
     
     const finalBaseDamage = Math.round(baseDamage * totalMultiplier);
@@ -143,11 +152,14 @@ function applyGustDamageOld(wizard, target, baseDamage, level, casterType) {
     let totalMultiplier = 1.0;
     let bonusLogDetails = [];
 
+    // Создаём casterInfo для баббла
+    const casterInfo = { faction: wizard.faction, casterType: casterType, position: target.position };
+
     if (wizard.faction === 'wind' && window.checkFactionDoubleDamage) {
-        const isFactionDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind');
+        const isFactionDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind', casterInfo);
         if (isFactionDouble) {
             totalMultiplier *= 2.0;
-            bonusLogDetails.push("💨 Фракционный бонус!");
+            bonusLogDetails.push("💨 Двойной урон!");
         }
     }
 
@@ -155,7 +167,7 @@ function applyGustDamageOld(wizard, target, baseDamage, level, casterType) {
         const isCritical = window.checkCriticalHit(50);
         if (isCritical) {
             totalMultiplier *= 1.5;
-            bonusLogDetails.push("🔥 КРИТ!");
+            bonusLogDetails.push("⚡ Крит!");
         }
     }
 
@@ -194,9 +206,15 @@ function castWindBlade(wizard, spellData, position, casterType) {
     
     // Фракционный бонус
     let actualDamage = baseDamage;
+    const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
     if (wizard.faction === 'wind' && typeof window.checkFactionDoubleDamage === 'function') {
-        const isDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind');
-        if (isDouble) actualDamage = baseDamage * 2;
+        const isDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind', casterInfo);
+        if (isDouble) {
+            actualDamage = baseDamage * 2;
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`   💨 Двойной урон!`);
+            }
+        }
     }
     
     // Применяем урон (AOE, игнорирует стены)
@@ -382,11 +400,12 @@ function castStormCloud(wizard, spellData, position, casterType) {
         // Применяем фракционный бонус Ветра — 5% шанс двойного урона
         let actualDamage = baseDamage;
         let bonusLog = '';
+        const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
         if (wizard.faction === 'wind' && typeof window.checkFactionDoubleDamage === 'function') {
-            const isDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind');
+            const isDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind', casterInfo);
             if (isDouble) {
                 actualDamage *= 2;
-                bonusLog = ' 💨 Фракционный бонус!';
+                bonusLog = ' 💨 Двойной урон!';
             }
         }
         
@@ -489,11 +508,12 @@ function castChainLightning(wizard, spellData, position, casterType) {
                 // Применяем фракционный бонус Ветра — 5% шанс двойного урона
                 let actualDamage = currentDamage;
                 let bonusLog = '';
+                const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
                 if (wizard.faction === 'wind' && typeof window.checkFactionDoubleDamage === 'function') {
-                    const isDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind');
+                    const isDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind', casterInfo);
                     if (isDouble) {
                         actualDamage *= 2;
-                        bonusLog = ' 💨 Фракционный бонус!';
+                        bonusLog = ' 💨 Двойной урон!';
                     }
                 }
                 
@@ -543,11 +563,12 @@ function castChainLightning(wizard, spellData, position, casterType) {
             // Применяем фракционный бонус Ветра
             let actualDamage = currentDamage;
             let bonusLog = '';
+            const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
             if (wizard.faction === 'wind' && typeof window.checkFactionDoubleDamage === 'function') {
-                const isDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind');
+                const isDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind', casterInfo);
                 if (isDouble) {
                     actualDamage *= 2;
-                    bonusLog = ' 💨 Фракционный бонус!';
+                    bonusLog = ' 💨 Двойной урон!';
                 }
             }
             
