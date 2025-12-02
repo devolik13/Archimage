@@ -77,17 +77,18 @@ function castIcicle(wizard, spellData, position, casterType) {
         
         // Применение эффектов после урона
         applyEffects: (targetWizard, spellLevel, casterFaction) => {
+            const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
             if (spellLevel === 5) {
                 if (casterFaction === 'water') {
-                    window.tryApplyEffect?.('freeze', targetWizard);
+                    window.tryApplyEffect?.('freeze', targetWizard, false, casterInfo);
                     console.log(`❄️ Применён эффект заморозки к ${targetWizard.name}`);
                 } else {
-                    window.tryApplyEffect?.('hoarFrost', targetWizard);
+                    window.tryApplyEffect?.('hoarFrost', targetWizard, false, casterInfo);
                     console.log(`❄️ Применён эффект изморози к ${targetWizard.name}`);
                 }
             } else {
                 if (casterFaction === 'water') {
-                    window.tryApplyEffect?.('chill', targetWizard, false);
+                    window.tryApplyEffect?.('chill', targetWizard, false, casterInfo);
                     console.log(`❄️ Применён эффект охлаждения к ${targetWizard.name}`);
                 }
             }
@@ -123,7 +124,8 @@ function castIcicleOld(wizard, spellData, position, casterType, target) {
 
 function applyIcicleDamageOld(wizard, target, baseDamage, spellData, position, casterType) {
     const level = spellData.level || 1;
-    
+    const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
+
     const result = window.applyDamageWithMultiLayerProtection?.(wizard, target, baseDamage, 'icicle', casterType);
 
     if (result) {
@@ -131,13 +133,13 @@ function applyIcicleDamageOld(wizard, target, baseDamage, spellData, position, c
         if (result.finalDamage > 0) {
             if (level === 5) {
                 if (wizard.faction === 'water') {
-                    window.tryApplyEffect?.('freeze', target.wizard);
+                    window.tryApplyEffect?.('freeze', target.wizard, false, casterInfo);
                 } else {
-                    window.tryApplyEffect?.('hoarFrost', target.wizard);
+                    window.tryApplyEffect?.('hoarFrost', target.wizard, false, casterInfo);
                 }
             } else {
                 if (wizard.faction === 'water') {
-                    window.tryApplyEffect?.('chill', target.wizard, false);
+                    window.tryApplyEffect?.('chill', target.wizard, false, casterInfo);
                 }
             }
         }
@@ -145,18 +147,18 @@ function applyIcicleDamageOld(wizard, target, baseDamage, spellData, position, c
         const finalDamage = window.applyFinalDamage?.(wizard, target.wizard, baseDamage, 'icicle', 0, false) || baseDamage;
         target.wizard.hp -= finalDamage;
         if (target.wizard.hp < 0) target.wizard.hp = 0;
-        
+
         window.logSpellHit?.(wizard, target.wizard, finalDamage, 'Ледышка');
         if (finalDamage > 0) {
             if (level === 5) {
                 if (wizard.faction === 'water') {
-                    window.tryApplyEffect?.('freeze', target.wizard);
+                    window.tryApplyEffect?.('freeze', target.wizard, false, casterInfo);
                 } else {
-                    window.tryApplyEffect?.('hoarFrost', target.wizard);
+                    window.tryApplyEffect?.('hoarFrost', target.wizard, false, casterInfo);
                 }
             } else {
                 if (wizard.faction === 'water') {
-                    window.tryApplyEffect?.('chill', target.wizard, false);
+                    window.tryApplyEffect?.('chill', target.wizard, false, casterInfo);
                 }
             }
         }
@@ -252,16 +254,17 @@ function castFrostArrow(wizard, spellData, position, casterType) {
                 });
 
                 // Применяем эффекты охлаждения ко всем пораженным целям
+                const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
                 targetsHit.forEach(targetWizard => {
                     if (level === 5) {
                         if (wizard.faction === 'water') {
-                            window.tryApplyEffect ? window.tryApplyEffect('freeze', targetWizard) : null;
+                            window.tryApplyEffect ? window.tryApplyEffect('freeze', targetWizard, false, casterInfo) : null;
                         } else {
-                            window.tryApplyEffect ? window.tryApplyEffect('hoarFrost', targetWizard) : null;
+                            window.tryApplyEffect ? window.tryApplyEffect('hoarFrost', targetWizard, false, casterInfo) : null;
                         }
                     } else {
                         if (wizard.faction === 'water') {
-                            window.tryApplyEffect ? window.tryApplyEffect('chill', targetWizard, false) : null;
+                            window.tryApplyEffect ? window.tryApplyEffect('chill', targetWizard, false, casterInfo) : null;
                         }
                     }
                 });
@@ -348,16 +351,17 @@ function castFrostArrow(wizard, spellData, position, casterType) {
         });
         
         // Эффекты
+        const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
         targetsHit.forEach(targetWizard => {
             if (level === 5) {
                 if (wizard.faction === 'water') {
-                    window.tryApplyEffect ? window.tryApplyEffect('freeze', targetWizard) : null;
+                    window.tryApplyEffect ? window.tryApplyEffect('freeze', targetWizard, false, casterInfo) : null;
                 } else {
-                    window.tryApplyEffect ? window.tryApplyEffect('hoarFrost', targetWizard) : null;
+                    window.tryApplyEffect ? window.tryApplyEffect('hoarFrost', targetWizard, false, casterInfo) : null;
                 }
             } else {
                 if (wizard.faction === 'water') {
-                    window.tryApplyEffect ? window.tryApplyEffect('chill', targetWizard, false) : null;
+                    window.tryApplyEffect ? window.tryApplyEffect('chill', targetWizard, false, casterInfo) : null;
                 }
             }
         });
@@ -433,12 +437,13 @@ function castIceRain(wizard, spellData, position, casterType) {
     });
 
     // Эффекты охлаждения (50% шанс)
+    const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
     targetsHit.forEach(targetWizard => {
         if (Math.random() < 0.5) {
             if (wizard.faction === 'water') {
-                window.tryApplyEffect ? window.tryApplyEffect('freeze', targetWizard) : null;
+                window.tryApplyEffect ? window.tryApplyEffect('freeze', targetWizard, false, casterInfo) : null;
             } else {
-                window.tryApplyEffect ? window.tryApplyEffect('hoarFrost', targetWizard) : null;
+                window.tryApplyEffect ? window.tryApplyEffect('hoarFrost', targetWizard, false, casterInfo) : null;
             }
         }
     });
