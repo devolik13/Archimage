@@ -1,0 +1,192 @@
+/* shop-modal-bg.css - Стили для модалки магазина с фоновым изображением */
+
+/* Экран магазина */
+.shop-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.shop-screen.active {
+    opacity: 1;
+}
+
+/* Фоновое изображение магазина */
+.shop-bg-image {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    image-rendering: crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Оверлей для UI элементов */
+.shop-ui-overlay {
+    position: absolute;
+    pointer-events: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.shop-ui-overlay > * {
+    pointer-events: auto;
+}
+
+/* Анимация появления */
+@keyframes shopFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.shop-bg-image {
+    animation: shopFadeIn 0.3s ease;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+    .shop-bg-image {
+        max-width: 95vw;
+        max-height: 95vh;
+    }
+}
+
+@media (max-height: 600px) {
+    .shop-bg-image {
+        max-width: 95vw;
+        max-height: 95vh;
+    }
+}
+
+/* Предотвращаем выделение текста на кнопках */
+.shop-ui-overlay button {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Убираем outline при фокусе */
+.shop-ui-overlay button:focus {
+    outline: none;
+}
+
+/* Эффект нажатия на кнопку */
+.shop-ui-overlay button:active {
+    transform: scale(0.95) !important;
+}
+
+/* Скроллбар для overlay */
+.shop-ui-overlay::-webkit-scrollbar {
+    width: 6px;
+}
+
+.shop-ui-overlay::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+}
+
+.shop-ui-overlay::-webkit-scrollbar-thumb {
+    background: rgba(255, 215, 0, 0.5);
+    border-radius: 3px;
+}
+
+.shop-ui-overlay::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 215, 0, 0.7);
+}
+
+/* Карточка товара */
+.shop-item-card {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.shop-item-card:hover {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: rgba(255, 215, 0, 0.6);
+    transform: translateY(-2px);
+}
+
+.shop-item-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.shop-item-card.disabled:hover {
+    transform: none;
+}
+
+/* Табы категорий */
+.shop-tab {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.shop-tab:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.shop-tab.active {
+    background: linear-gradient(135deg, #ffd700, #ffaa00);
+    border-color: #ffd700;
+    color: #1a1a2e;
+    font-weight: bold;
+}
+
+/* Кнопка покупки */
+.shop-buy-btn {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.shop-buy-btn:hover {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    transform: scale(1.05);
+}
+
+.shop-buy-btn.premium {
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+}
+
+.shop-buy-btn.premium:hover {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+}
+
+.shop-buy-btn:disabled {
+    background: #666;
+    cursor: not-allowed;
+    transform: none;
+}
