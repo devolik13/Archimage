@@ -501,12 +501,41 @@ function createBottomControlPanel() {
     const separator2 = document.createElement('div');
     separator2.style.cssText = separator.style.cssText;
     panel.appendChild(separator2);
-    
-    // Пустые слоты для будущих функций (уменьшаем до 1)
-    for (let i = 0; i < 1; i++) {
-        const emptySlot = createEmptySlot();
-        panel.appendChild(emptySlot);
-    }
+
+    // Вертикальный контейнер для airdrop (сверху) и магазина (снизу)
+    const airdropShopStack = document.createElement('div');
+    airdropShopStack.style.cssText = `
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: center;
+    `;
+
+    // Кнопка airdrop (сверху)
+    const airdropButton = createControlButton('🪂', 'Airdrop', () => {
+        console.log('🪂 Открыть окно airdrop');
+        if (typeof window.showAirdropModal === 'function') {
+            window.showAirdropModal();
+        } else {
+            showNotification('Airdrop скоро будет доступен!');
+        }
+    });
+
+    // Кнопка магазина (снизу)
+    const shopButton = createControlButton('🛒', 'Магазин', () => {
+        console.log('🛒 Открыть магазин');
+        if (typeof window.showShopModal === 'function') {
+            window.showShopModal();
+        } else {
+            showNotification('Магазин скоро откроется!');
+        }
+    });
+
+    // Собираем стек: airdrop сверху, магазин снизу
+    airdropShopStack.appendChild(airdropButton);
+    airdropShopStack.appendChild(shopButton);
+
+    panel.appendChild(airdropShopStack);
 }
 
 // Создание кнопки управления
