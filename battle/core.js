@@ -947,10 +947,7 @@ function checkBattleEnd() {
                     }
                 }
             }
-
-            // Очищаем флаг PvE боя
-            window.currentPvELevel = null;
-            window.isPvEBattle = false;
+            // НЕ очищаем флаги PvE здесь - они очистятся в блоке показа результата (строки 1107-1108)
         }
         // Старая система приключений (для обратной совместимости)
         else if (window.currentAdventureLevel && !enemyAlive && playerAlive) {
