@@ -1070,15 +1070,15 @@ function checkBattleEnd() {
             }, delay);
         }
 
-        // Для PvE показываем простое сообщение
+        // Для PvE показываем красивое окно результата
         if (isPvEBattle) {
-            // ИСПРАВЛЕНО: Сохраняем PvE прогресс при победе
-            if (battleResult === 'win' && window.currentPvELevel) {
+            const currentLevel = window.currentPvELevel;
+
+            // Сохраняем PvE прогресс при победе
+            if (battleResult === 'win' && currentLevel) {
                 if (!window.userData.pve_progress) {
                     window.userData.pve_progress = {};
                 }
-
-                const currentLevel = window.currentPvELevel;
 
                 // Сохраняем пройденный уровень
                 window.userData.pve_progress[`level_${currentLevel}`] = {
@@ -1101,25 +1101,27 @@ function checkBattleEnd() {
                 }
             }
 
-            // ИСПРАВЛЕНО: Увеличена задержка до 3500мс чтобы волк и анимация смерти успели завершиться
+            // Показываем результат с небольшой задержкой (1 сек)
             setTimeout(() => {
-                if (battleResult === 'win') {
-                    alert('🎉 Победа! Вы прошли уровень!');
-                } else if (battleResult === 'loss') {
-                    alert('💀 Поражение! Попробуйте еще раз.');
-                } else {
-                    alert('⚔️ Ничья!');
-                }
-
                 // Очищаем флаги PvE
                 window.isPvEBattle = false;
                 window.currentPvELevel = null;
 
-                // Возвращаемся в город
-                if (typeof window.returnToCity === 'function') {
-                    window.returnToCity();
+                // Показываем красивое окно результата
+                if (typeof window.showPvEResult === 'function') {
+                    window.showPvEResult(battleResult, currentLevel);
+                } else {
+                    // Fallback на alert
+                    if (battleResult === 'win') {
+                        alert('🎉 Победа!');
+                    } else {
+                        alert('💀 Поражение!');
+                    }
+                    if (typeof window.returnToCity === 'function') {
+                        window.returnToCity();
+                    }
                 }
-            }, 3500);
+            }, 1000);
         }
 
         return true;

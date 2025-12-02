@@ -389,6 +389,129 @@ function startPvELevel(levelId) {
     }
 }
 
+/**
+ * Показывает красивое окно результата PvE боя
+ */
+function showPvEResult(result, levelId) {
+    const isWin = result === 'win';
+    const level = window.CHAPTER_1_LEVELS?.find(l => l.id === levelId);
+    const levelName = level?.name || `Уровень ${levelId}`;
+    const reward = level?.reward || 0;
+
+    const bgColor = isWin
+        ? 'linear-gradient(135deg, #1a3a1a 0%, #2d4a1d 100%)'
+        : 'linear-gradient(135deg, #3a1a1a 0%, #4a1d1d 100%)';
+    const borderColor = isWin ? '#4CAF50' : '#f44336';
+
+    const overlay = document.createElement('div');
+    overlay.id = 'pve-result-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 10002;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease-out;
+    `;
+
+    overlay.innerHTML = `
+        <div style="
+            background: ${bgColor};
+            border: 3px solid ${borderColor};
+            border-radius: 16px;
+            padding: 24px 32px;
+            text-align: center;
+            color: white;
+            min-width: 280px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            animation: scaleIn 0.3s ease-out;
+        ">
+            <div style="font-size: 56px; margin-bottom: 12px;">
+                ${isWin ? '🏆' : '💀'}
+            </div>
+            <div style="font-size: 22px; font-weight: bold; margin-bottom: 8px; color: ${borderColor};">
+                ${isWin ? 'Победа!' : 'Поражение'}
+            </div>
+            <div style="font-size: 14px; color: #aaa; margin-bottom: 16px;">
+                ${levelName}
+            </div>
+            ${isWin && reward > 0 ? `
+                <div style="
+                    background: rgba(255,255,255,0.1);
+                    border-radius: 8px;
+                    padding: 10px;
+                    margin-bottom: 16px;
+                ">
+                    <span style="color: #ffd700;">⏰ +${reward} ${reward === 1 ? 'день' : (reward < 5 ? 'дня' : 'дней')}</span>
+                </div>
+            ` : ''}
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                ${isWin ? `
+                    <button onclick="closePvEResult(); showChapter1Levels();" style="
+                        padding: 10px 20px;
+                        background: #4a4a6a;
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        cursor: pointer;
+                        font-size: 14px;
+                    ">К уровням</button>
+                    ${levelId < 50 ? `
+                        <button onclick="closePvEResult(); startPvELevel(${levelId + 1});" style="
+                            padding: 10px 20px;
+                            background: #4CAF50;
+                            border: none;
+                            border-radius: 8px;
+                            color: white;
+                            cursor: pointer;
+                            font-size: 14px;
+                            font-weight: bold;
+                        ">Дальше ➡️</button>
+                    ` : ''}
+                ` : `
+                    <button onclick="closePvEResult(); showChapter1Levels();" style="
+                        padding: 10px 20px;
+                        background: #4a4a6a;
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        cursor: pointer;
+                        font-size: 14px;
+                    ">К уровням</button>
+                    <button onclick="closePvEResult(); startPvELevel(${levelId});" style="
+                        padding: 10px 20px;
+                        background: #f44336;
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        cursor: pointer;
+                        font-size: 14px;
+                        font-weight: bold;
+                    ">Ещё раз 🔄</button>
+                `}
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+}
+
+function closePvEResult() {
+    const overlay = document.getElementById('pve-result-overlay');
+    if (overlay) {
+        overlay.remove();
+    }
+    // Возвращаемся в город
+    if (typeof window.returnToCity === 'function') {
+        window.returnToCity();
+    }
+}
+
 // Экспорт функций
 window.showPvEChaptersMenu = showPvEChaptersMenu;
 window.showChapter1Levels = showChapter1Levels;
@@ -397,4 +520,6 @@ window.closePvEModal = closePvEModal;
 window.loadPvEProgress = loadPvEProgress;
 window.savePvEProgress = savePvEProgress;
 window.startPvELevel = startPvELevel;
+window.showPvEResult = showPvEResult;
+window.closePvEResult = closePvEResult;
 

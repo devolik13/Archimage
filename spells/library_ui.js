@@ -718,6 +718,7 @@ window.showLibrary = showLibrary;
 window.closeLibrary = closeLibrary;
 window.openSchoolSpells = openSchoolSpells;
 window.updateLibraryContent = updateLibraryContent;
+window.renderLibraryUI = updateLibraryContent; // Алиас для time-construction-system
 window.renderLibrary = renderLibrary;
 window.showSpellInfoModal = showSpellInfoModal;
 
