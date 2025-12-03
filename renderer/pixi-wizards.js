@@ -17,9 +17,9 @@
     // Конфигурация спрайтов по фракциям
     const FACTION_SPRITES_CONFIG = {
         nature: {
-            idle: 'images/wizards/nature/idle.png',
-            cast: 'images/wizards/nature/cast.png',
-            death: 'images/wizards/nature/death.png',
+            idle: 'images/wizards/nature/idle.webp',
+            cast: 'images/wizards/nature/cast.webp',
+            death: 'images/wizards/nature/death.webp',
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
@@ -27,9 +27,9 @@
             scale: 0.350 // Масштаб для спрайта 256x256
         },
         fire: {
-            idle: 'images/wizards/fire/idle.png',
-            cast: 'images/wizards/fire/cast.png',
-            death: 'images/wizards/fire/death.png',
+            idle: 'images/wizards/fire/idle.webp',
+            cast: 'images/wizards/fire/cast.webp',
+            death: 'images/wizards/fire/death.webp',
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
@@ -37,9 +37,9 @@
             scale: 0.350
         },
         water: {
-            idle: 'images/wizards/water/idle.png',
-            cast: 'images/wizards/water/cast.png',
-            death: 'images/wizards/water/death.png',
+            idle: 'images/wizards/water/idle.webp',
+            cast: 'images/wizards/water/cast.webp',
+            death: 'images/wizards/water/death.webp',
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
@@ -47,9 +47,9 @@
             scale: 0.350
         },
         earth: {
-            idle: 'images/wizards/earth/idle.png',
-            cast: 'images/wizards/earth/cast.png',
-            death: 'images/wizards/earth/death.png',
+            idle: 'images/wizards/earth/idle.webp',
+            cast: 'images/wizards/earth/cast.webp',
+            death: 'images/wizards/earth/death.webp',
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
@@ -67,9 +67,9 @@
             scale: 0.350
         },
         poison: {
-            idle: 'images/wizards/poison/idle.png',
-            cast: 'images/wizards/poison/cast.png',
-            death: 'images/wizards/poison/death.png',
+            idle: 'images/wizards/poison/idle.webp',
+            cast: 'images/wizards/poison/cast.webp',
+            death: 'images/wizards/poison/death.webp',
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
