@@ -565,8 +565,11 @@ function createControlButton(icon, label, onClick) {
     const isImagePath = icon.includes('/') || icon.includes('.webp') || icon.includes('.png');
 
     if (isImagePath) {
+        // Для иконок-изображений - прозрачный фон и увеличенный размер (+20%)
+        button.style.background = 'transparent';
+        button.style.border = 'none';
         button.innerHTML = `
-            <img src="${icon}" alt="${label}" style="width: 32px; height: 32px; object-fit: contain;">
+            <img src="${icon}" alt="${label}" style="width: 38px; height: 38px; object-fit: contain;">
             <div style="font-size: 9px; opacity: 0.8;">${label}</div>
         `;
     } else {
@@ -577,17 +580,21 @@ function createControlButton(icon, label, onClick) {
     }
     
     button.onclick = onClick;
-    
+
     button.onmouseover = () => {
         button.style.transform = 'scale(1.1)';
-        button.style.borderColor = 'rgba(255, 255, 255, 0.6)';
+        if (!isImagePath) {
+            button.style.borderColor = 'rgba(255, 255, 255, 0.6)';
+        }
     };
-    
+
     button.onmouseout = () => {
         button.style.transform = 'scale(1)';
-        button.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+        if (!isImagePath) {
+            button.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+        }
     };
-    
+
     return button;
 }
 
