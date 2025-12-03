@@ -434,8 +434,12 @@ function createBottomControlPanel() {
         align-items: center;
     `;
 
-    // Кнопка гильдии (такого же размера как стройка, сверху)
-    const guildButton = createControlButton('🏰', 'Гильдия', () => {
+    // Определяем фракцию для иконок
+    const faction = window.userData?.faction || 'fire';
+
+    // Кнопка гильдии - иконка зависит от фракции
+    const guildIconPath = `assets/icons/${faction}/${faction}_guild.webp`;
+    const guildButton = createControlButton(guildIconPath, 'Гильдия', () => {
         console.log('🏰 Открыть окно гильдии');
         if (typeof window.openGuildModal === 'function') {
             window.openGuildModal();
@@ -444,8 +448,7 @@ function createBottomControlPanel() {
         }
     });
 
-    // Кнопка строить (основная, снизу) - иконка зависит от фракции
-    const faction = window.userData?.faction || 'fire';
+    // Кнопка строить - иконка зависит от фракции
     const buildIconPath = `assets/icons/${faction}/${faction}_build.webp`;
     const buildButton = createControlButton(buildIconPath, 'Строить', () => {
         console.log('🏗️ Открыть меню строительства');
@@ -456,8 +459,9 @@ function createBottomControlPanel() {
     buildGuildStack.appendChild(guildButton);
     buildGuildStack.appendChild(buildButton);
 
-    // Кнопка заклинаний
-    const spellsButton = createControlButton('📖', 'Заклинания', () => {
+    // Кнопка заклинаний - иконка зависит от фракции
+    const spellsIconPath = `assets/icons/${faction}/${faction}_spells.webp`;
+    const spellsButton = createControlButton(spellsIconPath, 'Заклинания', () => {
         console.log('📖 Открыть библиотеку заклинаний');
         if (window.showLibrary) {
             window.showLibrary();
@@ -465,9 +469,10 @@ function createBottomControlPanel() {
             showNotification('Библиотека пока недоступна');
         }
     });
-    
-    // Кнопка арены
-    const arenaButton = createControlButton('⚔️', 'Арена', () => {
+
+    // Кнопка арены - иконка зависит от фракции
+    const arenaIconPath = `assets/icons/${faction}/${faction}_arena.webp`;
+    const arenaButton = createControlButton(arenaIconPath, 'Арена', () => {
         console.log('⚔️ Открыть арену');
         if (window.showPvPArenaModal) {
             window.showPvPArenaModal();
