@@ -67,11 +67,16 @@
             icon.dataset.type = type;
             icon.dataset.id = data.id || '';
 
-            let emoji, color, timeRemaining, clickHandler;
+            let emoji, color, timeRemaining, clickHandler, useImage = false;
+
+            // Иконка строительства для фракции
+            const faction = window.userData?.faction || 'fire';
+            const buildIconPath = `assets/icons/${faction}/${faction}_build.webp`;
 
             switch (type) {
                 case 'building':
-                    emoji = '🔨';
+                    emoji = buildIconPath;
+                    useImage = true;
                     color = '#ffa500';
                     timeRemaining = data.time_remaining;
                     clickHandler = () => {
@@ -141,8 +146,13 @@
                 animation: pulse 2s infinite;
             `;
 
+            // Формируем иконку (изображение для строительства, эмодзи для остального)
+            const iconContent = useImage
+                ? `<img src="${emoji}" alt="Строительство" style="width: 20px; height: 20px; object-fit: contain;">`
+                : `<span style="font-size: 16px;">${emoji}</span>`;
+
             icon.innerHTML = `
-                <span style="font-size: 16px;">${emoji}</span>
+                ${iconContent}
                 <span class="process-timer" style="
                     font-size: 11px;
                     color: ${color};

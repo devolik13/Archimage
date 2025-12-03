@@ -243,11 +243,12 @@ function showConstructionModal(constructionIndex) {
         operationIcon = '🔧';
     } else {
         operationType = 'Строительство здания';
-        operationIcon = '🏗️';
+        operationIcon = 'build_icon'; // Будет заменён на изображение
     }
 
-    // Определяем фракцию для фона
+    // Определяем фракцию для фона и иконки строительства
     const faction = window.userData?.faction || 'fire';
+    const buildIconPath = `assets/icons/${faction}/${faction}_build.webp`;
     const imagePath = `assets/ui/window/tower_${faction}.webp`;
 
     // Удаляем старый экран если есть
@@ -332,10 +333,15 @@ function showConstructionModal(constructionIndex) {
 
         const progress = ((construction.time_required - timeRemaining) / construction.time_required * 100);
 
+        // Формируем иконку (для строительства - изображение, для остального - эмодзи)
+        const iconHtml = operationIcon === 'build_icon'
+            ? `<img src="${buildIconPath}" alt="Строительство" style="width: ${titleFontSize * 1.5}px; height: ${titleFontSize * 1.5}px; object-fit: contain;">`
+            : `<span style="font-size: ${titleFontSize * 1.2}px;">${operationIcon}</span>`;
+
         container.innerHTML = `
             <!-- Заголовок -->
             <div style="text-align: center; margin-bottom: ${10 * scaleY}px;">
-                <div style="font-size: ${titleFontSize * 1.2}px;">${operationIcon}</div>
+                <div>${iconHtml}</div>
                 <h3 style="margin: ${5 * scaleY}px 0; color: #FFD700; font-size: ${titleFontSize}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.9);">
                     ${operationType}
                 </h3>

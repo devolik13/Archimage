@@ -444,8 +444,10 @@ function createBottomControlPanel() {
         }
     });
 
-    // Кнопка строить (основная, снизу)
-    const buildButton = createControlButton('🏗️', 'Строить', () => {
+    // Кнопка строить (основная, снизу) - иконка зависит от фракции
+    const faction = window.userData?.faction || 'fire';
+    const buildIconPath = `assets/icons/${faction}/${faction}_build.webp`;
+    const buildButton = createControlButton(buildIconPath, 'Строить', () => {
         console.log('🏗️ Открыть меню строительства');
         showBuildingSelectionMenu();
     });
@@ -538,7 +540,7 @@ function createBottomControlPanel() {
     panel.appendChild(airdropShopStack);
 }
 
-// Создание кнопки управления
+// Создание кнопки управления (поддерживает emoji и путь к изображению)
 function createControlButton(icon, label, onClick) {
     const button = document.createElement('button');
     button.style.cssText = `
@@ -558,11 +560,21 @@ function createControlButton(icon, label, onClick) {
         transition: all 0.3s;
         position: relative;
     `;
-    
-    button.innerHTML = `
-        <div>${icon}</div>
-        <div style="font-size: 9px; opacity: 0.8;">${label}</div>
-    `;
+
+    // Проверяем, это путь к изображению или эмодзи
+    const isImagePath = icon.includes('/') || icon.includes('.webp') || icon.includes('.png');
+
+    if (isImagePath) {
+        button.innerHTML = `
+            <img src="${icon}" alt="${label}" style="width: 32px; height: 32px; object-fit: contain;">
+            <div style="font-size: 9px; opacity: 0.8;">${label}</div>
+        `;
+    } else {
+        button.innerHTML = `
+            <div>${icon}</div>
+            <div style="font-size: 9px; opacity: 0.8;">${label}</div>
+        `;
+    }
     
     button.onclick = onClick;
     
