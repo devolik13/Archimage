@@ -565,11 +565,11 @@ function createControlButton(icon, label, onClick) {
     const isImagePath = icon.includes('/') || icon.includes('.webp') || icon.includes('.png');
 
     if (isImagePath) {
-        // Для иконок-изображений - прозрачный фон и увеличенный размер (+20%)
+        // Для иконок-изображений - прозрачный фон и увеличенный размер
         button.style.background = 'transparent';
         button.style.border = 'none';
         button.innerHTML = `
-            <img src="${icon}" alt="${label}" style="width: 38px; height: 38px; object-fit: contain;">
+            <img src="${icon}" alt="${label}" style="width: 46px; height: 46px; object-fit: contain;">
             <div style="font-size: 9px; opacity: 0.8;">${label}</div>
         `;
     } else {
