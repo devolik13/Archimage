@@ -57,9 +57,9 @@
             scale: 0.350
         },
         wind: {
-            idle: 'images/wizards/wind/idle.png',
-            cast: 'images/wizards/wind/cast.png',
-            death: 'images/wizards/wind/death.png',
+            idle: 'images/wizards/wind/idle.webp',
+            cast: 'images/wizards/wind/cast.webp',
+            death: 'images/wizards/wind/death.webp',
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
