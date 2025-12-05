@@ -24,7 +24,7 @@
         }
         
         // Загружаем спрайт-лист листьев (612x408, 5 колонок, 3 ряда)
-        const leafSheetPath = 'images/spells/nature/leaf_canopy/leaves_sheet.png';
+        const leafSheetPath = 'images/spells/nature/leaf_canopy/leaves_sheet.webp';
         
         PIXI.Assets.load(leafSheetPath).then(leafTexture => {
             if (!leafTexture || !leafTexture.valid) {

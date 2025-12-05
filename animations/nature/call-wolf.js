@@ -45,7 +45,7 @@
         
         console.log(`🐺 Создание нового волка ${wolfId}`);
         
-        const wolfTexturePath = 'images/spells/nature/call_wolf/wolf_idle_sheet.png';
+        const wolfTexturePath = 'images/spells/nature/call_wolf/wolf_idle_sheet.webp';
         
         PIXI.Assets.load(wolfTexturePath).then(baseTexture => {
             if (!baseTexture || !baseTexture.valid) {

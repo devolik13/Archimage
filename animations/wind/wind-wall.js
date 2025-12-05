@@ -38,7 +38,7 @@
     	const targetColumn = casterType === 'player' ? 3 : 2;
         
         // Загружаем текстуру спрайт-листа
-        const windWallTexturePath = 'images/spells/wind/wind_wall/wind_wall_spritesheet.png';
+        const windWallTexturePath = 'images/spells/wind/wind_wall/wind_wall_spritesheet.webp';
         
         PIXI.Assets.load(windWallTexturePath).then(texture => {
             if (!texture || !texture.valid) {

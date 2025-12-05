@@ -22,7 +22,7 @@
         const groundId = `burning_${column}_${row}_${Date.now()}`;
         
         // Загружаем спрайт-лист
-        const texturePath = 'images/spells/fire/fire_tsunami/burning_ground_sheet.png';
+        const texturePath = 'images/spells/fire/fire_tsunami/burning_ground_sheet.webp';
         
         PIXI.Assets.load(texturePath).then(baseTexture => {
             if (!baseTexture || !baseTexture.valid) {

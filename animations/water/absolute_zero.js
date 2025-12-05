@@ -54,7 +54,7 @@
         zoneContainer.addChild(frostOverlay);
         
         // 2. Загружаем спрайтшит снежинок
-        const snowflakeTexturePath = 'images/spells/water/absolute_zero/snowflakes_spritesheet.png';
+        const snowflakeTexturePath = 'images/spells/water/absolute_zero/snowflakes_spritesheet.webp';
         
         PIXI.Assets.load(snowflakeTexturePath).then(texture => {
             if (!texture || !texture.valid) {

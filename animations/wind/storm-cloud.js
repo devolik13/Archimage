@@ -24,7 +24,7 @@
         const targetColumns = casterType === 'player' ? [0, 1, 2] : [3, 4, 5];
         
         // Загружаем спрайт-лист молний
-        const lightningTexturePath = 'images/spells/wind/storm_cloud/lightning_spritesheet.png';
+        const lightningTexturePath = 'images/spells/wind/storm_cloud/lightning_spritesheet.webp';
         
         PIXI.Assets.load(lightningTexturePath).then(texture => {
             if (!texture || !texture.valid) {

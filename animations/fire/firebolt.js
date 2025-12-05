@@ -62,7 +62,7 @@
         console.log(`🏹 Запуск ${arrowCount} огненных стрел с точными координатами`);
         
         // Загружаем спрайт-лист
-        const fireboltTexturePath = 'images/spells/fire/firebolt/firebolt_sheet.png';
+        const fireboltTexturePath = 'images/spells/fire/firebolt/firebolt_sheet.webp';
         
         PIXI.Assets.load(fireboltTexturePath).then(baseTexture => {
             if (!baseTexture || !baseTexture.valid) {

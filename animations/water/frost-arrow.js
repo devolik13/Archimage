@@ -6,7 +6,7 @@
     // Создание эффекта взрыва (теперь принимает container как параметр)
     function createFrostImpact(x, y, scale, container) {
         // Загружаем спрайт-лист взрыва
-        const explosionTexturePath = 'images/spells/water/frost_arrow/frost_explosion_sprite.png';
+        const explosionTexturePath = 'images/spells/water/frost_arrow/frost_explosion_sprite.webp';
         
         PIXI.Assets.load(explosionTexturePath).then(texture => {
             if (!texture || !texture.valid) {
@@ -189,7 +189,7 @@
         }
         
         // Загружаем спрайтшит ледяной стрелы
-        const baseTexture = PIXI.BaseTexture.from('images/spells/water/frost_arrow/frost_arrow_sprite.png');
+        const baseTexture = PIXI.BaseTexture.from('images/spells/water/frost_arrow/frost_arrow_sprite.webp');
         
         // Ждем загрузки текстуры чтобы узнать реальный размер
         if (!baseTexture.valid) {

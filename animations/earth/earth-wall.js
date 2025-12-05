@@ -39,7 +39,7 @@
     	}
         
         // Загружаем текстуру стены
-        const wallTexturePath = 'images/spells/earth/earth_wall/wall_sprite.png';
+        const wallTexturePath = 'images/spells/earth/earth_wall/wall_sprite.webp';
         
         PIXI.Assets.load(wallTexturePath).then(texture => {
             console.log('🧱 Текстура валидна:', texture?.valid);

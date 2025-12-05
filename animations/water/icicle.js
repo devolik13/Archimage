@@ -158,7 +158,7 @@
             if (!effectsContainer) return;
 
             // Путь к спрайт-листу взрыва льда
-            const explosionSheetPath = 'images/spells/water/icicle/ice_explosion_sheet.png';
+            const explosionSheetPath = 'images/spells/water/icicle/ice_explosion_sheet.webp';
             
             PIXI.Assets.load(explosionSheetPath).then(texture => {
                 if (texture && texture.valid) {

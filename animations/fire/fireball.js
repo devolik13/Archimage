@@ -173,7 +173,7 @@
         
         function createExplosion() {
             // Загружаем спрайт-лист для взрыва
-            const fireballTexturePath = 'images/spells/fire/fireball/fireball_sheet.png';
+            const fireballTexturePath = 'images/spells/fire/fireball/fireball_sheet.webp';
             
             PIXI.Assets.load(fireballTexturePath).then(baseTexture => {
                 if (!baseTexture) {

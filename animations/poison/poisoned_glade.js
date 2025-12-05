@@ -52,7 +52,7 @@
         });
 
         // Загружаем текстуру спрайтшита
-        const gladeTexturePath = 'images/spells/poison/poisoned_glade/glade_spritesheet.png';
+        const gladeTexturePath = 'images/spells/poison/poisoned_glade/glade_spritesheet.webp';
 
         console.log('🌿 Загрузка текстуры:', gladeTexturePath);
 

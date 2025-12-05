@@ -54,7 +54,7 @@
         if (!entCell) return;
         
         // Загружаем спрайт 768x768, 3x3
-        const entSheetPath = 'images/spells/nature/ent/ent_sheet.png';
+        const entSheetPath = 'images/spells/nature/ent/ent_sheet.webp';
         
         PIXI.Assets.load(entSheetPath).then(texture => {
             // Нарезаем кадры

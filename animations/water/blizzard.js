@@ -47,7 +47,7 @@
         }
         
         // Загружаем спрайт-лист метели
-        const blizzardTexturePath = 'images/spells/water/blizzard/blizzard_sprite.png';
+        const blizzardTexturePath = 'images/spells/water/blizzard/blizzard_sprite.webp';
         
         PIXI.Assets.load(blizzardTexturePath).then(texture => {
             if (!texture || !texture.valid) {

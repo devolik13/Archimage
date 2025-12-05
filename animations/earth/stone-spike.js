@@ -43,7 +43,7 @@
         }
         
         // Загружаем спрайт-лист
-        const spikeTexturePath = 'images/spells/earth/stone_spike/spike_sprite.png';
+        const spikeTexturePath = 'images/spells/earth/stone_spike/spike_sprite.webp';
         
         PIXI.Assets.load(spikeTexturePath).then(texture => {
             if (!texture || !texture.valid) {

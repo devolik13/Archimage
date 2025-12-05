@@ -164,7 +164,7 @@
             if (!effectsContainer) return;
 
             // Путь к вашему спрайт-листу взрыва
-            const explosionSheetPath = 'images/spells/fire/spark/explosion_sheet.png';
+            const explosionSheetPath = 'images/spells/fire/spark/explosion_sheet.webp';
             
             PIXI.Assets.load(explosionSheetPath).then(texture => {
                 if (texture && texture.valid) {

@@ -38,7 +38,7 @@
         const endY = targetCell.y + targetCell.height / 2;
         
         // Загружаем спрайт-лист
-        const gustTexturePath = 'images/spells/wind/gust/gust_spritesheet.png';
+        const gustTexturePath = 'images/spells/wind/gust/gust_spritesheet.webp';
         
         PIXI.Assets.load(gustTexturePath).then(texture => {
             if (!texture || !texture.valid) {

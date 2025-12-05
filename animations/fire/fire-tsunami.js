@@ -27,7 +27,7 @@
         const startColumn = casterType === 'player' ? 0 : 5;
         
         // Загружаем спрайт-лист
-        const tsunamiTexturePath = 'images/spells/fire/fire_tsunami/tsunami_sheet.png';
+        const tsunamiTexturePath = 'images/spells/fire/fire_tsunami/tsunami_sheet.webp';
         
         PIXI.Assets.load(tsunamiTexturePath).then(baseTexture => {
             if (!baseTexture || !baseTexture.valid) {

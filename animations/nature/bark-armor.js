@@ -44,7 +44,7 @@
         }
         
         // Загружаем текстуру коры
-        const barkTexturePath = 'images/spells/nature/bark_armor/bark_shield.png';
+        const barkTexturePath = 'images/spells/nature/bark_armor/bark_shield.webp';
         
         PIXI.Assets.load(barkTexturePath).then(texture => {
             if (!texture || !texture.valid) {

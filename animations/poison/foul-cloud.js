@@ -103,7 +103,7 @@
     // Загрузка спрайт-листа облака
     function loadCloudSprite(container, scale) {
         // Пытаемся создать анимированный спрайт из атласа
-        const cloudTexturePath = 'images/spells/poison/foul_cloud/cloud.png';
+        const cloudTexturePath = 'images/spells/poison/foul_cloud/cloud.webp';
 
         console.log('☠️ Загрузка текстуры облака:', cloudTexturePath);
 

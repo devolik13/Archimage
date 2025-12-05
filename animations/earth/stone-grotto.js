@@ -62,7 +62,7 @@
         }
         
         // Загружаем текстуру каменного грота
-        const grottoTexturePath = 'images/spells/earth/stone_grotto/grotto_shield.png';
+        const grottoTexturePath = 'images/spells/earth/stone_grotto/grotto_shield.webp';
         
         PIXI.Assets.load(grottoTexturePath).then(texture => {
             if (!texture || !texture.valid) {

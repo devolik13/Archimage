@@ -41,7 +41,7 @@
         const startY = -200 * targetCell.cellScale; // Высоко за экраном
         
         // Загружаем текстуру метеорита
-        const meteorTexturePath = 'images/spells/earth/meteor/meteor_sprite.png';
+        const meteorTexturePath = 'images/spells/earth/meteor/meteor_sprite.webp';
         
         PIXI.Assets.load(meteorTexturePath).then(texture => {
             if (!texture || !texture.valid) {

@@ -39,7 +39,7 @@
         const targetColumn = casterType === 'player' ? 0 : 5;
         
         // Загружаем текстуру спрайт-листа
-        const textureUrl = '/images/spells/fire/fire_wall/fire_wall_spritesheet.png';
+        const textureUrl = '/images/spells/fire/fire_wall/fire_wall_spritesheet.webp';
         
         // Загружаем базовую текстуру
         const baseTexture = PIXI.BaseTexture.from(textureUrl);

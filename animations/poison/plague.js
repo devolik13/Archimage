@@ -131,7 +131,7 @@
         }
         
         // Загружаем спрайтшит
-        const plagueTexturePath = 'images/spells/poison/plague/plague_spritesheet.png';
+        const plagueTexturePath = 'images/spells/poison/plague/plague_spritesheet.webp';
         
         PIXI.Assets.load(plagueTexturePath).then(texture => {
             if (!texture || !texture.valid) {

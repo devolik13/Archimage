@@ -22,7 +22,7 @@
         }
         
         // Загружаем спрайт-лист
-        const bladeTexturePath = 'images/spells/wind/wind_blade/wind_blade_spritesheet.png';
+        const bladeTexturePath = 'images/spells/wind/wind_blade/wind_blade_spritesheet.webp';
         
         PIXI.Assets.load(bladeTexturePath).then(texture => {
             if (!texture || !texture.valid) {

@@ -38,7 +38,7 @@
         const endY = targetCell.y + targetCell.height / 2;
         
         // Загружаем текстуру клинка
-        const bladeTexturePath = 'images/spells/poison/poisoned_blade/blade_sprite.png';
+        const bladeTexturePath = 'images/spells/poison/poisoned_blade/blade_sprite.webp';
         
         PIXI.Assets.load(bladeTexturePath).then(texture => {
             if (!texture || !texture.valid) {

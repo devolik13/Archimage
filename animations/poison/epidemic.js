@@ -38,7 +38,7 @@
         const centerY = wizardY - (targetCell.height || 60) * 0.3; // Выше центра мага
         
         // Загружаем текстуру спрайтшита
-        const epidemicTexturePath = 'images/spells/poison/epidemic/epidemic_spritesheet.png';
+        const epidemicTexturePath = 'images/spells/poison/epidemic/epidemic_spritesheet.webp';
         
         PIXI.Assets.load(epidemicTexturePath).then(texture => {
             if (!texture || !texture.valid) {

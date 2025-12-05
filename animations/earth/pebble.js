@@ -39,7 +39,7 @@
         const endY = targetCell.y + targetCell.height / 2;
         
         // Загружаем текстуру камня
-        const pebbleTexturePath = 'images/spells/earth/pebble/pebble_sprite.png';
+        const pebbleTexturePath = 'images/spells/earth/pebble/pebble_sprite.webp';
         
         PIXI.Assets.load(pebbleTexturePath).then(texture => {
             if (!texture || !texture.valid) {

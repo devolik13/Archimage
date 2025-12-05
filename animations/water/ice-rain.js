@@ -22,7 +22,7 @@
         }
         
         // Загружаем спрайт-лист капель
-        const dropTexturePath = 'images/spells/water/ice_rain/ice_drop_sprite.png';
+        const dropTexturePath = 'images/spells/water/ice_rain/ice_drop_sprite.webp';
         
         PIXI.Assets.load(dropTexturePath).then(texture => {
             if (!texture || !texture.valid) {
