@@ -165,7 +165,7 @@ function openSchoolSpells(faction) {
     const gradientBackground = `radial-gradient(ellipse at center, ${schoolColor}33 0%, ${schoolColor}11 50%, #0a0a15 100%)`;
 
     // Определяем картинку для каждой школы
-    const spellsImage = `assets/ui/modals/spells_${faction}.png`;
+    const spellsImage = `assets/ui/modals/spells_${faction}.webp`;
 
     libraryContainer.innerHTML = `
         <div id="spells-background" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: ${gradientBackground};">
