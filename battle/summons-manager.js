@@ -16,7 +16,7 @@ class SummonsManager {
         this.summonTypes = {
             'nature_wolf': {
                 name: 'Волк Природы',
-                sprite: 'images/spells/nature/call_wolf/wolf_idle_sheet.png',
+                sprite: 'images/spells/nature/call_wolf/wolf_idle_sheet.webp',
                 frameWidth: 204,
                 frameHeight: 204,
                 frames: 6,

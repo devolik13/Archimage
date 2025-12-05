@@ -784,24 +784,24 @@ function applyPoisonEffect(targetWizard, stacks = 1) {
         // Ищем позицию мага
         let wizardKey = null;
 
-        // Проверяем в игроках
+        // Проверяем в игроках (колонка 5 - правая сторона поля)
         if (window.playerWizards && window.playerFormation) {
             const playerIndex = window.playerWizards.findIndex(w => w && w.id === targetWizard.id);
             if (playerIndex !== -1) {
                 const position = window.playerFormation.findIndex(id => id === targetWizard.id);
                 if (position !== -1) {
-                    wizardKey = `0_${position}`; // Колонка 0 для игрока
+                    wizardKey = `5_${position}`; // Колонка 5 для игрока
                 }
             }
         }
 
-        // Проверяем во врагах
+        // Проверяем во врагах (колонка 0 - левая сторона поля)
         if (!wizardKey && window.enemyWizards && window.enemyFormation) {
             const enemyIndex = window.enemyWizards.findIndex(w => w && w.id === targetWizard.id);
             if (enemyIndex !== -1) {
                 const position = window.enemyFormation.findIndex(id => id === targetWizard.id);
                 if (position !== -1) {
-                    wizardKey = `5_${position}`; // Колонка 5 для врага
+                    wizardKey = `0_${position}`; // Колонка 0 для врага
                 }
             }
         }
