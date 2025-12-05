@@ -5,7 +5,7 @@ const SPELL_ANIMATIONS = {
     fire: {
         spark: {
             type: 'projectile',
-            sprite: '/images/spells/fire/spark/spark.png',
+            sprite: '/images/spells/fire/spark/spark.webp',
             // Используем существующую реализацию из createSparkProjectile
             custom: true, // Флаг что у этого заклинания есть кастомная реализация
             frameWidth: 16,
@@ -23,7 +23,7 @@ const SPELL_ANIMATIONS = {
         
         firebolt: {
             type: 'projectile',
-            sprite: '/images/spells/fire/firebolt/firebolt.png',
+            sprite: '/images/spells/fire/firebolt/firebolt.webp',
             frameWidth: 48,
             frameHeight: 48,
             frames: 6,
@@ -43,8 +43,8 @@ const SPELL_ANIMATIONS = {
             // Используем существующую реализацию из createFireWallVisual
             custom: true, // Кастомная реализация
             sprites: {
-                base: '/images/spells/fire/fire_wall/base.png',
-                flame: '/images/spells/fire/fire_wall/flame.png'
+                base: '/images/spells/fire/fire_wall/base.webp',
+                flame: '/images/spells/fire/fire_wall/flame.webp'
             },
             frameWidth: 64,
             frameHeight: 128,
@@ -60,7 +60,7 @@ const SPELL_ANIMATIONS = {
         
         fireball: {
             type: 'projectile',
-            sprite: '/images/spells/fire/fireball/fireball.png',
+            sprite: '/images/spells/fire/fireball/fireball.webp',
             frameWidth: 64,
             frameHeight: 64,
             frames: 8,
@@ -68,7 +68,7 @@ const SPELL_ANIMATIONS = {
             scale: 1.5,
             blendMode: 'ADD',
             explosion: {
-                sprite: '/images/spells/fire/fireball/explosion.png',
+                sprite: '/images/spells/fire/fireball/explosion.webp',
                 frameWidth: 128,
                 frameHeight: 128,
                 frames: 12,
@@ -79,7 +79,7 @@ const SPELL_ANIMATIONS = {
         
         fire_tsunami: {
             type: 'wave',
-            sprite: '/images/spells/fire/fire_tsunami/wave.png',
+            sprite: '/images/spells/fire/fire_tsunami/wave.webp',
             frameWidth: 256,
             frameHeight: 128,
             frames: 16,
@@ -93,7 +93,7 @@ const SPELL_ANIMATIONS = {
     water: {
         icicle: {
             type: 'projectile',
-            sprite: '/images/spells/water/icicle/icicle.png',
+            sprite: '/images/spells/water/icicle/icicle.webp',
             // Используем существующую реализацию из createIcicleProjectile
             custom: true, // Кастомная реализация
             frameWidth: 24,
@@ -114,7 +114,7 @@ const SPELL_ANIMATIONS = {
         
         frost_arrow: {
             type: 'projectile',
-            sprite: '/images/spells/water/frost_arrow/arrow.png',
+            sprite: '/images/spells/water/frost_arrow/arrow.webp',
             frameWidth: 48,
             frameHeight: 16,
             frames: 4,
@@ -125,7 +125,7 @@ const SPELL_ANIMATIONS = {
         
         ice_rain: {
             type: 'area',
-            sprite: '/images/spells/water/ice_rain/rain.png',
+            sprite: '/images/spells/water/ice_rain/rain.webp',
             frameWidth: 32,
             frameHeight: 32,
             frames: 8,
@@ -137,7 +137,7 @@ const SPELL_ANIMATIONS = {
         
         blizzard: {
             type: 'area',
-            sprite: '/images/spells/water/blizzard/blizzard.png',
+            sprite: '/images/spells/water/blizzard/blizzard.webp',
             frameWidth: 256,
             frameHeight: 256,
             frames: 16,
@@ -148,7 +148,7 @@ const SPELL_ANIMATIONS = {
         
         absolute_zero: {
             type: 'instant',
-            sprite: '/images/spells/water/absolute_zero/freeze.png',
+            sprite: '/images/spells/water/absolute_zero/freeze.webp',
             frameWidth: 128,
             frameHeight: 128,
             frames: 12,
@@ -162,7 +162,7 @@ const SPELL_ANIMATIONS = {
     wind: {
         gust: {
             type: 'projectile',
-            sprite: '/images/spells/wind/gust/gust.png',
+            sprite: '/images/spells/wind/gust/gust.webp',
             frameWidth: 48,
             frameHeight: 48,
             frames: 6,
@@ -174,7 +174,7 @@ const SPELL_ANIMATIONS = {
         
         wind_blade: {
             type: 'projectile',
-            sprite: '/images/spells/wind/wind_blade/blade.png',
+            sprite: '/images/spells/wind/wind_blade/blade.webp',
             frameWidth: 64,
             frameHeight: 16,
             frames: 4,
@@ -185,7 +185,7 @@ const SPELL_ANIMATIONS = {
         
         wind_wall: {
             type: 'area',
-            sprite: '/images/spells/wind/wind_wall/wall.png',
+            sprite: '/images/spells/wind/wind_wall/wall.webp',
             frameWidth: 64,
             frameHeight: 128,
             frames: 8,
@@ -197,14 +197,14 @@ const SPELL_ANIMATIONS = {
         
         storm_cloud: {
             type: 'area',
-            sprite: '/images/spells/wind/storm_cloud/cloud.png',
+            sprite: '/images/spells/wind/storm_cloud/cloud.webp',
             frameWidth: 128,
             frameHeight: 128,
             frames: 12,
             animationSpeed: 0.15,
             scale: 1.5,
             lightning: {
-                sprite: '/images/spells/wind/storm_cloud/lightning.png',
+                sprite: '/images/spells/wind/storm_cloud/lightning.webp',
                 frameWidth: 32,
                 frameHeight: 256,
                 frames: 6,
@@ -214,7 +214,7 @@ const SPELL_ANIMATIONS = {
         
         chain_lightning: {
             type: 'chain',
-            sprite: '/images/spells/wind/chain_lightning/bolt.png',
+            sprite: '/images/spells/wind/chain_lightning/bolt.webp',
             frameWidth: 256,
             frameHeight: 32,
             frames: 8,
@@ -228,7 +228,7 @@ const SPELL_ANIMATIONS = {
     earth: {
         pebble: {
             type: 'projectile',
-            sprite: '/images/spells/earth/pebble/pebble.png',
+            sprite: '/images/spells/earth/pebble/pebble.webp',
             frameWidth: 24,
             frameHeight: 24,
             frames: 4,
@@ -239,7 +239,7 @@ const SPELL_ANIMATIONS = {
         
         stone_spike: {
             type: 'ground',
-            sprite: '/images/spells/earth/stone_spike/spike.png',
+            sprite: '/images/spells/earth/stone_spike/spike.webp',
             frameWidth: 48,
             frameHeight: 64,
             frames: 6,
@@ -250,7 +250,7 @@ const SPELL_ANIMATIONS = {
         
         earth_wall: {
             type: 'area',
-            sprite: '/images/spells/earth/earth_wall/wall.png',
+            sprite: '/images/spells/earth/earth_wall/wall.webp',
             frameWidth: 64,
             frameHeight: 96,
             frames: 1, // Статичная стена
@@ -260,7 +260,7 @@ const SPELL_ANIMATIONS = {
         
         stone_grotto: {
             type: 'summon',
-            sprite: '/images/spells/earth/stone_grotto/golem.png',
+            sprite: '/images/spells/earth/stone_grotto/golem.webp',
             frameWidth: 64,
             frameHeight: 64,
             frames: 8,
@@ -270,7 +270,7 @@ const SPELL_ANIMATIONS = {
         
         meteor_shower: {
             type: 'area',
-            sprite: '/images/spells/earth/meteor_shower/meteor.png',
+            sprite: '/images/spells/earth/meteor_shower/meteor.webp',
             frameWidth: 64,
             frameHeight: 64,
             frames: 8,
@@ -278,7 +278,7 @@ const SPELL_ANIMATIONS = {
             scale: 1.5,
             pattern: 'rain',
             impact: {
-                sprite: '/images/spells/earth/meteor_shower/impact.png',
+                sprite: '/images/spells/earth/meteor_shower/impact.webp',
                 frameWidth: 96,
                 frameHeight: 96,
                 frames: 8,
@@ -291,7 +291,7 @@ const SPELL_ANIMATIONS = {
     nature: {
         call_wolf: {
             type: 'summon',
-            sprite: '/images/spells/nature/call_wolf/wolf.png',
+            sprite: '/images/spells/nature/call_wolf/wolf.webp',
             frameWidth: 64,
             frameHeight: 48,
             frames: 8,
@@ -309,7 +309,7 @@ const SPELL_ANIMATIONS = {
         
         bark_armor: {
             type: 'buff',
-            sprite: '/images/spells/nature/bark_armor/armor.png',
+            sprite: '/images/spells/nature/bark_armor/armor.webp',
             frameWidth: 64,
             frameHeight: 64,
             frames: 8,
@@ -320,7 +320,7 @@ const SPELL_ANIMATIONS = {
         
         leaf_canopy: {
             type: 'area',
-            sprite: '/images/spells/nature/leaf_canopy/leaves.png',
+            sprite: '/images/spells/nature/leaf_canopy/leaves.webp',
             frameWidth: 128,
             frameHeight: 128,
             frames: 12,
@@ -331,7 +331,7 @@ const SPELL_ANIMATIONS = {
         
         ent: {
             type: 'summon',
-            sprite: '/images/spells/nature/ent/ent.png',
+            sprite: '/images/spells/nature/ent/ent.webp',
             frameWidth: 96,
             frameHeight: 128,
             frames: 8,
@@ -342,9 +342,9 @@ const SPELL_ANIMATIONS = {
         meteorokinesis: {
             type: 'weather',
             sprites: {
-                sun: '/images/spells/nature/meteorokinesis/sun.png',
-                rain: '/images/spells/nature/meteorokinesis/rain.png',
-                storm: '/images/spells/nature/meteorokinesis/storm.png'
+                sun: '/images/spells/nature/meteorokinesis/sun.webp',
+                rain: '/images/spells/nature/meteorokinesis/rain.webp',
+                storm: '/images/spells/nature/meteorokinesis/storm.webp'
             },
             frameWidth: 256,
             frameHeight: 256,
@@ -359,7 +359,7 @@ const SPELL_ANIMATIONS = {
     poison: {
         poisoned_blade: {
             type: 'projectile',
-            sprite: '/images/spells/poison/poisoned_blade/blade.png',
+            sprite: '/images/spells/poison/poisoned_blade/blade.webp',
             frameWidth: 32,
             frameHeight: 32,
             frames: 4,
@@ -375,7 +375,7 @@ const SPELL_ANIMATIONS = {
         
         poisoned_glade: {
             type: 'area',
-            sprite: '/images/spells/poison/poisoned_glade/glade.png',
+            sprite: '/images/spells/poison/poisoned_glade/glade.webp',
             frameWidth: 128,
             frameHeight: 128,
             frames: 8,
@@ -388,7 +388,7 @@ const SPELL_ANIMATIONS = {
         
         foul_cloud: {
             type: 'area',
-            sprite: '/images/spells/poison/foul_cloud/cloud.png',
+            sprite: '/images/spells/poison/foul_cloud/cloud.webp',
             frameWidth: 166,  // 500/3 = ~166
             frameHeight: 166, // 500/3 = ~166
             frames: 9,        // 3x3 = 9 кадров
@@ -400,7 +400,7 @@ const SPELL_ANIMATIONS = {
             pattern: 'spread', // Расползающийся паттерн
             particles: {
                 enabled: true,
-                sprite: '/images/spells/poison/foul_cloud/particle.png',
+                sprite: '/images/spells/poison/foul_cloud/particle.webp',
                 count: 30,
                 speed: 0.5,
                 lifespan: 2000,
@@ -410,7 +410,7 @@ const SPELL_ANIMATIONS = {
         
         plague: {
             type: 'debuff',
-            sprite: '/images/spells/poison/plague/plague.png',
+            sprite: '/images/spells/poison/plague/plague.webp',
             frameWidth: 48,
             frameHeight: 48,
             frames: 8,
@@ -425,7 +425,7 @@ const SPELL_ANIMATIONS = {
         
         epidemic: {
             type: 'area',
-            sprite: '/images/spells/poison/epidemic/epidemic.png',
+            sprite: '/images/spells/poison/epidemic/epidemic.webp',
             frameWidth: 256,
             frameHeight: 256,
             frames: 16,
