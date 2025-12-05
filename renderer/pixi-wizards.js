@@ -1167,6 +1167,18 @@
             return;
         }
 
+        // Парсим ключ для получения позиции (формат: "col_row")
+        const [colStr, rowStr] = key.split('_');
+        const col = parseInt(colStr);
+        const row = parseInt(rowStr);
+
+        // Получаем ячейку из gridCells (как в burning-effect.js)
+        const cellData = gridCells?.[col]?.[row];
+        if (!cellData) {
+            console.warn(`⚠️ Ячейка ${key} не найдена для иконки яда`);
+            return;
+        }
+
         // Создаем новую иконку с количеством стаков
         const poisonText = new PIXI.Text(`☠️${stacks}`, {
             fontFamily: 'Arial',
@@ -1179,14 +1191,9 @@
 
         poisonText.anchor.set(0.5, 1); // Центрируем по горизонтали, низ по вертикали
 
-        // Позиционируем над HP баром
-        if (container.hpBar) {
-            poisonText.x = container.hpBar.x;
-            poisonText.y = container.hpBar.y - 8; // Чуть выше HP бара
-        } else if (container.sprite) {
-            poisonText.x = container.sprite.x;
-            poisonText.y = container.sprite.y + 18; // Чуть выше спрайта
-        }
+        // Позиционируем над магом (используем координаты ячейки)
+        poisonText.x = cellData.x + cellData.width / 2;
+        poisonText.y = cellData.y + cellData.height * 0.15; // Над головой мага
 
         container.poisonIcon = poisonText;
 
