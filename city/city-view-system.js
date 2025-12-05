@@ -31,6 +31,120 @@ function isMobileDevice() {
     return result;
 }
 
+// Модалка "Построй здание гильдии"
+function showBuildGuildPrompt() {
+    const faction = window.userData?.faction || 'fire';
+
+    // Создаём оверлей
+    const overlay = document.createElement('div');
+    overlay.id = 'build-guild-prompt-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    `;
+
+    // Модальное окно с фоном гильдии
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        width: 90%;
+        max-width: 400px;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        position: relative;
+    `;
+
+    // Фон гильдии
+    const bgImage = document.createElement('img');
+    bgImage.src = `assets/ui/guild/guild_${faction}.webp`;
+    bgImage.style.cssText = `
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        display: block;
+    `;
+
+    // Контент поверх фона
+    const content = document.createElement('div');
+    content.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 20px;
+        box-sizing: border-box;
+    `;
+
+    content.innerHTML = `
+        <div style="font-size: 48px; margin-bottom: 15px;">🏰</div>
+        <div style="font-size: 20px; font-weight: bold; color: #FFD700; text-align: center; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+            Здание Гильдии не построено
+        </div>
+        <div style="font-size: 14px; color: #fff; text-align: center; margin-bottom: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+            Постройте Гильдию, чтобы нанимать магов для своей армии
+        </div>
+        <button id="build-guild-btn" style="
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            margin-bottom: 10px;
+        ">🏗️ Построить</button>
+        <button id="close-guild-prompt-btn" style="
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #aaa;
+            padding: 8px 20px;
+            font-size: 14px;
+            border-radius: 20px;
+            cursor: pointer;
+        ">Закрыть</button>
+    `;
+
+    modal.appendChild(bgImage);
+    modal.appendChild(content);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    // Обработчики
+    document.getElementById('build-guild-btn').addEventListener('click', () => {
+        overlay.remove();
+        // Открываем меню строительства с фокусом на гильдии
+        if (typeof showBuildingSelectionMenu === 'function') {
+            showBuildingSelectionMenu();
+        }
+    });
+
+    document.getElementById('close-guild-prompt-btn').addEventListener('click', () => {
+        overlay.remove();
+    });
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            overlay.remove();
+        }
+    });
+}
+
 // Загрузка фона города (новая версия)
 function loadCityBackgroundNew(faction, container) {
     const backgroundPath = `${CITY_IMAGES_CONFIG.backgrounds}${faction}-city.png`;
@@ -441,6 +555,16 @@ function createBottomControlPanel() {
     const guildIconPath = `assets/icons/${faction}/${faction}_guild.webp`;
     const guildButton = createControlButton(guildIconPath, 'Гильдия', () => {
         console.log('🏰 Открыть окно гильдии');
+
+        // Проверяем, построено ли здание гильдии
+        const guildLevel = window.userData?.buildings?.guild?.level || 0;
+
+        if (guildLevel === 0) {
+            // Здание не построено - показываем модалку с предложением построить
+            showBuildGuildPrompt();
+            return;
+        }
+
         if (typeof window.openGuildModal === 'function') {
             window.openGuildModal();
         } else {
