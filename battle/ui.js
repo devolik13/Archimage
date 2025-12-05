@@ -206,9 +206,10 @@ function createBattleInfoTop() {
         return;
     }
     
-    const playerLevel = typeof window.calculatePlayerLevel === 'function' ? 
+    const playerLevel = typeof window.calculatePlayerLevel === 'function' ?
         window.calculatePlayerLevel() : 1;
-    const enemyLevel = Math.floor(Math.random() * 5) + (playerLevel - 2);
+    const enemyLevel = window.selectedOpponent?.level || playerLevel;
+    const enemyName = window.selectedOpponent?.username || 'Противник';
     
     infoContainer.innerHTML = `
         <!-- Игрок -->
@@ -246,7 +247,7 @@ function createBattleInfoTop() {
                 border: 2px solid #ff6b6b;
             ">🤖</div>
             <div>
-                <div style="font-size: 10px; color: #ff6b6b; font-weight: bold;">Противник</div>
+                <div style="font-size: 10px; color: #ff6b6b; font-weight: bold;">${enemyName}</div>
                 <div style="font-size: 9px; color: #ffa500;">⭐ Ур. ${enemyLevel}</div>
             </div>
         </div>
