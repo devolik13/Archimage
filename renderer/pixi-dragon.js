@@ -21,9 +21,9 @@
         try {
             // Добавляем timestamp для сброса кеша
             const cacheBuster = `?v=${Date.now()}`;
-            const idleTexture = await PIXI.Assets.load('images/dragon/idle.png' + cacheBuster);
-            const castTexture = await PIXI.Assets.load('images/dragon/cast.png' + cacheBuster);
-            const deathTexture = await PIXI.Assets.load('images/dragon/death.png' + cacheBuster);
+            const idleTexture = await PIXI.Assets.load('images/dragon/idle.webp' + cacheBuster);
+            const castTexture = await PIXI.Assets.load('images/dragon/cast.webp' + cacheBuster);
+            const deathTexture = await PIXI.Assets.load('images/dragon/death.webp' + cacheBuster);
 
             console.log(`📐 Idle текстура: ${idleTexture.width}×${idleTexture.height}`);
             console.log(`📐 Cast текстура: ${castTexture.width}×${castTexture.height}`);
@@ -181,7 +181,7 @@
         const areaHeight = bottomRightCell.y + bottomRightCell.height - topLeftCell.y;
 
         if (!textures || !textures.idle || textures.idle.length === 0) {
-            console.warn('⚠️ Используем placeholder для дракона (добавьте PNG в images/dragon/)');
+            console.warn('⚠️ Используем placeholder для дракона (добавьте WEBP в images/dragon/)');
             idleSprite = createPlaceholderDragonGraphics();
             castSprite = createPlaceholderDragonGraphics();
             isPlaceholder = true;

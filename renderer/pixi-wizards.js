@@ -78,9 +78,9 @@
             reverseOnDeath: true // Проигрывать анимацию смерти в обратном порядке
         },
         goblin: {
-            idle: 'images/enemies/goblin/idle.png',
-            cast: 'images/enemies/goblin/attack.png',
-            death: 'images/enemies/goblin/death.png',
+            idle: 'images/enemies/goblin/idle.webp',
+            cast: 'images/enemies/goblin/attack.webp',
+            death: 'images/enemies/goblin/death.webp',
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
@@ -88,9 +88,9 @@
             scale: 0.245 // Уменьшено на 30% (0.350 * 0.7)
         },
         orc: {
-            idle: 'images/enemies/orc/idle.png',
-            cast: 'images/enemies/orc/attack.png',
-            death: 'images/enemies/orc/death.png',
+            idle: 'images/enemies/orc/idle.webp',
+            cast: 'images/enemies/orc/attack.webp',
+            death: 'images/enemies/orc/death.webp',
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
@@ -98,9 +98,9 @@
             scale: 0.30 // Орки крупнее гоблинов
         },
         fire_elemental: {
-            idle: 'images/enemies/fire_elemental/idle.png',
-            cast: 'images/enemies/fire_elemental/cast.png',
-            death: 'images/enemies/fire_elemental/death.png',
+            idle: 'images/enemies/fire_elemental/idle.webp',
+            cast: 'images/enemies/fire_elemental/cast.webp',
+            death: 'images/enemies/fire_elemental/death.webp',
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
@@ -108,9 +108,9 @@
             scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
         },
         water_elemental: {
-            idle: 'images/enemies/water_elemental/idle.png',
-            cast: 'images/enemies/water_elemental/cast.png',
-            death: 'images/enemies/water_elemental/death.png',
+            idle: 'images/enemies/water_elemental/idle.webp',
+            cast: 'images/enemies/water_elemental/cast.webp',
+            death: 'images/enemies/water_elemental/death.webp',
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
@@ -118,9 +118,9 @@
             scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
         },
         wind_elemental: {
-            idle: 'images/enemies/wind_elemental/idle.png',
-            cast: 'images/enemies/wind_elemental/cast.png',
-            death: 'images/enemies/wind_elemental/death.png',
+            idle: 'images/enemies/wind_elemental/idle.webp',
+            cast: 'images/enemies/wind_elemental/cast.webp',
+            death: 'images/enemies/wind_elemental/death.webp',
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
@@ -128,9 +128,9 @@
             scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
         },
         earth_elemental: {
-            idle: 'images/enemies/earth_elemental/idle.png',
-            cast: 'images/enemies/earth_elemental/cast.png',
-            death: 'images/enemies/earth_elemental/death.png',
+            idle: 'images/enemies/earth_elemental/idle.webp',
+            cast: 'images/enemies/earth_elemental/cast.webp',
+            death: 'images/enemies/earth_elemental/death.webp',
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
