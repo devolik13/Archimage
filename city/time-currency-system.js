@@ -321,6 +321,11 @@ function initTimeCurrency() {
     }
 }
 
+// Обновление отображения времени (вызывается после покупок)
+function updateTimeCurrencyDisplay() {
+    createTimeCurrencyUI();
+}
+
 // Экспорт функций
 window.TIME_CURRENCY_CONFIG = TIME_CURRENCY_CONFIG;
 window.getTimeCurrency = getTimeCurrency;
@@ -329,6 +334,7 @@ window.calculateProduction = calculateProduction;
 window.calculateMaxStorage = calculateMaxStorage;
 window.createTimeCurrencyUI = createTimeCurrencyUI;
 window.updateTimeCurrency = updateTimeCurrency;
+window.updateTimeCurrencyDisplay = updateTimeCurrencyDisplay;
 window.useTimeCurrency = useTimeCurrency;
 window.addTimeCurrency = addTimeCurrency;
 window.calculateOfflineEarnings = calculateOfflineEarnings;
