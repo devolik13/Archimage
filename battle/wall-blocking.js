@@ -23,6 +23,7 @@ function getSpellTypeForWalls(spellId) {
         'meteor_shower': 'aoe',
         'storm_cloud': 'aoe',
         'ball_lightning': 'aoe',
+        'chain_lightning': 'aoe', // Обратная совместимость
         'blizzard': 'aoe',
         'poisoned_glade': 'aoe',
         'foul_cloud': 'aoe',

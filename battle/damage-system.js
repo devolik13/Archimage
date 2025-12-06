@@ -14,7 +14,7 @@ if (!window.getSpellSchoolFallback) {
             return 'water';
         }
         // Ветер
-        if (['gust', 'wind_blade', 'wind_wall', 'storm_cloud', 'ball_lightning'].includes(spellId)) {
+        if (['gust', 'wind_blade', 'wind_wall', 'storm_cloud', 'ball_lightning', 'chain_lightning'].includes(spellId)) {
             return 'wind';
         }
         // Земля
