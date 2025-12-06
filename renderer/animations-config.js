@@ -214,11 +214,11 @@ const SPELL_ANIMATIONS = {
         
         chain_lightning: {
             type: 'chain',
-            sprite: '/images/spells/wind/chain_lightning/bolt.webp',
+            sprite: '/images/spells/wind/chain_lightning/ball_spritesheet.webp',
             frameWidth: 256,
-            frameHeight: 32,
-            frames: 8,
-            animationSpeed: 0.5,
+            frameHeight: 256,
+            frames: 9,
+            animationSpeed: 0.2,
             scale: 1.0,
             blendMode: 'ADD'
         }
