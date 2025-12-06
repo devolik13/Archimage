@@ -153,6 +153,15 @@ async function initGameWithDatabase() {
         // Обновляем last_login после расчета офлайн накопления
         window.userData.last_login = new Date().toISOString();
 
+        // ВАЖНО: Сразу сохраняем last_login в БД чтобы избежать повторного начисления при обновлении
+        if (window.dbManager && window.dbManager.supabase) {
+            await window.dbManager.supabase.rpc('update_player_safe', {
+                p_telegram_id: window.dbManager.getTelegramId(),
+                p_data: { last_login: window.userData.last_login }
+            });
+            console.log('✅ last_login сохранён в БД:', window.userData.last_login);
+        }
+
         if (typeof window.initConstructionSystem === 'function') {
             window.initConstructionSystem();
         }
