@@ -30,9 +30,10 @@
         
         console.log('⚡ Цепная молния: запуск анимации шара по', targets.length, 'целям');
         
-        // Загружаем spritesheet шара молнии
-        const ballTexturePath = 'images/spells/wind/chain_lightning/ball_spritesheet.webp';
-        
+        // Загружаем spritesheet шара молнии (с cache buster)
+        const cacheBuster = `?v=${Date.now()}`;
+        const ballTexturePath = 'images/spells/wind/chain_lightning/ball_spritesheet.webp' + cacheBuster;
+
         console.log('⚡ DEBUG: Начинаем загрузку текстуры:', ballTexturePath);
 
         PIXI.Assets.load(ballTexturePath).then(texture => {
