@@ -159,14 +159,24 @@
         const scale = ballSize / frames[0].width;
         ball.scale.set(scale);
 
-        // Без ADD blend mode чтобы сохранить оригинальный цвет спрайта
+        // Без tint и blend mode - оригинальные цвета
+        ball.tint = 0xFFFFFF; // Белый = без окрашивания
         ball.alpha = 0;
+
+        console.log('⚡ DEBUG ball created:', {
+            width: ball.width,
+            height: ball.height,
+            scale: scale,
+            currentFrame: ball.currentFrame,
+            totalFrames: ball.totalFrames,
+            texture: ball.texture
+        });
 
         container.addChild(ball);
 
-        // Добавляем светящийся след за шаром
-        const trail = new PIXI.Graphics();
-        container.addChild(trail);
+        // ВРЕМЕННО УБИРАЕМ TRAIL для отладки
+        // const trail = new PIXI.Graphics();
+        // container.addChild(trail);
         
         // Анимация полёта шара
         const flyDuration = 700; // Время полёта (было 500)
@@ -191,18 +201,18 @@
                 ball.alpha = 1;
             }
             
-            // Рисуем след за шаром (синий как молния)
-            trail.clear();
-            trail.beginFill(0x4488FF, 0.4);
-            const trailLength = 30;
-            for (let i = 0; i < 5; i++) {
-                const trailProgress = Math.max(0, progress - i * 0.05);
-                const tx = startX + (endX - startX) * trailProgress;
-                const ty = startY + (endY - startY) * trailProgress;
-                const size = (ballSize / 2) * (1 - i * 0.15);
-                trail.drawCircle(tx, ty, size);
-            }
-            trail.endFill();
+            // ВРЕМЕННО УБИРАЕМ TRAIL для отладки
+            // trail.clear();
+            // trail.beginFill(0x4488FF, 0.4);
+            // const trailLength = 30;
+            // for (let i = 0; i < 5; i++) {
+            //     const trailProgress = Math.max(0, progress - i * 0.05);
+            //     const tx = startX + (endX - startX) * trailProgress;
+            //     const ty = startY + (endY - startY) * trailProgress;
+            //     const size = (ballSize / 2) * (1 - i * 0.15);
+            //     trail.drawCircle(tx, ty, size);
+            // }
+            // trail.endFill();
             
             if (progress < 1) {
                 requestAnimationFrame(animateFly);
@@ -213,9 +223,10 @@
                     container.removeChild(ball);
                     ball.destroy();
                 }
-                if (trail.parent) {
-                    container.removeChild(trail);
-                }
+                // ВРЕМЕННО УБИРАЕМ TRAIL
+                // if (trail.parent) {
+                //     container.removeChild(trail);
+                // }
                 
                 // Эффект взрыва при попадании
                 createImpactExplosion(endX, endY, container, currentCell.cellScale);
