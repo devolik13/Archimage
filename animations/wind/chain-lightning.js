@@ -144,22 +144,21 @@
         ball.anchor.set(0.5);
         ball.x = startX;
         ball.y = startY;
-        ball.animationSpeed = 0.2; // Скорость анимации кадров (было 0.3)
+        ball.animationSpeed = 0.2; // Скорость анимации кадров
         ball.play();
 
         // Размер шара
         const ballSize = cellWidth * 0.6;
         const scale = ballSize / frames[0].width;
         ball.scale.set(scale);
-        
-        ball.blendMode = PIXI.BLEND_MODES.ADD;
+
+        // Без ADD blend mode чтобы сохранить оригинальный цвет спрайта
         ball.alpha = 0;
-        
+
         container.addChild(ball);
-        
+
         // Добавляем светящийся след за шаром
         const trail = new PIXI.Graphics();
-        trail.blendMode = PIXI.BLEND_MODES.ADD;
         container.addChild(trail);
         
         // Анимация полёта шара
@@ -185,9 +184,9 @@
                 ball.alpha = 1;
             }
             
-            // Рисуем след за шаром
+            // Рисуем след за шаром (синий как молния)
             trail.clear();
-            trail.beginFill(0xCCFFFF, 0.3);
+            trail.beginFill(0x4488FF, 0.4);
             const trailLength = 30;
             for (let i = 0; i < 5; i++) {
                 const trailProgress = Math.max(0, progress - i * 0.05);
