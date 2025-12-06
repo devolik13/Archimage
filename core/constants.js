@@ -10,7 +10,7 @@
 //    false = нормальная скорость (для релиза)
 
 window.DEV_MODE = false;  // Отключено для бета-теста
-window.BETA_MODE = true;  // Включено для бета-теста (10x скорость)
+window.BETA_MODE = false; // Отключено - реальное время
 window.TIME_MULTIPLIER = window.BETA_MODE ? 0.1 : 1; // 10x быстрее для беты
 
 // ============ СИСТЕМА ЭНЕРГИИ БОЕВ ============
