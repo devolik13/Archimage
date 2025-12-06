@@ -20,6 +20,11 @@ function calculateExpToNext(level) {
 function addExperienceToWizard(wizard, expAmount) {
     if (!wizard || wizard.level >= EXP_CONFIG.MAX_LEVEL) return;
 
+    // Инициализируем поля опыта если их нет (для старых магов)
+    if (!wizard.level) wizard.level = 1;
+    if (!wizard.exp_to_next) wizard.exp_to_next = calculateExpToNext(wizard.level);
+    if (!wizard.original_max_hp) wizard.original_max_hp = wizard.max_hp || 100;
+
     wizard.experience = (wizard.experience || 0) + expAmount;
 
     // Проверка повышения уровня

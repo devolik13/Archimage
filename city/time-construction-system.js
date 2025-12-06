@@ -846,7 +846,10 @@ async function completeConstruction(constructionIndex) {
             armor: 100,
             max_hp: 100,
             max_armor: 100,
-            level: 1
+            original_max_hp: 100,
+            level: 1,
+            experience: 0,
+            exp_to_next: 40 // 30 + (1*1*10) для 1 уровня
         };
         
         // ВАЖНО: добавляем в локальные данные
