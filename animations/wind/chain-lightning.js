@@ -139,11 +139,11 @@
         ball.tint = 0xFFFFFF;
         ball.alpha = 0;
 
-        container.addChild(ball);
-
-        // След за шаром
+        // След за шаром (добавляем ПЕРЕД шаром, чтобы был позади)
         const trail = new PIXI.Graphics();
         container.addChild(trail);
+
+        container.addChild(ball);
         
         // Анимация полёта шара
         const flyDuration = 700; // Время полёта (было 500)
@@ -168,11 +168,11 @@
                 ball.alpha = 1;
             }
             
-            // Рисуем след за шаром
+            // Рисуем след за шаром (начинаем с i=1 чтобы не перекрывать шар)
             trail.clear();
-            trail.beginFill(0x4488FF, 0.4);
-            for (let i = 0; i < 5; i++) {
-                const trailProgress = Math.max(0, progress - i * 0.05);
+            trail.beginFill(0x4488FF, 0.3);
+            for (let i = 1; i < 6; i++) {
+                const trailProgress = Math.max(0, progress - i * 0.04);
                 const tx = startX + (endX - startX) * trailProgress;
                 const ty = startY + (endY - startY) * trailProgress;
                 const size = (ballSize / 2) * (1 - i * 0.15);
