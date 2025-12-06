@@ -17,8 +17,8 @@ function castWindSpell(wizard, spellId, spellData, position, casterType) {
 	case 'storm_cloud':
     	    castStormCloud(wizard, spellData, position, casterType);
     	    break;
-	case 'chain_lightning':
-	    castChainLightning(wizard, spellData, position, casterType);
+	case 'ball_lightning':
+	    castBallLightning(wizard, spellData, position, casterType);
 	    break;
         default:
             console.log(`⚠️ Заклинание ветра ${spellId} не реализовано`);
@@ -454,8 +454,8 @@ function castStormCloud(wizard, spellData, position, casterType) {
 }
 
 
-// --- Цепная молния (Chain Lightning) - Тир 5, Цепочечное AOE по всем целям в колонках магов и призванных ---
-function castChainLightning(wizard, spellData, position, casterType) {
+// --- Шаровая молния (Ball Lightning) - Тир 5, Цепочечное AOE по всем целям в колонках магов и призванных ---
+function castBallLightning(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
     let baseDamage, decayPercent, stunChance = 0;
     
@@ -477,25 +477,25 @@ function castChainLightning(wizard, spellData, position, casterType) {
     
     if (targets.length === 0) {
         if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`⚡ ${wizard.name} использует Цепную молнию, но цели не найдены`);
+            window.addToBattleLog(`⚡ ${wizard.name} использует Шаровую молнию, но цели не найдены`);
         }
         return;
     }
-    
+
     // Перемешиваем цели — случайный порядок
     const shuffledTargets = [...targets].sort(() => 0.5 - Math.random());
-    
+
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`⚡ ${wizard.name} вызывает Цепную молнию! Поражает ${shuffledTargets.length} целей, урон снижается на ${Math.round(decayPercent * 100)}%`);
+        window.addToBattleLog(`⚡ ${wizard.name} вызывает Шаровую молнию! Поражает ${shuffledTargets.length} целей, урон снижается на ${Math.round(decayPercent * 100)}%`);
     }
-    
+
     // ЗАПУСКАЕМ АНИМАЦИЮ
-    if (window.spellAnimations?.chain_lightning?.play) {
+    if (window.spellAnimations?.ball_lightning?.play) {
         console.log('🎯 Цели:', shuffledTargets);
         
         let currentDamage = baseDamage;
         
-        window.spellAnimations.chain_lightning.play({
+        window.spellAnimations.ball_lightning.play({
             targets: shuffledTargets,
             casterType: casterType,
             onHitTarget: (index) => {
@@ -518,15 +518,15 @@ function castChainLightning(wizard, spellData, position, casterType) {
                 }
                 
                 // Применяем урон
-                const finalDamage = typeof window.applyFinalDamage === 'function' ? 
-                    window.applyFinalDamage(wizard, target, actualDamage, 'chain_lightning', 0, true) : actualDamage;
+                const finalDamage = typeof window.applyFinalDamage === 'function' ?
+                    window.applyFinalDamage(wizard, target, actualDamage, 'ball_lightning', 0, true) : actualDamage;
                     
                 target.hp -= finalDamage;
                 if (target.hp < 0) target.hp = 0;
                 
                 // Логируем урон
                 if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`⚡ Цепная молния [${index + 1}] → ${target.name} (${finalDamage} урона)${bonusLog}`);
+                    window.addToBattleLog(`⚡ Шаровая молния [${index + 1}] → ${target.name} (${finalDamage} урона)${bonusLog}`);
                     const damageSteps = target._lastDamageSteps || [];
                     if (damageSteps.length > 0) {
                         damageSteps.forEach(step => {
@@ -552,7 +552,7 @@ function castChainLightning(wizard, spellData, position, casterType) {
             }
         });
     } else {
-        console.warn('❌ window.spellAnimations.chain_lightning.play не найдена!');
+        console.warn('❌ window.spellAnimations.ball_lightning.play не найдена!');
         
         // Fallback без анимации - наносим урон сразу
         let currentDamage = baseDamage;
@@ -573,15 +573,15 @@ function castChainLightning(wizard, spellData, position, casterType) {
             }
             
             // Применяем урон
-            const finalDamage = typeof window.applyFinalDamage === 'function' ? 
-                window.applyFinalDamage(wizard, target, actualDamage, 'chain_lightning', 0, true) : actualDamage;
+            const finalDamage = typeof window.applyFinalDamage === 'function' ?
+                window.applyFinalDamage(wizard, target, actualDamage, 'ball_lightning', 0, true) : actualDamage;
                 
             target.hp -= finalDamage;
             if (target.hp < 0) target.hp = 0;
             
             // Логируем
             if (typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`⚡ Цепная молния [${index + 1}] → ${target.name} (${finalDamage} урона)${bonusLog}`);
+                window.addToBattleLog(`⚡ Шаровая молния [${index + 1}] → ${target.name} (${finalDamage} урона)${bonusLog}`);
                 const damageSteps = target._lastDamageSteps || [];
                 if (damageSteps.length > 0) {
                     damageSteps.forEach(step => {
@@ -614,6 +614,6 @@ window.castGust = castGust;
 window.castWindBlade = castWindBlade;
 window.castWindWall = castWindWall;
 window.castStormCloud = castStormCloud;
-window.castChainLightning = castChainLightning;
+window.castBallLightning = castBallLightning;
 window.castGustOld = castGustOld;
 window.applyGustDamageOld = applyGustDamageOld;

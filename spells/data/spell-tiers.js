@@ -23,7 +23,7 @@ const SPELL_TIERS = {
         "wind_blade",      // Tier 2
         "wind_wall",       // Tier 3
         "storm_cloud",     // Tier 4
-        "chain_lightning"  // Tier 5
+        "ball_lightning"   // Tier 5
     ],
     
     "earth": [

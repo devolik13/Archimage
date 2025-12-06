@@ -212,9 +212,9 @@ const SPELL_ANIMATIONS = {
             }
         },
         
-        chain_lightning: {
+        ball_lightning: {
             type: 'chain',
-            sprite: '/images/spells/wind/chain_lightning/ball_spritesheet.webp',
+            sprite: '/images/spells/wind/ball_lightning/ball_spritesheet.webp',
             frameWidth: 256,
             frameHeight: 256,
             frames: 9,

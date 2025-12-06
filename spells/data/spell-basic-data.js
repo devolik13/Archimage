@@ -21,7 +21,7 @@ const SPELL_NAMES = {
     "wind_blade": "Ветрорез",
     "wind_wall": "Ветряная стена",
     "storm_cloud": "Грозовая туча",
-    "chain_lightning": "Цепная молния",
+    "ball_lightning": "Шаровая молния",
     
     // Земля
     "pebble": "Камешек",
@@ -82,7 +82,7 @@ const SPELL_BASE_DAMAGE = {
     // Tier 5 - базовый урон 100-150
     "fire_tsunami": 120,
     "absolute_zero": 110,
-    "chain_lightning": 115,
+    "ball_lightning": 115,
     "meteor_shower": 140,
     "meteorokinesis": 0,  // усиление
     "epidemic": 100
@@ -114,7 +114,7 @@ const SPELL_TYPE_CONFIG = {
     "plague": "aoe",
     "fire_tsunami": "aoe",
     "absolute_zero": "aoe",
-    "chain_lightning": "aoe",
+    "ball_lightning": "aoe",
     "meteor_shower": "aoe",
     "epidemic": "aoe",
     

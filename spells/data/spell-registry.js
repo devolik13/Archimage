@@ -21,7 +21,7 @@ const SPELL_ANIMATIONS_REGISTRY = {
     wind_blade: 'wind/wind-blade',
     wind_wall: 'wind/wind-wall',
     storm_cloud: 'wind/storm-cloud',
-    chain_lightning: 'wind/chain-lightning',
+    ball_lightning: 'wind/ball-lightning',
     
     // Земля
     pebble: 'earth/pebble',

@@ -147,7 +147,7 @@ const FINAL_BOSS = {
     hp: 2000,
     armor: 250,
     faction: "fire", // визуально будет огненным
-    spells: ["fireball", "blizzard", "chain_lightning", "meteor_shower", "epidemic"], // все стихии
+    spells: ["fireball", "blizzard", "ball_lightning", "meteor_shower", "epidemic"], // все стихии
     resistances: {
         fire: 50,
         water: 50,

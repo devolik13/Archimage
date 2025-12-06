@@ -22,7 +22,7 @@ function getSpellTypeForWalls(spellId) {
         'absolute_zero': 'aoe',
         'meteor_shower': 'aoe',
         'storm_cloud': 'aoe',
-        'chain_lightning': 'aoe',
+        'ball_lightning': 'aoe',
         'blizzard': 'aoe',
         'poisoned_glade': 'aoe',
         'foul_cloud': 'aoe',

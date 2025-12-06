@@ -1,7 +1,7 @@
-// battle/renderer/animations/wind/chain-lightning.js - Анимация заклинания "Цепная молния"
+// battle/renderer/animations/wind/ball-lightning.js - Анимация заклинания "Шаровая молния"
 
 (function() {
-    function playChainLightningAnimation(params) {
+    function playBallLightningAnimation(params) {
         const { targets, casterType, onHitTarget } = params;
 
         // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
@@ -17,13 +17,13 @@
         const gridCells = window.pixiCore?.getGridCells();
 
         if (!effectsContainer || !gridCells || !targets || targets.length === 0) {
-            console.warn('⚡ Цепная молния: нет данных для анимации');
+            console.warn('⚡ Шаровая молния: нет данных для анимации');
             return;
         }
 
         // Загружаем spritesheet шара молнии (с cache buster)
         const cacheBuster = `?v=${Date.now()}`;
-        const ballTexturePath = 'images/spells/wind/chain_lightning/ball_spritesheet.webp' + cacheBuster;
+        const ballTexturePath = 'images/spells/wind/ball_lightning/ball_spritesheet.webp' + cacheBuster;
 
         PIXI.Assets.load(ballTexturePath).then(texture => {
             if (!texture || !texture.valid) {
@@ -412,9 +412,9 @@
     
     // Регистрация
     if (!window.spellAnimations) window.spellAnimations = {};
-    window.spellAnimations.chain_lightning = {
-        play: playChainLightningAnimation
+    window.spellAnimations.ball_lightning = {
+        play: playBallLightningAnimation
     };
-    
-    console.log('⚡ Анимация "Цепная молния" (шар) зарегистрирована');
+
+    console.log('⚡ Анимация "Шаровая молния" зарегистрирована');
 })();
