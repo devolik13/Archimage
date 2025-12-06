@@ -131,7 +131,7 @@ function openSpellSelection(wizardIndex, spellSlotIndex) {
                 if (spellData.level > 0 && (!allAssignedSpells.has(spellId) || spellId === currentSpellInSlot)) {
                     allLearnedSpellsGlobal.push({
                         id: spellId,
-                        name: spellData.name,
+                        name: window.SPELL_NAMES?.[spellId] || spellData.name,
                         level: spellData.level,
                         faction: faction,
                         category: 'standard',
@@ -147,7 +147,7 @@ function openSpellSelection(wizardIndex, spellSlotIndex) {
             if (spellData.level > 0 && (!allAssignedSpells.has(spellId) || spellId === currentSpellInSlot)) {
                 allLearnedSpellsGlobal.push({
                     id: spellId,
-                    name: spellData.name,
+                    name: window.SPELL_NAMES?.[spellId] || spellData.name,
                     level: spellData.level,
                     faction: 'hybrid',
                     category: 'hybrid',
