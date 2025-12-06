@@ -27,9 +27,11 @@ async function initGameWithDatabase() {
     window.userData.user_id = player.telegram_id;
     window.userData.username = player.username;
     window.userData.faction = player.faction;
-    window.userData.time_currency = player.time_currency || 0;
-    window.userData.level = player.level || 1;
-    window.userData.experience = player.experience || 0;
+
+    // Защита от читов: валидация значений при загрузке
+    window.userData.time_currency = Math.max(0, Math.min(999999, player.time_currency || 0));
+    window.userData.level = Math.max(1, Math.min(100, player.level || 1));
+    window.userData.experience = Math.max(0, player.experience || 0);
     window.userData.last_login = player.last_login;
 
     // Игровые данные (JSONB)
@@ -38,11 +40,11 @@ async function initGameWithDatabase() {
     window.userData.spells = player.spells || {};
     window.userData.buildings = player.buildings || {};
 
-    // Статистика боев
-    window.userData.total_battles = player.total_battles || 0;
-    window.userData.wins = player.wins || 0;
-    window.userData.losses = player.losses || 0;
-    window.userData.rating = player.rating || 1000;
+    // Статистика боев (с валидацией)
+    window.userData.total_battles = Math.max(0, player.total_battles || 0);
+    window.userData.wins = Math.max(0, player.wins || 0);
+    window.userData.losses = Math.max(0, player.losses || 0);
+    window.userData.rating = Math.max(0, Math.min(9999, player.rating || 1000));
 
     // Прогресс и настройки
     window.userData.pve_progress = player.pve_progress || {};

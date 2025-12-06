@@ -18,20 +18,32 @@ class DatabaseManager {
         return 12345678;
     }
 
-    // Получить username пользователя
+    // Получить username пользователя с санитизацией
     getTelegramUsername() {
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe.user) {
             const user = window.Telegram.WebApp.initDataUnsafe.user;
-            return user.username || user.first_name || 'Player';
+            const rawUsername = user.username || user.first_name || 'Player';
+            // Защита от XSS: убираем опасные символы и ограничиваем длину
+            return rawUsername.replace(/[<>"'&]/g, '').substring(0, 50);
         }
         return 'TestUser';
     }
 
     // Загрузить или создать игрока
     async loadOrCreatePlayer() {
+        // Валидация Telegram (в продакшене обязательна)
+        if (!window.validateTelegramWebAppData || !window.validateTelegramWebAppData()) {
+            if (!window.isDevEnvironment || !window.isDevEnvironment()) {
+                console.error('Не прошла валидация Telegram');
+                alert('Пожалуйста, запустите игру через Telegram');
+                return null;
+            }
+            console.warn('DEV режим: используем тестовый ID');
+        }
+
         const telegramId = this.getTelegramId();
-        
-        console.log('🔍 Поиск игрока с Telegram ID:', telegramId);
+
+        console.log('Поиск игрока с Telegram ID:', telegramId);
 
         try {
             // Ищем игрока по telegram_id
@@ -93,6 +105,23 @@ class DatabaseManager {
     // Сохранить данные игрока
     async savePlayer(playerData) {
         if (!this.currentPlayer) return false;
+
+        // Защита от читов: валидация данных перед сохранением
+        if (playerData.timeCurrency !== undefined) {
+            playerData.timeCurrency = Math.max(0, Math.min(999999, playerData.timeCurrency));
+        }
+        if (playerData.time_currency !== undefined) {
+            playerData.time_currency = Math.max(0, Math.min(999999, playerData.time_currency));
+        }
+        if (playerData.level !== undefined) {
+            playerData.level = Math.max(1, Math.min(100, playerData.level));
+        }
+        if (playerData.rating !== undefined) {
+            playerData.rating = Math.max(0, Math.min(9999, playerData.rating));
+        }
+        if (playerData.experience !== undefined) {
+            playerData.experience = Math.max(0, playerData.experience);
+        }
 
         try {
             // Сохраняем constructions внутри buildings
