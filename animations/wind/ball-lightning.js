@@ -187,10 +187,12 @@
                 ball.stop();
                 if (ball.parent) {
                     container.removeChild(ball);
-                    ball.destroy();
+                    // Не уничтожаем текстуры - они используются другими шарами
+                    ball.destroy({ texture: false, baseTexture: false });
                 }
                 if (trail.parent) {
                     container.removeChild(trail);
+                    trail.destroy();
                 }
 
                 // Эффект взрыва при попадании
