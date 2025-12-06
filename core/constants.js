@@ -39,14 +39,17 @@ window.CONSTRUCTION_TIME = {
 };
 
 // ============ ВРЕМЯ ИЗУЧЕНИЯ ЗАКЛИНАНИЙ ============
+// Прогрессия: 1, 2, 3, 5, 7 дней
+// Полная чужая ветка: ~135 дней (4.5 мес)
+// Полная своя ветка: ~115 дней (3.8 мес) с бонусом -15%
 window.SPELL_LEARNING_TIME = {
     getLearnTime: function(tier, currentLevel, faction = null) {
         const tierTimes = {
-            1: 144,  // 2.4 часа
-            2: 288,  // 4.8 часов
-            3: 432,  // 7.2 часов
-            4: 576,  // 9.6 часов
-            5: 720   // 12 часов
+            1: 1440,   // 1 день
+            2: 2880,   // 2 дня
+            3: 4320,   // 3 дня
+            4: 7200,   // 5 дней
+            5: 10080   // 7 дней
         };
         let baseTime = (tierTimes[tier] || 144) * window.TIME_MULTIPLIER;
         baseTime = Math.floor(baseTime * (currentLevel + 1) * 0.5);
