@@ -30,11 +30,19 @@ window.CONSTRUCTION_TIME = {
     pvp_arena: 1440 * window.TIME_MULTIPLIER,
     guild: 1440 * window.TIME_MULTIPLIER,
     arcane_lab: 1440 * window.TIME_MULTIPLIER,
-    
+
+    // Индивидуальные множители скорости для зданий
+    buildingSpeedMultiplier: {
+        arcane_lab: 0.8,      // -20% времени (195 дней до макс)
+        time_generator: 1.0   // стандартное время
+    },
+
     // Время улучшения (прогрессивное)
+    // Формула: baseTime × level × (1 + level/10) × buildingMultiplier
     getUpgradeTime: function(buildingId, targetLevel) {
         const baseTime = 1440 * window.TIME_MULTIPLIER;
-        return Math.floor(baseTime * targetLevel * (1 + targetLevel/10));
+        const buildingMultiplier = this.buildingSpeedMultiplier[buildingId] || 1.0;
+        return Math.floor(baseTime * targetLevel * (1 + targetLevel/10) * buildingMultiplier);
     }
 };
 
