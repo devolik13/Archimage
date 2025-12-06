@@ -2,13 +2,10 @@
 
 (function() {
     function playChainLightningAnimation(params) {
-        console.log('⚡⚡⚡ CHAIN LIGHTNING ANIMATION CALLED! params:', params);
-
         const { targets, casterType, onHitTarget } = params;
 
         // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
         if (window.fastSimulation) {
-            console.log('⚡ Быстрая симуляция: пропуск анимации Цепная молния');
             // Вызываем onHitTarget для всех целей сразу
             if (onHitTarget && targets) {
                 targets.forEach((_, index) => onHitTarget(index));
@@ -19,38 +16,24 @@
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
 
-        console.log('⚡ DEBUG: effectsContainer =', effectsContainer);
-        console.log('⚡ DEBUG: gridCells =', gridCells);
-        console.log('⚡ DEBUG: targets =', targets);
-
         if (!effectsContainer || !gridCells || !targets || targets.length === 0) {
-            console.warn('Не могу создать Цепную молнию - нет данных', { effectsContainer: !!effectsContainer, gridCells: !!gridCells, targets: targets?.length });
+            console.warn('⚡ Цепная молния: нет данных для анимации');
             return;
         }
-        
-        console.log('⚡ Цепная молния: запуск анимации шара по', targets.length, 'целям');
-        
+
         // Загружаем spritesheet шара молнии (с cache buster)
         const cacheBuster = `?v=${Date.now()}`;
         const ballTexturePath = 'images/spells/wind/chain_lightning/ball_spritesheet.webp' + cacheBuster;
 
-        console.log('⚡ DEBUG: Начинаем загрузку текстуры:', ballTexturePath);
-
         PIXI.Assets.load(ballTexturePath).then(texture => {
-            console.log('⚡ DEBUG: Текстура загружена:', texture);
-
             if (!texture || !texture.valid) {
-                console.warn('Не удалось загрузить текстуру шара молнии');
+                console.warn('⚡ Не удалось загрузить текстуру шара молнии');
                 createFallbackChain(targets, gridCells, effectsContainer, onHitTarget);
                 return;
             }
 
             // Получаем baseTexture из загруженной текстуры
             const baseTexture = texture.baseTexture;
-            console.log('⚡ DEBUG: texture:', texture);
-            console.log('⚡ DEBUG: texture.noFrame:', texture.noFrame);
-            console.log('⚡ DEBUG: texture._frame:', texture._frame);
-            console.log('⚡ DEBUG: baseTexture:', baseTexture, 'size:', baseTexture?.width, 'x', baseTexture?.height);
 
             // Создаем массив текстур из spritesheet (3x3 = 9 кадров)
             const frames = [];
@@ -71,12 +54,6 @@
                     frames.push(frame);
                 }
             }
-            
-            console.log('⚡ Создано кадров:', frames.length);
-            console.log('⚡ DEBUG: Первый кадр:', frames[0]);
-            console.log('⚡ DEBUG: Первый кадр valid:', frames[0]?.valid);
-            console.log('⚡ DEBUG: Первый кадр width:', frames[0]?.width, 'height:', frames[0]?.height);
-            console.log('⚡ DEBUG: Первый кадр frame:', frames[0]?.frame);
 
             // Контейнер для эффектов
             const lightningContainer = new PIXI.Container();
@@ -84,8 +61,6 @@
             
             // Запускаем цепочку ударов
             strikeChain(targets, 0, frames, gridCells, lightningContainer, onHitTarget, () => {
-                console.log('⚡ Цепная молния завершена');
-                
                 // Удаляем контейнер через небольшую задержку
                 setTimeout(() => {
                     if (lightningContainer.parent) {
@@ -160,24 +135,15 @@
         const scale = ballSize / frames[0].width;
         ball.scale.set(scale);
 
-        // Без tint и blend mode - оригинальные цвета
-        ball.tint = 0xFFFFFF; // Белый = без окрашивания
+        // Оригинальные цвета без тонирования
+        ball.tint = 0xFFFFFF;
         ball.alpha = 0;
-
-        console.log('⚡ DEBUG ball created:', {
-            width: ball.width,
-            height: ball.height,
-            scale: scale,
-            currentFrame: ball.currentFrame,
-            totalFrames: ball.totalFrames,
-            texture: ball.texture
-        });
 
         container.addChild(ball);
 
-        // ВРЕМЕННО УБИРАЕМ TRAIL для отладки
-        // const trail = new PIXI.Graphics();
-        // container.addChild(trail);
+        // След за шаром
+        const trail = new PIXI.Graphics();
+        container.addChild(trail);
         
         // Анимация полёта шара
         const flyDuration = 700; // Время полёта (было 500)
@@ -202,18 +168,17 @@
                 ball.alpha = 1;
             }
             
-            // ВРЕМЕННО УБИРАЕМ TRAIL для отладки
-            // trail.clear();
-            // trail.beginFill(0x4488FF, 0.4);
-            // const trailLength = 30;
-            // for (let i = 0; i < 5; i++) {
-            //     const trailProgress = Math.max(0, progress - i * 0.05);
-            //     const tx = startX + (endX - startX) * trailProgress;
-            //     const ty = startY + (endY - startY) * trailProgress;
-            //     const size = (ballSize / 2) * (1 - i * 0.15);
-            //     trail.drawCircle(tx, ty, size);
-            // }
-            // trail.endFill();
+            // Рисуем след за шаром
+            trail.clear();
+            trail.beginFill(0x4488FF, 0.4);
+            for (let i = 0; i < 5; i++) {
+                const trailProgress = Math.max(0, progress - i * 0.05);
+                const tx = startX + (endX - startX) * trailProgress;
+                const ty = startY + (endY - startY) * trailProgress;
+                const size = (ballSize / 2) * (1 - i * 0.15);
+                trail.drawCircle(tx, ty, size);
+            }
+            trail.endFill();
             
             if (progress < 1) {
                 requestAnimationFrame(animateFly);
@@ -224,11 +189,10 @@
                     container.removeChild(ball);
                     ball.destroy();
                 }
-                // ВРЕМЕННО УБИРАЕМ TRAIL
-                // if (trail.parent) {
-                //     container.removeChild(trail);
-                // }
-                
+                if (trail.parent) {
+                    container.removeChild(trail);
+                }
+
                 // Эффект взрыва при попадании
                 createImpactExplosion(endX, endY, container, currentCell.cellScale);
                 
@@ -236,9 +200,7 @@
                 if (onHitTarget) {
                     onHitTarget(currentIndex);
                 }
-                
-                console.log(`⚡ Шар попал в цель ${currentIndex + 1}/${targets.length}`);
-                
+
                 // Следующая цель через задержку
                 setTimeout(() => {
                     strikeChain(targets, currentIndex + 1, frames, gridCells, container, onHitTarget, onComplete);
