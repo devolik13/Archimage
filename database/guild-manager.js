@@ -70,7 +70,7 @@ class GuildManager {
         this.guildMembers = [];
     }
 
-    // === СОЗДАНИЕ ГИЛЬДИИ ===
+    // === СОЗДАНИЕ ГИЛЬДИИ (через RPC для обновления игрока) ===
     async createGuild(name, tag) {
         if (!this.supabase || !window.dbManager?.currentPlayer) {
             console.error('Supabase или игрок не инициализированы');
@@ -78,6 +78,7 @@ class GuildManager {
         }
 
         const playerId = window.dbManager.currentPlayer.id;
+        const telegramId = window.dbManager.getTelegramId();
 
         // Проверяем что игрок не в гильдии
         if (window.userData?.guild_id) {
@@ -117,15 +118,15 @@ class GuildManager {
                 throw error;
             }
 
-            // Обновляем игрока
-            const { error: playerError } = await this.supabase
-                .from('players')
-                .update({
+            // Обновляем игрока через безопасную RPC
+            const { error: playerError } = await this.supabase.rpc('update_player_safe', {
+                p_telegram_id: telegramId,
+                p_data: {
                     guild_id: guild.id,
                     guild_contribution: 0,
                     guild_last_active: new Date().toISOString()
-                })
-                .eq('id', playerId);
+                }
+            });
 
             if (playerError) throw playerError;
 
@@ -193,20 +194,20 @@ class GuildManager {
         }
     }
 
-    // === ВСТУПЛЕНИЕ В ГИЛЬДИЮ ===
+    // === ВСТУПЛЕНИЕ В ГИЛЬДИЮ (через RPC) ===
     async joinGuild(guildId) {
         if (!this.supabase || !window.dbManager?.currentPlayer) {
             return { success: false, error: 'Не авторизован' };
         }
 
-        const playerId = window.dbManager.currentPlayer.id;
+        const telegramId = window.dbManager.getTelegramId();
 
         if (window.userData?.guild_id) {
             return { success: false, error: 'Вы уже состоите в гильдии' };
         }
 
         try {
-            // Получаем гильдию
+            // Получаем гильдию для проверки режима
             const { data: guild, error: guildError } = await this.supabase
                 .from('guilds')
                 .select('*')
@@ -226,43 +227,26 @@ class GuildManager {
                 return { success: false, error: 'Гильдия переполнена' };
             }
 
-            // Проверяем режим вступления
-            if (guild.join_mode === 'request') {
-                // Добавляем заявку
-                const requests = guild.join_requests || [];
-                const existingRequest = requests.find(r => r.player_id === playerId);
-                if (existingRequest) {
-                    return { success: false, error: 'Заявка уже подана' };
-                }
+            // Вызываем RPC для вступления
+            const { data, error } = await this.supabase.rpc('guild_join_request', {
+                p_guild_id: guildId,
+                p_telegram_id: telegramId,
+                p_username: window.userData.username || 'Player',
+                p_action: guild.join_mode === 'request' ? 'request' : 'join'
+            });
 
-                requests.push({
-                    player_id: playerId,
-                    username: window.userData.username || 'Player',
-                    date: new Date().toISOString()
-                });
+            if (error) throw error;
 
-                const { error: updateError } = await this.supabase
-                    .from('guilds')
-                    .update({ join_requests: requests })
-                    .eq('id', guildId);
+            if (!data || !data.success) {
+                return { success: false, error: data?.error || 'Ошибка вступления' };
+            }
 
-                if (updateError) throw updateError;
-
+            // Если это заявка
+            if (data.action === 'request') {
                 return { success: true, message: 'Заявка отправлена' };
             }
 
-            // Свободное вступление
-            const { error: playerError } = await this.supabase
-                .from('players')
-                .update({
-                    guild_id: guildId,
-                    guild_contribution: 0,
-                    guild_last_active: new Date().toISOString()
-                })
-                .eq('id', playerId);
-
-            if (playerError) throw playerError;
-
+            // Если прямое вступление
             window.userData.guild_id = guildId;
             window.userData.guild_contribution = 0;
             this.currentGuild = guild;
@@ -275,7 +259,7 @@ class GuildManager {
         }
     }
 
-    // === ВЫХОД ИЗ ГИЛЬДИИ ===
+    // === ВЫХОД ИЗ ГИЛЬДИИ (через RPC) ===
     async leaveGuild() {
         if (!this.supabase || !window.dbManager?.currentPlayer) {
             return { success: false, error: 'Не авторизован' };
@@ -286,6 +270,7 @@ class GuildManager {
         }
 
         const playerId = window.dbManager.currentPlayer.id;
+        const telegramId = window.dbManager.getTelegramId();
         const guildId = window.userData.guild_id;
 
         try {
@@ -299,15 +284,15 @@ class GuildManager {
                 }
             }
 
-            // Выходим из гильдии
-            const { error } = await this.supabase
-                .from('players')
-                .update({
+            // Выходим из гильдии через безопасную RPC
+            const { error } = await this.supabase.rpc('update_player_safe', {
+                p_telegram_id: telegramId,
+                p_data: {
                     guild_id: null,
                     guild_contribution: 0,
                     guild_last_active: null
-                })
-                .eq('id', playerId);
+                }
+            });
 
             if (error) throw error;
 
@@ -324,7 +309,7 @@ class GuildManager {
         }
     }
 
-    // === ПЕРЕДАЧА ЛИДЕРСТВА ===
+    // === ПЕРЕДАЧА ЛИДЕРСТВА (через RPC) ===
     async transferLeadership(newLeaderId = null) {
         if (!this.currentGuild) {
             return { success: false, error: 'Гильдия не загружена' };
@@ -347,13 +332,20 @@ class GuildManager {
                 newLeaderId = candidates[0].id;
             }
 
-            // Передаём лидерство
-            const { error } = await this.supabase
-                .from('guilds')
-                .update({ leader_id: newLeaderId })
-                .eq('id', this.currentGuild.id);
+            const telegramId = window.dbManager.getTelegramId();
+
+            // Передаём лидерство через RPC
+            const { data, error } = await this.supabase.rpc('update_guild_by_leader', {
+                p_guild_id: this.currentGuild.id,
+                p_telegram_id: telegramId,
+                p_data: { leader_id: newLeaderId }
+            });
 
             if (error) throw error;
+
+            if (!data) {
+                return { success: false, error: 'Только глава может передавать лидерство' };
+            }
 
             this.currentGuild.leader_id = newLeaderId;
             return { success: true, newLeaderId };
@@ -364,22 +356,22 @@ class GuildManager {
         }
     }
 
-    // === УДАЛЕНИЕ ГИЛЬДИИ ===
+    // === УДАЛЕНИЕ ГИЛЬДИИ (через RPC) ===
     async deleteGuild(guildId) {
         try {
-            // Сначала убираем всех членов
-            await this.supabase
-                .from('players')
-                .update({ guild_id: null, guild_contribution: 0 })
-                .eq('guild_id', guildId);
+            const telegramId = window.dbManager.getTelegramId();
 
-            // Удаляем гильдию
-            const { error } = await this.supabase
-                .from('guilds')
-                .delete()
-                .eq('id', guildId);
+            // Вызываем RPC для удаления гильдии (только лидер может удалить)
+            const { data, error } = await this.supabase.rpc('guild_delete', {
+                p_guild_id: guildId,
+                p_leader_telegram_id: telegramId
+            });
 
             if (error) throw error;
+
+            if (!data || !data.success) {
+                return { success: false, error: data?.error || 'Ошибка удаления гильдии' };
+            }
 
             return { success: true };
         } catch (error) {
@@ -388,62 +380,37 @@ class GuildManager {
         }
     }
 
-    // === ДОБАВЛЕНИЕ ОПЫТА ГИЛЬДИИ ===
+    // === ДОБАВЛЕНИЕ ОПЫТА ГИЛЬДИИ (через безопасную RPC) ===
     async addGuildExperience(expAmount) {
         if (!this.currentGuild || !window.userData?.guild_id) {
             return { success: false };
         }
 
         try {
-            let { experience, level, bonus_points } = this.currentGuild;
-            experience += expAmount;
+            const telegramId = window.dbManager.getTelegramId();
 
-            // Проверяем повышение уровня
-            let leveledUp = false;
-            let expToNext = getExpToNextLevel(level);
-
-            while (experience >= expToNext) {
-                experience -= expToNext;
-
-                if (level < GUILD_CONFIG.MAX_LEVEL) {
-                    level++;
-                    leveledUp = true;
-                }
-
-                // На любом уровне (включая 30) даём очко
-                bonus_points++;
-
-                expToNext = getExpToNextLevel(level);
-            }
-
-            // Обновляем гильдию в БД
-            const { error } = await this.supabase
-                .from('guilds')
-                .update({ experience, level, bonus_points })
-                .eq('id', this.currentGuild.id);
+            // Вызываем безопасную RPC функцию
+            const { data, error } = await this.supabase.rpc('guild_add_experience', {
+                p_guild_id: this.currentGuild.id,
+                p_telegram_id: telegramId,
+                p_exp_amount: expAmount
+            });
 
             if (error) throw error;
 
-            // Обновляем вклад игрока
-            const playerId = window.dbManager.currentPlayer.id;
-            const newContribution = (window.userData.guild_contribution || 0) + expAmount;
+            // Обновляем локальные данные из результата RPC
+            if (data) {
+                this.currentGuild.experience = data.new_experience;
+                this.currentGuild.level = data.new_level;
+                this.currentGuild.bonus_points = data.new_bonus_points;
+                window.userData.guild_contribution = data.new_contribution;
+            }
 
-            await this.supabase
-                .from('players')
-                .update({
-                    guild_contribution: newContribution,
-                    guild_last_active: new Date().toISOString()
-                })
-                .eq('id', playerId);
-
-            window.userData.guild_contribution = newContribution;
-
-            // Обновляем локальные данные
-            this.currentGuild.experience = experience;
-            this.currentGuild.level = level;
-            this.currentGuild.bonus_points = bonus_points;
-
-            return { success: true, leveledUp, newLevel: level };
+            return {
+                success: true,
+                leveledUp: data?.leveled_up || false,
+                newLevel: data?.new_level || this.currentGuild.level
+            };
 
         } catch (error) {
             console.error('Ошибка добавления опыта гильдии:', error);
@@ -451,17 +418,13 @@ class GuildManager {
         }
     }
 
-    // === РАСПРЕДЕЛЕНИЕ ОЧКОВ ИССЛЕДОВАНИЙ (ТОЛЬКО ЛИДЕР) ===
+    // === РАСПРЕДЕЛЕНИЕ ОЧКОВ ИССЛЕДОВАНИЙ (ТОЛЬКО ЛИДЕР, через RPC) ===
     async spendResearchPoint(school) {
         if (!this.currentGuild) {
             return { success: false, error: 'Гильдия не загружена' };
         }
 
-        const playerId = window.dbManager.currentPlayer.id;
-        if (this.currentGuild.leader_id !== playerId) {
-            return { success: false, error: 'Только глава может распределять очки' };
-        }
-
+        // Локальные проверки (RPC тоже проверяет)
         if (this.currentGuild.bonus_points < 1) {
             return { success: false, error: 'Нет доступных очков' };
         }
@@ -476,18 +439,27 @@ class GuildManager {
         }
 
         try {
+            // Подготавливаем новые данные
             research[school] = (research[school] || 0) + 1;
             const newBonusPoints = this.currentGuild.bonus_points - 1;
 
-            const { error } = await this.supabase
-                .from('guilds')
-                .update({
-                    research,
+            const telegramId = window.dbManager.getTelegramId();
+
+            // Вызываем RPC (проверяет что caller = leader)
+            const { data, error } = await this.supabase.rpc('update_guild_by_leader', {
+                p_guild_id: this.currentGuild.id,
+                p_telegram_id: telegramId,
+                p_data: {
+                    research: research,
                     bonus_points: newBonusPoints
-                })
-                .eq('id', this.currentGuild.id);
+                }
+            });
 
             if (error) throw error;
+
+            if (!data) {
+                return { success: false, error: 'Только глава может распределять очки' };
+            }
 
             this.currentGuild.research = research;
             this.currentGuild.bonus_points = newBonusPoints;
@@ -501,15 +473,10 @@ class GuildManager {
         }
     }
 
-    // === ИЗМЕНЕНИЕ РЕЖИМА ВСТУПЛЕНИЯ (ТОЛЬКО ЛИДЕР) ===
+    // === ИЗМЕНЕНИЕ РЕЖИМА ВСТУПЛЕНИЯ (ТОЛЬКО ЛИДЕР, через RPC) ===
     async setJoinMode(mode) {
         if (!this.currentGuild) {
             return { success: false, error: 'Гильдия не загружена' };
-        }
-
-        const playerId = window.dbManager.currentPlayer.id;
-        if (this.currentGuild.leader_id !== playerId) {
-            return { success: false, error: 'Только глава может изменять настройки' };
         }
 
         if (!['free', 'request'].includes(mode)) {
@@ -517,12 +484,20 @@ class GuildManager {
         }
 
         try {
-            const { error } = await this.supabase
-                .from('guilds')
-                .update({ join_mode: mode })
-                .eq('id', this.currentGuild.id);
+            const telegramId = window.dbManager.getTelegramId();
+
+            // Вызываем RPC (проверяет что caller = leader)
+            const { data, error } = await this.supabase.rpc('update_guild_by_leader', {
+                p_guild_id: this.currentGuild.id,
+                p_telegram_id: telegramId,
+                p_data: { join_mode: mode }
+            });
 
             if (error) throw error;
+
+            if (!data) {
+                return { success: false, error: 'Только глава может изменять настройки' };
+            }
 
             this.currentGuild.join_mode = mode;
             return { success: true, mode };
@@ -533,53 +508,47 @@ class GuildManager {
         }
     }
 
-    // === КИК ЧЛЕНА ГИЛЬДИИ (ТОЛЬКО ЛИДЕР) ===
+    // === КИК ЧЛЕНА ГИЛЬДИИ (ТОЛЬКО ЛИДЕР, через RPC) ===
     async kickMember(playerId) {
         if (!this.currentGuild) {
             return { success: false, error: 'Гильдия не загружена' };
         }
 
         const leaderId = window.dbManager.currentPlayer.id;
-        if (this.currentGuild.leader_id !== leaderId) {
-            return { success: false, error: 'Только глава может исключать членов' };
-        }
+        const telegramId = window.dbManager.getTelegramId();
 
-        // Нельзя кикнуть себя
+        // Нельзя кикнуть себя (локальная проверка)
         if (playerId === leaderId) {
             return { success: false, error: 'Нельзя исключить себя из гильдии' };
         }
 
         try {
-            // Проверяем что игрок в нашей гильдии
-            const { data: player, error: playerError } = await this.supabase
+            // Получаем username для сообщения
+            const { data: player } = await this.supabase
                 .from('players')
-                .select('id, username, guild_id')
+                .select('username')
                 .eq('id', playerId)
                 .single();
 
-            if (playerError) throw playerError;
-
-            if (player.guild_id !== this.currentGuild.id) {
-                return { success: false, error: 'Игрок не состоит в вашей гильдии' };
-            }
-
-            // Исключаем игрока
-            const { error } = await this.supabase
-                .from('players')
-                .update({
-                    guild_id: null,
-                    guild_contribution: 0,
-                    guild_last_active: null
-                })
-                .eq('id', playerId);
+            // Вызываем RPC для кика
+            const { data, error } = await this.supabase.rpc('guild_kick_member', {
+                p_guild_id: this.currentGuild.id,
+                p_leader_telegram_id: telegramId,
+                p_target_player_id: playerId
+            });
 
             if (error) throw error;
+
+            if (!data || !data.success) {
+                return { success: false, error: data?.error || 'Ошибка исключения игрока' };
+            }
 
             // Обновляем локальный список членов
             this.guildMembers = this.guildMembers.filter(m => m.id !== playerId);
 
-            console.log(`👢 Игрок ${player.username} исключён из гильдии`);
-            return { success: true, message: `${player.username} исключён из гильдии` };
+            const username = player?.username || 'Игрок';
+            console.log(`👢 Игрок ${username} исключён из гильдии`);
+            return { success: true, message: `${username} исключён из гильдии` };
 
         } catch (error) {
             console.error('Ошибка исключения игрока:', error);
@@ -587,58 +556,35 @@ class GuildManager {
         }
     }
 
-    // === ОДОБРЕНИЕ/ОТКЛОНЕНИЕ ЗАЯВКИ (ТОЛЬКО ЛИДЕР) ===
+    // === ОДОБРЕНИЕ/ОТКЛОНЕНИЕ ЗАЯВКИ (ТОЛЬКО ЛИДЕР, через RPC) ===
     async handleJoinRequest(playerId, approve) {
         if (!this.currentGuild) {
             return { success: false, error: 'Гильдия не загружена' };
         }
 
-        const leaderId = window.dbManager.currentPlayer.id;
-        if (this.currentGuild.leader_id !== leaderId) {
-            return { success: false, error: 'Только глава может управлять заявками' };
-        }
-
         try {
-            const requests = this.currentGuild.join_requests || [];
-            const requestIndex = requests.findIndex(r => r.player_id === playerId);
+            const telegramId = window.dbManager.getTelegramId();
 
-            if (requestIndex === -1) {
-                return { success: false, error: 'Заявка не найдена' };
+            // Вызываем RPC для обработки заявки
+            const { data, error } = await this.supabase.rpc('guild_handle_request', {
+                p_guild_id: this.currentGuild.id,
+                p_leader_telegram_id: telegramId,
+                p_target_player_id: playerId,
+                p_approve: approve
+            });
+
+            if (error) throw error;
+
+            if (!data || !data.success) {
+                return { success: false, error: data?.error || 'Ошибка обработки заявки' };
             }
 
-            // Удаляем заявку из списка
-            requests.splice(requestIndex, 1);
-
-            if (approve) {
-                // Проверяем вместимость
-                const { count } = await this.supabase
-                    .from('players')
-                    .select('*', { count: 'exact', head: true })
-                    .eq('guild_id', this.currentGuild.id);
-
-                const capacity = getGuildCapacity(this.currentGuild.level);
-                if (count >= capacity) {
-                    return { success: false, error: 'Гильдия переполнена' };
-                }
-
-                // Добавляем игрока
-                await this.supabase
-                    .from('players')
-                    .update({
-                        guild_id: this.currentGuild.id,
-                        guild_contribution: 0,
-                        guild_last_active: new Date().toISOString()
-                    })
-                    .eq('id', playerId);
+            // Обновляем локальный список заявок
+            if (this.currentGuild.join_requests) {
+                this.currentGuild.join_requests = this.currentGuild.join_requests.filter(
+                    r => r.player_id !== playerId
+                );
             }
-
-            // Обновляем список заявок
-            await this.supabase
-                .from('guilds')
-                .update({ join_requests: requests })
-                .eq('id', this.currentGuild.id);
-
-            this.currentGuild.join_requests = requests;
 
             return { success: true, approved: approve };
 
