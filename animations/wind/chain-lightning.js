@@ -27,19 +27,21 @@
         // Загружаем spritesheet шара молнии
         const ballTexturePath = 'images/spells/wind/chain_lightning/ball_spritesheet.webp';
         
-        PIXI.Assets.load(ballTexturePath).then(baseTexture => {
-            if (!baseTexture || !baseTexture.valid) {
+        PIXI.Assets.load(ballTexturePath).then(texture => {
+            if (!texture || !texture.valid) {
                 console.warn('Не удалось загрузить текстуру шара молнии');
                 createFallbackChain(targets, gridCells, effectsContainer, onHitTarget);
                 return;
             }
-            
-            
+
+            // Получаем baseTexture из загруженной текстуры
+            const baseTexture = texture.baseTexture;
+
             // Создаем массив текстур из spritesheet (3x3 = 9 кадров)
             const frames = [];
             const frameWidth = 768 / 3;  // 256
             const frameHeight = 768 / 3; // 256
-            
+
             for (let row = 0; row < 3; row++) {
                 for (let col = 0; col < 3; col++) {
                     const frame = new PIXI.Texture(
