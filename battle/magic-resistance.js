@@ -55,7 +55,7 @@ function getSpellSchool(spellId) {
     const schoolSpells = {
         fire: ['spark', 'firebolt', 'fire_wall', 'fireball', 'fire_tsunami'],
         water: ['icicle', 'frost_arrow', 'ice_rain', 'blizzard', 'absolute_zero'],
-        wind: ['gust', 'wind_blade', 'wind_wall', 'storm_cloud', 'ball_lightning', 'chain_lightning'],
+        wind: ['gust', 'wind_blade', 'wind_wall', 'storm_cloud', 'ball_lightning'],
         earth: ['pebble', 'stone_spike', 'earth_wall', 'stone_grotto', 'meteor_shower'],
         nature: ['call_wolf', 'bark_armor', 'leaf_canopy', 'ent', 'meteorokinesis'],
         poison: ['poisoned_blade', 'poisoned_glade', 'foul_cloud', 'plague', 'epidemic']

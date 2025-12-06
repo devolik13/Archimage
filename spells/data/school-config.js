@@ -133,7 +133,6 @@ function getSpellSchoolFallback(spellId) {
         'wind_wall': 'wind',
         'storm_cloud': 'wind',
         'ball_lightning': 'wind',
-        'chain_lightning': 'wind', // Обратная совместимость
         
         // Земля
         'pebble': 'earth',

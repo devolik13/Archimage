@@ -18,7 +18,6 @@ function castWindSpell(wizard, spellId, spellData, position, casterType) {
     	    castStormCloud(wizard, spellData, position, casterType);
     	    break;
 	case 'ball_lightning':
-	case 'chain_lightning': // Обратная совместимость
 	    castBallLightning(wizard, spellData, position, casterType);
 	    break;
         default:

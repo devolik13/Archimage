@@ -152,27 +152,9 @@ function isSummonSpell(spellId) {
     return SPELL_TYPE_CONFIG[spellId] === "summon";
 }
 
-// === ОБРАТНАЯ СОВМЕСТИМОСТЬ: Алиасы для переименованных заклинаний ===
-// Старые ID маппятся на новые
-const SPELL_ID_ALIASES = {
-    "chain_lightning": "ball_lightning"
-};
-
-// Добавляем алиасы в словари для обратной совместимости
-SPELL_NAMES["chain_lightning"] = SPELL_NAMES["ball_lightning"];
-SPELL_BASE_DAMAGE["chain_lightning"] = SPELL_BASE_DAMAGE["ball_lightning"];
-SPELL_TYPE_CONFIG["chain_lightning"] = SPELL_TYPE_CONFIG["ball_lightning"];
-
-// Функция для получения актуального ID заклинания (с учётом алиасов)
-function resolveSpellId(spellId) {
-    return SPELL_ID_ALIASES[spellId] || spellId;
-}
-
-// Экспорт в window для обратной совместимости
+// Экспорт в window
 if (typeof window !== 'undefined') {
     window.SPELL_NAMES = SPELL_NAMES;
     window.SPELL_BASE_DAMAGE = SPELL_BASE_DAMAGE;
     window.SPELL_TYPE_CONFIG = SPELL_TYPE_CONFIG;
-    window.SPELL_ID_ALIASES = SPELL_ID_ALIASES;
-    window.resolveSpellId = resolveSpellId;
 }

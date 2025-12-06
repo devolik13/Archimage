@@ -415,8 +415,6 @@
     window.spellAnimations.ball_lightning = {
         play: playBallLightningAnimation
     };
-    // Обратная совместимость: старое название тоже работает
-    window.spellAnimations.chain_lightning = window.spellAnimations.ball_lightning;
 
     console.log('⚡ Анимация "Шаровая молния" зарегистрирована');
 })();
