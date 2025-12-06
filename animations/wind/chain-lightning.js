@@ -46,6 +46,9 @@
 
             // Получаем baseTexture из загруженной текстуры
             const baseTexture = texture.baseTexture;
+            console.log('⚡ DEBUG: texture:', texture);
+            console.log('⚡ DEBUG: texture.noFrame:', texture.noFrame);
+            console.log('⚡ DEBUG: texture._frame:', texture._frame);
             console.log('⚡ DEBUG: baseTexture:', baseTexture, 'size:', baseTexture?.width, 'x', baseTexture?.height);
 
             // Создаем массив текстур из spritesheet (3x3 = 9 кадров)
@@ -69,7 +72,11 @@
             }
             
             console.log('⚡ Создано кадров:', frames.length);
-            
+            console.log('⚡ DEBUG: Первый кадр:', frames[0]);
+            console.log('⚡ DEBUG: Первый кадр valid:', frames[0]?.valid);
+            console.log('⚡ DEBUG: Первый кадр width:', frames[0]?.width, 'height:', frames[0]?.height);
+            console.log('⚡ DEBUG: Первый кадр frame:', frames[0]?.frame);
+
             // Контейнер для эффектов
             const lightningContainer = new PIXI.Container();
             effectsContainer.addChild(lightningContainer);
