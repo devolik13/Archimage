@@ -133,7 +133,8 @@ class DatabaseManager {
                 daily_login: playerData.daily_login || { day: 1, last_login_date: null, last_reward_date: null, total_logins: 0 },
                 battle_energy: playerData.battle_energy || { current: 12, max: 12, last_regen: Date.now() },
                 active_blessing: playerData.active_blessing || null,
-                blessing_last_used: playerData.blessing_last_used || null
+                blessing_last_used: playerData.blessing_last_used || null,
+                last_login: playerData.last_login || new Date().toISOString()
             };
 
             // Вызываем безопасную RPC функцию (обновляет только по telegram_id)
