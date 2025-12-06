@@ -102,26 +102,9 @@ class DatabaseManager {
         }
     }
 
-    // Сохранить данные игрока
+    // Сохранить данные игрока (через безопасную RPC функцию)
     async savePlayer(playerData) {
         if (!this.currentPlayer) return false;
-
-        // Защита от читов: валидация данных перед сохранением
-        if (playerData.timeCurrency !== undefined) {
-            playerData.timeCurrency = Math.max(0, Math.min(999999, playerData.timeCurrency));
-        }
-        if (playerData.time_currency !== undefined) {
-            playerData.time_currency = Math.max(0, Math.min(999999, playerData.time_currency));
-        }
-        if (playerData.level !== undefined) {
-            playerData.level = Math.max(1, Math.min(100, playerData.level));
-        }
-        if (playerData.rating !== undefined) {
-            playerData.rating = Math.max(0, Math.min(9999, playerData.rating));
-        }
-        if (playerData.experience !== undefined) {
-            playerData.experience = Math.max(0, playerData.experience);
-        }
 
         try {
             // Сохраняем constructions внутри buildings
@@ -129,8 +112,9 @@ class DatabaseManager {
                 ...(playerData.buildings || {}),
                 _active_constructions: playerData.constructions || []
             };
-            
-            const updateData = {
+
+            // Формируем данные для RPC (лимиты проверяются на стороне БД)
+            const rpcData = {
                 time_currency: playerData.timeCurrency || playerData.time_currency || 0,
                 level: playerData.level || 1,
                 experience: playerData.experience || 0,
@@ -146,17 +130,17 @@ class DatabaseManager {
                 pve_progress: playerData.pve_progress || {},
                 settings: playerData.settings || { sound: true, language: 'ru', battle_speed: 'normal' },
                 welcome_shown: playerData.welcome_shown || false,
-                daily_login: playerData.daily_login || { day: 1, last_login_date: null, last_reward_date: null, total_logins: 0 }, // НОВОЕ: Ежедневные награды
-                battle_energy: playerData.battle_energy || { current: 12, max: 12, last_regen: Date.now() }, // НОВОЕ: Энергия боев
-                active_blessing: playerData.active_blessing || null, // Активное благословение
-                blessing_last_used: playerData.blessing_last_used || null, // Время последнего использования благословения
-                last_login: new Date().toISOString() // Обновляем время последнего входа
+                daily_login: playerData.daily_login || { day: 1, last_login_date: null, last_reward_date: null, total_logins: 0 },
+                battle_energy: playerData.battle_energy || { current: 12, max: 12, last_regen: Date.now() },
+                active_blessing: playerData.active_blessing || null,
+                blessing_last_used: playerData.blessing_last_used || null
             };
 
-            const { error } = await this.supabase
-                .from('players')
-                .update(updateData)
-                .eq('id', this.currentPlayer.id);
+            // Вызываем безопасную RPC функцию (обновляет только по telegram_id)
+            const { data, error } = await this.supabase.rpc('update_player_safe', {
+                p_telegram_id: this.getTelegramId(),
+                p_data: rpcData
+            });
 
             if (error) throw error;
 
@@ -164,36 +148,32 @@ class DatabaseManager {
             return true;
 
         } catch (error) {
-            console.error('❌ Ошибка сохранения игрока:', error);
+            console.error('Ошибка сохранения игрока:', error);
             return false;
         }
     }
 
-    // Сохранить расстановку войск
+    // Сохранить расстановку войск (через безопасную RPC)
     async saveFormation(formation) {
-        console.log('💾 dbManager.saveFormation вызвана с:', JSON.stringify(formation));
-        console.log('💾 currentPlayer.id:', this.currentPlayer?.id);
-
         if (!this.currentPlayer) {
-            console.error('❌ currentPlayer не существует!');
+            console.error('currentPlayer не существует!');
             return false;
         }
 
         try {
-            const { error } = await this.supabase
-                .from('players')
-                .update({
-                    formation: formation
-                })
-                .eq('id', this.currentPlayer.id);
+            // Используем RPC для безопасного обновления
+            const { data, error } = await this.supabase.rpc('update_player_safe', {
+                p_telegram_id: this.getTelegramId(),
+                p_data: { formation: formation }
+            });
 
             if (error) throw error;
 
-            console.log('⚔️ Расстановка успешно сохранена в Supabase:', formation);
+            console.log('Расстановка сохранена:', formation);
             return true;
 
         } catch (error) {
-            console.error('❌ Ошибка сохранения расстановки:', error);
+            console.error('Ошибка сохранения расстановки:', error);
             return false;
         }
     }
@@ -202,7 +182,7 @@ class DatabaseManager {
     // Отдельная таблица player_buildings больше не используется
     // Здания загружаются из поля buildings (JSONB) в методе loadOrCreatePlayer()
 
-    // Сохранить результат боя и обновить статистику
+    // Сохранить результат боя и обновить статистику (через безопасную RPC)
     async saveBattleResult(result, rewards, opponentLevel, ratingChange) {
         if (!this.currentPlayer || !window.userData) return false;
 
@@ -219,73 +199,45 @@ class DatabaseManager {
             // Обновляем рейтинг
             if (ratingChange !== undefined) {
                 window.userData.rating = (window.userData.rating || 1000) + ratingChange;
-                // Минимальный рейтинг - 0
-                window.userData.rating = Math.max(0, window.userData.rating);
+                window.userData.rating = Math.max(0, Math.min(9999, window.userData.rating));
             }
 
-            // Сохраняем в БД
-            const { error } = await this.supabase
-                .from('players')
-                .update({
+            // Сохраняем свои данные через безопасную RPC
+            const { error } = await this.supabase.rpc('update_player_safe', {
+                p_telegram_id: this.getTelegramId(),
+                p_data: {
                     total_battles: window.userData.total_battles,
                     wins: window.userData.wins,
                     losses: window.userData.losses,
                     rating: window.userData.rating
-                })
-                .eq('id', this.currentPlayer.id);
+                }
+            });
 
             if (error) throw error;
 
-            console.log(`⚔️ Результат боя сохранён: ${result} (${ratingChange > 0 ? '+' : ''}${ratingChange} рейтинга)`);
-            console.log(`📊 Статистика: ${window.userData.wins}W / ${window.userData.losses}L | Рейтинг: ${window.userData.rating}`);
+            console.log(`Результат боя: ${result} (${ratingChange > 0 ? '+' : ''}${ratingChange} рейтинга)`);
 
-            // НОВОЕ: Обновляем рейтинг противника (симметрично)
-            // Для всех противников (включая ботов)
-            console.log('🔍 DEBUG: Проверка обновления рейтинга противника');
-            console.log('   selectedOpponent:', window.selectedOpponent);
-            console.log('   ratingChange:', ratingChange);
-
+            // Обновляем рейтинг противника через отдельную RPC
             if (window.selectedOpponent && ratingChange !== undefined) {
-                const opponentId = window.selectedOpponent.id;
-                console.log('   opponentId:', opponentId);
+                const opponentTelegramId = window.selectedOpponent.telegram_id;
 
-                // Проверяем что ID валиден (не undefined и не null)
-                if (opponentId !== undefined && opponentId !== null) {
-                    const opponentRatingChange = -ratingChange; // Противоположное изменение
+                if (opponentTelegramId) {
+                    const opponentRatingChange = -ratingChange;
                     const currentOpponentRating = window.selectedOpponent.rating || 1000;
-                    const newOpponentRating = Math.max(0, currentOpponentRating + opponentRatingChange);
+                    const newOpponentRating = Math.max(0, Math.min(9999, currentOpponentRating + opponentRatingChange));
 
-                    console.log(`📊 ОБНОВЛЯЕМ РЕЙТИНГ ПРОТИВНИКА:`);
-                    console.log(`   Противник: ${window.selectedOpponent.username} (ID: ${opponentId})`);
-                    console.log(`   Текущий рейтинг: ${currentOpponentRating}`);
-                    console.log(`   Изменение: ${opponentRatingChange}`);
-                    console.log(`   Новый рейтинг: ${newOpponentRating}`);
-
-                    const { error: opponentError } = await this.supabase
-                        .from('players')
-                        .update({
-                            rating: newOpponentRating
-                        })
-                        .eq('id', opponentId);
-
-                    if (opponentError) {
-                        console.error('⚠️ Ошибка обновления рейтинга противника:', opponentError);
-                    } else {
-                        console.log(`   ${window.selectedOpponent.username}: ${currentOpponentRating} → ${newOpponentRating} (${opponentRatingChange > 0 ? '+' : ''}${opponentRatingChange})`);
-                    }
-                } else {
-                    console.log('⚠️ Противник не имеет валидного ID:', opponentId);
+                    // Обновляем рейтинг противника через RPC
+                    await this.supabase.rpc('update_player_safe', {
+                        p_telegram_id: opponentTelegramId,
+                        p_data: { rating: newOpponentRating }
+                    });
                 }
-            } else {
-                console.log('⚠️ Не выполнены условия для обновления рейтинга противника');
-                if (!window.selectedOpponent) console.log('   Причина: нет selectedOpponent');
-                if (ratingChange === undefined) console.log('   Причина: ratingChange === undefined');
             }
 
             return true;
 
         } catch (error) {
-            console.error('❌ Ошибка сохранения боя:', error);
+            console.error('Ошибка сохранения боя:', error);
             return false;
         }
     }
