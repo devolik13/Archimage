@@ -2,6 +2,8 @@
 
 (function() {
     function playChainLightningAnimation(params) {
+        console.log('⚡⚡⚡ CHAIN LIGHTNING ANIMATION CALLED! params:', params);
+
         const { targets, casterType, onHitTarget } = params;
 
         // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
@@ -16,9 +18,13 @@
 
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
-        
+
+        console.log('⚡ DEBUG: effectsContainer =', effectsContainer);
+        console.log('⚡ DEBUG: gridCells =', gridCells);
+        console.log('⚡ DEBUG: targets =', targets);
+
         if (!effectsContainer || !gridCells || !targets || targets.length === 0) {
-            console.warn('Не могу создать Цепную молнию - нет данных');
+            console.warn('Не могу создать Цепную молнию - нет данных', { effectsContainer: !!effectsContainer, gridCells: !!gridCells, targets: targets?.length });
             return;
         }
         
@@ -27,7 +33,11 @@
         // Загружаем spritesheet шара молнии
         const ballTexturePath = 'images/spells/wind/chain_lightning/ball_spritesheet.webp';
         
+        console.log('⚡ DEBUG: Начинаем загрузку текстуры:', ballTexturePath);
+
         PIXI.Assets.load(ballTexturePath).then(texture => {
+            console.log('⚡ DEBUG: Текстура загружена:', texture);
+
             if (!texture || !texture.valid) {
                 console.warn('Не удалось загрузить текстуру шара молнии');
                 createFallbackChain(targets, gridCells, effectsContainer, onHitTarget);
@@ -36,6 +46,7 @@
 
             // Получаем baseTexture из загруженной текстуры
             const baseTexture = texture.baseTexture;
+            console.log('⚡ DEBUG: baseTexture:', baseTexture, 'size:', baseTexture?.width, 'x', baseTexture?.height);
 
             // Создаем массив текстур из spritesheet (3x3 = 9 кадров)
             const frames = [];
