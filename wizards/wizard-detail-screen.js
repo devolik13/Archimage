@@ -186,14 +186,17 @@ function renderWizardDetailScreen(wizardIndex) {
                 if (spellData) {
                     const baseDamage = window.getSpellDamage ? window.getSpellDamage(spellId, spellData.level) : 0;
                     const finalDamage = Math.floor(baseDamage * totalDamageMultiplier);
-                    
+
                     // Показываем базовый урон и финальный с бонусами
-                    const damageDisplay = totalDamageBonusPercent > 0 ? 
-                        `${baseDamage} → ${finalDamage}💥` : 
+                    const damageDisplay = totalDamageBonusPercent > 0 ?
+                        `${baseDamage} → ${finalDamage}💥` :
                         `${finalDamage}💥`;
-                    
+
+                    // Используем SPELL_NAMES как источник актуальных названий
+                    const spellName = window.SPELL_NAMES?.[spellId] || spellData.name || spellId;
+
                     spellContent = `
-                        <div style="font-size: 13px; font-weight: bold; color: white; margin-bottom: 3px;">${spellData.name}</div>
+                        <div style="font-size: 13px; font-weight: bold; color: white; margin-bottom: 3px;">${spellName}</div>
                         <div style="font-size: 11px; color: #aaa;">Ур.${spellData.level} • ${damageDisplay}</div>
                     `;
                 } else {
@@ -1073,11 +1076,14 @@ function createSpellCells(wizardData, wizardIndex, totalDamageMultiplier, totalD
                         `${baseDamage} → ${finalDamage}💥` :
                         `${finalDamage}💥`;
 
+                    // Используем SPELL_NAMES как источник актуальных названий
+                    const spellName = window.SPELL_NAMES?.[spellId] || spellData.name || spellId;
+
                     cells.push({
                         type: 'spell',
                         col, row,
                         html: `
-                            <div class="wizard-bg-spell-name">${spellData.name}</div>
+                            <div class="wizard-bg-spell-name">${spellName}</div>
                             <div class="wizard-bg-spell-info">Ур.${spellData.level} • ${damageDisplay}</div>
                         `,
                         onclick: () => openSpellSelection(wizardIndex, i)
