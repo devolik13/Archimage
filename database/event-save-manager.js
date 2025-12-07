@@ -69,6 +69,7 @@ class EventSaveManager {
                 level: window.userData.level,
                 experience: window.userData.experience,
                 faction: window.userData.faction,
+                faction_changed: window.userData.faction_changed, // Флаг использованной бесплатной смены фракции
                 lastLogin: window.userData.last_login, // Для офлайн накопления
                 wizards: window.userData.wizards,
                 formation: window.userData.formation,

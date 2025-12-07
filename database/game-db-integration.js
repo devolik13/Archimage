@@ -27,6 +27,7 @@ async function initGameWithDatabase() {
     window.userData.user_id = player.telegram_id;
     window.userData.username = player.username;
     window.userData.faction = player.faction;
+    window.userData.faction_changed = player.faction_changed || false; // Флаг использованной бесплатной смены
 
     // Защита от читов: валидация значений при загрузке
     window.userData.time_currency = Math.max(0, Math.min(999999, player.time_currency || 0));
