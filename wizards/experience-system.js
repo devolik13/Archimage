@@ -6,14 +6,14 @@ const EXP_CONFIG = {
     DAMAGE_TO_EXP: 10,      // 10 урона = 1 опыт
     HEAL_TO_EXP: 8,         // 8 исцеления = 1 опыт
     VICTORY_BONUS: 10,      // За победу в бою
-    MAX_LEVEL: 20,          // Максимальный уровень
+    MAX_LEVEL: 40,          // Максимальный уровень (было 20)
     BASE_EXP: 50            // Базовый опыт для 2 уровня
 };
 
-// Плавная прогрессия опыта (квадратичная)
+// Плавная прогрессия опыта (квадратичная, ×2 от старой)
 function calculateExpToNext(level) {
     if (level >= EXP_CONFIG.MAX_LEVEL) return 0;
-    return 30 + (level * level * 10);
+    return 60 + (level * level * 20); // было: 30 + (level * level * 10)
 }
 
 // Добавление опыта магу
@@ -47,43 +47,43 @@ function addExperienceToWizard(wizard, expAmount) {
     }
 }
 
-// Применение бонусов за уровень с особым бонусом на 20 уровне
+// Применение бонусов за уровень с особым бонусом на 40 уровне
 function applyLevelBonuses(wizard) {
     const baseHP = wizard.original_max_hp || 100;
     let hpBonus;
-    
-    if (wizard.level === 20) {
-        // Уровень 20: +100% HP (удвоение)
+
+    if (wizard.level === 40) {
+        // Уровень 40: +100% HP (удвоение)
         hpBonus = 2.0;
     } else if (wizard.level > 1) {
-        // Уровни 2-19: +5% за каждый уровень
+        // Уровни 2-39: +5% за каждый уровень
         hpBonus = 1 + (wizard.level - 1) * 0.05;
     } else {
         // Уровень 1: базовое значение
         hpBonus = 1.0;
     }
-    
+
     wizard.max_hp = Math.floor(baseHP * hpBonus);
     wizard.hp = Math.min(wizard.hp + 5, wizard.max_hp); // Небольшое исцеление при повышении
 }
 
-// Получение множителя урона от уровня с особым бонусом на 20 уровне
+// Получение множителя урона от уровня с особым бонусом на 40 уровне
 function getDamageBonusFromLevel(wizard) {
     if (!wizard || !wizard.level) return 1.0;
-    
+
     let damageBonus;
-    
-    if (wizard.level === 20) {
-        // Уровень 20: +20% урона
+
+    if (wizard.level === 40) {
+        // Уровень 40: +20% урона
         damageBonus = 1.20;
     } else if (wizard.level > 1) {
-        // Уровни 2-19: +1% за каждый уровень
+        // Уровни 2-39: +1% за каждый уровень
         damageBonus = 1 + (wizard.level - 1) * 0.01;
     } else {
         // Уровень 1: базовое значение
         damageBonus = 1.0;
     }
-    
+
     return damageBonus;
 }
 
