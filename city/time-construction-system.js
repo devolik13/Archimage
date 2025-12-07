@@ -111,7 +111,7 @@ async function startSpellLearning(spellId, faction, tier, currentLevel) {
     }
 
     const timeRequired = SPELL_LEARNING_TIME.getLearnTime(tier, currentLevel, faction);
-    
+
     const construction = {
         type: 'spell',
         spell_id: spellId,
@@ -123,11 +123,23 @@ async function startSpellLearning(spellId, faction, tier, currentLevel) {
         time_remaining: timeRequired,
         started_at: Date.now()
     };
-    
+
     if (!window.userData.constructions) {
         window.userData.constructions = [];
     }
     window.userData.constructions.push(construction);
+
+    // Трекинг времени изучения заклинаний по фракциям (для расчёта цены смены фракции)
+    if (!window.userData.spell_learning_time) {
+        window.userData.spell_learning_time = { own_faction: 0, other_factions: 0 };
+    }
+    const isOwnFaction = faction === window.userData.faction;
+    if (isOwnFaction) {
+        window.userData.spell_learning_time.own_faction += timeRequired;
+    } else {
+        window.userData.spell_learning_time.other_factions += timeRequired;
+    }
+    console.log(`📊 Трекинг изучения: ${isOwnFaction ? 'своя' : 'чужая'} фракция, +${timeRequired} мин`);
 
     updateConstructionUI();
     await saveConstruction();

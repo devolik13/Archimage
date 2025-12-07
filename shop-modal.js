@@ -671,10 +671,51 @@ function formatTimePurchase(minutes) {
 }
 
 /**
+ * Расчёт динамической цены смены фракции
+ * Формула: цена зависит от того, сколько игрок сэкономил на изучении своих заклинаний
+ * Минимум: 280⭐ (~500₽), максимум: неограничено
+ */
+function calculateFactionChangePrice() {
+    const MIN_PRICE_STARS = 280; // ~500 рублей минимум
+    const STARS_PER_DAY = 168;   // 7⭐ × 24ч
+
+    const spellTime = window.userData?.spell_learning_time || { own_faction: 0, other_factions: 0 };
+    const ownTime = spellTime.own_faction || 0;      // минуты на свою фракцию
+    const otherTime = spellTime.other_factions || 0; // минуты на чужие фракции
+
+    // Экономия от скидки 15% = потраченное время × 0.176 (~15%/85%)
+    // Переплата за чужие = то что бы сэкономил со скидкой
+    const savedMinutes = ownTime * 0.176;
+    const overpaidMinutes = otherTime * 0.176;
+
+    // Баланс: если больше своих - должен заплатить за экономию
+    const balanceMinutes = savedMinutes - overpaidMinutes;
+
+    // Переводим в Stars (минуты → дни → Stars)
+    const balanceDays = balanceMinutes / 1440;
+    const balanceStars = Math.ceil(balanceDays * STARS_PER_DAY);
+
+    // Итоговая цена: минимум MIN_PRICE_STARS
+    const finalPrice = Math.max(MIN_PRICE_STARS, balanceStars);
+
+    console.log(`💰 Расчёт цены смены фракции: своя=${ownTime}мин, чужая=${otherTime}мин, баланс=${balanceMinutes.toFixed(0)}мин, цена=${finalPrice}⭐`);
+
+    return {
+        price: finalPrice,
+        ownTime,
+        otherTime,
+        savedMinutes: Math.round(savedMinutes),
+        overpaidMinutes: Math.round(overpaidMinutes),
+        isMinimum: balanceStars <= MIN_PRICE_STARS
+    };
+}
+
+/**
  * Диалог смены фракции
  */
 function showChangeFactionDialog(item) {
     const isFree = !window.userData?.faction_changed;
+    const priceInfo = calculateFactionChangePrice();
 
     // Показываем выбор фракции
     const factions = ['fire', 'water', 'earth', 'wind', 'nature', 'poison'];
@@ -688,6 +729,9 @@ function showChangeFactionDialog(item) {
         nature: '🌿 Природа',
         poison: '☠️ Яд'
     };
+
+    // Сохраняем цену для использования в confirmFactionChange
+    window._factionChangePrice = priceInfo.price;
 
     const dialog = document.createElement('div');
     dialog.id = 'faction-change-dialog';
@@ -722,6 +766,18 @@ function showChangeFactionDialog(item) {
             </button>
         `).join('');
 
+    // Формируем текст цены с пояснением
+    let priceText = '';
+    if (isFree) {
+        priceText = '<span style="color: #4ade80;">Первая смена бесплатно!</span>';
+    } else if (priceInfo.isMinimum) {
+        priceText = `Стоимость: <span style="color: #ffd700;">⭐${priceInfo.price}</span> <span style="color: #888;">(мин.)</span>`;
+    } else {
+        const savedDays = Math.round(priceInfo.savedMinutes / 1440 * 10) / 10;
+        priceText = `Стоимость: <span style="color: #ffd700;">⭐${priceInfo.price}</span>
+            <br><span style="color: #888; font-size: 11px;">Вы сэкономили ~${savedDays} дн. на своей фракции</span>`;
+    }
+
     dialog.innerHTML = `
         <div style="
             background: linear-gradient(135deg, #1a1a2e, #16213e);
@@ -733,10 +789,10 @@ function showChangeFactionDialog(item) {
         ">
             <h3 style="color: #ffd700; margin: 0 0 10px 0;">🔄 Смена фракции</h3>
             <p style="color: #aaa; font-size: 14px; margin-bottom: 15px;">
-                ${isFree ? 'Первая смена бесплатно!' : `Стоимость: $${item.price}`}
+                ${priceText}
             </p>
-            <p style="color: #ff6b6b; font-size: 12px; margin-bottom: 15px;">
-                ⚠️ Ваши маги будут заменены на магов новой фракции!
+            <p style="color: #4ade80; font-size: 12px; margin-bottom: 15px;">
+                ✅ Маги, здания и заклинания сохраняются!
             </p>
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 ${factionButtons}
@@ -762,6 +818,7 @@ function showChangeFactionDialog(item) {
  */
 async function confirmFactionChange(newFaction) {
     const isFree = !window.userData?.faction_changed;
+    const dynamicPrice = window._factionChangePrice || 280; // Используем рассчитанную цену
 
     if (!isFree) {
         // Платная смена через Stars
@@ -772,13 +829,13 @@ async function confirmFactionChange(newFaction) {
         }
 
         try {
-            // Открываем оплату Stars
+            // Открываем оплату Stars с динамической ценой
             window.Telegram.WebApp.openInvoice(
                 await createStarsInvoice({
                     id: 'faction_change',
                     name: 'Смена фракции',
-                    description: 'Изменить школу магии',
-                    price: 500
+                    description: `Изменить школу магии (⭐${dynamicPrice})`,
+                    price: dynamicPrice
                 }),
                 (status) => {
                     if (status === 'paid') {
@@ -806,15 +863,18 @@ async function confirmFactionChange(newFaction) {
 
 /**
  * Применить смену фракции
+ * Маги, здания и заклинания сохраняются - меняется только фракция
+ * (это влияет на -15% бонус изучения и визуальный стиль)
  */
 function applyFactionChange(newFaction) {
+    const oldFaction = window.userData.faction;
+
     // Меняем фракцию
     window.userData.faction = newFaction;
     window.userData.faction_changed = true;
 
-    // Сбрасываем магов (нужно создать новых для новой фракции)
-    // TODO: Реализовать создание магов новой фракции
-    window.userData.wizards = [];
+    // Сбрасываем трекинг времени изучения (новая фракция = новый отсчёт)
+    window.userData.spell_learning_time = { own_faction: 0, other_factions: 0 };
 
     // Сохраняем
     if (window.eventSaveManager) {
@@ -830,10 +890,11 @@ function applyFactionChange(newFaction) {
         poison: 'Яд'
     };
 
+    console.log(`🔄 Смена фракции: ${factionNames[oldFaction]} → ${factionNames[newFaction]}`);
     showShopNotification(`🔄 Фракция изменена на ${factionNames[newFaction]}!`, 'success');
     closeShopModal();
 
-    // Перезагружаем город
+    // Перезагружаем город (обновит визуальный стиль)
     if (typeof window.initCityView === 'function') {
         window.initCityView();
     }
