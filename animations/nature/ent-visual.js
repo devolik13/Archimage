@@ -135,38 +135,47 @@
     }
     
     function updateHPBar(hpBar, hp, maxHP) {
-        hpBar.clear();
-        const barWidth = 55;
-        const barHeight = 7;
-        const borderRadius = 2;
-        const hpPercent = hp / maxHP;
+        const barWidth = 40;
+        const barHeight = 5;
 
-        // Рамка
-        hpBar.lineStyle(1, 0x000000, 0.9);
-        hpBar.beginFill(0x222222, 0.9);
-        hpBar.drawRoundedRect(-barWidth/2 - 1, -60 - 1, barWidth + 2, barHeight + 2, borderRadius);
-        hpBar.endFill();
+        // Создаём фон если его нет
+        if (!hpBar.hpBarBg) {
+            hpBar.hpBarBg = new PIXI.Graphics();
+            hpBar.hpBarBg.beginFill(0x000000, 0.5);
+            hpBar.hpBarBg.drawRect(-barWidth/2, 0, barWidth, barHeight);
+            hpBar.hpBarBg.endFill();
+            hpBar.hpBarBg.y = -55;
+            hpBar.addChild(hpBar.hpBarBg);
 
-        // HP заполнение
-        const color = hpPercent > 0.5 ? 0x44CC44 :
-                     hpPercent > 0.25 ? 0xCCCC44 : 0xCC4444;
-        hpBar.beginFill(color, 1);
-        hpBar.drawRoundedRect(-barWidth/2, -60, barWidth * hpPercent, barHeight, borderRadius);
-        hpBar.endFill();
+            // Заполнение
+            hpBar.hpBarFill = new PIXI.Graphics();
+            hpBar.hpBarFill.y = -55;
+            hpBar.addChild(hpBar.hpBarFill);
 
-        // Обновляем текст HP (создаём при необходимости)
-        if (!hpBar.hpText) {
+            // Текст HP
             hpBar.hpText = new PIXI.Text('', {
-                fontSize: 9,
+                fontFamily: 'Arial',
+                fontSize: 10,
                 fill: 0xFFFFFF,
                 fontWeight: 'bold',
                 stroke: 0x000000,
                 strokeThickness: 2
             });
-            hpBar.hpText.anchor.set(0.5);
-            hpBar.hpText.y = -72;
+            hpBar.hpText.anchor.set(0.5, 1);
+            hpBar.hpText.y = -57;
             hpBar.addChild(hpBar.hpText);
         }
+
+        // Обновляем заполнение
+        hpBar.hpBarFill.clear();
+        const hpPercent = hp / maxHP;
+        const color = hpPercent > 0.5 ? 0x4ade80 :
+                     hpPercent > 0.25 ? 0xfbbf24 : 0xef4444;
+        hpBar.hpBarFill.beginFill(color);
+        hpBar.hpBarFill.drawRect(-barWidth/2, 0, barWidth * hpPercent, barHeight);
+        hpBar.hpBarFill.endFill();
+
+        // Обновляем текст
         hpBar.hpText.text = `${hp}/${maxHP}`;
     }
     

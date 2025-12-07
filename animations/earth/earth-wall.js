@@ -222,50 +222,55 @@
         animate();
     }
     
-    // HP индикатор (увеличенный, как у магов)
+    // HP индикатор (как у магов: 40x5, текст 10px)
     function createHPBar(wallSprite, currentHP, maxHP) {
-        if (wallSprite.hpBar) {
-            wallSprite.hpBar.clear();
-        } else {
+        const barWidth = 40;
+        const barHeight = 5;
+
+        // Создаём контейнер если его нет
+        if (!wallSprite.hpContainer) {
+            wallSprite.hpContainer = new PIXI.Container();
+            wallSprite.parent.addChild(wallSprite.hpContainer);
+
+            // Фон
+            wallSprite.hpBarBg = new PIXI.Graphics();
+            wallSprite.hpBarBg.beginFill(0x000000, 0.5);
+            wallSprite.hpBarBg.drawRect(-barWidth/2, 0, barWidth, barHeight);
+            wallSprite.hpBarBg.endFill();
+            wallSprite.hpContainer.addChild(wallSprite.hpBarBg);
+
+            // Заполнение
             wallSprite.hpBar = new PIXI.Graphics();
-            wallSprite.parent.addChild(wallSprite.hpBar);
-        }
+            wallSprite.hpContainer.addChild(wallSprite.hpBar);
 
-        const barWidth = 50;
-        const barHeight = 6;
-        const borderRadius = 2;
-
-        // Рамка
-        wallSprite.hpBar.lineStyle(1, 0x000000, 0.8);
-        wallSprite.hpBar.beginFill(0x222222, 0.9);
-        wallSprite.hpBar.drawRoundedRect(-barWidth/2 - 1, -barHeight/2 - 1, barWidth + 2, barHeight + 2, borderRadius);
-        wallSprite.hpBar.endFill();
-
-        // HP заполнение
-        const hpPercent = currentHP / maxHP;
-        const color = hpPercent > 0.5 ? 0x44CC44 : (hpPercent > 0.25 ? 0xCCCC44 : 0xCC4444);
-        wallSprite.hpBar.beginFill(color, 1);
-        wallSprite.hpBar.drawRoundedRect(-barWidth/2, -barHeight/2, barWidth * hpPercent, barHeight, borderRadius);
-        wallSprite.hpBar.endFill();
-
-        // Текст HP
-        if (!wallSprite.hpText) {
+            // Текст HP
             wallSprite.hpText = new PIXI.Text('', {
-                fontSize: 9,
+                fontFamily: 'Arial',
+                fontSize: 10,
                 fill: 0xFFFFFF,
                 fontWeight: 'bold',
                 stroke: 0x000000,
                 strokeThickness: 2
             });
-            wallSprite.hpText.anchor.set(0.5);
-            wallSprite.parent.addChild(wallSprite.hpText);
+            wallSprite.hpText.anchor.set(0.5, 1);
+            wallSprite.hpText.y = -2;
+            wallSprite.hpContainer.addChild(wallSprite.hpText);
         }
-        wallSprite.hpText.text = `${currentHP}/${maxHP}`;
-        wallSprite.hpText.x = wallSprite.x;
-        wallSprite.hpText.y = wallSprite.y - 40;
 
-        wallSprite.hpBar.x = wallSprite.x;
-        wallSprite.hpBar.y = wallSprite.y - 28;
+        // Обновляем заполнение
+        wallSprite.hpBar.clear();
+        const hpPercent = currentHP / maxHP;
+        const color = hpPercent > 0.5 ? 0x4ade80 : (hpPercent > 0.25 ? 0xfbbf24 : 0xef4444);
+        wallSprite.hpBar.beginFill(color);
+        wallSprite.hpBar.drawRect(-barWidth/2, 0, barWidth * hpPercent, barHeight);
+        wallSprite.hpBar.endFill();
+
+        // Обновляем текст
+        wallSprite.hpText.text = `${currentHP}/${maxHP}`;
+
+        // Позиционируем контейнер
+        wallSprite.hpContainer.x = wallSprite.x;
+        wallSprite.hpContainer.y = wallSprite.y - 25;
     }
     
 
@@ -354,8 +359,9 @@
             if (progress < 1) {
                 requestAnimationFrame(collapse);
             } else {
-                if (wallSprite.hpBar && wallSprite.hpBar.parent) wallSprite.hpBar.parent.removeChild(wallSprite.hpBar);
-                if (wallSprite.hpText && wallSprite.hpText.parent) wallSprite.hpText.parent.removeChild(wallSprite.hpText);
+                if (wallSprite.hpContainer && wallSprite.hpContainer.parent) {
+                    wallSprite.hpContainer.parent.removeChild(wallSprite.hpContainer);
+                }
                 if (wallSprite.parent) wallSprite.parent.removeChild(wallSprite);
             }
         };
@@ -367,8 +373,9 @@
         activeWallSprites.forEach(walls => {
             walls.forEach(wall => {
                 if (wall.sprite) {
-                    if (wall.sprite.hpBar && wall.sprite.hpBar.parent) wall.sprite.hpBar.parent.removeChild(wall.sprite.hpBar);
-                    if (wall.sprite.hpText && wall.sprite.hpText.parent) wall.sprite.hpText.parent.removeChild(wall.sprite.hpText);
+                    if (wall.sprite.hpContainer && wall.sprite.hpContainer.parent) {
+                        wall.sprite.hpContainer.parent.removeChild(wall.sprite.hpContainer);
+                    }
                     if (wall.sprite.parent) wall.sprite.parent.removeChild(wall.sprite);
                 }
             });

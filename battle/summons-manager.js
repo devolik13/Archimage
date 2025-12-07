@@ -415,78 +415,69 @@ class SummonsManager {
         this.startIdleAnimation(graphics);
     }
     
-    // Добавить HP бар (улучшенный с текстом)
+    // Добавить HP бар (как у магов: 40x5, текст 10px)
     addHPBar(summonId, parentSprite, summonData) {
-        const barWidth = 55;
-        const barHeight = 7;
-        const borderRadius = 2;
+        const barWidth = 40;
+        const barHeight = 5;
 
         // Контейнер для HP бара
         const hpContainer = new PIXI.Container();
-        hpContainer.y = -35;
+        hpContainer.y = -30;
 
-        // Графика HP бара
-        const hpBar = new PIXI.Graphics();
-
-        // Рамка
-        hpBar.lineStyle(1, 0x000000, 0.9);
-        hpBar.beginFill(0x222222, 0.9);
-        hpBar.drawRoundedRect(-barWidth/2 - 1, -barHeight/2 - 1, barWidth + 2, barHeight + 2, borderRadius);
-        hpBar.endFill();
+        // Фон HP бара
+        const hpBarBg = new PIXI.Graphics();
+        hpBarBg.beginFill(0x000000, 0.5);
+        hpBarBg.drawRect(-barWidth/2, 0, barWidth, barHeight);
+        hpBarBg.endFill();
 
         // HP заполнение
+        const hpBarFill = new PIXI.Graphics();
         const hpPercent = summonData.hp / summonData.maxHP;
-        const color = hpPercent > 0.5 ? 0x44CC44 : (hpPercent > 0.25 ? 0xCCCC44 : 0xCC4444);
-        hpBar.beginFill(color, 1);
-        hpBar.drawRoundedRect(-barWidth/2, -barHeight/2, barWidth * hpPercent, barHeight, borderRadius);
-        hpBar.endFill();
+        const color = hpPercent > 0.5 ? 0x4ade80 : (hpPercent > 0.25 ? 0xfbbf24 : 0xef4444);
+        hpBarFill.beginFill(color);
+        hpBarFill.drawRect(-barWidth/2, 0, barWidth * hpPercent, barHeight);
+        hpBarFill.endFill();
 
-        hpContainer.addChild(hpBar);
+        hpContainer.addChild(hpBarBg);
+        hpContainer.addChild(hpBarFill);
 
-        // Текст HP
+        // Текст HP (как у магов)
         const hpText = new PIXI.Text(`${summonData.hp}/${summonData.maxHP}`, {
-            fontSize: 9,
+            fontFamily: 'Arial',
+            fontSize: 10,
             fill: 0xFFFFFF,
             fontWeight: 'bold',
             stroke: 0x000000,
             strokeThickness: 2
         });
-        hpText.anchor.set(0.5);
-        hpText.y = -12;
+        hpText.anchor.set(0.5, 1);
+        hpText.y = -2;
         hpContainer.addChild(hpText);
 
         parentSprite.addChild(hpContainer);
-        parentSprite.hpBar = hpBar;
+        parentSprite.hpBar = hpBarFill;
+        parentSprite.hpBarBg = hpBarBg;
         parentSprite.hpText = hpText;
         parentSprite.hpContainer = hpContainer;
     }
     
-    // Обновить визуал HP
+    // Обновить визуал HP (как у магов)
     updateVisualHP(summonId, hp, maxHP) {
         const visual = this.visuals.get(summonId);
         if (!visual || !visual.hpBar) return;
 
-        const hpBar = visual.hpBar;
-        hpBar.clear();
+        const barWidth = 40;
+        const barHeight = 5;
 
-        const barWidth = 55;
-        const barHeight = 7;
-        const borderRadius = 2;
-
-        // Рамка
-        hpBar.lineStyle(1, 0x000000, 0.9);
-        hpBar.beginFill(0x222222, 0.9);
-        hpBar.drawRoundedRect(-barWidth/2 - 1, -barHeight/2 - 1, barWidth + 2, barHeight + 2, borderRadius);
-        hpBar.endFill();
-
-        // HP заполнение (цвет зависит от процента)
+        // Обновляем заполнение
+        visual.hpBar.clear();
         const hpPercent = hp / maxHP;
-        const color = hpPercent > 0.5 ? 0x44CC44 :
-                     hpPercent > 0.25 ? 0xCCCC44 : 0xCC4444;
+        const color = hpPercent > 0.5 ? 0x4ade80 :
+                     hpPercent > 0.25 ? 0xfbbf24 : 0xef4444;
 
-        hpBar.beginFill(color, 1);
-        hpBar.drawRoundedRect(-barWidth/2, -barHeight/2, barWidth * hpPercent, barHeight, borderRadius);
-        hpBar.endFill();
+        visual.hpBar.beginFill(color);
+        visual.hpBar.drawRect(-barWidth/2, 0, barWidth * hpPercent, barHeight);
+        visual.hpBar.endFill();
 
         // Обновляем текст HP
         if (visual.hpText) {
