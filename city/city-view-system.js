@@ -1121,12 +1121,11 @@ function setupBuildingSelectionUI() {
                         window.showConstructionModal(constructionIdx);
                     }
                 } else if (isBuilt) {
-                    // Улучшение - открываем модальное окно здания
-                    closeBuildingModal();
-                    openBuildingModal(building.id);
+                    // Улучшение - показываем детали в том же overlay
+                    showBuildingDetailsInOverlay(building.id, true);
                 } else {
-                    // Строительство
-                    buildBuilding(building.id);
+                    // Строительство - показываем детали в том же overlay
+                    showBuildingDetailsInOverlay(building.id, false);
                 }
             };
             btn.onmouseover = () => {
@@ -1202,6 +1201,237 @@ function openBuildingModal(buildingId) {
         console.log('⚠️ Модальное окно для', buildingId, 'не найдено');
     }
 }
+
+// Показать детали здания внутри того же overlay (перед строительством)
+function showBuildingDetailsInOverlay(buildingId, isUpgrade = false) {
+    const overlay = document.getElementById('building-selection-overlay');
+    if (!overlay) {
+        // Fallback на старое поведение
+        if (window.startBuilding) window.startBuilding(buildingId, isUpgrade);
+        return;
+    }
+
+    const img = document.getElementById('building-selection-bg');
+    if (!img) return;
+
+    const rect = img.getBoundingClientRect();
+    const scaleX = rect.width / 768;
+    const scaleY = rect.height / 512;
+
+    // Области
+    const headerArea = { x: 115 * scaleX, y: 20 * scaleY, width: (655 - 115) * scaleX, height: 50 * scaleY };
+    const contentArea = { x: 115 * scaleX, y: 70 * scaleY, width: (655 - 115) * scaleX, height: (410 - 70) * scaleY };
+    const footerArea = { x: 115 * scaleX, y: 420 * scaleY, width: (655 - 115) * scaleX, height: 60 * scaleY };
+
+    const titleFontSize = Math.max(16, 22 * Math.min(scaleX, scaleY));
+    const baseFontSize = Math.max(12, 14 * Math.min(scaleX, scaleY));
+    const smallFontSize = Math.max(10, 12 * Math.min(scaleX, scaleY));
+
+    // Данные здания
+    const buildingNames = {
+        'library': { name: 'Библиотека', icon: '📚' },
+        'wizard_tower': { name: 'Башня мага', icon: '🏯' },
+        'guild': { name: 'Гильдия', icon: '🏰' },
+        'pvp_arena': { name: 'Арена', icon: '🏟️' },
+        'blessing_tower': { name: 'Башня благословения', icon: '🙏' },
+        'arcane_lab': { name: 'Лаборатория', icon: '🔬' },
+        'time_generator': { name: 'Генератор времени', icon: '⏳' }
+    };
+
+    const buildingInfo = buildingNames[buildingId] || { name: buildingId, icon: '🏗️' };
+    const currentLevel = window.userData?.buildings?.[buildingId]?.level || 0;
+    const targetLevel = isUpgrade ? currentLevel + 1 : 1;
+
+    // Получаем время строительства
+    const timeRequired = isUpgrade ?
+        (window.CONSTRUCTION_TIME?.getUpgradeTime ?
+            window.CONSTRUCTION_TIME.getUpgradeTime(buildingId, targetLevel) : 144 * targetLevel) :
+        (window.CONSTRUCTION_TIME?.[buildingId] || 144);
+
+    const timeFormatted = window.formatTimeCurrency ? window.formatTimeCurrency(timeRequired) : timeRequired + ' мин';
+
+    // Получаем описание из BUILDING_DESCRIPTIONS
+    let description = '';
+    let levelInfo = '';
+    if (window.BUILDING_DESCRIPTIONS && window.BUILDING_DESCRIPTIONS[buildingId]) {
+        const config = window.BUILDING_DESCRIPTIONS[buildingId];
+        description = config.baseDescription || '';
+        levelInfo = config.getLevelDescription ? config.getLevelDescription(currentLevel, targetLevel) : '';
+    }
+
+    // Очищаем overlay
+    overlay.innerHTML = '';
+
+    // === ЗАГОЛОВОК ===
+    const headerContainer = document.createElement('div');
+    headerContainer.style.cssText = `
+        position: absolute;
+        left: ${headerArea.x}px;
+        top: ${headerArea.y}px;
+        width: ${headerArea.width}px;
+        height: ${headerArea.height}px;
+        pointer-events: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+    headerContainer.innerHTML = `
+        <div style="
+            color: #ffd700;
+            font-size: ${titleFontSize}px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            text-align: center;
+        ">${buildingInfo.icon} ${buildingInfo.name}</div>
+    `;
+    overlay.appendChild(headerContainer);
+
+    // === КОНТЕНТ: ДЕТАЛИ ЗДАНИЯ ===
+    const contentContainer = document.createElement('div');
+    contentContainer.style.cssText = `
+        position: absolute;
+        left: ${contentArea.x}px;
+        top: ${contentArea.y}px;
+        width: ${contentArea.width}px;
+        height: ${contentArea.height}px;
+        pointer-events: auto;
+        overflow-y: auto;
+        padding: 10px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    `;
+
+    contentContainer.innerHTML = `
+        <!-- Уровень -->
+        ${isUpgrade ? `
+        <div style="
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #7289da;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        ">
+            <div style="color: #aaa; font-size: ${smallFontSize}px;">Улучшение</div>
+            <div style="color: #ffd700; font-size: ${baseFontSize + 4}px; font-weight: bold;">
+                Уровень ${currentLevel} → ${targetLevel}
+            </div>
+        </div>
+        ` : ''}
+
+        <!-- Описание -->
+        <div style="
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #555;
+            border-radius: 8px;
+            padding: 12px;
+        ">
+            <div style="color: #ccc; font-size: ${baseFontSize}px; line-height: 1.5;">
+                ${description}
+            </div>
+        </div>
+
+        <!-- Бонусы -->
+        ${levelInfo ? `
+        <div style="
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #4ade80;
+            border-radius: 8px;
+            padding: 12px;
+        ">
+            <div style="color: #ffa500; font-size: ${smallFontSize}px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase;">
+                ${isUpgrade ? 'Новый бонус:' : 'Что даст:'}
+            </div>
+            <div style="color: #4ade80; font-size: ${baseFontSize}px; font-weight: bold;">
+                ${levelInfo}
+            </div>
+        </div>
+        ` : ''}
+
+        <!-- Стоимость -->
+        <div style="
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid rgba(255, 165, 0, 0.5);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        ">
+            <div style="color: #aaa; font-size: ${smallFontSize}px; margin-bottom: 5px;">
+                Время ${isUpgrade ? 'улучшения' : 'строительства'}:
+            </div>
+            <div style="color: #ffa500; font-size: ${baseFontSize + 6}px; font-weight: bold;">
+                ⏳ ${timeFormatted}
+            </div>
+        </div>
+    `;
+
+    overlay.appendChild(contentContainer);
+
+    // === КНОПКИ ===
+    const footerContainer = document.createElement('div');
+    footerContainer.style.cssText = `
+        position: absolute;
+        left: ${footerArea.x}px;
+        top: ${footerArea.y}px;
+        width: ${footerArea.width}px;
+        height: ${footerArea.height}px;
+        pointer-events: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    `;
+
+    // Кнопка "Назад"
+    const backBtn = document.createElement('button');
+    backBtn.textContent = '← Назад';
+    backBtn.style.cssText = `
+        padding: 10px 25px;
+        background: rgba(0, 0, 0, 0.6);
+        border: 2px solid #888;
+        border-radius: 10px;
+        color: #ccc;
+        font-size: ${baseFontSize}px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    `;
+    backBtn.onclick = () => setupBuildingSelectionUI();
+    backBtn.onmouseover = () => { backBtn.style.background = 'rgba(100, 100, 100, 0.5)'; };
+    backBtn.onmouseout = () => { backBtn.style.background = 'rgba(0, 0, 0, 0.6)'; };
+
+    // Кнопка "Построить/Улучшить"
+    const confirmBtn = document.createElement('button');
+    confirmBtn.textContent = isUpgrade ? '⚙️ Улучшить' : '✅ Построить';
+    confirmBtn.style.cssText = `
+        padding: 10px 30px;
+        background: linear-gradient(145deg, #4ade80, #22c55e);
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: ${baseFontSize}px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    `;
+    confirmBtn.onclick = () => {
+        closeBuildingModal();
+        if (window.executeBuilding) {
+            window.executeBuilding(buildingId, isUpgrade, targetLevel, timeRequired);
+        } else if (window.startBuilding) {
+            window.startBuilding(buildingId, isUpgrade);
+        }
+    };
+    confirmBtn.onmouseover = () => { confirmBtn.style.transform = 'scale(1.05)'; };
+    confirmBtn.onmouseout = () => { confirmBtn.style.transform = 'scale(1)'; };
+
+    footerContainer.appendChild(backBtn);
+    footerContainer.appendChild(confirmBtn);
+    overlay.appendChild(footerContainer);
+}
+
+window.showBuildingDetailsInOverlay = showBuildingDetailsInOverlay;
 
 // Резервное простое меню (если изображение не загрузилось)
 function showBuildingSelectionMenuFallback() {

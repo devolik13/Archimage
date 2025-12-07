@@ -1333,6 +1333,7 @@ window.createBuildingClickZones = createBuildingClickZones;
 window.loadCityPositions = loadCityPositions;
 window.closeConstructionModal = closeConstructionModal;
 window.startBuilding = startBuilding;
+window.executeBuilding = executeBuilding;
 window.getBuildingFunctionality = getBuildingFunctionality;
 window.getActionButton = getActionButton;
 window.addConstructionVisualization = addConstructionVisualization;
