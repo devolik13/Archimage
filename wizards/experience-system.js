@@ -47,16 +47,13 @@ function addExperienceToWizard(wizard, expAmount) {
     }
 }
 
-// Применение бонусов за уровень с особым бонусом на 40 уровне
+// Применение бонусов за уровень (линейный рост)
 function applyLevelBonuses(wizard) {
     const baseHP = wizard.original_max_hp || 100;
     let hpBonus;
 
-    if (wizard.level === 40) {
-        // Уровень 40: +100% HP (удвоение)
-        hpBonus = 2.0;
-    } else if (wizard.level > 1) {
-        // Уровни 2-39: +5% за каждый уровень
+    if (wizard.level > 1) {
+        // Уровни 2-40: +5% за каждый уровень
         hpBonus = 1 + (wizard.level - 1) * 0.05;
     } else {
         // Уровень 1: базовое значение
@@ -67,17 +64,14 @@ function applyLevelBonuses(wizard) {
     wizard.hp = Math.min(wizard.hp + 5, wizard.max_hp); // Небольшое исцеление при повышении
 }
 
-// Получение множителя урона от уровня с особым бонусом на 40 уровне
+// Получение множителя урона от уровня (линейный рост)
 function getDamageBonusFromLevel(wizard) {
     if (!wizard || !wizard.level) return 1.0;
 
     let damageBonus;
 
-    if (wizard.level === 40) {
-        // Уровень 40: +20% урона
-        damageBonus = 1.20;
-    } else if (wizard.level > 1) {
-        // Уровни 2-39: +1% за каждый уровень
+    if (wizard.level > 1) {
+        // Уровни 2-40: +1% за каждый уровень
         damageBonus = 1 + (wizard.level - 1) * 0.01;
     } else {
         // Уровень 1: базовое значение
