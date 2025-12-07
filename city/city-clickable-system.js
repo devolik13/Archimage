@@ -1039,79 +1039,100 @@ function updateUpgradeTimer(buildingId, element) {
     }, 10000);
 }
 
-// Обновим функцию startBuilding чтобы обрабатывать улучшения
+// Показать окно подтверждения перед строительством
 function startBuilding(buildingId, isUpgrade = false) {
-    console.log(`🏗️ ${isUpgrade ? 'Улучшаем' : 'Строим'} ${buildingId}`);
-    
+    console.log(`🏗️ Запрос на ${isUpgrade ? 'улучшение' : 'строительство'} ${buildingId}`);
+
     if (!window.userData.buildings) {
         window.userData.buildings = {};
     }
-    
-    closeConstructionModal();
-    
+
+    // Проверяем, нет ли уже активного строительства
     if (window.userData.constructions !== undefined && window.CONSTRUCTION_TIME) {
         const constructions = window.userData.constructions || [];
-        const hasActive = constructions.some(c => 
-            c.type === 'building' && 
+        const hasActive = constructions.some(c =>
+            c.type === 'building' &&
             c.time_remaining > 0
         );
-        
+
         if (hasActive) {
             if (window.showNotification) {
                 window.showNotification('⚠️ Можно строить/улучшать только одно здание одновременно!');
             }
             return;
         }
-        
-        if (!window.userData.constructions) {
-            window.userData.constructions = [];
-        }
-        
-        const currentLevel = window.userData.buildings[buildingId]?.level || 0;
-        const targetLevel = isUpgrade ? currentLevel + 1 : 1;
-        
-        const timeRequired = isUpgrade ?
-            (window.CONSTRUCTION_TIME?.getUpgradeTime ? 
-                window.CONSTRUCTION_TIME.getUpgradeTime(buildingId, targetLevel) : 144 * targetLevel) :
-            (window.CONSTRUCTION_TIME?.[buildingId] || 144);
-        
-        const construction = {
-            type: 'building',
-            building_id: buildingId,
-            cell_index: null,
-            is_upgrade: isUpgrade,
-            target_level: targetLevel,
-            time_required: timeRequired,
-            time_remaining: timeRequired,
-            started_at: Date.now()
-        };
-        
-        window.userData.constructions.push(construction);
-        
-        if (window.updateConstructionUI) {
-            window.updateConstructionUI();
-        }
-        
-        if (window.saveConstruction) {
-            window.saveConstruction();
-        }
+    }
 
-        // Добавляем визуализацию
-        if (isUpgrade) {
-            window.addUpgradeVisualization(buildingId);
-        } else {
-            addConstructionVisualization(buildingId);
-        }
-        
-        const container = document.getElementById('city-background-container');
-        if (container && window.userData?.faction) {
-            createBuildingClickZones(window.userData.faction, container);
-        }
+    const currentLevel = window.userData.buildings[buildingId]?.level || 0;
+    const targetLevel = isUpgrade ? currentLevel + 1 : 1;
 
-        if (window.showNotification) {
-            const action = isUpgrade ? 'Улучшение' : 'Строительство';
-            window.showNotification(`🏗️ ${action} ${buildingId} началось!`);
-        }
+    const timeRequired = isUpgrade ?
+        (window.CONSTRUCTION_TIME?.getUpgradeTime ?
+            window.CONSTRUCTION_TIME.getUpgradeTime(buildingId, targetLevel) : 144 * targetLevel) :
+        (window.CONSTRUCTION_TIME?.[buildingId] || 144);
+
+    // Показываем модальное окно с информацией и подтверждением
+    if (window.showBuildingInfoModal) {
+        closeConstructionModal();
+        window.showBuildingInfoModal(
+            buildingId,
+            currentLevel,
+            targetLevel,
+            isUpgrade,
+            timeRequired,
+            () => executeBuilding(buildingId, isUpgrade, targetLevel, timeRequired)
+        );
+    } else {
+        // Fallback: сразу строим если модалка недоступна
+        closeConstructionModal();
+        executeBuilding(buildingId, isUpgrade, targetLevel, timeRequired);
+    }
+}
+
+// Выполнить строительство (вызывается после подтверждения)
+function executeBuilding(buildingId, isUpgrade, targetLevel, timeRequired) {
+    console.log(`🏗️ ${isUpgrade ? 'Улучшаем' : 'Строим'} ${buildingId} до уровня ${targetLevel}`);
+
+    if (!window.userData.constructions) {
+        window.userData.constructions = [];
+    }
+
+    const construction = {
+        type: 'building',
+        building_id: buildingId,
+        cell_index: null,
+        is_upgrade: isUpgrade,
+        target_level: targetLevel,
+        time_required: timeRequired,
+        time_remaining: timeRequired,
+        started_at: Date.now()
+    };
+
+    window.userData.constructions.push(construction);
+
+    if (window.updateConstructionUI) {
+        window.updateConstructionUI();
+    }
+
+    if (window.saveConstruction) {
+        window.saveConstruction();
+    }
+
+    // Добавляем визуализацию
+    if (isUpgrade) {
+        window.addUpgradeVisualization(buildingId);
+    } else {
+        addConstructionVisualization(buildingId);
+    }
+
+    const container = document.getElementById('city-background-container');
+    if (container && window.userData?.faction) {
+        createBuildingClickZones(window.userData.faction, container);
+    }
+
+    if (window.showNotification) {
+        const action = isUpgrade ? 'Улучшение' : 'Строительство';
+        window.showNotification(`🏗️ ${action} ${buildingId} началось!`);
     }
 }
 
