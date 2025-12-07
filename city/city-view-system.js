@@ -325,8 +325,8 @@ function initializeDefaultBuildings() {
         window.userData.buildings = {};
     }
     
-    // Начальные здания - library и wizard_tower
-    const defaultBuildings = ['library', 'wizard_tower'];
+    // Начальные здания - library и time_generator
+    const defaultBuildings = ['library', 'time_generator'];
     
     defaultBuildings.forEach(buildingId => {
         if (!window.userData.buildings[buildingId]) {

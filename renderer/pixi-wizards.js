@@ -147,10 +147,18 @@
     
     // Безопасная проверка спрайта
     function isSpriteValid(sprite) {
-        return sprite && 
-               sprite.transform && 
+        return sprite &&
+               sprite.transform &&
                !sprite.destroyed &&
                sprite.parent;
+    }
+
+    // Проверка валидности текстур для анимации
+    function areTexturesValid(textures) {
+        if (!textures || !Array.isArray(textures) || textures.length === 0) {
+            return false;
+        }
+        return textures.every(tex => tex && tex._uvs && !tex.destroyed);
     }
     
     // Безопасный setTimeout
@@ -564,17 +572,17 @@
         }
         
         // Если есть кадры атаки
-        if (sprite instanceof PIXI.AnimatedSprite && container.attackFrames && container.attackFrames.length > 0) {
+        if (sprite instanceof PIXI.AnimatedSprite && areTexturesValid(container.attackFrames)) {
             console.log(`   Позиция: ${wizardCol}_${wizardRow}`);
 
             // Сохраняем текущее состояние
             const originalFrames = sprite.textures;
             const originalSpeed = sprite.animationSpeed;
             const originalLoop = sprite.loop;
-            
+
             const animationId = Symbol('attack');
             activeAnimations.add(animationId);
-            
+
             try {
                 // Переключаем на атаку
                 sprite.stop();
@@ -599,14 +607,17 @@
                         sprite.onComplete = null;
 
                         // Возвращаем idle анимацию
-                        if (container.idleFrames && container.idleFrames.length > 0) {
+                        if (areTexturesValid(container.idleFrames)) {
                             sprite.textures = container.idleFrames;
                             sprite.animationSpeed = originalSpeed;
                             sprite.loop = true;
-
-                            // ИСПРАВЛЕНО: Сразу запускаем анимацию без задержки
                             sprite.gotoAndPlay(0);
-
+                        } else if (areTexturesValid(originalFrames)) {
+                            // Fallback на оригинальные фреймы
+                            sprite.textures = originalFrames;
+                            sprite.animationSpeed = originalSpeed;
+                            sprite.loop = originalLoop;
+                            sprite.gotoAndPlay(0);
                         }
                     } catch (err) {
                         console.error('Ошибка при возврате к idle:', err);
@@ -673,21 +684,27 @@
         }
         
         // Если есть кадры смерти
-        if (sprite instanceof PIXI.AnimatedSprite && container.deathFrames && container.deathFrames.length > 0) {
+        if (sprite instanceof PIXI.AnimatedSprite && areTexturesValid(container.deathFrames)) {
             console.log(`💀 Запуск анимации смерти (${container.deathFrames.length} кадров)`);
-            
+
             const animationId = Symbol('death');
             activeAnimations.add(animationId);
-            
+
             try {
                 sprite.stop();
-                
+
                 // Для фракции яда проигрываем анимацию смерти в обратном порядке
                 const config = FACTION_SPRITES_CONFIG[container.faction];
-                const deathFrames = (config && config.reverseOnDeath) 
-                    ? [...container.deathFrames].reverse() 
+                const deathFrames = (config && config.reverseOnDeath)
+                    ? [...container.deathFrames].reverse()
                     : container.deathFrames;
-                
+
+                if (!areTexturesValid(deathFrames)) {
+                    console.warn('⚠️ Невалидные текстуры смерти после обработки');
+                    if (callback) callback();
+                    return;
+                }
+
                 sprite.textures = deathFrames;
                 sprite.animationSpeed = 0.15;
                 sprite.loop = false;
@@ -951,8 +968,8 @@
 
         const { castFrames, idleFrames } = sprite.userData;
 
-        if (!castFrames || castFrames.length === 0) {
-            console.warn('⚠️ Нет кадров каста');
+        if (!areTexturesValid(castFrames)) {
+            console.warn('⚠️ Нет валидных кадров каста');
             return;
         }
 
@@ -967,10 +984,12 @@
         sprite.onComplete = () => {
             // Возврат к idle
             sprite.stop();
-            sprite.textures = idleFrames;
-            sprite.animationSpeed = originalSpeed;
-            sprite.loop = true;
-            sprite.gotoAndPlay(0);
+            if (areTexturesValid(idleFrames)) {
+                sprite.textures = idleFrames;
+                sprite.animationSpeed = originalSpeed;
+                sprite.loop = true;
+                sprite.gotoAndPlay(0);
+            }
             sprite.onComplete = null;
         };
     }
@@ -985,7 +1004,7 @@
 
         const { deathFrames } = sprite.userData;
 
-        if (!deathFrames || deathFrames.length === 0) {
+        if (!areTexturesValid(deathFrames)) {
             // Fallback - затемнение
             let alpha = 1;
             const fadeInterval = setInterval(() => {
