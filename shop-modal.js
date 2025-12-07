@@ -671,11 +671,55 @@ function formatTimePurchase(minutes) {
 }
 
 /**
+ * Инициализация spell_learning_time из существующих заклинаний
+ * Вызывается один раз при открытии диалога смены фракции
+ */
+function initSpellLearningTimeFromExisting() {
+    // Уже инициализировано с данными по фракциям - пропускаем
+    const existing = window.userData?.spell_learning_time;
+    if (existing && typeof existing.fire === 'number') {
+        return; // Уже в новом формате с данными
+    }
+
+    console.log('📊 Инициализация spell_learning_time из существующих заклинаний...');
+
+    const spellTime = { fire: 0, water: 0, earth: 0, wind: 0, nature: 0, poison: 0 };
+    const spells = window.userData?.spells || {};
+
+    // Базовое время по тирам (в минутах, без TIME_MULTIPLIER - он уже был применён)
+    const tierTimes = { 1: 1440, 2: 2880, 3: 4320, 4: 7200, 5: 10080 };
+
+    // Для каждой фракции считаем потраченное время
+    Object.keys(spells).forEach(faction => {
+        const factionSpells = spells[faction] || {};
+
+        Object.values(factionSpells).forEach(spell => {
+            const level = spell.level || 0;
+            const tier = spell.tier || 1;
+
+            if (level > 0) {
+                // Формула: время = tierTime × L × (L+1) / 4
+                // Где L = текущий уровень заклинания
+                const baseTime = tierTimes[tier] || 1440;
+                const totalTime = Math.floor(baseTime * level * (level + 1) / 4);
+                spellTime[faction] = (spellTime[faction] || 0) + totalTime;
+            }
+        });
+    });
+
+    window.userData.spell_learning_time = spellTime;
+    console.log('📊 Инициализировано:', spellTime);
+}
+
+/**
  * Расчёт динамической цены смены фракции на конкретную целевую фракцию
  * Формула: цена зависит от баланса между сэкономленным (на своей) и переплаченным (на целевой)
  * Минимум: 280⭐ (~500₽), максимум: неограничено
  */
 function calculateFactionChangePrice(targetFaction) {
+    // Инициализируем трекинг из существующих заклинаний если нужно
+    initSpellLearningTimeFromExisting();
+
     const MIN_PRICE_STARS = 280; // ~500 рублей минимум
     const STARS_PER_DAY = 168;   // 7⭐ × 24ч
 
@@ -894,9 +938,17 @@ async function confirmFactionChange(newFaction) {
 function applyFactionChange(newFaction) {
     const oldFaction = window.userData.faction;
 
-    // Меняем фракцию
+    // Меняем фракцию игрока
     window.userData.faction = newFaction;
     window.userData.faction_changed = true;
+
+    // Обновляем фракцию у всех магов (меняет их внешний вид)
+    if (window.userData.wizards && window.userData.wizards.length > 0) {
+        window.userData.wizards.forEach(wizard => {
+            wizard.faction = newFaction;
+        });
+        console.log(`🧙 Обновлена фракция у ${window.userData.wizards.length} магов`);
+    }
 
     // Сбрасываем трекинг времени изучения (новая фракция = новый отсчёт)
     window.userData.spell_learning_time = {
