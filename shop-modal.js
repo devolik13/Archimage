@@ -671,24 +671,30 @@ function formatTimePurchase(minutes) {
 }
 
 /**
- * Расчёт динамической цены смены фракции
- * Формула: цена зависит от того, сколько игрок сэкономил на изучении своих заклинаний
+ * Расчёт динамической цены смены фракции на конкретную целевую фракцию
+ * Формула: цена зависит от баланса между сэкономленным (на своей) и переплаченным (на целевой)
  * Минимум: 280⭐ (~500₽), максимум: неограничено
  */
-function calculateFactionChangePrice() {
+function calculateFactionChangePrice(targetFaction) {
     const MIN_PRICE_STARS = 280; // ~500 рублей минимум
     const STARS_PER_DAY = 168;   // 7⭐ × 24ч
 
-    const spellTime = window.userData?.spell_learning_time || { own_faction: 0, other_factions: 0 };
-    const ownTime = spellTime.own_faction || 0;      // минуты на свою фракцию
-    const otherTime = spellTime.other_factions || 0; // минуты на чужие фракции
+    const currentFaction = window.userData?.faction || 'fire';
+    const spellTime = window.userData?.spell_learning_time || {};
 
-    // Экономия от скидки 15% = потраченное время × 0.176 (~15%/85%)
-    // Переплата за чужие = то что бы сэкономил со скидкой
+    // Время на текущую (свою) фракцию - игрок получил скидку 15%
+    const ownTime = spellTime[currentFaction] || 0;
+    // Время на целевую фракцию - игрок переплатил (не было скидки)
+    const targetTime = spellTime[targetFaction] || 0;
+
+    // Экономия от скидки 15% на своей = потраченное время × 0.176
+    // Переплата на целевой = то что бы сэкономил со скидкой
     const savedMinutes = ownTime * 0.176;
-    const overpaidMinutes = otherTime * 0.176;
+    const overpaidMinutes = targetTime * 0.176;
 
-    // Баланс: если больше своих - должен заплатить за экономию
+    // Баланс: сэкономленное - переплаченное
+    // Если больше сэкономил на своей → платит больше за уход
+    // Если больше переплатил на целевой → платит меньше за переход
     const balanceMinutes = savedMinutes - overpaidMinutes;
 
     // Переводим в Stars (минуты → дни → Stars)
@@ -698,12 +704,18 @@ function calculateFactionChangePrice() {
     // Итоговая цена: минимум MIN_PRICE_STARS
     const finalPrice = Math.max(MIN_PRICE_STARS, balanceStars);
 
-    console.log(`💰 Расчёт цены смены фракции: своя=${ownTime}мин, чужая=${otherTime}мин, баланс=${balanceMinutes.toFixed(0)}мин, цена=${finalPrice}⭐`);
+    // Время в днях для отображения
+    const ownDays = Math.round(ownTime / 1440 * 10) / 10;
+    const targetDays = Math.round(targetTime / 1440 * 10) / 10;
+
+    console.log(`💰 Цена ${currentFaction}→${targetFaction}: своя=${ownDays}дн, цель=${targetDays}дн, баланс=${balanceMinutes.toFixed(0)}мин, цена=${finalPrice}⭐`);
 
     return {
         price: finalPrice,
         ownTime,
-        otherTime,
+        targetTime,
+        ownDays,
+        targetDays,
         savedMinutes: Math.round(savedMinutes),
         overpaidMinutes: Math.round(overpaidMinutes),
         isMinimum: balanceStars <= MIN_PRICE_STARS
@@ -715,7 +727,6 @@ function calculateFactionChangePrice() {
  */
 function showChangeFactionDialog(item) {
     const isFree = !window.userData?.faction_changed;
-    const priceInfo = calculateFactionChangePrice();
 
     // Показываем выбор фракции
     const factions = ['fire', 'water', 'earth', 'wind', 'nature', 'poison'];
@@ -730,8 +741,14 @@ function showChangeFactionDialog(item) {
         poison: '☠️ Яд'
     };
 
-    // Сохраняем цену для использования в confirmFactionChange
-    window._factionChangePrice = priceInfo.price;
+    // Рассчитываем цену для каждой целевой фракции
+    const factionPrices = {};
+    factions.filter(f => f !== currentFaction).forEach(faction => {
+        factionPrices[faction] = calculateFactionChangePrice(faction);
+    });
+
+    // Сохраняем цены для использования в confirmFactionChange
+    window._factionChangePrices = factionPrices;
 
     const dialog = document.createElement('div');
     dialog.id = 'faction-change-dialog';
@@ -750,33 +767,40 @@ function showChangeFactionDialog(item) {
 
     const factionButtons = factions
         .filter(f => f !== currentFaction)
-        .map(faction => `
-            <button onclick="confirmFactionChange('${faction}')" style="
-                padding: 15px 20px;
-                background: rgba(0,0,0,0.6);
-                border: 1px solid rgba(255,215,0,0.3);
-                border-radius: 10px;
-                color: white;
-                font-size: 16px;
-                cursor: pointer;
-                transition: all 0.2s;
-            " onmouseover="this.style.borderColor='#ffd700'; this.style.background='rgba(0,0,0,0.8)'"
-               onmouseout="this.style.borderColor='rgba(255,215,0,0.3)'; this.style.background='rgba(0,0,0,0.6)'">
-                ${factionNames[faction]}
-            </button>
-        `).join('');
+        .map(faction => {
+            const priceInfo = factionPrices[faction];
+            const priceColor = priceInfo.isMinimum ? '#4ade80' : '#ffa500';
+            const timeSpentText = priceInfo.targetDays > 0
+                ? `изучено ${priceInfo.targetDays} дн.`
+                : 'не изучалось';
 
-    // Формируем текст цены с пояснением
-    let priceText = '';
-    if (isFree) {
-        priceText = '<span style="color: #4ade80;">Первая смена бесплатно!</span>';
-    } else if (priceInfo.isMinimum) {
-        priceText = `Стоимость: <span style="color: #ffd700;">⭐${priceInfo.price}</span> <span style="color: #888;">(мин.)</span>`;
-    } else {
-        const savedDays = Math.round(priceInfo.savedMinutes / 1440 * 10) / 10;
-        priceText = `Стоимость: <span style="color: #ffd700;">⭐${priceInfo.price}</span>
-            <br><span style="color: #888; font-size: 11px;">Вы сэкономили ~${savedDays} дн. на своей фракции</span>`;
-    }
+            return `
+                <button onclick="confirmFactionChange('${faction}')" style="
+                    padding: 12px 16px;
+                    background: rgba(0,0,0,0.6);
+                    border: 1px solid rgba(255,215,0,0.3);
+                    border-radius: 10px;
+                    color: white;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    text-align: center;
+                    min-width: 140px;
+                " onmouseover="this.style.borderColor='#ffd700'; this.style.background='rgba(0,0,0,0.8)'"
+                   onmouseout="this.style.borderColor='rgba(255,215,0,0.3)'; this.style.background='rgba(0,0,0,0.6)'">
+                    <div style="font-size: 16px; margin-bottom: 4px;">${factionNames[faction]}</div>
+                    <div style="font-size: 11px; color: #888; margin-bottom: 4px;">${timeSpentText}</div>
+                    <div style="font-size: 13px; color: ${priceColor}; font-weight: bold;">
+                        ${isFree ? '🆓 Бесплатно' : `⭐${priceInfo.price}`}
+                    </div>
+                </button>
+            `;
+        }).join('');
+
+    // Заголовок с информацией
+    const headerText = isFree
+        ? '<span style="color: #4ade80;">Первая смена бесплатно!</span>'
+        : 'Цена зависит от изученных заклинаний';
 
     dialog.innerHTML = `
         <div style="
@@ -784,22 +808,22 @@ function showChangeFactionDialog(item) {
             border: 2px solid #ffd700;
             border-radius: 15px;
             padding: 20px;
-            max-width: 350px;
+            max-width: 400px;
             text-align: center;
         ">
             <h3 style="color: #ffd700; margin: 0 0 10px 0;">🔄 Смена фракции</h3>
-            <p style="color: #aaa; font-size: 14px; margin-bottom: 15px;">
-                ${priceText}
+            <p style="color: #aaa; font-size: 13px; margin-bottom: 10px;">
+                ${headerText}
             </p>
-            <p style="color: #4ade80; font-size: 12px; margin-bottom: 15px;">
+            <p style="color: #4ade80; font-size: 11px; margin-bottom: 15px;">
                 ✅ Маги, здания и заклинания сохраняются!
             </p>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px;">
                 ${factionButtons}
             </div>
             <button onclick="closeFactionChangeDialog()" style="
                 width: 100%;
-                margin-top: 15px;
+                margin-top: 10px;
                 padding: 10px;
                 background: rgba(255,100,100,0.3);
                 border: 1px solid rgba(255,100,100,0.5);
@@ -818,7 +842,8 @@ function showChangeFactionDialog(item) {
  */
 async function confirmFactionChange(newFaction) {
     const isFree = !window.userData?.faction_changed;
-    const dynamicPrice = window._factionChangePrice || 280; // Используем рассчитанную цену
+    // Используем цену для конкретной целевой фракции
+    const dynamicPrice = window._factionChangePrices?.[newFaction]?.price || 280;
 
     if (!isFree) {
         // Платная смена через Stars
@@ -874,7 +899,9 @@ function applyFactionChange(newFaction) {
     window.userData.faction_changed = true;
 
     // Сбрасываем трекинг времени изучения (новая фракция = новый отсчёт)
-    window.userData.spell_learning_time = { own_faction: 0, other_factions: 0 };
+    window.userData.spell_learning_time = {
+        fire: 0, water: 0, earth: 0, wind: 0, nature: 0, poison: 0
+    };
 
     // Сохраняем
     if (window.eventSaveManager) {
