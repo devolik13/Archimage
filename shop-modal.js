@@ -671,22 +671,14 @@ function formatTimePurchase(minutes) {
 }
 
 /**
- * Инициализация spell_learning_time из существующих заклинаний
- * Вызывается один раз при открытии диалога смены фракции
+ * Рассчитывает время, потраченное на изучение заклинаний каждой фракции
+ * Данные берутся напрямую из userData.spells - всегда актуальны
  */
-function initSpellLearningTimeFromExisting() {
-    // Уже инициализировано с данными по фракциям - пропускаем
-    const existing = window.userData?.spell_learning_time;
-    if (existing && typeof existing.fire === 'number') {
-        return; // Уже в новом формате с данными
-    }
-
-    console.log('📊 Инициализация spell_learning_time из существующих заклинаний...');
-
+function calculateSpellTimeFromDB() {
     const spellTime = { fire: 0, water: 0, earth: 0, wind: 0, nature: 0, poison: 0 };
     const spells = window.userData?.spells || {};
 
-    // Базовое время по тирам (в минутах, без TIME_MULTIPLIER - он уже был применён)
+    // Базовое время по тирам (в минутах)
     const tierTimes = { 1: 1440, 2: 2880, 3: 4320, 4: 7200, 5: 10080 };
 
     // Для каждой фракции считаем потраченное время
@@ -707,8 +699,7 @@ function initSpellLearningTimeFromExisting() {
         });
     });
 
-    window.userData.spell_learning_time = spellTime;
-    console.log('📊 Инициализировано:', spellTime);
+    return spellTime;
 }
 
 /**
@@ -717,14 +708,12 @@ function initSpellLearningTimeFromExisting() {
  * Минимум: 280⭐ (~500₽), максимум: неограничено
  */
 function calculateFactionChangePrice(targetFaction) {
-    // Инициализируем трекинг из существующих заклинаний если нужно
-    initSpellLearningTimeFromExisting();
-
     const MIN_PRICE_STARS = 280; // ~500 рублей минимум
     const STARS_PER_DAY = 168;   // 7⭐ × 24ч
 
     const currentFaction = window.userData?.faction || 'fire';
-    const spellTime = window.userData?.spell_learning_time || {};
+    // Всегда считаем актуальные данные из БД
+    const spellTime = calculateSpellTimeFromDB();
 
     // Время на текущую (свою) фракцию - игрок получил скидку 15%
     const ownTime = spellTime[currentFaction] || 0;
@@ -949,11 +938,6 @@ function applyFactionChange(newFaction) {
         });
         console.log(`🧙 Обновлена фракция у ${window.userData.wizards.length} магов`);
     }
-
-    // Сбрасываем трекинг времени изучения (новая фракция = новый отсчёт)
-    window.userData.spell_learning_time = {
-        fire: 0, water: 0, earth: 0, wind: 0, nature: 0, poison: 0
-    };
 
     // Сохраняем
     if (window.eventSaveManager) {

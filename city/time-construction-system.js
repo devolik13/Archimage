@@ -129,24 +129,6 @@ async function startSpellLearning(spellId, faction, tier, currentLevel) {
     }
     window.userData.constructions.push(construction);
 
-    // Трекинг времени изучения заклинаний по каждой фракции (для расчёта цены смены фракции)
-    if (!window.userData.spell_learning_time) {
-        window.userData.spell_learning_time = {
-            fire: 0, water: 0, earth: 0, wind: 0, nature: 0, poison: 0
-        };
-    }
-    // Миграция старого формата
-    if (window.userData.spell_learning_time.own_faction !== undefined) {
-        const oldOwn = window.userData.spell_learning_time.own_faction || 0;
-        const currentFaction = window.userData.faction || 'fire';
-        window.userData.spell_learning_time = {
-            fire: 0, water: 0, earth: 0, wind: 0, nature: 0, poison: 0
-        };
-        window.userData.spell_learning_time[currentFaction] = oldOwn;
-    }
-    window.userData.spell_learning_time[faction] = (window.userData.spell_learning_time[faction] || 0) + timeRequired;
-    console.log(`📊 Трекинг изучения: ${faction}, +${timeRequired} мин (всего: ${window.userData.spell_learning_time[faction]})`);
-
     updateConstructionUI();
     await saveConstruction();
 
