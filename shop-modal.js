@@ -40,66 +40,57 @@ const SHOP_CONFIG = {
         {
             id: 'exp_scroll_small',
             name: 'Свиток опыта (малый)',
-            description: '+50 опыта выбранному магу',
+            description: '+250 опыта выбранному магу',
             icon: '📜',
-            price: 60, // 1 час
+            price: 360, // 6 часов
             currency: 'time',
             action: 'buyExpScroll',
-            amount: 50
-        },
-        {
-            id: 'exp_scroll_medium',
-            name: 'Свиток опыта (средний)',
-            description: '+150 опыта выбранному магу',
-            icon: '📜📜',
-            price: 150, // 2.5 часа (скидка)
-            currency: 'time',
-            action: 'buyExpScroll',
-            amount: 150
+            amount: 250
         },
         {
             id: 'exp_scroll_large',
             name: 'Свиток опыта (большой)',
-            description: '+500 опыта выбранному магу',
+            description: '+1000 опыта выбранному магу',
             icon: '📜📜📜',
-            price: 400, // ~6.5 часов (большая скидка)
+            price: 1440, // 1 день
             currency: 'time',
             action: 'buyExpScroll',
-            amount: 500
+            amount: 1000
         }
     ],
 
     // Premium товары (за Telegram Stars)
+    // Курс: 7 Stars = 1 час = 60 минут, 168 Stars = 1 день
     premium: [
         {
             id: 'time_pack_small',
-            name: 'Пакет времени (малый)',
-            description: '+1 день времени',
+            name: 'Пакет времени (1 день)',
+            description: '+1 день игрового времени',
             icon: '⏰',
-            price: 50,
+            price: 168, // 7 Stars × 24 часа
             currency: 'stars',
             action: 'buyTimePack',
             amount: 1440 // 1 день в минутах
         },
         {
             id: 'time_pack_medium',
-            name: 'Пакет времени (средний)',
-            description: '+7 дней времени',
+            name: 'Пакет времени (7 дней)',
+            description: '+7 дней времени (-5%)',
             icon: '⏰⏰',
-            price: 250,
+            price: 1120, // 168 × 7 × 0.95 ≈ 1120
             currency: 'stars',
             action: 'buyTimePack',
-            amount: 10080 // 7 дней (бонус ~30%)
+            amount: 10080 // 7 дней
         },
         {
             id: 'time_pack_large',
-            name: 'Пакет времени (большой)',
-            description: '+30 дней времени',
+            name: 'Пакет времени (30 дней)',
+            description: '+30 дней времени (-15%)',
             icon: '⏰⏰⏰',
-            price: 750,
+            price: 4280, // 168 × 30 × 0.85 ≈ 4280
             currency: 'stars',
             action: 'buyTimePack',
-            amount: 43200 // 30 дней (бонус ~50%)
+            amount: 43200 // 30 дней
         },
         {
             id: 'faction_change',
@@ -488,7 +479,7 @@ function showWizardSelectDialog(item) {
     const wizardCards = wizards.map((wizard, index) => {
         const expToNext = wizard.exp_to_next || window.calculateExpToNext?.(wizard.level) || 100;
         const currentExp = wizard.experience || 0;
-        const isMaxLevel = wizard.level >= 20;
+        const isMaxLevel = wizard.level >= (window.EXP_CONFIG?.MAX_LEVEL || 40);
 
         return `
             <div onclick="${isMaxLevel ? '' : `applyExpScroll(${index}, ${item.price}, ${item.amount})`}"
@@ -558,7 +549,7 @@ function applyExpScroll(wizardIndex, price, expAmount) {
         return;
     }
 
-    if (wizard.level >= 20) {
+    if (wizard.level >= (window.EXP_CONFIG?.MAX_LEVEL || 40)) {
         showShopNotification('❌ Маг уже максимального уровня!', 'error');
         closeWizardSelectDialog();
         return;
