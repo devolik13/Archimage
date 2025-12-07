@@ -82,7 +82,7 @@ class DatabaseManager {
                 .insert([{
                     telegram_id: telegramId,
                     username: username,
-                    time_currency: 100, // Начальная валюта
+                    time_currency: 7200, // Начальная валюта: 5 дней (5 × 24 × 60 мин)
                     level: 1,
                     experience: 0
                     // last_login убрано - добавится при обновлении игрока
