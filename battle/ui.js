@@ -283,13 +283,13 @@ function setWeatherDisplay() {
     }
 }
 
-// Функция переключения скорости боя
+// Функция переключения скорости боя (2 режима: обычный и быстрый)
 function toggleBattleSpeed() {
     const speedButton = document.querySelector('#speed-button');
-    
+
     if (window.battleSpeedMode === 'normal') {
         window.battleSpeedMode = 'fast';
-        window.battleSpeed = 1000;
+        window.battleSpeed = 800; // Быстрее: 0.8 сек вместо 2 сек
         if (speedButton) {
             speedButton.innerHTML = '⚡';
             speedButton.title = 'Замедлить';
@@ -297,21 +297,28 @@ function toggleBattleSpeed() {
         }
     } else {
         window.battleSpeedMode = 'normal';
-        window.battleSpeed = 2000;
+        window.battleSpeed = 2000; // Обычная: 2 сек
         if (speedButton) {
             speedButton.innerHTML = '▶';
             speedButton.title = 'Ускорить';
             speedButton.style.background = '#555';
         }
     }
-    
-    if (window.battleInterval) {
-        clearInterval(window.battleInterval);
-        if (!window.isPaused && window.battleState === 'active') {
-            window.battleInterval = setInterval(window.executeBattlePhase, window.battleSpeed);
+
+    // Применяем через battleTimerManager
+    if (window.battleTimerManager) {
+        window.battleTimerManager.changeSpeed(window.battleSpeed);
+    } else {
+        // Fallback
+        if (window.battleInterval) {
+            clearInterval(window.battleInterval);
+            if (!window.isPaused && window.battleState === 'active') {
+                window.battleInterval = setInterval(window.executeBattlePhase, window.battleSpeed);
+            }
         }
     }
-    
+
+    console.log(`⚡ Скорость боя: ${window.battleSpeedMode} (${window.battleSpeed}ms)`);
 }
 
 // Улучшенная функция паузы
