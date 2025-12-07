@@ -136,21 +136,38 @@
     
     function updateHPBar(hpBar, hp, maxHP) {
         hpBar.clear();
-        const barWidth = 50;
-        const barHeight = 5;
+        const barWidth = 55;
+        const barHeight = 7;
+        const borderRadius = 2;
         const hpPercent = hp / maxHP;
-        
-        // Фон
-        hpBar.beginFill(0x333333, 0.8);
-        hpBar.drawRect(-barWidth/2, -60, barWidth, barHeight);
+
+        // Рамка
+        hpBar.lineStyle(1, 0x000000, 0.9);
+        hpBar.beginFill(0x222222, 0.9);
+        hpBar.drawRoundedRect(-barWidth/2 - 1, -60 - 1, barWidth + 2, barHeight + 2, borderRadius);
         hpBar.endFill();
-        
-        // HP
-        const color = hpPercent > 0.5 ? 0x4ade80 : 
-                     hpPercent > 0.25 ? 0xfbbf24 : 0xef4444;
+
+        // HP заполнение
+        const color = hpPercent > 0.5 ? 0x44CC44 :
+                     hpPercent > 0.25 ? 0xCCCC44 : 0xCC4444;
         hpBar.beginFill(color, 1);
-        hpBar.drawRect(-barWidth/2, -60, barWidth * hpPercent, barHeight);
+        hpBar.drawRoundedRect(-barWidth/2, -60, barWidth * hpPercent, barHeight, borderRadius);
         hpBar.endFill();
+
+        // Обновляем текст HP (создаём при необходимости)
+        if (!hpBar.hpText) {
+            hpBar.hpText = new PIXI.Text('', {
+                fontSize: 9,
+                fill: 0xFFFFFF,
+                fontWeight: 'bold',
+                stroke: 0x000000,
+                strokeThickness: 2
+            });
+            hpBar.hpText.anchor.set(0.5);
+            hpBar.hpText.y = -72;
+            hpBar.addChild(hpBar.hpText);
+        }
+        hpBar.hpText.text = `${hp}/${maxHP}`;
     }
     
     // Обновление HP при получении урона

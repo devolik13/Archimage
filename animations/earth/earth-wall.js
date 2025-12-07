@@ -222,7 +222,7 @@
         animate();
     }
     
-    // HP индикатор
+    // HP индикатор (увеличенный, как у магов)
     function createHPBar(wallSprite, currentHP, maxHP) {
         if (wallSprite.hpBar) {
             wallSprite.hpBar.clear();
@@ -230,24 +230,42 @@
             wallSprite.hpBar = new PIXI.Graphics();
             wallSprite.parent.addChild(wallSprite.hpBar);
         }
-        
-        const barWidth = 40;
-        const barHeight = 4;
-        
-        // Фон
-        wallSprite.hpBar.beginFill(0x333333, 0.7);
-        wallSprite.hpBar.drawRect(-barWidth/2, -barHeight/2, barWidth, barHeight);
+
+        const barWidth = 50;
+        const barHeight = 6;
+        const borderRadius = 2;
+
+        // Рамка
+        wallSprite.hpBar.lineStyle(1, 0x000000, 0.8);
+        wallSprite.hpBar.beginFill(0x222222, 0.9);
+        wallSprite.hpBar.drawRoundedRect(-barWidth/2 - 1, -barHeight/2 - 1, barWidth + 2, barHeight + 2, borderRadius);
         wallSprite.hpBar.endFill();
-        
-        // HP
+
+        // HP заполнение
         const hpPercent = currentHP / maxHP;
-        const color = hpPercent > 0.5 ? 0x44AA44 : (hpPercent > 0.25 ? 0xAAAA44 : 0xAA4444);
-        wallSprite.hpBar.beginFill(color, 0.9);
-        wallSprite.hpBar.drawRect(-barWidth/2, -barHeight/2, barWidth * hpPercent, barHeight);
+        const color = hpPercent > 0.5 ? 0x44CC44 : (hpPercent > 0.25 ? 0xCCCC44 : 0xCC4444);
+        wallSprite.hpBar.beginFill(color, 1);
+        wallSprite.hpBar.drawRoundedRect(-barWidth/2, -barHeight/2, barWidth * hpPercent, barHeight, borderRadius);
         wallSprite.hpBar.endFill();
-        
+
+        // Текст HP
+        if (!wallSprite.hpText) {
+            wallSprite.hpText = new PIXI.Text('', {
+                fontSize: 9,
+                fill: 0xFFFFFF,
+                fontWeight: 'bold',
+                stroke: 0x000000,
+                strokeThickness: 2
+            });
+            wallSprite.hpText.anchor.set(0.5);
+            wallSprite.parent.addChild(wallSprite.hpText);
+        }
+        wallSprite.hpText.text = `${currentHP}/${maxHP}`;
+        wallSprite.hpText.x = wallSprite.x;
+        wallSprite.hpText.y = wallSprite.y - 40;
+
         wallSprite.hpBar.x = wallSprite.x;
-        wallSprite.hpBar.y = wallSprite.y - 30;
+        wallSprite.hpBar.y = wallSprite.y - 28;
     }
     
 
@@ -324,7 +342,7 @@
     // Эффект разрушения
     function destroyWall(wallSprite) {
         if (!wallSprite || !wallSprite.parent) return;
-        
+
         // Анимация разрушения
         const startTime = Date.now();
         const collapse = () => {
@@ -332,12 +350,13 @@
             wallSprite.scale.y *= 0.95;
             wallSprite.alpha = 1 - progress;
             wallSprite.rotation = (Math.random() - 0.5) * 0.1 * progress;
-            
+
             if (progress < 1) {
                 requestAnimationFrame(collapse);
             } else {
-                if (wallSprite.hpBar) wallSprite.parent.removeChild(wallSprite.hpBar);
-                wallSprite.parent.removeChild(wallSprite);
+                if (wallSprite.hpBar && wallSprite.hpBar.parent) wallSprite.hpBar.parent.removeChild(wallSprite.hpBar);
+                if (wallSprite.hpText && wallSprite.hpText.parent) wallSprite.hpText.parent.removeChild(wallSprite.hpText);
+                if (wallSprite.parent) wallSprite.parent.removeChild(wallSprite);
             }
         };
         collapse();
@@ -347,9 +366,10 @@
     function clearAll() {
         activeWallSprites.forEach(walls => {
             walls.forEach(wall => {
-                if (wall.sprite.parent) {
-                    if (wall.sprite.hpBar) wall.sprite.parent.removeChild(wall.sprite.hpBar);
-                    wall.sprite.parent.removeChild(wall.sprite);
+                if (wall.sprite) {
+                    if (wall.sprite.hpBar && wall.sprite.hpBar.parent) wall.sprite.hpBar.parent.removeChild(wall.sprite.hpBar);
+                    if (wall.sprite.hpText && wall.sprite.hpText.parent) wall.sprite.hpText.parent.removeChild(wall.sprite.hpText);
+                    if (wall.sprite.parent) wall.sprite.parent.removeChild(wall.sprite);
                 }
             });
         });
