@@ -14,10 +14,10 @@ RETURNS VOID AS $$
 BEGIN
     UPDATE players
     SET
-        -- Basic data
-        time_currency = COALESCE((p_data->>'time_currency')::INTEGER, time_currency),
-        level = COALESCE((p_data->>'level')::INTEGER, level),
-        experience = COALESCE((p_data->>'experience')::INTEGER, experience),
+        -- Basic data (BIGINT types)
+        time_currency = COALESCE((p_data->>'time_currency')::BIGINT, time_currency),
+        level = COALESCE((p_data->>'level')::BIGINT, level),
+        experience = COALESCE((p_data->>'experience')::BIGINT, experience),
         faction = COALESCE(p_data->>'faction', faction),
         faction_changed = COALESCE((p_data->>'faction_changed')::BOOLEAN, faction_changed),
 
