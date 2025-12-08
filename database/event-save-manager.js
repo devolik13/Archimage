@@ -89,8 +89,9 @@ class EventSaveManager {
                 pve_progress: window.userData.pve_progress,
                 settings: window.userData.settings,
                 welcome_shown: window.userData.welcome_shown,
-                daily_login: window.userData.daily_login, // НОВОЕ: Сохранение данных ежедневных наград
-                battle_energy: window.userData.battle_energy // НОВОЕ: Энергия боев
+                daily_login: window.userData.daily_login, // Данные ежедневных наград
+                battle_energy: window.userData.battle_energy, // Энергия боев
+                purchased_packs: window.userData.purchased_packs // Купленные стартовые пакеты
             });
 
             const success = await window.dbManager.savePlayer(playerData);

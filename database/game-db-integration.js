@@ -87,6 +87,9 @@ async function initGameWithDatabase() {
     window.userData.active_blessing = player.active_blessing || null;
     window.userData.blessing_last_used = player.blessing_last_used || null;
 
+    // Купленные стартовые пакеты
+    window.userData.purchased_packs = player.purchased_packs || {};
+
     // КРИТИЧНО: Проверяем есть ли фракция
     if (!player.faction || player.faction === null) {
         // Новый игрок - показываем выбор фракции

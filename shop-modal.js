@@ -3,6 +3,61 @@
 // Текущая вкладка магазина
 let currentShopTab = 'free';
 
+// Конфигурация стартовых пакетов (одноразовые покупки)
+const STARTER_PACKS = {
+    small: {
+        id: 'starter_pack_small',
+        name: '🎁 Малый пакет',
+        description: '7 дней времени, Башня магов 3 ур, 2-й маг, 5000 XP',
+        icon: '🎁',
+        price: 0, // Для теста бесплатно, потом 2900 Stars
+        currency: 'stars',
+        fullPrice: 2900,
+        discount: 30,
+        requires: null, // Доступен всем
+        rewards: {
+            time: 10080, // 7 дней в минутах
+            towerLevel: 3,
+            wizardCount: 2,
+            experience: 5000
+        }
+    },
+    medium: {
+        id: 'starter_pack_medium',
+        name: '📦 Средний пакет',
+        description: '30 дней времени, Башня магов 5 ур, 3-й маг, 30000 XP',
+        icon: '📦',
+        price: 0, // Для теста бесплатно, потом 10400 Stars
+        currency: 'stars',
+        fullPrice: 10400,
+        discount: 30,
+        requires: 'starter_pack_small', // После малого пакета
+        rewards: {
+            time: 43200, // 30 дней в минутах
+            towerLevel: 5,
+            wizardCount: 3,
+            experience: 30000
+        }
+    },
+    large: {
+        id: 'starter_pack_large',
+        name: '💎 Крупный пакет',
+        description: '90 дней времени, Башня магов 7 ур, 4-й маг, 200000 XP',
+        icon: '💎',
+        price: 0, // Для теста бесплатно, потом 40000 Stars
+        currency: 'stars',
+        fullPrice: 40000,
+        discount: 30,
+        requires: 'starter_pack_medium', // После среднего пакета
+        rewards: {
+            time: 129600, // 90 дней в минутах
+            towerLevel: 7,
+            wizardCount: 4,
+            experience: 200000
+        }
+    }
+};
+
 // Конфигурация товаров
 const SHOP_CONFIG = {
     // Бесплатные товары (за time_currency)
@@ -256,6 +311,11 @@ function renderShopContent(container, rect) {
 
             <!-- Табы -->
             <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="shop-tab ${currentShopTab === 'packs' ? 'active' : ''}"
+                        onclick="switchShopTab('packs')"
+                        style="font-size: ${baseFontSize}px;">
+                    🎁 Пакеты
+                </button>
                 <button class="shop-tab ${currentShopTab === 'free' ? 'active' : ''}"
                         onclick="switchShopTab('free')"
                         style="font-size: ${baseFontSize}px;">
@@ -287,10 +347,16 @@ function renderShopContent(container, rect) {
  * Рендер списка товаров
  */
 function renderShopItems(tab, scale) {
-    const items = SHOP_CONFIG[tab] || [];
     const baseFontSize = Math.max(12, 14 * scale);
     const smallFontSize = Math.max(10, 12 * scale);
     const timeCurrency = window.userData?.time_currency || 0;
+
+    // Специальный рендер для стартовых пакетов
+    if (tab === 'packs') {
+        return renderStarterPacks(scale);
+    }
+
+    const items = SHOP_CONFIG[tab] || [];
 
     return items.map(item => {
         // Проверяем доступность
@@ -344,6 +410,245 @@ function renderShopItems(tab, scale) {
             </div>
         `;
     }).join('');
+}
+
+/**
+ * Рендер стартовых пакетов
+ */
+function renderStarterPacks(scale) {
+    const baseFontSize = Math.max(12, 14 * scale);
+    const smallFontSize = Math.max(10, 12 * scale);
+    const purchasedPacks = window.userData?.purchased_packs || {};
+
+    let html = '';
+
+    for (const [key, pack] of Object.entries(STARTER_PACKS)) {
+        const isPurchased = purchasedPacks[pack.id];
+        const isLocked = pack.requires && !purchasedPacks[pack.requires];
+        const canBuy = !isPurchased && !isLocked;
+
+        let statusText = '';
+        let statusColor = '#4ade80';
+        let btnText = pack.price === 0 ? '🆓 Бесплатно (тест)' : `⭐ ${pack.price}`;
+
+        if (isPurchased) {
+            statusText = '✅ Куплено';
+            statusColor = '#888';
+            btnText = 'Получено';
+        } else if (isLocked) {
+            const requiredPack = Object.values(STARTER_PACKS).find(p => p.id === pack.requires);
+            statusText = `🔒 Сначала купите: ${requiredPack?.name || 'предыдущий пакет'}`;
+            statusColor = '#ff6b6b';
+            btnText = 'Недоступно';
+        }
+
+        // Детали награды
+        const rewardsHTML = `
+            <div style="text-align: left; font-size: ${smallFontSize * 0.9}px; color: #ccc; margin: 10px 0; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 6px;">
+                <div>⏰ ${Math.floor(pack.rewards.time / 1440)} дней времени</div>
+                <div>🏯 Башня магов ${pack.rewards.towerLevel} ур</div>
+                <div>🧙 ${pack.rewards.wizardCount} маг${pack.rewards.wizardCount > 1 ? 'а' : ''}</div>
+                <div>✨ ${pack.rewards.experience.toLocaleString()} XP</div>
+            </div>
+        `;
+
+        // Полная цена (зачёркнутая)
+        const fullPriceHTML = pack.price < pack.fullPrice && !isPurchased ? `
+            <div style="font-size: ${smallFontSize * 0.8}px; color: #888; text-decoration: line-through;">
+                ⭐ ${pack.fullPrice}
+            </div>
+            <div style="font-size: ${smallFontSize * 0.8}px; color: #4ade80;">
+                Скидка ${pack.discount}%!
+            </div>
+        ` : '';
+
+        html += `
+            <div class="shop-item-card ${!canBuy ? 'disabled' : ''}"
+                 onclick="${canBuy ? `buyStarterPack('${key}')` : ''}"
+                 style="text-align: center; ${isPurchased ? 'opacity: 0.6;' : ''}">
+                <div style="font-size: ${baseFontSize * 2.5}px; margin-bottom: 5px;">
+                    ${pack.icon}
+                </div>
+                <div style="color: #ffd700; font-size: ${baseFontSize * 1.1}px; font-weight: bold; margin-bottom: 3px;">
+                    ${pack.name}
+                </div>
+                ${fullPriceHTML}
+                ${rewardsHTML}
+                ${statusText ? `<div style="color: ${statusColor}; font-size: ${smallFontSize}px; margin-bottom: 5px;">${statusText}</div>` : ''}
+                <button class="shop-buy-btn premium" ${!canBuy ? 'disabled' : ''} style="font-size: ${smallFontSize}px; width: 100%;">
+                    ${btnText}
+                </button>
+            </div>
+        `;
+    }
+
+    return html;
+}
+
+/**
+ * Покупка стартового пакета
+ */
+async function buyStarterPack(packKey) {
+    const pack = STARTER_PACKS[packKey];
+    if (!pack) {
+        console.error('❌ Пакет не найден:', packKey);
+        return;
+    }
+
+    const purchasedPacks = window.userData?.purchased_packs || {};
+
+    // Проверяем что не куплен
+    if (purchasedPacks[pack.id]) {
+        if (window.showNotification) {
+            window.showNotification('⚠️ Этот пакет уже куплен!');
+        }
+        return;
+    }
+
+    // Проверяем требования
+    if (pack.requires && !purchasedPacks[pack.requires]) {
+        if (window.showNotification) {
+            window.showNotification('⚠️ Сначала купите предыдущий пакет!');
+        }
+        return;
+    }
+
+    console.log(`🎁 Покупка пакета: ${pack.name}`);
+
+    // Применяем награды
+    applyStarterPackRewards(pack);
+
+    // Отмечаем как купленный
+    if (!window.userData.purchased_packs) {
+        window.userData.purchased_packs = {};
+    }
+    window.userData.purchased_packs[pack.id] = {
+        purchased_at: new Date().toISOString(),
+        rewards: pack.rewards
+    };
+
+    // Сохраняем
+    if (window.eventSaveManager?.saveImmediate) {
+        await window.eventSaveManager.saveImmediate('starter_pack_purchase');
+    }
+
+    // Показываем уведомление
+    if (window.showNotification) {
+        window.showNotification(`🎁 ${pack.name} получен!`);
+    }
+
+    // Обновляем UI магазина
+    switchShopTab('packs');
+}
+
+/**
+ * Применение наград стартового пакета
+ */
+function applyStarterPackRewards(pack) {
+    const rewards = pack.rewards;
+
+    // 1. Добавляем время
+    window.userData.time_currency = (window.userData.time_currency || 0) + rewards.time;
+    console.log(`⏰ +${rewards.time} минут времени`);
+
+    // 2. Улучшаем башню магов до нужного уровня
+    if (!window.userData.buildings) {
+        window.userData.buildings = {};
+    }
+    if (!window.userData.buildings.wizard_tower) {
+        window.userData.buildings.wizard_tower = { level: 1 };
+    }
+    const currentTowerLevel = window.userData.buildings.wizard_tower.level || 1;
+    if (rewards.towerLevel > currentTowerLevel) {
+        window.userData.buildings.wizard_tower.level = rewards.towerLevel;
+        console.log(`🏯 Башня магов: ${currentTowerLevel} → ${rewards.towerLevel}`);
+    }
+
+    // 3. Добавляем магов до нужного количества
+    if (!window.userData.wizards) {
+        window.userData.wizards = [];
+    }
+    const currentWizardCount = window.userData.wizards.length;
+    const wizardsToAdd = rewards.wizardCount - currentWizardCount;
+
+    if (wizardsToAdd > 0) {
+        for (let i = 0; i < wizardsToAdd; i++) {
+            const newWizard = createNewWizard(currentWizardCount + i + 1);
+            window.userData.wizards.push(newWizard);
+            console.log(`🧙 Добавлен маг: ${newWizard.name}`);
+        }
+    }
+
+    // 4. Добавляем опыт первому магу (или распределяем)
+    if (window.userData.wizards.length > 0 && rewards.experience > 0) {
+        // Распределяем опыт поровну между всеми магами
+        const expPerWizard = Math.floor(rewards.experience / window.userData.wizards.length);
+        window.userData.wizards.forEach(wizard => {
+            wizard.experience = (wizard.experience || 0) + expPerWizard;
+            // Пересчитываем уровень
+            updateWizardLevel(wizard);
+        });
+        console.log(`✨ +${rewards.experience} XP (${expPerWizard} на мага)`);
+    }
+
+    // Обновляем UI
+    if (window.updateHeader) {
+        window.updateHeader();
+    }
+}
+
+/**
+ * Создание нового мага для стартового пакета
+ */
+function createNewWizard(index) {
+    const faction = window.userData?.faction || 'fire';
+    const names = {
+        fire: ['Пироман', 'Огневик', 'Пламенный', 'Жаровик', 'Искровик'],
+        water: ['Гидромаг', 'Ледовик', 'Морозник', 'Волновик', 'Туманник'],
+        earth: ['Геомант', 'Каменщик', 'Рудокоп', 'Скальник', 'Кристальщик'],
+        wind: ['Аэромант', 'Ветровик', 'Штормовик', 'Вихревик', 'Облачник'],
+        nature: ['Друид', 'Лесовик', 'Травник', 'Корневик', 'Листовик'],
+        poison: ['Токсимаг', 'Ядовик', 'Чумовик', 'Гнилевик', 'Миазмик']
+    };
+
+    const factionNames = names[faction] || names.fire;
+    const name = factionNames[index - 1] || `Маг ${index}`;
+
+    return {
+        id: `wizard_${Date.now()}_${index}`,
+        name: name,
+        level: 1,
+        experience: 0,
+        hp: 100,
+        max_hp: 100,
+        armor: 50,
+        max_armor: 50,
+        damage: 10,
+        isMain: index === 1
+    };
+}
+
+/**
+ * Обновление уровня мага по опыту
+ */
+function updateWizardLevel(wizard) {
+    // Простая формула: 1000 XP на уровень
+    const expPerLevel = 1000;
+    const newLevel = Math.floor((wizard.experience || 0) / expPerLevel) + 1;
+    const maxLevel = 100;
+
+    wizard.level = Math.min(newLevel, maxLevel);
+
+    // Обновляем статы по уровню
+    const baseHp = 100;
+    const baseArmor = 50;
+    const hpPerLevel = 10;
+    const armorPerLevel = 5;
+
+    wizard.max_hp = baseHp + (wizard.level - 1) * hpPerLevel;
+    wizard.hp = wizard.max_hp;
+    wizard.max_armor = baseArmor + (wizard.level - 1) * armorPerLevel;
+    wizard.armor = wizard.max_armor;
 }
 
 /**
@@ -1060,6 +1365,7 @@ window.showShopModal = showShopModal;
 window.closeShopModal = closeShopModal;
 window.switchShopTab = switchShopTab;
 window.buyShopItem = buyShopItem;
+window.buyStarterPack = buyStarterPack;
 window.applyExpScroll = applyExpScroll;
 window.closeWizardSelectDialog = closeWizardSelectDialog;
 window.confirmFactionChange = confirmFactionChange;

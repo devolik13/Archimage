@@ -135,7 +135,8 @@ class DatabaseManager {
                 battle_energy: playerData.battle_energy || { current: 12, max: 12, last_regen: Date.now() },
                 active_blessing: playerData.active_blessing || null,
                 blessing_last_used: playerData.blessing_last_used || null,
-                last_login: playerData.last_login || new Date().toISOString()
+                last_login: playerData.last_login || new Date().toISOString(),
+                purchased_packs: playerData.purchased_packs || {} // Купленные стартовые пакеты
             };
 
             // DEBUG: Логируем faction_changed перед отправкой в RPC
