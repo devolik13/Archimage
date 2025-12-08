@@ -105,9 +105,24 @@ function showPvEChaptersMenu() {
 }
 
 /**
- * Показывает уровни Главы 1
+ * Показывает уровни Главы 1 - используем новую карту
  */
 function showChapter1Levels() {
+    // Используем новую систему карты приключений
+    if (typeof showAdventureMap === 'function') {
+        closePvEModal();
+        showAdventureMap('1-10');
+        return;
+    }
+
+    // Fallback на старый UI если карта не загружена
+    showChapter1LevelsFallback();
+}
+
+/**
+ * Старый UI списка уровней (fallback)
+ */
+function showChapter1LevelsFallback() {
     const progress = loadPvEProgress();
     const maxUnlockedLevel = progress.chapter1?.maxLevel || 1;
 
