@@ -369,7 +369,10 @@ function startPvELevel(levelId) {
                 console.log(`   Уровни заклинаний:`, enemy.spell_levels);
             }
 
-            window.enemyFormation[index] = enemyWizard;
+            // Элементали ставим в позицию 2 (центр), остальных по порядку
+            const formationIndex = enemy.isElemental ? 2 : index;
+            enemyWizard.position = formationIndex; // Устанавливаем позицию врага
+            window.enemyFormation[formationIndex] = enemyWizard;
             window.enemyWizards.push(enemyWizard);
         }
     });

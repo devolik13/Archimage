@@ -475,19 +475,6 @@
         sprite.x = cellData.x + cellData.width / 2;
         sprite.y = cellData.y + cellData.height / 2;
 
-        // Элементали позиционируются в клетку [0, 2] (колонка 0, ряд 2 - центр)
-        if (faction && faction.endsWith('_elemental')) {
-            // Если элементаль враг, ставим его в col 0, row 2
-            if (col === 0 && row === 0) {
-                const cell02 = gridCells?.[0]?.[2]; // col 0, row 2 (центр)
-                if (cell02) {
-                    sprite.x = cell02.x + cell02.width / 2;
-                    sprite.y = cell02.y + cell02.height / 2;
-                    console.log(`🔥 Элементаль позиционирован в [0, 2]`);
-                }
-            }
-        }
-
         container.sprite = sprite;
 
         // HP бар
