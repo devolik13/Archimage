@@ -98,7 +98,7 @@ async function selectFaction(faction) {
                     spells: initialSpells,
                     formation: initialFormation,
                     buildings: initialBuildings,
-                    time_currency: 300, // 5 часов стартового времени
+                    time_currency: 7200, // 5 дней стартового времени
                     welcome_shown: false
                 })
                 .eq('id', window.dbManager.currentPlayer.id);
@@ -111,7 +111,7 @@ async function selectFaction(faction) {
             window.dbManager.currentPlayer.wizards = initialWizards;
             window.dbManager.currentPlayer.spells = initialSpells;
             window.dbManager.currentPlayer.buildings = initialBuildings;
-            window.dbManager.currentPlayer.time_currency = 300;
+            window.dbManager.currentPlayer.time_currency = 7200;
             window.dbManager.currentPlayer.welcome_shown = false;
 
             // Создаём window.userData для совместимости со старым кодом
@@ -119,7 +119,7 @@ async function selectFaction(faction) {
                 user_id: window.dbManager.currentPlayer.telegram_id,
                 username: window.dbManager.currentPlayer.username,
                 faction: faction,
-                time_currency: 300,
+                time_currency: 7200,
                 level: window.dbManager.currentPlayer.level,
                 experience: window.dbManager.currentPlayer.experience,
                 buildings: initialBuildings,
