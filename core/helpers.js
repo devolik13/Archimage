@@ -113,12 +113,19 @@ window.showNotification = function(message, type = 'info', duration = 3000) {
 // === МОДАЛЬНЫЕ ОКНА ===
 
 window.closeAllModals = function() {
-    // Закрываем все известные модальные окна
+    // Сначала пробуем закрыть через новую систему Modal
+    if (window.Modal && typeof window.Modal.closeAll === 'function') {
+        window.Modal.closeAll();
+    }
+
+    // Закрываем все известные модальные окна по ID
     const modalIds = [
         'modal-overlay',
         'building-selection-screen',
         'building-selection-modal',
         'construction-modal-screen',
+        'construction-modal',
+        'building-info-modal',
         'time-generator-screen',
         'wizard-tower-screen',
         'arcane-lab-screen',
@@ -134,8 +141,14 @@ window.closeAllModals = function() {
         if (el) el.remove();
     });
 
-    // Удаляем все overlay-и
+    // Удаляем все overlay-и по ID
     document.querySelectorAll('[id="modal-overlay"]').forEach(el => el.remove());
+
+    // Удаляем модалки по классам (новая система)
+    document.querySelectorAll('.modal-container, .modal-overlay').forEach(el => el.remove());
+
+    // Очищаем currentModal
+    window.currentModal = null;
 
     // Показываем аватар
     const avatar = document.getElementById('player-avatar-container');
@@ -145,11 +158,24 @@ window.closeAllModals = function() {
 };
 
 window.closeCurrentModal = function() {
+    // Сначала пробуем закрыть через новую систему Modal
+    if (window.Modal && typeof window.Modal.closeAll === 'function') {
+        window.Modal.closeAll();
+    }
+
+    // Затем закрываем старые модалки по currentModal
     if (window.currentModal) {
         if (window.currentModal.modal) window.currentModal.modal.remove();
         if (window.currentModal.overlay) window.currentModal.overlay.remove();
         window.currentModal = null;
     }
+
+    // Удаляем все overlay-и с id='modal-overlay'
+    document.querySelectorAll('[id="modal-overlay"]').forEach(el => el.remove());
+
+    // Удаляем construction-modal если остался
+    const constructionModal = document.getElementById('construction-modal');
+    if (constructionModal) constructionModal.remove();
 
     // Показываем аватар
     const avatar = document.getElementById('player-avatar-container');

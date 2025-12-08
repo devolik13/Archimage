@@ -613,6 +613,13 @@ function applyStarterPackRewards(pack) {
         window.updateTimerDisplay();
     }
 
+    // Обновляем вид города (здания могли измениться)
+    if (typeof window.initCityView === 'function') {
+        setTimeout(() => {
+            window.initCityView();
+        }, 100);
+    }
+
     console.log('📦 Пакет применён! Маги:', window.userData.wizards.map(w => ({
         name: w.name,
         faction: w.faction,
