@@ -374,6 +374,12 @@ function startPvELevel(levelId) {
             enemyWizard.position = formationIndex; // Устанавливаем позицию врага
             window.enemyFormation[formationIndex] = enemyWizard;
             window.enemyWizards.push(enemyWizard);
+
+            // DEBUG: Логируем позицию элементаля
+            if (enemy.isElemental) {
+                console.log(`🔥 [DEBUG] Элементаль позиция: formationIndex=${formationIndex}, enemyWizard.position=${enemyWizard.position}`);
+                console.log(`🔥 [DEBUG] enemyFormation[${formationIndex}] = ${window.enemyFormation[formationIndex]?.name}`);
+            }
         }
     });
 

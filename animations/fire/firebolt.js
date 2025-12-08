@@ -12,6 +12,10 @@
             onComplete
         } = params;
 
+        // DEBUG: Логируем полученные координаты
+        console.log(`🏹 [DEBUG] Firebolt animation params: casterType=${casterType}, casterPosition=${casterPosition}, casterCol=${casterCol}, level=${level}`);
+        console.log(`🏹 [DEBUG] Firebolt arrows count: ${arrows.length}`);
+
         // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
         if (window.fastSimulation) {
             console.log('⚡ Быстрая симуляция: пропуск анимации Firebolt');
