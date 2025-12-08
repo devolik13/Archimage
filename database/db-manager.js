@@ -208,7 +208,7 @@ class DatabaseManager {
 
             // Обновляем рейтинг
             if (ratingChange !== undefined) {
-                window.userData.rating = (window.userData.rating || 1000) + ratingChange;
+                window.userData.rating = (window.userData.rating || 0) + ratingChange;
                 window.userData.rating = Math.max(0, Math.min(9999, window.userData.rating));
             }
 

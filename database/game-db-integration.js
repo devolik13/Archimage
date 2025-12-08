@@ -49,7 +49,7 @@ async function initGameWithDatabase() {
     window.userData.total_battles = Math.max(0, player.total_battles || 0);
     window.userData.wins = Math.max(0, player.wins || 0);
     window.userData.losses = Math.max(0, player.losses || 0);
-    window.userData.rating = Math.max(0, Math.min(9999, player.rating || 1000));
+    window.userData.rating = Math.max(0, Math.min(9999, player.rating || 0));
 
     // Прогресс и настройки
     window.userData.pve_progress = player.pve_progress || {};
