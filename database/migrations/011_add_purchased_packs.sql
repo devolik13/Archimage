@@ -44,7 +44,7 @@ BEGIN
 
         -- Other
         welcome_shown = COALESCE((p_data->>'welcome_shown')::BOOLEAN, welcome_shown),
-        last_login = COALESCE(p_data->>'last_login', NOW()::TEXT)
+        last_login = COALESCE((p_data->>'last_login')::TIMESTAMPTZ, NOW())
     WHERE telegram_id = p_telegram_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
