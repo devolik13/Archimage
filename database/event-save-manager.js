@@ -70,6 +70,12 @@ class EventSaveManager {
                 experience: window.userData.experience,
                 faction: window.userData.faction,
                 faction_changed: window.userData.faction_changed, // Флаг использованной бесплатной смены фракции
+            };
+
+            // DEBUG: Логируем faction_changed при сохранении
+            console.log(`🔍 [SAVE DEBUG] faction_changed = ${window.userData.faction_changed} (причина: ${reason})`);
+
+            Object.assign(playerData, {
                 lastLogin: window.userData.last_login, // Для офлайн накопления
                 wizards: window.userData.wizards,
                 formation: window.userData.formation,
@@ -85,7 +91,7 @@ class EventSaveManager {
                 welcome_shown: window.userData.welcome_shown,
                 daily_login: window.userData.daily_login, // НОВОЕ: Сохранение данных ежедневных наград
                 battle_energy: window.userData.battle_energy // НОВОЕ: Энергия боев
-            };
+            });
 
             const success = await window.dbManager.savePlayer(playerData);
 

@@ -29,6 +29,10 @@ async function initGameWithDatabase() {
     window.userData.faction = player.faction;
     window.userData.faction_changed = player.faction_changed || false; // Флаг использованной бесплатной смены
 
+    // DEBUG: Логируем faction_changed при загрузке
+    console.log(`🔍 [LOAD DEBUG] player.faction_changed из БД = ${player.faction_changed}`);
+    console.log(`🔍 [LOAD DEBUG] window.userData.faction_changed = ${window.userData.faction_changed}`);
+
     // Защита от читов: валидация значений при загрузке
     window.userData.time_currency = Math.max(0, Math.min(999999, player.time_currency || 0));
     window.userData.level = Math.max(1, Math.min(100, player.level || 1));

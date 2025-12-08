@@ -138,13 +138,20 @@ class DatabaseManager {
                 last_login: playerData.last_login || new Date().toISOString()
             };
 
+            // DEBUG: Логируем faction_changed перед отправкой в RPC
+            console.log(`🔍 [RPC DEBUG] Отправка в update_player_safe: faction_changed = ${rpcData.faction_changed}`);
+
             // Вызываем безопасную RPC функцию (обновляет только по telegram_id)
             const { data, error } = await this.supabase.rpc('update_player_safe', {
                 p_telegram_id: this.getTelegramId(),
                 p_data: rpcData
             });
 
-            if (error) throw error;
+            if (error) {
+                console.error('❌ [RPC DEBUG] Ошибка RPC:', error);
+                throw error;
+            }
+            console.log('✅ [RPC DEBUG] RPC успешно выполнен');
 
             this.hasUnsavedChanges = false;
             return true;
