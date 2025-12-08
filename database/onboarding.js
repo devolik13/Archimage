@@ -78,9 +78,9 @@ async function selectFaction(faction) {
         "poison": { "poisoned_blade": { name: "Отравленный клинок", level: 1, tier: 1 } }
     };
     
-    // Стартовые здания: Башня магов и Генератор времени
+    // Стартовые здания: Библиотека и Генератор времени (Башню нужно строить)
     const initialBuildings = {
-        wizard_tower: { level: 1, building_id: 'wizard_tower' },
+        library: { level: 1, building_id: 'library' },
         time_generator: { level: 1, building_id: 'time_generator' }
     };
 
