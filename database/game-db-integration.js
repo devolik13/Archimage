@@ -89,6 +89,7 @@ async function initGameWithDatabase() {
 
     // Купленные стартовые пакеты
     window.userData.purchased_packs = player.purchased_packs || {};
+    console.log('📦 [DEBUG] Загружены purchased_packs из БД:', JSON.stringify(player.purchased_packs));
 
     // КРИТИЧНО: Проверяем есть ли фракция
     if (!player.faction || player.faction === null) {

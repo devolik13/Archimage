@@ -527,9 +527,14 @@ async function buyStarterPack(packKey) {
         rewards: pack.rewards
     };
 
+    console.log('📦 [DEBUG] purchased_packs после покупки:', JSON.stringify(window.userData.purchased_packs));
+
     // Сохраняем
     if (window.eventSaveManager?.saveImmediate) {
-        await window.eventSaveManager.saveImmediate('starter_pack_purchase');
+        const saveResult = await window.eventSaveManager.saveImmediate('starter_pack_purchase');
+        console.log('📦 [DEBUG] Результат сохранения:', saveResult);
+    } else {
+        console.warn('⚠️ eventSaveManager.saveImmediate не найден!');
     }
 
     // Показываем уведомление
@@ -584,6 +589,8 @@ function applyStarterPackRewards(pack) {
         // Распределяем опыт поровну между всеми магами
         const expPerWizard = Math.floor(rewards.experience / window.userData.wizards.length);
         window.userData.wizards.forEach(wizard => {
+            // Инициализируем поля опыта если их нет
+            if (!wizard.original_max_hp) wizard.original_max_hp = 100;
             wizard.experience = (wizard.experience || 0) + expPerWizard;
             // Пересчитываем уровень
             updateWizardLevel(wizard);
@@ -591,10 +598,30 @@ function applyStarterPackRewards(pack) {
         console.log(`✨ +${rewards.experience} XP (${expPerWizard} на мага)`);
     }
 
-    // Обновляем UI
+    // Обновляем весь UI
     if (window.updateHeader) {
         window.updateHeader();
     }
+
+    // Обновляем колонку магов в UI города
+    if (typeof window.renderWizardColumn === 'function') {
+        window.renderWizardColumn();
+    }
+
+    // Обновляем отображение времени
+    if (typeof window.updateTimerDisplay === 'function') {
+        window.updateTimerDisplay();
+    }
+
+    console.log('📦 Пакет применён! Маги:', window.userData.wizards.map(w => ({
+        name: w.name,
+        faction: w.faction,
+        level: w.level,
+        exp: w.experience,
+        exp_to_next: w.exp_to_next,
+        hp: w.hp,
+        max_hp: w.max_hp
+    })));
 }
 
 /**
@@ -617,8 +644,11 @@ function createNewWizard(index) {
     return {
         id: `wizard_${Date.now()}_${index}`,
         name: name,
+        faction: faction, // ИСПРАВЛЕНО: добавляем фракцию игрока
         level: 1,
         experience: 0,
+        exp_to_next: 80, // Базовое значение для уровня 1 (60 + 1*1*20)
+        original_max_hp: 100,
         hp: 100,
         max_hp: 100,
         armor: 50,
@@ -629,26 +659,43 @@ function createNewWizard(index) {
 }
 
 /**
- * Обновление уровня мага по опыту
+ * Обновление уровня мага по опыту (использует глобальную систему)
  */
 function updateWizardLevel(wizard) {
-    // Простая формула: 1000 XP на уровень
-    const expPerLevel = 1000;
-    const newLevel = Math.floor((wizard.experience || 0) / expPerLevel) + 1;
-    const maxLevel = 100;
+    // Используем глобальную систему опыта из experience-system.js
+    // Формула: exp_to_next = 60 + (level * level * 20)
+    // MAX_LEVEL = 40
 
-    wizard.level = Math.min(newLevel, maxLevel);
+    const MAX_LEVEL = window.EXP_CONFIG?.MAX_LEVEL || 40;
 
-    // Обновляем статы по уровню
-    const baseHp = 100;
-    const baseArmor = 50;
-    const hpPerLevel = 10;
-    const armorPerLevel = 5;
+    // Инициализируем поля если их нет
+    if (!wizard.level) wizard.level = 1;
+    if (!wizard.original_max_hp) wizard.original_max_hp = 100;
+    if (!wizard.exp_to_next) {
+        wizard.exp_to_next = 60 + (wizard.level * wizard.level * 20);
+    }
 
-    wizard.max_hp = baseHp + (wizard.level - 1) * hpPerLevel;
+    // Пересчитываем уровень исходя из накопленного опыта
+    while (wizard.experience >= wizard.exp_to_next && wizard.level < MAX_LEVEL) {
+        wizard.experience -= wizard.exp_to_next;
+        wizard.level++;
+        wizard.exp_to_next = 60 + (wizard.level * wizard.level * 20);
+    }
+
+    // Применяем бонусы уровня к HP (используем ту же формулу что в experience-system.js)
+    const baseHP = wizard.original_max_hp || 100;
+    let hpBonus;
+
+    if (wizard.level === 40) {
+        hpBonus = 3.0; // +200% на 40 уровне
+    } else if (wizard.level > 1) {
+        hpBonus = 1 + (wizard.level - 1) * 0.05; // +5% за каждый уровень
+    } else {
+        hpBonus = 1.0;
+    }
+
+    wizard.max_hp = Math.floor(baseHP * hpBonus);
     wizard.hp = wizard.max_hp;
-    wizard.max_armor = baseArmor + (wizard.level - 1) * armorPerLevel;
-    wizard.armor = wizard.max_armor;
 }
 
 /**
