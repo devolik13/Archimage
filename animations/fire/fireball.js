@@ -47,7 +47,12 @@
             if (onComplete) onComplete();
             return;
         }
-        
+
+        // ВАЖНО: Сохраняем координаты центра сразу, пока centerCell валиден
+        const savedCenterX = centerCell.x + centerCell.width / 2;
+        const savedCenterY = centerCell.y + centerCell.height / 2;
+        const savedCellScale = centerCell.cellScale || 1;
+
         // Создаем летящий огненный шар
         createFlyingFireball();
         
@@ -203,10 +208,10 @@
                 
                 // Создаем анимированный спрайт взрыва
                 const explosion = new PIXI.AnimatedSprite(frames);
-                explosion.x = centerCell.x + centerCell.width / 2;
-                explosion.y = centerCell.y + centerCell.height / 2;
+                explosion.x = savedCenterX;
+                explosion.y = savedCenterY;
                 explosion.anchor.set(0.5);
-                
+
                 // Масштаб для покрытия нужной области
                 let scale;
                 if (level === 5) {
@@ -214,7 +219,7 @@
                 } else {
                     scale = (PIXI_CONFIG.cellWidth * 3.5) / frameWidth;
                 }
-                scale *= centerCell.cellScale;
+                scale *= savedCellScale;
                 
                 explosion.scale.set(scale);
                 explosion.animationSpeed = 0.25;
@@ -254,9 +259,9 @@
             explosion.beginFill(0xFFFF00, 0.8);
             explosion.drawCircle(0, 0, radius * 0.4);
             explosion.endFill();
-            
-            explosion.x = centerCell.x + centerCell.width / 2;
-            explosion.y = centerCell.y + centerCell.height / 2;
+
+            explosion.x = savedCenterX;
+            explosion.y = savedCenterY;
             explosion.scale.set(0.1);
             
             effectsContainer.addChild(explosion);
@@ -270,7 +275,7 @@
                 const progress = Math.min((Date.now() - startTime) / duration, 1);
 
                 const targetScale = level === 5 ? 2.0 : 1.5;
-                explosion.scale.set(0.1 + progress * centerCell.cellScale * targetScale);
+                explosion.scale.set(0.1 + progress * savedCellScale * targetScale);
                 explosion.alpha = (1 - progress * 0.5);
                 explosion.rotation += 0.1;
 
