@@ -10,7 +10,7 @@ const STARTER_PACKS = {
         name: '🎁 Малый пакет',
         description: '7 дней времени, Башня магов 3 ур, 2-й маг, 5000 XP',
         icon: '🎁',
-        price: 0, // Для теста бесплатно, потом 2900 Stars
+        price: 2900,
         currency: 'stars',
         fullPrice: 2900,
         discount: 30,
@@ -27,7 +27,7 @@ const STARTER_PACKS = {
         name: '📦 Средний пакет',
         description: '30 дней времени, Башня магов 5 ур, 3-й маг, 30000 XP',
         icon: '📦',
-        price: 0, // Для теста бесплатно, потом 10400 Stars
+        price: 10400,
         currency: 'stars',
         fullPrice: 10400,
         discount: 30,
@@ -44,7 +44,7 @@ const STARTER_PACKS = {
         name: '💎 Крупный пакет',
         description: '90 дней времени, Башня магов 7 ур, 4-й маг, 200000 XP',
         icon: '💎',
-        price: 0, // Для теста бесплатно, потом 40000 Stars
+        price: 40000,
         currency: 'stars',
         fullPrice: 40000,
         discount: 30,
@@ -429,7 +429,7 @@ function renderStarterPacks(scale) {
 
         let statusText = '';
         let statusColor = '#4ade80';
-        let btnText = pack.price === 0 ? '🆓 Бесплатно (тест)' : `⭐ ${pack.price}`;
+        let btnText = `⭐ ${pack.price.toLocaleString()}`;
 
         if (isPurchased) {
             statusText = '✅ Куплено';
