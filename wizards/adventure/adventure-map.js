@@ -213,7 +213,7 @@ function setupAdventureMapUI(range) {
     const scaleY = rect.height / 512;
 
     // Загружаем прогресс
-    const progress = loadPvEProgress();
+    const progress = loadAdventureProgress();
     const maxUnlockedLevel = progress.chapter1?.maxLevel || 1;
     const completedLevels = progress.chapter1?.completed || {};
 
@@ -341,7 +341,7 @@ function updateNavigationArrows(range) {
     const rightArrow = document.getElementById('adventure-nav-right');
 
     // Проверяем прогресс для определения доступных карт
-    const progress = loadPvEProgress();
+    const progress = loadAdventureProgress();
     const maxUnlockedLevel = progress.chapter1?.maxLevel || 1;
 
     if (leftArrow) {
@@ -390,9 +390,13 @@ function closeAdventureMap() {
 }
 
 /**
- * Загрузить прогресс PvE
+ * Загрузить прогресс PvE - используем глобальную функцию
  */
-function loadPvEProgress() {
+function loadAdventureProgress() {
+    // Используем глобальную функцию если доступна
+    if (typeof window.loadPvEProgress === 'function') {
+        return window.loadPvEProgress();
+    }
     return window.userData?.pve_progress || { chapter1: { maxLevel: 1, completed: {} } };
 }
 
