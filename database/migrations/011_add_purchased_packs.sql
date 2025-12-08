@@ -5,6 +5,9 @@
 -- Add purchased_packs column as JSONB
 ALTER TABLE players ADD COLUMN IF NOT EXISTS purchased_packs JSONB DEFAULT '{}';
 
+-- Drop existing function first to avoid return type conflict
+DROP FUNCTION IF EXISTS update_player_safe(bigint, jsonb);
+
 -- Update RPC function to handle purchased_packs
 CREATE OR REPLACE FUNCTION update_player_safe(p_telegram_id BIGINT, p_data JSONB)
 RETURNS VOID AS $$
@@ -35,9 +38,9 @@ BEGIN
         losses = COALESCE((p_data->>'losses')::INTEGER, losses),
         rating = COALESCE((p_data->>'rating')::INTEGER, rating),
 
-        -- Blessing
-        active_blessing = COALESCE(p_data->>'active_blessing', active_blessing),
-        blessing_last_used = COALESCE(p_data->>'blessing_last_used', blessing_last_used),
+        -- Blessing (JSONB and BIGINT types)
+        active_blessing = COALESCE(p_data->'active_blessing', active_blessing),
+        blessing_last_used = COALESCE((p_data->>'blessing_last_used')::BIGINT, blessing_last_used),
 
         -- Other
         welcome_shown = COALESCE((p_data->>'welcome_shown')::BOOLEAN, welcome_shown),
