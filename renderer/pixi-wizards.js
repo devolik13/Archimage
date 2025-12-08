@@ -105,7 +105,7 @@
             frameHeight: 256,
             frameCount: 8,
             animationSpeed: 0.15,
-            scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
+            scale: 0.45 // Размер для одной клетки (col 0, row 2)
         },
         water_elemental: {
             idle: 'images/enemies/water_elemental/idle.webp',
@@ -115,7 +115,7 @@
             frameHeight: 256,
             frameCount: 8,
             animationSpeed: 0.15,
-            scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
+            scale: 0.45 // Размер для одной клетки
         },
         wind_elemental: {
             idle: 'images/enemies/wind_elemental/idle.webp',
@@ -125,7 +125,7 @@
             frameHeight: 256,
             frameCount: 8,
             animationSpeed: 0.15,
-            scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
+            scale: 0.45 // Размер для одной клетки
         },
         earth_elemental: {
             idle: 'images/enemies/earth_elemental/idle.webp',
@@ -135,7 +135,7 @@
             frameHeight: 256,
             frameCount: 8,
             animationSpeed: 0.15,
-            scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
+            scale: 0.45 // Размер для одной клетки
         }
     };
     
@@ -475,25 +475,15 @@
         sprite.x = cellData.x + cellData.width / 2;
         sprite.y = cellData.y + cellData.height / 2;
 
-        // ИСПРАВЛЕНИЕ: Позиционируем элементалей на 4 клетки (2x2)
-        // Элементаль занимает клетки: [0,1], [0,2], [1,1], [1,2] (ряды 1-2, колонки 0-1)
+        // Элементали позиционируются в клетку [0, 2] (колонка 0, ряд 2 - центр)
         if (faction && faction.endsWith('_elemental')) {
-            // Если элементаль враг (col = 0), центрируем между колонками 0 и 1, ряды 1-2
+            // Если элементаль враг, ставим его в col 0, row 2
             if (col === 0 && row === 0) {
-                // Получаем клетки для рядов 1 и 2
-                const cell01 = gridCells?.[0]?.[1]; // col 0, row 1
-                const cell02 = gridCells?.[0]?.[2]; // col 0, row 2
-                const cell11 = gridCells?.[1]?.[1]; // col 1, row 1
-                const cell12 = gridCells?.[1]?.[2]; // col 1, row 2
-
-                if (cell01 && cell02 && cell11 && cell12) {
-                    // Центр по X: между колонками 0 и 1
-                    sprite.x = (cell01.x + cell11.x + cell01.width / 2 + cell11.width / 2) / 2;
-
-                    // Центр по Y: между рядами 1 и 2
-                    sprite.y = (cell01.y + cell02.y + cell01.height / 2 + cell02.height / 2) / 2;
-
-                    console.log(`   Позиция: [0,1], [0,2], [1,1], [1,2]`);
+                const cell02 = gridCells?.[0]?.[2]; // col 0, row 2 (центр)
+                if (cell02) {
+                    sprite.x = cell02.x + cell02.width / 2;
+                    sprite.y = cell02.y + cell02.height / 2;
+                    console.log(`🔥 Элементаль позиционирован в [0, 2]`);
                 }
             }
         }
