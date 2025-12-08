@@ -119,6 +119,7 @@ class DatabaseManager {
                 level: playerData.level || 1,
                 experience: playerData.experience || 0,
                 faction: playerData.faction || null,
+                faction_changed: playerData.faction_changed || false, // Флаг бесплатной смены фракции
                 wizards: playerData.wizards || [],
                 formation: playerData.formation || [null, null, null, null, null],
                 spells: playerData.spells || {},
