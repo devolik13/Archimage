@@ -37,7 +37,18 @@ const ADVENTURE_MAP_POINTS = {
     // Уровни 21-30 (Грозовые равнины)
     '21-30': {
         image: 'assets/ui/adventure/map_021_030.webp',
-        points: []
+        points: [
+            { level: 21, x: 160, y: 143 },
+            { level: 22, x: 204, y: 227 },
+            { level: 23, x: 88, y: 319 },
+            { level: 24, x: 263, y: 410 },
+            { level: 25, x: 409, y: 331 },
+            { level: 26, x: 490, y: 300 },
+            { level: 27, x: 590, y: 230 },
+            { level: 28, x: 460, y: 160 },
+            { level: 29, x: 487, y: 75 },
+            { level: 30, x: 625, y: 90 }
+        ]
     },
     // Уровни 31-40 (Земные глубины)
     '31-40': {
