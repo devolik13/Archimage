@@ -249,23 +249,26 @@ function setupAdventureMapUI(range) {
         const bossLevels = [10, 20, 30, 40, 50];
         const isBoss = bossLevels.includes(point.level);
 
-        // Определяем цвет точки (прозрачный фон)
-        let bgColor, borderColor, textColor;
+        // Определяем цвет точки (объёмный стиль)
+        let bgColor, borderColor, textColor, boxShadow;
         if (isCompleted) {
             // Жёлтый - пройден
-            bgColor = 'rgba(255, 215, 0, 0.2)';
+            bgColor = 'linear-gradient(145deg, #ffd700, #ffaa00)';
             borderColor = '#fff700';
-            textColor = '#ffd700';
+            textColor = '#000';
+            boxShadow = '0 4px 12px rgba(255, 215, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.3), inset 0 -2px 4px rgba(0, 0, 0, 0.2)';
         } else if (isAvailable) {
             // Зелёный - доступен
-            bgColor = 'rgba(74, 222, 128, 0.2)';
+            bgColor = 'linear-gradient(145deg, #4ade80, #22c55e)';
             borderColor = '#4ade80';
-            textColor = '#4ade80';
+            textColor = '#fff';
+            boxShadow = '0 4px 12px rgba(74, 222, 128, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.3), inset 0 -2px 4px rgba(0, 0, 0, 0.2)';
         } else {
             // Красный - заблокирован
-            bgColor = 'rgba(239, 68, 68, 0.2)';
+            bgColor = 'linear-gradient(145deg, #ef4444, #dc2626)';
             borderColor = '#ef4444';
-            textColor = '#ef4444';
+            textColor = '#fff';
+            boxShadow = '0 4px 12px rgba(239, 68, 68, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.2), inset 0 -2px 4px rgba(0, 0, 0, 0.3)';
         }
 
         // Размер точки (боссы на 50% крупнее)
@@ -294,7 +297,7 @@ function setupAdventureMapUI(range) {
             font-weight: bold;
             cursor: ${isLocked ? 'not-allowed' : 'pointer'};
             pointer-events: auto;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            box-shadow: ${boxShadow};
             transition: transform 0.2s, box-shadow 0.2s;
             z-index: 10;
         `;
@@ -304,11 +307,13 @@ function setupAdventureMapUI(range) {
         if (!isLocked) {
             pointEl.onmouseover = () => {
                 pointEl.style.transform = 'scale(1.2)';
-                pointEl.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.7)';
+                // Усиленный объёмный эффект при hover
+                const hoverShadow = boxShadow.replace('0 4px 12px', '0 8px 24px');
+                pointEl.style.boxShadow = hoverShadow;
             };
             pointEl.onmouseout = () => {
                 pointEl.style.transform = 'scale(1)';
-                pointEl.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.5)';
+                pointEl.style.boxShadow = boxShadow;
             };
             pointEl.onclick = () => {
                 if (isAvailable) {
