@@ -69,7 +69,18 @@ const ADVENTURE_MAP_POINTS = {
     // Уровни 41-50 (Царство Хаоса)
     '41-50': {
         image: 'assets/ui/adventure/map_041_050.webp',
-        points: []
+        points: [
+            { level: 41, x: 608, y: 161 },
+            { level: 42, x: 565, y: 246 },
+            { level: 43, x: 554, y: 317 },
+            { level: 44, x: 633, y: 411 },
+            { level: 45, x: 535, y: 406 },
+            { level: 46, x: 448, y: 382 },
+            { level: 47, x: 372, y: 392 },
+            { level: 48, x: 327, y: 340 },
+            { level: 49, x: 254, y: 285 },
+            { level: 50, x: 201, y: 209 }
+        ]
     }
 };
 
