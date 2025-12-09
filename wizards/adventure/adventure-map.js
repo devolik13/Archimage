@@ -400,10 +400,23 @@ function loadAdventureProgress() {
     return window.userData?.pve_progress || { chapter1: { maxLevel: 1, completed: {} } };
 }
 
+/**
+ * Обновить UI карты без полной перерисовки
+ */
+function refreshAdventureMap() {
+    const screen = document.getElementById('adventure-map-screen');
+    if (!screen) return; // Карта не открыта
+
+    // Перерисовываем UI с актуальным прогрессом
+    setupAdventureMapUI(currentMapRange);
+    console.log('🔄 Карта приключений обновлена');
+}
+
 // Экспорт
 window.showAdventureMap = showAdventureMap;
 window.closeAdventureMap = closeAdventureMap;
 window.navigateAdventureMap = navigateAdventureMap;
+window.refreshAdventureMap = refreshAdventureMap;
 window.ADVENTURE_MAP_POINTS = ADVENTURE_MAP_POINTS;
 
 console.log('🗺️ Система карты приключений загружена');

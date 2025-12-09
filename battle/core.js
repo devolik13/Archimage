@@ -925,6 +925,11 @@ async function checkBattleEnd() {
 
                 await window.savePvEProgress(progress);
 
+                // Обновляем UI карты если она открыта
+                if (typeof window.refreshAdventureMap === 'function') {
+                    window.refreshAdventureMap();
+                }
+
                 // Даём награду временем (если есть)
                 if (level.reward) {
                     const timeRewardDays = level.reward; // в днях
