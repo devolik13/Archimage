@@ -568,7 +568,8 @@ function showGuildModal() {
     const guildLevel = getBuildingLevel('guild');
 
     if (guildLevel < 1) {
-        showNotification('Сначала постройте здание Гильдии');
+        // Показываем красивую модалку на фоне гильдии
+        showGuildNotBuiltModal();
         return;
     }
 
@@ -579,6 +580,180 @@ function showGuildModal() {
         showNotification('Система гильдий загружается...');
     }
 }
+
+// Модалка когда гильдия не построена - с красивым фоном
+function showGuildNotBuiltModal() {
+    // Скрываем аватар
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) playerAvatar.style.display = 'none';
+
+    // Определяем фон по фракции
+    const faction = window.userData?.faction || 'fire';
+    const imagePath = `assets/ui/guild/guild_${faction}.webp`;
+
+    // Удаляем старый экран
+    let screen = document.getElementById('guild-not-built-screen');
+    if (screen) screen.remove();
+
+    // Создаём экран
+    screen = document.createElement('div');
+    screen.id = 'guild-not-built-screen';
+
+    screen.innerHTML = `
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <img class="guild-bg-image" id="guild-nb-bg-image" src="${imagePath}" alt="Гильдия" style="
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+            ">
+            <div class="guild-nb-overlay" id="guild-nb-overlay"></div>
+        </div>
+    `;
+
+    screen.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 9000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
+
+    document.body.appendChild(screen);
+
+    const img = document.getElementById('guild-nb-bg-image');
+
+    // Настройка UI после загрузки изображения
+    const setupUI = () => {
+        const overlay = document.getElementById('guild-nb-overlay');
+        if (!img || !overlay) return;
+
+        const rect = img.getBoundingClientRect();
+
+        overlay.style.cssText = `
+            position: absolute;
+            left: ${rect.left}px;
+            top: ${rect.top}px;
+            width: ${rect.width}px;
+            height: ${rect.height}px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        `;
+
+        // Время строительства
+        const buildTime = window.CONSTRUCTION_TIME?.guild || 1440;
+        const buildTimeFormatted = window.formatTimeCurrency ? window.formatTimeCurrency(buildTime) : `${buildTime} мин`;
+
+        overlay.innerHTML = `
+            <div style="
+                background: rgba(0, 0, 0, 0.75);
+                backdrop-filter: blur(8px);
+                border-radius: 16px;
+                padding: 30px 40px;
+                text-align: center;
+                max-width: 380px;
+                border: 1px solid rgba(255, 215, 0, 0.2);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            ">
+                <div style="font-size: 48px; margin-bottom: 15px;">🏰</div>
+                <h3 style="color: #ffd700; margin: 0 0 12px 0; font-size: 22px;">
+                    Гильдия
+                </h3>
+                <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px; line-height: 1.6; margin: 0 0 20px 0;">
+                    Постройте здание Гильдии, чтобы объединяться с другими игроками и получать бонусы
+                </p>
+                <div style="
+                    background: rgba(255, 165, 0, 0.1);
+                    border: 1px solid rgba(255, 165, 0, 0.3);
+                    padding: 10px;
+                    border-radius: 8px;
+                    margin-bottom: 20px;
+                ">
+                    <div style="font-size: 12px; color: #aaa;">Время строительства:</div>
+                    <div style="font-size: 16px; color: #ffa500; font-weight: bold;">⏳ ${buildTimeFormatted}</div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="closeGuildNotBuiltModal()" style="
+                        flex: 1;
+                        padding: 12px;
+                        background: rgba(255, 255, 255, 0.1);
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                        border-radius: 8px;
+                        color: white;
+                        cursor: pointer;
+                        font-size: 14px;
+                        transition: all 0.2s;
+                    ">Назад</button>
+                    <button onclick="startBuildingGuildFromModal()" style="
+                        flex: 1;
+                        padding: 12px;
+                        background: linear-gradient(135deg, #4ade80, #22c55e);
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        cursor: pointer;
+                        font-size: 14px;
+                        font-weight: bold;
+                        transition: all 0.2s;
+                    ">Построить</button>
+                </div>
+            </div>
+        `;
+    };
+
+    img.onload = setupUI;
+    if (img.complete) setupUI();
+
+    // Fallback при ошибке загрузки изображения
+    img.onerror = () => {
+        screen.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)';
+        setupUI();
+    };
+}
+
+// Закрыть модалку "гильдия не построена"
+function closeGuildNotBuiltModal() {
+    const screen = document.getElementById('guild-not-built-screen');
+    if (screen) {
+        screen.style.opacity = '0';
+        screen.style.transition = 'opacity 0.3s';
+        setTimeout(() => screen.remove(), 300);
+    }
+
+    // Показываем аватар
+    const playerAvatar = document.getElementById('player-avatar-container');
+    if (playerAvatar) playerAvatar.style.display = 'flex';
+}
+
+// Начать строительство гильдии из модалки
+function startBuildingGuildFromModal() {
+    closeGuildNotBuiltModal();
+
+    // Проверяем, нет ли активного строительства
+    if (window.hasActiveConstruction && window.hasActiveConstruction('any_building_or_wizard')) {
+        showNotification('⚠️ Уже идёт строительство другого здания!');
+        return;
+    }
+
+    // Запускаем строительство
+    if (typeof window.startBuilding === 'function') {
+        window.startBuilding('guild', false);
+    } else if (typeof window.executeBuilding === 'function') {
+        const buildTime = window.CONSTRUCTION_TIME?.guild || 1440;
+        window.executeBuilding('guild', false, 1, buildTime);
+    }
+}
+
+// Экспортируем новые функции
+window.showGuildNotBuiltModal = showGuildNotBuiltModal;
+window.closeGuildNotBuiltModal = closeGuildNotBuiltModal;
+window.startBuildingGuildFromModal = startBuildingGuildFromModal;
 
 // Примечание: showNotification теперь в core/helpers.js
 

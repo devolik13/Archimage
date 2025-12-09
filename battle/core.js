@@ -770,6 +770,7 @@ async function executeEnemyPhase(mageCount) {
     while (magesToAttack.length < mageCount && positionsChecked < 5) {
         const wizard = window.enemyFormation[currentPos];
         if (wizard && wizard.hp > 0) {
+            console.log(`🎯 [DEBUG] executeEnemyPhase: найден враг ${wizard.name} на позиции ${currentPos}, wizard.position=${wizard.position}`);
             magesToAttack.push({ wizard, position: currentPos });
         }
         currentPos = (currentPos + 1) % 5;

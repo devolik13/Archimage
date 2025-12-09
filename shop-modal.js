@@ -3,6 +3,61 @@
 // Текущая вкладка магазина
 let currentShopTab = 'free';
 
+// Конфигурация стартовых пакетов (одноразовые покупки)
+const STARTER_PACKS = {
+    small: {
+        id: 'starter_pack_small',
+        name: '🎁 Малый пакет',
+        description: '7 дней времени, Башня магов 3 ур, 2-й маг, 5000 XP',
+        icon: '🎁',
+        price: 2900,
+        currency: 'stars',
+        fullPrice: 2900,
+        discount: 30,
+        requires: null, // Доступен всем
+        rewards: {
+            time: 10080, // 7 дней в минутах
+            towerLevel: 3,
+            wizardCount: 2,
+            experience: 5000
+        }
+    },
+    medium: {
+        id: 'starter_pack_medium',
+        name: '📦 Средний пакет',
+        description: '30 дней времени, Башня магов 5 ур, 3-й маг, 30000 XP',
+        icon: '📦',
+        price: 10400,
+        currency: 'stars',
+        fullPrice: 10400,
+        discount: 30,
+        requires: 'starter_pack_small', // После малого пакета
+        rewards: {
+            time: 43200, // 30 дней в минутах
+            towerLevel: 5,
+            wizardCount: 3,
+            experience: 30000
+        }
+    },
+    large: {
+        id: 'starter_pack_large',
+        name: '💎 Крупный пакет',
+        description: '90 дней времени, Башня магов 7 ур, 4-й маг, 200000 XP',
+        icon: '💎',
+        price: 40000,
+        currency: 'stars',
+        fullPrice: 40000,
+        discount: 30,
+        requires: 'starter_pack_medium', // После среднего пакета
+        rewards: {
+            time: 129600, // 90 дней в минутах
+            towerLevel: 7,
+            wizardCount: 4,
+            experience: 200000
+        }
+    }
+};
+
 // Конфигурация товаров
 const SHOP_CONFIG = {
     // Бесплатные товары (за time_currency)
@@ -40,77 +95,69 @@ const SHOP_CONFIG = {
         {
             id: 'exp_scroll_small',
             name: 'Свиток опыта (малый)',
-            description: '+50 опыта выбранному магу',
+            description: '+250 опыта выбранному магу',
             icon: '📜',
-            price: 60, // 1 час
+            price: 360, // 6 часов
             currency: 'time',
             action: 'buyExpScroll',
-            amount: 50
-        },
-        {
-            id: 'exp_scroll_medium',
-            name: 'Свиток опыта (средний)',
-            description: '+150 опыта выбранному магу',
-            icon: '📜📜',
-            price: 150, // 2.5 часа (скидка)
-            currency: 'time',
-            action: 'buyExpScroll',
-            amount: 150
+            amount: 250
         },
         {
             id: 'exp_scroll_large',
             name: 'Свиток опыта (большой)',
-            description: '+500 опыта выбранному магу',
+            description: '+1000 опыта выбранному магу',
             icon: '📜📜📜',
-            price: 400, // ~6.5 часов (большая скидка)
+            price: 1440, // 1 день
             currency: 'time',
             action: 'buyExpScroll',
-            amount: 500
+            amount: 1000
         }
     ],
 
     // Premium товары (за Telegram Stars)
+    // Курс: 7 Stars = 1 час = 60 минут, 168 Stars = 1 день
     premium: [
         {
             id: 'time_pack_small',
-            name: 'Пакет времени (малый)',
-            description: '+1 день времени',
+            name: 'Пакет времени (1 день)',
+            description: '+1 день игрового времени',
             icon: '⏰',
-            price: 50,
+            price: 168, // 7 Stars × 24 часа
             currency: 'stars',
             action: 'buyTimePack',
             amount: 1440 // 1 день в минутах
         },
         {
             id: 'time_pack_medium',
-            name: 'Пакет времени (средний)',
-            description: '+7 дней времени',
+            name: 'Пакет времени (7 дней)',
+            description: '+7 дней времени (-5%)',
             icon: '⏰⏰',
-            price: 250,
+            price: 1120, // 168 × 7 × 0.95 ≈ 1120
             currency: 'stars',
             action: 'buyTimePack',
-            amount: 10080 // 7 дней (бонус ~30%)
+            amount: 10080 // 7 дней
         },
         {
             id: 'time_pack_large',
-            name: 'Пакет времени (большой)',
-            description: '+30 дней времени',
+            name: 'Пакет времени (30 дней)',
+            description: '+30 дней времени (-15%)',
             icon: '⏰⏰⏰',
-            price: 750,
+            price: 4280, // 168 × 30 × 0.85 ≈ 4280
             currency: 'stars',
             action: 'buyTimePack',
-            amount: 43200 // 30 дней (бонус ~50%)
+            amount: 43200 // 30 дней
         },
         {
             id: 'faction_change',
             name: 'Смена фракции',
-            description: 'Изменить школу магии',
+            description: 'Цена зависит от изученных заклинаний',
             icon: '🔄',
-            price: 500,
+            price: 0, // Динамическая цена, показывается в диалоге
             currency: 'stars',
             action: 'changeFaction',
             amount: 1,
-            checkFree: true // Проверить бесплатную смену
+            checkFree: true, // Проверить бесплатную смену
+            dynamicPrice: true // Цена рассчитывается динамически
         }
     ]
 };
@@ -264,6 +311,11 @@ function renderShopContent(container, rect) {
 
             <!-- Табы -->
             <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="shop-tab ${currentShopTab === 'packs' ? 'active' : ''}"
+                        onclick="switchShopTab('packs')"
+                        style="font-size: ${baseFontSize}px;">
+                    🎁 Пакеты
+                </button>
                 <button class="shop-tab ${currentShopTab === 'free' ? 'active' : ''}"
                         onclick="switchShopTab('free')"
                         style="font-size: ${baseFontSize}px;">
@@ -295,10 +347,16 @@ function renderShopContent(container, rect) {
  * Рендер списка товаров
  */
 function renderShopItems(tab, scale) {
-    const items = SHOP_CONFIG[tab] || [];
     const baseFontSize = Math.max(12, 14 * scale);
     const smallFontSize = Math.max(10, 12 * scale);
     const timeCurrency = window.userData?.time_currency || 0;
+
+    // Специальный рендер для стартовых пакетов
+    if (tab === 'packs') {
+        return renderStarterPacks(scale);
+    }
+
+    const items = SHOP_CONFIG[tab] || [];
 
     return items.map(item => {
         // Проверяем доступность
@@ -315,7 +373,11 @@ function renderShopItems(tab, scale) {
 
             // Проверяем бесплатную смену фракции
             if (item.checkFree && !window.userData?.faction_changed) {
-                priceText = 'Бесплатно';
+                priceText = '🆓 Бесплатно';
+                canBuy = true;
+            } else if (item.dynamicPrice) {
+                // Динамическая цена - показываем в диалоге
+                priceText = 'Узнать цену';
                 canBuy = true;
             }
         }
@@ -348,6 +410,299 @@ function renderShopItems(tab, scale) {
             </div>
         `;
     }).join('');
+}
+
+/**
+ * Рендер стартовых пакетов
+ */
+function renderStarterPacks(scale) {
+    const baseFontSize = Math.max(12, 14 * scale);
+    const smallFontSize = Math.max(10, 12 * scale);
+    const purchasedPacks = window.userData?.purchased_packs || {};
+
+    let html = '';
+
+    for (const [key, pack] of Object.entries(STARTER_PACKS)) {
+        const isPurchased = purchasedPacks[pack.id];
+        const isLocked = pack.requires && !purchasedPacks[pack.requires];
+        const canBuy = !isPurchased && !isLocked;
+
+        let statusText = '';
+        let statusColor = '#4ade80';
+        let btnText = `⭐ ${pack.price.toLocaleString()}`;
+
+        if (isPurchased) {
+            statusText = '✅ Куплено';
+            statusColor = '#888';
+            btnText = 'Получено';
+        } else if (isLocked) {
+            const requiredPack = Object.values(STARTER_PACKS).find(p => p.id === pack.requires);
+            statusText = `🔒 Сначала купите: ${requiredPack?.name || 'предыдущий пакет'}`;
+            statusColor = '#ff6b6b';
+            btnText = 'Недоступно';
+        }
+
+        // Детали награды
+        const rewardsHTML = `
+            <div style="text-align: left; font-size: ${smallFontSize * 0.9}px; color: #ccc; margin: 10px 0; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 6px;">
+                <div>⏰ ${Math.floor(pack.rewards.time / 1440)} дней времени</div>
+                <div>🏯 Башня магов ${pack.rewards.towerLevel} ур</div>
+                <div>🧙 ${pack.rewards.wizardCount} маг${pack.rewards.wizardCount > 1 ? 'а' : ''}</div>
+                <div>✨ ${pack.rewards.experience.toLocaleString()} XP</div>
+            </div>
+        `;
+
+        // Полная цена (зачёркнутая)
+        const fullPriceHTML = pack.price < pack.fullPrice && !isPurchased ? `
+            <div style="font-size: ${smallFontSize * 0.8}px; color: #888; text-decoration: line-through;">
+                ⭐ ${pack.fullPrice}
+            </div>
+            <div style="font-size: ${smallFontSize * 0.8}px; color: #4ade80;">
+                Скидка ${pack.discount}%!
+            </div>
+        ` : '';
+
+        html += `
+            <div class="shop-item-card ${!canBuy ? 'disabled' : ''}"
+                 onclick="${canBuy ? `buyStarterPack('${key}')` : ''}"
+                 style="text-align: center; ${isPurchased ? 'opacity: 0.6;' : ''}">
+                <div style="font-size: ${baseFontSize * 2.5}px; margin-bottom: 5px;">
+                    ${pack.icon}
+                </div>
+                <div style="color: #ffd700; font-size: ${baseFontSize * 1.1}px; font-weight: bold; margin-bottom: 3px;">
+                    ${pack.name}
+                </div>
+                ${fullPriceHTML}
+                ${rewardsHTML}
+                ${statusText ? `<div style="color: ${statusColor}; font-size: ${smallFontSize}px; margin-bottom: 5px;">${statusText}</div>` : ''}
+                <button class="shop-buy-btn premium" ${!canBuy ? 'disabled' : ''} style="font-size: ${smallFontSize}px; width: 100%;">
+                    ${btnText}
+                </button>
+            </div>
+        `;
+    }
+
+    return html;
+}
+
+/**
+ * Покупка стартового пакета
+ */
+async function buyStarterPack(packKey) {
+    const pack = STARTER_PACKS[packKey];
+    if (!pack) {
+        console.error('❌ Пакет не найден:', packKey);
+        return;
+    }
+
+    const purchasedPacks = window.userData?.purchased_packs || {};
+
+    // Проверяем что не куплен
+    if (purchasedPacks[pack.id]) {
+        if (window.showNotification) {
+            window.showNotification('⚠️ Этот пакет уже куплен!');
+        }
+        return;
+    }
+
+    // Проверяем требования
+    if (pack.requires && !purchasedPacks[pack.requires]) {
+        if (window.showNotification) {
+            window.showNotification('⚠️ Сначала купите предыдущий пакет!');
+        }
+        return;
+    }
+
+    console.log(`🎁 Покупка пакета: ${pack.name}`);
+
+    // Применяем награды
+    applyStarterPackRewards(pack);
+
+    // Отмечаем как купленный
+    if (!window.userData.purchased_packs) {
+        window.userData.purchased_packs = {};
+    }
+    window.userData.purchased_packs[pack.id] = {
+        purchased_at: new Date().toISOString(),
+        rewards: pack.rewards
+    };
+
+    console.log('📦 [DEBUG] purchased_packs после покупки:', JSON.stringify(window.userData.purchased_packs));
+
+    // Сохраняем
+    if (window.eventSaveManager?.saveImmediate) {
+        const saveResult = await window.eventSaveManager.saveImmediate('starter_pack_purchase');
+        console.log('📦 [DEBUG] Результат сохранения:', saveResult);
+    } else {
+        console.warn('⚠️ eventSaveManager.saveImmediate не найден!');
+    }
+
+    // Показываем уведомление
+    if (window.showNotification) {
+        window.showNotification(`🎁 ${pack.name} получен!`);
+    }
+
+    // Обновляем UI магазина
+    switchShopTab('packs');
+}
+
+/**
+ * Применение наград стартового пакета
+ */
+function applyStarterPackRewards(pack) {
+    const rewards = pack.rewards;
+
+    // 1. Добавляем время
+    window.userData.time_currency = (window.userData.time_currency || 0) + rewards.time;
+    console.log(`⏰ +${rewards.time} минут времени`);
+
+    // 2. Улучшаем башню магов до нужного уровня
+    if (!window.userData.buildings) {
+        window.userData.buildings = {};
+    }
+    if (!window.userData.buildings.wizard_tower) {
+        window.userData.buildings.wizard_tower = { level: 1 };
+    }
+    const currentTowerLevel = window.userData.buildings.wizard_tower.level || 1;
+    if (rewards.towerLevel > currentTowerLevel) {
+        window.userData.buildings.wizard_tower.level = rewards.towerLevel;
+        console.log(`🏯 Башня магов: ${currentTowerLevel} → ${rewards.towerLevel}`);
+    }
+
+    // 3. Добавляем магов до нужного количества
+    if (!window.userData.wizards) {
+        window.userData.wizards = [];
+    }
+    const currentWizardCount = window.userData.wizards.length;
+    const wizardsToAdd = rewards.wizardCount - currentWizardCount;
+
+    if (wizardsToAdd > 0) {
+        for (let i = 0; i < wizardsToAdd; i++) {
+            const newWizard = createNewWizard(currentWizardCount + i + 1);
+            window.userData.wizards.push(newWizard);
+            console.log(`🧙 Добавлен маг: ${newWizard.name}`);
+        }
+    }
+
+    // 4. Добавляем опыт первому магу (или распределяем)
+    if (window.userData.wizards.length > 0 && rewards.experience > 0) {
+        // Распределяем опыт поровну между всеми магами
+        const expPerWizard = Math.floor(rewards.experience / window.userData.wizards.length);
+        window.userData.wizards.forEach(wizard => {
+            // Инициализируем поля опыта если их нет
+            if (!wizard.original_max_hp) wizard.original_max_hp = 100;
+            wizard.experience = (wizard.experience || 0) + expPerWizard;
+            // Пересчитываем уровень
+            updateWizardLevel(wizard);
+        });
+        console.log(`✨ +${rewards.experience} XP (${expPerWizard} на мага)`);
+    }
+
+    // Обновляем весь UI
+    if (window.updateHeader) {
+        window.updateHeader();
+    }
+
+    // Обновляем колонку магов в UI города
+    if (typeof window.renderWizardColumn === 'function') {
+        window.renderWizardColumn();
+    }
+
+    // Обновляем отображение времени
+    if (typeof window.updateTimerDisplay === 'function') {
+        window.updateTimerDisplay();
+    }
+
+    // Обновляем вид города (здания могли измениться)
+    if (typeof window.initCityView === 'function') {
+        setTimeout(() => {
+            window.initCityView();
+        }, 100);
+    }
+
+    console.log('📦 Пакет применён! Маги:', window.userData.wizards.map(w => ({
+        name: w.name,
+        faction: w.faction,
+        level: w.level,
+        exp: w.experience,
+        exp_to_next: w.exp_to_next,
+        hp: w.hp,
+        max_hp: w.max_hp
+    })));
+}
+
+/**
+ * Создание нового мага для стартового пакета
+ */
+function createNewWizard(index) {
+    const faction = window.userData?.faction || 'fire';
+    const names = {
+        fire: ['Пироман', 'Огневик', 'Пламенный', 'Жаровик', 'Искровик'],
+        water: ['Гидромаг', 'Ледовик', 'Морозник', 'Волновик', 'Туманник'],
+        earth: ['Геомант', 'Каменщик', 'Рудокоп', 'Скальник', 'Кристальщик'],
+        wind: ['Аэромант', 'Ветровик', 'Штормовик', 'Вихревик', 'Облачник'],
+        nature: ['Друид', 'Лесовик', 'Травник', 'Корневик', 'Листовик'],
+        poison: ['Токсимаг', 'Ядовик', 'Чумовик', 'Гнилевик', 'Миазмик']
+    };
+
+    const factionNames = names[faction] || names.fire;
+    const name = factionNames[index - 1] || `Маг ${index}`;
+
+    return {
+        id: `wizard_${Date.now()}_${index}`,
+        name: name,
+        faction: faction, // ИСПРАВЛЕНО: добавляем фракцию игрока
+        level: 1,
+        experience: 0,
+        exp_to_next: 80, // Базовое значение для уровня 1 (60 + 1*1*20)
+        original_max_hp: 100,
+        hp: 100,
+        max_hp: 100,
+        armor: 50,
+        max_armor: 50,
+        damage: 10,
+        isMain: index === 1
+    };
+}
+
+/**
+ * Обновление уровня мага по опыту (использует глобальную систему)
+ */
+function updateWizardLevel(wizard) {
+    // Используем глобальную систему опыта из experience-system.js
+    // Формула: exp_to_next = 60 + (level * level * 20)
+    // MAX_LEVEL = 40
+
+    const MAX_LEVEL = window.EXP_CONFIG?.MAX_LEVEL || 40;
+
+    // Инициализируем поля если их нет
+    if (!wizard.level) wizard.level = 1;
+    if (!wizard.original_max_hp) wizard.original_max_hp = 100;
+    if (!wizard.exp_to_next) {
+        wizard.exp_to_next = 60 + (wizard.level * wizard.level * 20);
+    }
+
+    // Пересчитываем уровень исходя из накопленного опыта
+    while (wizard.experience >= wizard.exp_to_next && wizard.level < MAX_LEVEL) {
+        wizard.experience -= wizard.exp_to_next;
+        wizard.level++;
+        wizard.exp_to_next = 60 + (wizard.level * wizard.level * 20);
+    }
+
+    // Применяем бонусы уровня к HP (используем ту же формулу что в experience-system.js)
+    const baseHP = wizard.original_max_hp || 100;
+    let hpBonus;
+
+    if (wizard.level === 40) {
+        hpBonus = 3.0; // +200% на 40 уровне
+    } else if (wizard.level > 1) {
+        hpBonus = 1 + (wizard.level - 1) * 0.05; // +5% за каждый уровень
+    } else {
+        hpBonus = 1.0;
+    }
+
+    wizard.max_hp = Math.floor(baseHP * hpBonus);
+    wizard.hp = wizard.max_hp;
 }
 
 /**
@@ -488,7 +843,7 @@ function showWizardSelectDialog(item) {
     const wizardCards = wizards.map((wizard, index) => {
         const expToNext = wizard.exp_to_next || window.calculateExpToNext?.(wizard.level) || 100;
         const currentExp = wizard.experience || 0;
-        const isMaxLevel = wizard.level >= 20;
+        const isMaxLevel = wizard.level >= (window.EXP_CONFIG?.MAX_LEVEL || 40);
 
         return `
             <div onclick="${isMaxLevel ? '' : `applyExpScroll(${index}, ${item.price}, ${item.amount})`}"
@@ -558,7 +913,7 @@ function applyExpScroll(wizardIndex, price, expAmount) {
         return;
     }
 
-    if (wizard.level >= 20) {
+    if (wizard.level >= (window.EXP_CONFIG?.MAX_LEVEL || 40)) {
         showShopNotification('❌ Маг уже максимального уровня!', 'error');
         closeWizardSelectDialog();
         return;
@@ -680,6 +1035,91 @@ function formatTimePurchase(minutes) {
 }
 
 /**
+ * Рассчитывает время, потраченное на изучение заклинаний каждой фракции
+ * Данные берутся напрямую из userData.spells - всегда актуальны
+ */
+function calculateSpellTimeFromDB() {
+    const spellTime = { fire: 0, water: 0, earth: 0, wind: 0, nature: 0, poison: 0 };
+    const spells = window.userData?.spells || {};
+
+    // Базовое время по тирам (в минутах)
+    const tierTimes = { 1: 1440, 2: 2880, 3: 4320, 4: 7200, 5: 10080 };
+
+    // Для каждой фракции считаем потраченное время
+    Object.keys(spells).forEach(faction => {
+        const factionSpells = spells[faction] || {};
+
+        Object.values(factionSpells).forEach(spell => {
+            const level = spell.level || 0;
+            const tier = spell.tier || 1;
+
+            if (level > 0) {
+                // Формула: время = tierTime × L × (L+1) / 4
+                // Где L = текущий уровень заклинания
+                const baseTime = tierTimes[tier] || 1440;
+                const totalTime = Math.floor(baseTime * level * (level + 1) / 4);
+                spellTime[faction] = (spellTime[faction] || 0) + totalTime;
+            }
+        });
+    });
+
+    return spellTime;
+}
+
+/**
+ * Расчёт динамической цены смены фракции на конкретную целевую фракцию
+ * Формула: цена зависит от баланса между сэкономленным (на своей) и переплаченным (на целевой)
+ * Минимум: 280⭐ (~500₽), максимум: неограничено
+ */
+function calculateFactionChangePrice(targetFaction) {
+    const MIN_PRICE_STARS = 280; // ~500 рублей минимум
+    const STARS_PER_DAY = 168;   // 7⭐ × 24ч
+
+    const currentFaction = window.userData?.faction || 'fire';
+    // Всегда считаем актуальные данные из БД
+    const spellTime = calculateSpellTimeFromDB();
+
+    // Время на текущую (свою) фракцию - игрок получил скидку 15%
+    const ownTime = spellTime[currentFaction] || 0;
+    // Время на целевую фракцию - игрок переплатил (не было скидки)
+    const targetTime = spellTime[targetFaction] || 0;
+
+    // Экономия от скидки 15% на своей = потраченное время × 0.176
+    // Переплата на целевой = то что бы сэкономил со скидкой
+    const savedMinutes = ownTime * 0.176;
+    const overpaidMinutes = targetTime * 0.176;
+
+    // Баланс: сэкономленное - переплаченное
+    // Если больше сэкономил на своей → платит больше за уход
+    // Если больше переплатил на целевой → платит меньше за переход
+    const balanceMinutes = savedMinutes - overpaidMinutes;
+
+    // Переводим в Stars (минуты → дни → Stars)
+    const balanceDays = balanceMinutes / 1440;
+    const balanceStars = Math.ceil(balanceDays * STARS_PER_DAY);
+
+    // Итоговая цена: минимум MIN_PRICE_STARS
+    const finalPrice = Math.max(MIN_PRICE_STARS, balanceStars);
+
+    // Время в днях для отображения
+    const ownDays = Math.round(ownTime / 1440 * 10) / 10;
+    const targetDays = Math.round(targetTime / 1440 * 10) / 10;
+
+    console.log(`💰 Цена ${currentFaction}→${targetFaction}: своя=${ownDays}дн, цель=${targetDays}дн, баланс=${balanceMinutes.toFixed(0)}мин, цена=${finalPrice}⭐`);
+
+    return {
+        price: finalPrice,
+        ownTime,
+        targetTime,
+        ownDays,
+        targetDays,
+        savedMinutes: Math.round(savedMinutes),
+        overpaidMinutes: Math.round(overpaidMinutes),
+        isMinimum: balanceStars <= MIN_PRICE_STARS
+    };
+}
+
+/**
  * Диалог смены фракции
  */
 function showChangeFactionDialog(item) {
@@ -698,6 +1138,15 @@ function showChangeFactionDialog(item) {
         poison: '☠️ Яд'
     };
 
+    // Рассчитываем цену для каждой целевой фракции
+    const factionPrices = {};
+    factions.filter(f => f !== currentFaction).forEach(faction => {
+        factionPrices[faction] = calculateFactionChangePrice(faction);
+    });
+
+    // Сохраняем цены для использования в confirmFactionChange
+    window._factionChangePrices = factionPrices;
+
     const dialog = document.createElement('div');
     dialog.id = 'faction-change-dialog';
     dialog.style.cssText = `
@@ -715,21 +1164,40 @@ function showChangeFactionDialog(item) {
 
     const factionButtons = factions
         .filter(f => f !== currentFaction)
-        .map(faction => `
-            <button onclick="confirmFactionChange('${faction}')" style="
-                padding: 15px 20px;
-                background: rgba(0,0,0,0.6);
-                border: 1px solid rgba(255,215,0,0.3);
-                border-radius: 10px;
-                color: white;
-                font-size: 16px;
-                cursor: pointer;
-                transition: all 0.2s;
-            " onmouseover="this.style.borderColor='#ffd700'; this.style.background='rgba(0,0,0,0.8)'"
-               onmouseout="this.style.borderColor='rgba(255,215,0,0.3)'; this.style.background='rgba(0,0,0,0.6)'">
-                ${factionNames[faction]}
-            </button>
-        `).join('');
+        .map(faction => {
+            const priceInfo = factionPrices[faction];
+            const priceColor = priceInfo.isMinimum ? '#4ade80' : '#ffa500';
+            const timeSpentText = priceInfo.targetDays > 0
+                ? `изучено ${priceInfo.targetDays} дн.`
+                : 'не изучалось';
+
+            return `
+                <button onclick="confirmFactionChange('${faction}')" style="
+                    padding: 12px 16px;
+                    background: rgba(0,0,0,0.6);
+                    border: 1px solid rgba(255,215,0,0.3);
+                    border-radius: 10px;
+                    color: white;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    text-align: center;
+                    min-width: 140px;
+                " onmouseover="this.style.borderColor='#ffd700'; this.style.background='rgba(0,0,0,0.8)'"
+                   onmouseout="this.style.borderColor='rgba(255,215,0,0.3)'; this.style.background='rgba(0,0,0,0.6)'">
+                    <div style="font-size: 16px; margin-bottom: 4px;">${factionNames[faction]}</div>
+                    <div style="font-size: 11px; color: #888; margin-bottom: 4px;">${timeSpentText}</div>
+                    <div style="font-size: 13px; color: ${priceColor}; font-weight: bold;">
+                        ${isFree ? '🆓 Бесплатно' : `⭐${priceInfo.price}`}
+                    </div>
+                </button>
+            `;
+        }).join('');
+
+    // Заголовок с информацией
+    const headerText = isFree
+        ? '<span style="color: #4ade80;">Первая смена бесплатно!</span>'
+        : 'Цена зависит от изученных заклинаний';
 
     dialog.innerHTML = `
         <div style="
@@ -737,22 +1205,22 @@ function showChangeFactionDialog(item) {
             border: 2px solid #ffd700;
             border-radius: 15px;
             padding: 20px;
-            max-width: 350px;
+            max-width: 400px;
             text-align: center;
         ">
             <h3 style="color: #ffd700; margin: 0 0 10px 0;">🔄 Смена фракции</h3>
-            <p style="color: #aaa; font-size: 14px; margin-bottom: 15px;">
-                ${isFree ? 'Первая смена бесплатно!' : `Стоимость: $${item.price}`}
+            <p style="color: #aaa; font-size: 13px; margin-bottom: 10px;">
+                ${headerText}
             </p>
-            <p style="color: #ff6b6b; font-size: 12px; margin-bottom: 15px;">
-                ⚠️ Ваши маги будут заменены на магов новой фракции!
+            <p style="color: #4ade80; font-size: 11px; margin-bottom: 15px;">
+                ✅ Маги, здания и заклинания сохраняются!
             </p>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px;">
                 ${factionButtons}
             </div>
             <button onclick="closeFactionChangeDialog()" style="
                 width: 100%;
-                margin-top: 15px;
+                margin-top: 10px;
                 padding: 10px;
                 background: rgba(255,100,100,0.3);
                 border: 1px solid rgba(255,100,100,0.5);
@@ -771,6 +1239,8 @@ function showChangeFactionDialog(item) {
  */
 async function confirmFactionChange(newFaction) {
     const isFree = !window.userData?.faction_changed;
+    // Используем цену для конкретной целевой фракции
+    const dynamicPrice = window._factionChangePrices?.[newFaction]?.price || 280;
 
     if (!isFree) {
         // Платная смена через Stars
@@ -781,13 +1251,13 @@ async function confirmFactionChange(newFaction) {
         }
 
         try {
-            // Открываем оплату Stars
+            // Открываем оплату Stars с динамической ценой
             window.Telegram.WebApp.openInvoice(
                 await createStarsInvoice({
                     id: 'faction_change',
                     name: 'Смена фракции',
-                    description: 'Изменить школу магии',
-                    price: 500
+                    description: `Изменить школу магии (⭐${dynamicPrice})`,
+                    price: dynamicPrice
                 }),
                 (status) => {
                     if (status === 'paid') {
@@ -815,15 +1285,23 @@ async function confirmFactionChange(newFaction) {
 
 /**
  * Применить смену фракции
+ * Маги, здания и заклинания сохраняются - меняется только фракция
+ * (это влияет на -15% бонус изучения и визуальный стиль)
  */
 function applyFactionChange(newFaction) {
-    // Меняем фракцию
+    const oldFaction = window.userData.faction;
+
+    // Меняем фракцию игрока
     window.userData.faction = newFaction;
     window.userData.faction_changed = true;
 
-    // Сбрасываем магов (нужно создать новых для новой фракции)
-    // TODO: Реализовать создание магов новой фракции
-    window.userData.wizards = [];
+    // Обновляем фракцию у всех магов (меняет их внешний вид)
+    if (window.userData.wizards && window.userData.wizards.length > 0) {
+        window.userData.wizards.forEach(wizard => {
+            wizard.faction = newFaction;
+        });
+        console.log(`🧙 Обновлена фракция у ${window.userData.wizards.length} магов`);
+    }
 
     // Сохраняем
     if (window.eventSaveManager) {
@@ -839,10 +1317,11 @@ function applyFactionChange(newFaction) {
         poison: 'Яд'
     };
 
+    console.log(`🔄 Смена фракции: ${factionNames[oldFaction]} → ${factionNames[newFaction]}`);
     showShopNotification(`🔄 Фракция изменена на ${factionNames[newFaction]}!`, 'success');
     closeShopModal();
 
-    // Перезагружаем город
+    // Перезагружаем город (обновит визуальный стиль)
     if (typeof window.initCityView === 'function') {
         window.initCityView();
     }
@@ -940,6 +1419,7 @@ window.showShopModal = showShopModal;
 window.closeShopModal = closeShopModal;
 window.switchShopTab = switchShopTab;
 window.buyShopItem = buyShopItem;
+window.buyStarterPack = buyStarterPack;
 window.applyExpScroll = applyExpScroll;
 window.closeWizardSelectDialog = closeWizardSelectDialog;
 window.confirmFactionChange = confirmFactionChange;

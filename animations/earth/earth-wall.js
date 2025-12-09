@@ -222,32 +222,55 @@
         animate();
     }
     
-    // HP индикатор
+    // HP индикатор (как у магов: 40x5, текст 10px)
     function createHPBar(wallSprite, currentHP, maxHP) {
-        if (wallSprite.hpBar) {
-            wallSprite.hpBar.clear();
-        } else {
-            wallSprite.hpBar = new PIXI.Graphics();
-            wallSprite.parent.addChild(wallSprite.hpBar);
-        }
-        
         const barWidth = 40;
-        const barHeight = 4;
-        
-        // Фон
-        wallSprite.hpBar.beginFill(0x333333, 0.7);
-        wallSprite.hpBar.drawRect(-barWidth/2, -barHeight/2, barWidth, barHeight);
-        wallSprite.hpBar.endFill();
-        
-        // HP
+        const barHeight = 5;
+
+        // Создаём контейнер если его нет
+        if (!wallSprite.hpContainer) {
+            wallSprite.hpContainer = new PIXI.Container();
+            wallSprite.parent.addChild(wallSprite.hpContainer);
+
+            // Фон
+            wallSprite.hpBarBg = new PIXI.Graphics();
+            wallSprite.hpBarBg.beginFill(0x000000, 0.5);
+            wallSprite.hpBarBg.drawRect(-barWidth/2, 0, barWidth, barHeight);
+            wallSprite.hpBarBg.endFill();
+            wallSprite.hpContainer.addChild(wallSprite.hpBarBg);
+
+            // Заполнение
+            wallSprite.hpBar = new PIXI.Graphics();
+            wallSprite.hpContainer.addChild(wallSprite.hpBar);
+
+            // Текст HP
+            wallSprite.hpText = new PIXI.Text('', {
+                fontFamily: 'Arial',
+                fontSize: 10,
+                fill: 0xFFFFFF,
+                fontWeight: 'bold',
+                stroke: 0x000000,
+                strokeThickness: 2
+            });
+            wallSprite.hpText.anchor.set(0.5, 1);
+            wallSprite.hpText.y = -2;
+            wallSprite.hpContainer.addChild(wallSprite.hpText);
+        }
+
+        // Обновляем заполнение
+        wallSprite.hpBar.clear();
         const hpPercent = currentHP / maxHP;
-        const color = hpPercent > 0.5 ? 0x44AA44 : (hpPercent > 0.25 ? 0xAAAA44 : 0xAA4444);
-        wallSprite.hpBar.beginFill(color, 0.9);
-        wallSprite.hpBar.drawRect(-barWidth/2, -barHeight/2, barWidth * hpPercent, barHeight);
+        const color = hpPercent > 0.5 ? 0x4ade80 : (hpPercent > 0.25 ? 0xfbbf24 : 0xef4444);
+        wallSprite.hpBar.beginFill(color);
+        wallSprite.hpBar.drawRect(-barWidth/2, 0, barWidth * hpPercent, barHeight);
         wallSprite.hpBar.endFill();
-        
-        wallSprite.hpBar.x = wallSprite.x;
-        wallSprite.hpBar.y = wallSprite.y - 30;
+
+        // Обновляем текст
+        wallSprite.hpText.text = `${currentHP}/${maxHP}`;
+
+        // Позиционируем контейнер
+        wallSprite.hpContainer.x = wallSprite.x;
+        wallSprite.hpContainer.y = wallSprite.y - 25;
     }
     
 
@@ -324,7 +347,7 @@
     // Эффект разрушения
     function destroyWall(wallSprite) {
         if (!wallSprite || !wallSprite.parent) return;
-        
+
         // Анимация разрушения
         const startTime = Date.now();
         const collapse = () => {
@@ -332,12 +355,14 @@
             wallSprite.scale.y *= 0.95;
             wallSprite.alpha = 1 - progress;
             wallSprite.rotation = (Math.random() - 0.5) * 0.1 * progress;
-            
+
             if (progress < 1) {
                 requestAnimationFrame(collapse);
             } else {
-                if (wallSprite.hpBar) wallSprite.parent.removeChild(wallSprite.hpBar);
-                wallSprite.parent.removeChild(wallSprite);
+                if (wallSprite.hpContainer && wallSprite.hpContainer.parent) {
+                    wallSprite.hpContainer.parent.removeChild(wallSprite.hpContainer);
+                }
+                if (wallSprite.parent) wallSprite.parent.removeChild(wallSprite);
             }
         };
         collapse();
@@ -347,9 +372,11 @@
     function clearAll() {
         activeWallSprites.forEach(walls => {
             walls.forEach(wall => {
-                if (wall.sprite.parent) {
-                    if (wall.sprite.hpBar) wall.sprite.parent.removeChild(wall.sprite.hpBar);
-                    wall.sprite.parent.removeChild(wall.sprite);
+                if (wall.sprite) {
+                    if (wall.sprite.hpContainer && wall.sprite.hpContainer.parent) {
+                        wall.sprite.hpContainer.parent.removeChild(wall.sprite.hpContainer);
+                    }
+                    if (wall.sprite.parent) wall.sprite.parent.removeChild(wall.sprite);
                 }
             });
         });

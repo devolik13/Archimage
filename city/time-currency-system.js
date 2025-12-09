@@ -6,11 +6,11 @@ const TIME_CURRENCY_CONFIG = {
     HOUR_TO_DAY: 24,
     DAY_TO_WEEK: 7,
     WEEK_TO_MONTH: 4,
-    
+
     // Генерация в минутах за уровень здания в час реального времени
-    GENERATOR_BASE_RATE: 60,  // 60 минут в час на 1 уровне
-    GENERATOR_PER_LEVEL: 30,  // +30 минут за каждый уровень
-    
+    GENERATOR_BASE_RATE: 30,  // 30 минут в час на 1 уровне (было 60)
+    GENERATOR_PER_LEVEL: 15,  // +15 минут за каждый уровень (было 30)
+
     // Максимальная вместимость хранилища
     STORAGE_BASE: 1440,  // 24 часа (1 день) на 1 уровне
     STORAGE_PER_LEVEL: 720  // +12 часов за уровень
@@ -321,6 +321,11 @@ function initTimeCurrency() {
     }
 }
 
+// Обновление отображения времени (вызывается после покупок)
+function updateTimeCurrencyDisplay() {
+    createTimeCurrencyUI();
+}
+
 // Экспорт функций
 window.TIME_CURRENCY_CONFIG = TIME_CURRENCY_CONFIG;
 window.getTimeCurrency = getTimeCurrency;
@@ -329,6 +334,7 @@ window.calculateProduction = calculateProduction;
 window.calculateMaxStorage = calculateMaxStorage;
 window.createTimeCurrencyUI = createTimeCurrencyUI;
 window.updateTimeCurrency = updateTimeCurrency;
+window.updateTimeCurrencyDisplay = updateTimeCurrencyDisplay;
 window.useTimeCurrency = useTimeCurrency;
 window.addTimeCurrency = addTimeCurrency;
 window.calculateOfflineEarnings = calculateOfflineEarnings;

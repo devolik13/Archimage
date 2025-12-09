@@ -6,6 +6,9 @@
     function playSparkAnimation(params) {
         const { casterCol, casterRow, targetCol, targetRow, onComplete } = params;
 
+        // DEBUG: Логируем полученные координаты
+        console.log(`⚡ [DEBUG] Spark animation params: casterCol=${casterCol}, casterRow=${casterRow}, targetCol=${targetCol}, targetRow=${targetRow}`);
+
         // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
         if (window.fastSimulation) {
             console.log('⚡ Быстрая симуляция: пропуск анимации Spark');

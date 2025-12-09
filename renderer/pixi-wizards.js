@@ -105,7 +105,7 @@
             frameHeight: 256,
             frameCount: 8,
             animationSpeed: 0.15,
-            scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
+            scale: 0.45 // Размер для одной клетки (col 0, row 2)
         },
         water_elemental: {
             idle: 'images/enemies/water_elemental/idle.webp',
@@ -115,7 +115,7 @@
             frameHeight: 256,
             frameCount: 8,
             animationSpeed: 0.15,
-            scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
+            scale: 0.45 // Размер для одной клетки
         },
         wind_elemental: {
             idle: 'images/enemies/wind_elemental/idle.webp',
@@ -125,7 +125,7 @@
             frameHeight: 256,
             frameCount: 8,
             animationSpeed: 0.15,
-            scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
+            scale: 0.45 // Размер для одной клетки
         },
         earth_elemental: {
             idle: 'images/enemies/earth_elemental/idle.webp',
@@ -135,7 +135,7 @@
             frameHeight: 256,
             frameCount: 8,
             animationSpeed: 0.15,
-            scale: 1.0 // Увеличен для покрытия 4 клеток (2x2)
+            scale: 0.45 // Размер для одной клетки
         }
     };
     
@@ -147,10 +147,18 @@
     
     // Безопасная проверка спрайта
     function isSpriteValid(sprite) {
-        return sprite && 
-               sprite.transform && 
+        return sprite &&
+               sprite.transform &&
                !sprite.destroyed &&
                sprite.parent;
+    }
+
+    // Проверка валидности текстур для анимации
+    function areTexturesValid(textures) {
+        if (!textures || !Array.isArray(textures) || textures.length === 0) {
+            return false;
+        }
+        return textures.every(tex => tex && tex._uvs && !tex.destroyed);
     }
     
     // Безопасный setTimeout
@@ -467,29 +475,6 @@
         sprite.x = cellData.x + cellData.width / 2;
         sprite.y = cellData.y + cellData.height / 2;
 
-        // ИСПРАВЛЕНИЕ: Позиционируем элементалей на 4 клетки (2x2)
-        // Элементаль занимает клетки: [0,1], [0,2], [1,1], [1,2] (ряды 1-2, колонки 0-1)
-        if (faction && faction.endsWith('_elemental')) {
-            // Если элементаль враг (col = 0), центрируем между колонками 0 и 1, ряды 1-2
-            if (col === 0 && row === 0) {
-                // Получаем клетки для рядов 1 и 2
-                const cell01 = gridCells?.[0]?.[1]; // col 0, row 1
-                const cell02 = gridCells?.[0]?.[2]; // col 0, row 2
-                const cell11 = gridCells?.[1]?.[1]; // col 1, row 1
-                const cell12 = gridCells?.[1]?.[2]; // col 1, row 2
-
-                if (cell01 && cell02 && cell11 && cell12) {
-                    // Центр по X: между колонками 0 и 1
-                    sprite.x = (cell01.x + cell11.x + cell01.width / 2 + cell11.width / 2) / 2;
-
-                    // Центр по Y: между рядами 1 и 2
-                    sprite.y = (cell01.y + cell02.y + cell01.height / 2 + cell02.height / 2) / 2;
-
-                    console.log(`   Позиция: [0,1], [0,2], [1,1], [1,2]`);
-                }
-            }
-        }
-
         container.sprite = sprite;
 
         // HP бар
@@ -564,17 +549,17 @@
         }
         
         // Если есть кадры атаки
-        if (sprite instanceof PIXI.AnimatedSprite && container.attackFrames && container.attackFrames.length > 0) {
+        if (sprite instanceof PIXI.AnimatedSprite && areTexturesValid(container.attackFrames)) {
             console.log(`   Позиция: ${wizardCol}_${wizardRow}`);
 
             // Сохраняем текущее состояние
             const originalFrames = sprite.textures;
             const originalSpeed = sprite.animationSpeed;
             const originalLoop = sprite.loop;
-            
+
             const animationId = Symbol('attack');
             activeAnimations.add(animationId);
-            
+
             try {
                 // Переключаем на атаку
                 sprite.stop();
@@ -599,14 +584,17 @@
                         sprite.onComplete = null;
 
                         // Возвращаем idle анимацию
-                        if (container.idleFrames && container.idleFrames.length > 0) {
+                        if (areTexturesValid(container.idleFrames)) {
                             sprite.textures = container.idleFrames;
                             sprite.animationSpeed = originalSpeed;
                             sprite.loop = true;
-
-                            // ИСПРАВЛЕНО: Сразу запускаем анимацию без задержки
                             sprite.gotoAndPlay(0);
-
+                        } else if (areTexturesValid(originalFrames)) {
+                            // Fallback на оригинальные фреймы
+                            sprite.textures = originalFrames;
+                            sprite.animationSpeed = originalSpeed;
+                            sprite.loop = originalLoop;
+                            sprite.gotoAndPlay(0);
                         }
                     } catch (err) {
                         console.error('Ошибка при возврате к idle:', err);
@@ -673,21 +661,27 @@
         }
         
         // Если есть кадры смерти
-        if (sprite instanceof PIXI.AnimatedSprite && container.deathFrames && container.deathFrames.length > 0) {
+        if (sprite instanceof PIXI.AnimatedSprite && areTexturesValid(container.deathFrames)) {
             console.log(`💀 Запуск анимации смерти (${container.deathFrames.length} кадров)`);
-            
+
             const animationId = Symbol('death');
             activeAnimations.add(animationId);
-            
+
             try {
                 sprite.stop();
-                
+
                 // Для фракции яда проигрываем анимацию смерти в обратном порядке
                 const config = FACTION_SPRITES_CONFIG[container.faction];
-                const deathFrames = (config && config.reverseOnDeath) 
-                    ? [...container.deathFrames].reverse() 
+                const deathFrames = (config && config.reverseOnDeath)
+                    ? [...container.deathFrames].reverse()
                     : container.deathFrames;
-                
+
+                if (!areTexturesValid(deathFrames)) {
+                    console.warn('⚠️ Невалидные текстуры смерти после обработки');
+                    if (callback) callback();
+                    return;
+                }
+
                 sprite.textures = deathFrames;
                 sprite.animationSpeed = 0.15;
                 sprite.loop = false;
@@ -951,8 +945,8 @@
 
         const { castFrames, idleFrames } = sprite.userData;
 
-        if (!castFrames || castFrames.length === 0) {
-            console.warn('⚠️ Нет кадров каста');
+        if (!areTexturesValid(castFrames)) {
+            console.warn('⚠️ Нет валидных кадров каста');
             return;
         }
 
@@ -967,10 +961,12 @@
         sprite.onComplete = () => {
             // Возврат к idle
             sprite.stop();
-            sprite.textures = idleFrames;
-            sprite.animationSpeed = originalSpeed;
-            sprite.loop = true;
-            sprite.gotoAndPlay(0);
+            if (areTexturesValid(idleFrames)) {
+                sprite.textures = idleFrames;
+                sprite.animationSpeed = originalSpeed;
+                sprite.loop = true;
+                sprite.gotoAndPlay(0);
+            }
             sprite.onComplete = null;
         };
     }
@@ -985,7 +981,7 @@
 
         const { deathFrames } = sprite.userData;
 
-        if (!deathFrames || deathFrames.length === 0) {
+        if (!areTexturesValid(deathFrames)) {
             // Fallback - затемнение
             let alpha = 1;
             const fadeInterval = setInterval(() => {

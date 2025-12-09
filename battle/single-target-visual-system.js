@@ -42,6 +42,7 @@ function castSingleTargetSpell(params) {
     } = params;
 
     console.log(`🎯 Single Target Spell: ${spellId} от ${caster.name} к ${target.wizard.name}`);
+    console.log(`🎯 [DEBUG] casterPosition=${casterPosition}, casterType=${casterType}, target.position=${target.position}`);
 
     // Устанавливаем текущего кастера для отслеживания фракционных бонусов
     if (typeof window.setCurrentSpellCaster === 'function') {
@@ -50,6 +51,7 @@ function castSingleTargetSpell(params) {
 
     // Определяем колонки
     const casterCol = casterType === 'player' ? 5 : 0;
+    console.log(`🎯 [DEBUG] casterCol=${casterCol}, will use fromRow=${casterPosition}`);
     
     // ШАГ 1: Рассчитываем урон через ВСЕ слои защиты
     // multi-layer-protection сама пройдёт все слои и вернёт точку остановки

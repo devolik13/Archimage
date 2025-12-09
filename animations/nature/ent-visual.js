@@ -135,22 +135,48 @@
     }
     
     function updateHPBar(hpBar, hp, maxHP) {
-        hpBar.clear();
-        const barWidth = 50;
+        const barWidth = 40;
         const barHeight = 5;
+
+        // Создаём фон если его нет
+        if (!hpBar.hpBarBg) {
+            hpBar.hpBarBg = new PIXI.Graphics();
+            hpBar.hpBarBg.beginFill(0x000000, 0.5);
+            hpBar.hpBarBg.drawRect(-barWidth/2, 0, barWidth, barHeight);
+            hpBar.hpBarBg.endFill();
+            hpBar.hpBarBg.y = -55;
+            hpBar.addChild(hpBar.hpBarBg);
+
+            // Заполнение
+            hpBar.hpBarFill = new PIXI.Graphics();
+            hpBar.hpBarFill.y = -55;
+            hpBar.addChild(hpBar.hpBarFill);
+
+            // Текст HP
+            hpBar.hpText = new PIXI.Text('', {
+                fontFamily: 'Arial',
+                fontSize: 10,
+                fill: 0xFFFFFF,
+                fontWeight: 'bold',
+                stroke: 0x000000,
+                strokeThickness: 2
+            });
+            hpBar.hpText.anchor.set(0.5, 1);
+            hpBar.hpText.y = -57;
+            hpBar.addChild(hpBar.hpText);
+        }
+
+        // Обновляем заполнение
+        hpBar.hpBarFill.clear();
         const hpPercent = hp / maxHP;
-        
-        // Фон
-        hpBar.beginFill(0x333333, 0.8);
-        hpBar.drawRect(-barWidth/2, -60, barWidth, barHeight);
-        hpBar.endFill();
-        
-        // HP
-        const color = hpPercent > 0.5 ? 0x4ade80 : 
+        const color = hpPercent > 0.5 ? 0x4ade80 :
                      hpPercent > 0.25 ? 0xfbbf24 : 0xef4444;
-        hpBar.beginFill(color, 1);
-        hpBar.drawRect(-barWidth/2, -60, barWidth * hpPercent, barHeight);
-        hpBar.endFill();
+        hpBar.hpBarFill.beginFill(color);
+        hpBar.hpBarFill.drawRect(-barWidth/2, 0, barWidth * hpPercent, barHeight);
+        hpBar.hpBarFill.endFill();
+
+        // Обновляем текст
+        hpBar.hpText.text = `${hp}/${maxHP}`;
     }
     
     // Обновление HP при получении урона

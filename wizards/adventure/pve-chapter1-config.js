@@ -77,13 +77,13 @@ const ENEMY_TYPES = {
 const ELEMENTALS = {
     fire: {
         name: "Огненный Элементаль",
-        hp: 400,
+        hp: 300,
         armor: 150,
         faction: "fire",
-        spells: ['firebolt', 'fireball'],  // ID заклинаний (ИСПРАВЛЕНО: fire_arrow → firebolt)
-        spell_levels: {  // Уровни заклинаний
-            'firebolt': 5,  // ИСПРАВЛЕНО: fire_arrow → firebolt
-            'fireball': 3
+        spells: ['firebolt', 'spark'],
+        spell_levels: {
+            'firebolt': 5,
+            'spark': 5
         },
         resistances: {
             fire: 75,    // 75% сопротивление огню

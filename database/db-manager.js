@@ -82,7 +82,7 @@ class DatabaseManager {
                 .insert([{
                     telegram_id: telegramId,
                     username: username,
-                    time_currency: 100, // Начальная валюта
+                    time_currency: 7200, // Начальная валюта: 5 дней (5 × 24 × 60 мин)
                     level: 1,
                     experience: 0
                     // last_login убрано - добавится при обновлении игрока
@@ -119,6 +119,7 @@ class DatabaseManager {
                 level: playerData.level || 1,
                 experience: playerData.experience || 0,
                 faction: playerData.faction || null,
+                faction_changed: playerData.faction_changed || false, // Флаг бесплатной смены фракции
                 wizards: playerData.wizards || [],
                 formation: playerData.formation || [null, null, null, null, null],
                 spells: playerData.spells || {},
@@ -134,8 +135,12 @@ class DatabaseManager {
                 battle_energy: playerData.battle_energy || { current: 12, max: 12, last_regen: Date.now() },
                 active_blessing: playerData.active_blessing || null,
                 blessing_last_used: playerData.blessing_last_used || null,
-                last_login: playerData.last_login || new Date().toISOString()
+                last_login: playerData.last_login || new Date().toISOString(),
+                purchased_packs: playerData.purchased_packs || {} // Купленные стартовые пакеты
             };
+
+            // DEBUG: Логируем faction_changed перед отправкой в RPC
+            console.log(`🔍 [RPC DEBUG] Отправка в update_player_safe: faction_changed = ${rpcData.faction_changed}`);
 
             // Вызываем безопасную RPC функцию (обновляет только по telegram_id)
             const { data, error } = await this.supabase.rpc('update_player_safe', {
@@ -143,7 +148,11 @@ class DatabaseManager {
                 p_data: rpcData
             });
 
-            if (error) throw error;
+            if (error) {
+                console.error('❌ [RPC DEBUG] Ошибка RPC:', error);
+                throw error;
+            }
+            console.log('✅ [RPC DEBUG] RPC успешно выполнен');
 
             this.hasUnsavedChanges = false;
             return true;
@@ -199,7 +208,7 @@ class DatabaseManager {
 
             // Обновляем рейтинг
             if (ratingChange !== undefined) {
-                window.userData.rating = (window.userData.rating || 1000) + ratingChange;
+                window.userData.rating = (window.userData.rating || 0) + ratingChange;
                 window.userData.rating = Math.max(0, Math.min(9999, window.userData.rating));
             }
 
@@ -259,6 +268,7 @@ class DatabaseManager {
                     level: window.userData.level,
                     experience: window.userData.experience,
                     faction: window.userData.faction,
+                    faction_changed: window.userData.faction_changed,
                     wizards: window.userData.wizards,
                     formation: window.userData.formation,
                     spells: window.userData.spells,
@@ -298,6 +308,7 @@ class DatabaseManager {
                     level: window.userData.level,
                     experience: window.userData.experience,
                     faction: window.userData.faction,
+                    faction_changed: window.userData.faction_changed,
                     wizards: window.userData.wizards,
                     formation: window.userData.formation,
                     spells: window.userData.spells,
