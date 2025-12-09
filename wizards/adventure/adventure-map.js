@@ -187,8 +187,7 @@ function showAdventureMap(range = '1-10') {
             <div id="adventure-range-indicator" style="
                 position: absolute;
                 top: 15px;
-                left: 50%;
-                transform: translateX(-50%);
+                right: 65px;
                 background: rgba(0, 0, 0, 0.7);
                 padding: 8px 20px;
                 border-radius: 20px;
