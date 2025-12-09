@@ -386,7 +386,7 @@ function updateBattleField() {
 }
 
 // Управление модальным окном
-function closeBattleFieldModal() {
+async function closeBattleFieldModal() {
 
     // КРИТИЧНО: Проверяем закрытие незавершенного PvP боя
     const isPvP = !window.isPvEBattle && window.selectedOpponent;
@@ -436,7 +436,7 @@ function closeBattleFieldModal() {
 
 
         // Функция быстрой симуляции боя до конца
-        const simulateBattleToEnd = () => {
+        const simulateBattleToEnd = async () => {
             const MAX_TURNS = 1000; // Защита от бесконечного цикла
             let turnCount = 0;
             let lastPlayerHP = 0;
@@ -482,7 +482,7 @@ function closeBattleFieldModal() {
 
                 // Выполняем фазу боя без задержек
                 if (typeof window.executeBattlePhase === 'function') {
-                    window.executeBattlePhase();
+                    await window.executeBattlePhase();
                 }
 
                 turnCount++;
@@ -497,7 +497,7 @@ function closeBattleFieldModal() {
                 console.error('⚠️ Достигнут лимит ходов симуляции');
                 // Принудительно завершаем и определяем победителя
                 if (typeof window.checkBattleEnd === 'function') {
-                    window.checkBattleEnd();
+                    await window.checkBattleEnd();
                 }
             }
 
@@ -505,7 +505,7 @@ function closeBattleFieldModal() {
 
         // Запускаем симуляцию
         try {
-            simulateBattleToEnd();
+            await simulateBattleToEnd();
         } catch (error) {
             console.error('❌ Ошибка симуляции боя:', error);
         } finally {
