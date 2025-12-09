@@ -391,7 +391,7 @@ function updateNavigationArrows(range) {
     if (rightArrow) {
         // Проверяем, доступна ли следующая карта
         const nextRangeStart = parseInt(ranges[currentIndex + 1]?.split('-')[0] || 999);
-        const isNextAvailable = maxUnlockedLevel >= nextRangeStart - 9; // Доступна если пройдены уровни текущей карты
+        const isNextAvailable = maxUnlockedLevel >= nextRangeStart; // Доступна если достигнут первый уровень следующей карты
 
         if (currentIndex >= ranges.length - 1 || !isNextAvailable) {
             rightArrow.style.opacity = '0.3';
