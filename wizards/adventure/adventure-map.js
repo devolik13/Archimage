@@ -53,7 +53,18 @@ const ADVENTURE_MAP_POINTS = {
     // Уровни 31-40 (Земные глубины)
     '31-40': {
         image: 'assets/ui/adventure/map_031_040.webp',
-        points: []
+        points: [
+            { level: 31, x: 712, y: 287 },
+            { level: 32, x: 533, y: 384 },
+            { level: 33, x: 332, y: 459 },
+            { level: 34, x: 200, y: 380 },
+            { level: 35, x: 347, y: 286 },
+            { level: 36, x: 193, y: 185 },
+            { level: 37, x: 136, y: 94 },
+            { level: 38, x: 294, y: 58 },
+            { level: 39, x: 358, y: 114 },
+            { level: 40, x: 600, y: 154 }
+        ]
     },
     // Уровни 41-50 (Царство Хаоса)
     '41-50': {
