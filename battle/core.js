@@ -484,7 +484,7 @@ function processBlessingRegeneration(wizard) {
     }
 }
 
-function executeBattlePhase() {
+async function executeBattlePhase() {
     if (window.battleState !== 'active' || window.isPaused) {
         return;
     }
@@ -510,38 +510,38 @@ function executeBattlePhase() {
     if (window.globalTurnCounter === 0) {
         // Первый ход - 1 маг атакующего
         if (window.isPlayerAttacker) {
-            executePlayerPhase(1);
+            await executePlayerPhase(1);
         } else {
-            executeEnemyPhase(1);
+            await executeEnemyPhase(1);
         }
     } else {
         // Дальше чередуем по 2 мага
         if (window.globalTurnCounter % 2 === 1) {
             // Нечётные ходы - защищающийся
             if (window.isPlayerAttacker) {
-                executeEnemyPhase(2);  // Враг защищается
+                await executeEnemyPhase(2);  // Враг защищается
             } else {
-                executePlayerPhase(2);  // Игрок защищается
+                await executePlayerPhase(2);  // Игрок защищается
             }
         } else {
             // Чётные ходы - атакующий
             if (window.isPlayerAttacker) {
-                executePlayerPhase(2);  // Игрок атакует
+                await executePlayerPhase(2);  // Игрок атакует
             } else {
-                executeEnemyPhase(2);   // Враг атакует
+                await executeEnemyPhase(2);   // Враг атакует
             }
         }
     }
 
     window.globalTurnCounter++;
-    checkBattleEnd();
+    await checkBattleEnd();
 
     if (typeof window.updateBattleField === 'function') {
         window.updateBattleField();
     }
 }
 
-function executeSingleMageAttack(wizard, position, casterType) {
+async function executeSingleMageAttack(wizard, position, casterType) {
     // Логирование начала хода
     if (window.battleLogger) {
         window.battleLogger.logTurnStart(casterType, wizard, position);
@@ -621,7 +621,7 @@ function executeSingleMageAttack(wizard, position, casterType) {
                     if (typeof window.performWolfAttack === 'function') {
                         window.performWolfAttack(summon, wizard);
                         // Проверяем конец боя после атаки волка
-                        if (checkBattleEnd()) {
+                        if (await checkBattleEnd()) {
                             return false; // Прерываем дальше
                         }
                     }
@@ -688,7 +688,7 @@ function executeSingleMageAttack(wizard, position, casterType) {
 }
 
 // --- Фаза игрока ---
-function executePlayerPhase(mageCount) {
+async function executePlayerPhase(mageCount) {
     // Проверка на Чуму
     if (typeof window.processPlagueEffects === 'function') {
         window.processPlagueEffects('player');
@@ -714,11 +714,11 @@ function executePlayerPhase(mageCount) {
     // Атакуем - с учетом быстрой симуляции
     if (window.fastSimulation) {
         // Быстрая симуляция: без задержек, синхронно
-        magesToAttack.forEach((mageData) => {
+        for (const mageData of magesToAttack) {
             if (mageData.wizard.hp > 0) {
-                executeSingleMageAttack(mageData.wizard, mageData.position, 'player');
+                await executeSingleMageAttack(mageData.wizard, mageData.position, 'player');
             }
-        });
+        }
 
         // Проверка на Метеокинез синхронно
         if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
@@ -756,7 +756,7 @@ function executePlayerPhase(mageCount) {
 }
 
 // --- Фаза противника ---
-function executeEnemyPhase(mageCount) {
+async function executeEnemyPhase(mageCount) {
     // Проверка на Чуму
     if (typeof window.processPlagueEffects === 'function') {
         window.processPlagueEffects('enemy');
@@ -779,11 +779,11 @@ function executeEnemyPhase(mageCount) {
     // Атакуем - с учетом быстрой симуляции
     if (window.fastSimulation) {
         // Быстрая симуляция: без задержек, синхронно
-        magesToAttack.forEach((mageData) => {
+        for (const mageData of magesToAttack) {
             if (mageData.wizard.hp > 0) {
-                executeSingleMageAttack(mageData.wizard, mageData.position, 'enemy');
+                await executeSingleMageAttack(mageData.wizard, mageData.position, 'enemy');
             }
-        });
+        }
 
         // Проверка на Метеокинез синхронно
         if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
@@ -825,7 +825,7 @@ function executeEnemyPhase(mageCount) {
 }
 
 // --- Проверка окончания боя ---
-function checkBattleEnd() {
+async function checkBattleEnd() {
     // ВАЖНО: Сохраняем флаг PvE в начале, чтобы избежать race conditions
     const isPvEBattle = window.isPvEBattle || false;
 
@@ -922,7 +922,7 @@ function checkBattleEnd() {
                     progress.chapter1.maxLevel = window.currentPvELevel + 1;
                 }
 
-                window.savePvEProgress(progress);
+                await window.savePvEProgress(progress);
 
                 // Даём награду временем (если есть)
                 if (level.reward) {

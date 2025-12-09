@@ -302,14 +302,15 @@ function loadPvEProgress() {
 /**
  * Сохраняет прогресс PvE в БД
  */
-function savePvEProgress(progress) {
+async function savePvEProgress(progress) {
     // Сохраняем в userData и в БД
     if (window.userData) {
         window.userData.pve_progress = progress;
 
-        // Сохраняем в БД
+        // Сохраняем в БД (ждём завершения)
         if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
-            window.dbManager.savePlayer(window.userData);
+            await window.dbManager.savePlayer(window.userData);
+            console.log('✅ PvE прогресс сохранён в БД:', progress);
         }
     }
 }
