@@ -69,7 +69,7 @@ function showPvPArenaModal() {
     	            🏆 Рейтинг
     	        </button>
     	        <button style="padding: 10px 8px; border: none; border-radius: 6px; background: #4CAF50; color: white; cursor: pointer; font-size: 14px; font-weight: bold;"
-    	                onclick="closePvPArenaModal(); window.showPvEChaptersMenu()">
+    	                onclick="closePvPArenaModal(); window.showAdventureHub()">
     	            🗺️ Приключения (PvE)
     	        </button>
     	    </div>

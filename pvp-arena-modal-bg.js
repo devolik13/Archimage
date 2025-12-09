@@ -201,8 +201,8 @@ function showArenaMainMenu() {
             text: '🗺️ Приключения',
             onClick: () => {
                 closePvPArenaModalBg(); // PvE закрывает окно арены
-                if (typeof window.showPvEChaptersMenu === 'function') {
-                    window.showPvEChaptersMenu();
+                if (typeof window.showAdventureHub === 'function') {
+                    window.showAdventureHub();
                 }
             },
             enabled: true,
