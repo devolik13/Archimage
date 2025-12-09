@@ -400,11 +400,8 @@ function updateNavigationArrows(range) {
     }
 
     if (rightArrow) {
-        // Проверяем, доступна ли следующая карта
-        const nextRangeStart = parseInt(ranges[currentIndex + 1]?.split('-')[0] || 999);
-        const isNextAvailable = maxUnlockedLevel >= nextRangeStart; // Доступна если достигнут первый уровень следующей карты
-
-        if (currentIndex >= ranges.length - 1 || !isNextAvailable) {
+        // Просмотр карт доступен всегда, блокируется только последняя карта
+        if (currentIndex >= ranges.length - 1) {
             rightArrow.style.opacity = '0.3';
             rightArrow.style.cursor = 'not-allowed';
             rightArrow.onclick = null;
