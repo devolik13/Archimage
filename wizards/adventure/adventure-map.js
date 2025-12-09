@@ -234,28 +234,34 @@ function setupAdventureMapUI(range) {
         const isAvailable = point.level <= maxUnlockedLevel && !isCompleted;
         const isLocked = point.level > maxUnlockedLevel;
 
-        // Определяем цвет точки
+        // Проверяем является ли уровень боссом
+        const bossLevels = [10, 20, 30, 40, 50];
+        const isBoss = bossLevels.includes(point.level);
+
+        // Определяем цвет точки (прозрачный фон)
         let bgColor, borderColor, textColor;
         if (isCompleted) {
             // Жёлтый - пройден
-            bgColor = 'linear-gradient(145deg, #ffd700, #ffaa00)';
+            bgColor = 'rgba(255, 215, 0, 0.2)';
             borderColor = '#fff700';
-            textColor = '#000';
+            textColor = '#ffd700';
         } else if (isAvailable) {
             // Зелёный - доступен
-            bgColor = 'linear-gradient(145deg, #4ade80, #22c55e)';
+            bgColor = 'rgba(74, 222, 128, 0.2)';
             borderColor = '#4ade80';
-            textColor = '#fff';
+            textColor = '#4ade80';
         } else {
             // Красный - заблокирован
-            bgColor = 'linear-gradient(145deg, #ef4444, #dc2626)';
+            bgColor = 'rgba(239, 68, 68, 0.2)';
             borderColor = '#ef4444';
-            textColor = '#fff';
+            textColor = '#ef4444';
         }
 
-        // Размер точки
-        const pointSize = Math.max(28, 36 * Math.min(scaleX, scaleY));
-        const fontSize = Math.max(12, 16 * Math.min(scaleX, scaleY));
+        // Размер точки (боссы на 50% крупнее)
+        const basePointSize = Math.max(28, 36 * Math.min(scaleX, scaleY));
+        const pointSize = isBoss ? basePointSize * 1.5 : basePointSize;
+        const baseFontSize = Math.max(12, 16 * Math.min(scaleX, scaleY));
+        const fontSize = isBoss ? baseFontSize * 1.3 : baseFontSize;
 
         // Создаём элемент точки
         const pointEl = document.createElement('div');
@@ -304,8 +310,7 @@ function setupAdventureMapUI(range) {
         }
 
         // Добавляем иконку для боссов
-        const bossLevels = [10, 20, 30, 40, 50];
-        if (bossLevels.includes(point.level)) {
+        if (isBoss) {
             const bossIcon = document.createElement('div');
             bossIcon.style.cssText = `
                 position: absolute;
