@@ -987,6 +987,14 @@ async function buyTimePack(item) {
                     // Успешная оплата
                     window.userData.time_currency = (window.userData.time_currency || 0) + item.amount;
 
+                    // Начисляем airdrop очки за покупку Stars (100 Stars = 10 очков)
+                    if (typeof window.addAirdropPoints === 'function' && item.price) {
+                        const airdropPoints = Math.floor(item.price / 10);
+                        if (airdropPoints > 0) {
+                            window.addAirdropPoints(airdropPoints, `Покупка ${item.price} Telegram Stars`);
+                        }
+                    }
+
                     if (window.eventSaveManager) {
                         window.eventSaveManager.saveImmediate('shop_stars_purchase');
                     }
@@ -1261,6 +1269,13 @@ async function confirmFactionChange(newFaction) {
                 }),
                 (status) => {
                     if (status === 'paid') {
+                        // Начисляем airdrop очки за покупку Stars (100 Stars = 10 очков)
+                        if (typeof window.addAirdropPoints === 'function' && dynamicPrice) {
+                            const airdropPoints = Math.floor(dynamicPrice / 10);
+                            if (airdropPoints > 0) {
+                                window.addAirdropPoints(airdropPoints, `Покупка ${dynamicPrice} Telegram Stars`);
+                            }
+                        }
                         applyFactionChange(newFaction);
                     } else if (status === 'cancelled') {
                         showShopNotification('Покупка отменена', 'info');

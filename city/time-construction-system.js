@@ -788,6 +788,11 @@ async function completeConstruction(constructionIndex) {
             window.userData.spells[faction][spell_id].name = spellName; // Обновляем название на случай если было на английском
         }
 
+        // Начисляем airdrop очки за изучение заклинания
+        if (typeof window.addAirdropPoints === 'function') {
+            window.addAirdropPoints(100, 'Изучение заклинания');
+        }
+
         // Разблокировка следующего заклинания при достижении 5 уровня
         if (target_level === 5) {
             const spellTiers = window.SPELL_TIERS?.[faction] || [];
@@ -894,7 +899,12 @@ async function completeConstruction(constructionIndex) {
                 window.userData.buildings[construction.building_id] = {};
             }
             window.userData.buildings[construction.building_id].level = construction.target_level;
-            
+
+            // Начисляем airdrop очки за улучшение здания
+            if (typeof window.addAirdropPoints === 'function') {
+                window.addAirdropPoints(100, 'Постройка/улучшение здания');
+            }
+
             // НЕ вызываем updateBuildingsGrid для улучшений!
             
             // Для Башни благословений блокируем переоткрытие модалки
@@ -951,6 +961,12 @@ async function completeConstruction(constructionIndex) {
                 cell_index: construction.cell_index,
                 building_id: construction.building_id
             };
+
+            // Начисляем airdrop очки за постройку здания
+            if (typeof window.addAirdropPoints === 'function') {
+                window.addAirdropPoints(100, 'Постройка/улучшение здания');
+            }
+
             // ===== ДОБАВИТЬ ЗДЕСЬ: Загрузка изображения здания =====
             // Загружаем изображение здания
             const container = document.getElementById('city-background-container');

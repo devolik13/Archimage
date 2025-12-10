@@ -242,24 +242,32 @@ function setupAirdropUI() {
                     <span style="color: #4ade80;">+10</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">🗡️ Победа в PvE</span>
-                    <span style="color: #4ade80;">+5</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
                     <span style="color: #ccc;">📅 Ежедневный вход</span>
                     <span style="color: #4ade80;">+20</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
                     <span style="color: #ccc;">📚 Изучение заклинания</span>
-                    <span style="color: #4ade80;">+2</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">🏰 Вступление в гильдию</span>
-                    <span style="color: #4ade80;">+50</span>
+                    <span style="color: #4ade80;">+100</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
                     <span style="color: #ccc;">👥 Приглашение друга</span>
+                    <span style="color: #4ade80;">+200</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
+                    <span style="color: #ccc;">🏰 Постройка/улучшение здания</span>
                     <span style="color: #4ade80;">+100</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
+                    <span style="color: #ccc;">🎯 Прохождение главы PvE</span>
+                    <span style="color: #4ade80;">+500</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
+                    <span style="color: #ccc;">🔥 Streak 7/30/100 дней</span>
+                    <span style="color: #4ade80;">+100/500/1000</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
+                    <span style="color: #ccc;">⭐ 100 Telegram Stars</span>
+                    <span style="color: #4ade80;">+10</span>
                 </div>
             </div>
         </div>

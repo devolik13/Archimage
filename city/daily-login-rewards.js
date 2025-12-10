@@ -114,6 +114,20 @@ async function checkDailyLoginReward() {
         window.addTimeCurrency(minutesReward);
     }
 
+    // Начисляем airdrop очки за ежедневный вход
+    if (typeof window.addAirdropPoints === 'function') {
+        window.addAirdropPoints(20, 'Ежедневный вход');
+
+        // Бонус за streak (серию входов)
+        if (dailyData.day === 7) {
+            window.addAirdropPoints(100, 'Streak 7 дней');
+        } else if (dailyData.day === 30) {
+            window.addAirdropPoints(500, 'Streak 30 дней');
+        } else if (dailyData.day === 100) {
+            window.addAirdropPoints(1000, 'Streak 100 дней');
+        }
+    }
+
     // Сохраняем НЕМЕДЛЕННО (критическая операция - награда не должна выдаваться дважды)
     if (typeof window.eventSaveManager?.saveImmediate === 'function') {
         window.eventSaveManager.saveImmediate('daily_login_reward');

@@ -84,7 +84,8 @@ class ReferralManager {
             const { error: referrerUpdateError } = await this.supabase
                 .from('players')
                 .update({
-                    time_currency: (referrer.time_currency || 0) + REFERRAL_REWARD
+                    time_currency: (referrer.time_currency || 0) + REFERRAL_REWARD,
+                    airdrop_points: (referrer.airdrop_points || 0) + 200
                 })
                 .eq('id', referrer.id);
 
@@ -104,17 +105,21 @@ class ReferralManager {
                 await this.supabase
                     .from('players')
                     .update({
-                        time_currency: (newPlayer.time_currency || 0) + REFERRAL_REWARD
+                        time_currency: (newPlayer.time_currency || 0) + REFERRAL_REWARD,
+                        airdrop_points: (newPlayer.airdrop_points || 0) + 200
                     })
                     .eq('id', newPlayerId);
 
                 // Обновляем локальные данные
                 if (window.userData) {
                     window.userData.time_currency = (window.userData.time_currency || 0) + REFERRAL_REWARD;
+                    window.userData.airdrop_points = (window.userData.airdrop_points || 0) + 200;
                 }
                 if (window.dbManager && window.dbManager.currentPlayer) {
                     window.dbManager.currentPlayer.time_currency =
                         (window.dbManager.currentPlayer.time_currency || 0) + REFERRAL_REWARD;
+                    window.dbManager.currentPlayer.airdrop_points =
+                        (window.dbManager.currentPlayer.airdrop_points || 0) + 200;
                 }
             }
 

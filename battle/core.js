@@ -905,6 +905,11 @@ async function checkBattleEnd() {
                     .filter(w => w && w.hp > 0);
                 window.grantVictoryExp(aliveWizards);
             }
+
+            // Начисляем airdrop очки за PvP победу (если это не PvE)
+            if (!isPvEBattle && typeof window.addAirdropPoints === 'function') {
+                window.addAirdropPoints(10, 'Победа в PvP');
+            }
         }
 
         // Если это PvE приключение и игрок победил
@@ -976,6 +981,11 @@ async function checkBattleEnd() {
                         window.addToBattleLog(`✅ Открыт уровень ${window.currentPvELevel + 1}`);
                     } else {
                         window.addToBattleLog(`👑 Поздравляем! Глава 1 пройдена!`);
+
+                        // Начисляем бонус за прохождение всей главы (только первый раз)
+                        if (isFirstCompletion && typeof window.addAirdropPoints === 'function') {
+                            window.addAirdropPoints(500, 'Прохождение главы PvE');
+                        }
                     }
                 }
             }
