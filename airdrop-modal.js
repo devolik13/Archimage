@@ -181,19 +181,21 @@ function setupAirdropUI() {
             }
         </style>
 
-        <!-- Очки и позиция -->
-        <div style="
+        <!-- Очки и позиция (кликабельно для детализации) -->
+        <div onclick="window.showAirdropPointsBreakdown()" style="
             background: linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,165,0,0.1) 100%);
             border: 2px solid #ffd700;
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 12px;
             text-align: center;
-        ">
-            <div style="font-size: ${smallFontSize}px; color: #aaa; margin-bottom: 5px;">Твои очки</div>
+            cursor: pointer;
+            transition: all 0.2s;
+        " onmouseover="this.style.background='linear-gradient(135deg, rgba(255,215,0,0.3) 0%, rgba(255,165,0,0.2) 100%)'" onmouseout="this.style.background='linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,165,0,0.1) 100%)'">
+            <div style="font-size: ${smallFontSize}px; color: #aaa; margin-bottom: 5px;">Твои очки 💡</div>
             <div style="font-size: ${bigFontSize}px; color: #ffd700; font-weight: bold;">${airdropPoints.toLocaleString()}</div>
             <div style="font-size: ${smallFontSize}px; color: #888; margin-top: 5px;">
-                📊 Позиция: скоро
+                📊 Нажми для детализации
             </div>
         </div>
 
@@ -423,6 +425,24 @@ function addAirdropPoints(points, reason = '') {
     const oldPoints = window.userData.airdrop_points || 0;
     window.userData.airdrop_points = oldPoints + points;
 
+    // Сохраняем историю начислений
+    if (!window.userData.airdrop_history) {
+        window.userData.airdrop_history = [];
+    }
+
+    // Добавляем запись в историю
+    window.userData.airdrop_history.push({
+        points: points,
+        reason: reason,
+        timestamp: Date.now(),
+        total: window.userData.airdrop_points
+    });
+
+    // Ограничиваем историю последними 100 записями
+    if (window.userData.airdrop_history.length > 100) {
+        window.userData.airdrop_history = window.userData.airdrop_history.slice(-100);
+    }
+
     console.log(`🪂 Airdrop: +${points} очков (${reason}). Всего: ${window.userData.airdrop_points}`);
 
     // Сохраняем в БД
@@ -517,9 +537,171 @@ function closeAirdropModal() {
     }
 }
 
+/**
+ * Показать детализацию очков Airdrop
+ */
+function showAirdropPointsBreakdown() {
+    const history = window.userData?.airdrop_history || [];
+    const totalPoints = window.userData?.airdrop_points || 0;
+
+    // Группируем по типу начисления
+    const breakdown = {};
+    const categoryEmoji = {
+        'Победа в PvP': '⚔️',
+        'Ежедневный вход': '📅',
+        'Изучение заклинания': '📚',
+        'Постройка/улучшение здания': '🏰',
+        'Прохождение главы PvE': '🎯',
+        'Streak 7 дней': '🔥',
+        'Streak 30 дней': '🔥',
+        'Streak 100 дней': '🔥',
+        'Приглашение друга': '👥',
+    };
+
+    // Подсчитываем по категориям
+    history.forEach(entry => {
+        const reason = entry.reason || 'Другое';
+        if (!breakdown[reason]) {
+            breakdown[reason] = { count: 0, points: 0 };
+        }
+        breakdown[reason].count++;
+        breakdown[reason].points += entry.points;
+    });
+
+    // Сортируем по количеству очков
+    const sortedBreakdown = Object.entries(breakdown).sort((a, b) => b[1].points - a[1].points);
+
+    // Создаём модальное окно
+    const modal = document.createElement('div');
+    modal.id = 'airdrop-breakdown-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #2c2c3d 0%, #1a1a2e 100%);
+        border: 2px solid #ffd700;
+        border-radius: 16px;
+        padding: 25px;
+        max-width: 450px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        z-index: 10001;
+        box-shadow: 0 10px 50px rgba(0,0,0,0.8);
+    `;
+
+    let historyHTML = '';
+    if (sortedBreakdown.length > 0) {
+        historyHTML = sortedBreakdown.map(([reason, data]) => {
+            const emoji = categoryEmoji[reason] || '🪂';
+            const percentage = totalPoints > 0 ? ((data.points / totalPoints) * 100).toFixed(1) : 0;
+            return `
+                <div style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 12px;
+                    margin: 8px 0;
+                    background: rgba(255,215,0,0.1);
+                    border-left: 3px solid #ffd700;
+                    border-radius: 8px;
+                ">
+                    <div style="flex: 1;">
+                        <div style="color: #ffd700; font-weight: bold; margin-bottom: 4px;">
+                            ${emoji} ${reason}
+                        </div>
+                        <div style="color: #888; font-size: 12px;">
+                            ${data.count}x начислений
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="color: #4ade80; font-weight: bold; font-size: 18px;">
+                            +${data.points.toLocaleString()}
+                        </div>
+                        <div style="color: #888; font-size: 11px;">
+                            ${percentage}%
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } else {
+        historyHTML = `
+            <div style="text-align: center; color: #888; padding: 20px;">
+                <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
+                <div>История начислений пока пуста</div>
+                <div style="font-size: 12px; margin-top: 8px;">
+                    Очки начисляются за игровую активность
+                </div>
+            </div>
+        `;
+    }
+
+    modal.innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="color: #ffd700; font-size: 24px; font-weight: bold; margin-bottom: 8px;">
+                💰 Детализация очков
+            </div>
+            <div style="color: #aaa; font-size: 14px;">
+                Всего: <span style="color: #4ade80; font-weight: bold;">${totalPoints.toLocaleString()}</span> очков
+            </div>
+        </div>
+
+        <div style="margin: 20px 0;">
+            ${historyHTML}
+        </div>
+
+        <button onclick="window.closeAirdropBreakdown()" style="
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #ffd700, #cc9900);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
+        " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+            Закрыть
+        </button>
+    `;
+
+    // Добавляем overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'airdrop-breakdown-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 10000;
+    `;
+    overlay.onclick = () => window.closeAirdropBreakdown();
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(modal);
+}
+
+/**
+ * Закрыть окно детализации
+ */
+function closeAirdropBreakdown() {
+    const modal = document.getElementById('airdrop-breakdown-modal');
+    const overlay = document.getElementById('airdrop-breakdown-overlay');
+    if (modal) modal.remove();
+    if (overlay) overlay.remove();
+}
+
 // Экспорт функций
 window.showAirdropModal = showAirdropModal;
 window.closeAirdropModal = closeAirdropModal;
 window.addAirdropPoints = addAirdropPoints;
 window.connectWallet = connectWallet;
 window.disconnectWallet = disconnectWallet;
+window.showAirdropPointsBreakdown = showAirdropPointsBreakdown;
+window.closeAirdropBreakdown = closeAirdropBreakdown;

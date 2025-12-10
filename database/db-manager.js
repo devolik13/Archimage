@@ -138,6 +138,7 @@ class DatabaseManager {
                 last_login: playerData.last_login || new Date().toISOString(),
                 purchased_packs: playerData.purchased_packs || {}, // Купленные стартовые пакеты
                 airdrop_points: playerData.airdrop_points || 0, // Очки для airdrop
+                airdrop_history: playerData.airdrop_history || [], // История начислений airdrop
                 wallet_address: playerData.wallet_address || null, // TON кошелек
                 wallet_connected_at: playerData.wallet_connected_at || null // Время подключения кошелька
             };
