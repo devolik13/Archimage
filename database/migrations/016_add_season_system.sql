@@ -91,10 +91,10 @@ BEGIN
             THEN p_data->'pve_progress'
             ELSE pve_progress
         END,
-        daily_streak = CASE
-            WHEN p_data ? 'daily_streak' AND p_data->'daily_streak' IS NOT NULL
-            THEN p_data->'daily_streak'
-            ELSE daily_streak
+        daily_login = CASE
+            WHEN p_data ? 'daily_login' AND p_data->'daily_login' IS NOT NULL
+            THEN p_data->'daily_login'
+            ELSE daily_login
         END,
         -- Season fields
         current_season = COALESCE((p_data->>'current_season')::INTEGER, current_season),
