@@ -41,8 +41,8 @@ const LEAGUES = [
         lossMultiplier: 0.0,   // Нет потери очков
         // Награды за достижение лиги (один раз за сезон)
         rewards: {
-            time_currency: 50,
-            airdrop_points: 100
+            time_currency: 100,      // ×2 (было 50)
+            airdrop_points: 50       // ÷2 (было 100)
         }
     },
     {
@@ -55,8 +55,8 @@ const LEAGUES = [
         winMultiplier: 1.3,    // +30% к победам
         lossMultiplier: 0.5,   // -50% потерь
         rewards: {
-            time_currency: 150,
-            airdrop_points: 250
+            time_currency: 300,      // ×2 (было 150)
+            airdrop_points: 125      // ÷2 (было 250)
         }
     },
     {
@@ -69,8 +69,8 @@ const LEAGUES = [
         winMultiplier: 1.1,    // +10% к победам
         lossMultiplier: 0.8,   // -20% потерь
         rewards: {
-            time_currency: 300,
-            airdrop_points: 500
+            time_currency: 600,      // ×2 (было 300)
+            airdrop_points: 250      // ÷2 (было 500)
         }
     },
     {
@@ -83,8 +83,8 @@ const LEAGUES = [
         winMultiplier: 1.0,    // Базовые значения
         lossMultiplier: 1.0,
         rewards: {
-            time_currency: 500,
-            airdrop_points: 1000
+            time_currency: 1000,     // ×2 (было 500)
+            airdrop_points: 500      // ÷2 (было 1000)
         }
     },
     {
@@ -97,8 +97,8 @@ const LEAGUES = [
         winMultiplier: 0.9,    // -10% к победам
         lossMultiplier: 1.2,   // +20% потерь
         rewards: {
-            time_currency: 1000,
-            airdrop_points: 2000
+            time_currency: 2000,     // ×2 (было 1000)
+            airdrop_points: 1000     // ÷2 (было 2000)
         }
     },
     {
@@ -111,8 +111,8 @@ const LEAGUES = [
         winMultiplier: 0.8,    // -20% к победам
         lossMultiplier: 1.4,   // +40% потерь
         rewards: {
-            time_currency: 2000,
-            airdrop_points: 4000
+            time_currency: 4000,     // ×2 (было 2000)
+            airdrop_points: 2000     // ÷2 (было 4000)
         }
     },
     {
@@ -125,8 +125,8 @@ const LEAGUES = [
         winMultiplier: 0.7,    // -30% к победам
         lossMultiplier: 1.6,   // +60% потерь
         rewards: {
-            time_currency: 5000,
-            airdrop_points: 10000
+            time_currency: 10000,    // ×2 (было 5000)
+            airdrop_points: 5000     // ÷2 (было 10000)
         }
     },
     {
@@ -139,8 +139,8 @@ const LEAGUES = [
         winMultiplier: 0.5,    // -50% к победам
         lossMultiplier: 2.0,   // +100% потерь
         rewards: {
-            time_currency: 10000,
-            airdrop_points: 25000
+            time_currency: 20000,    // ×2 (было 10000)
+            airdrop_points: 12500    // ÷2 (было 25000)
         }
     }
 ];
