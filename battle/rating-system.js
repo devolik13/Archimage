@@ -38,7 +38,13 @@ const LEAGUES = [
         color: '#8B4513',
         icon: '🔰',
         winMultiplier: 1.5,    // +50% к победам
-        lossMultiplier: 0.0    // Нет потери очков
+        lossMultiplier: 0.0,   // Нет потери очков
+        // Награды за достижение лиги (один раз за сезон)
+        rewards: {
+            gold: 500,
+            crystals: 10,
+            airdrop_points: 100
+        }
     },
     {
         id: 'apprentice',
@@ -48,7 +54,12 @@ const LEAGUES = [
         color: '#87CEEB',
         icon: '📘',
         winMultiplier: 1.3,    // +30% к победам
-        lossMultiplier: 0.5    // -50% потерь
+        lossMultiplier: 0.5,   // -50% потерь
+        rewards: {
+            gold: 1500,
+            crystals: 25,
+            airdrop_points: 250
+        }
     },
     {
         id: 'journeyman',
@@ -58,7 +69,12 @@ const LEAGUES = [
         color: '#4169E1',
         icon: '📗',
         winMultiplier: 1.1,    // +10% к победам
-        lossMultiplier: 0.8    // -20% потерь
+        lossMultiplier: 0.8,   // -20% потерь
+        rewards: {
+            gold: 3000,
+            crystals: 50,
+            airdrop_points: 500
+        }
     },
     {
         id: 'skilled',
@@ -68,7 +84,12 @@ const LEAGUES = [
         color: '#9370DB',
         icon: '🔮',
         winMultiplier: 1.0,    // Базовые значения
-        lossMultiplier: 1.0
+        lossMultiplier: 1.0,
+        rewards: {
+            gold: 5000,
+            crystals: 100,
+            airdrop_points: 1000
+        }
     },
     {
         id: 'master',
@@ -78,7 +99,12 @@ const LEAGUES = [
         color: '#FF69B4',
         icon: '✨',
         winMultiplier: 0.9,    // -10% к победам
-        lossMultiplier: 1.2    // +20% потерь
+        lossMultiplier: 1.2,   // +20% потерь
+        rewards: {
+            gold: 10000,
+            crystals: 200,
+            airdrop_points: 2000
+        }
     },
     {
         id: 'great',
@@ -88,7 +114,12 @@ const LEAGUES = [
         color: '#FFD700',
         icon: '⭐',
         winMultiplier: 0.8,    // -20% к победам
-        lossMultiplier: 1.4    // +40% потерь
+        lossMultiplier: 1.4,   // +40% потерь
+        rewards: {
+            gold: 20000,
+            crystals: 400,
+            airdrop_points: 4000
+        }
     },
     {
         id: 'supreme',
@@ -98,7 +129,12 @@ const LEAGUES = [
         color: '#FF4500',
         icon: '🔥',
         winMultiplier: 0.7,    // -30% к победам
-        lossMultiplier: 1.6    // +60% потерь
+        lossMultiplier: 1.6,   // +60% потерь
+        rewards: {
+            gold: 50000,
+            crystals: 1000,
+            airdrop_points: 10000
+        }
     },
     {
         id: 'archmage',
@@ -108,7 +144,12 @@ const LEAGUES = [
         color: '#9400D3',
         icon: '👑',
         winMultiplier: 0.5,    // -50% к победам
-        lossMultiplier: 2.0    // +100% потерь
+        lossMultiplier: 2.0,   // +100% потерь
+        rewards: {
+            gold: 100000,
+            crystals: 2500,
+            airdrop_points: 25000
+        }
     }
 ];
 

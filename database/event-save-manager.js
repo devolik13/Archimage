@@ -95,7 +95,9 @@ class EventSaveManager {
                 airdrop_points: window.userData.airdrop_points || 0, // Airdrop очки
                 airdrop_breakdown: window.userData.airdrop_breakdown || {}, // Разбивка по категориям
                 wallet_address: window.userData.wallet_address || null, // TON кошелек
-                wallet_connected_at: window.userData.wallet_connected_at || null // Время подключения кошелька
+                wallet_connected_at: window.userData.wallet_connected_at || null, // Время подключения кошелька
+                current_season: window.userData.current_season || 1, // Текущий сезон
+                season_league_rewards_claimed: window.userData.season_league_rewards_claimed || [] // Полученные награды за лиги
             });
 
             const success = await window.dbManager.savePlayer(playerData);
@@ -176,6 +178,9 @@ window.onBattleCompleted = async function(result, rewards, opponentLevel, rating
     window._lastBattleSaveTime = now;
 
 
+    // Запоминаем старый рейтинг для проверки новых наград
+    const oldRating = (window.userData?.rating || 0) - ratingChange;
+
     // Сначала сохраняем результат боя и обновляем статистику
     if (window.dbManager) {
         await window.dbManager.saveBattleResult(result, rewards, opponentLevel, ratingChange);
@@ -184,6 +189,11 @@ window.onBattleCompleted = async function(result, rewards, opponentLevel, rating
     // Затем сохраняем текущее состояние игрока (опыт, маги и т.д.)
     await window.eventSaveManager.saveImmediate(`battle_${result}`);
 
+    // Проверяем доступные награды за новые лиги
+    if (typeof window.checkForNewAvailableRewards === 'function') {
+        const newRating = window.userData?.rating || 0;
+        window.checkForNewAvailableRewards(oldRating, newRating);
+    }
 };
 
 window.onWizardsGainedExperience = function(wizardIds, expGained) {

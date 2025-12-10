@@ -140,7 +140,9 @@ class DatabaseManager {
                 airdrop_points: playerData.airdrop_points || 0, // Очки для airdrop
                 airdrop_breakdown: playerData.airdrop_breakdown || {}, // Разбивка очков по категориям
                 wallet_address: playerData.wallet_address || null, // TON кошелек
-                wallet_connected_at: playerData.wallet_connected_at || null // Время подключения кошелька
+                wallet_connected_at: playerData.wallet_connected_at || null, // Время подключения кошелька
+                current_season: playerData.current_season || 1, // Текущий сезон
+                season_league_rewards_claimed: playerData.season_league_rewards_claimed || [] // Полученные награды за лиги
             };
 
             // DEBUG: Логируем faction_changed перед отправкой в RPC

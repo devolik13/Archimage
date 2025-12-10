@@ -98,6 +98,12 @@ async function initGameWithDatabase() {
     window.userData.wallet_connected_at = player.wallet_connected_at || null;
     console.log('🪂 [DEBUG] Загружены airdrop_points из БД:', player.airdrop_points);
     console.log('🪂 [DEBUG] Загружен airdrop_breakdown из БД:', player.airdrop_breakdown);
+
+    // Данные сезона
+    window.userData.current_season = player.current_season || 1;
+    window.userData.season_league_rewards_claimed = player.season_league_rewards_claimed || [];
+    console.log('🏆 [DEBUG] Загружен сезон:', player.current_season);
+    console.log('🏆 [DEBUG] Полученные награды за лиги:', player.season_league_rewards_claimed);
     console.log('🪂 [DEBUG] window.userData.airdrop_breakdown после присвоения:', window.userData.airdrop_breakdown);
 
     // КРИТИЧНО: Проверяем есть ли фракция

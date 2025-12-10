@@ -165,6 +165,10 @@ function showArenaMainMenu() {
         height: (384 - 212) * scaleY
     };
     
+    // Проверяем доступные награды за лиги
+    const hasAvailableRewards = typeof window.getAvailableLeagueRewards === 'function' ?
+        window.getAvailableLeagueRewards().length > 0 : false;
+
     // Массив кнопок главного меню
     const buttons = [
         {
@@ -190,12 +194,18 @@ function showArenaMainMenu() {
             highlight: hasArena
         },
         {
-            text: '🏆 Рейтинг',
+            text: hasAvailableRewards ? '🎁 Награды за лиги ✨' : '🏆 Рейтинг',
             onClick: () => {
-                showArenaLeaderboard(); // Показываем рейтинг в том же окне
+                if (hasAvailableRewards && typeof window.showLeagueRewardsModal === 'function') {
+                    closePvPArenaModalBg(); // Закрываем арену для модального окна наград
+                    window.showLeagueRewardsModal();
+                } else {
+                    showArenaLeaderboard(); // Показываем рейтинг в том же окне
+                }
             },
             enabled: true,
-            gold: true
+            gold: hasAvailableRewards ? false : true,
+            orange: hasAvailableRewards // Новый цвет для доступных наград
         },
         {
             text: '🗺️ Приключения',
@@ -242,22 +252,25 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
             width: ${buttonWidth}px;
             height: ${buttonHeight}px;
             box-sizing: border-box;
-            background: ${button.enabled ? 
-                (button.highlight ? 'rgba(114, 137, 218, 0.3)' : 
+            background: ${button.enabled ?
+                (button.highlight ? 'rgba(114, 137, 218, 0.3)' :
                  button.gold ? 'rgba(255, 215, 0, 0.2)' :
+                 button.orange ? 'rgba(255, 165, 0, 0.3)' :
                  button.green ? 'rgba(76, 175, 80, 0.2)' :
-                 'rgba(255, 255, 255, 0.1)') : 
+                 'rgba(255, 255, 255, 0.1)') :
                 'rgba(0, 0, 0, 0.3)'};
-            border: 2px solid ${button.enabled ? 
+            border: 2px solid ${button.enabled ?
                 (button.highlight ? '#7289da' :
                  button.gold ? '#FFD700' :
+                 button.orange ? '#ffa500' :
                  button.green ? '#4CAF50' :
-                 'rgba(255, 255, 255, 0.3)') : 
+                 'rgba(255, 255, 255, 0.3)') :
                 'rgba(128, 128, 128, 0.3)'};
-            color: ${button.enabled ? 
+            color: ${button.enabled ?
                 (button.gold ? '#FFD700' :
+                 button.orange ? '#ffa500' :
                  button.green ? '#4CAF50' :
-                 'white') : 
+                 'white') :
                 '#666'};
             border-radius: ${borderRadius}px;
             font-size: ${buttonFontSize}px;
@@ -276,6 +289,7 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
             btnElement.onmouseover = () => {
                 btnElement.style.background = button.highlight ? 'rgba(114, 137, 218, 0.5)' :
                                             button.gold ? 'rgba(255, 215, 0, 0.4)' :
+                                            button.orange ? 'rgba(255, 165, 0, 0.5)' :
                                             button.green ? 'rgba(76, 175, 80, 0.4)' :
                                             'rgba(255, 255, 255, 0.2)';
                 btnElement.style.transform = 'scale(1.05)';
@@ -283,6 +297,7 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
             btnElement.onmouseout = () => {
                 btnElement.style.background = button.highlight ? 'rgba(114, 137, 218, 0.3)' :
                                              button.gold ? 'rgba(255, 215, 0, 0.2)' :
+                                             button.orange ? 'rgba(255, 165, 0, 0.3)' :
                                              button.green ? 'rgba(76, 175, 80, 0.2)' :
                                              'rgba(255, 255, 255, 0.1)';
                 btnElement.style.transform = 'scale(1)';
