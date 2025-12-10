@@ -305,11 +305,15 @@ function initTimeCurrency() {
         window.userData.time_currency += offlineEarnings;
         offlineNotificationShown = true; // Устанавливаем флаг ДО показа уведомления
         showOfflineEarningsNotification(offlineEarnings);
+    }
 
-        // Сохраняем обновленное значение
-        if (window.eventSaveManager) {
-            window.eventSaveManager.saveImmediate('offline_earnings_added');
-        }
+    // КРИТИЧНО: Обновляем last_login ПОСЛЕ расчёта офлайн бонуса
+    // Это предотвращает повторное начисление при перезагрузке
+    window.userData.last_login = new Date().toISOString();
+
+    // Сохраняем обновленное значение (включая новый last_login)
+    if (window.eventSaveManager) {
+        window.eventSaveManager.saveImmediate('time_currency_init');
     }
 
     createTimeCurrencyUI();
