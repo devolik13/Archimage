@@ -91,6 +91,13 @@ async function initGameWithDatabase() {
     window.userData.purchased_packs = player.purchased_packs || {};
     console.log('📦 [DEBUG] Загружены purchased_packs из БД:', JSON.stringify(player.purchased_packs));
 
+    // Airdrop данные
+    window.userData.airdrop_points = Math.max(0, player.airdrop_points || 0);
+    window.userData.airdrop_history = player.airdrop_history || [];
+    window.userData.wallet_address = player.wallet_address || null;
+    window.userData.wallet_connected_at = player.wallet_connected_at || null;
+    console.log('🪂 [DEBUG] Загружены airdrop_points из БД:', player.airdrop_points);
+
     // КРИТИЧНО: Проверяем есть ли фракция
     if (!player.faction || player.faction === null) {
         // Новый игрок - показываем выбор фракции
