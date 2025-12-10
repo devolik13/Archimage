@@ -772,13 +772,8 @@ function updateConstructionTimer(buildingId, element) {
             
             // Обновляем кликабельные зоны
             createBuildingClickZones(faction, container);
-            
-            // Показываем уведомление
-            const config = window.BUILDINGS_CONFIG?.[buildingId];
-            const buildingName = config ? config.name : buildingId;
-            if (window.showNotification) {
-                window.showNotification(`✅ ${buildingName} построено!`);
-            }
+
+            // Уведомление убрано - оно уже показывается в completeConstruction()
         }
         return;
     }
