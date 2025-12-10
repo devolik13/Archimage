@@ -37,7 +37,7 @@ const ENEMY_TYPES = {
         baseDamage: 15,
         hpGrowth: 8,
         damageGrowth: 2,
-        armor: 70,
+        armor: 130,
         attackType: "physical",
         spriteSheet: "orc"
     },
