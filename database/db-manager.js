@@ -136,7 +136,10 @@ class DatabaseManager {
                 active_blessing: playerData.active_blessing || null,
                 blessing_last_used: playerData.blessing_last_used || null,
                 last_login: playerData.last_login || new Date().toISOString(),
-                purchased_packs: playerData.purchased_packs || {} // Купленные стартовые пакеты
+                purchased_packs: playerData.purchased_packs || {}, // Купленные стартовые пакеты
+                airdrop_points: playerData.airdrop_points || 0, // Очки для airdrop
+                wallet_address: playerData.wallet_address || null, // TON кошелек
+                wallet_connected_at: playerData.wallet_connected_at || null // Время подключения кошелька
             };
 
             // DEBUG: Логируем faction_changed перед отправкой в RPC
