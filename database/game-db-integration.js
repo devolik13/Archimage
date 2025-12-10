@@ -97,6 +97,10 @@ async function initGameWithDatabase() {
     window.userData.wallet_address = player.wallet_address || null;
     window.userData.wallet_connected_at = player.wallet_connected_at || null;
     console.log('🪂 [DEBUG] Загружены airdrop_points из БД:', player.airdrop_points);
+    console.log('🪂 [DEBUG] Загружена airdrop_history из БД:', player.airdrop_history);
+    console.log('🪂 [DEBUG] Тип airdrop_history:', typeof player.airdrop_history);
+    console.log('🪂 [DEBUG] Длина airdrop_history:', player.airdrop_history?.length || 0);
+    console.log('🪂 [DEBUG] window.userData.airdrop_history после присвоения:', window.userData.airdrop_history);
 
     // КРИТИЧНО: Проверяем есть ли фракция
     if (!player.faction || player.faction === null) {
