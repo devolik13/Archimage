@@ -102,14 +102,9 @@ async function claimLeagueReward(leagueId) {
     // Выдаем награды
     const rewards = league.rewards;
 
-    if (rewards.gold) {
-        window.userData.gold = (window.userData.gold || 0) + rewards.gold;
-        console.log(`💰 Получено золота: +${rewards.gold}`);
-    }
-
-    if (rewards.crystals) {
-        window.userData.crystals = (window.userData.crystals || 0) + rewards.crystals;
-        console.log(`💎 Получено кристаллов: +${rewards.crystals}`);
+    if (rewards.time_currency) {
+        window.userData.time_currency = (window.userData.time_currency || 0) + rewards.time_currency;
+        console.log(`⏰ Получено времени: +${rewards.time_currency}`);
     }
 
     if (rewards.airdrop_points && typeof window.addAirdropPoints === 'function') {
@@ -202,8 +197,7 @@ function showLeagueRewardsModal() {
                     </div>
                     <div style="text-align: right;">
                         <div style="font-size: 12px; color: #aaa; margin-bottom: 5px;">Награды:</div>
-                        ${league.rewards.gold ? `<div style="color: #ffa500; font-size: 13px;">💰 ${league.rewards.gold}</div>` : ''}
-                        ${league.rewards.crystals ? `<div style="color: #7289da; font-size: 13px;">💎 ${league.rewards.crystals}</div>` : ''}
+                        ${league.rewards.time_currency ? `<div style="color: #00bfff; font-size: 13px;">⏰ ${league.rewards.time_currency}</div>` : ''}
                         ${league.rewards.airdrop_points ? `<div style="color: #4ade80; font-size: 13px;">🪂 ${league.rewards.airdrop_points}</div>` : ''}
                     </div>
                 </div>

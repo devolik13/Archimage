@@ -41,8 +41,7 @@ const LEAGUES = [
         lossMultiplier: 0.0,   // Нет потери очков
         // Награды за достижение лиги (один раз за сезон)
         rewards: {
-            gold: 500,
-            crystals: 10,
+            time_currency: 50,
             airdrop_points: 100
         }
     },
@@ -56,8 +55,7 @@ const LEAGUES = [
         winMultiplier: 1.3,    // +30% к победам
         lossMultiplier: 0.5,   // -50% потерь
         rewards: {
-            gold: 1500,
-            crystals: 25,
+            time_currency: 150,
             airdrop_points: 250
         }
     },
@@ -71,8 +69,7 @@ const LEAGUES = [
         winMultiplier: 1.1,    // +10% к победам
         lossMultiplier: 0.8,   // -20% потерь
         rewards: {
-            gold: 3000,
-            crystals: 50,
+            time_currency: 300,
             airdrop_points: 500
         }
     },
@@ -86,8 +83,7 @@ const LEAGUES = [
         winMultiplier: 1.0,    // Базовые значения
         lossMultiplier: 1.0,
         rewards: {
-            gold: 5000,
-            crystals: 100,
+            time_currency: 500,
             airdrop_points: 1000
         }
     },
@@ -101,8 +97,7 @@ const LEAGUES = [
         winMultiplier: 0.9,    // -10% к победам
         lossMultiplier: 1.2,   // +20% потерь
         rewards: {
-            gold: 10000,
-            crystals: 200,
+            time_currency: 1000,
             airdrop_points: 2000
         }
     },
@@ -116,8 +111,7 @@ const LEAGUES = [
         winMultiplier: 0.8,    // -20% к победам
         lossMultiplier: 1.4,   // +40% потерь
         rewards: {
-            gold: 20000,
-            crystals: 400,
+            time_currency: 2000,
             airdrop_points: 4000
         }
     },
@@ -131,8 +125,7 @@ const LEAGUES = [
         winMultiplier: 0.7,    // -30% к победам
         lossMultiplier: 1.6,   // +60% потерь
         rewards: {
-            gold: 50000,
-            crystals: 1000,
+            time_currency: 5000,
             airdrop_points: 10000
         }
     },
@@ -146,8 +139,7 @@ const LEAGUES = [
         winMultiplier: 0.5,    // -50% к победам
         lossMultiplier: 2.0,   // +100% потерь
         rewards: {
-            gold: 100000,
-            crystals: 2500,
+            time_currency: 10000,
             airdrop_points: 25000
         }
     }
