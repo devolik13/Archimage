@@ -138,7 +138,7 @@ class DatabaseManager {
                 last_login: playerData.last_login || new Date().toISOString(),
                 purchased_packs: playerData.purchased_packs || {}, // Купленные стартовые пакеты
                 airdrop_points: playerData.airdrop_points || 0, // Очки для airdrop
-                airdrop_history: playerData.airdrop_history || [], // История начислений airdrop
+                airdrop_breakdown: playerData.airdrop_breakdown || {}, // Разбивка очков по категориям
                 wallet_address: playerData.wallet_address || null, // TON кошелек
                 wallet_connected_at: playerData.wallet_connected_at || null // Время подключения кошелька
             };
@@ -147,7 +147,7 @@ class DatabaseManager {
             console.log(`🔍 [RPC DEBUG] Отправка в update_player_safe: faction_changed = ${rpcData.faction_changed}`);
             console.log(`🪂 [RPC DEBUG] Airdrop данные в rpcData:`);
             console.log(`  - airdrop_points: ${rpcData.airdrop_points}`);
-            console.log(`  - airdrop_history length: ${rpcData.airdrop_history?.length || 0}`);
+            console.log(`  - airdrop_breakdown:`, rpcData.airdrop_breakdown);
             console.log(`  - wallet_address: ${rpcData.wallet_address}`);
 
             // Вызываем безопасную RPC функцию (обновляет только по telegram_id)

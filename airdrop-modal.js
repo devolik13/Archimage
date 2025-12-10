@@ -425,27 +425,18 @@ function addAirdropPoints(points, reason = '') {
     const oldPoints = window.userData.airdrop_points || 0;
     window.userData.airdrop_points = oldPoints + points;
 
-    // Сохраняем историю начислений
-    if (!window.userData.airdrop_history) {
-        window.userData.airdrop_history = [];
+    // Накапливаем суммы по категориям (вместо истории)
+    if (!window.userData.airdrop_breakdown) {
+        window.userData.airdrop_breakdown = {};
     }
 
-    // Добавляем запись в историю
-    window.userData.airdrop_history.push({
-        points: points,
-        reason: reason,
-        timestamp: Date.now(),
-        total: window.userData.airdrop_points
-    });
-
-    // Ограничиваем историю последними 100 записями
-    if (window.userData.airdrop_history.length > 100) {
-        window.userData.airdrop_history = window.userData.airdrop_history.slice(-100);
-    }
+    // Добавляем очки к категории
+    const category = reason || 'Другое';
+    window.userData.airdrop_breakdown[category] = (window.userData.airdrop_breakdown[category] || 0) + points;
 
     console.log(`🪂 Airdrop: +${points} очков (${reason}). Всего: ${window.userData.airdrop_points}`);
     console.log(`🪂 [DEBUG] window.userData.airdrop_points = ${window.userData.airdrop_points}`);
-    console.log(`🪂 [DEBUG] window.userData.airdrop_history length = ${window.userData.airdrop_history.length}`);
+    console.log(`🪂 [DEBUG] window.userData.airdrop_breakdown:`, window.userData.airdrop_breakdown);
 
     // Сохраняем в БД
     if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
@@ -547,11 +538,9 @@ function closeAirdropModal() {
  * Показать детализацию очков Airdrop
  */
 function showAirdropPointsBreakdown() {
-    const history = window.userData?.airdrop_history || [];
+    const breakdown = window.userData?.airdrop_breakdown || {};
     const totalPoints = window.userData?.airdrop_points || 0;
 
-    // Группируем по типу начисления
-    const breakdown = {};
     const categoryEmoji = {
         'Победа в PvP': '⚔️',
         'Ежедневный вход': '📅',
@@ -564,18 +553,8 @@ function showAirdropPointsBreakdown() {
         'Приглашение друга': '👥',
     };
 
-    // Подсчитываем по категориям
-    history.forEach(entry => {
-        const reason = entry.reason || 'Другое';
-        if (!breakdown[reason]) {
-            breakdown[reason] = { count: 0, points: 0 };
-        }
-        breakdown[reason].count++;
-        breakdown[reason].points += entry.points;
-    });
-
-    // Сортируем по количеству очков
-    const sortedBreakdown = Object.entries(breakdown).sort((a, b) => b[1].points - a[1].points);
+    // Преобразуем breakdown в массив и сортируем по очкам
+    const sortedBreakdown = Object.entries(breakdown).sort((a, b) => b[1] - a[1]);
 
     // Создаём модальное окно
     const modal = document.createElement('div');
@@ -597,11 +576,11 @@ function showAirdropPointsBreakdown() {
         box-shadow: 0 10px 50px rgba(0,0,0,0.8);
     `;
 
-    let historyHTML = '';
+    let breakdownHTML = '';
     if (sortedBreakdown.length > 0) {
-        historyHTML = sortedBreakdown.map(([reason, data]) => {
-            const emoji = categoryEmoji[reason] || '🪂';
-            const percentage = totalPoints > 0 ? ((data.points / totalPoints) * 100).toFixed(1) : 0;
+        breakdownHTML = sortedBreakdown.map(([category, points]) => {
+            const emoji = categoryEmoji[category] || '🪂';
+            const percentage = totalPoints > 0 ? ((points / totalPoints) * 100).toFixed(1) : 0;
             return `
                 <div style="
                     display: flex;
@@ -615,12 +594,12 @@ function showAirdropPointsBreakdown() {
                 ">
                     <div style="flex: 1;">
                         <div style="color: #ffd700; font-weight: bold; font-size: 15px;">
-                            ${emoji} ${reason}
+                            ${emoji} ${category}
                         </div>
                     </div>
                     <div style="text-align: right;">
                         <div style="color: #4ade80; font-weight: bold; font-size: 20px;">
-                            ${data.points.toLocaleString()}
+                            ${points.toLocaleString()}
                         </div>
                         <div style="color: #888; font-size: 11px; margin-top: 2px;">
                             ${percentage}%
@@ -630,7 +609,7 @@ function showAirdropPointsBreakdown() {
             `;
         }).join('');
     } else {
-        historyHTML = `
+        breakdownHTML = `
             <div style="text-align: center; color: #888; padding: 20px;">
                 <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
                 <div>Очки пока не начислялись</div>
@@ -652,7 +631,7 @@ function showAirdropPointsBreakdown() {
         </div>
 
         <div style="margin: 20px 0;">
-            ${historyHTML}
+            ${breakdownHTML}
         </div>
 
         <button onclick="window.closeAirdropBreakdown()" style="

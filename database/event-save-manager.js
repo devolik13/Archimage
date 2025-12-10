@@ -93,7 +93,7 @@ class EventSaveManager {
                 battle_energy: window.userData.battle_energy, // Энергия боев
                 purchased_packs: window.userData.purchased_packs, // Купленные стартовые пакеты
                 airdrop_points: window.userData.airdrop_points || 0, // Airdrop очки
-                airdrop_history: window.userData.airdrop_history || [], // История начислений
+                airdrop_breakdown: window.userData.airdrop_breakdown || {}, // Разбивка по категориям
                 wallet_address: window.userData.wallet_address || null, // TON кошелек
                 wallet_connected_at: window.userData.wallet_connected_at || null // Время подключения кошелька
             });
