@@ -102,8 +102,7 @@ BEGIN
             WHEN p_data ? 'season_league_rewards_claimed' AND p_data->'season_league_rewards_claimed' IS NOT NULL
             THEN ARRAY(SELECT jsonb_array_elements_text(p_data->'season_league_rewards_claimed'))
             ELSE season_league_rewards_claimed
-        END,
-        updated_at = NOW()
+        END
     WHERE telegram_id = p_telegram_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
