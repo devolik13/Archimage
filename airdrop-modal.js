@@ -14,20 +14,26 @@ let tonConnectUI = null;
  * Вызывается один раз при загрузке страницы
  */
 function initTonConnect() {
+    console.log('👛 initTonConnect() вызван');
+    console.log('👛 typeof TON_CONNECT_UI:', typeof TON_CONNECT_UI);
+    console.log('👛 window.TON_CONNECT_UI:', window.TON_CONNECT_UI);
+
     // Проверяем, что библиотека загружена
-    if (typeof TON_CONNECT_UI === 'undefined' && typeof TonConnectUI === 'undefined') {
-        console.warn('⚠️ TON Connect UI библиотека не загружена');
+    if (typeof TON_CONNECT_UI === 'undefined' && typeof window.TON_CONNECT_UI === 'undefined') {
+        console.warn('⚠️ TON Connect UI библиотека не загружена. Попробуем позже...');
         return null;
     }
 
     // Если уже инициализирован - возвращаем существующий экземпляр
     if (tonConnectUI) {
+        console.log('👛 TON Connect уже инициализирован');
         return tonConnectUI;
     }
 
     try {
-        // Создаём экземпляр TON Connect UI
+        // Создаём экземпляр TON Connect UI (CDN версия: TON_CONNECT_UI.TonConnectUI)
         const TonConnectUIClass = window.TON_CONNECT_UI?.TonConnectUI || window.TonConnectUI;
+        console.log('👛 TonConnectUIClass:', TonConnectUIClass);
 
         tonConnectUI = new TonConnectUIClass({
             manifestUrl: window.location.origin + '/tonconnect-manifest.json',
@@ -548,36 +554,57 @@ function setupAirdropUI() {
  * Подключение кошелька через TON Connect
  */
 async function connectWallet() {
-    console.log('👛 Подключение кошелька...');
+    console.log('👛 connectWallet() вызван');
 
     // Инициализируем TON Connect если ещё не сделано
     if (!tonConnectUI) {
+        console.log('👛 tonConnectUI не инициализирован, пробуем инициализировать...');
         initTonConnect();
+
+        // Если всё ещё не инициализирован - ждём загрузку библиотеки
+        if (!tonConnectUI) {
+            console.log('👛 Ожидаем загрузку библиотеки TON Connect...');
+
+            // Ждём до 3 секунд пока библиотека загрузится
+            for (let i = 0; i < 6; i++) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                if (typeof window.TON_CONNECT_UI !== 'undefined') {
+                    console.log('👛 Библиотека загружена, инициализируем...');
+                    initTonConnect();
+                    break;
+                }
+            }
+        }
     }
 
     if (!tonConnectUI) {
-        console.error('❌ TON Connect не инициализирован');
+        console.error('❌ TON Connect не удалось инициализировать');
+        console.error('❌ window.TON_CONNECT_UI:', window.TON_CONNECT_UI);
         if (window.showNotification) {
-            window.showNotification('❌ Ошибка инициализации кошелька');
+            window.showNotification('❌ Кошелёк недоступен. Попробуйте обновить страницу.');
         }
         return;
     }
 
     try {
+        console.log('👛 tonConnectUI готов:', tonConnectUI);
+
         // Проверяем, подключён ли уже кошелёк
         if (tonConnectUI.wallet) {
-            console.log('👛 Кошелёк уже подключён');
+            console.log('👛 Кошелёк уже подключён:', tonConnectUI.wallet);
             return;
         }
 
         // Открываем модальное окно выбора кошелька
+        console.log('👛 Открываем модальное окно TON Connect...');
         await tonConnectUI.openModal();
-        console.log('👛 Модальное окно TON Connect открыто');
+        console.log('👛 Модальное окно TON Connect открыто успешно');
 
     } catch (error) {
         console.error('❌ Ошибка подключения кошелька:', error);
+        console.error('❌ Stack:', error.stack);
         if (window.showNotification) {
-            window.showNotification('❌ Ошибка подключения кошелька');
+            window.showNotification('❌ Ошибка подключения: ' + error.message);
         }
     }
 }
