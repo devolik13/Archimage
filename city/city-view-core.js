@@ -340,12 +340,10 @@ function initializeDefaultBuildings() {
     });
 }
 
-// Переключение на вид города с фоном
-
 // Экспорт core функций
 window.initCityViewSystem = initCityViewSystem;
 window.initCityView = initCityViewSystem; // Алиас для обратной совместимости
-window.switchToCityView = switchToCityView;
 window.loadBuildingImageNew = loadBuildingImageNew;
+// Примечание: switchToCityView экспортируется в city-view-ui.js, где она определена
 
 console.log('🏙️ City View Core загружен');

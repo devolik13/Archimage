@@ -93,12 +93,15 @@ function switchToCityView(faction) {
     
     // Создаём панель управления (для всех устройств)
     createBottomControlPanel();
-    
+
     // На мобильных добавляем минимальный UI overlay
     if (isMobile) {
         createMobileUIOverlay(faction);
     }
 }
+
+// Экспортируем функцию сразу после определения
+window.switchToCityView = switchToCityView;
 
 // Создание минимального UI для мобильных
 function createMobileUIOverlay(faction) {
