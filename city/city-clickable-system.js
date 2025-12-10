@@ -180,16 +180,9 @@ function setupPolygonEvents(polygon, position, buildingData, key) {
     };
     
     polygon.onmouseenter = (e) => {
-        // Подсветка полигона - тоже убираем
-        /*
-        if (!window.DEV_MODE) {
-            polygon.style.fill = 'rgba(255,255,255,0.08)';
-        }
-        */
-        
         // ПОДСВЕТКА ЗДАНИЯ остается
         highlightBuilding(position.buildingId, true);
-        showBuildingTooltip(e, position.buildingId, buildingData);
+        // Tooltip убран - мешал и долго не исчезал
     };
     
     polygon.onmouseleave = () => {
