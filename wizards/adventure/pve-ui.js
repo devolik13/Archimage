@@ -1,6 +1,29 @@
 // wizards/adventure/pve-ui.js
 
 /**
+ * Форматирует награду времени для отображения
+ * @param {number} minutes - количество минут
+ * @returns {string} - отформатированная строка
+ */
+function formatTimeReward(minutes) {
+    if (minutes >= 1440) {
+        // Показываем в днях для больших наград
+        const days = Math.floor(minutes / 1440);
+        const daysText = days === 1 ? 'день' : (days < 5 ? 'дня' : 'дней');
+        return `${days} ${daysText}`;
+    } else if (minutes >= 60) {
+        // Показываем в часах
+        const hours = Math.floor(minutes / 60);
+        const hoursText = hours === 1 ? 'час' : (hours < 5 ? 'часа' : 'часов');
+        return `${hours} ${hoursText}`;
+    } else {
+        // Показываем в минутах
+        const minutesText = minutes === 1 ? 'минуту' : (minutes < 5 ? 'минуты' : 'минут');
+        return `${minutes} ${minutesText}`;
+    }
+}
+
+/**
  * Показывает меню выбора глав PvE
  */
 function showPvEChaptersMenu() {
@@ -182,7 +205,7 @@ function showChapter1LevelsFallback() {
                                 ${!isUnlocked ? '<span style="color: #999; margin-left: 8px;">🔒</span>' : ''}
                                 <div style="font-size: 12px; color: #aaa; margin-top: 4px;">
                                     ${level.enemies.length} ${level.enemies.length === 1 ? 'враг' : 'врагов'}
-                                    ${level.reward ? ` • Награда: ⏰ +${level.reward} ${level.reward === 1 ? 'день' : (level.reward < 5 ? 'дня' : 'дней')}` : ''}
+                                    ${level.reward ? ` • Награда: ⏰ +${formatTimeReward(level.reward)}` : ''}
                                 </div>
                             </div>
                         </div>
@@ -472,7 +495,7 @@ function showPvEResult(result, levelId) {
                     padding: 10px;
                     margin-bottom: 16px;
                 ">
-                    <span style="color: #ffd700;">⏰ +${reward} ${reward === 1 ? 'день' : (reward < 5 ? 'дня' : 'дней')}</span>
+                    <span style="color: #ffd700;">⏰ +${formatTimeReward(reward)}</span>
                 </div>
             ` : ''}
             <div style="display: flex; gap: 10px; justify-content: center;">

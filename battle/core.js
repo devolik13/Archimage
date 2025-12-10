@@ -932,13 +932,29 @@ async function checkBattleEnd() {
 
                 // Даём награду временем (если есть)
                 if (level.reward) {
-                    const timeRewardDays = level.reward; // в днях
-                    const timeRewardSeconds = timeRewardDays * 24 * 60 * 60; // конвертируем дни в секунды
+                    const timeRewardMinutes = level.reward; // в минутах
+                    const timeRewardSeconds = timeRewardMinutes * 60; // конвертируем минуты в секунды
                     if (typeof window.addTimeCurrency === 'function') {
                         window.addTimeCurrency(timeRewardSeconds);
                         if (typeof window.addToBattleLog === 'function') {
-                            const daysText = timeRewardDays === 1 ? 'день' : (timeRewardDays < 5 ? 'дня' : 'дней');
-                            window.addToBattleLog(`⏰ Получено: ${timeRewardDays} ${daysText} времени!`);
+                            // Определяем формат отображения
+                            let rewardText;
+                            if (timeRewardMinutes >= 1440) {
+                                // Показываем в днях для больших наград
+                                const days = Math.floor(timeRewardMinutes / 1440);
+                                const daysText = days === 1 ? 'день' : (days < 5 ? 'дня' : 'дней');
+                                rewardText = `${days} ${daysText}`;
+                            } else if (timeRewardMinutes >= 60) {
+                                // Показываем в часах
+                                const hours = Math.floor(timeRewardMinutes / 60);
+                                const hoursText = hours === 1 ? 'час' : (hours < 5 ? 'часа' : 'часов');
+                                rewardText = `${hours} ${hoursText}`;
+                            } else {
+                                // Показываем в минутах
+                                const minutesText = timeRewardMinutes === 1 ? 'минуту' : (timeRewardMinutes < 5 ? 'минуты' : 'минут');
+                                rewardText = `${timeRewardMinutes} ${minutesText}`;
+                            }
+                            window.addToBattleLog(`⏰ Получено: ${rewardText} времени!`);
                         }
                     }
                 }
