@@ -444,10 +444,16 @@ function addAirdropPoints(points, reason = '') {
     }
 
     console.log(`🪂 Airdrop: +${points} очков (${reason}). Всего: ${window.userData.airdrop_points}`);
+    console.log(`🪂 [DEBUG] window.userData.airdrop_points = ${window.userData.airdrop_points}`);
+    console.log(`🪂 [DEBUG] window.userData.airdrop_history length = ${window.userData.airdrop_history.length}`);
 
     // Сохраняем в БД
     if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
-        window.dbManager.savePlayer(window.userData);
+        console.log('🪂 [DEBUG] Вызов dbManager.savePlayer() для сохранения airdrop очков...');
+        const saveResult = window.dbManager.savePlayer(window.userData);
+        console.log('🪂 [DEBUG] savePlayer вызван, результат:', saveResult);
+    } else {
+        console.error('❌ [DEBUG] dbManager.savePlayer не доступен!');
     }
 
     // Показываем уведомление

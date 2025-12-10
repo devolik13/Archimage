@@ -145,6 +145,10 @@ class DatabaseManager {
 
             // DEBUG: Логируем faction_changed перед отправкой в RPC
             console.log(`🔍 [RPC DEBUG] Отправка в update_player_safe: faction_changed = ${rpcData.faction_changed}`);
+            console.log(`🪂 [RPC DEBUG] Airdrop данные в rpcData:`);
+            console.log(`  - airdrop_points: ${rpcData.airdrop_points}`);
+            console.log(`  - airdrop_history length: ${rpcData.airdrop_history?.length || 0}`);
+            console.log(`  - wallet_address: ${rpcData.wallet_address}`);
 
             // Вызываем безопасную RPC функцию (обновляет только по telegram_id)
             const { data, error } = await this.supabase.rpc('update_player_safe', {
