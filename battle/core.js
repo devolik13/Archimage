@@ -911,11 +911,16 @@ async function checkBattleEnd() {
         if (window.currentPvELevel && !enemyAlive && playerAlive) {
             const level = window.CHAPTER_1_LEVELS?.find(l => l.id === window.currentPvELevel);
             if (level) {
-                // Сохраняем прогресс
+                // Загружаем прогресс ДО обновления
                 const progress = window.loadPvEProgress();
                 if (!progress.chapter1.completed) {
                     progress.chapter1.completed = {};
                 }
+
+                // Проверяем, был ли уровень уже пройден (для награды)
+                const isFirstCompletion = !progress.chapter1.completed[window.currentPvELevel];
+
+                // Отмечаем уровень как пройденный
                 progress.chapter1.completed[window.currentPvELevel] = true;
 
                 // Открываем следующий уровень
@@ -930,8 +935,8 @@ async function checkBattleEnd() {
                     window.refreshAdventureMap();
                 }
 
-                // Даём награду временем (если есть)
-                if (level.reward) {
+                // Даём награду временем ТОЛЬКО при первом прохождении
+                if (level.reward && isFirstCompletion) {
                     const timeRewardMinutes = level.reward; // в минутах
                     const timeRewardSeconds = timeRewardMinutes * 60; // конвертируем минуты в секунды
                     if (typeof window.addTimeCurrency === 'function') {
@@ -956,6 +961,11 @@ async function checkBattleEnd() {
                             }
                             window.addToBattleLog(`⏰ Получено: ${rewardText} времени!`);
                         }
+                    }
+                } else if (level.reward && !isFirstCompletion) {
+                    // Уровень переигрывается - награда не выдаётся
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`ℹ️ Уровень уже был пройден - награда не выдаётся`);
                     }
                 }
 
