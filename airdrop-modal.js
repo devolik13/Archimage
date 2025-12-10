@@ -601,25 +601,22 @@ function showAirdropPointsBreakdown() {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    padding: 12px;
+                    padding: 14px;
                     margin: 8px 0;
                     background: rgba(255,215,0,0.1);
                     border-left: 3px solid #ffd700;
                     border-radius: 8px;
                 ">
                     <div style="flex: 1;">
-                        <div style="color: #ffd700; font-weight: bold; margin-bottom: 4px;">
+                        <div style="color: #ffd700; font-weight: bold; font-size: 15px;">
                             ${emoji} ${reason}
-                        </div>
-                        <div style="color: #888; font-size: 12px;">
-                            ${data.count}x начислений
                         </div>
                     </div>
                     <div style="text-align: right;">
-                        <div style="color: #4ade80; font-weight: bold; font-size: 18px;">
-                            +${data.points.toLocaleString()}
+                        <div style="color: #4ade80; font-weight: bold; font-size: 20px;">
+                            ${data.points.toLocaleString()}
                         </div>
-                        <div style="color: #888; font-size: 11px;">
+                        <div style="color: #888; font-size: 11px; margin-top: 2px;">
                             ${percentage}%
                         </div>
                     </div>
@@ -630,9 +627,9 @@ function showAirdropPointsBreakdown() {
         historyHTML = `
             <div style="text-align: center; color: #888; padding: 20px;">
                 <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
-                <div>История начислений пока пуста</div>
+                <div>Очки пока не начислялись</div>
                 <div style="font-size: 12px; margin-top: 8px;">
-                    Очки начисляются за игровую активность
+                    Получайте очки за игровую активность
                 </div>
             </div>
         `;

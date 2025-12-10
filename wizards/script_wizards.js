@@ -304,7 +304,13 @@ async function assignSpellToWizard(wizardIndex, spellSlotIndex, spellId) {
         userData.wizards[wizardIndex].spells = [];
     }
     userData.wizards[wizardIndex].spells[spellSlotIndex] = spellId;
-    closeCurrentModal();
+
+    // Явно закрываем окно выбора заклинания
+    if (window.currentModal) {
+        if (window.currentModal.modal) window.currentModal.modal.remove();
+        if (window.currentModal.overlay) window.currentModal.overlay.remove();
+        window.currentModal = null;
+    }
 
     // Обновляем только слоты заклинаний (без перерисовки всего окна)
     if (typeof window.updateWizardSpellSlots === 'function') {
