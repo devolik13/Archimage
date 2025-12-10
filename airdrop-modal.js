@@ -392,8 +392,8 @@ function setupAirdropUI() {
             cursor: pointer;
             transition: all 0.2s;
         " onmouseover="this.style.background='linear-gradient(135deg, rgba(255,215,0,0.3) 0%, rgba(255,165,0,0.2) 100%)'" onmouseout="this.style.background='linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,165,0,0.1) 100%)'">
-            <div style="font-size: ${smallFontSize}px; color: #aaa; margin-bottom: 5px;">Твои очки 💡</div>
-            <div style="font-size: ${bigFontSize}px; color: #ffd700; font-weight: bold;">${airdropPoints.toLocaleString()}</div>
+            <div style="font-size: ${smallFontSize}px; color: #aaa; margin-bottom: 5px;">Твои BPM coin 🪙</div>
+            <div style="font-size: ${bigFontSize}px; color: #ffd700; font-weight: bold;">${airdropPoints.toLocaleString()} <span style="font-size: ${baseFontSize}px;">BPM</span></div>
             <div style="font-size: ${smallFontSize}px; color: #888; margin-top: 5px;">
                 📊 Нажми для детализации
             </div>
@@ -436,7 +436,7 @@ function setupAirdropUI() {
             margin-bottom: 12px;
         ">
             <div style="font-size: ${baseFontSize}px; color: #ffd700; font-weight: bold; margin-bottom: 10px;">
-                📈 Как заработать очки
+                📈 Как заработать BPM coin
             </div>
             <div style="display: flex; flex-direction: column; gap: 6px;">
                 <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
@@ -710,7 +710,7 @@ function addAirdropPoints(points, reason = '') {
 
     // Показываем уведомление
     if (window.showNotification && points > 0) {
-        window.showNotification(`🪂 +${points} очков Airdrop!`);
+        window.showNotification(`🪙 +${points} BPM coin!`);
     }
 }
 
@@ -738,11 +738,11 @@ function showAirdropModalFallback() {
     const points = window.userData?.airdrop_points || 0;
 
     modal.innerHTML = `
-        <h3 style="color: #ffd700; margin-top: 0;">🪂 AIRDROP</h3>
+        <h3 style="color: #ffd700; margin-top: 0;">🪙 BPM COIN</h3>
         <div style="font-size: 32px; color: #ffd700; font-weight: bold; margin: 20px 0;">
-            ${points.toLocaleString()} очков
+            ${points.toLocaleString()} BPM
         </div>
-        <p style="color: #888; font-size: 14px;">Зарабатывай очки играя и получи токены при airdrop!</p>
+        <p style="color: #888; font-size: 14px;">Зарабатывай BPM coin играя и получи токены при airdrop!</p>
         <button onclick="closeAirdropModal()" style="
             width: 100%;
             padding: 12px;
@@ -884,10 +884,10 @@ function showAirdropPointsBreakdown() {
     modal.innerHTML = `
         <div style="text-align: center; margin-bottom: 20px;">
             <div style="color: #ffd700; font-size: 24px; font-weight: bold; margin-bottom: 8px;">
-                💰 Детализация очков
+                🪙 Детализация BPM coin
             </div>
             <div style="color: #aaa; font-size: 14px;">
-                Всего: <span style="color: #4ade80; font-weight: bold;">${totalPoints.toLocaleString()}</span> очков
+                Всего: <span style="color: #4ade80; font-weight: bold;">${totalPoints.toLocaleString()}</span> BPM
             </div>
         </div>
 

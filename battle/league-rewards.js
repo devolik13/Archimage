@@ -198,7 +198,7 @@ function showLeagueRewardsModal() {
                     <div style="text-align: right;">
                         <div style="font-size: 12px; color: #aaa; margin-bottom: 5px;">Награды:</div>
                         ${league.rewards.time_currency ? `<div style="color: #00bfff; font-size: 13px;">⏰ ${league.rewards.time_currency}</div>` : ''}
-                        ${league.rewards.airdrop_points ? `<div style="color: #4ade80; font-size: 13px;">🪂 ${league.rewards.airdrop_points}</div>` : ''}
+                        ${league.rewards.airdrop_points ? `<div style="color: #4ade80; font-size: 13px;">🪙 ${league.rewards.airdrop_points} BPM</div>` : ''}
                     </div>
                 </div>
                 ${claimButton}
