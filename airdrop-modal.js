@@ -1,5 +1,199 @@
 // airdrop-modal.js - Экран Airdrop с очками и кошельком
 
+// ==========================================
+// TON CONNECT ИНТЕГРАЦИЯ
+// ==========================================
+
+/**
+ * Глобальная переменная для TON Connect UI
+ */
+let tonConnectUI = null;
+
+/**
+ * Инициализация TON Connect
+ * Вызывается один раз при загрузке страницы
+ */
+function initTonConnect() {
+    // Проверяем, что библиотека загружена
+    if (typeof TON_CONNECT_UI === 'undefined' && typeof TonConnectUI === 'undefined') {
+        console.warn('⚠️ TON Connect UI библиотека не загружена');
+        return null;
+    }
+
+    // Если уже инициализирован - возвращаем существующий экземпляр
+    if (tonConnectUI) {
+        return tonConnectUI;
+    }
+
+    try {
+        // Создаём экземпляр TON Connect UI
+        const TonConnectUIClass = window.TON_CONNECT_UI?.TonConnectUI || window.TonConnectUI;
+
+        tonConnectUI = new TonConnectUIClass({
+            manifestUrl: window.location.origin + '/tonconnect-manifest.json',
+            // Для Telegram Mini App используем встроенный кошелёк
+            walletsListConfiguration: {
+                includeWallets: [
+                    {
+                        appName: "tonkeeper",
+                        name: "Tonkeeper",
+                        imageUrl: "https://tonkeeper.com/assets/tonkeeper-logo.png",
+                        aboutUrl: "https://tonkeeper.com",
+                        universalLink: "https://app.tonkeeper.com/ton-connect",
+                        bridgeUrl: "https://bridge.tonapi.io/bridge",
+                        platforms: ["ios", "android", "chrome", "firefox", "safari"]
+                    },
+                    {
+                        appName: "tonhub",
+                        name: "Tonhub",
+                        imageUrl: "https://tonhub.com/tonhub-logo.png",
+                        aboutUrl: "https://tonhub.com",
+                        universalLink: "https://tonhub.com/ton-connect",
+                        bridgeUrl: "https://connect.tonhubapi.com/tonconnect",
+                        platforms: ["ios", "android"]
+                    },
+                    {
+                        appName: "mytonwallet",
+                        name: "MyTonWallet",
+                        imageUrl: "https://mytonwallet.io/icon-256.png",
+                        aboutUrl: "https://mytonwallet.io",
+                        universalLink: "https://connect.mytonwallet.org",
+                        bridgeUrl: "https://tonconnectbridge.mytonwallet.org/bridge",
+                        platforms: ["chrome", "windows", "macos", "linux", "ios", "android", "firefox"]
+                    }
+                ]
+            }
+        });
+
+        // Подписываемся на изменения статуса подключения
+        tonConnectUI.onStatusChange((wallet) => {
+            if (wallet) {
+                console.log('👛 Кошелёк подключён:', wallet.account.address);
+                handleWalletConnected(wallet);
+            } else {
+                console.log('👛 Кошелёк отключён');
+                handleWalletDisconnected();
+            }
+        });
+
+        // Проверяем, есть ли уже подключённый кошелёк
+        const connectedWallet = tonConnectUI.wallet;
+        if (connectedWallet) {
+            console.log('👛 Найден ранее подключённый кошелёк');
+            handleWalletConnected(connectedWallet);
+        }
+
+        console.log('✅ TON Connect UI инициализирован');
+        return tonConnectUI;
+
+    } catch (error) {
+        console.error('❌ Ошибка инициализации TON Connect:', error);
+        return null;
+    }
+}
+
+/**
+ * Обработка успешного подключения кошелька
+ * @param {object} wallet - Объект кошелька от TON Connect
+ */
+function handleWalletConnected(wallet) {
+    if (!wallet || !wallet.account) return;
+
+    // Конвертируем raw address в user-friendly формат
+    const rawAddress = wallet.account.address;
+    const userFriendlyAddress = convertToUserFriendlyAddress(rawAddress);
+
+    console.log('👛 Raw address:', rawAddress);
+    console.log('👛 User-friendly address:', userFriendlyAddress);
+
+    // Сохраняем в userData
+    if (window.userData) {
+        window.userData.wallet_address = userFriendlyAddress;
+        window.userData.wallet_connected_at = Date.now();
+
+        // Сохраняем в БД
+        if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+            window.dbManager.savePlayer(window.userData);
+            console.log('✅ Адрес кошелька сохранён в БД');
+        }
+    }
+
+    // Показываем уведомление
+    if (window.showNotification) {
+        window.showNotification('👛 Кошелёк успешно подключён!');
+    }
+
+    // Обновляем UI модалки если она открыта
+    refreshAirdropModalUI();
+}
+
+/**
+ * Обработка отключения кошелька
+ */
+function handleWalletDisconnected() {
+    if (window.userData) {
+        window.userData.wallet_address = null;
+        window.userData.wallet_connected_at = null;
+
+        // Сохраняем в БД
+        if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+            window.dbManager.savePlayer(window.userData);
+        }
+    }
+
+    // Показываем уведомление
+    if (window.showNotification) {
+        window.showNotification('👛 Кошелёк отключён');
+    }
+
+    // Обновляем UI
+    refreshAirdropModalUI();
+}
+
+/**
+ * Конвертация raw address в user-friendly формат
+ * @param {string} rawAddress - Raw адрес из TON Connect
+ * @returns {string} - User-friendly адрес
+ */
+function convertToUserFriendlyAddress(rawAddress) {
+    // TON Connect возвращает адрес в формате "0:xxx..." (raw)
+    // Нам нужен user-friendly формат "EQ..." или "UQ..."
+    // Для простоты пока возвращаем как есть - можно добавить конвертацию позже
+
+    // Если адрес уже в нужном формате
+    if (rawAddress.startsWith('EQ') || rawAddress.startsWith('UQ')) {
+        return rawAddress;
+    }
+
+    // Для raw адреса пока возвращаем его же
+    // В продакшене нужно использовать библиотеку @ton/ton для конвертации
+    return rawAddress;
+}
+
+/**
+ * Обновить UI модалки Airdrop
+ */
+function refreshAirdropModalUI() {
+    const screen = document.getElementById('airdrop-screen');
+    if (screen) {
+        closeAirdropModal();
+        setTimeout(() => showAirdropModal(), 100);
+    }
+}
+
+// Инициализируем TON Connect при загрузке страницы
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initTonConnect, 500);
+    });
+} else {
+    setTimeout(initTonConnect, 500);
+}
+
+// ==========================================
+// ОСНОВНОЙ КОД МОДАЛКИ AIRDROP
+// ==========================================
+
 /**
  * Показать модальное окно Airdrop
  */
@@ -351,36 +545,76 @@ function setupAirdropUI() {
 }
 
 /**
- * Подключение кошелька (заглушка)
+ * Подключение кошелька через TON Connect
  */
-function connectWallet() {
+async function connectWallet() {
     console.log('👛 Подключение кошелька...');
 
-    // TODO: Реализовать TON Connect
-    if (window.showNotification) {
-        window.showNotification('👛 TON Connect скоро будет доступен!');
+    // Инициализируем TON Connect если ещё не сделано
+    if (!tonConnectUI) {
+        initTonConnect();
+    }
+
+    if (!tonConnectUI) {
+        console.error('❌ TON Connect не инициализирован');
+        if (window.showNotification) {
+            window.showNotification('❌ Ошибка инициализации кошелька');
+        }
+        return;
+    }
+
+    try {
+        // Проверяем, подключён ли уже кошелёк
+        if (tonConnectUI.wallet) {
+            console.log('👛 Кошелёк уже подключён');
+            return;
+        }
+
+        // Открываем модальное окно выбора кошелька
+        await tonConnectUI.openModal();
+        console.log('👛 Модальное окно TON Connect открыто');
+
+    } catch (error) {
+        console.error('❌ Ошибка подключения кошелька:', error);
+        if (window.showNotification) {
+            window.showNotification('❌ Ошибка подключения кошелька');
+        }
     }
 }
 
 /**
- * Отключение кошелька
+ * Отключение кошелька через TON Connect
  */
-function disconnectWallet() {
+async function disconnectWallet() {
     console.log('👛 Отключение кошелька...');
 
-    if (window.userData) {
-        window.userData.wallet_address = null;
-        window.userData.wallet_connected_at = null;
+    try {
+        if (tonConnectUI) {
+            await tonConnectUI.disconnect();
+            console.log('✅ Кошелёк отключён через TON Connect');
+        }
 
-        // Сохраняем в БД
-        if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
-            window.dbManager.savePlayer(window.userData);
+        // Очищаем данные локально (на случай если TON Connect не работает)
+        if (window.userData) {
+            window.userData.wallet_address = null;
+            window.userData.wallet_connected_at = null;
+
+            // Сохраняем в БД
+            if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+                window.dbManager.savePlayer(window.userData);
+            }
+        }
+
+        // Перезагружаем модалку
+        closeAirdropModal();
+        setTimeout(() => showAirdropModal(), 100);
+
+    } catch (error) {
+        console.error('❌ Ошибка отключения кошелька:', error);
+        if (window.showNotification) {
+            window.showNotification('❌ Ошибка отключения кошелька');
         }
     }
-
-    // Перезагружаем модалку
-    closeAirdropModal();
-    setTimeout(() => showAirdropModal(), 100);
 }
 
 /**
@@ -687,3 +921,7 @@ window.connectWallet = connectWallet;
 window.disconnectWallet = disconnectWallet;
 window.showAirdropPointsBreakdown = showAirdropPointsBreakdown;
 window.closeAirdropBreakdown = closeAirdropBreakdown;
+
+// TON Connect функции
+window.initTonConnect = initTonConnect;
+window.getTonConnectUI = () => tonConnectUI;
