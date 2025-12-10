@@ -76,7 +76,7 @@ class EventSaveManager {
             console.log(`🔍 [SAVE DEBUG] faction_changed = ${window.userData.faction_changed} (причина: ${reason})`);
 
             Object.assign(playerData, {
-                lastLogin: window.userData.last_login, // Для офлайн накопления
+                last_login: window.userData.last_login, // Для офлайн накопления (snake_case!)
                 wizards: window.userData.wizards,
                 formation: window.userData.formation,
                 spells: window.userData.spells,
