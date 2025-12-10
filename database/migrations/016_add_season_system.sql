@@ -38,8 +38,6 @@ BEGIN
     SET
         username = COALESCE(p_data->>'username', username),
         level = COALESCE((p_data->>'level')::INTEGER, level),
-        gold = COALESCE((p_data->>'gold')::INTEGER, gold),
-        crystals = COALESCE((p_data->>'crystals')::INTEGER, crystals),
         rating = COALESCE((p_data->>'rating')::INTEGER, rating),
         wins = COALESCE((p_data->>'wins')::INTEGER, wins),
         losses = COALESCE((p_data->>'losses')::INTEGER, losses),
