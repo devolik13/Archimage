@@ -1,7 +1,7 @@
 {
-    "url": "https://archimage.app",
+    "url": "https://archimage.vercel.app",
     "name": "Archimage: Arcane Secrets",
-    "iconUrl": "https://archimage.app/images/icon-512.png",
-    "termsOfUseUrl": "https://archimage.app/terms",
-    "privacyPolicyUrl": "https://archimage.app/privacy"
+    "iconUrl": "https://archimage.vercel.app/images/icon-512.png",
+    "termsOfUseUrl": "https://archimage.vercel.app/terms",
+    "privacyPolicyUrl": "https://archimage.vercel.app/privacy"
 }
