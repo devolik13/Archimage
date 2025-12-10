@@ -486,7 +486,7 @@ function renderStarterPacks(scale) {
 }
 
 /**
- * Покупка стартового пакета
+ * Покупка стартового пакета через Telegram Stars
  */
 async function buyStarterPack(packKey) {
     const pack = STARTER_PACKS[packKey];
@@ -513,37 +513,63 @@ async function buyStarterPack(packKey) {
         return;
     }
 
-    console.log(`🎁 Покупка пакета: ${pack.name}`);
-
-    // Применяем награды
-    applyStarterPackRewards(pack);
-
-    // Отмечаем как купленный
-    if (!window.userData.purchased_packs) {
-        window.userData.purchased_packs = {};
-    }
-    window.userData.purchased_packs[pack.id] = {
-        purchased_at: new Date().toISOString(),
-        rewards: pack.rewards
-    };
-
-    console.log('📦 [DEBUG] purchased_packs после покупки:', JSON.stringify(window.userData.purchased_packs));
-
-    // Сохраняем
-    if (window.eventSaveManager?.saveImmediate) {
-        const saveResult = await window.eventSaveManager.saveImmediate('starter_pack_purchase');
-        console.log('📦 [DEBUG] Результат сохранения:', saveResult);
-    } else {
-        console.warn('⚠️ eventSaveManager.saveImmediate не найден!');
+    // Проверяем доступность Telegram WebApp
+    if (!window.Telegram?.WebApp) {
+        showShopNotification('⚠️ Доступно только в Telegram', 'warning');
+        return;
     }
 
-    // Показываем уведомление
-    if (window.showNotification) {
-        window.showNotification(`🎁 ${pack.name} получен!`);
-    }
+    console.log(`🎁 Покупка пакета: ${pack.name} (${pack.price} Stars)`);
 
-    // Обновляем UI магазина
-    switchShopTab('packs');
+    try {
+        // Создаём invoice через Edge Function
+        const invoiceUrl = await createStarsInvoice({ id: pack.id }, pack.price);
+
+        // Открываем окно оплаты Telegram
+        window.Telegram.WebApp.openInvoice(invoiceUrl, async (status) => {
+            console.log('💳 Payment status:', status);
+
+            if (status === 'paid') {
+                // Успешная оплата - награды применятся через webhook
+                // Но для моментального отображения применяем локально тоже
+                applyStarterPackRewards(pack);
+
+                // Отмечаем как купленный локально
+                if (!window.userData.purchased_packs) {
+                    window.userData.purchased_packs = {};
+                }
+                window.userData.purchased_packs[pack.id] = {
+                    purchased_at: new Date().toISOString(),
+                    rewards: pack.rewards
+                };
+
+                // Начисляем airdrop очки
+                if (typeof window.addAirdropPoints === 'function' && pack.price) {
+                    const airdropPoints = Math.floor(pack.price / 10);
+                    if (airdropPoints > 0) {
+                        window.addAirdropPoints(airdropPoints, `Покупка ${pack.price} Telegram Stars`);
+                    }
+                }
+
+                // Сохраняем
+                if (window.eventSaveManager?.saveImmediate) {
+                    await window.eventSaveManager.saveImmediate('starter_pack_purchase');
+                }
+
+                showShopNotification(`🎁 ${pack.name} получен!`, 'success');
+                switchShopTab('packs');
+
+            } else if (status === 'cancelled') {
+                showShopNotification('Покупка отменена', 'info');
+            } else if (status === 'failed') {
+                showShopNotification('❌ Ошибка оплаты', 'error');
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Ошибка покупки пакета:', error);
+        showShopNotification('⚠️ Платёжная система временно недоступна', 'warning');
+    }
 }
 
 /**
@@ -962,56 +988,45 @@ async function buyTimePack(item) {
         return;
     }
 
-    try {
-        // Создаём invoice для Telegram Stars
-        const invoiceData = {
-            title: item.name,
-            description: item.description,
-            payload: JSON.stringify({
-                item_id: item.id,
-                amount: item.amount,
-                user_id: window.userData?.id
-            }),
-            currency: 'XTR', // Telegram Stars
-            prices: [{ label: item.name, amount: item.price }]
-        };
+    console.log('🌟 Покупка пакета времени:', item.name, `(${item.price} Stars)`);
 
-        console.log('🌟 Создание платежа Stars:', invoiceData);
+    try {
+        // Создаём invoice через Edge Function
+        const invoiceUrl = await createStarsInvoice(item, item.price);
 
         // Открываем окно оплаты Telegram
-        // Примечание: для реальной работы нужен бэкенд который создаёт invoice
-        window.Telegram.WebApp.openInvoice(
-            await createStarsInvoice(item),
-            (status) => {
-                if (status === 'paid') {
-                    // Успешная оплата
-                    window.userData.time_currency = (window.userData.time_currency || 0) + item.amount;
+        window.Telegram.WebApp.openInvoice(invoiceUrl, async (status) => {
+            console.log('💳 Payment status:', status);
 
-                    // Начисляем airdrop очки за покупку Stars (100 Stars = 10 очков)
-                    if (typeof window.addAirdropPoints === 'function' && item.price) {
-                        const airdropPoints = Math.floor(item.price / 10);
-                        if (airdropPoints > 0) {
-                            window.addAirdropPoints(airdropPoints, `Покупка ${item.price} Telegram Stars`);
-                        }
+            if (status === 'paid') {
+                // Успешная оплата - время добавится через webhook
+                // Но для моментального отображения добавляем локально тоже
+                window.userData.time_currency = (window.userData.time_currency || 0) + item.amount;
+
+                // Начисляем airdrop очки за покупку Stars (100 Stars = 10 очков)
+                if (typeof window.addAirdropPoints === 'function' && item.price) {
+                    const airdropPoints = Math.floor(item.price / 10);
+                    if (airdropPoints > 0) {
+                        window.addAirdropPoints(airdropPoints, `Покупка ${item.price} Telegram Stars`);
                     }
-
-                    if (window.eventSaveManager) {
-                        window.eventSaveManager.saveImmediate('shop_stars_purchase');
-                    }
-
-                    showShopNotification(`⏰ +${formatTimePurchase(item.amount)} времени!`, 'success');
-                    refreshShopUI();
-
-                    if (typeof window.updateTimeCurrencyDisplay === 'function') {
-                        window.updateTimeCurrencyDisplay();
-                    }
-                } else if (status === 'cancelled') {
-                    showShopNotification('Покупка отменена', 'info');
-                } else if (status === 'failed') {
-                    showShopNotification('❌ Ошибка оплаты', 'error');
                 }
+
+                if (window.eventSaveManager) {
+                    await window.eventSaveManager.saveImmediate('shop_stars_purchase');
+                }
+
+                showShopNotification(`⏰ +${formatTimePurchase(item.amount)} времени!`, 'success');
+                refreshShopUI();
+
+                if (typeof window.updateTimeCurrencyDisplay === 'function') {
+                    window.updateTimeCurrencyDisplay();
+                }
+            } else if (status === 'cancelled') {
+                showShopNotification('Покупка отменена', 'info');
+            } else if (status === 'failed') {
+                showShopNotification('❌ Ошибка оплаты', 'error');
             }
-        );
+        });
     } catch (error) {
         console.error('❌ Ошибка Stars платежа:', error);
         showShopNotification('⚠️ Платёжная система временно недоступна', 'warning');
@@ -1019,16 +1034,52 @@ async function buyTimePack(item) {
 }
 
 /**
- * Создание invoice для Telegram Stars (заглушка - нужен бэкенд)
+ * Создание invoice для Telegram Stars через Supabase Edge Function
  */
-async function createStarsInvoice(item) {
-    // TODO: Реализовать на бэкенде через Telegram Bot API
-    // POST /createInvoiceLink с параметрами:
-    // - title, description, payload, currency: "XTR", prices
+async function createStarsInvoice(item, customPrice = null, targetFaction = null) {
+    // Получаем URL Supabase из конфига
+    const supabaseUrl = window.supabaseClient?.supabaseUrl ||
+        window.SUPABASE_URL ||
+        'https://your-project.supabase.co';
 
-    // Пока возвращаем заглушку
-    console.log('⚠️ Нужен бэкенд для создания invoice');
-    throw new Error('Backend not implemented');
+    const telegramId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id ||
+        window.userData?.telegram_id;
+
+    if (!telegramId) {
+        throw new Error('Telegram user ID not found');
+    }
+
+    console.log('🌟 Creating invoice:', {
+        product_id: item.id,
+        telegram_id: telegramId,
+        custom_price: customPrice,
+        target_faction: targetFaction
+    });
+
+    const response = await fetch(`${supabaseUrl}/functions/v1/create-invoice`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${window.supabaseClient?.supabaseKey || ''}`
+        },
+        body: JSON.stringify({
+            product_id: item.id,
+            telegram_id: telegramId,
+            custom_price: customPrice,
+            target_faction: targetFaction
+        })
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        console.error('Invoice creation failed:', error);
+        throw new Error(error.error || 'Failed to create invoice');
+    }
+
+    const data = await response.json();
+    console.log('✅ Invoice created:', data);
+
+    return data.invoice_url;
 }
 
 /**
@@ -1258,33 +1309,36 @@ async function confirmFactionChange(newFaction) {
             return;
         }
 
+        console.log('🔄 Смена фракции на:', newFaction, `(${dynamicPrice} Stars)`);
+
         try {
-            // Открываем оплату Stars с динамической ценой
-            window.Telegram.WebApp.openInvoice(
-                await createStarsInvoice({
-                    id: 'faction_change',
-                    name: 'Смена фракции',
-                    description: `Изменить школу магии (⭐${dynamicPrice})`,
-                    price: dynamicPrice
-                }),
-                (status) => {
-                    if (status === 'paid') {
-                        // Начисляем airdrop очки за покупку Stars (100 Stars = 10 очков)
-                        if (typeof window.addAirdropPoints === 'function' && dynamicPrice) {
-                            const airdropPoints = Math.floor(dynamicPrice / 10);
-                            if (airdropPoints > 0) {
-                                window.addAirdropPoints(airdropPoints, `Покупка ${dynamicPrice} Telegram Stars`);
-                            }
-                        }
-                        applyFactionChange(newFaction);
-                    } else if (status === 'cancelled') {
-                        showShopNotification('Покупка отменена', 'info');
-                    } else {
-                        showShopNotification('❌ Ошибка оплаты', 'error');
-                    }
-                    closeFactionChangeDialog();
-                }
+            // Создаём invoice через Edge Function с целевой фракцией
+            const invoiceUrl = await createStarsInvoice(
+                { id: 'faction_change' },
+                dynamicPrice,
+                newFaction
             );
+
+            // Открываем оплату Stars
+            window.Telegram.WebApp.openInvoice(invoiceUrl, async (status) => {
+                console.log('💳 Payment status:', status);
+
+                if (status === 'paid') {
+                    // Начисляем airdrop очки за покупку Stars (100 Stars = 10 очков)
+                    if (typeof window.addAirdropPoints === 'function' && dynamicPrice) {
+                        const airdropPoints = Math.floor(dynamicPrice / 10);
+                        if (airdropPoints > 0) {
+                            window.addAirdropPoints(airdropPoints, `Покупка ${dynamicPrice} Telegram Stars`);
+                        }
+                    }
+                    applyFactionChange(newFaction);
+                } else if (status === 'cancelled') {
+                    showShopNotification('Покупка отменена', 'info');
+                } else {
+                    showShopNotification('❌ Ошибка оплаты', 'error');
+                }
+                closeFactionChangeDialog();
+            });
         } catch (error) {
             console.error('❌ Ошибка Stars платежа:', error);
             showShopNotification('⚠️ Платёжная система временно недоступна', 'warning');
