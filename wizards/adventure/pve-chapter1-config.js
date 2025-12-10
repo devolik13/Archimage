@@ -78,7 +78,7 @@ const ELEMENTALS = {
     fire: {
         name: "Огненный Элементаль",
         hp: 300,
-        armor: 150,
+        armor: 120,
         faction: "fire",
         spells: ['firebolt', 'spark'],
         spell_levels: {

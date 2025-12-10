@@ -398,8 +398,10 @@ function initializeWizardHealth() {
         wizard.max_armor = trueBaseArmor;
 
         // Враги тоже получают бонус от Башни магов (для баланса)
+        // НО НЕ PvE враги (элементали, боссы, adventure enemies) - у них фиксированные характеристики
         let healthMultiplier = 1.0;
-        if (typeof window.applyWizardTowerHealthBonus === 'function') {
+        const isPveEnemy = wizard.isAdventureEnemy || wizard.isElemental || wizard.isBoss || wizard.isFinalBoss;
+        if (!isPveEnemy && typeof window.applyWizardTowerHealthBonus === 'function') {
             healthMultiplier = window.applyWizardTowerHealthBonus();
             wizard.max_hp = Math.floor(wizard.max_hp * healthMultiplier);
             wizard.hp = Math.floor(wizard.hp * healthMultiplier);
