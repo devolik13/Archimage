@@ -1060,8 +1060,44 @@ function showArenaResult(result, battleData = {}) {
                 </div>
             </div>
 
+            <!-- Секция лога боя (скрыта по умолчанию) -->
+            <div id="arena-result-battle-log" style="
+                display: none;
+                background: rgba(0, 0, 0, 0.4);
+                padding: 12px;
+                border-radius: 10px;
+                margin-bottom: 15px;
+                max-height: 200px;
+                overflow-y: auto;
+                font-size: 12px;
+                line-height: 1.4;
+                border: 1px solid rgba(114, 137, 218, 0.3);
+            ">
+                ${(window.battleLog || []).length > 0 ?
+                    window.battleLog.map(log => \`<div style="margin-bottom: 5px; padding: 5px; background: rgba(255,255,255,0.05); border-radius: 4px;">\${log}</div>\`).join('') :
+                    '<div style="color: #888; text-align: center;">Лог боя пуст</div>'
+                }
+            </div>
+
             <!-- Кнопки -->
-            <div style="display: flex; gap: 12px; justify-content: center;">
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <button id="arena-result-view-log" style="
+                    flex: 1;
+                    max-width: 200px;
+                    padding: 12px 20px;
+                    border: 2px solid #ffa500;
+                    border-radius: 8px;
+                    background: rgba(255, 165, 0, 0.1);
+                    color: #ffa500;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-weight: bold;
+                    transition: all 0.2s;
+                    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+                ">
+                    📜 Лог боя
+                </button>
+
                 <button id="arena-result-new-fight" style="
                     flex: 1;
                     max-width: 200px;
@@ -1101,8 +1137,33 @@ function showArenaResult(result, battleData = {}) {
         overlay.appendChild(container);
 
         // Навешиваем обработчики на кнопки
+        const viewLogBtn = document.getElementById('arena-result-view-log');
         const newFightBtn = document.getElementById('arena-result-new-fight');
         const returnBtn = document.getElementById('arena-result-return');
+        const battleLogSection = document.getElementById('arena-result-battle-log');
+
+        if (viewLogBtn && battleLogSection) {
+            let logVisible = false;
+            viewLogBtn.onmouseover = () => {
+                viewLogBtn.style.background = 'rgba(255, 165, 0, 0.3)';
+                viewLogBtn.style.transform = 'scale(1.05)';
+            };
+            viewLogBtn.onmouseout = () => {
+                viewLogBtn.style.background = logVisible ? 'rgba(255, 165, 0, 0.3)' : 'rgba(255, 165, 0, 0.1)';
+                viewLogBtn.style.transform = 'scale(1)';
+            };
+            viewLogBtn.onclick = () => {
+                logVisible = !logVisible;
+                battleLogSection.style.display = logVisible ? 'block' : 'none';
+                viewLogBtn.innerHTML = logVisible ? '📜 Скрыть лог' : '📜 Лог боя';
+                viewLogBtn.style.background = logVisible ? 'rgba(255, 165, 0, 0.3)' : 'rgba(255, 165, 0, 0.1)';
+                if (logVisible) {
+                    // Прокрутка лога вниз
+                    battleLogSection.scrollTop = battleLogSection.scrollHeight;
+                }
+                console.log('📜 Лог боя:', logVisible ? 'показан' : 'скрыт');
+            };
+        }
 
         if (newFightBtn) {
             newFightBtn.onmouseover = () => {
