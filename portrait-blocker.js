@@ -82,6 +82,16 @@
                 <div style="margin-top: 30px; font-size: 40px;">
                     🔄
                 </div>
+                <button id="portrait-continue-btn" style="
+                    margin-top: 30px;
+                    padding: 12px 30px;
+                    background: rgba(255,255,255,0.2);
+                    border: 1px solid rgba(255,255,255,0.3);
+                    border-radius: 8px;
+                    color: #fff;
+                    font-size: 14px;
+                    cursor: pointer;
+                ">Я перевернул ➜</button>
             </div>
 
             <style>
@@ -91,6 +101,14 @@
                 }
             </style>
         `;
+
+        // Кнопка для ручной проверки
+        overlay.querySelector('#portrait-continue-btn').onclick = () => {
+            console.log('👆 Нажата кнопка "Я перевернул"');
+            // Принудительно убираем оверлей и показываем игру
+            removeBlockerOverlay();
+            toggleGameContent(true);
+        };
 
         document.body.appendChild(overlay);
         console.log('🚫 Overlay блокировки создан');
