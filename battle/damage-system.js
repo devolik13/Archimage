@@ -191,32 +191,43 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
         }
     }
 
-    // Проверка на Энта — перехват урона (только для single target)
-    if (target && !isAOE) {
-        const ent = typeof window.findProtectingEnt === 'function' ? 
+    // Проверка на Энта — перехват урона (теперь работает и для AOE!)
+    if (target) {
+        const ent = typeof window.findProtectingEnt === 'function' ?
             window.findProtectingEnt(target, caster.casterType || 'player') : null;
         if (ent && ent.isAlive) {
             // Перенаправляем урон Энту
             const absorbed = Math.min(ent.hp, finalDamage);
             ent.hp -= absorbed;
-            
-            if (typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`🌳 Энт поглощает ${absorbed} урона за ${target.name} (осталось ${ent.hp}/${ent.maxHP})`);
+
+            // Обновляем HP бар Энта
+            if (window.summonsManager && typeof window.summonsManager.updateHP === 'function') {
+                window.summonsManager.updateHP(ent.id, ent.hp);
             }
-            
+
+            if (typeof window.addToBattleLog === 'function') {
+                const aoeLabel = isAOE ? ' (AOE)' : '';
+                window.addToBattleLog(`🌳 Энт поглощает ${absorbed} урона${aoeLabel} за ${target.name} (осталось ${ent.hp}/${ent.maxHP})`);
+            }
+
             // Если Энт умирает
             if (ent.hp <= 0) {
                 ent.isAlive = false;
                 if (typeof window.addToBattleLog === 'function') {
                     window.addToBattleLog(`🌳 Энт погибает, защищая ${target.name}`);
                 }
-                
+
+                // Убиваем через менеджер для визуала
+                if (window.summonsManager && typeof window.summonsManager.killSummon === 'function') {
+                    window.summonsManager.killSummon(ent.id);
+                }
+
                 // На 5 уровне — лечим самого слабого союзного мага
                 if (ent.level === 5 && typeof window.healWeakestAlly === 'function') {
                     window.healWeakestAlly(ent.casterType);
                 }
             }
-            
+
             // Остаток урона (если есть) → наносится цели
             const remainingDamage = finalDamage - absorbed;
             if (remainingDamage > 0) {
