@@ -810,7 +810,7 @@ async function showArenaLeaderboard() {
                 </div>
             </div>
             
-            <div style="text-align: center; margin-top: 20px;">
+            <div style="position: absolute; bottom: 15px; right: 15px; display: flex; gap: 10px;">
                 <button style="
                     padding: 10px 20px;
                     background: #4CAF50;
@@ -819,7 +819,6 @@ async function showArenaLeaderboard() {
                     color: white;
                     cursor: pointer;
                     font-weight: bold;
-                    margin-right: 10px;
                 " onclick="showArenaLeaderboard()">
                     🔄 Обновить
                 </button>
@@ -832,7 +831,7 @@ async function showArenaLeaderboard() {
                     cursor: pointer;
                     font-weight: bold;
                 " onclick="showArenaMainMenu()">
-                    ← Назад к меню
+                    ← Назад
                 </button>
             </div>
         `;
@@ -845,7 +844,7 @@ async function showArenaLeaderboard() {
                 <p style="color: #ff6b6b; font-size: 18px;">❌ Ошибка загрузки</p>
                 <p style="color: #aaa;">Не удалось загрузить таблицу лидеров</p>
             </div>
-            <div style="text-align: center; margin-top: 20px;">
+            <div style="position: absolute; bottom: 15px; right: 15px; display: flex; gap: 10px;">
                 <button style="
                     padding: 10px 20px;
                     background: #4CAF50;
@@ -854,9 +853,8 @@ async function showArenaLeaderboard() {
                     color: white;
                     cursor: pointer;
                     font-weight: bold;
-                    margin-right: 10px;
                 " onclick="showArenaLeaderboard()">
-                    🔄 Попробовать снова
+                    🔄 Повторить
                 </button>
                 <button style="
                     padding: 10px 20px;
@@ -867,7 +865,7 @@ async function showArenaLeaderboard() {
                     cursor: pointer;
                     font-weight: bold;
                 " onclick="showArenaMainMenu()">
-                    ← Назад к меню
+                    ← Назад
                 </button>
             </div>
         `;
@@ -1074,7 +1072,7 @@ function showArenaResult(result, battleData = {}) {
                 border: 1px solid rgba(114, 137, 218, 0.3);
             ">
                 ${(window.battleLog || []).length > 0 ?
-                    window.battleLog.map(log => \`<div style="margin-bottom: 5px; padding: 5px; background: rgba(255,255,255,0.05); border-radius: 4px;">\${log}</div>\`).join('') :
+                    window.battleLog.map(log => '<div style="margin-bottom: 5px; padding: 5px; background: rgba(255,255,255,0.05); border-radius: 4px;">' + log + '</div>').join('') :
                     '<div style="color: #888; text-align: center;">Лог боя пуст</div>'
                 }
             </div>
