@@ -66,6 +66,16 @@
         const overlay = document.getElementById('portrait-blocker-overlay');
         if (overlay) {
             overlay.remove();
+
+            // Пересоздаём UI элементы которые зависят от позиции фона
+            setTimeout(() => {
+                if (typeof window.createPlayerAvatarUI === 'function') {
+                    window.createPlayerAvatarUI();
+                }
+                if (typeof window.updateTimeCurrencyDisplay === 'function') {
+                    window.updateTimeCurrencyDisplay();
+                }
+            }, 100);
         }
     }
 

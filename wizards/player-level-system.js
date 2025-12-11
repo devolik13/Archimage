@@ -62,6 +62,12 @@ function createPlayerAvatarUI() {
         return;
     }
 
+    // Проверяем, не активен ли portrait blocker
+    if (document.getElementById('portrait-blocker-overlay')) {
+        console.log('⏳ Portrait blocker активен, откладываем создание аватара');
+        return;
+    }
+
     const playerLevel = calculatePlayerLevel();
 
     // Вычисляем положение города
@@ -72,8 +78,13 @@ function createPlayerAvatarUI() {
 
     if (backgroundImg) {
         const imgRect = backgroundImg.getBoundingClientRect();
-        leftPosition = `${imgRect.left + 10}px`;
-        console.log(`📍 Аватар привязан к городу: left = ${leftPosition}`);
+        // Проверяем что изображение видимо (имеет ширину)
+        if (imgRect.width > 0 && imgRect.left >= 0) {
+            leftPosition = `${imgRect.left + 10}px`;
+            console.log(`📍 Аватар привязан к городу: left = ${leftPosition}`);
+        } else {
+            console.log('⚠️ Фон города скрыт, используем дефолтную позицию');
+        }
     }
 
     // Определяем аватар (реальное фото или дефолт)
