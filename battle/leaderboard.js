@@ -10,7 +10,7 @@ async function showLeaderboard() {
     }
 
     // Данные игрока
-    const playerRating = window.userData?.rating || 1000;
+    const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 1000;
     const playerWins = window.userData?.wins || 0;
     const playerLosses = window.userData?.losses || 0;
     const playerTotalBattles = window.userData?.total_battles || 0;

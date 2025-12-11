@@ -242,9 +242,20 @@ class DatabaseManager {
                 const opponentTelegramId = window.selectedOpponent.telegram_id;
 
                 if (opponentTelegramId) {
-                    const opponentRatingChange = -ratingChange;
-                    const currentOpponentRating = window.selectedOpponent.rating || 1000;
+                    // Получаем текущий рейтинг защитника (правильно обрабатываем 0)
+                    const currentOpponentRating = typeof window.selectedOpponent.rating === 'number'
+                        ? window.selectedOpponent.rating
+                        : 1000;
+
+                    // Рассчитываем изменение рейтинга для защитника с учетом его лиги
+                    const opponentResult = result === 'win' ? 'loss' : result === 'loss' ? 'win' : 'draw';
+                    const opponentRatingChange = typeof window.calculateRatingChange === 'function'
+                        ? window.calculateRatingChange(currentOpponentRating, window.userData.rating, opponentResult)
+                        : -ratingChange;
+
                     const newOpponentRating = Math.max(0, Math.min(9999, currentOpponentRating + opponentRatingChange));
+
+                    console.log(`Обновление рейтинга противника: ${currentOpponentRating} → ${newOpponentRating} (${opponentRatingChange > 0 ? '+' : ''}${opponentRatingChange})`);
 
                     // Обновляем рейтинг противника через RPC
                     await this.supabase.rpc('update_player_safe', {

@@ -687,7 +687,7 @@ async function showArenaLeaderboard() {
     
     try {
         // Данные игрока
-        const playerRating = window.userData?.rating || 1000;
+        const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 1000;
         const playerWins = window.userData?.wins || 0;
         const playerLosses = window.userData?.losses || 0;
         const playerTotalBattles = window.userData?.total_battles || 0;
@@ -901,7 +901,7 @@ function showArenaResult(result, battleData = {}) {
     const ratingColor = ratingChange > 0 ? '#4CAF50' : ratingChange < 0 ? '#f44336' : '#aaa';
 
     // Новый рейтинг
-    const currentRating = window.userData?.rating || 1000;
+    const currentRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 1000;
     const newRating = currentRating + ratingChange;
 
     // Лига
