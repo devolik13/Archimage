@@ -248,7 +248,10 @@ function castStoneSpike(wizard, spellData, position, casterType) {
     }
 
     function applySpikeDamage() {
-        targets.forEach((targetInfo, index) => {
+        // Сортируем цели по HP% (слабейший первый) для приоритета защиты Энтом
+        const sortedTargets = window.sortTargetsByHpPercent ? window.sortTargetsByHpPercent(targets) : targets;
+
+        sortedTargets.forEach((targetInfo, index) => {
             if (!targetInfo.target) {
                 if (typeof window.logMiss === 'function') {
                     window.logMiss(targetInfo.direction, level);

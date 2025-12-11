@@ -1,5 +1,28 @@
 // battle/systems/damage-system.js - Централизованная система урона с благословениями и Метеокинезом
 
+/**
+ * Сортировка целей AOE по % HP (слабейший первый)
+ * Используется для приоритета защиты Энтом
+ * @param {Array} targets - массив объектов {wizard, position, ...}
+ * @returns {Array} - отсортированный массив (слабейший первый)
+ */
+function sortTargetsByHpPercent(targets) {
+    if (!Array.isArray(targets) || targets.length <= 1) return targets;
+
+    return [...targets].sort((a, b) => {
+        const wizardA = a.wizard || a;
+        const wizardB = b.wizard || b;
+
+        const hpPercentA = (wizardA.hp || 0) / (wizardA.max_hp || 1);
+        const hpPercentB = (wizardB.hp || 0) / (wizardB.max_hp || 1);
+
+        return hpPercentA - hpPercentB; // Слабейший первый
+    });
+}
+
+// Экспорт хелпера
+window.sortTargetsByHpPercent = sortTargetsByHpPercent;
+
 // Временная функция определения школы заклинания (если основная не загружена)
 if (!window.getSpellSchoolFallback) {
     window.getSpellSchoolFallback = function(spellId) {
