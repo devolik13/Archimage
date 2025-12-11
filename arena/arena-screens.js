@@ -810,7 +810,7 @@ async function showArenaLeaderboard() {
                 </div>
             </div>
             
-            <div style="position: absolute; bottom: 15px; right: 15px; display: flex; gap: 10px;">
+            <div style="text-align: center; margin-top: 20px; padding-bottom: 10px;">
                 <button style="
                     padding: 10px 20px;
                     background: #4CAF50;
@@ -819,6 +819,7 @@ async function showArenaLeaderboard() {
                     color: white;
                     cursor: pointer;
                     font-weight: bold;
+                    margin-right: 10px;
                 " onclick="showArenaLeaderboard()">
                     🔄 Обновить
                 </button>
@@ -844,7 +845,7 @@ async function showArenaLeaderboard() {
                 <p style="color: #ff6b6b; font-size: 18px;">❌ Ошибка загрузки</p>
                 <p style="color: #aaa;">Не удалось загрузить таблицу лидеров</p>
             </div>
-            <div style="position: absolute; bottom: 15px; right: 15px; display: flex; gap: 10px;">
+            <div style="text-align: center; margin-top: 20px;">
                 <button style="
                     padding: 10px 20px;
                     background: #4CAF50;
@@ -853,6 +854,7 @@ async function showArenaLeaderboard() {
                     color: white;
                     cursor: pointer;
                     font-weight: bold;
+                    margin-right: 10px;
                 " onclick="showArenaLeaderboard()">
                     🔄 Повторить
                 </button>
