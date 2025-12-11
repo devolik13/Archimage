@@ -530,8 +530,10 @@ async function closeBattleFieldModal() {
                 });
 
                 const battleResult = playerAlive ? 'win' : 'loss';
+                const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 1000;
+                const opponentRating = typeof window.selectedOpponent?.rating === 'number' ? window.selectedOpponent.rating : 1000;
                 const ratingChange = typeof window.calculateRatingChange === 'function' ?
-                    window.calculateRatingChange(window.userData?.rating || 1000, window.selectedOpponent?.rating || 1000, battleResult) :
+                    window.calculateRatingChange(playerRating, opponentRating, battleResult) :
                     (battleResult === 'win' ? 25 : -25);
 
                 if (typeof window.onBattleCompleted === 'function') {

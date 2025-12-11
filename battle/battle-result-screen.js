@@ -53,7 +53,7 @@ function showBattleResult(result, battleData = {}) {
     const ratingColor = ratingChange > 0 ? '#4CAF50' : ratingChange < 0 ? '#f44336' : '#aaa';
 
     // Новый рейтинг
-    const currentRating = window.userData?.rating || 1000;
+    const currentRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 1000;
     const newRating = currentRating + ratingChange;
 
     // Лига

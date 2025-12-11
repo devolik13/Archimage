@@ -176,7 +176,7 @@ function showPlayerProfile() {
     const totalBattles = userData.total_battles || 0;
     const wins = userData.wins || 0;
     const losses = userData.losses || 0;
-    const rating = userData.rating || 1000;
+    const rating = typeof userData.rating === 'number' ? userData.rating : 1000;
     const winRate = totalBattles > 0 ? Math.round((wins / totalBattles) * 100) : 0;
 
     // Лига

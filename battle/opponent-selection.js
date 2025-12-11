@@ -92,7 +92,7 @@ async function showOpponentSelection() {
         window.closePvPArenaModal();
     }
 
-    const playerRating = window.userData?.rating || 1000;
+    const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 1000;
     const playerLevel = window.userData?.level || 1;
 
     // Показываем загрузку

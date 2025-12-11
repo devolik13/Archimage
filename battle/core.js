@@ -1061,9 +1061,9 @@ async function checkBattleEnd() {
 
         // Рассчитываем изменение рейтинга ТОЛЬКО ДЛЯ PvP
         if (!isPvEBattle && typeof window.calculateRatingChange === 'function') {
-            const playerRating = window.userData?.rating || 1000;
+            const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 1000;
             // Используем реальный рейтинг противника из selectedOpponent
-            const opponentRating = window.selectedOpponent?.rating || playerRating;
+            const opponentRating = typeof window.selectedOpponent?.rating === 'number' ? window.selectedOpponent.rating : 1000;
 
             ratingChange = window.calculateRatingChange(playerRating, opponentRating, battleResult);
         }
