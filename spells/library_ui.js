@@ -389,10 +389,10 @@ function setupSpellsScreen(faction) {
             const learnTime = window.SPELL_LEARNING_TIME?.getLearnTime ?
                 window.SPELL_LEARNING_TIME.getLearnTime(tierIndex + 1, 0, faction) : 144;
             buttonHTML = `
-                <button 
+                <button
                     style="
                         margin-top: 3px;
-                        padding: ${3 * Math.min(scaleX, scaleY)}px ${6 * Math.min(scaleX, scaleY)}px;
+                        padding: ${12 * Math.min(scaleX, scaleY)}px ${6 * Math.min(scaleX, scaleY)}px;
                         border: none;
                         border-radius: 3px;
                         background: #7289da;
@@ -411,10 +411,10 @@ function setupSpellsScreen(faction) {
             const upgradeTime = window.SPELL_LEARNING_TIME?.getLearnTime ?
                 window.SPELL_LEARNING_TIME.getLearnTime(tierIndex + 1, spell.level, faction) : 144;
             buttonHTML = `
-                <button 
+                <button
                     style="
                         margin-top: 3px;
-                        padding: ${3 * Math.min(scaleX, scaleY)}px ${6 * Math.min(scaleX, scaleY)}px;
+                        padding: ${12 * Math.min(scaleX, scaleY)}px ${6 * Math.min(scaleX, scaleY)}px;
                         border: none;
                         border-radius: 3px;
                         background: #ffa500;
