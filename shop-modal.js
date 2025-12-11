@@ -548,6 +548,12 @@ async function buyStarterPack(packKey) {
                     const airdropPoints = Math.floor(pack.price / 10);
                     if (airdropPoints > 0) {
                         window.addAirdropPoints(airdropPoints, `Покупка ${pack.price} Telegram Stars`);
+
+                        // Бонус рефереру (10% от BPM coin покупателя)
+                        const buyerTelegramId = window.dbManager?.currentPlayer?.telegram_id;
+                        if (buyerTelegramId && window.referralManager?.rewardReferrerForPurchase) {
+                            window.referralManager.rewardReferrerForPurchase(buyerTelegramId, airdropPoints);
+                        }
                     }
                 }
 
@@ -1008,6 +1014,12 @@ async function buyTimePack(item) {
                     const airdropPoints = Math.floor(item.price / 10);
                     if (airdropPoints > 0) {
                         window.addAirdropPoints(airdropPoints, `Покупка ${item.price} Telegram Stars`);
+
+                        // Бонус рефереру (10% от BPM coin покупателя)
+                        const buyerTelegramId = window.dbManager?.currentPlayer?.telegram_id;
+                        if (buyerTelegramId && window.referralManager?.rewardReferrerForPurchase) {
+                            window.referralManager.rewardReferrerForPurchase(buyerTelegramId, airdropPoints);
+                        }
                     }
                 }
 
@@ -1329,6 +1341,12 @@ async function confirmFactionChange(newFaction) {
                         const airdropPoints = Math.floor(dynamicPrice / 10);
                         if (airdropPoints > 0) {
                             window.addAirdropPoints(airdropPoints, `Покупка ${dynamicPrice} Telegram Stars`);
+
+                            // Бонус рефереру (10% от BPM coin покупателя)
+                            const buyerTelegramId = window.dbManager?.currentPlayer?.telegram_id;
+                            if (buyerTelegramId && window.referralManager?.rewardReferrerForPurchase) {
+                                window.referralManager.rewardReferrerForPurchase(buyerTelegramId, airdropPoints);
+                            }
                         }
                     }
                     applyFactionChange(newFaction);

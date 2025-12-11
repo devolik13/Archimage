@@ -1,6 +1,7 @@
 // database/referral-manager.js - Реферальная система
 
 const REFERRAL_REWARD = 1440; // 1 день = 1440 минут time_currency
+const REFERRAL_PURCHASE_BONUS_PERCENT = 10; // 10% от BPM coin покупателя идёт рефереру
 
 class ReferralManager {
     constructor() {
@@ -153,6 +154,66 @@ class ReferralManager {
         }
     }
 
+    // Начислить бонус рефереру за покупку привлечённого игрока
+    async rewardReferrerForPurchase(buyerTelegramId, airdropPointsEarned) {
+        if (!airdropPointsEarned || airdropPointsEarned <= 0) return null;
+
+        try {
+            // Ищем реферера этого игрока в таблице referrals
+            const { data: referralRecord, error: refError } = await this.supabase
+                .from('referrals')
+                .select('referrer_id, referrer_telegram_id')
+                .eq('referred_telegram_id', buyerTelegramId)
+                .single();
+
+            if (refError || !referralRecord) {
+                // Игрок не был приглашён никем - это нормально
+                console.log('📝 Покупатель не имеет реферера');
+                return null;
+            }
+
+            // Вычисляем бонус для реферера (10% от очков покупателя)
+            const referrerBonus = Math.floor(airdropPointsEarned * REFERRAL_PURCHASE_BONUS_PERCENT / 100);
+            if (referrerBonus <= 0) return null;
+
+            // Получаем текущие очки реферера
+            const { data: referrer, error: referrerError } = await this.supabase
+                .from('players')
+                .select('id, airdrop_points, username')
+                .eq('telegram_id', referralRecord.referrer_telegram_id)
+                .single();
+
+            if (referrerError || !referrer) {
+                console.warn('⚠️ Реферер не найден:', referralRecord.referrer_telegram_id);
+                return null;
+            }
+
+            // Начисляем бонус рефереру
+            const { error: updateError } = await this.supabase
+                .from('players')
+                .update({
+                    airdrop_points: (referrer.airdrop_points || 0) + referrerBonus
+                })
+                .eq('id', referrer.id);
+
+            if (updateError) {
+                console.error('❌ Ошибка начисления бонуса рефереру:', updateError);
+                return null;
+            }
+
+            console.log(`🎁 Реферер ${referrer.username} получил +${referrerBonus} BPM coin за покупку приглашённого игрока`);
+
+            return {
+                referrerUsername: referrer.username,
+                bonus: referrerBonus
+            };
+
+        } catch (error) {
+            console.error('❌ Ошибка начисления реферального бонуса:', error);
+            return null;
+        }
+    }
+
     // Показать UI реферальной ссылки
     showReferralUI() {
         if (!window.userData || !window.dbManager?.currentPlayer) {
@@ -169,6 +230,9 @@ class ReferralManager {
                 <p style="font-size: 13px; color: #ccc; margin: 15px 0;">
                     Поделись ссылкой с друзьями.<br>
                     Вы оба получите <span style="color: #4ade80; font-weight: bold;">1 день</span> времени + <span style="color: #ffd700; font-weight: bold;">200 BPM coin</span>!
+                </p>
+                <p style="font-size: 11px; color: #888; margin: 10px 0;">
+                    💎 Бонус: <span style="color: #ffd700;">+10%</span> BPM coin от покупок друга
                 </p>
 
                 <div style="
