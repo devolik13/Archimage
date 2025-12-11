@@ -117,10 +117,20 @@ async function claimLeagueReward(leagueId) {
     }
     window.userData.season_league_rewards_claimed.push(leagueId);
 
-    // Сохраняем в БД
-    if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
-        await window.dbManager.savePlayer(window.userData);
-        console.log('✅ Прогресс наград сохранен в БД');
+    // НЕМЕДЛЕННОЕ сохранение в БД (чтобы нельзя было получить повторно при перезагрузке)
+    try {
+        if (window.eventSaveManager && typeof window.eventSaveManager.saveImmediate === 'function') {
+            await window.eventSaveManager.saveImmediate('league_reward_claimed');
+            console.log('✅ Награда за лигу сохранена немедленно');
+        } else if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+            await window.dbManager.savePlayer(window.userData);
+            console.log('✅ Прогресс наград сохранен в БД');
+        }
+    } catch (saveError) {
+        console.error('❌ Ошибка сохранения награды:', saveError);
+        // Откатываем изменения если сохранение не удалось
+        window.userData.season_league_rewards_claimed = window.userData.season_league_rewards_claimed.filter(id => id !== leagueId);
+        return false;
     }
 
     // Показываем уведомление

@@ -1173,7 +1173,7 @@ function showArenaResult(result, battleData = {}) {
     }, 100);
 }
 
-// Полноэкранное окно лога боя
+// Полноэкранное окно лога боя (с фоном арены)
 function showBattleLogFullscreen() {
     // Удаляем старое окно если есть
     const existing = document.getElementById('battle-log-fullscreen');
@@ -1189,75 +1189,118 @@ function showBattleLogFullscreen() {
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
         z-index: 100000;
         display: flex;
-        flex-direction: column;
-        overflow: hidden;
+        align-items: center;
+        justify-content: center;
     `;
 
     screen.innerHTML = `
-        <div style="
-            padding: 15px 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-bottom: 2px solid rgba(255, 165, 0, 0.5);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        ">
-            <h2 style="margin: 0; color: #ffa500; font-size: 20px;">📜 Лог боя</h2>
-            <span style="color: #888; font-size: 12px;">${battleLog.length} записей</span>
-        </div>
+        <!-- Фон арены -->
+        <img src="images/arena_bg.webp" style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        " onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)';">
 
-        <div id="battle-log-content" style="
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            font-size: 13px;
-            line-height: 1.5;
-        ">
-            ${battleLog.length > 0 ?
-                battleLog.map(log => '<div style="margin-bottom: 8px; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 6px; border-left: 3px solid rgba(255, 165, 0, 0.5);">' + log + '</div>').join('') :
-                '<div style="color: #888; text-align: center; padding: 50px;">Лог боя пуст</div>'
-            }
-        </div>
-
+        <!-- Затемнение -->
         <div style="
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2;
+        "></div>
+
+        <!-- Контент -->
+        <div style="
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
             display: flex;
-            justify-content: center;
-            gap: 15px;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 165, 0, 0.5);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 165, 0, 0.3);
         ">
-            <button id="battle-log-scroll-top" style="
-                padding: 10px 20px;
-                background: rgba(114, 137, 218, 0.3);
-                border: 1px solid #7289da;
-                border-radius: 6px;
-                color: white;
-                cursor: pointer;
-                font-size: 14px;
-            ">⬆ В начало</button>
-            <button id="battle-log-scroll-bottom" style="
-                padding: 10px 20px;
-                background: rgba(114, 137, 218, 0.3);
-                border: 1px solid #7289da;
-                border-radius: 6px;
-                color: white;
-                cursor: pointer;
-                font-size: 14px;
-            ">⬇ В конец</button>
-            <button id="battle-log-close" style="
-                padding: 10px 25px;
-                background: rgba(255, 165, 0, 0.2);
-                border: 2px solid #ffa500;
-                border-radius: 6px;
-                color: #ffa500;
-                cursor: pointer;
-                font-size: 14px;
-                font-weight: bold;
-            ">✕ Закрыть</button>
+            <!-- Заголовок -->
+            <div style="
+                padding: 15px 20px;
+                background: rgba(0, 0, 0, 0.4);
+                border-bottom: 2px solid rgba(255, 165, 0, 0.3);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            ">
+                <h2 style="margin: 0; color: #ffa500; font-size: 20px;">📜 Лог боя</h2>
+                <span style="color: #888; font-size: 12px;">${battleLog.length} записей</span>
+            </div>
+
+            <!-- Содержимое лога -->
+            <div id="battle-log-content" style="
+                flex: 1;
+                overflow-y: auto;
+                padding: 15px;
+                font-size: 13px;
+                line-height: 1.5;
+            ">
+                ${battleLog.length > 0 ?
+                    battleLog.map(log => '<div style="margin-bottom: 8px; padding: 8px 12px; background: rgba(255,255,255,0.08); border-radius: 6px; border-left: 3px solid rgba(255, 165, 0, 0.5);">' + log + '</div>').join('') :
+                    '<div style="color: #888; text-align: center; padding: 50px;">Лог боя пуст</div>'
+                }
+            </div>
+
+            <!-- Кнопки -->
+            <div style="
+                padding: 15px;
+                background: rgba(0, 0, 0, 0.4);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+                flex-wrap: wrap;
+            ">
+                <button id="battle-log-scroll-top" style="
+                    padding: 10px 15px;
+                    background: rgba(114, 137, 218, 0.3);
+                    border: 1px solid #7289da;
+                    border-radius: 6px;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 13px;
+                ">⬆ В начало</button>
+                <button id="battle-log-scroll-bottom" style="
+                    padding: 10px 15px;
+                    background: rgba(114, 137, 218, 0.3);
+                    border: 1px solid #7289da;
+                    border-radius: 6px;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 13px;
+                ">⬇ В конец</button>
+                <button id="battle-log-close" style="
+                    padding: 10px 20px;
+                    background: rgba(255, 165, 0, 0.2);
+                    border: 2px solid #ffa500;
+                    border-radius: 6px;
+                    color: #ffa500;
+                    cursor: pointer;
+                    font-size: 14px;
+                    font-weight: bold;
+                ">← Закрыть</button>
+            </div>
         </div>
     `;
 
