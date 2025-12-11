@@ -17,18 +17,36 @@
 
         // === ОСНОВНАЯ ПАНЕЛЬ АКТИВНЫХ ПРОЦЕССОВ ===
         function createProcessPanel() {
+            // Проверяем, не активен ли portrait blocker
+            if (document.getElementById('portrait-blocker-overlay')) {
+                return null;
+            }
+
             // Удаляем старую панель если есть
             const oldPanel = document.getElementById('active-processes-panel');
             if (oldPanel) {
                 oldPanel.remove();
             }
 
+            // Вычисляем позицию относительно аватара
+            const avatar = document.getElementById('player-avatar-container');
+            let leftPos = '180px';
+            let topPos = '10px';
+
+            if (avatar) {
+                const avatarRect = avatar.getBoundingClientRect();
+                if (avatarRect.width > 0) {
+                    leftPos = (avatarRect.right + 10) + 'px';
+                    topPos = avatarRect.top + 'px';
+                }
+            }
+
             const panel = document.createElement('div');
             panel.id = 'active-processes-panel';
             panel.style.cssText = `
                 position: fixed;
-                top: 10px;
-                left: 180px;
+                top: ${topPos};
+                left: ${leftPos};
                 display: flex;
                 gap: 8px;
                 z-index: 10001;

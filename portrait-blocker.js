@@ -75,6 +75,10 @@
                 if (typeof window.updateTimeCurrencyDisplay === 'function') {
                     window.updateTimeCurrencyDisplay();
                 }
+                // Обновляем панель процессов (изучение заклинаний, стройка и т.д.)
+                if (typeof window.updateProcessPanel === 'function') {
+                    window.updateProcessPanel();
+                }
             }, 100);
         }
     }
