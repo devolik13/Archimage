@@ -1060,25 +1060,6 @@ function showArenaResult(result, battleData = {}) {
                 </div>
             </div>
 
-            <!-- Секция лога боя (скрыта по умолчанию) -->
-            <div id="arena-result-battle-log" style="
-                display: none;
-                background: rgba(0, 0, 0, 0.4);
-                padding: 12px;
-                border-radius: 10px;
-                margin-bottom: 15px;
-                max-height: 200px;
-                overflow-y: auto;
-                font-size: 12px;
-                line-height: 1.4;
-                border: 1px solid rgba(114, 137, 218, 0.3);
-            ">
-                ${(window.battleLog || []).length > 0 ?
-                    window.battleLog.map(log => '<div style="margin-bottom: 5px; padding: 5px; background: rgba(255,255,255,0.05); border-radius: 4px;">' + log + '</div>').join('') :
-                    '<div style="color: #888; text-align: center;">Лог боя пуст</div>'
-                }
-            </div>
-
             <!-- Кнопки -->
             <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
                 <button id="arena-result-view-log" style="
@@ -1140,28 +1121,19 @@ function showArenaResult(result, battleData = {}) {
         const viewLogBtn = document.getElementById('arena-result-view-log');
         const newFightBtn = document.getElementById('arena-result-new-fight');
         const returnBtn = document.getElementById('arena-result-return');
-        const battleLogSection = document.getElementById('arena-result-battle-log');
 
-        if (viewLogBtn && battleLogSection) {
-            let logVisible = false;
+        if (viewLogBtn) {
             viewLogBtn.onmouseover = () => {
                 viewLogBtn.style.background = 'rgba(255, 165, 0, 0.3)';
                 viewLogBtn.style.transform = 'scale(1.05)';
             };
             viewLogBtn.onmouseout = () => {
-                viewLogBtn.style.background = logVisible ? 'rgba(255, 165, 0, 0.3)' : 'rgba(255, 165, 0, 0.1)';
+                viewLogBtn.style.background = 'rgba(255, 165, 0, 0.1)';
                 viewLogBtn.style.transform = 'scale(1)';
             };
             viewLogBtn.onclick = () => {
-                logVisible = !logVisible;
-                battleLogSection.style.display = logVisible ? 'block' : 'none';
-                viewLogBtn.innerHTML = logVisible ? '📜 Скрыть лог' : '📜 Лог боя';
-                viewLogBtn.style.background = logVisible ? 'rgba(255, 165, 0, 0.3)' : 'rgba(255, 165, 0, 0.1)';
-                if (logVisible) {
-                    // Прокрутка лога вниз
-                    battleLogSection.scrollTop = battleLogSection.scrollHeight;
-                }
-                console.log('📜 Лог боя:', logVisible ? 'показан' : 'скрыт');
+                // Открываем полноэкранное окно с логом
+                showBattleLogFullscreen();
             };
         }
 
@@ -1201,9 +1173,121 @@ function showArenaResult(result, battleData = {}) {
     }, 100);
 }
 
+// Полноэкранное окно лога боя
+function showBattleLogFullscreen() {
+    // Удаляем старое окно если есть
+    const existing = document.getElementById('battle-log-fullscreen');
+    if (existing) existing.remove();
+
+    const battleLog = window.battleLog || [];
+
+    const screen = document.createElement('div');
+    screen.id = 'battle-log-fullscreen';
+    screen.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        z-index: 100000;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    `;
+
+    screen.innerHTML = `
+        <div style="
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid rgba(255, 165, 0, 0.5);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        ">
+            <h2 style="margin: 0; color: #ffa500; font-size: 20px;">📜 Лог боя</h2>
+            <span style="color: #888; font-size: 12px;">${battleLog.length} записей</span>
+        </div>
+
+        <div id="battle-log-content" style="
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+        ">
+            ${battleLog.length > 0 ?
+                battleLog.map(log => '<div style="margin-bottom: 8px; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 6px; border-left: 3px solid rgba(255, 165, 0, 0.5);">' + log + '</div>').join('') :
+                '<div style="color: #888; text-align: center; padding: 50px;">Лог боя пуст</div>'
+            }
+        </div>
+
+        <div style="
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        ">
+            <button id="battle-log-scroll-top" style="
+                padding: 10px 20px;
+                background: rgba(114, 137, 218, 0.3);
+                border: 1px solid #7289da;
+                border-radius: 6px;
+                color: white;
+                cursor: pointer;
+                font-size: 14px;
+            ">⬆ В начало</button>
+            <button id="battle-log-scroll-bottom" style="
+                padding: 10px 20px;
+                background: rgba(114, 137, 218, 0.3);
+                border: 1px solid #7289da;
+                border-radius: 6px;
+                color: white;
+                cursor: pointer;
+                font-size: 14px;
+            ">⬇ В конец</button>
+            <button id="battle-log-close" style="
+                padding: 10px 25px;
+                background: rgba(255, 165, 0, 0.2);
+                border: 2px solid #ffa500;
+                border-radius: 6px;
+                color: #ffa500;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: bold;
+            ">✕ Закрыть</button>
+        </div>
+    `;
+
+    document.body.appendChild(screen);
+
+    // Обработчики кнопок
+    const logContent = document.getElementById('battle-log-content');
+
+    document.getElementById('battle-log-scroll-top').onclick = () => {
+        logContent.scrollTop = 0;
+    };
+
+    document.getElementById('battle-log-scroll-bottom').onclick = () => {
+        logContent.scrollTop = logContent.scrollHeight;
+    };
+
+    document.getElementById('battle-log-close').onclick = () => {
+        screen.remove();
+    };
+
+    // Прокрутка в конец по умолчанию
+    setTimeout(() => {
+        logContent.scrollTop = logContent.scrollHeight;
+    }, 100);
+}
+
 // Экспортируем функции
 window.showPvPArenaModalBg = showPvPArenaModalBg;
 window.closePvPArenaModalBg = closePvPArenaModalBg;
+window.showBattleLogFullscreen = showBattleLogFullscreen;
 
 console.log('🎮 PvP арена с фоном готова');
 
