@@ -690,8 +690,8 @@ function createNewWizard(index) {
         original_max_hp: 100,
         hp: 100,
         max_hp: 100,
-        armor: 50,
-        max_armor: 50,
+        armor: 100,
+        max_armor: 100,
         damage: 10,
         isMain: index === 1
     };
