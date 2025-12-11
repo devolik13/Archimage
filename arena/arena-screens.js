@@ -1197,7 +1197,7 @@ function showBattleLogFullscreen() {
 
     screen.innerHTML = `
         <!-- Фон арены -->
-        <img src="images/arena_bg.webp" style="
+        <img src="assets/ui/arena/arena_earth.webp" style="
             position: absolute;
             top: 0;
             left: 0;
