@@ -985,25 +985,12 @@ window.addEventListener('resize', () => {
 // Для Telegram Web App - максимизируем область просмотра
 if (window.Telegram && window.Telegram.WebApp) {
     console.log('📱 Telegram WebApp обнаружен');
-    const tgWebApp = window.Telegram.WebApp;
-
-    // Разворачиваем на весь экран
-    tgWebApp.expand?.();
-
-    // Подтверждение при закрытии (чтобы случайно не вышли)
-    tgWebApp.enableClosingConfirmation?.();
-
-    // ВАЖНО для горизонтальной игры: отключаем свайп вниз для закрытия
-    tgWebApp.disableVerticalSwipes?.();
-
-    // Пробуем заблокировать ориентацию в landscape (если API доступен)
-    tgWebApp.lockOrientation?.();
+    window.Telegram.WebApp.expand();
+    window.Telegram.WebApp.enableClosingConfirmation();
 
     // Убираем отступы Telegram
     document.body.style.paddingTop = '0';
     document.body.style.paddingBottom = '0';
-
-    console.log('📱 Telegram WebApp настроен для горизонтальной игры');
 }
 
 // Экспортируем функции в глобальную область

@@ -1,54 +1,20 @@
 // portrait-blocker.js - Блокировка portrait режима для мобильных устройств
 (function() {
 
-    // Функция определения мобильного устройства через Telegram
+    // Функция определения мобильного устройства
     function isMobileDevice() {
-        const tg = window.Telegram?.WebApp;
-        if (!tg) {
-            console.log('📱 Telegram WebApp не найден, используем fallback определение');
-            return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        }
-
-        const platform = tg.platform || 'unknown';
-        const isMobile = ['ios', 'android', 'android_x'].includes(platform);
-        console.log('📱 Платформа:', platform, '| Мобильный:', isMobile);
-        return isMobile;
+        return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     }
 
-    // Функция проверки ориентации - несколько методов для надёжности
+    // Функция проверки ориентации
     function isPortraitMode() {
-        // Метод 1: screen.orientation API (самый надёжный)
-        if (screen.orientation && screen.orientation.type) {
-            const isPortrait = screen.orientation.type.includes('portrait');
-            console.log(`📐 screen.orientation: ${screen.orientation.type} | Portrait: ${isPortrait}`);
-            return isPortrait;
-        }
-
-        // Метод 2: window.orientation (deprecated но работает)
-        if (typeof window.orientation !== 'undefined') {
-            const isPortrait = window.orientation === 0 || window.orientation === 180;
-            console.log(`📐 window.orientation: ${window.orientation} | Portrait: ${isPortrait}`);
-            return isPortrait;
-        }
-
-        // Метод 3: screen dimensions
-        if (screen.width && screen.height) {
-            const isPortrait = screen.height > screen.width;
-            console.log(`📐 screen: ${screen.width}x${screen.height} | Portrait: ${isPortrait}`);
-            return isPortrait;
-        }
-
-        // Метод 4: fallback на window размеры
-        const isPortrait = window.innerHeight > window.innerWidth;
-        console.log(`📐 window: ${window.innerWidth}x${window.innerHeight} | Portrait: ${isPortrait}`);
-        return isPortrait;
+        return window.innerHeight > window.innerWidth;
     }
 
     // Создание overlay для блокировки
     function createBlockerOverlay() {
-        // Проверяем, уже есть ли overlay
         if (document.getElementById('portrait-blocker-overlay')) {
-            return; // Уже есть, не создаём дубликат
+            return;
         }
 
         const overlay = document.createElement('div');
@@ -82,16 +48,6 @@
                 <div style="margin-top: 30px; font-size: 40px;">
                     🔄
                 </div>
-                <button id="portrait-continue-btn" style="
-                    margin-top: 30px;
-                    padding: 12px 30px;
-                    background: rgba(255,255,255,0.2);
-                    border: 1px solid rgba(255,255,255,0.3);
-                    border-radius: 8px;
-                    color: #fff;
-                    font-size: 14px;
-                    cursor: pointer;
-                ">Я перевернул ➜</button>
             </div>
 
             <style>
@@ -102,16 +58,7 @@
             </style>
         `;
 
-        // Кнопка для ручной проверки
-        overlay.querySelector('#portrait-continue-btn').onclick = () => {
-            console.log('👆 Нажата кнопка "Я перевернул"');
-            // Принудительно убираем оверлей и показываем игру
-            removeBlockerOverlay();
-            toggleGameContent(true);
-        };
-
         document.body.appendChild(overlay);
-        console.log('🚫 Overlay блокировки создан');
     }
 
     // Удаление overlay
@@ -119,7 +66,6 @@
         const overlay = document.getElementById('portrait-blocker-overlay');
         if (overlay) {
             overlay.remove();
-            console.log('✅ Overlay блокировки удалён');
         }
     }
 
@@ -137,13 +83,9 @@
         const isPortrait = isPortraitMode();
 
         if (isMobile && isPortrait) {
-            // Мобильный + вертикально = БЛОКИРОВКА
-            console.log('🚫 БЛОКИРОВКА: portrait режим');
             createBlockerOverlay();
             toggleGameContent(false);
         } else {
-            // Десктоп ИЛИ горизонтально = ОК
-            console.log('✅ OK: landscape или десктоп');
             removeBlockerOverlay();
             toggleGameContent(true);
         }
@@ -151,41 +93,14 @@
 
     // Инициализация
     function init() {
-        console.log('🎬 Инициализация portrait-blocker...');
-
-        // Первая проверка
         checkOrientation();
 
-        // Слушаем изменения ориентации - все возможные события
-        window.addEventListener('resize', () => {
+        window.addEventListener('resize', checkOrientation);
+        window.addEventListener('orientationchange', () => {
             setTimeout(checkOrientation, 100);
         });
-
-        window.addEventListener('orientationchange', () => {
-            setTimeout(checkOrientation, 300);
-        });
-
-        // screen.orientation API
-        if (screen.orientation) {
-            screen.orientation.addEventListener('change', () => {
-                console.log('📐 screen.orientation change event');
-                setTimeout(checkOrientation, 100);
-            });
-        }
-
-        // Периодическая проверка как fallback (каждые 500мс первые 5 секунд)
-        let checkCount = 0;
-        const intervalId = setInterval(() => {
-            checkOrientation();
-            checkCount++;
-            if (checkCount >= 10) {
-                clearInterval(intervalId);
-                console.log('📐 Периодическая проверка завершена');
-            }
-        }, 500);
     }
 
-    // Запускаем когда DOM готов
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
