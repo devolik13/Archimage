@@ -450,7 +450,7 @@ function setupSpellsScreen(faction) {
             height: ${(y2 - y1) * scaleY}px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-end;
             align-items: center;
             padding: 3px;
             box-sizing: border-box;
