@@ -1053,9 +1053,11 @@ function initConstructionSystem() {
 }
 
 async function saveConstructionsToServer() {
-    // Здания сохраняются автоматически через автосохранение каждые 30 секунд
-    // Просто отмечаем что есть изменения
-    if (window.dbManager) {
+    // ВАЖНО: Сохраняем НЕМЕДЛЕННО, а не ждём автосохранения
+    if (window.eventSaveManager) {
+        await window.eventSaveManager.saveImmediate('construction_started');
+        console.log('💾 Конструкция сохранена немедленно');
+    } else if (window.dbManager) {
         window.dbManager.markChanged();
     }
     
