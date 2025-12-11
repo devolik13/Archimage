@@ -308,6 +308,6 @@ class ReferralManager {
 // Создаём глобальный экземпляр
 window.referralManager = new ReferralManager();
 
-// Константы для настройки бота (замени на реальные)
-window.TELEGRAM_BOT_USERNAME = 'ArchiMageBot'; // Имя бота
+// Константы для настройки бота
+window.TELEGRAM_BOT_USERNAME = 'Archimage_bot'; // Имя бота
 window.TELEGRAM_APP_NAME = 'app'; // Имя Mini App
