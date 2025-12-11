@@ -168,7 +168,7 @@ class ReferralManager {
                 <h3 style="color: #4ade80; margin-top: 0;">🎁 Пригласи друга!</h3>
                 <p style="font-size: 13px; color: #ccc; margin: 15px 0;">
                     Поделись ссылкой с друзьями.<br>
-                    Вы оба получите <span style="color: #4ade80; font-weight: bold;">1 день</span> игрового времени!
+                    Вы оба получите <span style="color: #4ade80; font-weight: bold;">1 день</span> времени + <span style="color: #ffd700; font-weight: bold;">200 BPM coin</span>!
                 </p>
 
                 <div style="
@@ -290,7 +290,7 @@ class ReferralManager {
         if (!telegramId) return;
 
         const link = this.generateReferralLink(telegramId);
-        const text = '🧙‍♂️ Присоединяйся к Archimage! Магическая стратегия с боями магов. Мы оба получим 1 день игрового времени!';
+        const text = '🧙‍♂️ Присоединяйся к Archimage! Магическая стратегия с боями магов. Мы оба получим 1 день времени + 200 BPM coin! 🪙';
 
         // Используем Telegram WebApp для шаринга
         if (window.Telegram && window.Telegram.WebApp) {
