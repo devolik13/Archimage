@@ -102,10 +102,7 @@
         const isMobile = isMobileDevice();
         const isPortrait = isPortraitMode();
         
-        // Определяем переход
-        const transitionToLandscape = wasPortrait === true && !isPortrait;
-        
-        console.log(`📊 Было: ${wasPortrait === null ? 'первый запуск' : wasPortrait ? 'portrait' : 'landscape'} → Стало: ${isPortrait ? 'portrait' : 'landscape'}`);
+        console.log(`📊 Ориентация: ${isPortrait ? 'portrait' : 'landscape'}`);
         
         if (isMobile && isPortrait) {
             // Мобильный + вертикально = БЛОКИРОВКА
@@ -113,13 +110,9 @@
             createBlockerOverlay();
             toggleGameContent(false);
             wasPortrait = true;
-        } else if (isMobile && transitionToLandscape) {
-            // Переход portrait → landscape = RELOAD
-            setTimeout(() => {
-                window.location.reload();
-            }, 500);
         } else {
             // Десктоп ИЛИ горизонтально = ОК
+            console.log('✅ Ориентация OK, убираем блокировку');
             removeBlockerOverlay();
             toggleGameContent(true);
             wasPortrait = false;
