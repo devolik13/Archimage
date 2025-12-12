@@ -78,7 +78,7 @@ const ELEMENTALS = {
     fire: {
         name: "Огненный Элементаль",
         hp: 300,
-        armor: 120,
+        armor: 110,
         faction: "fire",
         spells: ['firebolt', 'spark'],
         spell_levels: {
@@ -97,7 +97,7 @@ const ELEMENTALS = {
     water: {
         name: "Водный Элементаль",
         hp: 400,
-        armor: 170,
+        armor: 120,
         faction: "water",
         spells: ["icicle", "frost_arrow", "blizzard"],
         spell_levels: {
@@ -116,8 +116,8 @@ const ELEMENTALS = {
     },
     wind: {
         name: "Воздушный Элементаль",
-        hp: 800,
-        armor: 190,
+        hp: 500,
+        armor: 130,
         faction: "wind",
         spells: ["gust", "wind_blade", "storm_cloud"],
         spell_levels: {
@@ -136,8 +136,8 @@ const ELEMENTALS = {
     },
     earth: {
         name: "Земной Элементаль",
-        hp: 1000,
-        armor: 210,
+        hp: 600,
+        armor: 140,
         faction: "earth",
         spells: ["pebble", "stone_spike", "meteor_shower"],
         spell_levels: {
@@ -159,8 +159,8 @@ const ELEMENTALS = {
 // Финальный босс уровня 50
 const FINAL_BOSS = {
     name: "Повелитель Хаоса",
-    hp: 2000,
-    armor: 250,
+    hp: 700,
+    armor: 150,
     faction: "fire", // визуально будет огненным
     spells: ["fireball", "blizzard", "ball_lightning", "meteor_shower", "epidemic"], // все стихии
     spell_levels: {
