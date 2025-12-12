@@ -442,13 +442,10 @@ async function renameWizard(wizardIndex, newName) {
             nameDisplay.textContent = trimmedName;
         }
         updateWizardsList();
-        
-        // Обновляем окно мага если оно открыто
-        if (document.getElementById('wizard-detail-screen')) {
-            if (typeof window.renderWizardDetailScreenWithBackground === 'function') {
-                window.renderWizardDetailScreenWithBackground(wizardIndex);
-            }
-        }
+
+        // НЕ перерисовываем весь экран - на мобильном это ломает размеры
+        // (клавиатура ещё закрывается и window.innerHeight неправильный)
+        // Имя уже обновлено выше через nameDisplay.textContent
 
         // Сохраняем изменения через event-save-manager
         if (window.eventSaveManager) {

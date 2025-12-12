@@ -37,7 +37,7 @@ const ENEMY_TYPES = {
         baseDamage: 15,
         hpGrowth: 8,
         damageGrowth: 2,
-        armor: 70,
+        armor: 130,
         attackType: "physical",
         spriteSheet: "orc"
     },
@@ -78,7 +78,7 @@ const ELEMENTALS = {
     fire: {
         name: "Огненный Элементаль",
         hp: 300,
-        armor: 150,
+        armor: 120,
         faction: "fire",
         spells: ['firebolt', 'spark'],
         spell_levels: {

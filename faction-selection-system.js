@@ -47,7 +47,7 @@ window.FactionSelection = {
     },
 
     init: function() {
-    
+
     	const container = document.getElementById('faction-selection');
     	if (!container) return;
 
@@ -57,8 +57,10 @@ window.FactionSelection = {
     	    header.style.display = 'none';
     	}
 
-    	// Проверяем CSS rotation
-    	const isRotated = window.cssRotationActive === true;
+    	// Определяем портретный режим (высота больше ширины)
+    	const isPortrait = window.innerHeight > window.innerWidth;
+    	// Используем rotation если портретный режим ИЛИ если флаг активен
+    	const isRotated = isPortrait || window.cssRotationActive === true;
 
     	container.style.cssText = `
     	    position: fixed;
@@ -68,7 +70,7 @@ window.FactionSelection = {
     	    height: 100vh;
     	    display: block;
     	    background: #000;
-    	    z-index: 9999;
+    	    z-index: 9999999;
     	    overflow: hidden;
     	`;
 	
@@ -300,7 +302,7 @@ window.FactionSelection = {
             height: 100vh;
             background: rgba(0, 0, 0, 0.95);
             border-right: 2px solid #ffd700;
-            z-index: 10000;
+            z-index: 99999999;
             padding: 15px 20px;
             box-sizing: border-box;
             overflow-y: auto;

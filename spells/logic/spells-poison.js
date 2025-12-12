@@ -354,9 +354,12 @@ function castFoulCloud(wizard, spellData, position, casterType) {
     }
     
     // Атакуем всех врагов в указанных колонках
-    const targetInfo = findAllTargetsInColumns(columnsToAttack, casterType);
-    
-    targetInfo.forEach(targetInfo => {
+    const allTargetsInCloud = findAllTargetsInColumns(columnsToAttack, casterType);
+
+    // Сортируем цели по HP% (слабейший первый) для приоритета защиты Энтом
+    const sortedCloudTargets = window.sortTargetsByHpPercent ? window.sortTargetsByHpPercent(allTargetsInCloud) : allTargetsInCloud;
+
+    sortedCloudTargets.forEach(targetInfo => {
         // Проверяем живой ли враг
         if (targetInfo.wizard.hp <= 0) return;
         
@@ -731,8 +734,11 @@ function castEpidemic(wizard, spellData, position, casterType) {
     
     // Функция применения урона (вызывается после анимации)
     function applyEpidemicDamage() {
+        // Сортируем цели по HP% (слабейший первый) для приоритета защиты Энтом
+        const sortedTargetData = window.sortTargetsByHpPercent ? window.sortTargetsByHpPercent(targetData) : targetData;
+
         // Наносим урон и накладываем яд
-        targetData.forEach((targetObj) => {
+        sortedTargetData.forEach((targetObj) => {
             const target = targetObj.wizard;
             
             // ИСПРАВЛЕНО: Передаем полный объект

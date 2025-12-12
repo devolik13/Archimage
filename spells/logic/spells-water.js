@@ -401,39 +401,49 @@ function castIceRain(wizard, spellData, position, casterType) {
         });
     }
 
-    // Наносим урон
-    const processedTargets = new Set();
-    
+    // Собираем все цели с их позициями
+    const allTargets = [];
+    const processedPositions = new Set();
+
     affectedPositions.forEach((col) => {
         const target = findTargetAtSimplePosition(col, casterType);
         if (target) {
-            // На 5 уровне разрешаем повторный урон
-            if (level === 5 || !processedTargets.has(target.wizard.id)) {
-                if (level < 5) {
-                    processedTargets.add(target.wizard.id);
-                }
-                
-                const finalDamage = window.applyFinalDamage ?
-                    window.applyFinalDamage(wizard, target.wizard, baseDamage, 'ice_rain', 0, true) : baseDamage;
-
-                target.wizard.hp -= finalDamage;
-                if (target.wizard.hp < 0) target.wizard.hp = 0;
-
-                if (typeof window.addToBattleLog === 'function') {
-                    // Многострочный лог как у Искры
-                    window.addToBattleLog(`❄️ Ледяной дождь [${col}] → ${target.wizard.name} (${finalDamage} урона)`);
-                    const damageSteps = target.wizard._lastDamageSteps || [];
-                    if (damageSteps.length > 0) {
-                        damageSteps.forEach(step => {
-                            window.addToBattleLog(`    ├─ ${step}`);
-                        });
-                    }
-                    window.addToBattleLog(`    └─ HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
-                    delete target.wizard._lastDamageSteps;
-                }
-                targetsHit.push(target.wizard);
+            // На 5 уровне добавляем цель дважды (две волны)
+            if (level === 5) {
+                allTargets.push({ wizard: target.wizard, col: col });
+            } else if (!processedPositions.has(col)) {
+                processedPositions.add(col);
+                allTargets.push({ wizard: target.wizard, col: col });
             }
         }
+    });
+
+    // Сортируем по HP% (слабейшие первыми) для правильной работы Энта
+    const sortedTargets = window.sortTargetsByHpPercent ? window.sortTargetsByHpPercent(allTargets) : allTargets;
+
+    // Наносим урон отсортированным целям
+    sortedTargets.forEach((targetInfo) => {
+        const target = targetInfo.wizard;
+        const col = targetInfo.col;
+
+        const finalDamage = window.applyFinalDamage ?
+            window.applyFinalDamage(wizard, target, baseDamage, 'ice_rain', 0, true) : baseDamage;
+
+        target.hp -= finalDamage;
+        if (target.hp < 0) target.hp = 0;
+
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`❄️ Ледяной дождь [${col}] → ${target.name} (${finalDamage} урона)`);
+            const damageSteps = target._lastDamageSteps || [];
+            if (damageSteps.length > 0) {
+                damageSteps.forEach(step => {
+                    window.addToBattleLog(`    ├─ ${step}`);
+                });
+            }
+            window.addToBattleLog(`    └─ HP: ${target.hp}/${target.max_hp}`);
+            delete target._lastDamageSteps;
+        }
+        targetsHit.push(target);
     });
 
     // Эффекты охлаждения (50% шанс)

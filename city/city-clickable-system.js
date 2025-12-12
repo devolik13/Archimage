@@ -180,16 +180,9 @@ function setupPolygonEvents(polygon, position, buildingData, key) {
     };
     
     polygon.onmouseenter = (e) => {
-        // Подсветка полигона - тоже убираем
-        /*
-        if (!window.DEV_MODE) {
-            polygon.style.fill = 'rgba(255,255,255,0.08)';
-        }
-        */
-        
         // ПОДСВЕТКА ЗДАНИЯ остается
         highlightBuilding(position.buildingId, true);
-        showBuildingTooltip(e, position.buildingId, buildingData);
+        // Tooltip убран - мешал и долго не исчезал
     };
     
     polygon.onmouseleave = () => {
@@ -779,13 +772,8 @@ function updateConstructionTimer(buildingId, element) {
             
             // Обновляем кликабельные зоны
             createBuildingClickZones(faction, container);
-            
-            // Показываем уведомление
-            const config = window.BUILDINGS_CONFIG?.[buildingId];
-            const buildingName = config ? config.name : buildingId;
-            if (window.showNotification) {
-                window.showNotification(`✅ ${buildingName} построено!`);
-            }
+
+            // Уведомление убрано - оно уже показывается в completeConstruction()
         }
         return;
     }

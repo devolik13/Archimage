@@ -36,6 +36,20 @@
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+    <!-- TON Connect UI -->
+    <script src="https://unpkg.com/@tonconnect/ui@2.0.9/dist/tonconnect-ui.min.js"></script>
+
+    <!-- TON Connect Modal z-index fix -->
+    <style>
+        /* Убеждаемся что модалка TON Connect поверх всего */
+        [data-tc-wallets-modal-container],
+        [data-tc-notification],
+        .tc-root,
+        #tc-widget-root {
+            z-index: 99999 !important;
+        }
+    </style>
+
     <!-- Блокировка portrait режима -->
     <script src="portrait-blocker.js"></script>
     

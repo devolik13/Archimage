@@ -117,10 +117,20 @@ async function claimLeagueReward(leagueId) {
     }
     window.userData.season_league_rewards_claimed.push(leagueId);
 
-    // Сохраняем в БД
-    if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
-        await window.dbManager.savePlayer(window.userData);
-        console.log('✅ Прогресс наград сохранен в БД');
+    // НЕМЕДЛЕННОЕ сохранение в БД (чтобы нельзя было получить повторно при перезагрузке)
+    try {
+        if (window.eventSaveManager && typeof window.eventSaveManager.saveImmediate === 'function') {
+            await window.eventSaveManager.saveImmediate('league_reward_claimed');
+            console.log('✅ Награда за лигу сохранена немедленно');
+        } else if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+            await window.dbManager.savePlayer(window.userData);
+            console.log('✅ Прогресс наград сохранен в БД');
+        }
+    } catch (saveError) {
+        console.error('❌ Ошибка сохранения награды:', saveError);
+        // Откатываем изменения если сохранение не удалось
+        window.userData.season_league_rewards_claimed = window.userData.season_league_rewards_claimed.filter(id => id !== leagueId);
+        return false;
     }
 
     // Показываем уведомление
@@ -137,57 +147,63 @@ async function claimLeagueReward(leagueId) {
 }
 
 /**
- * Показать модальное окно с наградами за лиги
+ * Показать полноэкранное окно с наградами за лиги (стиль арены)
  */
 function showLeagueRewardsModal() {
+    // Удаляем старое окно если есть
+    const existing = document.getElementById('league-rewards-fullscreen');
+    if (existing) existing.remove();
+
     const allLeagues = getAllLeaguesWithStatus();
     const playerRating = window.userData?.rating || 0;
     const currentLeague = window.getLeagueByRating ? window.getLeagueByRating(playerRating) : null;
+    const currentSeasonInfo = window.userData?.current_season ? `Сезон ${window.userData.current_season}` : 'Сезон 1';
 
     let leaguesHTML = '';
 
     allLeagues.forEach(league => {
         const isCurrent = currentLeague && currentLeague.id === league.id;
 
-        // Определяем стиль карточки
         let cardStyle = '';
         let statusBadge = '';
         let claimButton = '';
 
         if (league.status === 'claimed') {
-            cardStyle = 'background: rgba(76, 175, 80, 0.1); border: 2px solid rgba(76, 175, 80, 0.5);';
+            cardStyle = 'background: rgba(76, 175, 80, 0.15); border: 2px solid rgba(76, 175, 80, 0.6);';
             statusBadge = '<div style="color: #4CAF50; font-weight: bold; margin-top: 5px;">✅ Получено</div>';
         } else if (league.status === 'available') {
-            cardStyle = 'background: rgba(255, 165, 0, 0.15); border: 2px solid #ffa500; box-shadow: 0 0 15px rgba(255, 165, 0, 0.3);';
+            cardStyle = 'background: rgba(255, 165, 0, 0.2); border: 2px solid #ffa500; box-shadow: 0 0 20px rgba(255, 165, 0, 0.4);';
             statusBadge = '<div style="color: #ffa500; font-weight: bold; margin-top: 5px;">🎁 Доступно!</div>';
             claimButton = `
                 <button style="
                     margin-top: 10px;
-                    padding: 8px 16px;
-                    background: #ffa500;
+                    padding: 10px 20px;
+                    background: linear-gradient(135deg, #ffa500, #ff8c00);
                     border: none;
-                    border-radius: 6px;
+                    border-radius: 8px;
                     color: white;
                     font-weight: bold;
                     cursor: pointer;
                     width: 100%;
+                    font-size: 14px;
+                    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
                 " onclick="claimLeagueRewardFromModal('${league.id}')">
                     🎁 Получить награду
                 </button>
             `;
         } else {
-            cardStyle = 'background: rgba(0, 0, 0, 0.3); border: 2px solid rgba(128, 128, 128, 0.3); opacity: 0.6;';
-            statusBadge = `<div style="color: #888; margin-top: 5px;">🔒 Требуется ${league.minRating} рейтинга</div>`;
+            cardStyle = 'background: rgba(0, 0, 0, 0.4); border: 2px solid rgba(128, 128, 128, 0.3); opacity: 0.5;';
+            statusBadge = '<div style="color: #666; margin-top: 5px;">🔒 Требуется ${league.minRating} рейтинга</div>';
         }
 
         leaguesHTML += `
-            <div style="${cardStyle} padding: 15px; border-radius: 10px; margin-bottom: 12px;">
+            <div style="${cardStyle} padding: 15px; border-radius: 12px; margin-bottom: 12px; ${isCurrent ? 'box-shadow: 0 0 15px rgba(114, 137, 218, 0.5);' : ''}">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div style="flex: 1;">
-                        <div style="font-size: 24px; margin-bottom: 5px;">
+                        <div style="font-size: 28px; margin-bottom: 5px;">
                             ${league.icon} ${isCurrent ? '⭐' : ''}
                         </div>
-                        <div style="font-weight: bold; color: ${league.color}; font-size: 16px;">
+                        <div style="font-weight: bold; color: ${league.color}; font-size: 18px;">
                             ${league.name}
                         </div>
                         <div style="font-size: 12px; color: #aaa; margin-top: 3px;">
@@ -196,9 +212,9 @@ function showLeagueRewardsModal() {
                         ${statusBadge}
                     </div>
                     <div style="text-align: right;">
-                        <div style="font-size: 12px; color: #aaa; margin-bottom: 5px;">Награды:</div>
-                        ${league.rewards.time_currency ? `<div style="color: #00bfff; font-size: 13px;">⏰ ${league.rewards.time_currency}</div>` : ''}
-                        ${league.rewards.airdrop_points ? `<div style="color: #4ade80; font-size: 13px;">🪂 ${league.rewards.airdrop_points}</div>` : ''}
+                        <div style="font-size: 11px; color: #888; margin-bottom: 5px;">Награды:</div>
+                        ${league.rewards.time_currency ? '<div style="color: #00bfff; font-size: 14px;">⏰ ' + league.rewards.time_currency + '</div>' : ''}
+                        ${league.rewards.airdrop_points ? '<div style="color: #4ade80; font-size: 14px;">🪙 ' + league.rewards.airdrop_points + ' BPM</div>' : ''}
                     </div>
                 </div>
                 ${claimButton}
@@ -206,53 +222,114 @@ function showLeagueRewardsModal() {
         `;
     });
 
-    const currentSeasonInfo = window.userData?.current_season ? `Сезон ${window.userData.current_season}` : 'Сезон 1';
+    const screen = document.createElement('div');
+    screen.id = 'league-rewards-fullscreen';
+    screen.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 100000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `;
 
-    const modalContent = `
-        <div class="modal-content" style="max-width: 600px;">
-            <h3 class="modal-header">🏆 Награды за лиги</h3>
+    screen.innerHTML = `
+        <!-- Фон арены -->
+        <img src="assets/ui/arena/arena_earth.webp" style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        " onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)';">
 
-            <div class="modal-body smooth-scroll" style="max-height: 500px;">
-                <div style="background: rgba(0, 0, 0, 0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px; text-align: center;">
-                    <div style="font-size: 12px; color: #aaa;">Текущий сезон</div>
-                    <div style="font-size: 18px; color: #ffa500; font-weight: bold;">${currentSeasonInfo}</div>
-                    <div style="font-size: 12px; color: #aaa; margin-top: 5px;">
-                        Награды можно получить один раз за сезон
-                    </div>
-                </div>
+        <!-- Затемнение -->
+        <div style="
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2;
+        "></div>
 
-                <div style="background: rgba(114, 137, 218, 0.1); padding: 10px; border-radius: 6px; margin-bottom: 15px;">
-                    <div style="font-size: 12px; color: #7289da; line-height: 1.4;">
-                        💡 <strong>Как это работает:</strong><br>
-                        Достигните лиги и получите награду один раз за сезон. В новом сезоне можно получить награды снова!
+        <!-- Контент -->
+        <div style="
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 500px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        ">
+            <!-- Заголовок -->
+            <div style="
+                padding: 15px 20px;
+                background: rgba(0, 0, 0, 0.4);
+                border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+                text-align: center;
+            ">
+                <h2 style="margin: 0; color: #FFD700; font-size: 22px;">🏆 Награды за лиги</h2>
+                <div style="color: #ffa500; font-size: 14px; margin-top: 5px;">${currentSeasonInfo}</div>
+            </div>
+
+            <!-- Список лиг -->
+            <div style="
+                flex: 1;
+                overflow-y: auto;
+                padding: 15px;
+            ">
+                <div style="
+                    background: rgba(114, 137, 218, 0.15);
+                    padding: 12px;
+                    border-radius: 8px;
+                    margin-bottom: 15px;
+                    border: 1px solid rgba(114, 137, 218, 0.3);
+                ">
+                    <div style="font-size: 12px; color: #7289da; line-height: 1.4; text-align: center;">
+                        💡 Достигните лиги и получите награду один раз за сезон
                     </div>
                 </div>
 
                 ${leaguesHTML}
             </div>
 
-            <div class="modal-footer">
-                <button class="modal-button" onclick="closeLeagueRewardsModal()">
-                    Закрыть
-                </button>
+            <!-- Кнопка закрытия -->
+            <div style="
+                padding: 15px;
+                background: rgba(0, 0, 0, 0.4);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                text-align: center;
+            ">
+                <button onclick="closeLeagueRewardsModal()" style="
+                    padding: 12px 40px;
+                    background: rgba(114, 137, 218, 0.3);
+                    border: 2px solid #7289da;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: 16px;
+                    font-weight: bold;
+                    cursor: pointer;
+                ">← Закрыть</button>
             </div>
         </div>
     `;
 
-    const modal = document.createElement('div');
-    modal.innerHTML = modalContent;
-    modal.id = 'league-rewards-modal-container';
-    modal.className = 'modal-container';
-
-    const overlay = document.createElement('div');
-    overlay.id = 'league-rewards-overlay';
-    overlay.className = 'modal-overlay';
-    overlay.onclick = closeLeagueRewardsModal;
-
-    document.body.appendChild(overlay);
-    document.body.appendChild(modal);
-
-    window.currentLeagueRewardsModal = { modal, overlay };
+    document.body.appendChild(screen);
 }
 
 /**
@@ -276,15 +353,14 @@ async function claimLeagueRewardFromModal(leagueId) {
  * Закрыть модальное окно наград
  */
 function closeLeagueRewardsModal() {
+    const screen = document.getElementById('league-rewards-fullscreen');
+    if (screen) screen.remove();
+
+    // Для совместимости со старой версией
     const modal = document.getElementById('league-rewards-modal-container');
     const overlay = document.getElementById('league-rewards-overlay');
-
     if (modal) modal.remove();
     if (overlay) overlay.remove();
-
-    if (window.currentLeagueRewardsModal) {
-        window.currentLeagueRewardsModal = null;
-    }
 }
 
 /**

@@ -54,6 +54,12 @@ function createTimeCurrencyUI() {
         return;
     }
 
+    // Проверяем, не активен ли portrait blocker
+    if (document.getElementById('portrait-blocker-overlay')) {
+        console.log('⏳ Portrait blocker активен, откладываем создание UI времени');
+        return;
+    }
+
     // Вычисляем положение правого края города
     const cityView = document.getElementById('city-view');
     const backgroundImg = cityView?.querySelector('.city-background-img');
@@ -62,10 +68,15 @@ function createTimeCurrencyUI() {
 
     if (backgroundImg) {
         const imgRect = backgroundImg.getBoundingClientRect();
-        const screenWidth = window.innerWidth;
-        const cityRight = imgRect.right;
-        rightPosition = `${screenWidth - cityRight + 10}px`;
-        console.log(`📍 Время привязано к городу: right = ${rightPosition}`);
+        // Проверяем что изображение видимо
+        if (imgRect.width > 0) {
+            const screenWidth = window.innerWidth;
+            const cityRight = imgRect.right;
+            rightPosition = `${screenWidth - cityRight + 10}px`;
+            console.log(`📍 Время привязано к городу: right = ${rightPosition}`);
+        } else {
+            console.log('⚠️ Фон города скрыт, используем дефолтную позицию для времени');
+        }
     }
 
     const currencyHTML = `
@@ -305,11 +316,15 @@ function initTimeCurrency() {
         window.userData.time_currency += offlineEarnings;
         offlineNotificationShown = true; // Устанавливаем флаг ДО показа уведомления
         showOfflineEarningsNotification(offlineEarnings);
+    }
 
-        // Сохраняем обновленное значение
-        if (window.eventSaveManager) {
-            window.eventSaveManager.saveImmediate('offline_earnings_added');
-        }
+    // КРИТИЧНО: Обновляем last_login ПОСЛЕ расчёта офлайн бонуса
+    // Это предотвращает повторное начисление при перезагрузке
+    window.userData.last_login = new Date().toISOString();
+
+    // Сохраняем обновленное значение (включая новый last_login)
+    if (window.eventSaveManager) {
+        window.eventSaveManager.saveImmediate('time_currency_init');
     }
 
     createTimeCurrencyUI();

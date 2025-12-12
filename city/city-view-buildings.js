@@ -987,7 +987,7 @@ if (window.Telegram && window.Telegram.WebApp) {
     console.log('📱 Telegram WebApp обнаружен');
     window.Telegram.WebApp.expand();
     window.Telegram.WebApp.enableClosingConfirmation();
-    
+
     // Убираем отступы Telegram
     document.body.style.paddingTop = '0';
     document.body.style.paddingBottom = '0';

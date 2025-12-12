@@ -576,8 +576,11 @@ function castFireball(wizard, spellData, position, casterType) {
             window.findTargetsInArea(centerCol, centerRow, 3, 3, casterType) : [];
     }
     
+    // Сортируем цели по HP% (слабейший первый) для приоритета защиты Энтом
+    const sortedTargets = window.sortTargetsByHpPercent ? window.sortTargetsByHpPercent(targets) : targets;
+
     // Наносим урон с многоуровневой защитой
-    targets.forEach(targetInfo => {
+    sortedTargets.forEach(targetInfo => {
         // ИСПРАВЛЕНИЕ: Используем многоуровневую защиту для детального логирования
         if (typeof window.applyDamageWithMultiLayerProtection === 'function') {
             const result = window.applyDamageWithMultiLayerProtection(wizard, targetInfo, baseDamage, 'fireball', casterType);

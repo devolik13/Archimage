@@ -164,10 +164,10 @@ function showAdventureMap(range = '1-10') {
                 transition: all 0.3s;
             ">▶</button>
 
-            <!-- Кнопка закрыть -->
+            <!-- Кнопка закрыть (правый нижний угол) -->
             <button onclick="closeAdventureMap()" style="
                 position: absolute;
-                top: 15px;
+                bottom: 15px;
                 right: 15px;
                 width: 40px;
                 height: 40px;

@@ -1,36 +1,22 @@
 // portrait-blocker.js - Блокировка portrait режима для мобильных устройств
 (function() {
-    
-    // Функция определения мобильного устройства через Telegram
+
+    // Функция определения мобильного устройства
     function isMobileDevice() {
-        const tg = window.Telegram?.WebApp;
-        if (!tg) {
-            console.log('📱 Telegram WebApp не найден, используем fallback определение');
-            return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        }
-        
-        const platform = tg.platform || 'unknown';
-        const isMobile = ['ios', 'android', 'android_x'].includes(platform);
-        console.log('📱 Платформа:', platform, '| Мобильный:', isMobile);
-        return isMobile;
+        return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     }
-    
+
     // Функция проверки ориентации
     function isPortraitMode() {
-        const portrait = window.innerHeight > window.innerWidth;
-        console.log(`📐 Размеры: ${window.innerWidth}x${window.innerHeight} | Portrait: ${portrait}`);
-        return portrait;
+        return window.innerHeight > window.innerWidth;
     }
-    
+
     // Создание overlay для блокировки
     function createBlockerOverlay() {
-        // Удаляем старый overlay если есть
-        const oldOverlay = document.getElementById('portrait-blocker-overlay');
-        if (oldOverlay) {
-            oldOverlay.remove();
+        if (document.getElementById('portrait-blocker-overlay')) {
+            return;
         }
-        
-        // Создаем новый overlay
+
         const overlay = document.createElement('div');
         overlay.id = 'portrait-blocker-overlay';
         overlay.style.cssText = `
@@ -47,7 +33,7 @@
             z-index: 999999;
             font-family: Arial, sans-serif;
         `;
-        
+
         overlay.innerHTML = `
             <div style="text-align: center; padding: 20px;">
                 <div style="font-size: 80px; margin-bottom: 20px; animation: rotate 2s ease-in-out infinite;">
@@ -63,7 +49,7 @@
                     🔄
                 </div>
             </div>
-            
+
             <style>
                 @keyframes rotate {
                     0%, 100% { transform: rotate(0deg); }
@@ -71,19 +57,32 @@
                 }
             </style>
         `;
-        
+
         document.body.appendChild(overlay);
-        console.log('🚫 Overlay блокировки создан');
     }
-    
+
     // Удаление overlay
     function removeBlockerOverlay() {
         const overlay = document.getElementById('portrait-blocker-overlay');
         if (overlay) {
             overlay.remove();
+
+            // Пересоздаём UI элементы которые зависят от позиции фона
+            setTimeout(() => {
+                if (typeof window.createPlayerAvatarUI === 'function') {
+                    window.createPlayerAvatarUI();
+                }
+                if (typeof window.updateTimeCurrencyDisplay === 'function') {
+                    window.updateTimeCurrencyDisplay();
+                }
+                // Обновляем панель процессов (изучение заклинаний, стройка и т.д.)
+                if (typeof window.updateProcessPanel === 'function') {
+                    window.updateProcessPanel();
+                }
+            }, 100);
         }
     }
-    
+
     // Скрытие/показ игрового контента
     function toggleGameContent(show) {
         const container = document.querySelector('.container');
@@ -91,66 +90,35 @@
             container.style.display = show ? 'block' : 'none';
         }
     }
-    
-    // Переменная для отслеживания предыдущего состояния
-    let wasPortrait = null;
-    
+
     // Главная функция проверки
     function checkOrientation() {
-        console.log('🔍 Проверка ориентации...');
-        
         const isMobile = isMobileDevice();
         const isPortrait = isPortraitMode();
-        
-        // Определяем переход
-        const transitionToLandscape = wasPortrait === true && !isPortrait;
-        
-        console.log(`📊 Было: ${wasPortrait === null ? 'первый запуск' : wasPortrait ? 'portrait' : 'landscape'} → Стало: ${isPortrait ? 'portrait' : 'landscape'}`);
-        
+
         if (isMobile && isPortrait) {
-            // Мобильный + вертикально = БЛОКИРОВКА
-            console.log('🚫 БЛОКИРОВКА: Мобильное устройство в portrait режиме');
             createBlockerOverlay();
             toggleGameContent(false);
-            wasPortrait = true;
-        } else if (isMobile && transitionToLandscape) {
-            // Переход portrait → landscape = RELOAD
-            setTimeout(() => {
-                window.location.reload();
-            }, 500);
         } else {
-            // Десктоп ИЛИ горизонтально = ОК
             removeBlockerOverlay();
             toggleGameContent(true);
-            wasPortrait = false;
         }
     }
-    
+
     // Инициализация
     function init() {
-        console.log('🎬 Инициализация portrait-blocker...');
-        
-        // Первая проверка сразу
         checkOrientation();
-        
-        // Слушаем изменения ориентации
-        window.addEventListener('resize', () => {
-            console.log('📐 resize event');
+
+        window.addEventListener('resize', checkOrientation);
+        window.addEventListener('orientationchange', () => {
             setTimeout(checkOrientation, 100);
         });
-        
-        window.addEventListener('orientationchange', () => {
-            console.log('📐 orientationchange event');
-            setTimeout(checkOrientation, 300);
-        });
-        
     }
-    
-    // Запускаем когда DOM готов
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
         init();
     }
-    
+
 })();

@@ -1,5 +1,28 @@
 // battle/systems/damage-system.js - Централизованная система урона с благословениями и Метеокинезом
 
+/**
+ * Сортировка целей AOE по % HP (слабейший первый)
+ * Используется для приоритета защиты Энтом
+ * @param {Array} targets - массив объектов {wizard, position, ...}
+ * @returns {Array} - отсортированный массив (слабейший первый)
+ */
+function sortTargetsByHpPercent(targets) {
+    if (!Array.isArray(targets) || targets.length <= 1) return targets;
+
+    return [...targets].sort((a, b) => {
+        const wizardA = a.wizard || a;
+        const wizardB = b.wizard || b;
+
+        const hpPercentA = (wizardA.hp || 0) / (wizardA.max_hp || 1);
+        const hpPercentB = (wizardB.hp || 0) / (wizardB.max_hp || 1);
+
+        return hpPercentA - hpPercentB; // Слабейший первый
+    });
+}
+
+// Экспорт хелпера
+window.sortTargetsByHpPercent = sortTargetsByHpPercent;
+
 // Временная функция определения школы заклинания (если основная не загружена)
 if (!window.getSpellSchoolFallback) {
     window.getSpellSchoolFallback = function(spellId) {
@@ -191,32 +214,43 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
         }
     }
 
-    // Проверка на Энта — перехват урона (только для single target)
-    if (target && !isAOE) {
-        const ent = typeof window.findProtectingEnt === 'function' ? 
+    // Проверка на Энта — перехват урона (теперь работает и для AOE!)
+    if (target) {
+        const ent = typeof window.findProtectingEnt === 'function' ?
             window.findProtectingEnt(target, caster.casterType || 'player') : null;
         if (ent && ent.isAlive) {
             // Перенаправляем урон Энту
             const absorbed = Math.min(ent.hp, finalDamage);
             ent.hp -= absorbed;
-            
-            if (typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`🌳 Энт поглощает ${absorbed} урона за ${target.name} (осталось ${ent.hp}/${ent.maxHP})`);
+
+            // Обновляем HP бар Энта
+            if (window.summonsManager && typeof window.summonsManager.updateHP === 'function') {
+                window.summonsManager.updateHP(ent.id, ent.hp);
             }
-            
+
+            if (typeof window.addToBattleLog === 'function') {
+                const aoeLabel = isAOE ? ' (AOE)' : '';
+                window.addToBattleLog(`🌳 Энт поглощает ${absorbed} урона${aoeLabel} за ${target.name} (осталось ${ent.hp}/${ent.maxHP})`);
+            }
+
             // Если Энт умирает
             if (ent.hp <= 0) {
                 ent.isAlive = false;
                 if (typeof window.addToBattleLog === 'function') {
                     window.addToBattleLog(`🌳 Энт погибает, защищая ${target.name}`);
                 }
-                
+
+                // Убиваем через менеджер для визуала
+                if (window.summonsManager && typeof window.summonsManager.killSummon === 'function') {
+                    window.summonsManager.killSummon(ent.id);
+                }
+
                 // На 5 уровне — лечим самого слабого союзного мага
                 if (ent.level === 5 && typeof window.healWeakestAlly === 'function') {
                     window.healWeakestAlly(ent.casterType);
                 }
             }
-            
+
             // Остаток урона (если есть) → наносится цели
             const remainingDamage = finalDamage - absorbed;
             if (remainingDamage > 0) {

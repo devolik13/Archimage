@@ -43,7 +43,7 @@ function showAdventureHub() {
             <!-- Кнопка закрыть -->
             <button onclick="closeAdventureHub()" style="
                 position: absolute;
-                top: 15px;
+                bottom: 15px;
                 right: 15px;
                 width: 40px;
                 height: 40px;
