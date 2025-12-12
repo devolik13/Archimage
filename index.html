@@ -51,6 +51,33 @@
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+    <!-- Telegram WebApp инициализация -->
+    <script>
+        // Сразу после загрузки SDK разворачиваем в полноэкранный режим
+        if (window.Telegram?.WebApp) {
+            const tg = window.Telegram.WebApp;
+
+            // Разворачиваем в полный экран
+            tg.expand();
+
+            // Включаем вертикальные свайпы (для горизонтальной игры)
+            tg.enableClosingConfirmation();
+
+            // Устанавливаем цвета темы
+            tg.setHeaderColor('#1a1a2e');
+            tg.setBackgroundColor('#16213e');
+
+            // Говорим Telegram что приложение готово
+            tg.ready();
+
+            console.log('📱 Telegram WebApp инициализирован:', {
+                platform: tg.platform,
+                version: tg.version,
+                isExpanded: tg.isExpanded
+            });
+        }
+    </script>
+
     <!-- TON Connect UI -->
     <script src="https://unpkg.com/@tonconnect/ui@2.0.9/dist/tonconnect-ui.min.js"></script>
 
