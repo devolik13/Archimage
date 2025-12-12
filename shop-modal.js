@@ -21,7 +21,7 @@ const STARTER_PACKS = {
         description: '7 дней времени, Башня магов 3 ур, 2-й маг, 5000 XP',
         icon: '🎁',
         price: 2900,
-        priceUSD: 39, // Базовая цена в USD для расчёта TON
+        priceUSD: 65, // 2900 Stars × $0.0224
         currency: 'dual', // Поддерживает Stars и TON
         fullPrice: 2900,
         discount: 30,
@@ -39,7 +39,7 @@ const STARTER_PACKS = {
         description: '30 дней времени, Башня магов 5 ур, 3-й маг, 30000 XP',
         icon: '📦',
         price: 10400,
-        priceUSD: 140,
+        priceUSD: 233, // 10400 Stars × $0.0224
         currency: 'dual',
         fullPrice: 10400,
         discount: 30,
@@ -57,7 +57,7 @@ const STARTER_PACKS = {
         description: '90 дней времени, Башня магов 7 ур, 4-й маг, 200000 XP',
         icon: '💎',
         price: 40000,
-        priceUSD: 540,
+        priceUSD: 896, // 40000 Stars × $0.0224
         currency: 'dual',
         fullPrice: 40000,
         discount: 30,
@@ -128,7 +128,7 @@ const SHOP_CONFIG = {
     ],
 
     // Premium товары (за Telegram Stars или TON)
-    // Курс: 1 Star ≈ $0.013, TON курс динамический
+    // Курс: 1 Star = 1.79₽ = $0.0224 USD, TON курс динамический из CoinGecko API
     premium: [
         {
             id: 'time_pack_test',
@@ -136,7 +136,7 @@ const SHOP_CONFIG = {
             description: '+1 час игрового времени (тест)',
             icon: '🧪',
             price: 10,
-            priceUSD: 0.13,
+            priceUSD: 0.22, // 10 Stars × $0.0224
             currency: 'dual',
             action: 'buyTimePack',
             amount: 60
@@ -147,7 +147,7 @@ const SHOP_CONFIG = {
             description: '+1 день игрового времени',
             icon: '⏰',
             price: 168,
-            priceUSD: 2.2,
+            priceUSD: 3.77, // 168 Stars × $0.0224
             currency: 'dual',
             action: 'buyTimePack',
             amount: 1440
@@ -158,7 +158,7 @@ const SHOP_CONFIG = {
             description: '+7 дней времени (-5%)',
             icon: '⏰⏰',
             price: 1120,
-            priceUSD: 15,
+            priceUSD: 25.1, // 1120 Stars × $0.0224
             currency: 'dual',
             action: 'buyTimePack',
             amount: 10080
@@ -169,7 +169,7 @@ const SHOP_CONFIG = {
             description: '+30 дней времени (-15%)',
             icon: '⏰⏰⏰',
             price: 4280,
-            priceUSD: 56,
+            priceUSD: 95.9, // 4280 Stars × $0.0224
             currency: 'dual',
             action: 'buyTimePack',
             amount: 43200
@@ -179,8 +179,8 @@ const SHOP_CONFIG = {
             name: 'Смена фракции',
             description: 'Цена зависит от изученных заклинаний',
             icon: '🔄',
-            price: 0,
-            priceUSD: 0,
+            price: 280, // Базовая цена ≈500₽
+            priceUSD: 6.3, // 280 Stars × $0.0224
             currency: 'dual',
             action: 'changeFaction',
             amount: 1,
