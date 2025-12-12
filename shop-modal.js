@@ -1004,11 +1004,19 @@ async function buyTimePack(item) {
         return;
     }
 
-    console.log('🌟 Покупка пакета времени:', item.name, `(${item.price} Stars)`);
+    console.log('🌟 Покупка пакета времени:', item);
+    console.log('🌟 Item details:', {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        amount: item.amount
+    });
 
     try {
         // Создаём invoice через Edge Function
+        console.log('🌟 Вызов createStarsInvoice для:', item.id);
         const invoiceUrl = await createStarsInvoice(item, item.price);
+        console.log('🌟 Invoice URL получен:', invoiceUrl);
 
         // Открываем окно оплаты Telegram
         window.Telegram.WebApp.openInvoice(invoiceUrl, async (status) => {
@@ -1093,9 +1101,17 @@ async function createStarsInvoice(item, customPrice = null, targetFaction = null
     });
 
     if (!response.ok) {
-        const error = await response.json();
-        console.error('Invoice creation failed:', error);
-        throw new Error(error.error || 'Failed to create invoice');
+        const errorText = await response.text();
+        console.error('❌ Invoice creation failed!');
+        console.error('❌ Response status:', response.status);
+        console.error('❌ Response text:', errorText);
+        try {
+            const errorJson = JSON.parse(errorText);
+            console.error('❌ Error JSON:', errorJson);
+            throw new Error(errorJson.error || 'Failed to create invoice');
+        } catch (e) {
+            throw new Error(`Server error: ${response.status} - ${errorText}`);
+        }
     }
 
     const data = await response.json();
