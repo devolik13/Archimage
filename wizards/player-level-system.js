@@ -290,6 +290,9 @@ function showPlayerProfile() {
                             faction === 'nature' ? 'Природа' :
                             faction === 'poison' ? 'Яд' : faction;
 
+        // Получаем количество рефералов (асинхронно)
+        let referralCountText = '<span id="referral-count-placeholder">⏳</span>';
+
         container.innerHTML = `
             <!-- Заголовок: имя и уровень -->
             <div style="text-align: center; margin-bottom: ${10 * scaleY}px;">
@@ -320,6 +323,7 @@ function showPlayerProfile() {
                         <div>📖 Заклинания: <strong>${breakdown.spells}</strong></div>
                         <div>🏛️ Здания: <strong>${breakdown.buildings}</strong></div>
                         <div>🧙‍♂️ Маги: <strong>${breakdown.wizards}</strong></div>
+                        <div>🎁 Приглашено: <strong style="color: #4ade80;" id="referral-count">${referralCountText}</strong></div>
                         <div style="border-top: 1px solid rgba(255,255,255,0.3); margin-top: ${5 * scaleY}px; padding-top: ${5 * scaleY}px;">
                             📊 Всего: <strong style="color: #ffa500;">${level}</strong> очков
                         </div>
@@ -327,6 +331,24 @@ function showPlayerProfile() {
                 </div>
             </div>
         `;
+
+        // Асинхронно загружаем количество рефералов
+        if (window.referralManager && window.dbManager?.currentPlayer) {
+            window.referralManager.getReferralCount(window.dbManager.currentPlayer.id)
+                .then(count => {
+                    const countElement = document.getElementById('referral-count');
+                    if (countElement) {
+                        countElement.innerHTML = `<strong style="color: #4ade80;">${count}</strong>`;
+                    }
+                })
+                .catch(err => {
+                    console.error('❌ Ошибка загрузки количества рефералов:', err);
+                    const countElement = document.getElementById('referral-count');
+                    if (countElement) {
+                        countElement.innerHTML = '<strong style="color: #999;">0</strong>';
+                    }
+                });
+        }
 
         overlay.appendChild(container);
 

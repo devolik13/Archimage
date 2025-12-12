@@ -8,17 +8,30 @@ class ReferralManager {
         this.supabase = window.supabaseClient;
     }
 
-    // Получить реферальный параметр из Telegram
+    // Получить реферальный параметр из Telegram или localStorage
     getReferralParam() {
+        // Сначала пробуем взять из Telegram (свежий)
         if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
             const startParam = window.Telegram.WebApp.initDataUnsafe.start_param;
             if (startParam && startParam.startsWith('ref_')) {
-                // Формат: ref_TELEGRAM_ID
                 const referrerId = startParam.replace('ref_', '');
-                console.log('🔗 Найден реферальный параметр:', referrerId);
+                console.log('🔗 Найден реферальный параметр из Telegram:', referrerId);
                 return referrerId;
             }
         }
+
+        // Если нет - пробуем из localStorage (сохраненный при первом входе)
+        try {
+            const savedParam = localStorage.getItem('archimage_referral_param');
+            if (savedParam && savedParam.startsWith('ref_')) {
+                const referrerId = savedParam.replace('ref_', '');
+                console.log('🔗 Найден реферальный параметр из localStorage:', referrerId);
+                return referrerId;
+            }
+        } catch (e) {
+            console.error('❌ Ошибка чтения реферального параметра из localStorage:', e);
+        }
+
         return null;
     }
 
@@ -143,6 +156,14 @@ class ReferralManager {
 
             console.log(`✅ Реферал обработан! ${referrer.username} пригласил нового игрока. Оба получили ${REFERRAL_REWARD} минут`);
 
+            // Очищаем сохраненный параметр чтобы не засчитать дважды
+            try {
+                localStorage.removeItem('archimage_referral_param');
+                console.log('🧹 Реферальный параметр очищен из localStorage');
+            } catch (e) {
+                console.error('❌ Ошибка очистки реферального параметра:', e);
+            }
+
             return {
                 referrerUsername: referrer.username,
                 reward: REFERRAL_REWARD
@@ -211,6 +232,26 @@ class ReferralManager {
         } catch (error) {
             console.error('❌ Ошибка начисления реферального бонуса:', error);
             return null;
+        }
+    }
+
+    // Получить количество приглашенных игроков
+    async getReferralCount(playerId) {
+        try {
+            const { count, error } = await this.supabase
+                .from('referrals')
+                .select('*', { count: 'exact', head: true })
+                .eq('referrer_id', playerId);
+
+            if (error) {
+                console.error('❌ Ошибка получения количества рефералов:', error);
+                return 0;
+            }
+
+            return count || 0;
+        } catch (error) {
+            console.error('❌ Ошибка получения количества рефералов:', error);
+            return 0;
         }
     }
 
