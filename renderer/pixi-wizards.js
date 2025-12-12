@@ -113,8 +113,9 @@
             death: 'images/enemies/water_elemental/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
+            frameCount: 25, // 5×5 сетка
+            gridColumns: 5,  // Количество колонок в сетке
+            animationSpeed: 0.12, // Чуть медленнее для плавности 25 кадров
             scale: 0.45 // Размер для одной клетки
         },
         wind_elemental: {
@@ -172,32 +173,50 @@
     }
     
     // Загрузка спрайт-листа и создание кадров
-    async function loadSpriteSheet(path, frameWidth, frameHeight, frameCount) {
+    async function loadSpriteSheet(path, frameWidth, frameHeight, frameCount, gridColumns = null) {
         try {
-            
+
             // Загружаем текстуру
             const texture = await PIXI.Assets.load(path);
-            
+
             if (!texture || !texture.valid) {
                 console.error(`❌ Не удалось загрузить текстуру: ${path}`);
                 return null;
             }
-            
+
             // Создаем массив кадров
             const frames = [];
-            for (let i = 0; i < frameCount; i++) {
-                const rect = new PIXI.Rectangle(
-                    i * frameWidth,
-                    0,
-                    frameWidth,
-                    frameHeight
-                );
-                const frame = new PIXI.Texture(texture.baseTexture, rect);
-                frames.push(frame);
+
+            if (gridColumns) {
+                // Сетка (например 5×5)
+                for (let i = 0; i < frameCount; i++) {
+                    const col = i % gridColumns;
+                    const row = Math.floor(i / gridColumns);
+                    const rect = new PIXI.Rectangle(
+                        col * frameWidth,
+                        row * frameHeight,
+                        frameWidth,
+                        frameHeight
+                    );
+                    const frame = new PIXI.Texture(texture.baseTexture, rect);
+                    frames.push(frame);
+                }
+            } else {
+                // Горизонтальная полоса (старый формат)
+                for (let i = 0; i < frameCount; i++) {
+                    const rect = new PIXI.Rectangle(
+                        i * frameWidth,
+                        0,
+                        frameWidth,
+                        frameHeight
+                    );
+                    const frame = new PIXI.Texture(texture.baseTexture, rect);
+                    frames.push(frame);
+                }
             }
-            
+
             return frames;
-            
+
         } catch (error) {
             console.error(`❌ Ошибка загрузки спрайт-листа ${path}:`, error);
             return null;
@@ -229,25 +248,28 @@
                 config.idle,
                 config.frameWidth,
                 config.frameHeight,
-                config.frameCount
+                config.frameCount,
+                config.gridColumns // Передаём gridColumns для сетки
             );
         }
-        
+
         if (config.cast) {
             textures.cast = await loadSpriteSheet(
                 config.cast,
                 config.frameWidth,
                 config.frameHeight,
-                config.frameCount
+                config.frameCount,
+                config.gridColumns // Передаём gridColumns для сетки
             );
         }
-        
+
         if (config.death) {
             textures.death = await loadSpriteSheet(
                 config.death,
                 config.frameWidth,
                 config.frameHeight,
-                config.frameCount
+                config.frameCount,
+                config.gridColumns // Передаём gridColumns для сетки
             );
         }
         
