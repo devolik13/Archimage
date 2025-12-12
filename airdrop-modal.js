@@ -27,6 +27,7 @@ function initTonConnect() {
     // Если уже инициализирован - возвращаем существующий экземпляр
     if (tonConnectUI) {
         console.log('👛 TON Connect уже инициализирован');
+        window.tonConnectUI = tonConnectUI; // Экспортируем в window для доступа из других модулей
         return tonConnectUI;
     }
 
@@ -90,6 +91,10 @@ function initTonConnect() {
         }
 
         console.log('✅ TON Connect UI инициализирован');
+
+        // Экспортируем в window для доступа из других модулей (например, shop-modal.js)
+        window.tonConnectUI = tonConnectUI;
+
         return tonConnectUI;
 
     } catch (error) {
