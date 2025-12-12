@@ -23,6 +23,7 @@ const STARTER_PACK_REWARDS: Record<string, {
 
 // Конфигурация пакетов времени
 const TIME_PACKS: Record<string, number> = {
+  time_pack_test: 60,       // 1 час (тест)
   time_pack_small: 1440,    // 1 день
   time_pack_medium: 10080,  // 7 дней
   time_pack_large: 43200    // 30 дней
