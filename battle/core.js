@@ -945,9 +945,9 @@ async function checkBattleEnd() {
                 // Даём награду временем ТОЛЬКО при первом прохождении
                 if (level.reward && isFirstCompletion) {
                     const timeRewardMinutes = level.reward; // в минутах
-                    const timeRewardSeconds = timeRewardMinutes * 60; // конвертируем минуты в секунды
+                    // addTimeCurrency принимает минуты, НЕ умножаем на 60!
                     if (typeof window.addTimeCurrency === 'function') {
-                        window.addTimeCurrency(timeRewardSeconds);
+                        window.addTimeCurrency(timeRewardMinutes);
                         if (typeof window.addToBattleLog === 'function') {
                             // Определяем формат отображения
                             let rewardText;
