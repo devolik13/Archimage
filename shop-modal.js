@@ -408,6 +408,11 @@ function renderShopItems(tab, scale) {
                 priceText = 'Узнать цену';
                 canBuy = true;
             }
+        } else if (item.currency === 'dual') {
+            // Поддержка Stars и TON
+            priceText = `💎 Приобрести`;
+            btnClass += ' premium';
+            canBuy = true;
         }
 
         // Проверяем лимиты для энергии
@@ -457,7 +462,7 @@ function renderStarterPacks(scale) {
 
         let statusText = '';
         let statusColor = '#4ade80';
-        let btnText = `⭐ ${pack.price.toLocaleString()}`;
+        let btnText = `💎 Приобрести`;
 
         if (isPurchased) {
             statusText = '✅ Куплено';
