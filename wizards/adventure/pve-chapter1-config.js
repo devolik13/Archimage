@@ -96,7 +96,7 @@ const ELEMENTALS = {
     },
     water: {
         name: "Водный Элементаль",
-        hp: 600,
+        hp: 400,
         armor: 170,
         faction: "water",
         spells: ["icicle", "frost_arrow", "blizzard"],
