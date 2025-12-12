@@ -70,72 +70,27 @@
             // Пробуем развернуть
             tg.expand();
 
-            // Показываем overlay с кнопкой если не развернуто
+            // Используем MainButton для перехода в fullscreen (только если не развернуто)
             setTimeout(() => {
-                if (!tg.isExpanded) {
-                    const overlay = document.createElement('div');
-                    overlay.id = 'fullscreen-prompt';
-                    overlay.style.cssText = `
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100vw;
-                        height: 100vh;
-                        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        z-index: 999999;
-                        font-family: Arial, sans-serif;
-                    `;
+                // Проверяем высоту viewport - если меньше определенного значения, значит не fullscreen
+                const viewportHeight = window.innerHeight;
+                const isLikelyNotFullscreen = viewportHeight < 600; // Обычно в компактном режиме < 600px
 
-                    const botUsername = 'Archimage_bot';
-                    const startParam = tg.initDataUnsafe?.start_param || '';
-                    const fullscreenUrl = \`https://t.me/\${botUsername}/app\${startParam ? '?startapp=' + startParam : ''}\`;
+                if (isLikelyNotFullscreen) {
+                    // Показываем MainButton от Telegram
+                    tg.MainButton.text = '🚀 Открыть в полном экране';
+                    tg.MainButton.color = '#4ade80';
+                    tg.MainButton.textColor = '#ffffff';
+                    tg.MainButton.show();
 
-                    overlay.innerHTML = \`
-                        <div style="text-align: center; padding: 20px; max-width: 300px;">
-                            <div style="font-size: 60px; margin-bottom: 20px;">📱</div>
-                            <h2 style="color: #fff; font-size: 20px; margin-bottom: 15px;">
-                                Откройте в полном экране
-                            </h2>
-                            <p style="color: #aaa; font-size: 14px; margin-bottom: 25px;">
-                                Для лучшего игрового опыта рекомендуем открыть приложение в полноэкранном режиме
-                            </p>
-                            <button onclick="window.location.href='\${fullscreenUrl}'" style="
-                                background: linear-gradient(135deg, #4ade80, #22c55e);
-                                border: none;
-                                border-radius: 12px;
-                                padding: 15px 30px;
-                                color: white;
-                                font-size: 16px;
-                                font-weight: bold;
-                                cursor: pointer;
-                                box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
-                                margin-bottom: 10px;
-                                width: 100%;
-                            ">
-                                🚀 Открыть в полном экране
-                            </button>
-                            <button onclick="document.getElementById('fullscreen-prompt').remove()" style="
-                                background: rgba(114, 137, 218, 0.2);
-                                border: 1px solid rgba(114, 137, 218, 0.5);
-                                border-radius: 12px;
-                                padding: 12px 30px;
-                                color: #aaa;
-                                font-size: 14px;
-                                cursor: pointer;
-                                width: 100%;
-                            ">
-                                Продолжить так
-                            </button>
-                        </div>
-                    \`;
-
-                    document.body.appendChild(overlay);
+                    tg.MainButton.onClick(function() {
+                        const botUsername = 'Archimage_bot';
+                        const startParam = tg.initDataUnsafe?.start_param || '';
+                        const fullscreenUrl = 'https://t.me/' + botUsername + '/app' + (startParam ? '?startapp=' + startParam : '');
+                        window.location.href = fullscreenUrl;
+                    });
                 }
-            }, 500);
+            }, 1000);
         }
     </script>
 
