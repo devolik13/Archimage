@@ -53,7 +53,7 @@
 
     <!-- Telegram WebApp инициализация -->
     <script>
-        // Сразу после загрузки SDK разворачиваем в полноэкранный режим
+        // Базовая инициализация Telegram WebApp
         if (window.Telegram?.WebApp) {
             const tg = window.Telegram.WebApp;
 
@@ -66,31 +66,6 @@
 
             // Говорим Telegram что приложение готово
             tg.ready();
-
-            // Показываем кнопку для перехода в fullscreen СРАЗУ
-            tg.MainButton.text = '🚀 Открыть в полном экране';
-            tg.MainButton.color = '#4ade80';
-            tg.MainButton.textColor = '#ffffff';
-            tg.MainButton.show();
-
-            tg.MainButton.onClick(function() {
-                const botUsername = 'Archimage_bot';
-                const startParam = tg.initDataUnsafe?.start_param || '';
-                const fullscreenUrl = 'https://t.me/' + botUsername + '/app' + (startParam ? '?startapp=' + startParam : '');
-                window.location.href = fullscreenUrl;
-            });
-
-            // Пробуем развернуть
-            tg.expand();
-
-            // Проверяем через 2 секунды - если развернулось, скрываем кнопку
-            setTimeout(() => {
-                const viewportHeight = window.innerHeight;
-                // Если высота больше 700px - значит fullscreen, скрываем кнопку
-                if (viewportHeight > 700) {
-                    tg.MainButton.hide();
-                }
-            }, 2000);
         }
     </script>
 
