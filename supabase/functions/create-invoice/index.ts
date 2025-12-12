@@ -12,6 +12,13 @@ const corsHeaders = {
 // Конфигурация товаров (должна совпадать с клиентом)
 const PRODUCTS: Record<string, { title: string; description: string; price: number; type: string; amount?: number }> = {
   // Пакеты времени
+  time_pack_test: {
+    title: "🧪 Тест (1 час)",
+    description: "+1 час игрового времени (тест)",
+    price: 10,
+    type: "time_pack",
+    amount: 60
+  },
   time_pack_small: {
     title: "Пакет времени (1 день)",
     description: "+1 день игрового времени",

@@ -103,7 +103,10 @@ function initTonConnect() {
  * @param {object} wallet - Объект кошелька от TON Connect
  */
 function handleWalletConnected(wallet) {
-    if (!wallet || !wallet.account) return;
+    if (!wallet || !wallet.account) {
+        console.error('❌ handleWalletConnected: wallet или wallet.account отсутствует');
+        return;
+    }
 
     // Конвертируем raw address в user-friendly формат
     const rawAddress = wallet.account.address;
@@ -116,12 +119,29 @@ function handleWalletConnected(wallet) {
     if (window.userData) {
         window.userData.wallet_address = userFriendlyAddress;
         window.userData.wallet_connected_at = Date.now();
+        console.log('✅ Адрес сохранен в window.userData:', window.userData.wallet_address);
 
         // Сохраняем в БД
         if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
             window.dbManager.savePlayer(window.userData);
             console.log('✅ Адрес кошелька сохранён в БД');
+        } else {
+            console.warn('⚠️ dbManager не доступен для сохранения');
         }
+    } else {
+        console.warn('⚠️ window.userData не доступен, ждём инициализацию...');
+        // Пробуем снова через 1 секунду
+        setTimeout(() => {
+            if (window.userData) {
+                window.userData.wallet_address = userFriendlyAddress;
+                window.userData.wallet_connected_at = Date.now();
+                console.log('✅ Адрес сохранен в window.userData (отложенно):', window.userData.wallet_address);
+                if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+                    window.dbManager.savePlayer(window.userData);
+                }
+                refreshAirdropModalUI();
+            }
+        }, 1000);
     }
 
     // Показываем уведомление
@@ -318,7 +338,20 @@ function setupAirdropUI() {
 
     // Получаем данные игрока
     const airdropPoints = window.userData?.airdrop_points || 0;
-    const walletAddress = window.userData?.wallet_address || null;
+    let walletAddress = window.userData?.wallet_address || null;
+
+    // Дополнительная проверка: если кошелёк подключен в TON Connect но не в userData
+    if (!walletAddress && tonConnectUI && tonConnectUI.wallet) {
+        console.log('👛 Обнаружен подключённый кошелёк в TON Connect, синхронизируем...');
+        walletAddress = convertToUserFriendlyAddress(tonConnectUI.wallet.account.address);
+        if (window.userData) {
+            window.userData.wallet_address = walletAddress;
+            window.userData.wallet_connected_at = Date.now();
+            if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+                window.dbManager.savePlayer(window.userData);
+            }
+        }
+    }
 
     // === ЗАГОЛОВОК ===
     const headerContainer = document.createElement('div');
@@ -592,6 +625,11 @@ async function connectWallet() {
         // Проверяем, подключён ли уже кошелёк
         if (tonConnectUI.wallet) {
             console.log('👛 Кошелёк уже подключён:', tonConnectUI.wallet);
+            // Обновляем UI если кошелёк подключен но не отображается
+            if (!window.userData?.wallet_address) {
+                console.log('👛 Кошелёк подключен но не сохранен, обновляем...');
+                handleWalletConnected(tonConnectUI.wallet);
+            }
             return;
         }
 
