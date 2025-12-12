@@ -97,6 +97,36 @@
             animationSpeed: 0.12, // Чуть медленнее - орки массивнее
             scale: 0.30 // Орки крупнее гоблинов
         },
+        troll: {
+            idle: 'images/enemies/troll/idle.webp',
+            cast: 'images/enemies/troll/attack.webp',
+            death: 'images/enemies/troll/death.webp',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            animationSpeed: 0.10, // Медленнее - тролли тяжёлые
+            scale: 0.35 // Тролли крупнее орков
+        },
+        ogre: {
+            idle: 'images/enemies/ogre/idle.webp',
+            cast: 'images/enemies/ogre/attack.webp',
+            death: 'images/enemies/ogre/death.webp',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            animationSpeed: 0.08, // Очень медленные - огромные
+            scale: 0.40 // Огры ещё крупнее
+        },
+        demon: {
+            idle: 'images/enemies/demon/idle.webp',
+            cast: 'images/enemies/demon/attack.webp',
+            death: 'images/enemies/demon/death.webp',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            animationSpeed: 0.15, // Демоны быстрые
+            scale: 0.38 // Средний размер между огром и троллем
+        },
         fire_elemental: {
             idle: 'images/enemies/fire_elemental/idle.webp',
             cast: 'images/enemies/fire_elemental/cast.webp',
