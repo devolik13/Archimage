@@ -3,6 +3,16 @@
 // Текущая вкладка магазина
 let currentShopTab = 'free';
 
+// Кэш курса TON (обновляется каждые 5 минут)
+let tonPriceCache = {
+    priceUSD: 5.0, // Дефолтный курс TON/USD
+    lastUpdate: 0,
+    cacheTime: 5 * 60 * 1000 // 5 минут
+};
+
+// Адрес получателя TON платежей
+const TON_RECEIVER_ADDRESS = 'UQAnElrwdRQf8-U0ERo5DAGwitB_ipMOF0plhyDox_HA3bFU';
+
 // Конфигурация стартовых пакетов (одноразовые покупки)
 const STARTER_PACKS = {
     small: {
@@ -11,7 +21,8 @@ const STARTER_PACKS = {
         description: '7 дней времени, Башня магов 3 ур, 2-й маг, 5000 XP',
         icon: '🎁',
         price: 2900,
-        currency: 'stars',
+        priceUSD: 39, // Базовая цена в USD для расчёта TON
+        currency: 'dual', // Поддерживает Stars и TON
         fullPrice: 2900,
         discount: 30,
         requires: null, // Доступен всем
@@ -28,7 +39,8 @@ const STARTER_PACKS = {
         description: '30 дней времени, Башня магов 5 ур, 3-й маг, 30000 XP',
         icon: '📦',
         price: 10400,
-        currency: 'stars',
+        priceUSD: 140,
+        currency: 'dual',
         fullPrice: 10400,
         discount: 30,
         requires: 'starter_pack_small', // После малого пакета
@@ -45,7 +57,8 @@ const STARTER_PACKS = {
         description: '90 дней времени, Башня магов 7 ур, 4-й маг, 200000 XP',
         icon: '💎',
         price: 40000,
-        currency: 'stars',
+        priceUSD: 540,
+        currency: 'dual',
         fullPrice: 40000,
         discount: 30,
         requires: 'starter_pack_medium', // После среднего пакета
@@ -114,60 +127,65 @@ const SHOP_CONFIG = {
         }
     ],
 
-    // Premium товары (за Telegram Stars)
-    // Курс: 7 Stars = 1 час = 60 минут, 168 Stars = 1 день
+    // Premium товары (за Telegram Stars или TON)
+    // Курс: 1 Star ≈ $0.013, TON курс динамический
     premium: [
         {
             id: 'time_pack_test',
             name: '🧪 Тест (1 час)',
             description: '+1 час игрового времени (тест)',
             icon: '🧪',
-            price: 10, // Тестовая цена
-            currency: 'stars',
+            price: 10,
+            priceUSD: 0.13,
+            currency: 'dual',
             action: 'buyTimePack',
-            amount: 60 // 1 час в минутах
+            amount: 60
         },
         {
             id: 'time_pack_small',
             name: 'Пакет времени (1 день)',
             description: '+1 день игрового времени',
             icon: '⏰',
-            price: 168, // 7 Stars × 24 часа
-            currency: 'stars',
+            price: 168,
+            priceUSD: 2.2,
+            currency: 'dual',
             action: 'buyTimePack',
-            amount: 1440 // 1 день в минутах
+            amount: 1440
         },
         {
             id: 'time_pack_medium',
             name: 'Пакет времени (7 дней)',
             description: '+7 дней времени (-5%)',
             icon: '⏰⏰',
-            price: 1120, // 168 × 7 × 0.95 ≈ 1120
-            currency: 'stars',
+            price: 1120,
+            priceUSD: 15,
+            currency: 'dual',
             action: 'buyTimePack',
-            amount: 10080 // 7 дней
+            amount: 10080
         },
         {
             id: 'time_pack_large',
             name: 'Пакет времени (30 дней)',
             description: '+30 дней времени (-15%)',
             icon: '⏰⏰⏰',
-            price: 4280, // 168 × 30 × 0.85 ≈ 4280
-            currency: 'stars',
+            price: 4280,
+            priceUSD: 56,
+            currency: 'dual',
             action: 'buyTimePack',
-            amount: 43200 // 30 дней
+            amount: 43200
         },
         {
             id: 'faction_change',
             name: 'Смена фракции',
             description: 'Цена зависит от изученных заклинаний',
             icon: '🔄',
-            price: 0, // Динамическая цена, показывается в диалоге
-            currency: 'stars',
+            price: 0,
+            priceUSD: 0,
+            currency: 'dual',
             action: 'changeFaction',
             amount: 1,
-            checkFree: true, // Проверить бесплатную смену
-            dynamicPrice: true // Цена рассчитывается динамически
+            checkFree: true,
+            dynamicPrice: true
         }
     ]
 };
@@ -496,7 +514,7 @@ function renderStarterPacks(scale) {
 }
 
 /**
- * Покупка стартового пакета через Telegram Stars
+ * Покупка стартового пакета (показывает диалог выбора или покупает напрямую)
  */
 async function buyStarterPack(packKey) {
     const pack = STARTER_PACKS[packKey];
@@ -520,6 +538,12 @@ async function buyStarterPack(packKey) {
         if (window.showNotification) {
             window.showNotification('⚠️ Сначала купите предыдущий пакет!');
         }
+        return;
+    }
+
+    // Если пакет поддерживает dual currency - показываем диалог выбора
+    if (pack.currency === 'dual') {
+        showPaymentMethodDialog(pack, packKey);
         return;
     }
 
@@ -779,6 +803,12 @@ function buyShopItem(itemId) {
     }
 
     console.log('🛒 Покупка:', item.name);
+
+    // Если товар поддерживает dual currency - показываем диалог выбора
+    if (item.currency === 'dual' && item.action === 'buyTimePack') {
+        showPaymentMethodDialog(item);
+        return;
+    }
 
     // Выполняем действие
     switch (item.action) {
@@ -1525,6 +1555,387 @@ function closeShopModal() {
     if (playerAvatar) playerAvatar.style.display = '';
 
     console.log('🛒 Магазин закрыт');
+}
+
+// ==========================================
+// TON ПЛАТЕЖИ
+// ==========================================
+
+/**
+ * Получить актуальный курс TON/USD
+ */
+async function getTonPrice() {
+    const now = Date.now();
+
+    // Если кэш свежий - возвращаем из кэша
+    if (tonPriceCache.lastUpdate && (now - tonPriceCache.lastUpdate) < tonPriceCache.cacheTime) {
+        console.log('💎 Курс TON из кэша:', tonPriceCache.priceUSD);
+        return tonPriceCache.priceUSD;
+    }
+
+    try {
+        console.log('💎 Запрос курса TON с CoinGecko API...');
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
+        const data = await response.json();
+
+        if (data && data['the-open-network'] && data['the-open-network'].usd) {
+            tonPriceCache.priceUSD = data['the-open-network'].usd;
+            tonPriceCache.lastUpdate = now;
+            console.log('✅ Курс TON обновлён:', tonPriceCache.priceUSD, 'USD');
+            return tonPriceCache.priceUSD;
+        }
+    } catch (error) {
+        console.error('❌ Ошибка получения курса TON:', error);
+    }
+
+    // Возвращаем дефолтное значение если не удалось получить
+    console.log('⚠️ Используется дефолтный курс TON:', tonPriceCache.priceUSD);
+    return tonPriceCache.priceUSD;
+}
+
+/**
+ * Рассчитать цену в TON на основе USD цены
+ */
+async function calculateTonPrice(priceUSD) {
+    const tonPriceUSD = await getTonPrice();
+    const tonAmount = priceUSD / tonPriceUSD;
+    // Округляем до 2 знаков после запятой
+    return Math.ceil(tonAmount * 100) / 100;
+}
+
+/**
+ * Показать диалог выбора способа оплаты (Stars или TON)
+ */
+async function showPaymentMethodDialog(item, packKey = null) {
+    console.log('💳 Показ диалога выбора способа оплаты для:', item.name);
+
+    // Рассчитываем цену в TON
+    const tonPrice = await calculateTonPrice(item.priceUSD || 0);
+
+    const dialog = document.createElement('div');
+    dialog.id = 'payment-method-dialog';
+    dialog.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 10001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s;
+    `;
+
+    dialog.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 2px solid #ffd700;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        ">
+            <h2 style="color: #ffd700; margin: 0 0 10px 0; text-align: center; font-size: 24px;">
+                ${item.icon} ${item.name}
+            </h2>
+            <p style="color: #aaa; text-align: center; margin: 0 0 25px 0; font-size: 14px;">
+                ${item.description}
+            </p>
+
+            <div style="color: #fff; font-size: 18px; font-weight: bold; margin-bottom: 20px; text-align: center;">
+                Выберите способ оплаты:
+            </div>
+
+            <button id="pay-stars-btn" style="
+                width: 100%;
+                padding: 15px;
+                margin-bottom: 12px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: 2px solid #ffd700;
+                border-radius: 12px;
+                color: white;
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+            ">
+                <span style="font-size: 24px;">⭐</span>
+                <span>${item.price} Stars</span>
+            </button>
+
+            <button id="pay-ton-btn" style="
+                width: 100%;
+                padding: 15px;
+                margin-bottom: 20px;
+                background: linear-gradient(135deg, #0088cc 0%, #0066cc 100%);
+                border: 2px solid #0088cc;
+                border-radius: 12px;
+                color: white;
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+            ">
+                <span style="font-size: 24px;">💎</span>
+                <span>${tonPrice} TON</span>
+                <span style="font-size: 12px; opacity: 0.8;">(~$${item.priceUSD})</span>
+            </button>
+
+            <button id="cancel-payment-btn" style="
+                width: 100%;
+                padding: 12px;
+                background: rgba(255,255,255,0.1);
+                border: 1px solid #666;
+                border-radius: 10px;
+                color: #aaa;
+                font-size: 14px;
+                cursor: pointer;
+            ">
+                Отмена
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(dialog);
+
+    // Обработчики кнопок
+    document.getElementById('pay-stars-btn').onclick = () => {
+        dialog.remove();
+        if (packKey) {
+            buyStarterPackWithStars(packKey);
+        } else {
+            buyTimePackWithStars(item);
+        }
+    };
+
+    document.getElementById('pay-ton-btn').onclick = () => {
+        dialog.remove();
+        if (packKey) {
+            buyStarterPackWithTon(packKey, tonPrice);
+        } else {
+            buyTimePackWithTon(item, tonPrice);
+        }
+    };
+
+    document.getElementById('cancel-payment-btn').onclick = () => {
+        dialog.remove();
+    };
+
+    // Hover эффекты
+    const starsBtn = document.getElementById('pay-stars-btn');
+    const tonBtn = document.getElementById('pay-ton-btn');
+
+    starsBtn.onmouseover = () => {
+        starsBtn.style.transform = 'scale(1.05)';
+        starsBtn.style.boxShadow = '0 5px 20px rgba(102, 126, 234, 0.5)';
+    };
+    starsBtn.onmouseout = () => {
+        starsBtn.style.transform = 'scale(1)';
+        starsBtn.style.boxShadow = 'none';
+    };
+
+    tonBtn.onmouseover = () => {
+        tonBtn.style.transform = 'scale(1.05)';
+        tonBtn.style.boxShadow = '0 5px 20px rgba(0, 136, 204, 0.5)';
+    };
+    tonBtn.onmouseout = () => {
+        tonBtn.style.transform = 'scale(1)';
+        tonBtn.style.boxShadow = 'none';
+    };
+}
+
+/**
+ * Покупка пакета времени через Stars (старая функция переименована)
+ */
+async function buyTimePackWithStars(item) {
+    return buyTimePack(item);
+}
+
+/**
+ * Покупка пакета времени через TON
+ */
+async function buyTimePackWithTon(item, tonPrice) {
+    console.log('💎 Покупка через TON:', item.name, tonPrice, 'TON');
+
+    if (!window.tonConnectUI || !window.tonConnectUI.wallet) {
+        showShopNotification('⚠️ Сначала подключите TON кошелёк в разделе Airdrop', 'warning');
+        return;
+    }
+
+    try {
+        // Формируем транзакцию
+        const transaction = {
+            validUntil: Math.floor(Date.now() / 1000) + 600, // 10 минут
+            messages: [
+                {
+                    address: TON_RECEIVER_ADDRESS,
+                    amount: String(Math.floor(tonPrice * 1000000000)), // Конвертируем в nanotons
+                    payload: btoa(JSON.stringify({
+                        product_id: item.id,
+                        telegram_id: window.userData?.telegram_id,
+                        amount: item.amount,
+                        timestamp: Date.now()
+                    }))
+                }
+            ]
+        };
+
+        console.log('💎 Отправка TON транзакции:', transaction);
+
+        const result = await window.tonConnectUI.sendTransaction(transaction);
+
+        console.log('✅ TON транзакция отправлена:', result);
+
+        // Сразу добавляем время локально (оптимистичное обновление)
+        window.userData.time_currency = (window.userData.time_currency || 0) + item.amount;
+
+        // Начисляем airdrop очки (используем USD эквивалент Stars)
+        if (typeof window.addAirdropPoints === 'function' && item.priceUSD) {
+            const airdropPoints = Math.floor((item.priceUSD / 0.013) / 10);
+            if (airdropPoints > 0) {
+                window.addAirdropPoints(airdropPoints, `TON покупка ${tonPrice} TON`);
+            }
+        }
+
+        // Сохраняем в БД
+        if (window.eventSaveManager) {
+            await window.eventSaveManager.saveImmediate('shop_ton_purchase');
+        }
+
+        // Сохраняем транзакцию в БД для отслеживания
+        await saveTonPayment(item, tonPrice, result);
+
+        showShopNotification(`✅ +${formatTimePurchase(item.amount)} времени!`, 'success');
+        refreshShopUI();
+
+        if (typeof window.updateTimeCurrencyDisplay === 'function') {
+            window.updateTimeCurrencyDisplay();
+        }
+
+    } catch (error) {
+        console.error('❌ Ошибка TON платежа:', error);
+        showShopNotification('❌ Ошибка TON платежа', 'error');
+    }
+}
+
+/**
+ * Покупка стартового пакета через Stars
+ */
+async function buyStarterPackWithStars(packKey) {
+    return buyStarterPack(packKey);
+}
+
+/**
+ * Покупка стартового пакета через TON
+ */
+async function buyStarterPackWithTon(packKey, tonPrice) {
+    const pack = STARTER_PACKS[packKey];
+    if (!pack) return;
+
+    console.log('💎 Покупка стартового пакета через TON:', pack.name, tonPrice, 'TON');
+
+    if (!window.tonConnectUI || !window.tonConnectUI.wallet) {
+        showShopNotification('⚠️ Сначала подключите TON кошелёк в разделе Airdrop', 'warning');
+        return;
+    }
+
+    try {
+        const transaction = {
+            validUntil: Math.floor(Date.now() / 1000) + 600,
+            messages: [
+                {
+                    address: TON_RECEIVER_ADDRESS,
+                    amount: String(Math.floor(tonPrice * 1000000000)),
+                    payload: btoa(JSON.stringify({
+                        product_id: pack.id,
+                        telegram_id: window.userData?.telegram_id,
+                        type: 'starter_pack',
+                        timestamp: Date.now()
+                    }))
+                }
+            ]
+        };
+
+        const result = await window.tonConnectUI.sendTransaction(transaction);
+
+        console.log('✅ TON транзакция стартового пакета отправлена:', result);
+
+        // Применяем награды локально
+        applyStarterPackRewards(pack);
+
+        // Отмечаем как купленный
+        if (!window.userData.purchased_packs) {
+            window.userData.purchased_packs = {};
+        }
+        window.userData.purchased_packs[pack.id] = {
+            purchased_at: new Date().toISOString(),
+            rewards: pack.rewards,
+            payment_method: 'ton'
+        };
+
+        // Airdrop очки
+        if (typeof window.addAirdropPoints === 'function' && pack.priceUSD) {
+            const airdropPoints = Math.floor((pack.priceUSD / 0.013) / 10);
+            if (airdropPoints > 0) {
+                window.addAirdropPoints(airdropPoints, `TON покупка ${pack.name}`);
+            }
+        }
+
+        if (window.eventSaveManager) {
+            await window.eventSaveManager.saveImmediate('shop_ton_purchase');
+        }
+
+        await saveTonPayment(pack, tonPrice, result);
+
+        showShopNotification(`🎁 ${pack.name} получен!`, 'success');
+        refreshShopUI();
+
+        if (typeof window.updateTimeCurrencyDisplay === 'function') {
+            window.updateTimeCurrencyDisplay();
+        }
+
+    } catch (error) {
+        console.error('❌ Ошибка TON платежа:', error);
+        showShopNotification('❌ Ошибка TON платежа', 'error');
+    }
+}
+
+/**
+ * Сохранить TON платёж в БД
+ */
+async function saveTonPayment(item, tonAmount, txResult) {
+    try {
+        const { error } = await window.supabaseClient.supabase
+            .from('payments')
+            .insert({
+                telegram_id: window.userData?.telegram_id,
+                product_id: item.id,
+                amount_ton: tonAmount,
+                payment_method: 'ton',
+                status: 'completed',
+                ton_transaction_hash: txResult?.boc || 'unknown',
+                completed_at: new Date().toISOString()
+            });
+
+        if (error) {
+            console.error('❌ Ошибка сохранения TON платежа:', error);
+        } else {
+            console.log('✅ TON платёж сохранён в БД');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка сохранения TON платежа:', error);
+    }
 }
 
 // Экспорт
