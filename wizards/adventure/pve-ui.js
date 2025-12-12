@@ -446,6 +446,10 @@ function showPvEResult(result, levelId) {
     const levelName = level?.name || `Уровень ${levelId}`;
     const reward = level?.reward || 0;
 
+    // Проверяем, первое ли это прохождение (для показа награды)
+    const progress = loadPvEProgress();
+    const isFirstCompletion = !progress.chapter1?.completed?.[levelId];
+
     const bgColor = isWin
         ? 'linear-gradient(135deg, #1a3a1a 0%, #2d4a1d 100%)'
         : 'linear-gradient(135deg, #3a1a1a 0%, #4a1d1d 100%)';
@@ -488,7 +492,7 @@ function showPvEResult(result, levelId) {
             <div style="font-size: 14px; color: #aaa; margin-bottom: 16px;">
                 ${levelName}
             </div>
-            ${isWin && reward > 0 ? `
+            ${isWin && reward > 0 && isFirstCompletion ? `
                 <div style="
                     background: rgba(255,255,255,0.1);
                     border-radius: 8px;
@@ -496,6 +500,16 @@ function showPvEResult(result, levelId) {
                     margin-bottom: 16px;
                 ">
                     <span style="color: #ffd700;">⏰ +${formatTimeReward(reward)}</span>
+                </div>
+            ` : ''}
+            ${isWin && reward > 0 && !isFirstCompletion ? `
+                <div style="
+                    background: rgba(255,255,255,0.05);
+                    border-radius: 8px;
+                    padding: 10px;
+                    margin-bottom: 16px;
+                ">
+                    <span style="color: #888;">ℹ️ Награда уже получена</span>
                 </div>
             ` : ''}
             <div style="display: flex; gap: 10px; justify-content: center;">
