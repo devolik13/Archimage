@@ -100,6 +100,11 @@ const ELEMENTALS = {
         armor: 170,
         faction: "water",
         spells: ["icicle", "frost_arrow", "blizzard"],
+        spell_levels: {
+            'icicle': 5,
+            'frost_arrow': 5,
+            'blizzard': 3  // Blizzard мощнее, поэтому чуть ниже уровень
+        },
         resistances: {
             fire: 30,
             water: 75,   // 75% сопротивление воде
@@ -115,6 +120,11 @@ const ELEMENTALS = {
         armor: 190,
         faction: "wind",
         spells: ["gust", "wind_blade", "storm_cloud"],
+        spell_levels: {
+            'gust': 5,
+            'wind_blade': 5,
+            'storm_cloud': 3
+        },
         resistances: {
             fire: 30,
             water: 30,
@@ -130,6 +140,11 @@ const ELEMENTALS = {
         armor: 210,
         faction: "earth",
         spells: ["pebble", "stone_spike", "meteor_shower"],
+        spell_levels: {
+            'pebble': 5,
+            'stone_spike': 5,
+            'meteor_shower': 3
+        },
         resistances: {
             fire: 30,
             water: 30,
@@ -148,6 +163,13 @@ const FINAL_BOSS = {
     armor: 250,
     faction: "fire", // визуально будет огненным
     spells: ["fireball", "blizzard", "ball_lightning", "meteor_shower", "epidemic"], // все стихии
+    spell_levels: {
+        'fireball': 7,       // Огонь
+        'blizzard': 7,       // Вода
+        'ball_lightning': 7, // Воздух
+        'meteor_shower': 7,  // Земля
+        'epidemic': 7        // Яд - мастер всех стихий!
+    },
     resistances: {
         fire: 50,
         water: 50,
