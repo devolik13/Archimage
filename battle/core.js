@@ -990,6 +990,9 @@ async function checkBattleEnd() {
                         }
                     }
                 }
+
+                // Сохраняем isFirstCompletion для передачи в showPvEResult
+                window.lastPvEWasFirstCompletion = isFirstCompletion;
             }
             // НЕ очищаем флаги PvE здесь - они очистятся в блоке показа результата (строки 1107-1108)
         }

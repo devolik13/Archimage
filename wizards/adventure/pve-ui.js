@@ -446,9 +446,9 @@ function showPvEResult(result, levelId) {
     const levelName = level?.name || `Уровень ${levelId}`;
     const reward = level?.reward || 0;
 
-    // Проверяем, первое ли это прохождение (для показа награды)
-    const progress = loadPvEProgress();
-    const isFirstCompletion = !progress.chapter1?.completed?.[levelId];
+    // Используем сохранённое значение из battle/core.js (ВАЖНО!)
+    // Не загружаем прогресс заново, т.к. уровень уже помечен как пройденный
+    const isFirstCompletion = window.lastPvEWasFirstCompletion ?? false;
 
     const bgColor = isWin
         ? 'linear-gradient(135deg, #1a3a1a 0%, #2d4a1d 100%)'
@@ -568,6 +568,8 @@ function closePvEResult() {
     if (overlay) {
         overlay.remove();
     }
+    // Очищаем флаг первого прохождения
+    window.lastPvEWasFirstCompletion = undefined;
     // Возвращаемся в город
     if (typeof window.returnToCity === 'function') {
         window.returnToCity();
