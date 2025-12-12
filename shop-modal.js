@@ -1774,19 +1774,14 @@ async function buyTimePackWithTon(item, tonPrice) {
     }
 
     try {
-        // Формируем транзакцию
+        // Формируем транзакцию (без payload - он вызывал ошибку "Invalid magic")
+        // Идентификация транзакции будет по хешу, который вернётся в result
         const transaction = {
             validUntil: Math.floor(Date.now() / 1000) + 600, // 10 минут
             messages: [
                 {
                     address: TON_RECEIVER_ADDRESS,
-                    amount: String(Math.floor(tonPrice * 1000000000)), // Конвертируем в nanotons
-                    payload: btoa(JSON.stringify({
-                        product_id: item.id,
-                        telegram_id: window.userData?.telegram_id,
-                        amount: item.amount,
-                        timestamp: Date.now()
-                    }))
+                    amount: String(Math.floor(tonPrice * 1000000000)) // Конвертируем в nanotons
                 }
             ]
         };
@@ -1851,18 +1846,13 @@ async function buyStarterPackWithTon(packKey, tonPrice) {
     }
 
     try {
+        // Формируем транзакцию (без payload - он вызывал ошибку "Invalid magic")
         const transaction = {
             validUntil: Math.floor(Date.now() / 1000) + 600,
             messages: [
                 {
                     address: TON_RECEIVER_ADDRESS,
-                    amount: String(Math.floor(tonPrice * 1000000000)),
-                    payload: btoa(JSON.stringify({
-                        product_id: pack.id,
-                        telegram_id: window.userData?.telegram_id,
-                        type: 'starter_pack',
-                        timestamp: Date.now()
-                    }))
+                    amount: String(Math.floor(tonPrice * 1000000000))
                 }
             ]
         };
