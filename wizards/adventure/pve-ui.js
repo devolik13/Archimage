@@ -134,7 +134,27 @@ function showChapter1Levels() {
     // Используем новую систему карты приключений
     if (typeof showAdventureMap === 'function') {
         closePvEModal();
-        showAdventureMap('1-10');
+
+        // Определяем текущую карту по прогрессу игрока
+        const progress = loadPvEProgress();
+        const maxLevel = progress.chapter1?.maxLevel || 1;
+
+        // Выбираем карту в зависимости от достигнутого уровня
+        let mapRange = '1-10'; // По умолчанию первая карта
+
+        if (maxLevel >= 41) {
+            mapRange = '41-50'; // Царство Хаоса
+        } else if (maxLevel >= 31) {
+            mapRange = '31-40'; // Земные глубины
+        } else if (maxLevel >= 21) {
+            mapRange = '21-30'; // Грозовые равнины
+        } else if (maxLevel >= 11) {
+            mapRange = '11-20'; // Ледяные вершины
+        }
+        // else остаётся '1-10' (Огненные пещеры)
+
+        console.log(`🗺️ Открытие карты приключений: ${mapRange} (maxLevel: ${maxLevel})`);
+        showAdventureMap(mapRange);
         return;
     }
 
