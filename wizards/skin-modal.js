@@ -497,8 +497,11 @@ function startSkinPreviewAnimation(skin, canvasId) {
         // Первый кадр сразу
         drawFrame();
 
-        // Запускаем анимацию (150ms на кадр = ~6.7 FPS)
-        skinPreviewAnimationId = setInterval(drawFrame, 150);
+        // Запускаем анимацию - подбираем интервал чтобы цикл длился ~1.2с
+        // Для 8 кадров: 150ms, для 25 кадров: ~50ms
+        const targetCycleDuration = 1200; // мс для полного цикла
+        const interval = Math.max(40, Math.floor(targetCycleDuration / frameCount));
+        skinPreviewAnimationId = setInterval(drawFrame, interval);
     };
 
     img.src = spritePath;

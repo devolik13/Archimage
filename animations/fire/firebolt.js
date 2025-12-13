@@ -79,7 +79,7 @@
             const frames = [];
             const frameWidth = Math.floor(baseTexture.width / 2);
             const frameHeight = Math.floor(baseTexture.height / 3);
-            
+
             for (let row = 0; row < 3; row++) {
                 for (let col = 0; col < 2; col++) {
                     const frame = new PIXI.Texture(
@@ -94,10 +94,28 @@
                     frames.push(frame);
                 }
             }
-            
+
+            // Проверяем валидность всех кадров перед использованием
+            const validFrames = frames.every(frame =>
+                frame && frame.baseTexture && frame.baseTexture.valid
+            );
+
+            if (!validFrames || frames.length === 0) {
+                console.warn('⚠️ Frames have invalid baseTexture, using fallback');
+                createFallbackArrows();
+                return;
+            }
+
             // Запускаем стрелы с задержкой
             arrowsToUse.forEach((arrowData, i) => {
                 setTimeout(() => {
+                    // Дополнительная проверка перед созданием каждой стрелы
+                    const stillValid = frames.every(f => f && f.baseTexture && f.baseTexture.valid);
+                    if (!stillValid) {
+                        console.warn(`⚠️ Frames became invalid before arrow ${i}, using fallback`);
+                        createFallbackArrow(arrowData, i);
+                        return;
+                    }
                     createAnimatedArrow(frames, arrowData, i);
                 }, i * 200);
             });
@@ -198,6 +216,95 @@
             animate();
         }
         
+        // Fallback для одной стрелы (без задержки)
+        function createFallbackArrow(arrowData, index) {
+            const targetCol = arrowData.impactCol;
+            const targetRow = arrowData.impactRow;
+            const targetCell = gridCells[targetCol]?.[targetRow];
+
+            if (!targetCell) {
+                completedArrows++;
+                checkComplete();
+                return;
+            }
+
+            const arrow = new PIXI.Graphics();
+
+            arrow.beginFill(0xFF6600, 1);
+            arrow.drawRect(-25, -4, 50, 8);
+            arrow.endFill();
+
+            arrow.beginFill(0xFFFF00, 1);
+            arrow.moveTo(25, 0);
+            arrow.lineTo(35, -10);
+            arrow.lineTo(35, 10);
+            arrow.closePath();
+            arrow.endFill();
+
+            arrow.beginFill(0xFF0000, 0.7);
+            arrow.drawCircle(-25, 0, 10);
+            arrow.endFill();
+
+            arrow.x = casterCell.x + casterCell.width / 2;
+            arrow.y = casterCell.y + casterCell.height / 2;
+
+            const dx = targetCell.x + targetCell.width / 2 - arrow.x;
+            const dy = targetCell.y + targetCell.height / 2 - arrow.y;
+            arrow.rotation = Math.atan2(dy, dx);
+
+            effectsContainer.addChild(arrow);
+
+            const targetX = targetCell.x + targetCell.width / 2;
+            const targetY = targetCell.y + targetCell.height / 2;
+            const duration = 800;
+            const startTime = Date.now();
+
+            const startX = casterCell.x + casterCell.width / 2;
+            const startY = casterCell.y + casterCell.height / 2;
+
+            const animate = () => {
+                if (!arrow || arrow.destroyed || !arrow.transform || !arrow.parent) {
+                    completedArrows++;
+                    checkComplete();
+                    return;
+                }
+
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                try {
+                    arrow.x = startX + (targetX - startX) * progress;
+                    arrow.y = startY + (targetY - startY) * progress;
+                } catch (e) {
+                    completedArrows++;
+                    checkComplete();
+                    return;
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    if (arrow.parent) {
+                        effectsContainer.removeChild(arrow);
+                    }
+                    if (!arrow.destroyed) {
+                        arrow.destroy();
+                    }
+
+                    createImpact(targetX, targetY);
+
+                    if (onArrowHit) {
+                        onArrowHit(index);
+                    }
+
+                    completedArrows++;
+                    checkComplete();
+                }
+            };
+
+            animate();
+        }
+
         function createFallbackArrows() {
             arrowsToUse.forEach((arrowData, i) => {
                 setTimeout(() => {
