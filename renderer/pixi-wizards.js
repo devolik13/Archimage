@@ -1030,7 +1030,12 @@
 
         sprite.stop();
         sprite.textures = castFrames;
-        sprite.animationSpeed = 0.15;
+
+        // Для магов с большим количеством кадров (25) используем более высокую скорость
+        // чтобы общая длительность анимации была сопоставима с 8-кадровыми
+        // 8 кадров при 0.15 = ~53 тиков, 25 кадров при 0.45 = ~55 тиков
+        const castSpeed = castFrames.length > 10 ? 0.45 : 0.15;
+        sprite.animationSpeed = castSpeed;
         sprite.loop = false;
         sprite.gotoAndPlay(0);
 
