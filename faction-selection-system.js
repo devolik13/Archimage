@@ -115,21 +115,32 @@ window.FactionSelection = {
     	bgImage.src = 'assets/faction-background.png';
     	bgImage.id = 'faction-bg-image';
     	bgImage.className = 'faction-background-img';
-    	
+
     	// Масштабирование КАК У ГОРОДА
-    	const screenHeight = window.innerHeight;
+    	// При повороте: визуальная высота = физическая ширина экрана
+    	const screenHeight = isRotated ? window.innerWidth : window.innerHeight;
+    	const screenWidth = isRotated ? window.innerHeight : window.innerWidth;
     	const imageHeight = 512;
     	const imageWidth = 768;
     	const aspectRatio = imageWidth / imageHeight;
-    	
-    	const scaledHeight = screenHeight;
-    	const scaledWidth = scaledHeight * aspectRatio;
-    	
+
+    	// Масштабируем чтобы изображение полностью помещалось
+    	let scaledHeight, scaledWidth;
+    	if (screenWidth / screenHeight > aspectRatio) {
+    	    // Экран шире изображения - масштабируем по высоте
+    	    scaledHeight = screenHeight;
+    	    scaledWidth = scaledHeight * aspectRatio;
+    	} else {
+    	    // Экран уже изображения - масштабируем по ширине
+    	    scaledWidth = screenWidth;
+    	    scaledHeight = scaledWidth / aspectRatio;
+    	}
+
     	bgImage.style.cssText = `
     	    position: absolute;
-    	    top: 0;
+    	    top: 50%;
     	    left: 50%;
-    	    transform: translateX(-50%);
+    	    transform: translate(-50%, -50%);
     	    width: ${scaledWidth}px;
     	    height: ${scaledHeight}px;
     	    z-index: 0;
@@ -291,27 +302,57 @@ window.FactionSelection = {
         // Удаляем старую панель если есть
         this.hideFactionPanel();
 
+        // Определяем режим поворота
+        const isPortrait = window.innerHeight > window.innerWidth;
+        const isRotated = isPortrait || window.cssRotationActive === true;
+
         // Создаем панель
         const panel = document.createElement('div');
         panel.id = 'faction-description-panel';
-        panel.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: -50vw;
-            width: 50vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.95);
-            border-right: 2px solid #ffd700;
-            z-index: 99999999;
-            padding: 15px 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-            transition: left 0.3s ease-out;
-            color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            align-items: center;
-        `;
+
+        if (isRotated) {
+            // В режиме поворота - панель тоже должна быть повёрнута
+            panel.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(-90deg) translateX(-25vh);
+                transform-origin: center center;
+                width: 50vh;
+                height: 100vw;
+                background: rgba(0, 0, 0, 0.95);
+                border-right: 2px solid #ffd700;
+                z-index: 99999999;
+                padding: 15px 20px;
+                box-sizing: border-box;
+                overflow-y: auto;
+                transition: transform 0.3s ease-out;
+                color: white;
+                font-family: Arial, sans-serif;
+                display: flex;
+                align-items: center;
+            `;
+            panel._isRotated = true;
+        } else {
+            panel.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: -50vw;
+                width: 50vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.95);
+                border-right: 2px solid #ffd700;
+                z-index: 99999999;
+                padding: 15px 20px;
+                box-sizing: border-box;
+                overflow-y: auto;
+                transition: left 0.3s ease-out;
+                color: white;
+                font-family: Arial, sans-serif;
+                display: flex;
+                align-items: center;
+            `;
+        }
 
         // Содержимое панели
         panel.innerHTML = `
@@ -404,7 +445,11 @@ window.FactionSelection = {
 
         // Анимация появления
         setTimeout(() => {
-            panel.style.left = '0';
+            if (panel._isRotated) {
+                panel.style.transform = 'translate(-50%, -50%) rotate(-90deg) translateX(0)';
+            } else {
+                panel.style.left = '0';
+            }
         }, 10);
 
         // Обработчики событий
@@ -444,7 +489,11 @@ window.FactionSelection = {
             }
 
             // Анимация закрытия
-            panel.style.left = '-50vw';
+            if (panel._isRotated) {
+                panel.style.transform = 'translate(-50%, -50%) rotate(-90deg) translateX(-25vh)';
+            } else {
+                panel.style.left = '-50vw';
+            }
             setTimeout(() => {
                 panel.remove();
             }, 300);
