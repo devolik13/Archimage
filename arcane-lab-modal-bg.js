@@ -388,12 +388,16 @@ async function confirmLabUpgrade(targetLevel) {
         }
     }
     
-    // Запускаем улучшение через систему строительства
-    if (window.startBuilding) {
-        window.startBuilding('arcane_lab', true); // true означает что это улучшение
+    // Рассчитываем время улучшения
+    const timeRequired = window.CONSTRUCTION_TIME?.getUpgradeTime ?
+        window.CONSTRUCTION_TIME.getUpgradeTime('arcane_lab', targetLevel) : 144 * targetLevel;
+
+    // Вызываем executeBuilding напрямую (пользователь уже подтвердил)
+    if (window.executeBuilding) {
+        window.executeBuilding('arcane_lab', true, targetLevel, timeRequired);
         return;
     }
-    
+
     // Альтернативный метод через систему конструкций
     if (typeof window.startConstruction === 'function') {
         const success = await window.startConstruction('arcane_lab', null, true, targetLevel);
@@ -402,7 +406,7 @@ async function confirmLabUpgrade(targetLevel) {
         }
         return;
     }
-    
+
     // Если ничего не сработало
     showNotification('❌ Ошибка системы строительства');
 }

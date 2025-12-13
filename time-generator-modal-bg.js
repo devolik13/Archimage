@@ -422,11 +422,11 @@ function showGeneratorUpgradeConfirm(currentLevel, upgradeTime) {
     overlay.appendChild(confirmContainer);
 }
 
-// Подтвердить апгрейд лаборатории
+// Подтвердить апгрейд генератора
 async function confirmGeneratorUpgrade(targetLevel) {
-    // Закрываем окно лаборатории
+    // Закрываем окно генератора
     closeTimeGeneratorModalBg();
-    
+
     // Проверяем активные конструкции
     if (window.hasActiveConstruction && window.hasActiveConstruction('any_building_or_wizard')) {
         const constructions = window.userData.constructions || [];
@@ -443,13 +443,17 @@ async function confirmGeneratorUpgrade(targetLevel) {
             return;
         }
     }
-    
-    // Запускаем улучшение через систему строительства
-    if (window.startBuilding) {
-        window.startBuilding('time_generator', true); // true означает что это улучшение
+
+    // Рассчитываем время улучшения
+    const timeRequired = window.CONSTRUCTION_TIME?.getUpgradeTime ?
+        window.CONSTRUCTION_TIME.getUpgradeTime('time_generator', targetLevel) : 144 * targetLevel;
+
+    // Вызываем executeBuilding напрямую (пользователь уже подтвердил)
+    if (window.executeBuilding) {
+        window.executeBuilding('time_generator', true, targetLevel, timeRequired);
         return;
     }
-    
+
     // Альтернативный метод через систему конструкций
     if (typeof window.startConstruction === 'function') {
         const success = await window.startConstruction('time_generator', null, true, targetLevel);
@@ -458,7 +462,7 @@ async function confirmGeneratorUpgrade(targetLevel) {
         }
         return;
     }
-    
+
     // Если ничего не сработало
     showNotification('❌ Ошибка системы строительства');
 }

@@ -442,21 +442,25 @@ async function confirmBlessingUpgrade(targetLevel) {
         }
     }
     
-    // Запускаем улучшение через систему строительства
-    if (window.startBuilding) {
-        window.startBuilding('blessing_tower', true); // true означает что это улучшение
+    // Рассчитываем время улучшения
+    const timeRequired = window.CONSTRUCTION_TIME?.getUpgradeTime ?
+        window.CONSTRUCTION_TIME.getUpgradeTime('blessing_tower', targetLevel) : 144 * targetLevel;
+
+    // Вызываем executeBuilding напрямую (пользователь уже подтвердил)
+    if (window.executeBuilding) {
+        window.executeBuilding('blessing_tower', true, targetLevel, timeRequired);
         return;
     }
-    
+
     // Альтернативный метод через систему конструкций
     if (typeof window.startConstruction === 'function') {
-        const success = await window.startConstruction('arcane_lab', null, true, targetLevel);
+        const success = await window.startConstruction('blessing_tower', null, true, targetLevel);
         if (success) {
             showNotification(`🔨 Начато улучшение до уровня ${targetLevel}`);
         }
         return;
     }
-    
+
     // Если ничего не сработало
     showNotification('❌ Ошибка системы строительства');
 }

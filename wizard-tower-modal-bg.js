@@ -444,12 +444,16 @@ async function confirmTowerUpgrade(targetLevel) {
         }
     }
     
-    // Запускаем улучшение через систему строительства
-    if (window.startBuilding) {
-        window.startBuilding('wizard_tower', true); // true означает что это улучшение
+    // Рассчитываем время улучшения
+    const timeRequired = window.CONSTRUCTION_TIME?.getUpgradeTime ?
+        window.CONSTRUCTION_TIME.getUpgradeTime('wizard_tower', targetLevel) : 144 * targetLevel;
+
+    // Вызываем executeBuilding напрямую (пользователь уже подтвердил)
+    if (window.executeBuilding) {
+        window.executeBuilding('wizard_tower', true, targetLevel, timeRequired);
         return;
     }
-    
+
     // Альтернативный метод через систему конструкций
     if (typeof window.startConstruction === 'function') {
         const success = await window.startConstruction('wizard_tower', null, true, targetLevel);
@@ -458,7 +462,7 @@ async function confirmTowerUpgrade(targetLevel) {
         }
         return;
     }
-    
+
     // Если ничего не сработало
     showNotification('❌ Ошибка системы строительства');
 }
