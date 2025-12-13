@@ -142,7 +142,9 @@ class DatabaseManager {
                 wallet_address: playerData.wallet_address || null, // TON кошелек
                 wallet_connected_at: playerData.wallet_connected_at || null, // Время подключения кошелька
                 current_season: playerData.current_season || 1, // Текущий сезон
-                season_league_rewards_claimed: playerData.season_league_rewards_claimed || [] // Полученные награды за лиги
+                season_league_rewards_claimed: playerData.season_league_rewards_claimed || [], // Полученные награды за лиги
+                unlocked_skins: playerData.unlocked_skins || [], // Разблокированные скины
+                wizard_skins: playerData.wizard_skins || {} // Выбранные скины для магов
             };
 
             // DEBUG: Логируем faction_changed перед отправкой в RPC (закомментировано)
@@ -303,7 +305,9 @@ class DatabaseManager {
                     settings: window.userData.settings,
                     welcome_shown: window.userData.welcome_shown,
                     daily_login: window.userData.daily_login,
-                    battle_energy: window.userData.battle_energy
+                    battle_energy: window.userData.battle_energy,
+                    unlocked_skins: window.userData.unlocked_skins,
+                    wizard_skins: window.userData.wizard_skins
                 };
                 await this.savePlayer(playerData);
             }
@@ -343,7 +347,9 @@ class DatabaseManager {
                     settings: window.userData.settings,
                     welcome_shown: window.userData.welcome_shown,
                     daily_login: window.userData.daily_login,
-                    battle_energy: window.userData.battle_energy
+                    battle_energy: window.userData.battle_energy,
+                    unlocked_skins: window.userData.unlocked_skins,
+                    wizard_skins: window.userData.wizard_skins
                 };
                 await this.savePlayer(playerData);
             }

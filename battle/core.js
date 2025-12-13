@@ -994,13 +994,14 @@ async function checkBattleEnd() {
                 // Сохраняем isFirstCompletion для передачи в showPvEResult
                 window.lastPvEWasFirstCompletion = isFirstCompletion;
 
-                // Проверяем разблокировку скина элементаля (только при первом прохождении босса)
+                // Проверяем разблокировку скина мага (только при первом прохождении босса-элементаля)
                 if (isFirstCompletion && level.type === 'miniboss' && typeof window.unlockSkin === 'function') {
+                    // Убийство элементаля открывает скин мага соответствующей стихии
                     const skinMap = {
-                        10: 'fire_elemental',    // Огненный Элементаль
-                        20: 'water_elemental',   // Водный Элементаль
-                        30: 'wind_elemental',    // Воздушный Элементаль
-                        40: 'earth_elemental'    // Земной Элементаль
+                        10: 'fire_default',     // Огненный Элементаль → Маг Огня
+                        20: 'water_default',    // Водный Элементаль → Маг Воды
+                        30: 'wind_default',     // Воздушный Элементаль → Маг Воздуха
+                        40: 'earth_default'     // Земной Элементаль → Маг Земли
                     };
 
                     const skinId = skinMap[window.currentPvELevel];
