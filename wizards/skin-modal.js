@@ -133,11 +133,52 @@ function showSkinModal(wizard) {
     overlay.appendChild(contentContainer);
     document.body.appendChild(overlay);
 
+    // Загружаем превью спрайтов
+    loadSkinPreviews(allSkinsOrdered);
+
     // Закрытие по клику вне окна
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay || e.target === darkLayer) {
             closeSkinModal();
         }
+    });
+}
+
+/**
+ * Загружает превью спрайтов на canvas
+ */
+function loadSkinPreviews(skinIds) {
+    skinIds.forEach(skinId => {
+        const skin = SKINS_CONFIG[skinId];
+        if (!skin) return;
+
+        const canvasId = `skin-preview-${skinId}`;
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const spriteConfig = skin.spriteConfig;
+
+        // Определяем путь к спрайту
+        let spritePath;
+        if (skin.isDefault) {
+            // Стандартные скины магов
+            spritePath = `images/wizards/${skin.faction}/idle.webp`;
+        } else {
+            // Скины элементалей
+            spritePath = `images/enemies/${spriteConfig}/idle.webp`;
+        }
+
+        // Загружаем изображение
+        const img = new Image();
+        img.onload = () => {
+            // Рисуем первый кадр (верхний левый угол сетки)
+            // Предполагаем размер кадра 256x256
+            const frameSize = 256;
+            ctx.clearRect(0, 0, 120, 120);
+            ctx.drawImage(img, 0, 0, frameSize, frameSize, 0, 0, 120, 120);
+        };
+        img.src = spritePath;
     });
 }
 
@@ -148,6 +189,7 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
     const borderColor = isCurrent ? '#4ade80' : (isUnlocked ? 'rgba(255, 215, 0, 0.5)' : 'rgba(150, 150, 150, 0.3)');
     const borderWidth = isCurrent ? '3px' : '2px';
     const bgColor = isUnlocked ? 'rgba(255, 215, 0, 0.1)' : 'rgba(100, 100, 100, 0.1)';
+    const canvasId = `skin-preview-${skinId}`;
 
     return `
         <div style="
@@ -175,11 +217,10 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 48px;
                 position: relative;
                 overflow: hidden;
             ">
-                ${skin.icon}
+                <canvas id="${canvasId}" width="120" height="120" style="width: 120px; height: 120px;"></canvas>
                 ${!isUnlocked ? `
                     <div style="
                         position: absolute;

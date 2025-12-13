@@ -244,6 +244,7 @@ class ModalSystem {
         document.querySelectorAll('.modal-container, .modal-overlay').forEach(el => el.remove());
         
         // 4. Удаляем модалки по специфичным ID (исключая библиотеку заклинаний и окно скинов)
+        const protectedModals = ['library-modal', 'spell-library-modal', 'library-fullscreen'];
         const modalIds = [
             'battle-setup-modal-container',
             'battle-setup-overlay',
@@ -257,8 +258,10 @@ class ModalSystem {
         ];
 
         modalIds.forEach(id => {
-            const element = document.getElementById(id);
-            if (element) element.remove();
+            if (!protectedModals.includes(id)) {
+                const element = document.getElementById(id);
+                if (element) element.remove();
+            }
         });
         
         // 5. Удаляем любые overlay элементы (кроме окна скинов и библиотеки заклинаний)
