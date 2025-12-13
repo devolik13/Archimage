@@ -90,6 +90,10 @@ async function selectFaction(faction) {
             // Автоматическая расстановка первого мага в первую позицию
             const initialFormation = ['wizard_1', null, null, null, null];
 
+            // Получаем telegram_id для обновления
+            const telegramId = window.dbManager.getTelegramId();
+            console.log('📝 Сохранение фракции для telegram_id:', telegramId);
+
             const { error } = await window.dbManager.supabase
                 .from('players')
                 .update({
@@ -101,9 +105,11 @@ async function selectFaction(faction) {
                     time_currency: 7200, // 5 дней стартового времени
                     welcome_shown: false
                 })
-                .eq('id', window.dbManager.currentPlayer.id);
+                .eq('telegram_id', telegramId);
 
             if (error) throw error;
+
+            console.log('✅ Фракция успешно сохранена в БД:', faction);
 
 
             // Обновляем локальные данные
