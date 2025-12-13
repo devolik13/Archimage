@@ -103,7 +103,8 @@
             death: 'images/enemies/troll/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
+            frameCount: 25, // 5×5 сетка
+            gridColumns: 5,
             animationSpeed: 0.10, // Медленнее - тролли тяжёлые
             scale: 0.35 // Тролли крупнее орков
         },
@@ -113,7 +114,8 @@
             death: 'images/enemies/cave_beast/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
+            frameCount: 25, // 5×5 сетка
+            gridColumns: 5,
             animationSpeed: 0.08, // Очень медленные - огромные
             scale: 0.40 // Пещерные звери крупнее троллей
         },
@@ -154,8 +156,9 @@
             death: 'images/enemies/air_elemental/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
+            frameCount: 25, // 5×5 сетка
+            gridColumns: 5,
+            animationSpeed: 0.12,
             scale: 0.45 // Размер для одной клетки
         },
         earth_elemental: {
@@ -164,8 +167,9 @@
             death: 'images/enemies/earth_elemental/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
+            frameCount: 25, // 5×5 сетка
+            gridColumns: 5,
+            animationSpeed: 0.12,
             scale: 0.45 // Размер для одной клетки
         },
         // Алиас для обратной совместимости с PvE конфигом (использует faction: "wind")
@@ -175,8 +179,9 @@
             death: 'images/enemies/air_elemental/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
+            frameCount: 25, // 5×5 сетка
+            gridColumns: 5,
+            animationSpeed: 0.12,
             scale: 0.45
         }
     };
