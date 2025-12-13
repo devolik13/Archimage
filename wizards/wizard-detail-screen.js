@@ -973,10 +973,8 @@ function setupWizardUI(wizardIndex, wizardStats) {
     `;
     skinBtn.onclick = () => {
         console.log('🎨 Нажата кнопка "Образ"');
-        const wizard = window.playerWizards[wizardIndex];
+        const wizard = window.userData.wizards[wizardIndex];
         console.log('🎨 Маг:', wizard);
-        console.log('🎨 showSkinModal доступна?', typeof showSkinModal);
-        console.log('🎨 window.showSkinModal доступна?', typeof window.showSkinModal);
         if (wizard && typeof window.showSkinModal === 'function') {
             window.showSkinModal(wizard);
         } else {

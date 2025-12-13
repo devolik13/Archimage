@@ -27,7 +27,7 @@ function showSkinModal(wizard) {
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.85);
-        z-index: 10000;
+        z-index: 10010;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -313,7 +313,7 @@ function showNotification(message, type = 'info') {
         border-radius: 8px;
         font-size: 14px;
         font-weight: bold;
-        z-index: 10001;
+        z-index: 10011;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         animation: slideDown 0.3s ease-out;
     `;

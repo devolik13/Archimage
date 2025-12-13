@@ -262,9 +262,11 @@ class ModalSystem {
             if (element) element.remove();
         });
         
-        // 5. Удаляем любые overlay элементы
+        // 5. Удаляем любые overlay элементы (кроме окна скинов)
         document.querySelectorAll('[id*="overlay"]').forEach(el => {
-            if (el.style.position === 'fixed') el.remove();
+            if (el.style.position === 'fixed' && el.id !== 'skin-modal-overlay') {
+                el.remove();
+            }
         });
         
         // 6. Убираем класс блокировки скролла
