@@ -415,12 +415,12 @@ function createWizardSlot(index) {
     	const level = wizard.level || 1;
     	const wizardFaction = wizard.faction || window.userData?.faction || 'fire';
     	slot.innerHTML = `
-    	    <img src="assets/icons/${wizardFaction}/wizard.png" 
-    	         style="width: 40px; height: 40px;" 
+    	    <img src="assets/icons/${wizardFaction}/wizard.png"
+    	         style="width: 40px; height: 40px;"
     	         onerror="this.outerHTML='<div>🧙‍♂️</div>'">
     	    <div style="font-size: 10px; position: absolute; bottom: 2px;">Ур.${level}</div>
     	`;
-        
+
         slot.onclick = () => {
             console.log(`🧙‍♂️ Открыть окно мага ${index}`);
             // Используем существующую функцию из script_wizards.js
@@ -430,26 +430,262 @@ function createWizardSlot(index) {
         };
     } else {
         slot.innerHTML = `
-            <div style="opacity: 0.3;">➕</div>
-            <div style="font-size: 9px; opacity: 0.5;">Пусто</div>
+            <div style="opacity: 0.5;">➕</div>
+            <div style="font-size: 9px; opacity: 0.7;">Нанять</div>
         `;
-        slot.style.opacity = '0.6';
+        slot.style.opacity = '0.8';
+        slot.style.cursor = 'pointer';
+
+        // Клик на пустой слот - открыть окно найма
+        slot.onclick = () => {
+            showHireWizardModal(index);
+        };
     }
     
     slot.onmouseover = () => {
-        if (wizard) {
-            slot.style.transform = 'scale(1.1)';
-            slot.style.borderColor = 'rgba(100, 200, 255, 0.6)';
-        }
+        slot.style.transform = 'scale(1.1)';
+        slot.style.borderColor = wizard ? 'rgba(100, 200, 255, 0.6)' : 'rgba(255, 215, 0, 0.6)';
     };
-    
+
     slot.onmouseout = () => {
         slot.style.transform = 'scale(1)';
         slot.style.borderColor = 'rgba(100, 200, 255, 0.3)';
     };
-    
+
     return slot;
 }
+
+// Показать окно найма мага
+function showHireWizardModal(slotIndex) {
+    const wizards = window.userData?.wizards || [];
+    const towerLevel = window.userData?.buildings?.wizard_tower?.level || 0;
+
+    // Требования уровня башни для каждого мага
+    const towerRequirements = {
+        0: 1,   // 1-й маг: башня 1 ур
+        1: 3,   // 2-й маг: башня 3 ур
+        2: 5,   // 3-й маг: башня 5 ур
+        3: 7,   // 4-й маг: башня 7 ур
+        4: 10   // 5-й маг: башня 10 ур
+    };
+
+    const requiredLevel = towerRequirements[slotIndex] || 1;
+    const canHire = towerLevel >= requiredLevel;
+
+    // Проверяем активный найм
+    const hasActiveHire = window.hasActiveConstruction && window.hasActiveConstruction('wizard');
+
+    // Время найма (минуты)
+    const hireTime = window.WIZARD_HIRE_TIME ? window.WIZARD_HIRE_TIME.getHireTime(slotIndex) : (30 + slotIndex * 30);
+
+    // Форматируем время
+    const formatTime = (minutes) => {
+        if (minutes < 60) return `${minutes} мин`;
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return mins > 0 ? `${hours} ч ${mins} мин` : `${hours} ч`;
+    };
+
+    // Создаём overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'hire-wizard-modal-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease-out;
+    `;
+
+    let content;
+
+    if (!canHire) {
+        // Условия НЕ выполнены
+        content = `
+            <div style="
+                background: linear-gradient(145deg, rgba(60, 30, 30, 0.95), rgba(40, 20, 20, 0.95));
+                border: 2px solid rgba(255, 100, 100, 0.5);
+                border-radius: 16px;
+                padding: 24px;
+                max-width: 350px;
+                text-align: center;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            ">
+                <h3 style="color: #ff6b6b; margin: 0 0 15px 0; font-size: 20px;">
+                    ⚠️ Найм недоступен
+                </h3>
+                <div style="
+                    background: rgba(0, 0, 0, 0.3);
+                    border-radius: 10px;
+                    padding: 15px;
+                    margin-bottom: 15px;
+                ">
+                    <p style="color: #ffd700; margin: 0 0 10px 0; font-size: 16px;">
+                        Для найма ${slotIndex + 1}-го мага требуется:
+                    </p>
+                    <p style="color: #ff6b6b; margin: 0; font-size: 18px; font-weight: bold;">
+                        🏯 Башня магов ${requiredLevel} уровня
+                    </p>
+                    <p style="color: #aaa; margin: 10px 0 0 0; font-size: 14px;">
+                        Текущий уровень: ${towerLevel || 'не построена'}
+                    </p>
+                </div>
+                <button onclick="closeHireWizardModal()" style="
+                    padding: 12px 30px;
+                    background: rgba(100, 100, 100, 0.5);
+                    border: 2px solid rgba(255, 255, 255, 0.3);
+                    border-radius: 8px;
+                    color: white;
+                    font-size: 14px;
+                    cursor: pointer;
+                ">Закрыть</button>
+            </div>
+        `;
+    } else if (hasActiveHire) {
+        // Уже идёт найм
+        content = `
+            <div style="
+                background: linear-gradient(145deg, rgba(60, 50, 30, 0.95), rgba(40, 35, 20, 0.95));
+                border: 2px solid rgba(255, 200, 100, 0.5);
+                border-radius: 16px;
+                padding: 24px;
+                max-width: 350px;
+                text-align: center;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            ">
+                <h3 style="color: #ffc107; margin: 0 0 15px 0; font-size: 20px;">
+                    ⏳ Найм в процессе
+                </h3>
+                <p style="color: #ddd; margin: 0 0 15px 0;">
+                    Уже идёт найм другого мага. Дождитесь завершения.
+                </p>
+                <button onclick="closeHireWizardModal()" style="
+                    padding: 12px 30px;
+                    background: rgba(100, 100, 100, 0.5);
+                    border: 2px solid rgba(255, 255, 255, 0.3);
+                    border-radius: 8px;
+                    color: white;
+                    font-size: 14px;
+                    cursor: pointer;
+                ">Закрыть</button>
+            </div>
+        `;
+    } else {
+        // Можно нанять!
+        const faction = window.userData?.faction || 'fire';
+        content = `
+            <div style="
+                background: linear-gradient(145deg, rgba(30, 50, 70, 0.95), rgba(20, 35, 50, 0.95));
+                border: 2px solid rgba(100, 200, 255, 0.5);
+                border-radius: 16px;
+                padding: 24px;
+                max-width: 380px;
+                text-align: center;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            ">
+                <h3 style="color: #4ade80; margin: 0 0 15px 0; font-size: 20px;">
+                    🧙‍♂️ Нанять мага
+                </h3>
+                <div style="
+                    background: rgba(0, 0, 0, 0.3);
+                    border-radius: 10px;
+                    padding: 15px;
+                    margin-bottom: 15px;
+                ">
+                    <img src="assets/icons/${faction}/wizard.png"
+                         style="width: 64px; height: 64px; margin-bottom: 10px;"
+                         onerror="this.outerHTML='<div style=\"font-size: 48px;\">🧙‍♂️</div>'">
+                    <p style="color: #ffd700; margin: 0 0 5px 0; font-size: 16px;">
+                        Маг #${slotIndex + 1}
+                    </p>
+                    <p style="color: #aaa; margin: 0; font-size: 13px;">
+                        Фракция: ${getFactionName(faction)}
+                    </p>
+                </div>
+                <div style="
+                    background: rgba(255, 215, 0, 0.1);
+                    border: 1px solid rgba(255, 215, 0, 0.3);
+                    border-radius: 8px;
+                    padding: 10px;
+                    margin-bottom: 15px;
+                ">
+                    <p style="color: #ffd700; margin: 0; font-size: 14px;">
+                        ⏱️ Время найма: <strong>${formatTime(hireTime)}</strong>
+                    </p>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button onclick="closeHireWizardModal()" style="
+                        padding: 12px 24px;
+                        background: rgba(100, 100, 100, 0.5);
+                        border: 2px solid rgba(255, 255, 255, 0.3);
+                        border-radius: 8px;
+                        color: white;
+                        font-size: 14px;
+                        cursor: pointer;
+                    ">Отмена</button>
+                    <button onclick="startHireFromModal(${slotIndex})" style="
+                        padding: 12px 24px;
+                        background: linear-gradient(145deg, rgba(74, 222, 128, 0.8), rgba(34, 197, 94, 0.8));
+                        border: 2px solid rgba(74, 222, 128, 0.8);
+                        border-radius: 8px;
+                        color: white;
+                        font-size: 14px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Нанять</button>
+                </div>
+            </div>
+        `;
+    }
+
+    overlay.innerHTML = content;
+
+    // Закрытие по клику на overlay
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            closeHireWizardModal();
+        }
+    });
+
+    document.body.appendChild(overlay);
+}
+
+// Закрыть окно найма
+function closeHireWizardModal() {
+    const overlay = document.getElementById('hire-wizard-modal-overlay');
+    if (overlay) overlay.remove();
+}
+
+// Начать найм из модалки
+async function startHireFromModal(slotIndex) {
+    closeHireWizardModal();
+
+    if (typeof window.startWizardHire === 'function') {
+        const success = await window.startWizardHire(slotIndex);
+        if (success) {
+            showNotification('🧙‍♂️ Начат найм мага!');
+            // Обновляем UI города
+            if (typeof window.switchToCityView === 'function') {
+                window.switchToCityView();
+            }
+        } else {
+            showNotification('❌ Не удалось начать найм');
+        }
+    } else {
+        showNotification('❌ Система найма недоступна');
+    }
+}
+
+// Экспорт функций
+window.showHireWizardModal = showHireWizardModal;
+window.closeHireWizardModal = closeHireWizardModal;
+window.startHireFromModal = startHireFromModal;
 
 // Создание пустого слота
 function createEmptySlot() {
