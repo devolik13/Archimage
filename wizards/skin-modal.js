@@ -16,7 +16,7 @@ function showSkinModal(wizard) {
     currentWizardForSkin = wizard;
     const currentSkin = getWizardSkin(wizard.id, wizard.faction);
 
-    // Создаём overlay
+    // Создаём overlay с фоновым изображением (как в adventure-hub)
     const overlay = document.createElement('div');
     overlay.id = 'skin-modal-overlay';
     overlay.style.cssText = `
@@ -25,10 +25,7 @@ function showSkinModal(wizard) {
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('assets/ui/adventure/adventure_hub.webp');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
+        background: rgba(0, 0, 0, 0.85);
         z-index: 10010;
         display: flex;
         align-items: center;
@@ -58,69 +55,98 @@ function showSkinModal(wizard) {
         }
     }
 
-    // Создаём контейнер с контентом
-    const contentContainer = document.createElement('div');
-    contentContainer.style.cssText = `
-        background: rgba(0, 0, 0, 0.4);
-        border: 3px solid rgba(255, 215, 0, 0.5);
-        border-radius: 16px;
-        padding: 24px;
-        max-width: 90%;
-        max-height: 85vh;
-        overflow-y: auto;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        backdrop-filter: blur(10px);
-        animation: scaleIn 0.3s ease-out;
-        position: relative;
-        z-index: 1;
-    `;
+    // Создаём структуру с фоновым изображением (паттерн adventure-hub)
+    overlay.innerHTML = `
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <!-- Фоновое изображение -->
+            <img id="skin-modal-bg" src="assets/ui/adventure/adventure_hub.webp" alt="Фон" style="
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+            ">
 
-    contentContainer.innerHTML = `
-        <!-- Заголовок -->
-        <div style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
-        ">
-            <div>
-                <h2 style="margin: 0; color: #ffd700; font-size: 22px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
-                    🎨 Выбор облика мага
-                </h2>
-                <p style="margin: 5px 0 0 0; color: #c9a961; font-size: 14px;">
-                    Получено скинов: ${unlockedCount} / ${allSkinsOrdered.length}
-                </p>
-            </div>
-            <button onclick="closeSkinModal()" style="
-                background: rgba(0, 0, 0, 0.7);
-                border: 2px solid rgba(255, 255, 255, 0.3);
-                border-radius: 50%;
-                color: white;
-                font-size: 24px;
-                width: 40px;
-                height: 40px;
-                cursor: pointer;
+            <!-- Контейнер для контента поверх фона -->
+            <div id="skin-modal-content" style="
+                position: absolute;
                 display: flex;
+                flex-direction: column;
                 align-items: center;
                 justify-content: center;
-            ">×</button>
-        </div>
+                padding: 20px;
+            ">
+                <!-- Прозрачная панель с контентом -->
+                <div style="
+                    background: rgba(0, 0, 0, 0.3);
+                    border: 2px solid rgba(255, 215, 0, 0.4);
+                    border-radius: 16px;
+                    padding: 20px;
+                    max-height: 80vh;
+                    overflow-y: auto;
+                    backdrop-filter: blur(8px);
+                    animation: scaleIn 0.3s ease-out;
+                ">
+                    <!-- Заголовок -->
+                    <div style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 15px;
+                        padding-bottom: 12px;
+                        border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+                    ">
+                        <div>
+                            <h2 style="margin: 0; color: #ffd700; font-size: 20px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
+                                🎨 Выбор облика мага
+                            </h2>
+                            <p style="margin: 5px 0 0 0; color: #c9a961; font-size: 13px;">
+                                Получено скинов: ${unlockedCount} / ${allSkinsOrdered.length}
+                            </p>
+                        </div>
+                        <button onclick="closeSkinModal()" style="
+                            background: rgba(0, 0, 0, 0.5);
+                            border: 2px solid rgba(255, 255, 255, 0.3);
+                            border-radius: 50%;
+                            color: white;
+                            font-size: 22px;
+                            width: 36px;
+                            height: 36px;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">×</button>
+                    </div>
 
-        <!-- Сетка скинов -->
-        <div style="
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-        ">
-            ${skinsHTML}
+                    <!-- Сетка скинов -->
+                    <div style="
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 12px;
+                        justify-content: center;
+                    ">
+                        ${skinsHTML}
+                    </div>
+                </div>
+            </div>
         </div>
     `;
 
-    overlay.appendChild(contentContainer);
     document.body.appendChild(overlay);
+
+    // Подстраиваем размер контента под фоновое изображение
+    const bgImg = document.getElementById('skin-modal-bg');
+    const contentContainer = document.getElementById('skin-modal-content');
+
+    const setupContentSize = () => {
+        if (bgImg && contentContainer) {
+            const rect = bgImg.getBoundingClientRect();
+            contentContainer.style.width = rect.width + 'px';
+            contentContainer.style.height = rect.height + 'px';
+        }
+    };
+
+    bgImg.onload = setupContentSize;
+    if (bgImg.complete) setupContentSize();
 
     // Загружаем превью спрайтов
     loadSkinPreviews(allSkinsOrdered);
