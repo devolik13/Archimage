@@ -3,114 +3,91 @@
 
 /**
  * Конфигурация доступных скинов
+ *
+ * Логика разблокировки:
+ * - Образ текущей фракции мага всегда доступен
+ * - Образы других фракций открываются за убийство соответствующих элементалей:
+ *   - Огненный элементаль (уровень 10) → образ Мага Огня
+ *   - Водный элементаль (уровень 20) → образ Мага Воды
+ *   - Воздушный элементаль (уровень 30) → образ Мага Воздуха
+ *   - Земной элементаль (уровень 40) → образ Мага Земли
+ * - Природа и Яд пока без боссов (только для своей фракции)
  */
 const SKINS_CONFIG = {
-    // Стандартные скины фракций (всегда доступны для своей фракции)
     fire_default: {
         id: 'fire_default',
         name: 'Маг Огня',
-        description: 'Стандартный облик',
+        description: 'Облик повелителя пламени',
         icon: '🔥',
         faction: 'fire',
         spriteConfig: 'fire',
-        unlockType: 'default',
-        isDefault: true
-    },
-    water_default: {
-        id: 'water_default',
-        name: 'Маг Воды',
-        description: 'Стандартный облик',
-        icon: '💧',
-        faction: 'water',
-        spriteConfig: 'water',
-        unlockType: 'default',
-        isDefault: true
-    },
-    wind_default: {
-        id: 'wind_default',
-        name: 'Маг Воздуха',
-        description: 'Стандартный облик',
-        icon: '💨',
-        faction: 'wind',
-        spriteConfig: 'wind',
-        unlockType: 'default',
-        isDefault: true
-    },
-    earth_default: {
-        id: 'earth_default',
-        name: 'Маг Земли',
-        description: 'Стандартный облик',
-        icon: '🪨',
-        faction: 'earth',
-        spriteConfig: 'earth',
-        unlockType: 'default',
-        isDefault: true
-    },
-    nature_default: {
-        id: 'nature_default',
-        name: 'Маг Природы',
-        description: 'Стандартный облик',
-        icon: '🌿',
-        faction: 'nature',
-        spriteConfig: 'nature',
-        unlockType: 'default',
-        isDefault: true
-    },
-    poison_default: {
-        id: 'poison_default',
-        name: 'Маг Яда',
-        description: 'Стандартный облик',
-        icon: '☠️',
-        faction: 'poison',
-        spriteConfig: 'poison',
-        unlockType: 'default',
-        isDefault: true
-    },
-
-    // Скины элементалей (открываются за убийство боссов)
-    fire_elemental: {
-        id: 'fire_elemental',
-        name: 'Огненный Элементаль',
-        description: 'Облик повелителя огня',
-        icon: '🔥✨',
-        spriteConfig: 'fire_elemental',
+        isDefault: true,
+        // Открывается убийством Огненного Элементаля или по умолчанию для магов огня
         unlockType: 'boss',
         unlockBoss: 'fire_elemental',
         unlockLevel: 10,
         unlockText: 'Победите Огненного Элементаля (уровень 10)'
     },
-    water_elemental: {
-        id: 'water_elemental',
-        name: 'Водный Элементаль',
-        description: 'Облик повелителя воды',
-        icon: '💧✨',
-        spriteConfig: 'water_elemental',
+    water_default: {
+        id: 'water_default',
+        name: 'Маг Воды',
+        description: 'Облик повелителя волн',
+        icon: '💧',
+        faction: 'water',
+        spriteConfig: 'water',
+        isDefault: true,
         unlockType: 'boss',
         unlockBoss: 'water_elemental',
         unlockLevel: 20,
         unlockText: 'Победите Водного Элементаля (уровень 20)'
     },
-    wind_elemental: {
-        id: 'wind_elemental',
-        name: 'Воздушный Элементаль',
-        description: 'Облик повелителя воздуха',
-        icon: '💨✨',
-        spriteConfig: 'air_elemental', // Используем air_elemental спрайты
+    wind_default: {
+        id: 'wind_default',
+        name: 'Маг Воздуха',
+        description: 'Облик повелителя ветров',
+        icon: '💨',
+        faction: 'wind',
+        spriteConfig: 'wind',
+        isDefault: true,
         unlockType: 'boss',
         unlockBoss: 'wind_elemental',
         unlockLevel: 30,
         unlockText: 'Победите Воздушного Элементаля (уровень 30)'
     },
-    earth_elemental: {
-        id: 'earth_elemental',
-        name: 'Земной Элементаль',
-        description: 'Облик повелителя земли',
-        icon: '🪨✨',
-        spriteConfig: 'earth_elemental',
+    earth_default: {
+        id: 'earth_default',
+        name: 'Маг Земли',
+        description: 'Облик повелителя камня',
+        icon: '🪨',
+        faction: 'earth',
+        spriteConfig: 'earth',
+        isDefault: true,
         unlockType: 'boss',
         unlockBoss: 'earth_elemental',
         unlockLevel: 40,
         unlockText: 'Победите Земного Элементаля (уровень 40)'
+    },
+    nature_default: {
+        id: 'nature_default',
+        name: 'Маг Природы',
+        description: 'Облик хранителя леса',
+        icon: '🌿',
+        faction: 'nature',
+        spriteConfig: 'nature',
+        isDefault: true,
+        unlockType: 'faction_only', // Пока только для своей фракции
+        unlockText: 'Доступен только магам Природы'
+    },
+    poison_default: {
+        id: 'poison_default',
+        name: 'Маг Яда',
+        description: 'Облик мастера отравы',
+        icon: '☠️',
+        faction: 'poison',
+        spriteConfig: 'poison',
+        isDefault: true,
+        unlockType: 'faction_only', // Пока только для своей фракции
+        unlockText: 'Доступен только магам Яда'
     }
 };
 
@@ -121,12 +98,17 @@ function isSkinUnlocked(skinId, wizardFaction = null) {
     const skin = SKINS_CONFIG[skinId];
     if (!skin) return false;
 
-    // Стандартные скины всегда разблокированы для своей фракции
+    // 1. Образ своей фракции всегда доступен
     if (skin.isDefault && wizardFaction && skin.faction === wizardFaction) {
         return true;
     }
 
-    // Проверяем разблокированные скины в userData
+    // 2. Для faction_only скинов - только своя фракция
+    if (skin.unlockType === 'faction_only') {
+        return wizardFaction && skin.faction === wizardFaction;
+    }
+
+    // 3. Проверяем разблокированные скины в userData (убитые боссы)
     const unlockedSkins = window.userData?.unlocked_skins || [];
     return unlockedSkins.includes(skinId);
 }

@@ -307,20 +307,14 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
     `;
 }
 
-// Конфигурация анимаций для скинов
+// Конфигурация анимаций для скинов магов
 const SKIN_ANIMATION_CONFIG = {
-    // Маги - большинство 8 кадров горизонтально, water - 5x5 сетка
     fire: { frameCount: 8, gridColumns: null },
     water: { frameCount: 25, gridColumns: 5 },
     wind: { frameCount: 8, gridColumns: null },
     earth: { frameCount: 8, gridColumns: null },
     nature: { frameCount: 8, gridColumns: null },
-    poison: { frameCount: 8, gridColumns: null },
-    // Элементали
-    fire_elemental: { frameCount: 8, gridColumns: null },
-    water_elemental: { frameCount: 25, gridColumns: 5 },
-    air_elemental: { frameCount: 25, gridColumns: 5 },
-    earth_elemental: { frameCount: 25, gridColumns: 5 }
+    poison: { frameCount: 8, gridColumns: null }
 };
 
 // Хранилище для текущей анимации превью
