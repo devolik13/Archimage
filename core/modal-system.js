@@ -243,7 +243,7 @@ class ModalSystem {
         // 3. Удаляем все элементы с классами модалок
         document.querySelectorAll('.modal-container, .modal-overlay').forEach(el => el.remove());
         
-        // 4. Удаляем модалки по специфичным ID
+        // 4. Удаляем модалки по специфичным ID (исключая библиотеку заклинаний и окно скинов)
         const modalIds = [
             'battle-setup-modal-container',
             'battle-setup-overlay',
@@ -252,11 +252,10 @@ class ModalSystem {
             'battle-field-modal',
             'battle-field-fullscreen-container',
             'wizard-hire-modal',
-            'library-modal',
-            'spell-library-modal',
             'blessing-tower-modal'
+            // Исключено: 'library-modal', 'spell-library-modal', 'library-fullscreen' - библиотека сама управляет закрытием
         ];
-        
+
         modalIds.forEach(id => {
             const element = document.getElementById(id);
             if (element) element.remove();

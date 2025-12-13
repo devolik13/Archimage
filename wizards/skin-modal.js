@@ -8,7 +8,6 @@ let selectedSkinPreview = null;
  * Показывает модальное окно выбора скина
  */
 function showSkinModal(wizard) {
-    console.log('🎨 showSkinModal вызвана', wizard);
     if (!wizard) {
         console.error('❌ Маг не передан в showSkinModal');
         return;
@@ -58,14 +57,15 @@ function showSkinModal(wizard) {
 
     overlay.innerHTML = `
         <div style="
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border: 3px solid #4a5568;
+            background: rgba(0, 0, 0, 0.85);
+            border: 3px solid rgba(255, 215, 0, 0.3);
             border-radius: 16px;
             padding: 24px;
             max-width: 90%;
             max-height: 85%;
             overflow-y: auto;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
             animation: scaleIn 0.3s ease-out;
         ">
             <!-- Заголовок -->
@@ -75,20 +75,20 @@ function showSkinModal(wizard) {
                 align-items: center;
                 margin-bottom: 20px;
                 padding-bottom: 15px;
-                border-bottom: 2px solid #4a5568;
+                border-bottom: 2px solid rgba(255, 215, 0, 0.3);
             ">
                 <div>
-                    <h2 style="margin: 0; color: #fff; font-size: 22px;">
+                    <h2 style="margin: 0; color: #ffd700; font-size: 22px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
                         🎨 Выбор облика мага
                     </h2>
-                    <p style="margin: 5px 0 0 0; color: #aaa; font-size: 14px;">
+                    <p style="margin: 5px 0 0 0; color: #c9a961; font-size: 14px;">
                         Получено скинов: ${unlockedCount} / ${allSkinsOrdered.length}
                     </p>
                 </div>
                 <button onclick="closeSkinModal()" style="
-                    background: #4a5568;
-                    border: none;
-                    border-radius: 8px;
+                    background: rgba(0, 0, 0, 0.7);
+                    border: 2px solid rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
                     color: white;
                     font-size: 24px;
                     width: 40px;
@@ -126,13 +126,14 @@ function showSkinModal(wizard) {
  * Создаёт карточку скина
  */
 function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
-    const borderColor = isCurrent ? '#4ade80' : (isUnlocked ? '#4a5568' : '#2d3748');
+    const borderColor = isCurrent ? '#4ade80' : (isUnlocked ? 'rgba(255, 215, 0, 0.5)' : 'rgba(150, 150, 150, 0.3)');
     const borderWidth = isCurrent ? '3px' : '2px';
+    const bgColor = isUnlocked ? 'rgba(255, 215, 0, 0.1)' : 'rgba(100, 100, 100, 0.1)';
 
     return `
         <div style="
             width: 150px;
-            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            background: ${bgColor};
             border: ${borderWidth} solid ${borderColor};
             border-radius: 12px;
             padding: 12px;
@@ -140,6 +141,7 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
             cursor: ${isUnlocked ? 'pointer' : 'default'};
             transition: all 0.3s;
             position: relative;
+            backdrop-filter: blur(5px);
         " onclick="${isUnlocked ? `selectSkin('${skinId}')` : ''}"
            onmouseover="this.style.transform='scale(1.05)'"
            onmouseout="this.style.transform='scale(1)'">
@@ -190,10 +192,11 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
 
             <!-- Название -->
             <div style="
-                color: ${isUnlocked ? '#fff' : '#888'};
+                color: ${isUnlocked ? '#ffd700' : '#888'};
                 font-size: 14px;
                 font-weight: bold;
                 margin-bottom: 5px;
+                text-shadow: ${isUnlocked ? '0 0 5px rgba(255, 215, 0, 0.3)' : 'none'};
             ">${skin.name}</div>
 
             <!-- Статус/Кнопка -->
@@ -202,16 +205,16 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
                     <button onclick="event.stopPropagation(); applySkin('${skinId}')" style="
                         width: 100%;
                         padding: 6px 12px;
-                        background: #4ade80;
+                        background: rgba(255, 215, 0, 0.8);
                         border: none;
                         border-radius: 6px;
-                        color: white;
+                        color: #000;
                         font-size: 12px;
                         font-weight: bold;
                         cursor: pointer;
                         transition: background 0.3s;
-                    " onmouseover="this.style.background='#22c55e'"
-                       onmouseout="this.style.background='#4ade80'">
+                    " onmouseover="this.style.background='rgba(255, 215, 0, 1)'"
+                       onmouseout="this.style.background='rgba(255, 215, 0, 0.8)'">
                         Применить
                     </button>
                 ` : `
@@ -244,8 +247,97 @@ function selectSkin(skinId) {
 
     selectedSkinPreview = skinId;
 
-    // TODO: Показать увеличенное превью с idle анимацией
-    console.log(`👁️ Превью скина: ${skin.name}`);
+    // Создаём overlay для превью
+    const previewOverlay = document.createElement('div');
+    previewOverlay.id = 'skin-preview-overlay';
+    previewOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 10020;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease-out;
+    `;
+
+    previewOverlay.innerHTML = `
+        <div style="
+            background: rgba(0, 0, 0, 0.9);
+            border: 3px solid rgba(255, 215, 0, 0.5);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            text-align: center;
+            backdrop-filter: blur(15px);
+        ">
+            <h3 style="
+                color: #ffd700;
+                font-size: 24px;
+                margin: 0 0 20px 0;
+                text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            ">${skin.name}</h3>
+
+            <div style="
+                width: 300px;
+                height: 300px;
+                margin: 0 auto 20px;
+                background: rgba(255, 215, 0, 0.05);
+                border: 2px solid rgba(255, 215, 0, 0.2);
+                border-radius: 15px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 120px;
+            ">${skin.icon}</div>
+
+            ${skin.description ? `
+                <p style="
+                    color: #c9a961;
+                    font-size: 16px;
+                    margin: 0 0 20px 0;
+                ">${skin.description}</p>
+            ` : ''}
+
+            <button onclick="closeSkinPreview()" style="
+                padding: 10px 30px;
+                background: rgba(255, 215, 0, 0.2);
+                border: 2px solid rgba(255, 215, 0, 0.5);
+                border-radius: 8px;
+                color: #ffd700;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s;
+            " onmouseover="this.style.background='rgba(255, 215, 0, 0.3)'"
+               onmouseout="this.style.background='rgba(255, 215, 0, 0.2)'">
+                Закрыть
+            </button>
+        </div>
+    `;
+
+    // Закрытие по клику вне окна
+    previewOverlay.addEventListener('click', (e) => {
+        if (e.target === previewOverlay) {
+            closeSkinPreview();
+        }
+    });
+
+    document.body.appendChild(previewOverlay);
+}
+
+/**
+ * Закрывает превью скина
+ */
+function closeSkinPreview() {
+    const previewOverlay = document.getElementById('skin-preview-overlay');
+    if (previewOverlay) {
+        previewOverlay.remove();
+    }
+    selectedSkinPreview = null;
 }
 
 /**
@@ -354,3 +446,4 @@ window.showSkinModal = showSkinModal;
 window.closeSkinModal = closeSkinModal;
 window.selectSkin = selectSkin;
 window.applySkin = applySkin;
+window.closeSkinPreview = closeSkinPreview;
