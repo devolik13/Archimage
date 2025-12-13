@@ -99,7 +99,9 @@ BEGIN
             WHEN p_data ? 'wizard_skins' AND p_data->'wizard_skins' IS NOT NULL
             THEN p_data->'wizard_skins'
             ELSE wizard_skins
-        END
+        END,
+        -- Welcome flag
+        welcome_shown = COALESCE((p_data->>'welcome_shown')::BOOLEAN, welcome_shown)
     WHERE telegram_id = p_telegram_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

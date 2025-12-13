@@ -84,7 +84,7 @@ async function selectFaction(faction) {
         time_generator: { level: 1, building_id: 'time_generator' }
     };
 
-    // Сохраняем ВСЁ в Supabase
+    // Сохраняем ВСЁ в Supabase через RPC (обходит RLS)
     if (window.dbManager && window.dbManager.currentPlayer) {
         try {
             // Автоматическая расстановка первого мага в первую позицию
@@ -94,22 +94,23 @@ async function selectFaction(faction) {
             const telegramId = window.dbManager.getTelegramId();
             console.log('📝 Сохранение фракции для telegram_id:', telegramId);
 
-            const { error } = await window.dbManager.supabase
-                .from('players')
-                .update({
+            // Используем RPC функцию update_player_safe (SECURITY DEFINER обходит RLS)
+            const { error } = await window.dbManager.supabase.rpc('update_player_safe', {
+                p_telegram_id: telegramId,
+                p_data: {
                     faction: faction,
                     wizards: initialWizards,
                     spells: initialSpells,
                     formation: initialFormation,
                     buildings: initialBuildings,
-                    time_currency: 7200, // 5 дней стартового времени
+                    time_currency: 7200,
                     welcome_shown: false
-                })
-                .eq('telegram_id', telegramId);
+                }
+            });
 
             if (error) throw error;
 
-            console.log('✅ Фракция успешно сохранена в БД:', faction);
+            console.log('✅ Фракция успешно сохранена в БД через RPC:', faction);
 
 
             // Обновляем локальные данные
