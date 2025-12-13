@@ -63,6 +63,10 @@
                 
                 for (let i = 0; i < dropsCount; i++) {
                     setTimeout(() => {
+                        // Проверяем что контейнер и текстуры валидны
+                        if (!effectsContainer || effectsContainer.destroyed) return;
+                        if (!dropTextures.every(t => t && t.baseTexture && t.baseTexture.valid)) return;
+
                         createIceDrop(
                             cell.x + cell.width / 2 + (Math.random() - 0.5) * cell.width * 0.6,
                             cell.y - 100 - Math.random() * 200, // Стартуют выше экрана
@@ -76,10 +80,13 @@
             
             // Эффект замерзания земли
             setTimeout(() => {
+                // Проверяем что контейнер ещё существует
+                if (!effectsContainer || effectsContainer.destroyed) return;
+
                 targetPositions.forEach(position => {
                     const targetCol = casterType === 'player' ? 0 : 5;
                     const cell = gridCells[targetCol]?.[position];
-                    if (cell) {
+                    if (cell && typeof cell.x === 'number') {
                         createFrostGround(cell);
                     }
                 });
@@ -169,11 +176,15 @@
         
         // Эффект замерзшей земли
         function createFrostGround(cell) {
+            // Проверяем что контейнер и данные ячейки валидны
+            if (!effectsContainer || effectsContainer.destroyed) return;
+            if (!cell || typeof cell.x !== 'number' || typeof cell.y !== 'number') return;
+
             const frost = new PIXI.Graphics();
             frost.beginFill(0x88ccff, 0.3);
             frost.drawRect(cell.x, cell.y, cell.width, cell.height);
             frost.endFill();
-            
+
             effectsContainer.addChild(frost);
             
             // Исчезновение
