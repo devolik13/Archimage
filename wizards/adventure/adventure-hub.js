@@ -101,7 +101,21 @@ function setupAdventureChapters() {
                 closeAdventureHub();
                 setTimeout(() => {
                     if (typeof window.showAdventureMap === 'function') {
-                        window.showAdventureMap('1-10');
+                        // Определяем диапазон карты на основе прогресса игрока
+                        const maxLevel = window.userData?.pve_progress?.maxLevel || 1;
+                        let mapRange = '1-10';
+
+                        if (maxLevel >= 41) {
+                            mapRange = '41-50';
+                        } else if (maxLevel >= 31) {
+                            mapRange = '31-40';
+                        } else if (maxLevel >= 21) {
+                            mapRange = '21-30';
+                        } else if (maxLevel >= 11) {
+                            mapRange = '11-20';
+                        }
+
+                        window.showAdventureMap(mapRange);
                     }
                 }, 300);
             }

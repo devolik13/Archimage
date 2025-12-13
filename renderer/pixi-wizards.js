@@ -517,7 +517,7 @@
         // Fallback на простую графику
         if (!sprite) {
             sprite = new PIXI.Graphics();
-            
+
             // Цвет зависит от фракции
             const factionColors = {
                 nature: 0x4ade80,
@@ -527,11 +527,11 @@
                 wind: 0x06b6d4,
                 poison: 0xa855f7
             };
-            
-            const color = type === 'player' ? 
-                (factionColors[faction] || 0x4ade80) : 
+
+            const color = type === 'player' ?
+                (factionColors[faction] || 0x4ade80) :
                 0xef4444;
-            
+
             sprite.beginFill(color);
             sprite.drawCircle(0, 0, 15 * scale);
             sprite.endFill();
@@ -540,7 +540,14 @@
             sprite.drawCircle(5 * scale, -5 * scale, 5 * scale);
             sprite.endFill();
         }
-        
+
+        // Проверяем что спрайт и контейнер валидны после async операций
+        if (!sprite || sprite.destroyed || !container || container.destroyed) {
+            console.warn(`⚠️ Спрайт или контейнер уничтожен до завершения создания: ${key}`);
+            creatingSprites.delete(key);
+            return null;
+        }
+
         sprite.x = cellData.x + cellData.width / 2;
         sprite.y = cellData.y + cellData.height / 2;
 
