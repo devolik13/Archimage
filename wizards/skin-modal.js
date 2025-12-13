@@ -25,7 +25,10 @@ function showSkinModal(wizard) {
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.85);
+        background-image: url('assets/ui/adventure/adventure_hub.webp');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         z-index: 10010;
         display: flex;
         align-items: center;
@@ -55,7 +58,22 @@ function showSkinModal(wizard) {
         }
     }
 
-    overlay.innerHTML = `
+    // Создаём затемняющий слой
+    const darkLayer = document.createElement('div');
+    darkLayer.style.cssText = `
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        pointer-events: none;
+    `;
+    overlay.appendChild(darkLayer);
+
+    // Создаём контейнер с контентом
+    const contentContainer = document.createElement('div');
+    contentContainer.innerHTML = `
         <div style="
             background: rgba(0, 0, 0, 0.85);
             border: 3px solid rgba(255, 215, 0, 0.3);
@@ -112,11 +130,12 @@ function showSkinModal(wizard) {
         </div>
     `;
 
+    overlay.appendChild(contentContainer);
     document.body.appendChild(overlay);
 
     // Закрытие по клику вне окна
     overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
+        if (e.target === overlay || e.target === darkLayer) {
             closeSkinModal();
         }
     });

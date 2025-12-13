@@ -261,9 +261,10 @@ class ModalSystem {
             if (element) element.remove();
         });
         
-        // 5. Удаляем любые overlay элементы (кроме окна скинов)
+        // 5. Удаляем любые overlay элементы (кроме окна скинов и библиотеки заклинаний)
+        const protectedOverlays = ['skin-modal-overlay', 'skin-preview-overlay', 'spell-info-overlay'];
         document.querySelectorAll('[id*="overlay"]').forEach(el => {
-            if (el.style.position === 'fixed' && el.id !== 'skin-modal-overlay') {
+            if (el.style.position === 'fixed' && !protectedOverlays.includes(el.id)) {
                 el.remove();
             }
         });
