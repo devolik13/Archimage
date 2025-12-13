@@ -307,6 +307,25 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
     `;
 }
 
+// Конфигурация анимаций для скинов
+const SKIN_ANIMATION_CONFIG = {
+    // Маги - большинство 8 кадров горизонтально, water - 5x5 сетка
+    fire: { frameCount: 8, gridColumns: null },
+    water: { frameCount: 25, gridColumns: 5 },
+    wind: { frameCount: 8, gridColumns: null },
+    earth: { frameCount: 8, gridColumns: null },
+    nature: { frameCount: 8, gridColumns: null },
+    poison: { frameCount: 8, gridColumns: null },
+    // Элементали
+    fire_elemental: { frameCount: 8, gridColumns: null },
+    water_elemental: { frameCount: 25, gridColumns: 5 },
+    air_elemental: { frameCount: 25, gridColumns: 5 },
+    earth_elemental: { frameCount: 25, gridColumns: 5 }
+};
+
+// Хранилище для текущей анимации превью
+let skinPreviewAnimationId = null;
+
 /**
  * Выбирает скин (показывает превью)
  */
@@ -359,16 +378,20 @@ function selectSkin(skinId) {
                     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 15px rgba(255, 215, 0, 0.6);
                 ">${skin.name}</h3>
 
-                <!-- Превью спрайта -->
+                <!-- Превью спрайта с рамкой -->
                 <div style="
-                    width: 300px;
-                    height: 300px;
+                    width: 280px;
+                    height: 280px;
+                    border: 4px solid #ffd700;
+                    border-radius: 12px;
+                    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), inset 0 0 30px rgba(0, 0, 0, 0.5);
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     overflow: hidden;
+                    background: rgba(0, 0, 0, 0.3);
                 ">
-                    <canvas id="${previewCanvasId}" width="300" height="300" style="width: 300px; height: 300px;"></canvas>
+                    <canvas id="${previewCanvasId}" width="256" height="256" style="width: 256px; height: 256px;"></canvas>
                 </div>
 
                 ${skin.description ? `
@@ -424,33 +447,79 @@ function selectSkin(skinId) {
     bgImg.onload = setupContentSize;
     if (bgImg.complete) setupContentSize();
 
-    // Загружаем спрайт в canvas
-    const canvas = document.getElementById(previewCanvasId);
-    if (canvas) {
-        const ctx = canvas.getContext('2d');
-        let spritePath;
-        if (skin.isDefault) {
-            spritePath = `images/wizards/${skin.faction}/idle.webp`;
-        } else {
-            spritePath = `images/enemies/${skin.spriteConfig}/idle.webp`;
-        }
+    // Запускаем анимированное превью
+    startSkinPreviewAnimation(skin, previewCanvasId);
+}
 
-        const img = new Image();
-        img.onload = () => {
-            const frameSize = 256;
-            ctx.clearRect(0, 0, 300, 300);
-            // Центрируем и увеличиваем спрайт
-            const offset = (300 - 256) / 2;
-            ctx.drawImage(img, 0, 0, frameSize, frameSize, offset, offset, 256, 256);
-        };
-        img.src = spritePath;
+/**
+ * Запускает анимацию превью скина
+ */
+function startSkinPreviewAnimation(skin, canvasId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+
+    // Определяем путь к спрайту
+    let spritePath;
+    let animConfig;
+
+    if (skin.isDefault) {
+        spritePath = `images/wizards/${skin.faction}/idle.webp`;
+        animConfig = SKIN_ANIMATION_CONFIG[skin.faction] || { frameCount: 8, gridColumns: null };
+    } else {
+        spritePath = `images/enemies/${skin.spriteConfig}/idle.webp`;
+        animConfig = SKIN_ANIMATION_CONFIG[skin.spriteConfig] || { frameCount: 8, gridColumns: null };
     }
+
+    const frameSize = 256;
+    const { frameCount, gridColumns } = animConfig;
+    let currentFrame = 0;
+
+    const img = new Image();
+    img.onload = () => {
+        // Функция отрисовки кадра
+        const drawFrame = () => {
+            ctx.clearRect(0, 0, 256, 256);
+
+            let srcX, srcY;
+            if (gridColumns) {
+                // Сетка (например 5x5)
+                const col = currentFrame % gridColumns;
+                const row = Math.floor(currentFrame / gridColumns);
+                srcX = col * frameSize;
+                srcY = row * frameSize;
+            } else {
+                // Горизонтальная полоса
+                srcX = currentFrame * frameSize;
+                srcY = 0;
+            }
+
+            ctx.drawImage(img, srcX, srcY, frameSize, frameSize, 0, 0, 256, 256);
+
+            currentFrame = (currentFrame + 1) % frameCount;
+        };
+
+        // Первый кадр сразу
+        drawFrame();
+
+        // Запускаем анимацию (150ms на кадр = ~6.7 FPS)
+        skinPreviewAnimationId = setInterval(drawFrame, 150);
+    };
+
+    img.src = spritePath;
 }
 
 /**
  * Закрывает превью скина
  */
 function closeSkinPreview() {
+    // Останавливаем анимацию
+    if (skinPreviewAnimationId) {
+        clearInterval(skinPreviewAnimationId);
+        skinPreviewAnimationId = null;
+    }
+
     const previewOverlay = document.getElementById('skin-preview-overlay');
     if (previewOverlay) {
         previewOverlay.remove();
