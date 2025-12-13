@@ -107,15 +107,15 @@
             animationSpeed: 0.10, // Медленнее - тролли тяжёлые
             scale: 0.35 // Тролли крупнее орков
         },
-        ogre: {
-            idle: 'images/enemies/ogre/idle.webp',
-            cast: 'images/enemies/ogre/attack.webp',
-            death: 'images/enemies/ogre/death.webp',
+        cave_beast: {
+            idle: 'images/enemies/cave_beast/idle.webp',
+            cast: 'images/enemies/cave_beast/attack.webp',
+            death: 'images/enemies/cave_beast/death.webp',
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
             animationSpeed: 0.08, // Очень медленные - огромные
-            scale: 0.40 // Огры ещё крупнее
+            scale: 0.40 // Пещерные звери крупнее троллей
         },
         demon: {
             idle: 'images/enemies/demon/idle.webp',
@@ -148,10 +148,10 @@
             animationSpeed: 0.12, // Чуть медленнее для плавности 25 кадров
             scale: 0.45 // Размер для одной клетки
         },
-        wind_elemental: {
-            idle: 'images/enemies/wind_elemental/idle.webp',
-            cast: 'images/enemies/wind_elemental/cast.webp',
-            death: 'images/enemies/wind_elemental/death.webp',
+        air_elemental: {
+            idle: 'images/enemies/air_elemental/idle.webp',
+            cast: 'images/enemies/air_elemental/cast.webp',
+            death: 'images/enemies/air_elemental/death.webp',
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
@@ -167,6 +167,17 @@
             frameCount: 8,
             animationSpeed: 0.15,
             scale: 0.45 // Размер для одной клетки
+        },
+        // Алиас для обратной совместимости с PvE конфигом (использует faction: "wind")
+        wind_elemental: {
+            idle: 'images/enemies/air_elemental/idle.webp',
+            cast: 'images/enemies/air_elemental/cast.webp',
+            death: 'images/enemies/air_elemental/death.webp',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            animationSpeed: 0.15,
+            scale: 0.45
         }
     };
     

@@ -51,15 +51,15 @@ const ENEMY_TYPES = {
         attackType: "physical",
         spriteSheet: "troll"
     },
-    ogre: {
-        name: "Огр",
+    cave_beast: {
+        name: "Пещерный Зверь",
         baseHp: 250,
         baseDamage: 35,
         hpGrowth: 15,
         damageGrowth: 4,
         armor: 110,
         attackType: "physical",
-        spriteSheet: "ogre"
+        spriteSheet: "cave_beast"
     },
     demon: {
         name: "Демон",
@@ -255,7 +255,7 @@ function generateEnemyForLevel(level, position) {
             isBoss: true
         };
     } else if (level >= 31 && level <= 39) {
-        enemyType = ENEMY_TYPES.ogre;
+        enemyType = ENEMY_TYPES.cave_beast;
         levelInGroup = level - 31;
     } else if (level === 40) {
         // Земной Элементаль
