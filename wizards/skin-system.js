@@ -220,15 +220,7 @@ function getAllSkinsOrdered() {
         // Второй ряд
         'earth_default',
         'nature_default',
-        'poison_default',
-
-        // Третий ряд - элементали
-        'fire_elemental',
-        'water_elemental',
-        'wind_elemental',
-
-        // Четвёртый ряд
-        'earth_elemental'
+        'poison_default'
     ];
 }
 

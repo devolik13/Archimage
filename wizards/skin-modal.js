@@ -25,7 +25,7 @@ function showSkinModal(wizard) {
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url('assets/ui/adventure/adventure_hub.webp');
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('assets/ui/adventure/adventure_hub.webp');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -58,75 +58,64 @@ function showSkinModal(wizard) {
         }
     }
 
-    // Создаём затемняющий слой
-    const darkLayer = document.createElement('div');
-    darkLayer.style.cssText = `
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        pointer-events: none;
-    `;
-    overlay.appendChild(darkLayer);
-
     // Создаём контейнер с контентом
     const contentContainer = document.createElement('div');
-    contentContainer.innerHTML = `
-        <div style="
-            background: rgba(0, 0, 0, 0.85);
-            border: 3px solid rgba(255, 215, 0, 0.3);
-            border-radius: 16px;
-            padding: 24px;
-            max-width: 90%;
-            max-height: 85%;
-            overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
-            animation: scaleIn 0.3s ease-out;
-        ">
-            <!-- Заголовок -->
-            <div style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-                padding-bottom: 15px;
-                border-bottom: 2px solid rgba(255, 215, 0, 0.3);
-            ">
-                <div>
-                    <h2 style="margin: 0; color: #ffd700; font-size: 22px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
-                        🎨 Выбор облика мага
-                    </h2>
-                    <p style="margin: 5px 0 0 0; color: #c9a961; font-size: 14px;">
-                        Получено скинов: ${unlockedCount} / ${allSkinsOrdered.length}
-                    </p>
-                </div>
-                <button onclick="closeSkinModal()" style="
-                    background: rgba(0, 0, 0, 0.7);
-                    border: 2px solid rgba(255, 255, 255, 0.3);
-                    border-radius: 50%;
-                    color: white;
-                    font-size: 24px;
-                    width: 40px;
-                    height: 40px;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                ">×</button>
-            </div>
+    contentContainer.style.cssText = `
+        background: rgba(0, 0, 0, 0.85);
+        border: 3px solid rgba(255, 215, 0, 0.3);
+        border-radius: 16px;
+        padding: 24px;
+        max-width: 90%;
+        max-height: 85vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        backdrop-filter: blur(10px);
+        animation: scaleIn 0.3s ease-out;
+        position: relative;
+        z-index: 1;
+    `;
 
-            <!-- Сетка скинов -->
-            <div style="
-                display: flex;
-                flex-wrap: wrap;
-                gap: 15px;
-                justify-content: center;
-            ">
-                ${skinsHTML}
+    contentContainer.innerHTML = `
+        <!-- Заголовок -->
+        <div style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        ">
+            <div>
+                <h2 style="margin: 0; color: #ffd700; font-size: 22px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
+                    🎨 Выбор облика мага
+                </h2>
+                <p style="margin: 5px 0 0 0; color: #c9a961; font-size: 14px;">
+                    Получено скинов: ${unlockedCount} / ${allSkinsOrdered.length}
+                </p>
             </div>
+            <button onclick="closeSkinModal()" style="
+                background: rgba(0, 0, 0, 0.7);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-radius: 50%;
+                color: white;
+                font-size: 24px;
+                width: 40px;
+                height: 40px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">×</button>
+        </div>
+
+        <!-- Сетка скинов -->
+        <div style="
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        ">
+            ${skinsHTML}
         </div>
     `;
 
@@ -138,7 +127,7 @@ function showSkinModal(wizard) {
 
     // Закрытие по клику вне окна
     overlay.addEventListener('click', (e) => {
-        if (e.target === overlay || e.target === darkLayer) {
+        if (e.target === overlay) {
             closeSkinModal();
         }
     });
