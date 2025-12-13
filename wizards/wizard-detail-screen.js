@@ -960,19 +960,24 @@ function setupWizardUI(wizardIndex, wizardStats) {
     resistBtn.onclick = () => showResistancesModal(wizardIndex);
     overlay.appendChild(resistBtn);
 
-    // Кнопка инвентаря: left: 110px, top: 370px, width: 178px, height: 41px
-    const invBtn = document.createElement('button');
-    invBtn.className = 'wizard-bg-button';
-    invBtn.textContent = '🎒 Инвентарь';
-    invBtn.style.cssText = `
+    // Кнопка выбора скина: left: 110px, top: 370px, width: 178px, height: 41px
+    const skinBtn = document.createElement('button');
+    skinBtn.className = 'wizard-bg-button';
+    skinBtn.textContent = '🎨 Образ';
+    skinBtn.style.cssText = `
         left: ${(110 * scaleX) + offsetX}px;
         top: ${370 * scaleY}px;
         width: ${178 * scaleX}px;
         height: ${41 * scaleY}px;
         font-size: ${13 * Math.min(scaleX, scaleY)}px;
     `;
-    invBtn.onclick = () => showInventoryModalCompact(wizardIndex);
-    overlay.appendChild(invBtn);
+    skinBtn.onclick = () => {
+        const wizard = window.playerWizards[wizardIndex];
+        if (wizard && typeof showSkinModal === 'function') {
+            showSkinModal(wizard);
+        }
+    };
+    overlay.appendChild(skinBtn);
 
     // === СЕТКА СТАТОВ 3x2 (правая часть) ===
     // Оригинальная сетка: left: 309px, top: 191px, width: 361px, height: 199px

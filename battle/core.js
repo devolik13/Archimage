@@ -993,6 +993,31 @@ async function checkBattleEnd() {
 
                 // Сохраняем isFirstCompletion для передачи в showPvEResult
                 window.lastPvEWasFirstCompletion = isFirstCompletion;
+
+                // Проверяем разблокировку скина элементаля (только при первом прохождении босса)
+                if (isFirstCompletion && level.type === 'miniboss' && typeof window.unlockSkin === 'function') {
+                    const skinMap = {
+                        10: 'fire_elemental',    // Огненный Элементаль
+                        20: 'water_elemental',   // Водный Элементаль
+                        30: 'wind_elemental',    // Воздушный Элементаль
+                        40: 'earth_elemental'    // Земной Элементаль
+                    };
+
+                    const skinId = skinMap[window.currentPvELevel];
+                    if (skinId) {
+                        // Разблокируем скин
+                        window.unlockSkin(skinId).then(unlocked => {
+                            if (unlocked) {
+                                const skinName = window.SKINS_CONFIG?.[skinId]?.name || 'Новый скин';
+                                if (typeof window.addToBattleLog === 'function') {
+                                    window.addToBattleLog(`✨ Разблокирован скин: ${skinName}!`);
+                                }
+                                // Сохраняем информацию о разблокированном скине для показа в результате
+                                window.lastUnlockedSkin = { id: skinId, name: skinName };
+                            }
+                        });
+                    }
+                }
             }
             // НЕ очищаем флаги PvE здесь - они очистятся в блоке показа результата (строки 1107-1108)
         }

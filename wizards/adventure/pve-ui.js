@@ -532,6 +532,24 @@ function showPvEResult(result, levelId) {
                     <span style="color: #888;">ℹ️ Награда уже получена</span>
                 </div>
             ` : ''}
+            ${isWin && window.lastUnlockedSkin ? `
+                <div style="
+                    background: linear-gradient(135deg, rgba(139,92,246,0.2) 0%, rgba(168,85,247,0.2) 100%);
+                    border: 2px solid #a855f7;
+                    border-radius: 8px;
+                    padding: 12px;
+                    margin-bottom: 16px;
+                    animation: pulse 2s ease-in-out infinite;
+                ">
+                    <div style="font-size: 24px; margin-bottom: 5px;">✨</div>
+                    <div style="color: #a855f7; font-weight: bold; font-size: 14px; margin-bottom: 3px;">
+                        Разблокирован новый скин!
+                    </div>
+                    <div style="color: #d8b4fe; font-size: 12px;">
+                        ${window.lastUnlockedSkin.name}
+                    </div>
+                </div>
+            ` : ''}
             <div style="display: flex; gap: 10px; justify-content: center;">
                 ${isWin ? `
                     <button onclick="closePvEResult(); showChapter1Levels();" style="
