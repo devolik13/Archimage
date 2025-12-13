@@ -13,7 +13,7 @@ function showWizardDetailScreen(wizard) {
     // Проверяем, не открыто ли уже окно мага
     const existingScreen = document.getElementById('wizard-detail-screen');
     if (existingScreen) {
-        console.log('⚠️ Окно мага уже открыто, обновляем содержимое');
+        console.log('⚠️ Окно мага уже открыто, обновляем содержимое без закрытия модалок');
         const wizardIndex = userData.wizards.findIndex(w => w.id === wizard.id);
         if (wizardIndex !== -1) {
             window.currentWizardDetailIndex = wizardIndex;
@@ -22,7 +22,8 @@ function showWizardDetailScreen(wizard) {
         return;
     }
 
-    // Закрываем ВСЕ модалки через централизованную систему
+    // Закрываем ВСЕ модалки через централизованную систему (только при ПЕРВОМ открытии окна мага)
+    console.log('🎭 Первое открытие окна мага - закрываем все модалки');
     if (window.Modal && window.Modal.closeAll) {
         window.Modal.closeAll();
     } else if (typeof closeCurrentModal === 'function') {

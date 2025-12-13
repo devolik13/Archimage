@@ -693,13 +693,9 @@ function showSpellInfoModal(spellId, faction, currentLevel, action) {
 
     // Обработчики кнопок
     document.getElementById('spell-cancel-btn').onclick = () => {
-        console.log('🚫 Кнопка "Отмена" нажата, закрываем overlay');
         const overlayToRemove = document.getElementById('spell-info-overlay');
         if (overlayToRemove) {
             overlayToRemove.remove();
-            console.log('✅ Overlay spell-info-overlay удалён');
-        } else {
-            console.error('❌ Не найден spell-info-overlay');
         }
     };
 

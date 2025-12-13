@@ -61,8 +61,8 @@ function showSkinModal(wizard) {
     // Создаём контейнер с контентом
     const contentContainer = document.createElement('div');
     contentContainer.style.cssText = `
-        background: rgba(0, 0, 0, 0.85);
-        border: 3px solid rgba(255, 215, 0, 0.3);
+        background: rgba(0, 0, 0, 0.4);
+        border: 3px solid rgba(255, 215, 0, 0.5);
         border-radius: 16px;
         padding: 24px;
         max-width: 90%;
@@ -313,6 +313,7 @@ function selectSkin(skinId) {
         animation: fadeIn 0.2s ease-out;
     `;
 
+    const previewCanvasId = 'skin-large-preview-canvas';
     previewOverlay.innerHTML = `
         <div style="
             background: rgba(0, 0, 0, 0.9);
@@ -340,8 +341,10 @@ function selectSkin(skinId) {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 120px;
-            ">${skin.icon}</div>
+                overflow: hidden;
+            ">
+                <canvas id="${previewCanvasId}" width="300" height="300" style="width: 300px; height: 300px;"></canvas>
+            </div>
 
             ${skin.description ? `
                 <p style="
@@ -376,6 +379,28 @@ function selectSkin(skinId) {
     });
 
     document.body.appendChild(previewOverlay);
+
+    // Загружаем спрайт в canvas
+    const canvas = document.getElementById(previewCanvasId);
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let spritePath;
+        if (skin.isDefault) {
+            spritePath = `images/wizards/${skin.faction}/idle.webp`;
+        } else {
+            spritePath = `images/enemies/${skin.spriteConfig}/idle.webp`;
+        }
+
+        const img = new Image();
+        img.onload = () => {
+            const frameSize = 256;
+            ctx.clearRect(0, 0, 300, 300);
+            // Центрируем и увеличиваем спрайт
+            const offset = (300 - 256) / 2;
+            ctx.drawImage(img, 0, 0, frameSize, frameSize, offset, offset, 256, 256);
+        };
+        img.src = spritePath;
+    }
 }
 
 /**
