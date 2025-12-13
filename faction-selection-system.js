@@ -524,13 +524,58 @@ window.FactionSelection = {
     }
 };
 
+// Переменная для отслеживания ориентации
+let factionSelectionLastOrientation = null;
+
 // Переопределяем showFactionSelection
 window.showFactionSelection = function() {
-    
+
     const gameArea = document.getElementById('game-area');
     if (gameArea) {
         gameArea.style.display = 'none';
     }
-    
+
+    // Запоминаем текущую ориентацию
+    const isPortrait = window.innerHeight > window.innerWidth;
+    factionSelectionLastOrientation = isPortrait ? 'portrait' : 'landscape';
+
     window.FactionSelection.init();
 };
+
+// Обработчик изменения ориентации/размера окна
+
+function checkFactionSelectionOrientation() {
+    const factionScreen = document.getElementById('faction-selection');
+    if (!factionScreen || factionScreen.style.display === 'none') {
+        return; // Экран выбора фракции не активен
+    }
+
+    const isPortrait = window.innerHeight > window.innerWidth;
+    const currentOrientation = isPortrait ? 'portrait' : 'landscape';
+
+    // Если ориентация изменилась - переинициализируем
+    if (factionSelectionLastOrientation !== null && factionSelectionLastOrientation !== currentOrientation) {
+        console.log('🔄 Ориентация изменилась, переинициализация выбора фракции');
+
+        // Закрываем панель описания если открыта
+        window.FactionSelection.hideFactionPanel();
+
+        // Удаляем старый rotation style
+        const rotationStyle = document.getElementById('faction-rotation-style');
+        if (rotationStyle) {
+            rotationStyle.remove();
+        }
+
+        // Переинициализируем
+        setTimeout(() => {
+            window.FactionSelection.init();
+        }, 100);
+    }
+
+    factionSelectionLastOrientation = currentOrientation;
+}
+
+window.addEventListener('resize', checkFactionSelectionOrientation);
+window.addEventListener('orientationchange', () => {
+    setTimeout(checkFactionSelectionOrientation, 150);
+});
