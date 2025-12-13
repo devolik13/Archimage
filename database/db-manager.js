@@ -145,12 +145,12 @@ class DatabaseManager {
                 season_league_rewards_claimed: playerData.season_league_rewards_claimed || [] // Полученные награды за лиги
             };
 
-            // DEBUG: Логируем faction_changed перед отправкой в RPC
-            console.log(`🔍 [RPC DEBUG] Отправка в update_player_safe: faction_changed = ${rpcData.faction_changed}`);
-            console.log(`🪂 [RPC DEBUG] Airdrop данные в rpcData:`);
-            console.log(`  - airdrop_points: ${rpcData.airdrop_points}`);
-            console.log(`  - airdrop_breakdown:`, rpcData.airdrop_breakdown);
-            console.log(`  - wallet_address: ${rpcData.wallet_address}`);
+            // DEBUG: Логируем faction_changed перед отправкой в RPC (закомментировано)
+            // console.log(`🔍 [RPC DEBUG] Отправка в update_player_safe: faction_changed = ${rpcData.faction_changed}`);
+            // console.log(`🪂 [RPC DEBUG] Airdrop данные в rpcData:`);
+            // console.log(`  - airdrop_points: ${rpcData.airdrop_points}`);
+            // console.log(`  - airdrop_breakdown:`, rpcData.airdrop_breakdown);
+            // console.log(`  - wallet_address: ${rpcData.wallet_address}`);
 
             // Вызываем безопасную RPC функцию (обновляет только по telegram_id)
             const { data, error } = await this.supabase.rpc('update_player_safe', {

@@ -8,7 +8,11 @@ let selectedSkinPreview = null;
  * Показывает модальное окно выбора скина
  */
 function showSkinModal(wizard) {
-    if (!wizard) return;
+    console.log('🎨 showSkinModal вызвана', wizard);
+    if (!wizard) {
+        console.error('❌ Маг не передан в showSkinModal');
+        return;
+    }
 
     currentWizardForSkin = wizard;
     const currentSkin = getWizardSkin(wizard.id, wizard.faction);

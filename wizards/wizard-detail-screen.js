@@ -972,9 +972,15 @@ function setupWizardUI(wizardIndex, wizardStats) {
         font-size: ${13 * Math.min(scaleX, scaleY)}px;
     `;
     skinBtn.onclick = () => {
+        console.log('🎨 Нажата кнопка "Образ"');
         const wizard = window.playerWizards[wizardIndex];
-        if (wizard && typeof showSkinModal === 'function') {
-            showSkinModal(wizard);
+        console.log('🎨 Маг:', wizard);
+        console.log('🎨 showSkinModal доступна?', typeof showSkinModal);
+        console.log('🎨 window.showSkinModal доступна?', typeof window.showSkinModal);
+        if (wizard && typeof window.showSkinModal === 'function') {
+            window.showSkinModal(wizard);
+        } else {
+            console.error('❌ showSkinModal недоступна или маг не найден');
         }
     };
     overlay.appendChild(skinBtn);
