@@ -77,8 +77,8 @@ const ENEMY_TYPES = {
 const ELEMENTALS = {
     fire: {
         name: "Огненный Элементаль",
-        hp: 300,
-        armor: 110,
+        hp: 200,
+        armor: 100,
         faction: "fire",
         spells: ['firebolt', 'spark'],
         spell_levels: {
