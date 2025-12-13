@@ -74,15 +74,11 @@ function showSkinModal(wizard) {
                 justify-content: center;
                 padding: 20px;
             ">
-                <!-- Прозрачная панель с контентом -->
+                <!-- Полностью прозрачная панель с контентом -->
                 <div style="
-                    background: rgba(0, 0, 0, 0.3);
-                    border: 2px solid rgba(255, 215, 0, 0.4);
-                    border-radius: 16px;
                     padding: 20px;
                     max-height: 80vh;
                     overflow-y: auto;
-                    backdrop-filter: blur(8px);
                     animation: scaleIn 0.3s ease-out;
                 ">
                     <!-- Заголовок -->
@@ -91,8 +87,6 @@ function showSkinModal(wizard) {
                         justify-content: space-between;
                         align-items: center;
                         margin-bottom: 15px;
-                        padding-bottom: 12px;
-                        border-bottom: 1px solid rgba(255, 215, 0, 0.3);
                     ">
                         <div>
                             <h2 style="margin: 0; color: #ffd700; font-size: 20px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
@@ -322,7 +316,7 @@ function selectSkin(skinId) {
 
     selectedSkinPreview = skinId;
 
-    // Создаём overlay для превью
+    // Создаём overlay для превью с тем же фоном adventure_hub
     const previewOverlay = document.createElement('div');
     previewOverlay.id = 'skin-preview-overlay';
     previewOverlay.style.cssText = `
@@ -331,7 +325,7 @@ function selectSkin(skinId) {
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.9);
+        background: rgba(0, 0, 0, 0.85);
         z-index: 10020;
         display: flex;
         align-items: center;
@@ -341,59 +335,68 @@ function selectSkin(skinId) {
 
     const previewCanvasId = 'skin-large-preview-canvas';
     previewOverlay.innerHTML = `
-        <div style="
-            background: rgba(0, 0, 0, 0.9);
-            border: 3px solid rgba(255, 215, 0, 0.5);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 500px;
-            text-align: center;
-            backdrop-filter: blur(15px);
-        ">
-            <h3 style="
-                color: #ffd700;
-                font-size: 24px;
-                margin: 0 0 20px 0;
-                text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-            ">${skin.name}</h3>
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <!-- Фоновое изображение -->
+            <img id="skin-preview-bg" src="assets/ui/adventure/adventure_hub.webp" alt="Фон" style="
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+            ">
 
-            <div style="
-                width: 300px;
-                height: 300px;
-                margin: 0 auto 20px;
-                background: rgba(255, 215, 0, 0.05);
-                border: 2px solid rgba(255, 215, 0, 0.2);
-                border-radius: 15px;
+            <!-- Контейнер для контента поверх фона -->
+            <div id="skin-preview-content" style="
+                position: absolute;
                 display: flex;
+                flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                overflow: hidden;
             ">
-                <canvas id="${previewCanvasId}" width="300" height="300" style="width: 300px; height: 300px;"></canvas>
-            </div>
-
-            ${skin.description ? `
-                <p style="
-                    color: #c9a961;
-                    font-size: 16px;
+                <!-- Название скина -->
+                <h3 style="
+                    color: #ffd700;
+                    font-size: 24px;
                     margin: 0 0 20px 0;
-                ">${skin.description}</p>
-            ` : ''}
+                    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 15px rgba(255, 215, 0, 0.6);
+                ">${skin.name}</h3>
 
-            <button onclick="closeSkinPreview()" style="
-                padding: 10px 30px;
-                background: rgba(255, 215, 0, 0.2);
-                border: 2px solid rgba(255, 215, 0, 0.5);
-                border-radius: 8px;
-                color: #ffd700;
-                font-size: 14px;
-                font-weight: bold;
-                cursor: pointer;
-                transition: all 0.3s;
-            " onmouseover="this.style.background='rgba(255, 215, 0, 0.3)'"
-               onmouseout="this.style.background='rgba(255, 215, 0, 0.2)'">
-                Закрыть
-            </button>
+                <!-- Превью спрайта -->
+                <div style="
+                    width: 300px;
+                    height: 300px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    overflow: hidden;
+                ">
+                    <canvas id="${previewCanvasId}" width="300" height="300" style="width: 300px; height: 300px;"></canvas>
+                </div>
+
+                ${skin.description ? `
+                    <p style="
+                        color: #ffd700;
+                        font-size: 16px;
+                        margin: 20px 0;
+                        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+                    ">${skin.description}</p>
+                ` : ''}
+
+                <!-- Кнопка закрытия -->
+                <button onclick="closeSkinPreview()" style="
+                    margin-top: 20px;
+                    padding: 10px 30px;
+                    background: rgba(0, 0, 0, 0.5);
+                    border: 2px solid rgba(255, 215, 0, 0.5);
+                    border-radius: 8px;
+                    color: #ffd700;
+                    font-size: 14px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                " onmouseover="this.style.background='rgba(255, 215, 0, 0.3)'"
+                   onmouseout="this.style.background='rgba(0, 0, 0, 0.5)'">
+                    Закрыть
+                </button>
+            </div>
         </div>
     `;
 
@@ -405,6 +408,21 @@ function selectSkin(skinId) {
     });
 
     document.body.appendChild(previewOverlay);
+
+    // Подстраиваем размер контента под фоновое изображение
+    const bgImg = document.getElementById('skin-preview-bg');
+    const contentContainer = document.getElementById('skin-preview-content');
+
+    const setupContentSize = () => {
+        if (bgImg && contentContainer) {
+            const rect = bgImg.getBoundingClientRect();
+            contentContainer.style.width = rect.width + 'px';
+            contentContainer.style.height = rect.height + 'px';
+        }
+    };
+
+    bgImg.onload = setupContentSize;
+    if (bgImg.complete) setupContentSize();
 
     // Загружаем спрайт в canvas
     const canvas = document.getElementById(previewCanvasId);
