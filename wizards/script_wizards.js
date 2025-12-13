@@ -212,6 +212,7 @@ function showSpellSelectionModal() {
     `;
     closeCurrentModal();
     const modal = document.createElement('div');
+    modal.className = 'modal-container spell-selection-modal';
     modal.innerHTML = modalContent;
     modal.style.cssText = `
         position: fixed;
@@ -224,6 +225,7 @@ function showSpellSelectionModal() {
         z-index: 10001;
     `;
     const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay spell-selection-overlay';
     overlay.style.cssText = `
         position: fixed;
         top: 0;
