@@ -550,6 +550,25 @@ function showPvEResult(result, levelId) {
                     </div>
                 </div>
             ` : ''}
+            ${window.lastPvEWizardExpGained && window.lastPvEWizardExpGained.length > 0 ? `
+                <div style="
+                    background: rgba(255,165,0,0.1);
+                    border: 1px solid rgba(255,165,0,0.3);
+                    border-radius: 8px;
+                    padding: 10px;
+                    margin-bottom: 16px;
+                ">
+                    <div style="font-size: 12px; color: #ffa500; margin-bottom: 8px; text-align: center;">Опыт магов</div>
+                    ${window.lastPvEWizardExpGained.map(w => `
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0;">
+                            <span style="color: #ddd;">${w.name}</span>
+                            <span style="color: #ffa500; font-weight: bold;">
+                                +${w.expGained} XP${w.levelGained > 0 ? ` <span style="color: #4CAF50;">⬆️ Ур.${w.newLevel}</span>` : ''}
+                            </span>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : ''}
             <div style="display: flex; gap: 10px; justify-content: center;">
                 ${isWin ? `
                     <button onclick="closePvEResult(); showChapter1Levels();" style="
@@ -608,6 +627,8 @@ function closePvEResult() {
     }
     // Очищаем флаг первого прохождения
     window.lastPvEWasFirstCompletion = undefined;
+    // Очищаем данные об опыте магов
+    window.lastPvEWizardExpGained = undefined;
     // Возвращаемся в город
     if (typeof window.returnToCity === 'function') {
         window.returnToCity();

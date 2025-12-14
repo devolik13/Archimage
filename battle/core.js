@@ -1182,6 +1182,30 @@ async function checkBattleEnd() {
         if (isPvEBattle) {
             const currentLevel = window.currentPvELevel;
 
+            // Вычисляем прирост опыта для PvE (аналогично PvP)
+            const wizardExpGained = [];
+            if (window.wizardExpBeforeBattle && window.playerWizards) {
+                window.playerWizards.forEach(wizard => {
+                    if (wizard && wizard.id) {
+                        const before = window.wizardExpBeforeBattle[wizard.id];
+                        if (before) {
+                            const expGained = (wizard.experience || 0) - before.experience;
+                            const levelGained = (wizard.level || 1) - before.level;
+                            if (expGained > 0 || levelGained > 0) {
+                                wizardExpGained.push({
+                                    name: wizard.name || before.name,
+                                    expGained: expGained,
+                                    levelGained: levelGained,
+                                    newLevel: wizard.level || 1
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+            // Сохраняем для отображения в pve-ui.js
+            window.lastPvEWizardExpGained = wizardExpGained;
+
             // Сохраняем PvE прогресс при победе
             if (battleResult === 'win' && currentLevel) {
                 if (!window.userData.pve_progress) {
