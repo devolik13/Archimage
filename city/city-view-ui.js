@@ -436,9 +436,23 @@ function createWizardSlot(index) {
         slot.style.opacity = '0.8';
         slot.style.cursor = 'pointer';
 
-        // Клик на пустой слот - открыть окно найма
+        // Клик на пустой слот - открыть окно башни магов или показать подсказку
         slot.onclick = () => {
-            showHireWizardModal(index);
+            const towerLevel = window.userData?.buildings?.wizard_tower?.level || 0;
+
+            if (towerLevel > 0) {
+                // Башня построена - открываем окно башни магов
+                if (window.showWizardTowerModalBg) {
+                    window.showWizardTowerModalBg();
+                }
+            } else {
+                // Башня не построена - показываем подсказку
+                if (typeof showInlineNotification === 'function') {
+                    showInlineNotification('🏰 Постройте Башню магов для дополнительного найма');
+                } else {
+                    alert('Постройте Башню магов для дополнительного найма');
+                }
+            }
         };
     }
     
