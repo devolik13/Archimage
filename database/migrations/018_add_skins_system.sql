@@ -50,6 +50,12 @@ BEGIN
             ELSE buildings
         END,
         time_currency = COALESCE((p_data->>'time_currency')::INTEGER, time_currency),
+        -- Last login update
+        last_login = CASE
+            WHEN p_data ? 'last_login' AND p_data->>'last_login' IS NOT NULL
+            THEN (p_data->>'last_login')::TIMESTAMPTZ
+            ELSE last_login
+        END,
         purchased_packs = CASE
             WHEN p_data ? 'purchased_packs' AND p_data->'purchased_packs' IS NOT NULL
             THEN p_data->'purchased_packs'
