@@ -169,6 +169,20 @@ function startBattle() {
     // Сбрасываем флаг показа результата для нового боя
     window.battleResultShown = false;
 
+    // Сохраняем опыт магов ДО начала боя для отображения прироста
+    window.wizardExpBeforeBattle = {};
+    if (window.playerWizards) {
+        window.playerWizards.forEach(wizard => {
+            if (wizard && wizard.id) {
+                window.wizardExpBeforeBattle[wizard.id] = {
+                    name: wizard.name || `Маг ${wizard.id}`,
+                    level: wizard.level || 1,
+                    experience: wizard.experience || 0
+                };
+            }
+        });
+    }
+
     window.battleState = 'active';
     window.battleLog = [];
     window.playerMageIndex = 0;
@@ -1122,13 +1136,37 @@ async function checkBattleEnd() {
         // Показываем экран результатов боя ТОЛЬКО ДЛЯ PvP
         if (!isPvEBattle && typeof window.showBattleResult === 'function') {
             const opponent = window.selectedOpponent || {};
+
+            // Вычисляем прирост опыта для каждого мага
+            const wizardExpGained = [];
+            if (window.wizardExpBeforeBattle && window.playerWizards) {
+                window.playerWizards.forEach(wizard => {
+                    if (wizard && wizard.id) {
+                        const before = window.wizardExpBeforeBattle[wizard.id];
+                        if (before) {
+                            const expGained = (wizard.experience || 0) - before.experience;
+                            const levelGained = (wizard.level || 1) - before.level;
+                            if (expGained > 0 || levelGained > 0) {
+                                wizardExpGained.push({
+                                    name: wizard.name || before.name,
+                                    expGained: expGained,
+                                    levelGained: levelGained,
+                                    newLevel: wizard.level || 1
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+
             const battleData = {
                 opponentName: opponent.username || 'Противник',
                 opponentRating: opponent.rating || 1000,
                 ratingChange: ratingChange,
                 rewards: rewards,
                 battleDuration: 0, // TODO: добавить таймер боя если нужно
-                earlyExit: window.battleEarlyExit || false // Флаг досрочного выхода
+                earlyExit: window.battleEarlyExit || false, // Флаг досрочного выхода
+                wizardExpGained: wizardExpGained // Прирост опыта магов
             };
 
             // Показываем с небольшой задержкой для визуального эффекта (или без задержки при earlyExit)

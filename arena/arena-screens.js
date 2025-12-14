@@ -886,7 +886,8 @@ function showArenaResult(result, battleData = {}) {
         ratingChange = 0,
         rewards = {},
         battleDuration = 0,
-        earlyExit = false
+        earlyExit = false,
+        wizardExpGained = []
     } = battleData;
 
     const isWin = result === 'win';
@@ -1023,7 +1024,33 @@ function showArenaResult(result, battleData = {}) {
                 </div>
             </div>
 
-            ${expGained > 0 ? `
+            ${wizardExpGained.length > 0 ? `
+                <div style="
+                    background: rgba(255, 165, 0, 0.15);
+                    padding: 12px;
+                    border-radius: 10px;
+                    margin-bottom: 15px;
+                    border: 1px solid rgba(255, 165, 0, 0.4);
+                ">
+                    <div style="font-size: 12px; color: #ffa500; margin-bottom: 8px; text-align: center;">Опыт магов</div>
+                    ${wizardExpGained.map(w => `
+                        <div style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding: 4px 8px;
+                            background: rgba(0,0,0,0.2);
+                            border-radius: 5px;
+                            margin-bottom: 4px;
+                        ">
+                            <span style="color: #ddd; font-size: 13px;">${w.name}</span>
+                            <span style="color: #ffa500; font-weight: bold; font-size: 13px;">
+                                +${w.expGained} XP${w.levelGained > 0 ? ` <span style="color: #4CAF50;">⬆️ Ур.${w.newLevel}</span>` : ''}
+                            </span>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : (expGained > 0 ? `
                 <div style="
                     background: rgba(255, 165, 0, 0.15);
                     padding: 12px;
@@ -1035,7 +1062,7 @@ function showArenaResult(result, battleData = {}) {
                     <div style="font-size: 12px; color: #ffa500; margin-bottom: 3px;">Опыт получен</div>
                     <div style="font-size: 20px; color: #ffa500; font-weight: bold;">+${expGained} XP</div>
                 </div>
-            ` : ''}
+            ` : '')}
 
             <!-- Статистика -->
             <div style="

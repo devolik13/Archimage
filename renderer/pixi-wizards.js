@@ -364,6 +364,17 @@
             if (wizardId) {
                 const wizard = window.playerWizards?.find(w => w.id === wizardId);
                 if (wizard && wizard.faction) {
+                    // Проверяем выбранный скин мага
+                    if (typeof window.getWizardSkin === 'function') {
+                        const skinId = window.getWizardSkin(wizardId, wizard.faction);
+                        // Получаем spriteConfig из скина
+                        if (typeof window.getSkinSpriteConfig === 'function') {
+                            const spriteConfig = window.getSkinSpriteConfig(skinId);
+                            if (spriteConfig && FACTION_SPRITES_CONFIG[spriteConfig]) {
+                                return spriteConfig;
+                            }
+                        }
+                    }
                     return wizard.faction;
                 }
             }
