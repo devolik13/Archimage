@@ -13,58 +13,51 @@ async function getOpponentsList(playerRating, count = 4) {
             return [];
         }
 
-        // Получаем всех игроков (включая ботов), отсортированных по рейтингу
+        const currentTelegramId = window.dbManager.getTelegramId();
+
+        // Оптимизация: ищем только в диапазоне ±500 от рейтинга игрока
+        // и загружаем только нужные поля (без тяжёлых JSON)
+        const ratingMin = Math.max(0, playerRating - 500);
+        const ratingMax = playerRating + 500;
+
+        // Первый запрос - только лёгкие данные для списка
         const { data, error } = await window.dbManager.supabase
             .from('players')
-            .select('id, telegram_id, username, rating, level, wins, losses, faction, wizards, spells, formation, buildings')
-            .order('rating', { ascending: true });
+            .select('id, telegram_id, username, rating, level, wins, losses, faction')
+            .neq('telegram_id', currentTelegramId)
+            .gte('rating', ratingMin)
+            .lte('rating', ratingMax)
+            .order('rating', { ascending: true })
+            .limit(20); // Ограничиваем выборку
 
         if (error) {
             console.error('❌ Ошибка загрузки списка игроков:', error);
             return [];
         }
 
-        // Исключаем текущего игрока
-        const currentTelegramId = window.dbManager.getTelegramId();
-        const allPlayers = data.filter(p => p.telegram_id !== currentTelegramId);
+        if (!data || data.length === 0) {
+            // Fallback: если в диапазоне нет игроков, берём любых
+            const { data: fallbackData, error: fallbackError } = await window.dbManager.supabase
+                .from('players')
+                .select('id, telegram_id, username, rating, level, wins, losses, faction')
+                .neq('telegram_id', currentTelegramId)
+                .order('rating', { ascending: true })
+                .limit(10);
 
-        // Находим индекс ближайшего по рейтингу
-        let closestIndex = 0;
-        let minDiff = Math.abs(allPlayers[0].rating - playerRating);
-
-        for (let i = 1; i < allPlayers.length; i++) {
-            const diff = Math.abs(allPlayers[i].rating - playerRating);
-            if (diff < minDiff) {
-                minDiff = diff;
-                closestIndex = i;
+            if (fallbackError || !fallbackData) {
+                return [];
             }
+            return fallbackData.slice(0, count);
         }
 
-        // Берем 2 выше и 2 ниже (или сколько есть)
-        const opponents = [];
-        const halfCount = Math.floor(count / 2);
+        // Находим ближайших по рейтингу
+        const sorted = data.sort((a, b) => {
+            const diffA = Math.abs(a.rating - playerRating);
+            const diffB = Math.abs(b.rating - playerRating);
+            return diffA - diffB;
+        });
 
-        // Берем нижних
-        for (let i = Math.max(0, closestIndex - halfCount); i < closestIndex && opponents.length < halfCount; i++) {
-            opponents.push(allPlayers[i]);
-        }
-
-        // Берем верхних
-        for (let i = closestIndex; i < Math.min(allPlayers.length, closestIndex + halfCount); i++) {
-            if (opponents.length >= count) break;
-            opponents.push(allPlayers[i]);
-        }
-
-        // Если недостаточно, добираем откуда можем
-        if (opponents.length < count) {
-            for (let i = 0; i < allPlayers.length && opponents.length < count; i++) {
-                if (!opponents.includes(allPlayers[i])) {
-                    opponents.push(allPlayers[i]);
-                }
-            }
-        }
-
-        return opponents.slice(0, count);
+        return sorted.slice(0, count);
 
     } catch (error) {
         console.error('❌ Ошибка в getOpponentsList:', error);
@@ -92,7 +85,7 @@ async function showOpponentSelection() {
         window.closePvPArenaModal();
     }
 
-    const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 1000;
+    const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 0;
     const playerLevel = window.userData?.level || 1;
 
     // Показываем загрузку
@@ -232,15 +225,31 @@ async function showOpponentSelection() {
  * Выбрать противника и начать бой
  * @param {number} index - Индекс противника в window.currentOpponentsList
  */
-function selectOpponent(index) {
+async function selectOpponent(index) {
     if (!window.currentOpponentsList || !window.currentOpponentsList[index]) {
         console.error('❌ Противник не найден по индексу:', index);
         alert('❌ Ошибка выбора противника');
         return;
     }
 
-    const opponent = window.currentOpponentsList[index];
-    console.log(`⚔️ Выбран противник: ${opponent.username} (${opponent.rating})`);
+    const opponentBasic = window.currentOpponentsList[index];
+    console.log(`⚔️ Выбран противник: ${opponentBasic.username} (${opponentBasic.rating})`);
+
+    // Дозагружаем полные данные противника (wizards, spells, formation, buildings)
+    let opponent = opponentBasic;
+    try {
+        const { data, error } = await window.dbManager.supabase
+            .from('players')
+            .select('wizards, spells, formation, buildings')
+            .eq('telegram_id', opponentBasic.telegram_id)
+            .single();
+
+        if (!error && data) {
+            opponent = { ...opponentBasic, ...data };
+        }
+    } catch (e) {
+        console.warn('⚠️ Не удалось дозагрузить данные противника:', e);
+    }
 
     // КРИТИЧЕСКИ ВАЖНО: Списываем энергию СРАЗУ при выборе противника
     // Это предотвращает эксплойт с отменой боя

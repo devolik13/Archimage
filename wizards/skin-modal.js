@@ -363,20 +363,23 @@ function selectSkin(skinId) {
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
+                padding: 10px;
+                box-sizing: border-box;
             ">
                 <!-- Название скина -->
                 <h3 style="
                     color: #ffd700;
-                    font-size: 24px;
-                    margin: 0 0 20px 0;
+                    font-size: min(24px, 5vw);
+                    margin: 0 0 15px 0;
                     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 15px rgba(255, 215, 0, 0.6);
+                    text-align: center;
                 ">${skin.name}</h3>
 
-                <!-- Превью спрайта с рамкой -->
+                <!-- Превью спрайта с рамкой (адаптивный размер) -->
                 <div style="
-                    width: 280px;
-                    height: 280px;
-                    border: 4px solid #ffd700;
+                    width: min(280px, 70vw);
+                    height: min(280px, 70vw);
+                    border: 3px solid #ffd700;
                     border-radius: 12px;
                     box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), inset 0 0 30px rgba(0, 0, 0, 0.5);
                     display: flex;
@@ -385,27 +388,28 @@ function selectSkin(skinId) {
                     overflow: hidden;
                     background: rgba(0, 0, 0, 0.3);
                 ">
-                    <canvas id="${previewCanvasId}" width="256" height="256" style="width: 256px; height: 256px;"></canvas>
+                    <canvas id="${previewCanvasId}" width="256" height="256" style="width: 100%; height: 100%; object-fit: contain;"></canvas>
                 </div>
 
                 ${skin.description ? `
                     <p style="
                         color: #ffd700;
-                        font-size: 16px;
-                        margin: 20px 0;
+                        font-size: min(16px, 3.5vw);
+                        margin: 15px 0;
                         text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+                        text-align: center;
                     ">${skin.description}</p>
                 ` : ''}
 
                 <!-- Кнопка закрытия -->
                 <button onclick="closeSkinPreview()" style="
-                    margin-top: 20px;
-                    padding: 10px 30px;
+                    margin-top: 15px;
+                    padding: 8px 25px;
                     background: rgba(0, 0, 0, 0.5);
                     border: 2px solid rgba(255, 215, 0, 0.5);
                     border-radius: 8px;
                     color: #ffd700;
-                    font-size: 14px;
+                    font-size: min(14px, 3.5vw);
                     font-weight: bold;
                     cursor: pointer;
                     transition: all 0.3s;
