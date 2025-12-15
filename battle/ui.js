@@ -530,8 +530,8 @@ async function closeBattleFieldModal() {
                 });
 
                 const battleResult = playerAlive ? 'win' : 'loss';
-                const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 1000;
-                const opponentRating = typeof window.selectedOpponent?.rating === 'number' ? window.selectedOpponent.rating : 1000;
+                const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 0;
+                const opponentRating = typeof window.selectedOpponent?.rating === 'number' ? window.selectedOpponent.rating : 0;
                 const ratingChange = typeof window.calculateRatingChange === 'function' ?
                     window.calculateRatingChange(playerRating, opponentRating, battleResult) :
                     (battleResult === 'win' ? 25 : -25);
@@ -543,7 +543,7 @@ async function closeBattleFieldModal() {
                 if (typeof window.showBattleResult === 'function') {
                     const battleData = {
                         opponentName: window.selectedOpponent?.username || 'Противник',
-                        opponentRating: window.selectedOpponent?.rating || 1000,
+                        opponentRating: typeof window.selectedOpponent?.rating === 'number' ? window.selectedOpponent.rating : 0,
                         ratingChange: ratingChange,
                         rewards: { exp: 0 },
                         battleDuration: 0,

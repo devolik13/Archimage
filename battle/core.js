@@ -1113,9 +1113,9 @@ async function checkBattleEnd() {
 
         // Рассчитываем изменение рейтинга ТОЛЬКО ДЛЯ PvP
         if (!isPvEBattle && typeof window.calculateRatingChange === 'function') {
-            const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 1000;
+            const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 0;
             // Используем реальный рейтинг противника из selectedOpponent
-            const opponentRating = typeof window.selectedOpponent?.rating === 'number' ? window.selectedOpponent.rating : 1000;
+            const opponentRating = typeof window.selectedOpponent?.rating === 'number' ? window.selectedOpponent.rating : 0;
 
             ratingChange = window.calculateRatingChange(playerRating, opponentRating, battleResult);
         }
@@ -1170,7 +1170,7 @@ async function checkBattleEnd() {
 
             const battleData = {
                 opponentName: opponent.username || 'Противник',
-                opponentRating: opponent.rating || 1000,
+                opponentRating: typeof opponent.rating === 'number' ? opponent.rating : 0,
                 ratingChange: ratingChange,
                 rewards: rewards,
                 battleDuration: 0, // TODO: добавить таймер боя если нужно

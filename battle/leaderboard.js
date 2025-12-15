@@ -9,8 +9,8 @@ async function showLeaderboard() {
         window.closeCurrentModal();
     }
 
-    // Данные игрока
-    const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 1000;
+    // Данные игрока (0 - валидное значение для новичков)
+    const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 0;
     const playerWins = window.userData?.wins || 0;
     const playerLosses = window.userData?.losses || 0;
     const playerTotalBattles = window.userData?.total_battles || 0;

@@ -688,7 +688,7 @@ function renderGuildMembers(container) {
                             ${m.id === guild.leader_id ? '👑 ' : ''}${m.username}
                         </div>
                         <div style="color: #aaa; font-size: 11px;">
-                            Ур. ${m.level} | Рейтинг: ${m.rating || 1000}
+                            Ур. ${m.level} | Рейтинг: ${typeof m.rating === 'number' ? m.rating : 0}
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">

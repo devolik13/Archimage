@@ -440,8 +440,8 @@ async function showArenaOpponentSelection() {
             return;
         }
         
-        // Получаем рейтинг игрока
-        const playerRating = window.userData?.rating || 1200;
+        // Получаем рейтинг игрока (0 - валидное значение для новичков)
+        const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 0;
         
         // Загружаем противников из Supabase
         let opponents = [];
@@ -686,8 +686,8 @@ async function showArenaLeaderboard() {
     overlay.appendChild(container);
     
     try {
-        // Данные игрока
-        const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 1000;
+        // Данные игрока (0 - валидное значение для новичков)
+        const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 0;
         const playerWins = window.userData?.wins || 0;
         const playerLosses = window.userData?.losses || 0;
         const playerTotalBattles = window.userData?.total_battles || 0;
@@ -901,8 +901,8 @@ function showArenaResult(result, battleData = {}) {
     const ratingChangeText = ratingChange > 0 ? `+${ratingChange}` : ratingChange;
     const ratingColor = ratingChange > 0 ? '#4CAF50' : ratingChange < 0 ? '#f44336' : '#aaa';
 
-    // Новый рейтинг
-    const currentRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 1000;
+    // Новый рейтинг (0 - валидное значение для новичков)
+    const currentRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 0;
     const newRating = currentRating + ratingChange;
 
     // Лига
