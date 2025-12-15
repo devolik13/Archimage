@@ -1,6 +1,14 @@
-/* shop-modal-bg.css - Стили для модалки магазина с фоновым изображением */
+/* modal-bg-common.css - Общие стили для всех модальных окон с фоновым изображением */
 
-/* Экран магазина */
+/* ============ БАЗОВЫЕ СТИЛИ ЭКРАНОВ ============ */
+
+.modal-bg-screen,
+.wizard-tower-screen,
+.blessing-tower-screen,
+.arcane-lab-screen,
+.time-generator-screen,
+.pvp-arena-screen,
+.guild-screen,
 .shop-screen {
     position: fixed;
     top: 0;
@@ -16,11 +24,26 @@
     transition: opacity 0.3s ease;
 }
 
+.modal-bg-screen.active,
+.wizard-tower-screen.active,
+.blessing-tower-screen.active,
+.arcane-lab-screen.active,
+.time-generator-screen.active,
+.pvp-arena-screen.active,
+.guild-screen.active,
 .shop-screen.active {
     opacity: 1;
 }
 
-/* Фоновое изображение магазина */
+/* ============ ФОНОВЫЕ ИЗОБРАЖЕНИЯ ============ */
+
+.modal-bg-image,
+.tower-bg-image,
+.blessing-bg-image,
+.lab-bg-image,
+.generator-bg-image,
+.arena-bg-image,
+.guild-bg-image,
 .shop-bg-image {
     max-width: 90vw;
     max-height: 90vh;
@@ -30,22 +53,44 @@
     image-rendering: -webkit-optimize-contrast;
     user-select: none;
     pointer-events: none;
+    animation: modalBgFadeIn 0.3s ease;
 }
 
-/* Оверлей для UI элементов */
+/* ============ ОВЕРЛЕИ ДЛЯ UI ============ */
+
+.modal-ui-overlay,
+.tower-ui-overlay,
+.blessing-ui-overlay,
+.lab-ui-overlay,
+.generator-ui-overlay,
+.arena-ui-overlay,
+.guild-ui-overlay,
 .shop-ui-overlay {
     position: absolute;
     pointer-events: none;
+}
+
+/* Со скроллом */
+.guild-ui-overlay,
+.shop-ui-overlay {
     overflow-y: auto;
     overflow-x: hidden;
 }
 
+.modal-ui-overlay > *,
+.tower-ui-overlay > *,
+.blessing-ui-overlay > *,
+.lab-ui-overlay > *,
+.generator-ui-overlay > *,
+.arena-ui-overlay > *,
+.guild-ui-overlay > *,
 .shop-ui-overlay > * {
     pointer-events: auto;
 }
 
-/* Анимация появления */
-@keyframes shopFadeIn {
+/* ============ АНИМАЦИЯ ============ */
+
+@keyframes modalBgFadeIn {
     from {
         opacity: 0;
         transform: scale(0.9);
@@ -56,12 +101,16 @@
     }
 }
 
-.shop-bg-image {
-    animation: shopFadeIn 0.3s ease;
-}
+/* ============ АДАПТАЦИЯ ============ */
 
-/* Адаптация для мобильных устройств */
 @media (max-width: 768px) {
+    .modal-bg-image,
+    .tower-bg-image,
+    .blessing-bg-image,
+    .lab-bg-image,
+    .generator-bg-image,
+    .arena-bg-image,
+    .guild-bg-image,
     .shop-bg-image {
         max-width: 95vw;
         max-height: 95vh;
@@ -69,13 +118,28 @@
 }
 
 @media (max-height: 600px) {
+    .modal-bg-image,
+    .tower-bg-image,
+    .blessing-bg-image,
+    .lab-bg-image,
+    .generator-bg-image,
+    .arena-bg-image,
+    .guild-bg-image,
     .shop-bg-image {
         max-width: 95vw;
         max-height: 95vh;
     }
 }
 
-/* Предотвращаем выделение текста на кнопках */
+/* ============ КНОПКИ В ОВЕРЛЕЯХ ============ */
+
+.modal-ui-overlay button,
+.tower-ui-overlay button,
+.blessing-ui-overlay button,
+.lab-ui-overlay button,
+.generator-ui-overlay button,
+.arena-ui-overlay button,
+.guild-ui-overlay button,
 .shop-ui-overlay button {
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -84,34 +148,66 @@
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Убираем outline при фокусе */
+.modal-ui-overlay button:focus,
+.tower-ui-overlay button:focus,
+.blessing-ui-overlay button:focus,
+.lab-ui-overlay button:focus,
+.generator-ui-overlay button:focus,
+.arena-ui-overlay button:focus,
+.guild-ui-overlay button:focus,
 .shop-ui-overlay button:focus {
     outline: none;
 }
 
-/* Эффект нажатия на кнопку */
+.modal-ui-overlay button:active,
+.tower-ui-overlay button:active,
+.blessing-ui-overlay button:active,
+.lab-ui-overlay button:active,
+.generator-ui-overlay button:active,
+.arena-ui-overlay button:active,
+.guild-ui-overlay button:active,
 .shop-ui-overlay button:active {
     transform: scale(0.95) !important;
 }
 
-/* Скроллбар для overlay */
+.modal-ui-overlay button:not(:disabled):hover,
+.tower-ui-overlay button:not(:disabled):hover,
+.blessing-ui-overlay button:not(:disabled):hover,
+.lab-ui-overlay button:not(:disabled):hover,
+.generator-ui-overlay button:not(:disabled):hover,
+.arena-ui-overlay button:not(:disabled):hover,
+.guild-ui-overlay button:not(:disabled):hover,
+.shop-ui-overlay button:not(:disabled):hover {
+    filter: brightness(1.2);
+    transform: scale(1.02);
+    transition: all 0.2s;
+}
+
+/* ============ СКРОЛЛБАР ============ */
+
+.guild-ui-overlay::-webkit-scrollbar,
 .shop-ui-overlay::-webkit-scrollbar {
     width: 6px;
 }
 
+.guild-ui-overlay::-webkit-scrollbar-track,
 .shop-ui-overlay::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.3);
     border-radius: 3px;
 }
 
+.guild-ui-overlay::-webkit-scrollbar-thumb,
 .shop-ui-overlay::-webkit-scrollbar-thumb {
     background: rgba(255, 215, 0, 0.5);
     border-radius: 3px;
 }
 
+.guild-ui-overlay::-webkit-scrollbar-thumb:hover,
 .shop-ui-overlay::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 215, 0, 0.7);
 }
+
+/* ============ СПЕЦИФИЧНЫЕ СТИЛИ МАГАЗИНА ============ */
 
 /* Карточка товара */
 .shop-item-card {
