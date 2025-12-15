@@ -464,7 +464,7 @@ function getActionButton(buildingId) {
     return actions[buildingId] || '';
 }
 
-// Функция показа меню строительства - теперь использует единое окно
+// Функция показа меню строительства - использует окно с фоном как в меню "Строить"
 function showBuildingConstructionMenu(buildingId) {
     console.log(`🏗️ Открытие меню строительства для ${buildingId}`);
 
@@ -475,25 +475,13 @@ function showBuildingConstructionMenu(buildingId) {
         return;
     }
 
-    // Вычисляем параметры для showBuildingInfoModal
-    const currentLevel = 0;
-    const targetLevel = 1;
-    const isUpgrade = false;
-    const timeRequired = window.CONSTRUCTION_TIME?.[buildingId] || 144;
-
-    // Используем единое окно информации о здании
-    if (window.showBuildingInfoModal) {
-        window.showBuildingInfoModal(
-            buildingId,
-            currentLevel,
-            targetLevel,
-            isUpgrade,
-            timeRequired,
-            () => executeBuilding(buildingId, isUpgrade, targetLevel, timeRequired)
-        );
+    // Используем то же окно с фоном, что и в меню "Строить"
+    if (window.showBuildingDetailsInOverlay) {
+        window.showBuildingDetailsInOverlay(buildingId, false); // false = новая постройка
     } else {
-        // Fallback: сразу строим если модалка недоступна
-        executeBuilding(buildingId, isUpgrade, targetLevel, timeRequired);
+        // Fallback на старый метод
+        const timeRequired = window.CONSTRUCTION_TIME?.[buildingId] || 144;
+        executeBuilding(buildingId, false, 1, timeRequired);
     }
 }
 
