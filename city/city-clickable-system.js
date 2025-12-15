@@ -249,10 +249,10 @@ function handleBuildingClick(buildingId, buildingData) {
                 } else if (window.startDemoBattle) {
                     window.startDemoBattle();
                 } else {
-                    showBuildingInfoModal(buildingId, buildingData);
+                    showBuildingInfoModalFallback(buildingId, buildingData);
                 }
                 break;
-                
+
             case 'guild':
                 // Модалка гильдии
                 if (window.showGuildModal) {
@@ -260,7 +260,7 @@ function handleBuildingClick(buildingId, buildingData) {
                 } else if (window.openGuildModal) {
                     window.openGuildModal();
                 } else {
-                    showBuildingInfoModal(buildingId, buildingData);
+                    showBuildingInfoModalFallback(buildingId, buildingData);
                 }
                 break;
                 
@@ -270,7 +270,7 @@ function handleBuildingClick(buildingId, buildingData) {
                 } else if (window.showBlessingTowerModal) {
                     window.showBlessingTowerModal();
                 } else {
-                    showBuildingInfoModal(buildingId, buildingData);
+                    showBuildingInfoModalFallback(buildingId, buildingData);
                 }
                 break;
                 
@@ -280,7 +280,7 @@ function handleBuildingClick(buildingId, buildingData) {
                 } else if (window.showTimeGeneratorModal) {
                     window.showTimeGeneratorModal();
                 } else {
-                    showBuildingInfoModal(buildingId, buildingData);
+                    showBuildingInfoModalFallback(buildingId, buildingData);
                 }
                 break;
                 
@@ -290,12 +290,12 @@ function handleBuildingClick(buildingId, buildingData) {
                 } else if (window.showArcaneLabModal) {
                     window.showArcaneLabModal();
                 } else {
-                    showBuildingInfoModal(buildingId, buildingData);
+                    showBuildingInfoModalFallback(buildingId, buildingData);
                 }
                 break;
                 
             default:
-                showBuildingInfoModal(buildingId, buildingData);
+                showBuildingInfoModalFallback(buildingId, buildingData);
         }
     } else {
         // Слот пустой - показываем меню строительства
@@ -356,8 +356,8 @@ function hideBuildingTooltip() {
     if (tooltip) tooltip.remove();
 }
 
-// Стандартное окно информации о здании
-function showBuildingInfoModal(buildingId, buildingData) {
+// Стандартное окно информации о здании (fallback для построенных зданий)
+function showBuildingInfoModalFallback(buildingId, buildingData) {
     // Скрываем tooltip
     hideBuildingTooltip();
 
@@ -1221,7 +1221,7 @@ window.checkActiveSpellResearch = checkActiveSpellResearch;
 
 // Экспортируем функции
 window.highlightBuilding = highlightBuilding;
-window.showBuildingInfoModal = showBuildingInfoModal;
+// showBuildingInfoModal экспортируется из building-descriptions.js (с параметрами для постройки)
 window.closeBuildingInfoModal = closeBuildingInfoModal;
 window.closeAllModals = closeAllModals;
 window.showBuildingTooltip = showBuildingTooltip;
