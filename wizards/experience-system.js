@@ -107,18 +107,17 @@ function trackHealExp(caster, healAmount) {
     }
 }
 
-// Начисление опыта за участие в бою (всем магам, не только выжившим)
+// Начисление бонуса за победу (всем магам команды, не только выжившим)
+// Основной опыт начисляется во время боя через trackDamageExp/trackHealExp
 function grantBattleExp(wizards, isVictory = true) {
     if (!Array.isArray(wizards)) return;
 
-    // Бонус за участие всем магам + дополнительный бонус победителям
-    const baseExp = 5; // Базовый опыт за участие
-    const victoryBonus = isVictory ? EXP_CONFIG.VICTORY_BONUS : 0;
+    // Бонус только за победу
+    if (!isVictory) return;
 
     wizards.forEach(wizard => {
         if (wizard) {
-            const expAmount = baseExp + victoryBonus;
-            addExperienceToWizard(wizard, expAmount);
+            addExperienceToWizard(wizard, EXP_CONFIG.VICTORY_BONUS);
         }
     });
 }
