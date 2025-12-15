@@ -887,7 +887,11 @@ function showArenaResult(result, battleData = {}) {
         rewards = {},
         battleDuration = 0,
         earlyExit = false,
-        wizardExpGained = []
+        wizardExpGained = [],
+        isPvE = false,
+        pveLevel = null,
+        pveReward = 0,
+        isFirstCompletion = false
     } = battleData;
 
     const isWin = result === 'win';
@@ -895,9 +899,9 @@ function showArenaResult(result, battleData = {}) {
     // Определяем цвета и иконки
     const titleColor = isWin ? '#4CAF50' : '#f44336';
     const titleIcon = isWin ? '🏆' : '💀';
-    const titleText = isWin ? 'Вы выиграли!' : 'Вы проиграли!';
+    const titleText = isWin ? 'Победа!' : 'Поражение';
 
-    // Форматируем изменение рейтинга
+    // Форматируем изменение рейтинга (только для PvP)
     const ratingChangeText = ratingChange > 0 ? `+${ratingChange}` : ratingChange;
     const ratingColor = ratingChange > 0 ? '#4CAF50' : ratingChange < 0 ? '#f44336' : '#aaa';
 
@@ -913,6 +917,14 @@ function showArenaResult(result, battleData = {}) {
 
     // Опыт для магов (если есть)
     const expGained = rewards.exp || 0;
+
+    // Форматирование награды PvE
+    const formatPveReward = (minutes) => {
+        if (typeof window.formatTimeCurrency === 'function') {
+            return window.formatTimeCurrency(minutes);
+        }
+        return `${minutes} мин`;
+    };
 
     // Сначала открываем окно арены с фоном
     showPvPArenaModalBg();
@@ -976,7 +988,7 @@ function showArenaResult(result, battleData = {}) {
                 </div>
             ` : ''}
 
-            <!-- Информация о противнике -->
+            <!-- Информация о противнике/уровне -->
             <div style="
                 background: rgba(0, 0, 0, 0.3);
                 padding: 8px;
@@ -984,41 +996,81 @@ function showArenaResult(result, battleData = {}) {
                 margin-bottom: 10px;
                 text-align: center;
             ">
-                <div style="font-size: 11px; color: #aaa;">Противник: <span style="color: white; font-weight: bold;">${opponentName}</span> (${opponentRating})</div>
+                ${isPvE ? `
+                    <div style="font-size: 13px; color: white; font-weight: bold;">${opponentName}</div>
+                ` : `
+                    <div style="font-size: 11px; color: #aaa;">Противник: <span style="color: white; font-weight: bold;">${opponentName}</span> (${opponentRating})</div>
+                `}
             </div>
 
-            <!-- Изменение рейтинга -->
-            <div style="
-                background: rgba(0, 0, 0, 0.3);
-                padding: 10px;
-                border-radius: 8px;
-                margin-bottom: 10px;
-            ">
-                <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center;">
-                    <div style="text-align: center;">
-                        <div style="font-size: 10px; color: #aaa;">Было</div>
-                        <div style="font-size: 16px; color: #7289da; font-weight: bold;">${currentRating}</div>
-                    </div>
-                    <div style="text-align: center;">
-                        <div style="font-size: 22px; color: ${ratingColor}; font-weight: bold;">
-                            ${ratingChangeText}
+            <!-- Изменение рейтинга (только для PvP) -->
+            ${!isPvE ? `
+                <div style="
+                    background: rgba(0, 0, 0, 0.3);
+                    padding: 10px;
+                    border-radius: 8px;
+                    margin-bottom: 10px;
+                ">
+                    <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 10px; color: #aaa;">Было</div>
+                            <div style="font-size: 16px; color: #7289da; font-weight: bold;">${currentRating}</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 22px; color: ${ratingColor}; font-weight: bold;">
+                                ${ratingChangeText}
+                            </div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 10px; color: #aaa;">Стало</div>
+                            <div style="font-size: 16px; color: ${titleColor}; font-weight: bold;">${newRating}</div>
                         </div>
                     </div>
-                    <div style="text-align: center;">
-                        <div style="font-size: 10px; color: #aaa;">Стало</div>
-                        <div style="font-size: 16px; color: ${titleColor}; font-weight: bold;">${newRating}</div>
+                    <div style="
+                        text-align: center;
+                        margin-top: 8px;
+                        padding: 6px;
+                        background: rgba(0, 0, 0, 0.2);
+                        border-radius: 6px;
+                    ">
+                        <div style="font-size: 12px; color: #ffa500;">${leagueInfo}</div>
                     </div>
                 </div>
+            ` : ''}
+
+            <!-- Награда PvE -->
+            ${isPvE && isWin && pveReward > 0 ? `
                 <div style="
+                    background: ${isFirstCompletion ? 'rgba(255, 215, 0, 0.15)' : 'rgba(100, 100, 100, 0.15)'};
+                    padding: 10px;
+                    border-radius: 8px;
+                    margin-bottom: 10px;
                     text-align: center;
-                    margin-top: 8px;
-                    padding: 6px;
-                    background: rgba(0, 0, 0, 0.2);
-                    border-radius: 6px;
+                    border: 1px solid ${isFirstCompletion ? 'rgba(255, 215, 0, 0.5)' : 'rgba(100, 100, 100, 0.3)'};
                 ">
-                    <div style="font-size: 12px; color: #ffa500;">${leagueInfo}</div>
+                    ${isFirstCompletion ? `
+                        <div style="font-size: 13px; color: #ffd700; font-weight: bold;">⏰ +${formatPveReward(pveReward)}</div>
+                    ` : `
+                        <div style="font-size: 12px; color: #888;">ℹ️ Награда уже получена</div>
+                    `}
                 </div>
-            </div>
+            ` : ''}
+
+            <!-- Разблокированный скин -->
+            ${isPvE && isWin && window.lastUnlockedSkin ? `
+                <div style="
+                    background: linear-gradient(135deg, rgba(139,92,246,0.2) 0%, rgba(168,85,247,0.2) 100%);
+                    border: 2px solid #a855f7;
+                    border-radius: 8px;
+                    padding: 10px;
+                    margin-bottom: 10px;
+                    text-align: center;
+                ">
+                    <div style="font-size: 18px; margin-bottom: 3px;">✨</div>
+                    <div style="color: #a855f7; font-weight: bold; font-size: 12px;">Разблокирован новый скин!</div>
+                    <div style="color: #d8b4fe; font-size: 11px;">${window.lastUnlockedSkin.name}</div>
+                </div>
+            ` : ''}
 
             ${wizardExpGained.length > 0 ? `
                 <div style="
@@ -1059,28 +1111,30 @@ function showArenaResult(result, battleData = {}) {
                 </div>
             ` : '')}
 
-            <!-- Статистика -->
-            <div style="
-                background: rgba(0, 0, 0, 0.2);
-                padding: 8px;
-                border-radius: 8px;
-                margin-bottom: 12px;
-            ">
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center;">
-                    <div>
-                        <div style="font-size: 10px; color: #aaa;">Побед</div>
-                        <div style="color: #4CAF50; font-size: 16px; font-weight: bold;">${window.userData?.wins || 0}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 10px; color: #aaa;">Поражений</div>
-                        <div style="color: #f44336; font-size: 16px; font-weight: bold;">${window.userData?.losses || 0}</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 10px; color: #aaa;">Всего</div>
-                        <div style="color: #7289da; font-size: 16px; font-weight: bold;">${window.userData?.total_battles || 0}</div>
+            <!-- Статистика (только для PvP) -->
+            ${!isPvE ? `
+                <div style="
+                    background: rgba(0, 0, 0, 0.2);
+                    padding: 8px;
+                    border-radius: 8px;
+                    margin-bottom: 12px;
+                ">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center;">
+                        <div>
+                            <div style="font-size: 10px; color: #aaa;">Побед</div>
+                            <div style="color: #4CAF50; font-size: 16px; font-weight: bold;">${window.userData?.wins || 0}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: #aaa;">Поражений</div>
+                            <div style="color: #f44336; font-size: 16px; font-weight: bold;">${window.userData?.losses || 0}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 10px; color: #aaa;">Всего</div>
+                            <div style="color: #7289da; font-size: 16px; font-weight: bold;">${window.userData?.total_battles || 0}</div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            ` : ''}
 
             <!-- Кнопки -->
             <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
@@ -1101,22 +1155,41 @@ function showArenaResult(result, battleData = {}) {
                     📜 Лог
                 </button>
 
-                <button id="arena-result-new-fight" style="
-                    flex: 1;
-                    min-width: 80px;
-                    max-width: 120px;
-                    padding: 10px 12px;
-                    border: none;
-                    border-radius: 6px;
-                    background: #7289da;
-                    color: white;
-                    cursor: pointer;
-                    font-size: 13px;
-                    font-weight: bold;
-                    transition: all 0.2s;
-                ">
-                    ⚔️ Бой
-                </button>
+                ${isPvE ? `
+                    <button id="arena-result-to-levels" style="
+                        flex: 1;
+                        min-width: 80px;
+                        max-width: 120px;
+                        padding: 10px 12px;
+                        border: none;
+                        border-radius: 6px;
+                        background: #7289da;
+                        color: white;
+                        cursor: pointer;
+                        font-size: 13px;
+                        font-weight: bold;
+                        transition: all 0.2s;
+                    ">
+                        📋 Уровни
+                    </button>
+                ` : `
+                    <button id="arena-result-new-fight" style="
+                        flex: 1;
+                        min-width: 80px;
+                        max-width: 120px;
+                        padding: 10px 12px;
+                        border: none;
+                        border-radius: 6px;
+                        background: #7289da;
+                        color: white;
+                        cursor: pointer;
+                        font-size: 13px;
+                        font-weight: bold;
+                        transition: all 0.2s;
+                    ">
+                        ⚔️ Бой
+                    </button>
+                `}
 
                 <button id="arena-result-return" style="
                     flex: 1;
@@ -1142,6 +1215,7 @@ function showArenaResult(result, battleData = {}) {
         // Навешиваем обработчики на кнопки
         const viewLogBtn = document.getElementById('arena-result-view-log');
         const newFightBtn = document.getElementById('arena-result-new-fight');
+        const toLevelsBtn = document.getElementById('arena-result-to-levels');
         const returnBtn = document.getElementById('arena-result-return');
 
         if (viewLogBtn) {
@@ -1175,6 +1249,30 @@ function showArenaResult(result, battleData = {}) {
             };
         }
 
+        // Кнопка "К уровням" для PvE
+        if (toLevelsBtn) {
+            toLevelsBtn.onmouseover = () => {
+                toLevelsBtn.style.background = '#5a6ebd';
+                toLevelsBtn.style.transform = 'scale(1.05)';
+            };
+            toLevelsBtn.onmouseout = () => {
+                toLevelsBtn.style.background = '#7289da';
+                toLevelsBtn.style.transform = 'scale(1)';
+            };
+            toLevelsBtn.onclick = () => {
+                console.log('📋 Нажата кнопка "К уровням" в окне PvE');
+                closePvPArenaModalBg();
+                // Очищаем флаги PvE
+                window.lastPvEWasFirstCompletion = undefined;
+                window.lastPvEWizardExpGained = undefined;
+                window.lastUnlockedSkin = null;
+                // Открываем меню уровней
+                if (typeof window.showChapter1Levels === 'function') {
+                    window.showChapter1Levels();
+                }
+            };
+        }
+
         if (returnBtn) {
             returnBtn.onmouseover = () => {
                 returnBtn.style.background = 'rgba(255, 0, 0, 0.2)';
@@ -1188,6 +1286,10 @@ function showArenaResult(result, battleData = {}) {
             };
             returnBtn.onclick = () => {
                 console.log('🏠 Нажата кнопка "Вернуться" в окне арены');
+                // Очищаем флаги PvE при выходе
+                window.lastPvEWasFirstCompletion = undefined;
+                window.lastPvEWizardExpGained = undefined;
+                window.lastUnlockedSkin = null;
                 closePvPArenaModalBg();
             };
         }

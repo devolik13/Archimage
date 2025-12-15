@@ -1220,11 +1220,13 @@ async function checkBattleEnd() {
             }, delay);
         }
 
-        // Для PvE показываем красивое окно результата
+        // Для PvE показываем красивое окно результата (теперь как в PvP)
         if (isPvEBattle) {
             const currentLevel = window.currentPvELevel;
+            const level = window.CHAPTER_1_LEVELS?.find(l => l.id === currentLevel);
+            const levelName = level?.name || `Уровень ${currentLevel}`;
 
-            // Вычисляем прирост опыта для PvE (аналогично PvP)
+            // Вычисляем прирост опыта для PvE - показываем ВСЕХ магов
             const wizardExpGained = [];
             if (window.wizardExpBeforeBattle && window.playerWizards) {
                 window.playerWizards.forEach(wizard => {
@@ -1233,19 +1235,18 @@ async function checkBattleEnd() {
                         if (before) {
                             const expGained = (wizard.experience || 0) - before.experience;
                             const levelGained = (wizard.level || 1) - before.level;
-                            if (expGained > 0 || levelGained > 0) {
-                                wizardExpGained.push({
-                                    name: wizard.name || before.name,
-                                    expGained: expGained,
-                                    levelGained: levelGained,
-                                    newLevel: wizard.level || 1
-                                });
-                            }
+                            // Показываем всех магов, даже с 0 XP
+                            wizardExpGained.push({
+                                name: wizard.name || before.name,
+                                expGained: Math.max(0, expGained),
+                                levelGained: levelGained,
+                                newLevel: wizard.level || 1
+                            });
                         }
                     }
                 });
             }
-            // Сохраняем для отображения в pve-ui.js
+            // Сохраняем для отображения
             window.lastPvEWizardExpGained = wizardExpGained;
 
             // Сохраняем PvE прогресс при победе
@@ -1275,14 +1276,33 @@ async function checkBattleEnd() {
                 }
             }
 
+            // Формируем данные для окна результата (как в PvP)
+            const battleData = {
+                opponentName: levelName,
+                opponentRating: level?.difficulty || 0,
+                ratingChange: 0, // В PvE нет рейтинга
+                rewards: {},
+                battleDuration: 0,
+                earlyExit: window.battleEarlyExit || false,
+                wizardExpGained: wizardExpGained,
+                isPvE: true, // Флаг для особой обработки
+                pveLevel: currentLevel,
+                pveReward: level?.reward || 0,
+                isFirstCompletion: window.lastPvEWasFirstCompletion ?? false
+            };
+
             // Показываем результат с небольшой задержкой (1 сек)
             setTimeout(() => {
                 // Очищаем флаги PvE
                 window.isPvEBattle = false;
                 window.currentPvELevel = null;
+                window.battleEarlyExit = false;
 
-                // Показываем красивое окно результата
-                if (typeof window.showPvEResult === 'function') {
+                // Показываем окно результата в стиле арены
+                if (typeof window.showArenaResult === 'function') {
+                    window.showArenaResult(battleResult, battleData);
+                } else if (typeof window.showPvEResult === 'function') {
+                    // Fallback на старое окно PvE
                     window.showPvEResult(battleResult, currentLevel);
                 } else {
                     // Fallback на alert
