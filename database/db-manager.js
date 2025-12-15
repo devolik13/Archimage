@@ -287,7 +287,7 @@ class DatabaseManager {
         this.autoSaveInterval = setInterval(async () => {
             if (this.hasUnsavedChanges && window.userData) {
                 const playerData = {
-                    timeCurrency: window.userData.time_currency,
+                    timeCurrency: Math.floor(window.userData.time_currency || 0),
                     level: window.userData.level,
                     experience: window.userData.experience,
                     faction: window.userData.faction,
@@ -329,7 +329,7 @@ class DatabaseManager {
         window.addEventListener('beforeunload', async () => {
             if (this.hasUnsavedChanges && window.userData) {
                 const playerData = {
-                    timeCurrency: window.userData.time_currency,
+                    timeCurrency: Math.floor(window.userData.time_currency || 0),
                     level: window.userData.level,
                     experience: window.userData.experience,
                     faction: window.userData.faction,

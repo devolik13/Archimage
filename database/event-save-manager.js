@@ -65,7 +65,8 @@ class EventSaveManager {
 
         try {
             const playerData = {
-                timeCurrency: window.userData.time_currency,
+                // floor() т.к. в памяти храним дробное для накопления, но БД ожидает integer
+                timeCurrency: Math.floor(window.userData.time_currency || 0),
                 level: window.userData.level,
                 experience: window.userData.experience,
                 faction: window.userData.faction,
