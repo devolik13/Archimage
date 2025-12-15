@@ -147,34 +147,7 @@ window.spellRegistry = {
     createProjectile: createProjectile
 };
 
-// Экспорт для совместимости со старым кодом
-window.createSparkProjectile = function(casterCol, casterRow, targetCol, targetRow, onComplete) {
-    playSpellAnimation('spark', {
-        casterCol,
-        casterRow,
-        targetCol,
-        targetRow,
-        onComplete
-    });
-};
-
-window.createIcicleProjectile = function(casterCol, casterRow, targetCol, targetRow, onComplete) {
-    playSpellAnimation('icicle', {
-        casterCol,
-        casterRow,
-        targetCol,
-        targetRow,
-        onComplete
-    });
-};
-
-window.createFireWallVisual = function(casterType, positions, damage, level) {
-    playSpellAnimation('fire_wall', {
-        casterType,
-        positions,
-        damage,
-        level
-    });
-};
+// Функции createSparkProjectile, createIcicleProjectile, createFireWallVisual
+// определяются в animations/*.js (с полной PIXI реализацией)
 
 console.log('📚 Реестр анимаций готов');

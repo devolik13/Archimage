@@ -184,11 +184,7 @@ window.closeCurrentModal = function() {
     }
 };
 
-// Определение школы заклинания (резервная)
-window.getSpellSchoolFallback = function(spellId) {
-    // Используем функцию из spell-functions.js если есть
-    return window.getSpellSchoolFromId?.(spellId) || null;
-};
+// getSpellSchoolFallback определяется в battle/damage-system.js
 
 // Названия направлений
 window.getDirectionNameSimple = function(direction) {
@@ -216,6 +212,6 @@ window.getSpellInfo = function(spellId) {
         id: spellId,
         name: window.SPELL_NAMES?.[spellId] || spellId,
         level: spellData?.level || 1,
-        school: window.getSpellSchoolFromId?.(spellId)
+        school: window.getSpellSchoolFallback?.(spellId)
     };
 };
