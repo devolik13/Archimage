@@ -66,10 +66,21 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
     // === СЛОЙ 2: КОЛОНКА ПРИЗВАННЫХ ===
     if (remainingDamage > 0) {
         console.log(`🛡️ Проверяем слой 2 - призванные в колонке ${summonColumn}, ряд ${target.position}`);
-    
-        // Проверяем призванных существ
-        const summonedCreature = typeof window.findSummonedCreatureAt === 'function' ? 
+
+        // Проверяем призванных существ по позиции
+        let summonedCreature = typeof window.findSummonedCreatureAt === 'function' ?
             window.findSummonedCreatureAt(summonColumn, target.position) : null;
+
+        // ИСПРАВЛЕНИЕ: Для Энтов проверяем linkedWizards (защита связанных магов)
+        // targetType - противоположный casterType (тот кого атакуют)
+        const targetType = casterType === 'player' ? 'enemy' : 'player';
+        if (!summonedCreature && typeof window.findProtectingEnt === 'function' && target.wizard) {
+            const protectingEnt = window.findProtectingEnt(target.wizard, targetType);
+            if (protectingEnt && protectingEnt.hp > 0 && protectingEnt.isAlive) {
+                summonedCreature = protectingEnt;
+                console.log(`🌳 Энт защищает связанного мага ${target.wizard.name}!`);
+            }
+        }
     
         if (summonedCreature && summonedCreature.hp > 0) {
             const creatureDamage = Math.min(remainingDamage, summonedCreature.hp);
@@ -84,6 +95,11 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             // Наносим урон призванному существу
             summonedCreature.hp -= creatureDamage;
             if (summonedCreature.hp < 0) summonedCreature.hp = 0;
+
+            // ИСПРАВЛЕНИЕ: Обновляем визуальный HP бар через менеджер
+            if (window.summonsManager && typeof window.summonsManager.updateHP === 'function') {
+                window.summonsManager.updateHP(summonedCreature.id, summonedCreature.hp);
+            }
             
             // УЛУЧШЕННОЕ ЛОГИРОВАНИЕ с указанием типа существа и защищаемой цели
             let protectionMessage = '';

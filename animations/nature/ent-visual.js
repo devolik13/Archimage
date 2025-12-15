@@ -135,40 +135,41 @@
     }
     
     function updateHPBar(hpBar, hp, maxHP) {
-        const barWidth = 40;
-        const barHeight = 5;
+        const barWidth = 50;  // Увеличено как у магов
+        const barHeight = 6;
+        const barY = -65;     // Выше над спрайтом
 
         // Создаём фон если его нет
         if (!hpBar.hpBarBg) {
             hpBar.hpBarBg = new PIXI.Graphics();
-            hpBar.hpBarBg.beginFill(0x000000, 0.5);
+            hpBar.hpBarBg.beginFill(0x000000, 0.7);
             hpBar.hpBarBg.drawRect(-barWidth/2, 0, barWidth, barHeight);
             hpBar.hpBarBg.endFill();
-            hpBar.hpBarBg.y = -55;
+            hpBar.hpBarBg.y = barY;
             hpBar.addChild(hpBar.hpBarBg);
 
             // Заполнение
             hpBar.hpBarFill = new PIXI.Graphics();
-            hpBar.hpBarFill.y = -55;
+            hpBar.hpBarFill.y = barY;
             hpBar.addChild(hpBar.hpBarFill);
 
-            // Текст HP
+            // Текст HP - увеличен шрифт
             hpBar.hpText = new PIXI.Text('', {
                 fontFamily: 'Arial',
-                fontSize: 10,
+                fontSize: 14,
                 fill: 0xFFFFFF,
                 fontWeight: 'bold',
                 stroke: 0x000000,
-                strokeThickness: 2
+                strokeThickness: 3
             });
             hpBar.hpText.anchor.set(0.5, 1);
-            hpBar.hpText.y = -57;
+            hpBar.hpText.y = barY - 2;
             hpBar.addChild(hpBar.hpText);
         }
 
         // Обновляем заполнение
         hpBar.hpBarFill.clear();
-        const hpPercent = hp / maxHP;
+        const hpPercent = Math.max(0, hp / maxHP);
         const color = hpPercent > 0.5 ? 0x4ade80 :
                      hpPercent > 0.25 ? 0xfbbf24 : 0xef4444;
         hpBar.hpBarFill.beginFill(color);
@@ -176,7 +177,7 @@
         hpBar.hpBarFill.endFill();
 
         // Обновляем текст
-        hpBar.hpText.text = `${hp}/${maxHP}`;
+        hpBar.hpText.text = `${Math.floor(hp)}/${Math.floor(maxHP)}`;
     }
     
     // Обновление HP при получении урона
