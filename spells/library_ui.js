@@ -363,15 +363,15 @@ function setupSpellsScreen(faction) {
             status = '📖 Изучается...';
             const constructionIndex = constructions.indexOf(activeSpellLearning);
             buttonHTML = `
-                <button 
+                <button
                     style="
                         margin-top: 3px;
-                        padding: ${3 * Math.min(scaleX, scaleY)}px ${6 * Math.min(scaleX, scaleY)}px;
+                        padding: ${12 * Math.min(scaleX, scaleY)}px ${6 * Math.min(scaleX, scaleY)}px;
                         border: none;
                         border-radius: 3px;
                         background: #555577;
                         color: white;
-                        font-size: ${fontSize * 0.8}px;
+                        font-size: ${fontSize * 0.75}px;
                         font-weight: bold;
                         cursor: pointer;
                         width: 85%;
