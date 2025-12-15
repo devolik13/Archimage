@@ -74,8 +74,8 @@ async function showBattleField() {
             window.renderBattleField();
         }
 
-        // Начало боя
-        startBattle();
+        // Начало боя (используем window.startBattle для интеграции с battle-timer-manager)
+        window.startBattle();
     } catch (error) {
         console.error('❌ Ошибка загрузки расстановки:', error);
         alert('Ошибка загрузки расстановки');
