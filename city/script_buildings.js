@@ -5,8 +5,8 @@ function showPvPArenaModal() {
     // Закрываем предыдущие модальные окна
     closeCurrentModal();
 
-    // Проверяем построена ли арена
-    const hasArena = window.userData?.buildings?.pvp_arena?.level > 0;
+    // Арена теперь доступна сразу без постройки
+    const hasArena = true;
 
     // Получаем данные энергии боев
     let battleEnergyInfo = '';

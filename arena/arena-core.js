@@ -15,8 +15,8 @@ function showPvPArenaModalBg() {
         closeCurrentModal();
     }
     
-    // Проверяем построена ли арена
-    const hasArena = window.userData?.buildings?.pvp_arena?.level > 0;
+    // Арена теперь доступна сразу без постройки
+    const hasArena = true;
     
     // Регенерируем энергию
     if (typeof window.regenerateBattleEnergy === 'function') {
@@ -85,8 +85,9 @@ function showArenaMainMenu() {
     // Сбрасываем выбранного мага при возврате в меню
     arenaSelectedWizardId = null;
 
-    const hasArena = window.userData?.buildings?.pvp_arena?.level > 0;
-    
+    // Арена теперь доступна сразу без постройки
+    const hasArena = true;
+
     // Очищаем оверлей
     overlay.innerHTML = '';
     

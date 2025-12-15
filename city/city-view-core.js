@@ -325,8 +325,8 @@ function initializeDefaultBuildings() {
         window.userData.buildings = {};
     }
     
-    // Начальные здания - library и time_generator
-    const defaultBuildings = ['library', 'time_generator'];
+    // Начальные здания - library, time_generator и pvp_arena
+    const defaultBuildings = ['library', 'time_generator', 'pvp_arena'];
     
     defaultBuildings.forEach(buildingId => {
         if (!window.userData.buildings[buildingId]) {

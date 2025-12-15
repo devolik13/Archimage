@@ -29,7 +29,7 @@ window.BUILDINGS_CONFIG = {
         "name": "PvP Арена",
         "emoji": "⚔️",
         "description": "Проведение боев 1 на 1 по принципу autochess с рейтингом.",
-        "can_build": true
+        "can_build": false // Арена доступна с самого начала
     },
     "guild": {
         "name": "Гильдия",
