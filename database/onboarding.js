@@ -78,11 +78,10 @@ async function selectFaction(faction) {
         "poison": { "poisoned_blade": { name: "Отравленный клинок", level: 1, tier: 1 } }
     };
     
-    // Стартовые здания: Библиотека, Генератор времени и Арена
+    // Стартовые здания: Библиотека и Генератор времени (арена работает без здания)
     const initialBuildings = {
         library: { level: 1, building_id: 'library' },
-        time_generator: { level: 1, building_id: 'time_generator' },
-        pvp_arena: { level: 1, building_id: 'pvp_arena' }
+        time_generator: { level: 1, building_id: 'time_generator' }
     };
 
     // Сохраняем ВСЁ в Supabase через RPC (обходит RLS)
