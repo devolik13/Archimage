@@ -114,8 +114,10 @@ class DatabaseManager {
             };
 
             // Формируем данные для RPC (лимиты проверяются на стороне БД)
+            // ВАЖНО: Используем Math.floor т.к. time_currency может быть дробным из-за накопления
+            const rawTimeCurrency = playerData.timeCurrency ?? playerData.time_currency ?? 0;
             const rpcData = {
-                time_currency: playerData.timeCurrency || playerData.time_currency || 0,
+                time_currency: Math.floor(rawTimeCurrency),
                 level: playerData.level || 1,
                 experience: playerData.experience || 0,
                 faction: playerData.faction || null,
