@@ -197,6 +197,11 @@ function startBattle() {
     window.battleSpeed = 2000;
     window.battleSpeedMode = 'normal';
 
+    // Защита от бесконечных боёв
+    window.lastTotalHP = null;
+    window.stalemateCounter = 0;
+    window.STALEMATE_TURNS_LIMIT = 15; // Ничья после 15 ходов без изменения HP
+
     // Сброс визуала кнопки скорости
     const speedButton = document.querySelector('#speed-button');
     if (speedButton) {
@@ -562,10 +567,107 @@ async function executeBattlePhase() {
     }
 
     window.globalTurnCounter++;
+
+    // 🔄 Проверка на бесконечный бой (stalemate)
+    const currentTotalHP = calculateTotalHP();
+    if (window.lastTotalHP !== null && currentTotalHP === window.lastTotalHP) {
+        window.stalemateCounter++;
+        if (window.stalemateCounter >= window.STALEMATE_TURNS_LIMIT) {
+            console.log(`⚖️ Бой закончился ничьей: ${window.stalemateCounter} ходов без изменения HP`);
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`⚖️ НИЧЬЯ! ${window.STALEMATE_TURNS_LIMIT} ходов без изменений HP`);
+            }
+            window.battleState = 'stalemate';
+            await endBattleAsDraw();
+            return;
+        }
+    } else {
+        window.stalemateCounter = 0; // Сбрасываем счётчик если HP изменился
+    }
+    window.lastTotalHP = currentTotalHP;
+
     await checkBattleEnd();
 
     if (typeof window.updateBattleField === 'function') {
         window.updateBattleField();
+    }
+}
+
+// Вычисление общего HP всех существ для проверки stalemate
+function calculateTotalHP() {
+    let total = 0;
+
+    // HP игроков
+    if (window.playerWizards) {
+        window.playerWizards.forEach(w => {
+            if (w && w.hp > 0) total += w.hp;
+        });
+    }
+
+    // HP врагов
+    if (window.enemyWizards) {
+        window.enemyWizards.forEach(w => {
+            if (w && w.hp > 0) total += w.hp;
+        });
+    } else if (window.enemyFormation) {
+        window.enemyFormation.forEach(w => {
+            if (w && w.hp > 0) total += w.hp;
+        });
+    }
+
+    // HP призванных существ
+    if (window.summonsManager) {
+        for (const [id, summon] of window.summonsManager.summons) {
+            if (summon.isAlive && summon.hp > 0) {
+                total += summon.hp;
+            }
+        }
+    }
+
+    return total;
+}
+
+// Завершение боя как ничья
+async function endBattleAsDraw() {
+    window.battleState = 'finished';
+
+    // Останавливаем таймер боя
+    if (window.battleTimerManager) {
+        window.battleTimerManager.stopBattle();
+    }
+
+    // Показываем результат как ничью (считается поражением для обеих сторон)
+    const isPvEBattle = window.isPvEBattle || false;
+
+    if (isPvEBattle) {
+        // Для PvE - показываем как поражение
+        setTimeout(() => {
+            window.isPvEBattle = false;
+            window.currentPvELevel = null;
+            if (typeof window.showArenaResult === 'function') {
+                window.showArenaResult('loss', {
+                    opponentName: 'Ничья',
+                    ratingChange: 0,
+                    wizardExpGained: [],
+                    isPvE: true,
+                    earlyExit: false
+                });
+            } else if (typeof window.returnToCity === 'function') {
+                window.returnToCity();
+            }
+        }, 1000);
+    } else {
+        // Для PvP - нет изменения рейтинга
+        setTimeout(() => {
+            if (typeof window.showArenaResult === 'function') {
+                window.showArenaResult('draw', {
+                    opponentName: window.selectedOpponent?.username || 'Противник',
+                    ratingChange: 0,
+                    wizardExpGained: [],
+                    earlyExit: false
+                });
+            }
+        }, 1000);
     }
 }
 

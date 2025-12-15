@@ -895,11 +895,23 @@ function showArenaResult(result, battleData = {}) {
     } = battleData;
 
     const isWin = result === 'win';
+    const isDraw = result === 'draw';
 
     // Определяем цвета и иконки
-    const titleColor = isWin ? '#4CAF50' : '#f44336';
-    const titleIcon = isWin ? '🏆' : '💀';
-    const titleText = isWin ? 'Победа!' : 'Поражение';
+    let titleColor, titleIcon, titleText;
+    if (isDraw) {
+        titleColor = '#ffa500';
+        titleIcon = '⚖️';
+        titleText = 'Ничья';
+    } else if (isWin) {
+        titleColor = '#4CAF50';
+        titleIcon = '🏆';
+        titleText = 'Победа!';
+    } else {
+        titleColor = '#f44336';
+        titleIcon = '💀';
+        titleText = 'Поражение';
+    }
 
     // Форматируем изменение рейтинга (только для PvP)
     const ratingChangeText = ratingChange > 0 ? `+${ratingChange}` : ratingChange;
