@@ -475,9 +475,15 @@ function showBuildingConstructionMenu(buildingId) {
         return;
     }
 
-    // Используем то же окно с фоном, что и в меню "Строить"
-    if (window.showBuildingDetailsInOverlay) {
-        window.showBuildingDetailsInOverlay(buildingId, false); // false = новая постройка
+    // Сначала открываем экран с фоном (как в меню "Строить")
+    if (window.showBuildingSelectionMenu) {
+        window.showBuildingSelectionMenu();
+        // После создания overlay показываем детали здания
+        setTimeout(() => {
+            if (window.showBuildingDetailsInOverlay) {
+                window.showBuildingDetailsInOverlay(buildingId, false); // false = новая постройка
+            }
+        }, 50); // Небольшая задержка для создания DOM
     } else {
         // Fallback на старый метод
         const timeRequired = window.CONSTRUCTION_TIME?.[buildingId] || 144;
