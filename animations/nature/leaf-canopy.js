@@ -222,13 +222,18 @@
         // Анимация увеличения и возврата
         let scaleProgress = 0;
         const pulseAnimation = () => {
+            // Проверяем что спрайт ещё валиден
+            if (!sprite || sprite.destroyed || !sprite.transform) {
+                return;
+            }
+
             scaleProgress += 0.08;
-            
+
             if (scaleProgress <= 1) {
                 // Пульсация размера
                 const scaleFactor = 1 + Math.sin(scaleProgress * Math.PI) * 0.4;
                 sprite.scale.set(originalScale * scaleFactor);
-                
+
                 // Зеленое свечение
                 if (scaleProgress < 0.5) {
                     sprite.tint = 0x00ff00;
@@ -237,9 +242,9 @@
                     sprite.tint = 0xffffff;
                     sprite.alpha = 0.8;
                 }
-                
+
                 requestAnimationFrame(pulseAnimation);
-            } else {
+            } else if (sprite.transform) {
                 // Возвращаем исходные параметры
                 sprite.scale.set(originalScale);
                 sprite.tint = 0xffffff;
