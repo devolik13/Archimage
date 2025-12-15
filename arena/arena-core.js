@@ -83,7 +83,7 @@ function showArenaMainMenu() {
     if (!overlay) return;
     
     // Сбрасываем выбранного мага при возврате в меню
-    arenaSelectedWizardId = null;
+    window.arenaSelectedWizardId = null;
 
     // Арена теперь доступна сразу без постройки
     const hasArena = true;
@@ -417,7 +417,7 @@ function setupArenaUI() {
 // Закрыть окно PvP арены с фоном
 function closePvPArenaModalBg() {
     // Сбрасываем выбранного мага при закрытии арены
-    arenaSelectedWizardId = null;
+    window.arenaSelectedWizardId = null;
 
     const screen = document.getElementById('pvp-arena-screen');
     if (screen) {
@@ -456,7 +456,8 @@ window.showPvPArenaModal = function() {
 };
 
 // Показать расстановку войск внутри окна арены
-let arenaSelectedWizardId = null; // Глобальная переменная для выбранного мага
+// Глобальная переменная для выбранного мага (экспорт в window для доступа из arena-screens.js)
+window.arenaSelectedWizardId = null;
 
 
 // Экспорт функций

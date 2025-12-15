@@ -184,7 +184,7 @@ async function showArenaFormation() {
         // Функция для добавления в расстановку
         window.addToArenaFormation = function(wizardId) {
             // Выбираем мага для размещения
-            arenaSelectedWizardId = wizardId;
+            window.arenaSelectedWizardId = wizardId;
             showArenaFormation(); // Перерисовываем с выделением
         };
         
@@ -192,16 +192,16 @@ async function showArenaFormation() {
         window.onPositionClick = function(position) {
             if (!window.userData || !window.userData.formation) return;
             
-            if (arenaSelectedWizardId) {
+            if (window.arenaSelectedWizardId) {
                 // Если есть выбранный маг - ставим его на позицию
                 // Удаляем мага из других позиций если он уже есть
-                const currentIndex = window.userData.formation.indexOf(arenaSelectedWizardId);
+                const currentIndex = window.userData.formation.indexOf(window.arenaSelectedWizardId);
                 if (currentIndex !== -1) {
                     window.userData.formation[currentIndex] = null;
                 }
                 // Ставим мага на новую позицию
-                window.userData.formation[position] = arenaSelectedWizardId;
-                arenaSelectedWizardId = null; // Сбрасываем выбор
+                window.userData.formation[position] = window.arenaSelectedWizardId;
+                window.arenaSelectedWizardId = null; // Сбрасываем выбор
                 showArenaFormation(); // Перерисовываем
             } else if (window.userData.formation[position]) {
                 // Если позиция занята и нет выбранного мага - убираем мага с позиции
@@ -233,12 +233,12 @@ async function showArenaFormation() {
                     position: relative;
                     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
                     transition: all 0.2s;
-                    ${arenaSelectedWizardId && !wizard ? 'border-color: #ffa500; box-shadow: 0 0 15px rgba(255, 165, 0, 0.5);' : ''}
+                    ${window.arenaSelectedWizardId && !wizard ? 'border-color: #ffa500; box-shadow: 0 0 15px rgba(255, 165, 0, 0.5);' : ''}
                 " 
                 onclick="onPositionClick(${i})"
                 onmouseover="this.style.transform='scale(1.05)'"
                 onmouseout="this.style.transform='scale(1)'"
-                title="${wizard ? `Клик - убрать ${wizard.name}` : (arenaSelectedWizardId ? 'Клик - поставить выбранного мага сюда' : 'Сначала выберите мага снизу')}">
+                title="${wizard ? `Клик - убрать ${wizard.name}` : (window.arenaSelectedWizardId ? 'Клик - поставить выбранного мага сюда' : 'Сначала выберите мага снизу')}">
                     ${wizard ? `
                         <div style="text-align: center;">
                             <div style="font-weight: bold; font-size: 12px; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">${wizard.name}</div>
@@ -301,7 +301,7 @@ async function showArenaFormation() {
                     padding: 4px;
                     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
                     transition: all 0.2s;
-                    ${arenaSelectedWizardId === wizard.id ? 'border-color: #ffa500; box-shadow: 0 0 10px rgba(255, 165, 0, 0.8);' : ''}
+                    ${window.arenaSelectedWizardId === wizard.id ? 'border-color: #ffa500; box-shadow: 0 0 10px rgba(255, 165, 0, 0.8);' : ''}
                 " 
                 onclick="${!isAssigned ? `addToArenaFormation('${wizard.id}')` : ''}"
                 onmouseover="${!isAssigned ? `this.style.transform='scale(1.1)'` : ''}"
@@ -315,7 +315,7 @@ async function showArenaFormation() {
                         ${wizard.spells && wizard.spells.length > 0 ? getSpellNamesInTwoRows(wizard) : 'Без заклинаний'}
                     </div>
                     ${isAssigned ? '<div style="font-size: 8px; color: #7289da;">В строю</div>' : 
-                      (arenaSelectedWizardId === wizard.id ? '<div style="font-size: 8px; color: #ffa500;">ВЫБРАН</div>' : '')}
+                      (window.arenaSelectedWizardId === wizard.id ? '<div style="font-size: 8px; color: #ffa500;">ВЫБРАН</div>' : '')}
                 </div>
             `;
         });
@@ -323,7 +323,7 @@ async function showArenaFormation() {
         container.innerHTML = `
             <h3 style="margin-top: 0; color: #7289da;">⚔️ Расстановка войск</h3>
             <div style="font-size: 12px; color: #aaa; margin-bottom: 10px; text-align: center;">
-                ${arenaSelectedWizardId ? 
+                ${window.arenaSelectedWizardId ? 
                     '<span style="color: #ffa500;">🎯 Выберите позицию для выбранного мага</span>' : 
                     '<span>📍 Выберите мага снизу, затем позицию сверху</span>'
                 }
