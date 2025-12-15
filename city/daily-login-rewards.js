@@ -137,10 +137,10 @@ async function checkDailyLoginReward() {
     showDailyRewardModal(dailyData.day, hoursReward);
 }
 
-// Показ модального окна с наградой
+// Показ модального окна с наградой (с красивым фоном)
 function showDailyRewardModal(day, hours) {
     // Удаляем старую модалку если есть
-    const oldModal = document.getElementById('daily-reward-modal');
+    const oldModal = document.getElementById('daily-reward-screen');
     if (oldModal) oldModal.remove();
 
     // Определяем сообщение
@@ -151,103 +151,138 @@ function showDailyRewardModal(day, hours) {
         dayMessage = `День ${day} (макс. награда)`;
     }
 
-    const modalHTML = `
-        <div id="daily-reward-modal" style="
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            animation: fadeIn 0.3s;
-        ">
-            <div style="
-                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-                border: 3px solid #ffa500;
-                border-radius: 20px;
-                padding: 30px;
-                max-width: 400px;
-                text-align: center;
-                box-shadow: 0 10px 40px rgba(255, 165, 0, 0.3);
-                animation: slideIn 0.5s;
-            ">
-                <div style="font-size: 60px; margin-bottom: 20px; animation: bounce 1s infinite;">
-                    🎁
-                </div>
-                <h2 style="color: #ffa500; margin-bottom: 10px; font-size: 28px;">
-                    Ежедневная награда!
-                </h2>
-                <div style="color: #fff; font-size: 18px; margin-bottom: 20px;">
-                    ${dayMessage}
-                </div>
-                <div style="
-                    background: rgba(255, 165, 0, 0.2);
-                    border: 2px solid #ffa500;
-                    border-radius: 10px;
-                    padding: 20px;
-                    margin-bottom: 20px;
-                ">
-                    <div style="font-size: 48px; margin-bottom: 10px;">
-                        ⏰
-                    </div>
-                    <div style="color: #ffa500; font-size: 32px; font-weight: bold;">
-                        +${hours} ${hours === 1 ? 'час' : hours < 5 ? 'часа' : 'часов'}
-                    </div>
-                </div>
-                <div style="color: #aaa; font-size: 14px; margin-bottom: 20px;">
-                    ${day < DAILY_REWARD_CONFIG.MAX_DAY
-                        ? `Завтра получите ${day + 1} ${day + 1 === 1 ? 'час' : day + 1 < 5 ? 'часа' : 'часов'}!`
-                        : 'Максимальная награда достигнута!'}
-                </div>
-                <button onclick="document.getElementById('daily-reward-modal').remove();" style="
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    border: none;
-                    padding: 12px 30px;
-                    border-radius: 25px;
-                    font-size: 16px;
-                    font-weight: bold;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                " onmouseover="this.style.transform='scale(1.05)'"
-                   onmouseout="this.style.transform='scale(1)'">
-                    Отлично! 🎉
-                </button>
-            </div>
-        </div>
-        <style>
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
-            @keyframes slideIn {
-                from {
-                    transform: translateY(-50px);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateY(0);
-                    opacity: 1;
-                }
-            }
-            @keyframes bounce {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-10px); }
-            }
-        </style>
+    // Фон по фракции игрока
+    const faction = window.userData?.faction || 'fire';
+    const backgroundPath = `assets/ui/window/tower_${faction}.webp`;
+
+    // Создаём экран
+    const screen = document.createElement('div');
+    screen.id = 'daily-reward-screen';
+    screen.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease;
     `;
 
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    screen.innerHTML = `
+        <style>
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        </style>
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <img id="daily-reward-bg" src="${backgroundPath}" alt="Фон" style="
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+            ">
+            <div id="daily-reward-overlay" style="
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 20px;
+            "></div>
+        </div>
+    `;
 
-    // Автозакрытие через 5 секунд
-    setTimeout(() => {
-        const modal = document.getElementById('daily-reward-modal');
-        if (modal) modal.remove();
-    }, 5000);
+    document.body.appendChild(screen);
+
+    // Ждём загрузку изображения для масштабирования
+    const img = document.getElementById('daily-reward-bg');
+    const setupUI = () => {
+        const overlay = document.getElementById('daily-reward-overlay');
+        if (!overlay || !img) return;
+
+        const rect = img.getBoundingClientRect();
+        const scaleX = rect.width / 768;
+        const scaleY = rect.height / 512;
+        const scale = Math.min(scaleX, scaleY);
+
+        const titleSize = Math.max(18, 28 * scale);
+        const subtitleSize = Math.max(14, 20 * scale);
+        const textSize = Math.max(12, 16 * scale);
+        const valueSize = Math.max(24, 36 * scale);
+        const btnSize = Math.max(14, 18 * scale);
+        const iconSize = Math.max(40, 60 * scale);
+
+        // Центральная область (115,70 : 655,410 в оригинале 768x512)
+        const contentWidth = (655 - 115) * scaleX;
+        const contentHeight = (410 - 70) * scaleY;
+
+        overlay.style.cssText = `
+            position: absolute;
+            left: ${115 * scaleX + rect.left - img.parentElement.getBoundingClientRect().left}px;
+            top: ${70 * scaleY}px;
+            width: ${contentWidth}px;
+            height: ${contentHeight}px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            animation: slideUp 0.5s ease;
+        `;
+
+        const hoursText = hours === 1 ? 'час' : hours < 5 ? 'часа' : 'часов';
+        const tomorrowHours = day + 1;
+        const tomorrowText = tomorrowHours === 1 ? 'час' : tomorrowHours < 5 ? 'часа' : 'часов';
+
+        overlay.innerHTML = `
+            <div style="font-size: ${iconSize}px; margin-bottom: ${10 * scale}px; animation: bounce 1s infinite;">🎁</div>
+            <div style="font-size: ${titleSize}px; font-weight: bold; color: #ffd700; margin-bottom: ${5 * scale}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+                Ежедневная награда!
+            </div>
+            <div style="font-size: ${subtitleSize}px; color: #fff; margin-bottom: ${15 * scale}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                ${dayMessage}
+            </div>
+            <div style="
+                background: rgba(0,0,0,0.4);
+                border: 2px solid rgba(255,165,0,0.6);
+                border-radius: ${12 * scale}px;
+                padding: ${15 * scale}px ${25 * scale}px;
+                margin-bottom: ${15 * scale}px;
+            ">
+                <div style="font-size: ${iconSize * 0.8}px; margin-bottom: ${8 * scale}px;">⏰</div>
+                <div style="font-size: ${valueSize}px; font-weight: bold; color: #ffa500; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+                    +${hours} ${hoursText}
+                </div>
+            </div>
+            <div style="font-size: ${textSize}px; color: #aaa; margin-bottom: ${15 * scale}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                ${day < DAILY_REWARD_CONFIG.MAX_DAY
+                    ? `Завтра получите ${tomorrowHours} ${tomorrowText}!`
+                    : 'Максимальная награда достигнута!'}
+            </div>
+            <button onclick="document.getElementById('daily-reward-screen').remove()" style="
+                background: linear-gradient(145deg, #667eea, #764ba2);
+                border: none;
+                padding: ${12 * scale}px ${35 * scale}px;
+                border-radius: ${25 * scale}px;
+                color: white;
+                font-size: ${btnSize}px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: transform 0.2s;
+                box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                Отлично! 🎉
+            </button>
+        `;
+    };
+
+    img.onload = setupUI;
+    if (img.complete) setupUI();
+
 }
 
 // Экспорт функций

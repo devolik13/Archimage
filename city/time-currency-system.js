@@ -220,7 +220,7 @@ function calculateOfflineEarnings() {
     return actualEarnings;
 }
 
-// Показать уведомление о накоплении за офлайн
+// Показать уведомление о накоплении за офлайн (с красивым фоном)
 function showOfflineEarningsNotification(earnedMinutes) {
     if (earnedMinutes === 0) return;
 
@@ -229,62 +229,137 @@ function showOfflineEarningsNotification(earnedMinutes) {
         return;
     }
 
-    const notification = document.createElement('div');
-    notification.style.cssText = `
+    // Удаляем старое если есть
+    const oldScreen = document.getElementById('offline-earnings-screen');
+    if (oldScreen) oldScreen.remove();
+
+    // Фон по фракции игрока
+    const faction = window.userData?.faction || 'fire';
+    const backgroundPath = `assets/ui/window/tower_${faction}.webp`;
+
+    // Создаём экран
+    const screen = document.createElement('div');
+    screen.id = 'offline-earnings-screen';
+    screen.style.cssText = `
         position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: linear-gradient(145deg, #2c2c3d, #1a1a2e);
-        border: 3px solid #ffa500;
-        border-radius: 15px;
-        padding: 30px;
-        text-align: center;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
         z-index: 10000;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        animation: slideDown 0.5s ease-out;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease;
     `;
 
-    notification.innerHTML = `
+    screen.innerHTML = `
         <style>
-            @keyframes slideDown {
-                from { transform: translate(-50%, -70%); opacity: 0; }
-                to { transform: translate(-50%, -50%); opacity: 1; }
-            }
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         </style>
-        <div style="font-size: 48px; margin-bottom: 15px;">⏰</div>
-        <div style="font-size: 20px; font-weight: bold; color: white; margin-bottom: 10px;">
-            Добро пожаловать!
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <img id="offline-earnings-bg" src="${backgroundPath}" alt="Фон" style="
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+            ">
+            <div id="offline-earnings-overlay" style="
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 20px;
+            "></div>
         </div>
-        <div style="font-size: 16px; color: #aaa; margin-bottom: 20px;">
-            За время вашего отсутствия накоплено:
-        </div>
-        <div style="font-size: 32px; font-weight: bold; color: #ffa500; margin-bottom: 25px;">
-            ${window.formatTimeCurrency(earnedMinutes)}
-        </div>
-        <button onclick="this.parentElement.remove()" style="
-            background: #ffa500;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-            Отлично!
-        </button>
     `;
 
-    document.body.appendChild(notification);
+    document.body.appendChild(screen);
 
-    // Автоудаление через 10 секунд
+    // Ждём загрузку изображения для масштабирования
+    const img = document.getElementById('offline-earnings-bg');
+    const setupUI = () => {
+        const overlay = document.getElementById('offline-earnings-overlay');
+        if (!overlay || !img) return;
+
+        const rect = img.getBoundingClientRect();
+        const scaleX = rect.width / 768;
+        const scaleY = rect.height / 512;
+        const scale = Math.min(scaleX, scaleY);
+
+        const titleSize = Math.max(18, 28 * scale);
+        const textSize = Math.max(14, 18 * scale);
+        const valueSize = Math.max(24, 40 * scale);
+        const btnSize = Math.max(14, 18 * scale);
+        const iconSize = Math.max(40, 64 * scale);
+
+        // Центральная область (115,70 : 655,410 в оригинале 768x512)
+        const contentWidth = (655 - 115) * scaleX;
+        const contentHeight = (410 - 70) * scaleY;
+
+        overlay.style.cssText = `
+            position: absolute;
+            left: ${115 * scaleX + rect.left - img.parentElement.getBoundingClientRect().left}px;
+            top: ${70 * scaleY}px;
+            width: ${contentWidth}px;
+            height: ${contentHeight}px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            animation: slideUp 0.5s ease;
+        `;
+
+        overlay.innerHTML = `
+            <div style="font-size: ${iconSize}px; margin-bottom: ${15 * scale}px;">⏰</div>
+            <div style="font-size: ${titleSize}px; font-weight: bold; color: #ffd700; margin-bottom: ${10 * scale}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+                Добро пожаловать!
+            </div>
+            <div style="font-size: ${textSize}px; color: #ccc; margin-bottom: ${20 * scale}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                За время вашего отсутствия накоплено:
+            </div>
+            <div style="
+                font-size: ${valueSize}px;
+                font-weight: bold;
+                color: #ffa500;
+                margin-bottom: ${25 * scale}px;
+                text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
+                background: rgba(0,0,0,0.3);
+                padding: ${10 * scale}px ${20 * scale}px;
+                border-radius: ${10 * scale}px;
+                border: 2px solid rgba(255,165,0,0.5);
+            ">
+                ${window.formatTimeCurrency(earnedMinutes)}
+            </div>
+            <button onclick="document.getElementById('offline-earnings-screen').remove()" style="
+                background: linear-gradient(145deg, #ffa500, #ff8c00);
+                border: none;
+                padding: ${12 * scale}px ${35 * scale}px;
+                border-radius: ${10 * scale}px;
+                color: white;
+                font-size: ${btnSize}px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: transform 0.2s;
+                box-shadow: 0 4px 15px rgba(255,165,0,0.4);
+            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                Отлично! ✨
+            </button>
+        `;
+    };
+
+    img.onload = setupUI;
+    if (img.complete) setupUI();
+
+    // Автоудаление через 15 секунд
     setTimeout(() => {
-        if (notification.parentElement) {
-            notification.remove();
-        }
-    }, 10000);
+        const s = document.getElementById('offline-earnings-screen');
+        if (s) s.remove();
+    }, 15000);
 }
 
 // Флаг для предотвращения множественных вызовов
