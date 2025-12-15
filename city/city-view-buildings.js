@@ -120,12 +120,11 @@ function setupBuildingSelectionUI() {
     const baseFontSize = Math.max(12, 14 * Math.min(scaleX, scaleY));
     const smallFontSize = Math.max(10, 12 * Math.min(scaleX, scaleY));
 
-    // Конфигурация зданий
+    // Конфигурация зданий (pvp_arena убрана - функционал работает без здания)
     const buildableBuildings = [
         { id: 'library', name: 'Библиотека', description: 'Изучение заклинаний', icon: '📚' },
         { id: 'wizard_tower', name: 'Башня мага', description: 'Найм новых магов', icon: '🏯' },
         { id: 'guild', name: 'Гильдия', description: 'Объединение игроков', icon: '🏰' },
-        { id: 'pvp_arena', name: 'Арена', description: 'PvP сражения', icon: '🏟️' },
         { id: 'blessing_tower', name: 'Башня благословения', description: 'Временные бонусы', icon: '🙏' },
         { id: 'arcane_lab', name: 'Лаборатория', description: 'Ускорение изучения', icon: '🔬' },
         { id: 'time_generator', name: 'Генератор времени', description: 'Производство времени', icon: '⏳' }
