@@ -169,6 +169,9 @@ function startBattle() {
     // Сбрасываем флаг показа результата для нового боя
     window.battleResultShown = false;
 
+    // Сбрасываем информацию о разблокированном скине (чтобы не показывать повторно)
+    window.lastUnlockedSkin = null;
+
     // Сохраняем опыт магов ДО начала боя для отображения прироста
     window.wizardExpBeforeBattle = {};
     if (window.playerWizards) {
