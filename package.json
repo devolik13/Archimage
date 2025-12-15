@@ -2,8 +2,18 @@
   "name": "archimage",
   "version": "1.0.0",
   "description": "Archimage: Arcane Secrets - магическая игра для Telegram",
+  "type": "module",
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "start": "python3 -m http.server 8000"
   },
-  "dependencies": {}
+  "devDependencies": {
+    "vite": "^5.4.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "pixi.js": "^7.4.0"
+  }
 }
