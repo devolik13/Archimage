@@ -341,6 +341,7 @@ function initializeDefaultBuildings() {
 }
 
 // Экспорт core функций
+window.isMobileDevice = isMobileDevice;
 window.initCityViewSystem = initCityViewSystem;
 window.initCityView = initCityViewSystem; // Алиас для обратной совместимости
 window.loadBuildingImageNew = loadBuildingImageNew;
