@@ -592,8 +592,10 @@ function findCaster(casterId, casterType) {
 }
 
 function removeDeadWolf(wolf) {
-    if (window.spellAnimations?.call_wolf?.remove) {
-        window.spellAnimations.call_wolf.remove(wolf.column, wolf.position);
+    // Используем clear вместо несуществующего remove
+    // clear принимает wolfId, а не column/position
+    if (window.spellAnimations?.call_wolf?.clear && wolf.id) {
+        window.spellAnimations.call_wolf.clear(wolf.id);
     }
 }
 

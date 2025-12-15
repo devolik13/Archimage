@@ -251,7 +251,8 @@
                 requestAnimationFrame(fadeOut);
             } else {
                 if (wolf.parent) wolf.parent.removeChild(wolf);
-                wolf.destroy(true);
+                // НЕ уничтожаем текстуру - она общая для всех волков!
+                wolf.destroy({ children: true, texture: false, baseTexture: false });
                 activeWolfVisuals.delete(wolfId);
             }
         };

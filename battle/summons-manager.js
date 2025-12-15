@@ -268,8 +268,8 @@ class SummonsManager {
                 if (visual.parent) {
                     visual.parent.removeChild(visual);
                 }
-                // Уничтожаем спрайт
-                visual.destroy(true);
+                // Уничтожаем спрайт (НЕ текстуру - она может использоваться другими волками)
+                visual.destroy({ children: true, texture: false, baseTexture: false });
             }
         }
         
@@ -502,7 +502,8 @@ class SummonsManager {
                 visual.parent.removeChild(visual);
             }
             if (!visual.destroyed) {
-                visual.destroy(true);
+                // ВАЖНО: НЕ уничтожаем текстуру (texture: false), т.к. она общая для всех волков!
+                visual.destroy({ children: true, texture: false, baseTexture: false });
             }
             this.visuals.delete(summonId);
         });
