@@ -96,6 +96,12 @@ async function createBuildingClickZones(faction, container) {
         // Создаем полигон для каждой позиции
         Object.keys(positions).forEach(key => {
             const pos = positions[key];
+
+            // Пропускаем арену - функционал доступен без здания на карте
+            if (pos.buildingId === 'pvp_arena') {
+                return;
+            }
+
             const buildingData = window.userData?.buildings?.[pos.buildingId];
             
             const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
