@@ -464,150 +464,37 @@ function getActionButton(buildingId) {
     return actions[buildingId] || '';
 }
 
-// Функция показа меню строительства
+// Функция показа меню строительства - теперь использует единое окно
 function showBuildingConstructionMenu(buildingId) {
     console.log(`🏗️ Открытие меню строительства для ${buildingId}`);
 
-    // КРИТИЧЕСКИ ВАЖНО: Проверяем config ДО создания overlay!
+    // Проверяем config
     const config = window.BUILDINGS_CONFIG[buildingId];
     if (!config) {
         console.warn(`⚠️ Нет конфигурации для здания ${buildingId}, меню не показано`);
         return;
     }
 
-    // Получаем информацию о бонусах через систему building-descriptions
-    let levelInfo = '';
-    if (typeof window.getBuildingModalData === 'function') {
-        const modalData = window.getBuildingModalData(buildingId, 0, 1, false);
-        levelInfo = modalData.levelInfo;
+    // Вычисляем параметры для showBuildingInfoModal
+    const currentLevel = 0;
+    const targetLevel = 1;
+    const isUpgrade = false;
+    const timeRequired = window.CONSTRUCTION_TIME?.[buildingId] || 144;
+
+    // Используем единое окно информации о здании
+    if (window.showBuildingInfoModal) {
+        window.showBuildingInfoModal(
+            buildingId,
+            currentLevel,
+            targetLevel,
+            isUpgrade,
+            timeRequired,
+            () => executeBuilding(buildingId, isUpgrade, targetLevel, timeRequired)
+        );
+    } else {
+        // Fallback: сразу строим если модалка недоступна
+        executeBuilding(buildingId, isUpgrade, targetLevel, timeRequired);
     }
-
-    // Вычисляем стоимость строительства
-    const timeCost = window.CONSTRUCTION_TIME[buildingId] || 1440;
-    const timeCostFormatted = typeof window.formatTimeCurrency === 'function'
-        ? window.formatTimeCurrency(timeCost)
-        : `${timeCost} мин`;
-
-    // Закрываем предыдущие модальные окна
-    closeAllModals();
-
-    // Создаем модальное окно
-    const modal = document.createElement('div');
-    modal.id = 'construction-modal';
-    modal.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: #2c2c3d;
-        border-radius: 15px;
-        padding: 25px;
-        color: white;
-        z-index: 2000;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        max-width: 450px;
-        animation: modalFadeIn 0.3s ease;
-    `;
-
-    modal.innerHTML = `
-        <!-- Заголовок -->
-        <div style="text-align: center; margin-bottom: 20px;">
-            <div style="font-size: 50px; margin-bottom: 10px;">${config.emoji}</div>
-            <h2 style="margin: 0; color: #7289da; font-size: 24px;">
-                ${config.name}
-            </h2>
-        </div>
-
-        <!-- Описание -->
-        <div style="background: #3d3d5c; padding: 15px; border-radius: 10px; margin: 15px 0;">
-            <div style="font-size: 14px; color: #ccc; line-height: 1.6;">
-                ${config.description}
-            </div>
-        </div>
-
-        <!-- Бонусы (что даст здание) -->
-        ${levelInfo ? `
-        <div style="background: #3d3d5c; padding: 15px; border-radius: 10px; margin: 15px 0;">
-            <div style="
-                font-size: 12px;
-                color: #ffa500;
-                font-weight: bold;
-                margin-bottom: 8px;
-                text-transform: uppercase;
-            ">
-                Что даст:
-            </div>
-            <div style="font-size: 16px; color: #4ade80; font-weight: bold;">
-                ${levelInfo}
-            </div>
-        </div>
-        ` : ''}
-
-        <!-- Стоимость -->
-        <div style="
-            background: rgba(255, 165, 0, 0.1);
-            border: 1px solid rgba(255, 165, 0, 0.3);
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: center;
-        ">
-            <div style="font-size: 12px; color: #aaa; margin-bottom: 5px;">
-                Время строительства:
-            </div>
-            <div style="font-size: 18px; color: #ffa500; font-weight: bold;">
-                ⏳ ${timeCostFormatted}
-            </div>
-        </div>
-
-        <!-- Кнопки -->
-        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
-            <button onclick="closeConstructionModal()" style="
-                padding: 12px 24px;
-                background: #444;
-                color: white;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 14px;
-                transition: background 0.2s;
-            " onmouseover="this.style.background='#555'"
-               onmouseout="this.style.background='#444'">
-                Отмена
-            </button>
-            <button onclick="startBuilding('${buildingId}')" style="
-                padding: 12px 24px;
-                background: #4CAF50;
-                color: white;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 14px;
-                font-weight: bold;
-                transition: background 0.2s;
-            " onmouseover="this.style.background='#45a049'"
-               onmouseout="this.style.background='#4CAF50'">
-                ✅ Построить
-            </button>
-        </div>
-    `;
-
-    // Добавляем затемнение фона
-    const overlay = document.createElement('div');
-    overlay.id = 'modal-overlay';
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 1999;
-    `;
-    overlay.onclick = closeConstructionModal;
-
-    document.body.appendChild(overlay);
-    document.body.appendChild(modal);
 }
 
 // Закрыть модальное окно строительства
