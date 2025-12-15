@@ -553,7 +553,8 @@
         }
 
         // Проверяем что спрайт и контейнер валидны после async операций
-        if (!sprite || sprite.destroyed || !container || container.destroyed) {
+        // Проверка transform нужна т.к. в PIXI v7+ он может быть null у уничтоженных объектов
+        if (!sprite || sprite.destroyed || !sprite.transform || !container || container.destroyed) {
             console.warn(`⚠️ Спрайт или контейнер уничтожен до завершения создания: ${key}`);
             creatingSprites.delete(key);
             return null;
