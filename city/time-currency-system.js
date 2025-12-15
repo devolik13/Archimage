@@ -129,10 +129,13 @@ function updateTimeCurrency() {
     const perMinute = production / 60;
 
     // Убрали maxStorage проверку - онлайн накопление безлимитное!
+    // ВАЖНО: НЕ используем Math.floor здесь, чтобы не терять дробное накопление!
+    // Например, при production=30 мин/час, perMinute=0.5
+    // Если floor каждую минуту - никогда не накопится (floor(X + 0.5) = X)
     const newAmount = currentTime + perMinute;
 
     if (window.userData) {
-        window.userData.time_currency = Math.floor(newAmount);
+        window.userData.time_currency = newAmount;
     }
 
     // Обновляем отображение

@@ -26,10 +26,13 @@ function updateBackgroundByFaction(faction) {
 
 // Форматировать временную валюту
 function formatTimeCurrency(minutes) {
+    // Округляем для отображения (внутреннее хранение может быть дробным)
+    minutes = Math.floor(minutes);
+
     if (minutes < 60) {
         return `${minutes} мин`;
     }
-    
+
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     
