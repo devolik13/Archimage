@@ -106,6 +106,11 @@ async function initGameWithDatabase() {
     console.log('🏆 [DEBUG] Полученные награды за лиги:', player.season_league_rewards_claimed);
     console.log('🪂 [DEBUG] window.userData.airdrop_breakdown после присвоения:', window.userData.airdrop_breakdown);
 
+    // Система скинов
+    window.userData.unlocked_skins = player.unlocked_skins || [];
+    window.userData.wizard_skins = player.wizard_skins || {};
+    console.log('🎨 [DEBUG] Загружены unlocked_skins:', player.unlocked_skins);
+
     // КРИТИЧНО: Проверяем есть ли фракция
     if (!player.faction || player.faction === null) {
         // Новый игрок - показываем выбор фракции
