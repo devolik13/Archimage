@@ -125,10 +125,8 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     	    }
     	}
 
-        // Начисляем опыт за урон (используем базовый урон)
-        if (typeof window.trackDamageExp === 'function' && baseDamage > 0) {
-            window.trackDamageExp(caster, baseDamage);
-        }
+        // Опыт теперь начисляется централизованно в executeSingleMageAttack (core.js)
+        // на основе фактического изменения HP врагов
 
         return finalDamage;
     }
@@ -137,10 +135,7 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     if (typeof window.applyDamageWithMultiLayerProtection === 'function') {
         const result = window.applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId, caster.casterType || 'player');
         if (result) {
-            // Начисляем опыт за урон
-            if (typeof window.trackDamageExp === 'function' && baseDamage > 0) {
-                window.trackDamageExp(caster, baseDamage);
-            }
+            // Опыт начисляется централизованно в core.js
             return result.finalDamage;
         }
     }
@@ -257,22 +252,16 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
                 if (typeof window.addToBattleLog === 'function') {
                     window.addToBattleLog(`🌳 Остаток урона (${remainingDamage}) достигает ${target.name}`);
                 }
-                // Начисляем опыт только если урон дошел до цели
-                if (typeof window.trackDamageExp === 'function' && baseDamage > 0) {
-                    window.trackDamageExp(caster, baseDamage);
-                }
+                // Опыт начисляется централизованно в core.js
                 return remainingDamage;
             } else {
                 return 0; // урон полностью поглощён
             }
         }
     }
-    
-    // Начисляем опыт за урон (используем базовый урон без модификаторов)
-    if (typeof window.trackDamageExp === 'function' && baseDamage > 0) {
-        window.trackDamageExp(caster, baseDamage);
-    }
-    
+
+    // Опыт начисляется централизованно в executeSingleMageAttack (core.js)
+
     console.log('applyFinalDamage возвращает:', finalDamage);
     return finalDamage;
 }

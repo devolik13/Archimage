@@ -575,6 +575,17 @@ async function executeSingleMageAttack(wizard, position, casterType) {
         window.battleLogger.logTurnStart(casterType, wizard, position);
     }
 
+    // 📊 Сохраняем HP врагов ДО хода для подсчёта нанесённого урона
+    const enemyHpBefore = {};
+    const enemies = casterType === 'player' ? window.enemyWizards : window.playerWizards;
+    if (enemies) {
+        enemies.forEach(enemy => {
+            if (enemy && enemy.id) {
+                enemyHpBefore[enemy.id] = enemy.hp || 0;
+            }
+        });
+    }
+
     // ☠️ ОБРАБОТКА УРОНА ОТ ЯДА В НАЧАЛЕ ХОДА МАГА
     if (wizard.effects && wizard.effects.poison && wizard.effects.poison.stacks > 0) {
         const poisonDamage = wizard.effects.poison.stacks * (wizard.effects.poison.damagePerStack || 5);
@@ -710,6 +721,24 @@ async function executeSingleMageAttack(wizard, position, casterType) {
     // Цунами
     if (typeof window.processTsunamisForCaster === 'function') {
         window.processTsunamisForCaster(wizard, casterType);
+    }
+
+    // 📊 Подсчёт нанесённого урона и начисление опыта (только для игрока)
+    if (casterType === 'player' && typeof window.trackDamageExp === 'function') {
+        let totalDamageDealt = 0;
+        if (enemies) {
+            enemies.forEach(enemy => {
+                if (enemy && enemy.id && enemyHpBefore[enemy.id] !== undefined) {
+                    const hpLost = enemyHpBefore[enemy.id] - (enemy.hp || 0);
+                    if (hpLost > 0) {
+                        totalDamageDealt += hpLost;
+                    }
+                }
+            });
+        }
+        if (totalDamageDealt > 0) {
+            window.trackDamageExp(wizard, totalDamageDealt);
+        }
     }
 
     return true;
