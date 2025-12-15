@@ -98,7 +98,9 @@ class EventSaveManager {
                 wallet_address: window.userData.wallet_address || null, // TON кошелек
                 wallet_connected_at: window.userData.wallet_connected_at || null, // Время подключения кошелька
                 current_season: window.userData.current_season || 1, // Текущий сезон
-                season_league_rewards_claimed: window.userData.season_league_rewards_claimed || [] // Полученные награды за лиги
+                season_league_rewards_claimed: window.userData.season_league_rewards_claimed || [], // Полученные награды за лиги
+                unlocked_skins: window.userData.unlocked_skins || [], // Разблокированные скины
+                wizard_skins: window.userData.wizard_skins || {} // Выбранные скины для магов
             });
 
             const success = await window.dbManager.savePlayer(playerData);
