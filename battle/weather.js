@@ -1,12 +1,11 @@
 // battle/weather.js - Система погоды (адаптированная)
 
-
-let currentWeather = null;
+// Инициализация глобальной переменной погоды
+window.currentWeather = null;
 
 function initializeWeatherForBattle() {
     const weathers = ['drought', 'ice_fog', 'sandstorm', 'storm'];
-    currentWeather = weathers[Math.floor(Math.random() * weathers.length)];
-	window.currentWeather = currentWeather;
+    window.currentWeather = weathers[Math.floor(Math.random() * weathers.length)];
     if (typeof window.addToBattleLog === 'function') {
         const weatherNames = {
             'drought': 'Засуха (+15% огню)',
@@ -14,12 +13,12 @@ function initializeWeatherForBattle() {
             'sandstorm': 'Песчаная буря (+15% земле)',
             'storm': 'Шторм (+15% ветру)'
         };
-        window.addToBattleLog(`🌤️ Установлена погода: ${weatherNames[currentWeather]}`);
+        window.addToBattleLog(`🌤️ Установлена погода: ${weatherNames[window.currentWeather]}`);
     }
 }
 
 function resetWeather() {
-    currentWeather = null;
+    window.currentWeather = null;
 }
 
 function applyWeatherBonus(spellFaction, baseDamage) {
@@ -57,18 +56,17 @@ function applyWeatherBonus(spellFaction, baseDamage) {
 }
 
 function getAllBonusesHTML() {
-    if (!currentWeather) return '';
+    if (!window.currentWeather) return '';
     const weatherNames = {
         'drought': '☀️ Засуха: +15% к огню',
         'ice_fog': '❄️ Ледяной туман: +15% к воде',
         'sandstorm': '🏜️ Песчаная буря: +15% к земле',
         'storm': '🌪️ Шторм: +15% к ветру'
     };
-    return `<div style="background: #444; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">${weatherNames[currentWeather]}</div>`;
+    return `<div style="background: #444; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">${weatherNames[window.currentWeather]}</div>`;
 }
 
-// Экспорт
-window.currentWeather = currentWeather;
+// Экспорт функций (window.currentWeather уже инициализирован в начале файла)
 window.initializeWeatherForBattle = initializeWeatherForBattle;
 window.resetWeather = resetWeather;
 window.applyWeatherBonus = applyWeatherBonus;

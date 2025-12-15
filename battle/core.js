@@ -1463,21 +1463,11 @@ function applyAbsoluteZeroEffect(wizard, level, casterType) {
     }
 }
 
-// Глобальный экспорт (в конце файла core.js)
+// Глобальный экспорт функций (в конце файла core.js)
+// ВАЖНО: Переменные состояния боя (playerFormation, enemyFormation, etc.)
+// инициализируются в startBattle() и НЕ экспортируются здесь повторно,
+// чтобы не перезаписать актуальные значения пустыми начальными значениями модуля
 window.showBattleField = showBattleField;
-window.playerFormation = playerFormation;
-window.enemyFormation = enemyFormation;
-window.playerWizards = playerWizards;
-window.enemyWizards = enemyWizards;
-window.battleState = battleState;
-window.currentPhase = currentPhase;
-window.currentPlayerTurn = currentPlayerTurn;
-window.battleLog = battleLog;
-window.battleInterval = battleInterval;
-window.playerMageIndex = playerMageIndex;
-window.enemyMageIndex = enemyMageIndex;
-window.isPaused = isPaused;
-window.battleSpeed = battleSpeed;
 window.generateEnemyFormation = generateEnemyFormation;
 window.cleanupOldWalls = cleanupOldWalls;
 window.startBattle = startBattle;
