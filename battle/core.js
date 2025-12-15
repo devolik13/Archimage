@@ -586,6 +586,17 @@ async function executeSingleMageAttack(wizard, position, casterType) {
         });
     }
 
+    // 💚 Сохраняем HP союзников ДО хода для подсчёта лечения
+    const allyHpBefore = {};
+    const allies = casterType === 'player' ? window.playerWizards : window.enemyWizards;
+    if (allies) {
+        allies.forEach(ally => {
+            if (ally && ally.id) {
+                allyHpBefore[ally.id] = ally.hp || 0;
+            }
+        });
+    }
+
     // ☠️ ОБРАБОТКА УРОНА ОТ ЯДА В НАЧАЛЕ ХОДА МАГА
     if (wizard.effects && wizard.effects.poison && wizard.effects.poison.stacks > 0) {
         const poisonDamage = wizard.effects.poison.stacks * (wizard.effects.poison.damagePerStack || 5);
@@ -738,6 +749,24 @@ async function executeSingleMageAttack(wizard, position, casterType) {
         }
         if (totalDamageDealt > 0) {
             window.trackDamageExp(wizard, totalDamageDealt);
+        }
+
+        // 💚 Подсчёт лечения союзников (XP за лечение)
+        let totalHealingDone = 0;
+        if (allies) {
+            allies.forEach(ally => {
+                if (ally && ally.id && allyHpBefore[ally.id] !== undefined) {
+                    const hpGained = (ally.hp || 0) - allyHpBefore[ally.id];
+                    if (hpGained > 0) {
+                        totalHealingDone += hpGained;
+                    }
+                }
+            });
+        }
+        if (totalHealingDone > 0) {
+            // Лечение даёт XP по той же формуле что и урон
+            window.trackDamageExp(wizard, totalHealingDone);
+            console.log(`💚 [XP] ${wizard.name} получает опыт за лечение: ${totalHealingDone} HP`);
         }
     }
 
