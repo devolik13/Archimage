@@ -27,10 +27,10 @@ import './database/constructions-init.js';
 import './database/onboarding.js';
 import './database/guild-manager.js';
 import './database/referral-manager.js';
-import './guild-modal.js';
-import './airdrop-modal.js';
-import './shop-modal.js';
-import './faction-selection-system.js';
+import './modals/guild-modal.js';
+import './modals/airdrop-modal.js';
+import './modals/shop-modal.js';
+import './modals/faction-selection-system.js';
 
 // ============================================
 // 3. КОНФИГУРАЦИЯ ЗАКЛИНАНИЙ (Spells Data)
@@ -59,11 +59,11 @@ import './city/time-construction-system.js';
 import './city/script_buildings.js';
 import './arena/arena-core.js';
 import './arena/arena-screens.js';
-import './construction-visual-clean.js';
-import './wizard-tower-modal-bg.js';
-import './arcane-lab-modal-bg.js';
-import './time-generator-modal-bg.js';
-import './blessing-tower-modal-bg.js';
+import './city/construction-visual-clean.js';
+import './city/wizard-tower-modal-bg.js';
+import './city/arcane-lab-modal-bg.js';
+import './city/time-generator-modal-bg.js';
+import './city/blessing-tower-modal-bg.js';
 
 // ============================================
 // 5. МАГИ (Wizards)
