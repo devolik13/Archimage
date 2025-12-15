@@ -185,45 +185,6 @@ window.togglePause = function() {
     }
 };
 
-// Переопределяем toggleSpeed
-const originalToggleSpeed = window.toggleSpeed;
-window.toggleSpeed = function() {
-    console.log('🔧 Использую безопасный toggleSpeed');
-    
-    const speedButton = document.querySelector('#speed-button');
-    
-    if (!window.battleSpeedMode || window.battleSpeedMode === 'normal') {
-        window.battleSpeedMode = 'fast';
-        window.battleSpeed = 1000;
-        if (speedButton) {
-            speedButton.innerHTML = '⚡⚡';
-            speedButton.title = 'Очень быстро';
-            speedButton.style.background = '#FFA500';
-        }
-    } else if (window.battleSpeedMode === 'fast') {
-        window.battleSpeedMode = 'veryfast';
-        window.battleSpeed = 500;
-        if (speedButton) {
-            speedButton.innerHTML = '⚡⚡⚡';
-            speedButton.title = 'Замедлить';
-            speedButton.style.background = '#FFD700';
-        }
-    } else {
-        window.battleSpeedMode = 'normal';
-        window.battleSpeed = 2000;
-        if (speedButton) {
-            speedButton.innerHTML = '▶';
-            speedButton.title = 'Ускорить';
-            speedButton.style.background = '#555';
-        }
-    }
-    
-    // Применяем новую скорость
-    window.battleTimerManager.changeSpeed(window.battleSpeed);
-    
-    console.log(`⚡ Скорость боя: ${window.battleSpeedMode} (${window.battleSpeed}ms)`);
-};
-
 // Очистка при выходе из боя
 const originalCloseBattle = window.closeBattle;
 window.closeBattle = function() {

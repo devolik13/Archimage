@@ -192,6 +192,15 @@ function startBattle() {
     window.currentTurn = 'player';
     window.isPaused = false;
     window.battleSpeed = 2000;
+    window.battleSpeedMode = 'normal';
+
+    // Сброс визуала кнопки скорости
+    const speedButton = document.querySelector('#speed-button');
+    if (speedButton) {
+        speedButton.innerHTML = '▶';
+        speedButton.title = 'Ускорить';
+        speedButton.style.background = '#555';
+    }
 
     // Инициализация логгера боя
     if (window.battleLogger) {
