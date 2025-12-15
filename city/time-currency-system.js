@@ -419,6 +419,18 @@ function updateTimeCurrencyDisplay() {
     createTimeCurrencyUI();
 }
 
+// Очистка интервала (для предотвращения утечек памяти)
+function cleanupTimeCurrency() {
+    if (window.timeCurrencyInterval) {
+        clearInterval(window.timeCurrencyInterval);
+        window.timeCurrencyInterval = null;
+        console.log('⏰ Остановлен интервал временной валюты');
+    }
+}
+
+// Автоматическая очистка при выгрузке страницы
+window.addEventListener('beforeunload', cleanupTimeCurrency);
+
 // Экспорт функций
 window.TIME_CURRENCY_CONFIG = TIME_CURRENCY_CONFIG;
 window.getTimeCurrency = getTimeCurrency;
@@ -433,4 +445,5 @@ window.addTimeCurrency = addTimeCurrency;
 window.calculateOfflineEarnings = calculateOfflineEarnings;
 window.showOfflineEarningsNotification = showOfflineEarningsNotification;
 window.initTimeCurrency = initTimeCurrency;
+window.cleanupTimeCurrency = cleanupTimeCurrency;
 
