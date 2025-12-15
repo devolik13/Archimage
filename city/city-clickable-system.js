@@ -1079,6 +1079,22 @@ function startBuilding(buildingId, isUpgrade = false) {
 
 // Выполнить строительство (вызывается после подтверждения)
 function executeBuilding(buildingId, isUpgrade, targetLevel, timeRequired) {
+    // ЗАЩИТА: Финальная проверка на активное строительство
+    if (window.hasActiveConstruction && window.hasActiveConstruction('any_building_or_wizard')) {
+        const constructions = window.userData.constructions || [];
+        const activeConstruction = constructions.find(c =>
+            c.type === 'building' &&
+            c.time_remaining > 0
+        );
+        if (activeConstruction) {
+            console.warn('⚠️ executeBuilding: уже есть активное строительство!', activeConstruction.building_id);
+            if (window.showNotification) {
+                window.showNotification('⚠️ Уже идёт строительство другого здания!');
+            }
+            return false;
+        }
+    }
+
     console.log(`🏗️ ${isUpgrade ? 'Улучшаем' : 'Строим'} ${buildingId} до уровня ${targetLevel}`);
 
     if (!window.userData.constructions) {
