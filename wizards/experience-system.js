@@ -107,15 +107,25 @@ function trackHealExp(caster, healAmount) {
     }
 }
 
-// Начисление опыта за победу
-function grantVictoryExp(winners) {
-    if (!Array.isArray(winners)) return;
-    
-    winners.forEach(wizard => {
-        if (wizard && wizard.hp > 0) {
-            addExperienceToWizard(wizard, EXP_CONFIG.VICTORY_BONUS);
+// Начисление опыта за участие в бою (всем магам, не только выжившим)
+function grantBattleExp(wizards, isVictory = true) {
+    if (!Array.isArray(wizards)) return;
+
+    // Бонус за участие всем магам + дополнительный бонус победителям
+    const baseExp = 5; // Базовый опыт за участие
+    const victoryBonus = isVictory ? EXP_CONFIG.VICTORY_BONUS : 0;
+
+    wizards.forEach(wizard => {
+        if (wizard) {
+            const expAmount = baseExp + victoryBonus;
+            addExperienceToWizard(wizard, expAmount);
         }
     });
+}
+
+// Устаревшая функция для обратной совместимости
+function grantVictoryExp(winners) {
+    grantBattleExp(winners, true);
 }
 
 // Инициализация уровней для новых магов
@@ -135,4 +145,5 @@ window.getDamageBonusFromLevel = getDamageBonusFromLevel;
 window.trackDamageExp = trackDamageExp;
 window.trackHealExp = trackHealExp;
 window.grantVictoryExp = grantVictoryExp;
+window.grantBattleExp = grantBattleExp;
 window.initializeWizardLevel = initializeWizardLevel;

@@ -927,33 +927,34 @@ function showArenaResult(result, battleData = {}) {
 
         overlay.innerHTML = ''; // Очищаем
 
-        // Создаем контейнер для результатов
+        // Создаем контейнер для результатов (адаптивный для мобильных)
         const container = document.createElement('div');
         container.style.cssText = `
             position: absolute;
-            top: 5%;
-            left: 10%;
-            width: 80%;
-            height: 85%;
-            background: rgba(0, 0, 0, 0.5);
+            top: 2%;
+            left: 5%;
+            width: 90%;
+            max-height: 96%;
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             border: 2px solid ${isWin ? 'rgba(76, 175, 80, 0.8)' : 'rgba(244, 67, 54, 0.8)'};
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 12px;
             overflow-y: auto;
             color: white;
             pointer-events: auto;
             box-shadow: 0 0 30px ${isWin ? 'rgba(76, 175, 80, 0.4)' : 'rgba(244, 67, 54, 0.4)'};
+            box-sizing: border-box;
         `;
 
         container.innerHTML = `
             <!-- Заголовок -->
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div style="font-size: 56px; margin-bottom: 10px;">${titleIcon}</div>
+            <div style="text-align: center; margin-bottom: 10px;">
+                <div style="font-size: 40px; margin-bottom: 5px;">${titleIcon}</div>
                 <h2 style="
                     margin: 0;
-                    font-size: 28px;
+                    font-size: 22px;
                     color: ${titleColor};
                     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
                 ">${titleText}</h2>
@@ -963,17 +964,14 @@ function showArenaResult(result, battleData = {}) {
             ${earlyExit ? `
                 <div style="
                     background: rgba(255, 165, 0, 0.2);
-                    border: 2px solid #ffa500;
-                    padding: 12px;
-                    border-radius: 10px;
-                    margin-bottom: 15px;
+                    border: 1px solid #ffa500;
+                    padding: 8px;
+                    border-radius: 8px;
+                    margin-bottom: 10px;
                     text-align: center;
                 ">
-                    <div style="font-size: 14px; color: #ffa500; font-weight: bold; margin-bottom: 5px;">
-                        ℹ️ Досрочный выход из боя
-                    </div>
-                    <div style="font-size: 12px; color: #ffd699; line-height: 1.4;">
-                        Бой был просчитан до конца автоматически.
+                    <div style="font-size: 12px; color: #ffa500; font-weight: bold;">
+                        ℹ️ Бой просчитан автоматически
                     </div>
                 </div>
             ` : ''}
@@ -981,71 +979,69 @@ function showArenaResult(result, battleData = {}) {
             <!-- Информация о противнике -->
             <div style="
                 background: rgba(0, 0, 0, 0.3);
-                padding: 12px;
-                border-radius: 10px;
-                margin-bottom: 15px;
+                padding: 8px;
+                border-radius: 8px;
+                margin-bottom: 10px;
                 text-align: center;
             ">
-                <div style="font-size: 12px; color: #aaa; margin-bottom: 3px;">Противник</div>
-                <div style="font-size: 18px; font-weight: bold; color: white;">${opponentName}</div>
-                <div style="font-size: 12px; color: #aaa; margin-top: 3px;">Рейтинг: ${opponentRating}</div>
+                <div style="font-size: 11px; color: #aaa;">Противник: <span style="color: white; font-weight: bold;">${opponentName}</span> (${opponentRating})</div>
             </div>
 
             <!-- Изменение рейтинга -->
             <div style="
                 background: rgba(0, 0, 0, 0.3);
-                padding: 15px;
-                border-radius: 10px;
-                margin-bottom: 15px;
+                padding: 10px;
+                border-radius: 8px;
+                margin-bottom: 10px;
             ">
-                <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 15px; align-items: center;">
+                <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center;">
                     <div style="text-align: center;">
-                        <div style="font-size: 11px; color: #aaa; margin-bottom: 3px;">Было</div>
-                        <div style="font-size: 20px; color: #7289da; font-weight: bold;">${currentRating}</div>
+                        <div style="font-size: 10px; color: #aaa;">Было</div>
+                        <div style="font-size: 16px; color: #7289da; font-weight: bold;">${currentRating}</div>
                     </div>
                     <div style="text-align: center;">
-                        <div style="font-size: 28px; color: ${ratingColor}; font-weight: bold;">
+                        <div style="font-size: 22px; color: ${ratingColor}; font-weight: bold;">
                             ${ratingChangeText}
                         </div>
                     </div>
                     <div style="text-align: center;">
-                        <div style="font-size: 11px; color: #aaa; margin-bottom: 3px;">Стало</div>
-                        <div style="font-size: 20px; color: ${titleColor}; font-weight: bold;">${newRating}</div>
+                        <div style="font-size: 10px; color: #aaa;">Стало</div>
+                        <div style="font-size: 16px; color: ${titleColor}; font-weight: bold;">${newRating}</div>
                     </div>
                 </div>
                 <div style="
                     text-align: center;
-                    margin-top: 12px;
-                    padding: 10px;
+                    margin-top: 8px;
+                    padding: 6px;
                     background: rgba(0, 0, 0, 0.2);
-                    border-radius: 8px;
+                    border-radius: 6px;
                 ">
-                    <div style="font-size: 14px; color: #ffa500;">${leagueInfo}</div>
+                    <div style="font-size: 12px; color: #ffa500;">${leagueInfo}</div>
                 </div>
             </div>
 
             ${wizardExpGained.length > 0 ? `
                 <div style="
                     background: rgba(255, 165, 0, 0.15);
-                    padding: 12px;
-                    border-radius: 10px;
-                    margin-bottom: 15px;
+                    padding: 8px;
+                    border-radius: 8px;
+                    margin-bottom: 10px;
                     border: 1px solid rgba(255, 165, 0, 0.4);
                 ">
-                    <div style="font-size: 12px; color: #ffa500; margin-bottom: 8px; text-align: center;">Опыт магов</div>
+                    <div style="font-size: 11px; color: #ffa500; margin-bottom: 6px; text-align: center;">Опыт магов</div>
                     ${wizardExpGained.map(w => `
                         <div style="
                             display: flex;
                             justify-content: space-between;
                             align-items: center;
-                            padding: 4px 8px;
+                            padding: 3px 6px;
                             background: rgba(0,0,0,0.2);
-                            border-radius: 5px;
-                            margin-bottom: 4px;
+                            border-radius: 4px;
+                            margin-bottom: 3px;
                         ">
-                            <span style="color: #ddd; font-size: 13px;">${w.name}</span>
-                            <span style="color: #ffa500; font-weight: bold; font-size: 13px;">
-                                +${w.expGained} XP${w.levelGained > 0 ? ` <span style="color: #4CAF50;">⬆️ Ур.${w.newLevel}</span>` : ''}
+                            <span style="color: #ddd; font-size: 11px;">${w.name}</span>
+                            <span style="color: #ffa500; font-weight: bold; font-size: 11px;">
+                                +${w.expGained} XP${w.levelGained > 0 ? ` <span style="color: #4CAF50;">⬆${w.newLevel}</span>` : ''}
                             </span>
                         </div>
                     `).join('')}
@@ -1053,91 +1049,90 @@ function showArenaResult(result, battleData = {}) {
             ` : (expGained > 0 ? `
                 <div style="
                     background: rgba(255, 165, 0, 0.15);
-                    padding: 12px;
-                    border-radius: 10px;
-                    margin-bottom: 15px;
+                    padding: 8px;
+                    border-radius: 8px;
+                    margin-bottom: 10px;
                     text-align: center;
                     border: 1px solid rgba(255, 165, 0, 0.4);
                 ">
-                    <div style="font-size: 12px; color: #ffa500; margin-bottom: 3px;">Опыт получен</div>
-                    <div style="font-size: 20px; color: #ffa500; font-weight: bold;">+${expGained} XP</div>
+                    <div style="font-size: 11px; color: #ffa500;">Опыт: <span style="font-size: 14px; font-weight: bold;">+${expGained} XP</span></div>
                 </div>
             ` : '')}
 
             <!-- Статистика -->
             <div style="
                 background: rgba(0, 0, 0, 0.2);
-                padding: 12px;
-                border-radius: 10px;
-                margin-bottom: 20px;
+                padding: 8px;
+                border-radius: 8px;
+                margin-bottom: 12px;
             ">
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center;">
                     <div>
-                        <div style="font-size: 11px; color: #aaa;">Побед</div>
-                        <div style="color: #4CAF50; font-size: 20px; font-weight: bold;">${window.userData?.wins || 0}</div>
+                        <div style="font-size: 10px; color: #aaa;">Побед</div>
+                        <div style="color: #4CAF50; font-size: 16px; font-weight: bold;">${window.userData?.wins || 0}</div>
                     </div>
                     <div>
-                        <div style="font-size: 11px; color: #aaa;">Поражений</div>
-                        <div style="color: #f44336; font-size: 20px; font-weight: bold;">${window.userData?.losses || 0}</div>
+                        <div style="font-size: 10px; color: #aaa;">Поражений</div>
+                        <div style="color: #f44336; font-size: 16px; font-weight: bold;">${window.userData?.losses || 0}</div>
                     </div>
                     <div>
-                        <div style="font-size: 11px; color: #aaa;">Всего боёв</div>
-                        <div style="color: #7289da; font-size: 20px; font-weight: bold;">${window.userData?.total_battles || 0}</div>
+                        <div style="font-size: 10px; color: #aaa;">Всего</div>
+                        <div style="color: #7289da; font-size: 16px; font-weight: bold;">${window.userData?.total_battles || 0}</div>
                     </div>
                 </div>
             </div>
 
             <!-- Кнопки -->
-            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
                 <button id="arena-result-view-log" style="
                     flex: 1;
-                    max-width: 200px;
-                    padding: 12px 20px;
-                    border: 2px solid #ffa500;
-                    border-radius: 8px;
+                    min-width: 80px;
+                    max-width: 120px;
+                    padding: 10px 12px;
+                    border: 1px solid #ffa500;
+                    border-radius: 6px;
                     background: rgba(255, 165, 0, 0.1);
                     color: #ffa500;
                     cursor: pointer;
-                    font-size: 16px;
+                    font-size: 13px;
                     font-weight: bold;
                     transition: all 0.2s;
-                    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
                 ">
-                    📜 Лог боя
+                    📜 Лог
                 </button>
 
                 <button id="arena-result-new-fight" style="
                     flex: 1;
-                    max-width: 200px;
-                    padding: 12px 20px;
+                    min-width: 80px;
+                    max-width: 120px;
+                    padding: 10px 12px;
                     border: none;
-                    border-radius: 8px;
+                    border-radius: 6px;
                     background: #7289da;
                     color: white;
                     cursor: pointer;
-                    font-size: 16px;
+                    font-size: 13px;
                     font-weight: bold;
                     transition: all 0.2s;
-                    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
                 ">
-                    ⚔️ Новый бой
+                    ⚔️ Бой
                 </button>
 
                 <button id="arena-result-return" style="
                     flex: 1;
-                    max-width: 200px;
-                    padding: 12px 20px;
-                    border: 2px solid #7289da;
-                    border-radius: 8px;
+                    min-width: 80px;
+                    max-width: 120px;
+                    padding: 10px 12px;
+                    border: 1px solid #7289da;
+                    border-radius: 6px;
                     background: rgba(0, 0, 0, 0.3);
                     color: white;
                     cursor: pointer;
-                    font-size: 16px;
+                    font-size: 13px;
                     font-weight: bold;
                     transition: all 0.2s;
-                    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
                 ">
-                    🏠 Вернуться
+                    🏠 Выход
                 </button>
             </div>
         `;

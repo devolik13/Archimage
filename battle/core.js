@@ -916,19 +916,20 @@ async function checkBattleEnd() {
         }
         console.log(resultLog);
 
+        // Начисляем опыт ВСЕМ магам игрока (не только выжившим)
+        const allPlayerWizards = window.playerFormation
+            .map(id => id ? window.playerWizards.find(w => w.id === id) : null)
+            .filter(w => w);
+
         if (!playerAlive) {
-            // Враги победили - даём им опыт
-            if (typeof window.grantVictoryExp === 'function') {
-                const aliveEnemies = window.enemyFormation.filter(w => w && w.hp > 0);
-                window.grantVictoryExp(aliveEnemies);
+            // Враги победили - игроку опыт за участие (без бонуса победы)
+            if (typeof window.grantBattleExp === 'function') {
+                window.grantBattleExp(allPlayerWizards, false);
             }
         } else if (!enemyAlive) {
-            // Игрок победил - даём опыт его магам
-            if (typeof window.grantVictoryExp === 'function') {
-                const aliveWizards = window.playerFormation
-                    .map(id => id ? window.playerWizards.find(w => w.id === id) : null)
-                    .filter(w => w && w.hp > 0);
-                window.grantVictoryExp(aliveWizards);
+            // Игрок победил - опыт за участие + бонус победы
+            if (typeof window.grantBattleExp === 'function') {
+                window.grantBattleExp(allPlayerWizards, true);
             }
 
             // Начисляем airdrop очки за PvP победу (если это не PvE)
