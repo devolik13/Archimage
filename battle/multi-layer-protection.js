@@ -74,8 +74,11 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
         // ИСПРАВЛЕНИЕ: Для Энтов проверяем linkedWizards (защита связанных магов)
         // targetType - противоположный casterType (тот кого атакуют)
         const targetType = casterType === 'player' ? 'enemy' : 'player';
+        console.log(`🌳 [Multi] Проверка Энта для ${target.wizard.name} (id=${target.wizard.id}), summonedCreature=${!!summonedCreature}`);
         if (!summonedCreature && typeof window.findProtectingEnt === 'function' && target.wizard) {
+            console.log(`🌳 [Multi] Вызываем findProtectingEnt для ${target.wizard.name}, targetType=${targetType}`);
             const protectingEnt = window.findProtectingEnt(target.wizard, targetType);
+            console.log(`🌳 [Multi] Результат findProtectingEnt:`, protectingEnt ? `найден (id=${protectingEnt.id}, HP=${protectingEnt.hp})` : 'не найден');
             if (protectingEnt && protectingEnt.hp > 0 && protectingEnt.isAlive) {
                 summonedCreature = protectingEnt;
                 console.log(`🌳 Энт защищает связанного мага ${target.wizard.name}!`);

@@ -211,8 +211,10 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
 
     // Проверка на Энта — перехват урона (теперь работает и для AOE!)
     if (target) {
+        console.log(`🌳 [Damage] Проверка защиты Энта для ${target.name} (id=${target.id})`);
         const ent = typeof window.findProtectingEnt === 'function' ?
             window.findProtectingEnt(target, caster.casterType || 'player') : null;
+        console.log(`🌳 [Damage] Результат поиска Энта:`, ent ? `найден (HP=${ent.hp}, id=${ent.id})` : 'не найден');
         if (ent && ent.isAlive) {
             // Перенаправляем урон Энту
             const absorbed = Math.min(ent.hp, finalDamage);
