@@ -116,7 +116,7 @@ const ELEMENTALS = {
     },
     wind: {
         name: "Воздушный Элементаль",
-        hp: 500,
+        hp: 400,
         armor: 130,
         faction: "wind",
         spells: ["gust", "wind_blade", "storm_cloud"],
