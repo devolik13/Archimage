@@ -866,8 +866,8 @@ async function executeSingleMageAttack(wizard, position, casterType) {
             });
         }
         if (totalHealingDone > 0) {
-            // Лечение даёт XP по той же формуле что и урон
-            window.trackDamageExp(wizard, totalHealingDone);
+            // Лечение даёт XP по формуле HEAL_TO_EXP (8 heal = 1 XP)
+            window.trackHealExp(wizard, totalHealingDone);
             console.log(`💚 [XP] ${wizard.name} получает опыт за лечение: ${totalHealingDone} HP`);
         }
     }
@@ -1357,7 +1357,7 @@ async function checkBattleEnd() {
             const level = window.CHAPTER_1_LEVELS?.find(l => l.id === currentLevel);
             const levelName = level?.name || `Уровень ${currentLevel}`;
 
-            // Вычисляем прирост опыта для PvE - показываем ВСЕХ магов
+            // Вычисляем прирост опыта для PvE - показываем только магов с реальным приростом
             const wizardExpGained = [];
             if (window.wizardExpBeforeBattle && window.playerWizards) {
                 window.playerWizards.forEach(wizard => {
@@ -1366,13 +1366,15 @@ async function checkBattleEnd() {
                         if (before) {
                             const expGained = (wizard.experience || 0) - before.experience;
                             const levelGained = (wizard.level || 1) - before.level;
-                            // Показываем всех магов, даже с 0 XP
-                            wizardExpGained.push({
-                                name: wizard.name || before.name,
-                                expGained: Math.max(0, expGained),
-                                levelGained: levelGained,
-                                newLevel: wizard.level || 1
-                            });
+                            // Показываем только магов с реальным приростом XP или уровня
+                            if (expGained > 0 || levelGained > 0) {
+                                wizardExpGained.push({
+                                    name: wizard.name || before.name,
+                                    expGained: Math.max(0, expGained),
+                                    levelGained: levelGained,
+                                    newLevel: wizard.level || 1
+                                });
+                            }
                         }
                     }
                 });

@@ -1170,20 +1170,56 @@ function showArenaResult(result, battleData = {}) {
                 ${isPvE ? `
                     <button id="arena-result-to-levels" style="
                         flex: 1;
-                        min-width: 80px;
-                        max-width: 120px;
-                        padding: 10px 12px;
-                        border: none;
+                        min-width: 70px;
+                        max-width: 100px;
+                        padding: 10px 8px;
+                        border: 1px solid #7289da;
                         border-radius: 6px;
-                        background: #7289da;
+                        background: rgba(114, 137, 218, 0.2);
                         color: white;
                         cursor: pointer;
-                        font-size: 13px;
+                        font-size: 12px;
                         font-weight: bold;
                         transition: all 0.2s;
                     ">
                         📋 Уровни
                     </button>
+                    ${isWin && pveLevel < 50 ? `
+                        <button id="arena-result-next-level" style="
+                            flex: 1;
+                            min-width: 70px;
+                            max-width: 100px;
+                            padding: 10px 8px;
+                            border: none;
+                            border-radius: 6px;
+                            background: #4CAF50;
+                            color: white;
+                            cursor: pointer;
+                            font-size: 12px;
+                            font-weight: bold;
+                            transition: all 0.2s;
+                        ">
+                            Дальше ➡️
+                        </button>
+                    ` : ''}
+                    ${!isWin ? `
+                        <button id="arena-result-retry" style="
+                            flex: 1;
+                            min-width: 70px;
+                            max-width: 100px;
+                            padding: 10px 8px;
+                            border: none;
+                            border-radius: 6px;
+                            background: #f44336;
+                            color: white;
+                            cursor: pointer;
+                            font-size: 12px;
+                            font-weight: bold;
+                            transition: all 0.2s;
+                        ">
+                            🔄 Ещё раз
+                        </button>
+                    ` : ''}
                 ` : `
                     <button id="arena-result-new-fight" style="
                         flex: 1;
@@ -1264,11 +1300,11 @@ function showArenaResult(result, battleData = {}) {
         // Кнопка "К уровням" для PvE
         if (toLevelsBtn) {
             toLevelsBtn.onmouseover = () => {
-                toLevelsBtn.style.background = '#5a6ebd';
+                toLevelsBtn.style.background = 'rgba(114, 137, 218, 0.4)';
                 toLevelsBtn.style.transform = 'scale(1.05)';
             };
             toLevelsBtn.onmouseout = () => {
-                toLevelsBtn.style.background = '#7289da';
+                toLevelsBtn.style.background = 'rgba(114, 137, 218, 0.2)';
                 toLevelsBtn.style.transform = 'scale(1)';
             };
             toLevelsBtn.onclick = () => {
@@ -1281,6 +1317,56 @@ function showArenaResult(result, battleData = {}) {
                 // Открываем меню уровней
                 if (typeof window.showChapter1Levels === 'function') {
                     window.showChapter1Levels();
+                }
+            };
+        }
+
+        // Кнопка "Дальше" для PvE (следующий уровень)
+        const nextLevelBtn = document.getElementById('arena-result-next-level');
+        if (nextLevelBtn) {
+            nextLevelBtn.onmouseover = () => {
+                nextLevelBtn.style.background = '#45a049';
+                nextLevelBtn.style.transform = 'scale(1.05)';
+            };
+            nextLevelBtn.onmouseout = () => {
+                nextLevelBtn.style.background = '#4CAF50';
+                nextLevelBtn.style.transform = 'scale(1)';
+            };
+            nextLevelBtn.onclick = () => {
+                console.log('➡️ Нажата кнопка "Дальше" - переход к уровню', pveLevel + 1);
+                closePvPArenaModalBg();
+                // Очищаем флаги PvE
+                window.lastPvEWasFirstCompletion = undefined;
+                window.lastPvEWizardExpGained = undefined;
+                window.lastUnlockedSkin = null;
+                // Запускаем следующий уровень
+                if (typeof window.startPvELevel === 'function') {
+                    window.startPvELevel(pveLevel + 1);
+                }
+            };
+        }
+
+        // Кнопка "Ещё раз" для PvE (повтор уровня)
+        const retryBtn = document.getElementById('arena-result-retry');
+        if (retryBtn) {
+            retryBtn.onmouseover = () => {
+                retryBtn.style.background = '#d32f2f';
+                retryBtn.style.transform = 'scale(1.05)';
+            };
+            retryBtn.onmouseout = () => {
+                retryBtn.style.background = '#f44336';
+                retryBtn.style.transform = 'scale(1)';
+            };
+            retryBtn.onclick = () => {
+                console.log('🔄 Нажата кнопка "Ещё раз" - повтор уровня', pveLevel);
+                closePvPArenaModalBg();
+                // Очищаем флаги PvE
+                window.lastPvEWasFirstCompletion = undefined;
+                window.lastPvEWizardExpGained = undefined;
+                window.lastUnlockedSkin = null;
+                // Повторяем текущий уровень
+                if (typeof window.startPvELevel === 'function') {
+                    window.startPvELevel(pveLevel);
                 }
             };
         }
