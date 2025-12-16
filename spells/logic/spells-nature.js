@@ -376,33 +376,68 @@ function castEnt(wizard, spellData, position, casterType) {
     const selectedAllies = shuffledAllies.slice(0, additionalCount);
     
     linkedWizards.push(...selectedAllies);
-    
+
+    // Логируем связанных магов
+    const linkedNames = linkedWizards.map(w => `${w.name}(id=${w.id})`).join(', ');
+    console.log(`🌳 [Ent] Создание Энта уровня ${level} для ${casterType}`);
+    console.log(`🌳 [Ent] Связанные маги: ${linkedNames}`);
+
     // Создаем Энта через менеджер
     const ent = window.createEntSummon(wizard, casterType, position, level, linkedWizards);
-    
+
     if (!ent) {
         console.error('Не удалось создать Энта');
         return;
     }
-    
+
+    // Проверяем, что linkedWizards сохранились правильно
+    console.log(`🌳 [Ent] Энт создан: id=${ent.id}, HP=${ent.hp}, linkedWizards=${ent.special?.linkedWizards?.length || 0}`);
+
+    // Добавляем в лог боя
+    if (typeof window.addToBattleLog === 'function') {
+        window.addToBattleLog(`🌳 Энт призван (защищает: ${linkedNames})`);
+    }
+
     // Применяем бонус фракции
     applyNatureFactionBonus(wizard, casterType);
 }
 
 // Обновленная функция поиска защищающего Энта
 function findProtectingEnt(target, casterType) {
-    // Используем менеджер для поиска
+    // Проверяем наличие менеджера призывов
+    if (!window.summonsManager || !window.summonsManager.summons) {
+        console.log('🌳 [Ent] summonsManager не найден');
+        return null;
+    }
+
+    // Проверяем, что target - это маг с id
+    if (!target || !target.id) {
+        console.log('🌳 [Ent] Цель не найдена или без id:', target?.name);
+        return null;
+    }
+
     const ents = [];
-    
+
     for (const [id, summon] of window.summonsManager.summons) {
-        if (summon.type === 'nature_ent' && 
-            summon.isAlive && 
-            summon.special?.linkedWizards?.some(w => w.id === target.id)) {
-            ents.push(summon);
+        // Отладка: показываем всех Энтов
+        if (summon.type === 'nature_ent') {
+            // linkedWizards могут быть в special или в корне объекта
+            const linkedWizards = summon.special?.linkedWizards || summon.linkedWizards || [];
+            const linkedIds = linkedWizards.map(w => w?.id).filter(Boolean);
+            console.log(`🌳 [Ent] Найден Энт ${id}: HP=${summon.hp}, isAlive=${summon.isAlive}, linkedWizards=[${linkedIds.join(',')}], ищем=${target.id}`);
+
+            if (summon.isAlive && linkedWizards.some(w => w && w.id === target.id)) {
+                console.log(`🌳 [Ent] Энт ${id} защищает мага ${target.name}!`);
+                ents.push(summon);
+            }
         }
     }
-    
-    // Возвращаем первого найденного Энта (можно модифицировать логику)
+
+    if (ents.length === 0) {
+        console.log(`🌳 [Ent] Не найден защищающий Энт для ${target.name}`);
+    }
+
+    // Возвращаем первого найденного Энта
     return ents[0] || null;
 }
 
