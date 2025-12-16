@@ -70,17 +70,19 @@
                 }
             }
             
-            // Создаем спрайт
+            // Создаем спрайт (увеличен на 20%: 0.3 → 0.36)
             const entSprite = new PIXI.AnimatedSprite(frames);
             entSprite.animationSpeed = 0.05;
             entSprite.anchor.set(0.5, 0.5);
-            entSprite.scale.set(entCell.cellScale * 0.3);
+            const spriteScale = entCell.cellScale * 0.36;
+            entSprite.scale.set(spriteScale);
             entSprite.x = entCell.x + entCell.width / 2;
             entSprite.y = entCell.y + entCell.height / 2;
             entSprite.play();
-            
-            // HP бар
+
+            // HP бар - компенсируем масштаб спрайта чтобы бар был нормального размера
             const hpBar = new PIXI.Graphics();
+            hpBar.scale.set(1 / spriteScale); // Инвертируем масштаб спрайта
             updateHPBar(hpBar, entData.hp, entData.maxHP);
             entSprite.addChild(hpBar);
             
@@ -116,12 +118,15 @@
         ent.drawCircle(5, -15, 2);
         ent.endFill();
         
-        ent.scale.set(cell.cellScale * 0.75);
+        // Увеличен на 20%: 0.75 → 0.9
+        const fallbackScale = cell.cellScale * 0.9;
+        ent.scale.set(fallbackScale);
         ent.x = cell.x + cell.width / 2;
         ent.y = cell.y + cell.height / 2;
-        
-        // HP бар
+
+        // HP бар - компенсируем масштаб спрайта
         const hpBar = new PIXI.Graphics();
+        hpBar.scale.set(1 / fallbackScale); // Инвертируем масштаб
         updateHPBar(hpBar, entData.hp, entData.maxHP);
         ent.addChild(hpBar);
         

@@ -377,8 +377,8 @@ function castEnt(wizard, spellData, position, casterType) {
     
     linkedWizards.push(...selectedAllies);
 
-    // Логируем связанных магов
-    const linkedNames = linkedWizards.map(w => `${w.name}(id=${w.id})`).join(', ');
+    // Логируем связанных магов (без id)
+    const linkedNames = linkedWizards.map(w => w.name).join(', ');
     console.log(`🌳 [Ent] Создание Энта уровня ${level} для ${casterType}`);
     console.log(`🌳 [Ent] Связанные маги: ${linkedNames}`);
 
@@ -423,11 +423,11 @@ function findProtectingEnt(target, casterType) {
         if (summon.type === 'nature_ent') {
             // linkedWizards могут быть в special или в корне объекта
             const linkedWizards = summon.special?.linkedWizards || summon.linkedWizards || [];
-            const linkedIds = linkedWizards.map(w => w?.id).filter(Boolean);
-            console.log(`🌳 [Ent] Найден Энт ${id}: HP=${summon.hp}, isAlive=${summon.isAlive}, linkedWizards=[${linkedIds.join(',')}], ищем=${target.id}`);
+            const linkedNames = linkedWizards.map(w => w?.name).filter(Boolean);
+            console.log(`🌳 [Ent] Энт: HP=${summon.hp}, защищает: ${linkedNames.join(', ')}`);
 
             if (summon.isAlive && linkedWizards.some(w => w && w.id === target.id)) {
-                console.log(`🌳 [Ent] Энт ${id} защищает мага ${target.name}!`);
+                console.log(`🌳 [Ent] Энт защищает ${target.name}!`);
                 ents.push(summon);
             }
         }

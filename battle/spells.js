@@ -253,11 +253,12 @@ function castBasicAttack(wizard, position, casterType) {
             const result = window.applyDamageWithMultiLayerProtection(wizard, target, baseDamage, 'basic_attack', casterType);
 
             if (result) {
-
+                // Показываем имя атакующего в названии атаки
+                const attackName = `${wizard.name}: Атака`;
                 if (typeof window.logSpellHit === 'function') {
-                    window.logSpellHit(wizard, target.wizard, result.finalDamage, 'Базовая атака');
+                    window.logSpellHit(wizard, target.wizard, result.finalDamage, attackName);
                 } else if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`⚔️ ${wizard.name} атакует ${target.wizard.name} (${result.finalDamage} урона) (${target.wizard.hp}/${target.wizard.max_hp})`);
+                    window.addToBattleLog(`⚔️ ${attackName} → ${target.wizard.name} (${result.finalDamage} урона) (${target.wizard.hp}/${target.wizard.max_hp})`);
                 }
             }
         } else {
@@ -268,11 +269,12 @@ function castBasicAttack(wizard, position, casterType) {
             target.wizard.hp -= finalDamage;
             if (target.wizard.hp < 0) target.wizard.hp = 0;
 
-
+            // Показываем имя атакующего в названии атаки
+            const attackName = `${wizard.name}: Атака`;
             if (typeof window.logSpellHit === 'function') {
-                window.logSpellHit(wizard, target.wizard, finalDamage, 'Базовая атака');
+                window.logSpellHit(wizard, target.wizard, finalDamage, attackName);
             } else if (Array.isArray(window.battleLog)) {
-                const logEntry = `⚔️ ${wizard.name} атакует ${target.wizard.name} (${finalDamage} урона) (${target.wizard.hp}/${target.wizard.max_hp})`;
+                const logEntry = `⚔️ ${attackName} → ${target.wizard.name} (${finalDamage} урона) (${target.wizard.hp}/${target.wizard.max_hp})`;
                 window.battleLog.push(logEntry);
                 console.log(logEntry);
             }
