@@ -135,14 +135,15 @@
     }
     
     function updateHPBar(hpBar, hp, maxHP) {
-        const barWidth = 50;  // Увеличено как у магов
-        const barHeight = 6;
-        const barY = -65;     // Выше над спрайтом
+        // Такие же размеры как у магов
+        const barWidth = 40;
+        const barHeight = 5;
+        const barY = -55;     // Выше над спрайтом
 
         // Создаём фон если его нет
         if (!hpBar.hpBarBg) {
             hpBar.hpBarBg = new PIXI.Graphics();
-            hpBar.hpBarBg.beginFill(0x000000, 0.7);
+            hpBar.hpBarBg.beginFill(0x000000, 0.5);
             hpBar.hpBarBg.drawRect(-barWidth/2, 0, barWidth, barHeight);
             hpBar.hpBarBg.endFill();
             hpBar.hpBarBg.y = barY;
@@ -153,14 +154,14 @@
             hpBar.hpBarFill.y = barY;
             hpBar.addChild(hpBar.hpBarFill);
 
-            // Текст HP - увеличен шрифт
+            // Текст HP - как у магов
             hpBar.hpText = new PIXI.Text('', {
                 fontFamily: 'Arial',
-                fontSize: 14,
+                fontSize: 10,
                 fill: 0xFFFFFF,
                 fontWeight: 'bold',
                 stroke: 0x000000,
-                strokeThickness: 3
+                strokeThickness: 2
             });
             hpBar.hpText.anchor.set(0.5, 1);
             hpBar.hpText.y = barY - 2;

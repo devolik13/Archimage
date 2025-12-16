@@ -69,11 +69,17 @@ function performWolfAttack(wolf, caster) {
         }
         
         // Применяем урон основной цели
-        const finalDamage = typeof window.applyFinalDamage === 'function' ? 
+        const finalDamage = typeof window.applyFinalDamage === 'function' ?
             window.applyFinalDamage(caster, target.wizard, wolf.damage, 'wolf_attack', 0, false) : wolf.damage;
-            
+
         target.wizard.hp -= finalDamage;
         if (target.wizard.hp < 0) target.wizard.hp = 0;
+
+        // 📊 Учитываем урон волка для XP хозяина
+        if (typeof window.trackBattleDamage === 'function' && wolf.casterType === 'player') {
+            window.trackBattleDamage(caster, finalDamage);
+            console.log(`📊 [XP] Волк ${caster.name}: +${finalDamage} урона в статистику`);
+        }
         
         // ✅ ОБНОВЛЯЕМ ВИЗУАЛЬНЫЙ HP БАР
         if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
@@ -126,12 +132,17 @@ function performWolfAttack(wolf, caster) {
             // ===== АТАКА ПО ЛЕВОМУ СОСЕДУ =====
             const leftTarget = findTargetAtSimplePosition(leftPos, wolf.casterType);
             if (leftTarget) {
-                const leftFinalDamage = typeof window.applyFinalDamage === 'function' ? 
+                const leftFinalDamage = typeof window.applyFinalDamage === 'function' ?
                     window.applyFinalDamage(caster, leftTarget.wizard, baseSplashDamage, 'wolf_splash', 0, true) : baseSplashDamage;
-                
+
                 leftTarget.wizard.hp -= leftFinalDamage;
                 if (leftTarget.wizard.hp < 0) leftTarget.wizard.hp = 0;
-                
+
+                // 📊 Учитываем AoE урон волка для XP хозяина
+                if (typeof window.trackBattleDamage === 'function' && wolf.casterType === 'player') {
+                    window.trackBattleDamage(caster, leftFinalDamage);
+                }
+
                 // ✅ ОБНОВЛЯЕМ HP БАР ЛЕВОЙ ЦЕЛИ
                 if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
                     const leftCol = leftTarget.column !== undefined ? leftTarget.column : (wolf.casterType === 'player' ? 0 : 5);
@@ -171,12 +182,17 @@ function performWolfAttack(wolf, caster) {
             // ===== АТАКА ПО ПРАВОМУ СОСЕДУ =====
             const rightTarget = findTargetAtSimplePosition(rightPos, wolf.casterType);
             if (rightTarget) {
-                const rightFinalDamage = typeof window.applyFinalDamage === 'function' ? 
+                const rightFinalDamage = typeof window.applyFinalDamage === 'function' ?
                     window.applyFinalDamage(caster, rightTarget.wizard, baseSplashDamage, 'wolf_splash', 0, true) : baseSplashDamage;
-                
+
                 rightTarget.wizard.hp -= rightFinalDamage;
                 if (rightTarget.wizard.hp < 0) rightTarget.wizard.hp = 0;
-                
+
+                // 📊 Учитываем AoE урон волка для XP хозяина
+                if (typeof window.trackBattleDamage === 'function' && wolf.casterType === 'player') {
+                    window.trackBattleDamage(caster, rightFinalDamage);
+                }
+
                 // ✅ ОБНОВЛЯЕМ HP БАР ПРАВОЙ ЦЕЛИ
                 if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
                     const rightCol = rightTarget.column !== undefined ? rightTarget.column : (wolf.casterType === 'player' ? 0 : 5);
