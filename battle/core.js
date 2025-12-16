@@ -172,6 +172,11 @@ function startBattle() {
     // Сбрасываем информацию о разблокированном скине (чтобы не показывать повторно)
     window.lastUnlockedSkin = null;
 
+    // Инициализируем статистику боя для новой системы опыта
+    if (typeof window.initBattleStats === 'function') {
+        window.initBattleStats();
+    }
+
     // Сохраняем опыт магов ДО начала боя для отображения прироста
     window.wizardExpBeforeBattle = {};
     if (window.playerWizards) {
@@ -636,6 +641,13 @@ async function endBattleAsDraw() {
         window.battleTimerManager.stopBattle();
     }
 
+    // Начисляем опыт за ничью (считается как поражение - DEFEAT_BONUS)
+    let wizardExpGained = [];
+    if (typeof window.grantBattleExp === 'function') {
+        wizardExpGained = window.grantBattleExp([], false); // false = не победа
+        console.log('📊 [XP] Опыт за ничью:', wizardExpGained);
+    }
+
     // Показываем результат как ничью (считается поражением для обеих сторон)
     const isPvEBattle = window.isPvEBattle || false;
 
@@ -648,7 +660,7 @@ async function endBattleAsDraw() {
                 window.showArenaResult('loss', {
                     opponentName: 'Ничья',
                     ratingChange: 0,
-                    wizardExpGained: [],
+                    wizardExpGained: wizardExpGained,
                     isPvE: true,
                     earlyExit: false
                 });
@@ -663,7 +675,7 @@ async function endBattleAsDraw() {
                 window.showArenaResult('draw', {
                     opponentName: window.selectedOpponent?.username || 'Противник',
                     ratingChange: 0,
-                    wizardExpGained: [],
+                    wizardExpGained: wizardExpGained,
                     earlyExit: false
                 });
             }
@@ -1084,21 +1096,19 @@ async function checkBattleEnd() {
             .map(id => id ? window.playerWizards.find(w => w.id === id) : null)
             .filter(w => w);
 
-        if (!playerAlive) {
-            // Враги победили - игроку опыт за участие (без бонуса победы)
-            if (typeof window.grantBattleExp === 'function') {
-                window.grantBattleExp(allPlayerWizards, false);
-            }
-        } else if (!enemyAlive) {
-            // Игрок победил - опыт за участие + бонус победы
-            if (typeof window.grantBattleExp === 'function') {
-                window.grantBattleExp(allPlayerWizards, true);
-            }
+        // Определяем результат боя для XP
+        const isVictory = !enemyAlive && playerAlive;
 
-            // Начисляем airdrop очки за PvP победу (если это не PvE)
-            if (!isPvEBattle && typeof window.addAirdropPoints === 'function') {
-                window.addAirdropPoints(10, 'Победа в PvP');
-            }
+        // Начисляем опыт через новую систему (подсчёт в конце боя)
+        // grantBattleExp возвращает массив с детальной статистикой
+        if (typeof window.grantBattleExp === 'function') {
+            window.lastBattleExpResults = window.grantBattleExp(allPlayerWizards, isVictory);
+            console.log('📊 [XP] Результаты боя:', window.lastBattleExpResults);
+        }
+
+        // Начисляем airdrop очки за PvP победу (если это не PvE)
+        if (isVictory && !isPvEBattle && typeof window.addAirdropPoints === 'function') {
+            window.addAirdropPoints(10, 'Победа в PvP');
         }
 
         // Если это PvE приключение и игрок победил
@@ -1310,27 +1320,8 @@ async function checkBattleEnd() {
         if (!isPvEBattle && typeof window.showBattleResult === 'function') {
             const opponent = window.selectedOpponent || {};
 
-            // Вычисляем прирост опыта для каждого мага
-            const wizardExpGained = [];
-            if (window.wizardExpBeforeBattle && window.playerWizards) {
-                window.playerWizards.forEach(wizard => {
-                    if (wizard && wizard.id) {
-                        const before = window.wizardExpBeforeBattle[wizard.id];
-                        if (before) {
-                            const expGained = (wizard.experience || 0) - before.experience;
-                            const levelGained = (wizard.level || 1) - before.level;
-                            if (expGained > 0 || levelGained > 0) {
-                                wizardExpGained.push({
-                                    name: wizard.name || before.name,
-                                    expGained: expGained,
-                                    levelGained: levelGained,
-                                    newLevel: wizard.level || 1
-                                });
-                            }
-                        }
-                    }
-                });
-            }
+            // Используем результаты из новой системы XP (включает урон, лечение, убийства)
+            const wizardExpGained = window.lastBattleExpResults || [];
 
             const battleData = {
                 opponentName: opponent.username || 'Противник',
@@ -1357,28 +1348,8 @@ async function checkBattleEnd() {
             const level = window.CHAPTER_1_LEVELS?.find(l => l.id === currentLevel);
             const levelName = level?.name || `Уровень ${currentLevel}`;
 
-            // Вычисляем прирост опыта для PvE - показываем только магов с реальным приростом
-            const wizardExpGained = [];
-            if (window.wizardExpBeforeBattle && window.playerWizards) {
-                window.playerWizards.forEach(wizard => {
-                    if (wizard && wizard.id) {
-                        const before = window.wizardExpBeforeBattle[wizard.id];
-                        if (before) {
-                            const expGained = (wizard.experience || 0) - before.experience;
-                            const levelGained = (wizard.level || 1) - before.level;
-                            // Показываем только магов с реальным приростом XP или уровня
-                            if (expGained > 0 || levelGained > 0) {
-                                wizardExpGained.push({
-                                    name: wizard.name || before.name,
-                                    expGained: Math.max(0, expGained),
-                                    levelGained: levelGained,
-                                    newLevel: wizard.level || 1
-                                });
-                            }
-                        }
-                    }
-                });
-            }
+            // Используем результаты из новой системы XP (включает урон, лечение, убийства)
+            const wizardExpGained = window.lastBattleExpResults || [];
             // Сохраняем для отображения
             window.lastPvEWizardExpGained = wizardExpGained;
 

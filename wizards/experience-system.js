@@ -1,12 +1,16 @@
-// battle/systems/experience-system.js - Обновленная система опыта
+// battle/systems/experience-system.js - Система опыта v2 (подсчёт в конце боя)
 
 
 // Константы системы опыта
 const EXP_CONFIG = {
-    DAMAGE_TO_EXP: 10,      // 10 урона = 1 опыт
-    HEAL_TO_EXP: 8,         // 8 исцеления = 1 опыт
-    VICTORY_BONUS: 10,      // За победу в бою
-    MAX_LEVEL: 40,          // Максимальный уровень (было 20)
+    // Новая система - подсчёт в конце боя
+    PARTICIPATION_XP: 15,   // Базовый XP за участие в бою
+    DAMAGE_TO_EXP: 15,      // 15 урона = 1 опыт (было 10)
+    HEAL_TO_EXP: 6,         // 6 исцеления = 1 опыт (было 8, хилеры получают больше)
+    KILL_BONUS: 0,          // Бонус за убийство (TODO: добавить отслеживание)
+    VICTORY_BONUS: 30,      // За победу в бою (было 10)
+    DEFEAT_BONUS: 10,       // За поражение (ново - чтобы был прогресс)
+    MAX_LEVEL: 40,          // Максимальный уровень
     BASE_EXP: 50            // Базовый опыт для 2 уровня
 };
 
@@ -87,44 +91,152 @@ function getDamageBonusFromLevel(wizard) {
     return damageBonus;
 }
 
-// Учет опыта за нанесенный урон
-function trackDamageExp(caster, damage) {
-    if (!caster || !damage || damage <= 0) return;
-    
-    const expGained = Math.floor(damage / EXP_CONFIG.DAMAGE_TO_EXP);
-    if (expGained > 0) {
-        addExperienceToWizard(caster, expGained);
+// ============================================
+// НОВАЯ СИСТЕМА: Накопление статистики боя
+// ============================================
+
+// Инициализация статистики боя для всех магов игрока
+function initBattleStats() {
+    window.battleStats = {};
+
+    if (window.playerWizards) {
+        window.playerWizards.forEach(wizard => {
+            if (wizard && wizard.id) {
+                window.battleStats[wizard.id] = {
+                    name: wizard.name || `Маг ${wizard.id}`,
+                    damageDealt: 0,
+                    healingDone: 0,
+                    kills: 0,
+                    participated: true
+                };
+            }
+        });
+    }
+
+    console.log('📊 [XP] Статистика боя инициализирована:', Object.keys(window.battleStats).length, 'магов');
+}
+
+// Накопление урона в статистику (вызывается во время боя)
+function trackBattleDamage(caster, damage) {
+    if (!caster || !caster.id || !damage || damage <= 0) return;
+    if (!window.battleStats) initBattleStats();
+
+    if (window.battleStats[caster.id]) {
+        window.battleStats[caster.id].damageDealt += damage;
     }
 }
 
-// Учет опыта за исцеление
-function trackHealExp(caster, healAmount) {
-    if (!caster || !healAmount || healAmount <= 0) return;
-    
-    const expGained = Math.floor(healAmount / EXP_CONFIG.HEAL_TO_EXP);
-    if (expGained > 0) {
-        addExperienceToWizard(caster, expGained);
+// Накопление лечения в статистику
+function trackBattleHeal(caster, healAmount) {
+    if (!caster || !caster.id || !healAmount || healAmount <= 0) return;
+    if (!window.battleStats) initBattleStats();
+
+    if (window.battleStats[caster.id]) {
+        window.battleStats[caster.id].healingDone += healAmount;
     }
 }
 
-// Начисление бонуса за победу (всем магам команды, не только выжившим)
-// Основной опыт начисляется во время боя через trackDamageExp/trackHealExp
-function grantBattleExp(wizards, isVictory = true) {
-    if (!Array.isArray(wizards)) return;
+// Накопление убийств в статистику
+function trackBattleKill(caster) {
+    if (!caster || !caster.id) return;
+    if (!window.battleStats) initBattleStats();
 
-    // Бонус только за победу
-    if (!isVictory) return;
+    if (window.battleStats[caster.id]) {
+        window.battleStats[caster.id].kills += 1;
+    }
+}
 
-    wizards.forEach(wizard => {
-        if (wizard) {
-            addExperienceToWizard(wizard, EXP_CONFIG.VICTORY_BONUS);
-        }
+// Расчёт XP на основе статистики боя
+function calculateWizardBattleExp(stats, isVictory) {
+    let exp = EXP_CONFIG.PARTICIPATION_XP; // Базовый XP за участие
+
+    // XP за урон
+    exp += Math.floor(stats.damageDealt / EXP_CONFIG.DAMAGE_TO_EXP);
+
+    // XP за лечение
+    exp += Math.floor(stats.healingDone / EXP_CONFIG.HEAL_TO_EXP);
+
+    // XP за убийства
+    exp += stats.kills * EXP_CONFIG.KILL_BONUS;
+
+    // Бонус за результат боя
+    if (isVictory) {
+        exp += EXP_CONFIG.VICTORY_BONUS;
+    } else {
+        exp += EXP_CONFIG.DEFEAT_BONUS;
+    }
+
+    return exp;
+}
+
+// Главная функция: подсчёт и начисление XP в конце боя
+function calculateAndGrantBattleExp(isVictory) {
+    if (!window.battleStats || !window.playerWizards) {
+        console.warn('⚠️ [XP] Нет статистики боя или магов');
+        return [];
+    }
+
+    const expResults = [];
+
+    window.playerWizards.forEach(wizard => {
+        if (!wizard || !wizard.id) return;
+
+        const stats = window.battleStats[wizard.id];
+        if (!stats) return;
+
+        const levelBefore = wizard.level || 1;
+        const expBefore = wizard.experience || 0;
+
+        // Рассчитываем XP
+        const expGained = calculateWizardBattleExp(stats, isVictory);
+
+        // Начисляем XP
+        addExperienceToWizard(wizard, expGained);
+
+        // Сохраняем результат для отображения
+        expResults.push({
+            name: stats.name,
+            damageDealt: stats.damageDealt,
+            healingDone: stats.healingDone,
+            kills: stats.kills,
+            expGained: expGained,
+            levelGained: (wizard.level || 1) - levelBefore,
+            newLevel: wizard.level || 1
+        });
+
+        console.log(`✨ [XP] ${stats.name}: +${expGained} XP (урон: ${stats.damageDealt}, лечение: ${stats.healingDone}, убийств: ${stats.kills})`);
     });
+
+    // Очищаем статистику
+    window.battleStats = null;
+
+    return expResults;
+}
+
+// ============================================
+// Старые функции (для совместимости, теперь накапливают статистику)
+// ============================================
+
+// Теперь накапливает статистику вместо мгновенного начисления
+function trackDamageExp(caster, damage) {
+    trackBattleDamage(caster, damage);
+}
+
+// Теперь накапливает статистику вместо мгновенного начисления
+function trackHealExp(caster, healAmount) {
+    trackBattleHeal(caster, healAmount);
+}
+
+// Теперь вызывает новую систему
+function grantBattleExp(wizards, isVictory = true) {
+    // Эта функция теперь просто триггер для новой системы
+    // Реальный подсчёт происходит в calculateAndGrantBattleExp
+    return calculateAndGrantBattleExp(isVictory);
 }
 
 // Устаревшая функция для обратной совместимости
 function grantVictoryExp(winners) {
-    grantBattleExp(winners, true);
+    return grantBattleExp(winners, true);
 }
 
 // Инициализация уровней для новых магов
@@ -141,8 +253,19 @@ window.calculateExpToNext = calculateExpToNext;
 window.addExperienceToWizard = addExperienceToWizard;
 window.applyLevelBonuses = applyLevelBonuses;
 window.getDamageBonusFromLevel = getDamageBonusFromLevel;
+window.initializeWizardLevel = initializeWizardLevel;
+
+// Новая система статистики боя
+window.initBattleStats = initBattleStats;
+window.trackBattleDamage = trackBattleDamage;
+window.trackBattleHeal = trackBattleHeal;
+window.trackBattleKill = trackBattleKill;
+window.calculateAndGrantBattleExp = calculateAndGrantBattleExp;
+
+// Старые функции (для совместимости)
 window.trackDamageExp = trackDamageExp;
 window.trackHealExp = trackHealExp;
 window.grantVictoryExp = grantVictoryExp;
 window.grantBattleExp = grantBattleExp;
-window.initializeWizardLevel = initializeWizardLevel;
+
+console.log('✅ Experience System v2 загружена (подсчёт в конце боя)');

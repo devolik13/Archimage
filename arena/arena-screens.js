@@ -1092,21 +1092,23 @@ function showArenaResult(result, battleData = {}) {
                     margin-bottom: 10px;
                     border: 1px solid rgba(255, 165, 0, 0.4);
                 ">
-                    <div style="font-size: 11px; color: #ffa500; margin-bottom: 6px; text-align: center;">Опыт магов</div>
+                    <div style="font-size: 11px; color: #ffa500; margin-bottom: 6px; text-align: center;">📊 Статистика боя</div>
                     ${wizardExpGained.map(w => `
                         <div style="
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                            padding: 3px 6px;
+                            padding: 4px 6px;
                             background: rgba(0,0,0,0.2);
                             border-radius: 4px;
                             margin-bottom: 3px;
                         ">
-                            <span style="color: #ddd; font-size: 11px;">${w.name}</span>
-                            <span style="color: #ffa500; font-weight: bold; font-size: 11px;">
-                                +${w.expGained} XP${w.levelGained > 0 ? ` <span style="color: #4CAF50;">⬆${w.newLevel}</span>` : ''}
-                            </span>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: #ddd; font-size: 11px; font-weight: bold;">${w.name}</span>
+                                <span style="color: #ffa500; font-weight: bold; font-size: 12px;">
+                                    +${w.expGained} XP${w.levelGained > 0 ? ` <span style="color: #4CAF50;">⬆${w.newLevel}</span>` : ''}
+                                </span>
+                            </div>
+                            <div style="font-size: 9px; color: #888; margin-top: 2px;">
+                                ${w.damageDealt > 0 ? `⚔️${w.damageDealt}` : ''}${w.healingDone > 0 ? ` 💚${w.healingDone}` : ''}${w.kills > 0 ? ` 💀${w.kills}` : ''}
+                            </div>
                         </div>
                     `).join('')}
                 </div>
