@@ -309,7 +309,7 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
 
 // Конфигурация анимаций для скинов магов
 const SKIN_ANIMATION_CONFIG = {
-    fire: { frameCount: 8, gridColumns: null },
+    fire: { frameCount: 25, gridColumns: 5 }, // 5×5 сетка
     water: { frameCount: 25, gridColumns: 5 },
     wind: { frameCount: 8, gridColumns: null },
     earth: { frameCount: 8, gridColumns: null },

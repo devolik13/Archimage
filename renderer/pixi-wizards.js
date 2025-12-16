@@ -32,8 +32,9 @@
             death: 'images/wizards/fire/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
+            frameCount: 25, // 5×5 сетка
+            gridColumns: 5,
+            animationSpeed: 0.12, // Чуть медленнее для плавности 25 кадров
             scale: 0.350
         },
         water: {
