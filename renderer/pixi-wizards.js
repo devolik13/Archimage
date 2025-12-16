@@ -476,12 +476,6 @@
                     sprite.baseScaleX = sprite.scale.x; // Обновляем базовый scale после зеркалирования
                 }
 
-                // Дополнительное отражение для фракции fire (спрайты смотрят в другую сторону)
-                if (faction === 'fire') {
-                    sprite.scale.x *= -1;
-                    sprite.baseScaleX = sprite.scale.x; // Обновляем базовый scale после зеркалирования
-                }
-                
                 // Сохраняем кадры для анимаций
                 container.idleFrames = textures.idle;
                 container.attackFrames = textures.cast;
@@ -1175,12 +1169,6 @@
 
             // Зеркалим для игрока (смотрит влево)
             if (type === 'player') {
-                sprite.scale.x *= -1;
-                sprite.baseScaleX = sprite.scale.x; // Обновляем базовый scale после зеркалирования
-            }
-
-            // Дополнительное отражение для фракции fire
-            if (faction === 'fire') {
                 sprite.scale.x *= -1;
                 sprite.baseScaleX = sprite.scale.x; // Обновляем базовый scale после зеркалирования
             }
