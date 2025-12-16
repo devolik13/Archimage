@@ -1107,9 +1107,7 @@ function showArenaResult(result, battleData = {}) {
                                 </span>
                             </div>
                             <div style="font-size: 9px; color: #888; margin-top: 2px;">
-                                ${w.damageDealt > 0 || w.healingDone > 0 || w.kills > 0
-                                    ? `${w.damageDealt > 0 ? `⚔️${w.damageDealt}` : ''}${w.healingDone > 0 ? ` 💚${w.healingDone}` : ''}${w.kills > 0 ? ` 💀${w.kills}` : ''}`
-                                    : '(за участие)'}
+                                ⚔️${w.damageDealt || 0}${w.healingDone > 0 ? ` 💚${w.healingDone}` : ''}${w.kills > 0 ? ` 💀${w.kills}` : ''}
                             </div>
                         </div>
                     `).join('')}
