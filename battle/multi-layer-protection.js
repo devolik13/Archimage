@@ -3,11 +3,8 @@
 function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId, casterType) {
     // Проверяем, есть ли цель и маг в ней
     if (!target || !target.wizard) {
-        console.warn("⚠️ Цель не определена или не содержит мага — пропускаем нанесение урона");
         return null;
     }
-
-    console.log(`🎯 Многослойная атака: ${caster.name} → ${target.wizard.name} (ряд ${target.position}), базовый урон: ${baseDamage}`);
     
     let remainingDamage = baseDamage;
     const protectionLayers = [];
@@ -23,8 +20,6 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
     const summonColumn = casterType === 'player' ? 1 : 4;
     
     // === СЛОЙ 1: КОЛОНКА ЭФФЕКТОВ (ЗЕМЛЯНЫЕ СТЕНЫ) ===
-    console.log(`🛡️ Проверяем слой 1 - эффекты в колонке ${effectColumn}, ряд ${target.position}`);
-    
     const earthWall = typeof window.findEarthWallAt === 'function' ? 
         window.findEarthWallAt(effectColumn, target.position) : null;
     
@@ -36,7 +31,6 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             // ✅ ЕСЛИ СТЕНА ПОЛНОСТЬЮ БЛОКИРУЕТ - ТОЧКА СТОЛКНОВЕНИЯ НАЙДЕНА
             if (earthWall.hp >= remainingDamage) {
                 impactCol = effectColumn;
-                console.log(`💥 СТЕНА ДЕРЖИТ УДАР! Точка столкновения: колонка ${impactCol}, ряд ${impactRow}`);
             }
             
             if (typeof window.damageEarthWall === 'function') {
@@ -45,10 +39,8 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             
             protectionLayers.push(`Земляная стена поглощает ${wallDamage} урона`);
             remainingDamage = wallRemainder;
-            console.log(`🧱 Земляная стена: ${wallDamage} поглощено, ${remainingDamage} остается`);
         } else {
             protectionLayers.push(`Земляная стена не блокирует заклинания своих магов`);
-            console.log(`🧱 Стена принадлежит ${casterType} — пропускаем`);
         }
     }
     
@@ -60,13 +52,10 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
         const reduction = Math.round(remainingDamage * windWall.weakenPercent / 100);
         remainingDamage = remainingDamage - reduction;
         protectionLayers.push(`Ветряная стена ослабляет урон на ${reduction} (-${windWall.weakenPercent}%)`);
-        console.log(`💨 Ветряная стена: урон ослаблен на ${reduction}, остается ${remainingDamage}`);
     }
     
     // === СЛОЙ 2: КОЛОНКА ПРИЗВАННЫХ ===
     if (remainingDamage > 0) {
-        console.log(`🛡️ Проверяем слой 2 - призванные в колонке ${summonColumn}, ряд ${target.position}`);
-
         // Проверяем призванных существ по позиции
         let summonedCreature = typeof window.findSummonedCreatureAt === 'function' ?
             window.findSummonedCreatureAt(summonColumn, target.position) : null;
@@ -74,14 +63,10 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
         // ИСПРАВЛЕНИЕ: Для Энтов проверяем linkedWizards (защита связанных магов)
         // targetType - противоположный casterType (тот кого атакуют)
         const targetType = casterType === 'player' ? 'enemy' : 'player';
-        console.log(`🌳 [Multi] Проверка Энта для ${target.wizard.name} (id=${target.wizard.id}), summonedCreature=${!!summonedCreature}`);
         if (!summonedCreature && typeof window.findProtectingEnt === 'function' && target.wizard) {
-            console.log(`🌳 [Multi] Вызываем findProtectingEnt для ${target.wizard.name}, targetType=${targetType}`);
             const protectingEnt = window.findProtectingEnt(target.wizard, targetType);
-            console.log(`🌳 [Multi] Результат findProtectingEnt:`, protectingEnt ? `найден (id=${protectingEnt.id}, HP=${protectingEnt.hp})` : 'не найден');
             if (protectingEnt && protectingEnt.hp > 0 && protectingEnt.isAlive) {
                 summonedCreature = protectingEnt;
-                console.log(`🌳 Энт защищает связанного мага ${target.wizard.name}!`);
             }
         }
     
@@ -92,7 +77,6 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             // ✅ ЕСЛИ ПРИЗВАННЫЙ ПОЛНОСТЬЮ БЛОКИРУЕТ - ТОЧКА СТОЛКНОВЕНИЯ НАЙДЕНА
             if (impactCol === null && summonedCreature.hp >= remainingDamage) {
                 impactCol = summonColumn;
-                console.log(`💥 ПРИЗВАННЫЙ ДЕРЖИТ УДАР! Точка столкновения: колонка ${impactCol}, ряд ${impactRow}`);
             }
             
             // Наносим урон призванному существу
@@ -127,9 +111,7 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             
             protectionLayers.push(protectionMessage);
             remainingDamage = creatureRemainder;
-            
-            console.log(`👹 ${summonedCreature.name || 'Существо'}: ${creatureDamage} получено, ${remainingDamage} остается`);
-            
+
             // Проверяем уничтожение существа
             if (summonedCreature.hp <= 0) {
                 // Специальное сообщение для разных типов существ
@@ -175,11 +157,9 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
     // ✅ ЕСЛИ ДОШЛИ ДО МАГА - ЭТО ТОЧКА СТОЛКНОВЕНИЯ
     if (impactCol === null) {
         impactCol = casterType === 'player' ? 0 : 5;
-        console.log(`💥 Снаряд достиг мага! Точка столкновения: колонка ${impactCol}, ряд ${impactRow}`);
     }
     
     if (remainingDamage > 0) {
-        console.log(`⚔️ Применяем финальный урон к цели: ${remainingDamage}`);
 
         // СНАЧАЛА проверка Метеокинеза для стихийных заклинаний
         if (window.activeMeteorokinesis && spellId) {
@@ -194,7 +174,6 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
                     const oldDamage = remainingDamage;
                     remainingDamage = Math.floor(remainingDamage * (1 + activeEffect.damageBonus / 100));
                     protectionLayers.push(`Метеокинез усиливает урон: ${oldDamage} → ${remainingDamage} (+${activeEffect.damageBonus}%)`);
-                    console.log(`🌿 Метеокинез усиливает ${spellId}: ${oldDamage} → ${remainingDamage} (+${activeEffect.damageBonus}%)`);
                 }
             }
         }
@@ -214,11 +193,9 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             const row = target.position;
             const key = `${targetCol}_${row}`;
             window.pixiWizards.updateHP(key, target.wizard.hp, target.wizard.max_hp);
-            console.log(`💚 Обновлен HP бар для ${key}: ${target.wizard.hp}/${target.wizard.max_hp}`);
         }
     
         protectionLayers.push(`${target.wizard.name} получает ${finalDamage} финального урона`);
-        console.log(`🎯 Цель получает: ${finalDamage} урона (${target.wizard.hp}/${target.wizard.max_hp})`);
         
         return {
             totalDamage: baseDamage,
@@ -231,7 +208,6 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
         };
     } else {
         protectionLayers.push(`${target.wizard.name} не получает урона - защита поглотила все!`);
-        console.log(`🛡️ Полная защита: ${baseDamage} урона поглощено, цель не пострадала`);
         
         return {
             totalDamage: baseDamage,
@@ -248,7 +224,6 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
 // --- Логирование результата защиты ---
 function logProtectionResult(caster, target, result, spellName) {
     if (!target || !target.wizard) {
-        console.warn("⚠️ Невозможно залогировать результат — цель не содержит мага");
         return;
     }
 
@@ -263,7 +238,6 @@ function logProtectionResult(caster, target, result, spellName) {
             );
 
         if (!hasProtection && result.finalDamage === 0) {
-            console.log('⏭️ Пропуск логирования: пустая цель без защиты и без урона');
             return;
         }
     }
@@ -299,14 +273,11 @@ function logProtectionResult(caster, target, result, spellName) {
     }
     
     // Показываем модификаторы урона
-    console.log(`🔍 Проверка _lastDamageSteps для ${target.wizard.name}:`, target.wizard._lastDamageSteps);
     if (target.wizard._lastDamageSteps && target.wizard._lastDamageSteps.length > 0) {
         target.wizard._lastDamageSteps.forEach(step => {
             window.addToBattleLog(`    ├─ ${step}`);
         });
         delete target.wizard._lastDamageSteps; // Очищаем
-    } else {
-        console.warn(`⚠️ НЕТ _lastDamageSteps для ${target.wizard.name}`);
     }
     
     // Итоговое HP

@@ -1,8 +1,6 @@
 // battle/spells/spells-nature.js - Заклинания школы Природа
 
 function castNatureSpell(wizard, spellId, spellData, position, casterType) {
-    console.log(`🌿 Casting nature spell: ${spellId}`);
-    
     switch (spellId) {
         case 'call_wolf':
             castCallWolf(wizard, spellData, position, casterType);
@@ -12,17 +10,14 @@ function castNatureSpell(wizard, spellId, spellData, position, casterType) {
             break;
         case 'leaf_canopy':
             // Не применяется в бою — только для UI
-            console.log('🍃 Покров листвы — применяется автоматически в начале боя');
             break;
 	case 'ent':
 	    castEnt(wizard, spellData, position, casterType);
 	    break;
 	case 'meteorokinesis':
 	    // НЕ применяется в бою — только в начале
-	    console.log('🌿 Метеокинез — уже активен с начала боя');
 	    break;
         default:
-            console.log(`⚠️ Заклинание природы ${spellId} не реализовано`);
             if (typeof window.castBasicAttack === 'function') {
                 window.castBasicAttack(wizard, position, casterType);
             }
@@ -78,7 +73,6 @@ function performWolfAttack(wolf, caster) {
         // 📊 Учитываем урон волка для XP хозяина
         if (typeof window.trackBattleDamage === 'function' && wolf.casterType === 'player') {
             window.trackBattleDamage(caster, finalDamage);
-            console.log(`📊 [XP] Волк ${caster.name}: +${finalDamage} урона в статистику`);
         }
         
         // ✅ ОБНОВЛЯЕМ ВИЗУАЛЬНЫЙ HP БАР
@@ -87,12 +81,10 @@ function performWolfAttack(wolf, caster) {
             const targetRow = target.position;
             const key = `${targetCol}_${targetRow}`;
             window.pixiWizards.updateHP(key, target.wizard.hp, target.wizard.max_hp);
-            console.log(`💚 Обновлен HP бар после атаки волка: ${key} → ${target.wizard.hp}/${target.wizard.max_hp}`);
         }
         
         // ✅ ПРОВЕРКА СМЕРТИ И АНИМАЦИЯ
         if (target.wizard.hp <= 0) {
-            console.log(`💀 ${target.wizard.name} убит волком!`);
             
             // Запускаем анимацию смерти
             if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
@@ -105,7 +97,6 @@ function performWolfAttack(wolf, caster) {
                 if (container && !container.deathAnimationStarted) {
                     container.deathAnimationStarted = true;
                     window.pixiWizards.playDeath(targetCol, targetRow);
-                    console.log(`🎬 Запущена анимация смерти для ${target.wizard.name} на позиции ${key}`);
                 }
             }
         }
@@ -148,12 +139,10 @@ function performWolfAttack(wolf, caster) {
                     const leftCol = leftTarget.column !== undefined ? leftTarget.column : (wolf.casterType === 'player' ? 0 : 5);
                     const leftKey = `${leftCol}_${leftPos}`;
                     window.pixiWizards.updateHP(leftKey, leftTarget.wizard.hp, leftTarget.wizard.max_hp);
-                    console.log(`💚 Обновлен HP бар после splash урона: ${leftKey} → ${leftTarget.wizard.hp}/${leftTarget.wizard.max_hp}`);
                 }
                 
                 // ✅ ПРОВЕРКА СМЕРТИ И АНИМАЦИЯ
                 if (leftTarget.wizard.hp <= 0) {
-                    console.log(`💀 ${leftTarget.wizard.name} убит splash уроном волка!`);
                     
                     // Запускаем анимацию смерти
                     if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
@@ -164,7 +153,6 @@ function performWolfAttack(wolf, caster) {
                         if (container && !container.deathAnimationStarted) {
                             container.deathAnimationStarted = true;
                             window.pixiWizards.playDeath(leftCol, leftPos);
-                            console.log(`🎬 Запущена анимация смерти для ${leftTarget.wizard.name} (splash)`);
                         }
                     }
                 }
@@ -198,12 +186,10 @@ function performWolfAttack(wolf, caster) {
                     const rightCol = rightTarget.column !== undefined ? rightTarget.column : (wolf.casterType === 'player' ? 0 : 5);
                     const rightKey = `${rightCol}_${rightPos}`;
                     window.pixiWizards.updateHP(rightKey, rightTarget.wizard.hp, rightTarget.wizard.max_hp);
-                    console.log(`💚 Обновлен HP бар после splash урона: ${rightKey} → ${rightTarget.wizard.hp}/${rightTarget.wizard.max_hp}`);
                 }
                 
                 // ✅ ПРОВЕРКА СМЕРТИ И АНИМАЦИЯ
                 if (rightTarget.wizard.hp <= 0) {
-                    console.log(`💀 ${rightTarget.wizard.name} убит splash уроном волка!`);
                     
                     // Запускаем анимацию смерти
                     if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
@@ -214,7 +200,6 @@ function performWolfAttack(wolf, caster) {
                         if (container && !container.deathAnimationStarted) {
                             container.deathAnimationStarted = true;
                             window.pixiWizards.playDeath(rightCol, rightPos);
-                            console.log(`🎬 Запущена анимация смерти для ${rightTarget.wizard.name} (splash)`);
                         }
                     }
                 }
@@ -356,7 +341,6 @@ function removeBarkArmorOnDeath(wizard, position, casterType) {
 // --- Покров листвы (Leaf Canopy) - Тир 3, Buff (применяется в core.js) ---
 function castLeafCanopy(wizard, spellData, position, casterType) {
     // Не применяется в бою — только для UI
-    console.log('🍃 Покров листвы — применяется автоматически в начале боя');
 }
 
 // --- Энт (Ent) - Тир 4, Защитный призыв, поглощающий урон за союзников ---
@@ -377,21 +361,15 @@ function castEnt(wizard, spellData, position, casterType) {
     
     linkedWizards.push(...selectedAllies);
 
-    // Логируем связанных магов (без id)
+    // Связанные маги (без id)
     const linkedNames = linkedWizards.map(w => w.name).join(', ');
-    console.log(`🌳 [Ent] Создание Энта уровня ${level} для ${casterType}`);
-    console.log(`🌳 [Ent] Связанные маги: ${linkedNames}`);
 
     // Создаем Энта через менеджер
     const ent = window.createEntSummon(wizard, casterType, position, level, linkedWizards);
 
     if (!ent) {
-        console.error('Не удалось создать Энта');
         return;
     }
-
-    // Проверяем, что linkedWizards сохранились правильно
-    console.log(`🌳 [Ent] Энт создан: id=${ent.id}, HP=${ent.hp}, linkedWizards=${ent.special?.linkedWizards?.length || 0}`);
 
     // Добавляем в лог боя
     if (typeof window.addToBattleLog === 'function') {
@@ -406,35 +384,25 @@ function castEnt(wizard, spellData, position, casterType) {
 function findProtectingEnt(target, casterType) {
     // Проверяем наличие менеджера призывов
     if (!window.summonsManager || !window.summonsManager.summons) {
-        console.log('🌳 [Ent] summonsManager не найден');
         return null;
     }
 
     // Проверяем, что target - это маг с id
     if (!target || !target.id) {
-        console.log('🌳 [Ent] Цель не найдена или без id:', target?.name);
         return null;
     }
 
     const ents = [];
 
     for (const [id, summon] of window.summonsManager.summons) {
-        // Отладка: показываем всех Энтов
         if (summon.type === 'nature_ent') {
             // linkedWizards могут быть в special или в корне объекта
             const linkedWizards = summon.special?.linkedWizards || summon.linkedWizards || [];
-            const linkedNames = linkedWizards.map(w => w?.name).filter(Boolean);
-            console.log(`🌳 [Ent] Энт: HP=${summon.hp}, защищает: ${linkedNames.join(', ')}`);
 
             if (summon.isAlive && linkedWizards.some(w => w && w.id === target.id)) {
-                console.log(`🌳 [Ent] Энт защищает ${target.name}!`);
                 ents.push(summon);
             }
         }
-    }
-
-    if (ents.length === 0) {
-        console.log(`🌳 [Ent] Не найден защищающий Энт для ${target.name}`);
     }
 
     // Возвращаем первого найденного Энта
@@ -580,7 +548,6 @@ function applyNatureFactionBonus(wizard, casterType) {
                 if (position !== -1) {
                     const col = casterType === 'player' ? 5 : 0;
                     window.showFactionSpeechBubble('nature', col, position);
-                    console.log('🌱 БОНУС ПРИРОДЫ СРАБОТАЛ! Исцеление');
                 }
             }
         }

@@ -2,8 +2,6 @@
 
 
 function castFireSpell(wizard, spellId, spellData, position, casterType) {
-    console.log(`🔥 Casting fire spell: ${spellId}`);
-    
     switch (spellId) {
         case 'spark':
             castSpark(wizard, spellData, position, casterType);
@@ -33,19 +31,15 @@ function castFireSpell(wizard, spellId, spellData, position, casterType) {
 function castSpark(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
     const baseDamage = [10, 12, 15, 20, 30][level - 1] || 10;
-    
-    console.log(`🔥 Casting Spark - Level ${level}, Damage ${baseDamage}`);
-    
+
     // Находим цель
     const target = window.findTarget?.(position, casterType);
     if (!target) {
-        console.warn('⚠️ Цель не найдена');
         return;
     }
-    
+
     // Проверяем доступность новой системы
     if (!window.castSingleTargetSpell) {
-        console.warn('⚠️ Single-target система не загружена, используем старую версию');
         return castSparkOld(wizard, spellData, position, casterType, target);
     }
     
@@ -62,18 +56,15 @@ function castSpark(wizard, spellData, position, casterType) {
         // Функция создания снаряда
         createProjectile: (params) => {
             const { fromCol, fromRow, toCol, toRow, onHit } = params;
-            
-            console.log(`⚡ Создаём снаряд Искры: [${fromCol},${fromRow}] → [${toCol},${toRow}]`);
-            
+
             if (window.createSparkProjectile) {
                 // Передаём toCol как точку столкновения (а не колонку мага!)
                 window.createSparkProjectile(fromCol, fromRow, toCol, toRow, onHit);
             } else {
-                console.warn('⚠️ createSparkProjectile не найдена');
                 setTimeout(onHit, 300);
             }
         },
-        
+
         // Применение эффектов после урона
         applyEffects: (targetWizard, spellLevel, casterFaction) => {
             if (casterFaction === 'fire' && window.tryApplyEffect) {
@@ -83,16 +74,14 @@ function castSpark(wizard, spellData, position, casterType) {
                     position: position
                 };
                 window.tryApplyEffect('burning', targetWizard, false, casterInfo);
-                console.log(`🔥 Применён эффект горения к ${targetWizard.name}`);
             }
         },
         
         // Callback после завершения всей цепочки
         onComplete: (finalResult) => {
-            
+
             // ЭФФЕКТ 5 УРОВНЯ: 50% шанс повторной атаки
             if (level === 5 && Math.random() < 0.5) {
-                console.log('⚡ УРОВЕНЬ 5: Запуск повторной атаки!');
                 
                 setTimeout(() => {
                     const newTarget = window.findTarget?.(position, casterType);
@@ -109,9 +98,7 @@ function castSpark(wizard, spellData, position, casterType) {
 function castSparkSecondary(wizard, spellData, position, casterType, target) {
     const level = spellData.level || 1;
     const baseDamage = [10, 12, 15, 20, 30][level - 1] || 10;
-    
-    console.log('⚡⚡ ВТОРИЧНАЯ АТАКА ИСКРЫ');
-    
+
     if (!window.castSingleTargetSpell) {
         return castSparkOld(wizard, spellData, position, casterType, target);
     }
@@ -140,8 +127,7 @@ function castSparkSecondary(wizard, spellData, position, casterType, target) {
             }
         },
         
-        onComplete: () => {
-        }
+        onComplete: () => {}
     });
 }
 
@@ -213,8 +199,6 @@ function applySparkDamageOld(wizard, target, baseDamage, spellData, position, ca
 function castFirebolt(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
     
-    console.log(`🔥 Firebolt Level ${level}: Начинаем подготовку стрел`);
-    
     // ШАГ 1: Определяем количество и урон стрел
     let arrowsConfig;
     switch (level) {
@@ -233,7 +217,6 @@ function castFirebolt(wizard, spellData, position, casterType) {
     
     // Эффект 5 уровня: 20% шанс на 3 дополнительные стрелы
     if (level === 5 && Math.random() < 0.2) {
-        console.log('⚡ УРОВЕНЬ 5: +3 дополнительные стрелы!');
         arrowsConfig.push(
             { damage: 8, target: 'random' },
             { damage: 8, target: 'random' },
@@ -273,8 +256,6 @@ function castFirebolt(wizard, spellData, position, casterType) {
             }
         }
         
-        console.log(`🎯 Стрела ${i+1} (${config.target}) → ряд ${targetRow}${targetWizard ? ' (есть маг: ' + targetWizard.name + ')' : ' (пусто)'}`);
-        
         // Создаем виртуальную цель для этого ряда
         const virtualTarget = {
             wizard: targetWizard || { 
@@ -293,8 +274,6 @@ function castFirebolt(wizard, spellData, position, casterType) {
         
         if (result) {
             // Успешно прошли через многослойную защиту
-            console.log(`   💥 Точка столкновения: [${result.impactCol}, ${result.impactRow}], урон: ${result.finalDamage}`);
-            
             arrowsWithTargets.push({
                 target: virtualTarget,
                 damage: config.damage,
@@ -316,8 +295,6 @@ function castFirebolt(wizard, spellData, position, casterType) {
             }
         } else {
             // Fallback: если многослойная защита не работает
-            console.warn('⚠️ Многослойная защита не доступна');
-            
             // Если есть маг - наносим урон
             if (targetWizard) {
                 const finalDamage = window.applyFinalDamage ? 
@@ -353,9 +330,7 @@ function castFirebolt(wizard, spellData, position, casterType) {
             }
         }
     }
-    
-    console.log(`🏹 Подготовлено ${arrowsWithTargets.length} стрел, запускаем анимацию`);
-    
+
     // ШАГ 3: Запускаем анимацию с точными координатами
     const casterCol = casterType === 'player' ? 5 : 0;
     
@@ -375,8 +350,6 @@ function castFirebolt(wizard, spellData, position, casterType) {
             level: level,
             arrows: arrowsWithTargets
         });
-    } else {
-        console.warn('⚠️ Система анимаций не найдена');
     }
 }
 
@@ -623,9 +596,7 @@ function castFireball(wizard, spellData, position, casterType) {
     	    targetCol: target.position,  
     	    targetRow: target.position,
     	    level: level,
-    	    onComplete: () => {
-    	        console.log('Анимация Огненного шара завершена');
-    	    }
+    	    onComplete: () => {}
     	});
     }
     // Лог общего эффекта

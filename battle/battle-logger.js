@@ -26,7 +26,6 @@ function initBattleLogger() {
             faction: w.faction
         } : null) || []))
     };
-    console.log('📝 Инициализирован детальный лог боя');
 }
 
 // Запись события в лог
@@ -39,7 +38,6 @@ function logBattleEvent(eventType, data) {
     };
 
     detailedBattleLog.events.push(event);
-    console.log(`📝 [${event.relativeTime}ms] ${eventType}:`, data);
 }
 
 // Логирование начала хода
@@ -319,4 +317,3 @@ window.battleLogger = {
     current: detailedBattleLog
 };
 
-console.log('💡 Доступно: battleLogger.analyze() - анализ последнего боя');

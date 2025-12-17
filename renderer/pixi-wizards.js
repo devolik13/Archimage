@@ -633,7 +633,6 @@
         
         // Если есть кадры атаки
         if (sprite instanceof PIXI.AnimatedSprite && areTexturesValid(container.attackFrames)) {
-            console.log(`   Позиция: ${wizardCol}_${wizardRow}`);
 
             // Сохраняем текущее состояние
             const originalFrames = sprite.textures;
@@ -722,8 +721,6 @@
     
     // Анимация смерти мага
     function playWizardDeathAnimation(wizardCol, wizardRow, callback) {
-        console.log('💀 Анимация смерти для позиции:', wizardCol, wizardRow);
-
         const wizardKey = `${wizardCol}_${wizardRow}`;
         const container = wizardSprites[wizardKey];
         
@@ -745,7 +742,6 @@
         
         // Если есть кадры смерти
         if (sprite instanceof PIXI.AnimatedSprite && areTexturesValid(container.deathFrames)) {
-            console.log(`💀 Запуск анимации смерти (${container.deathFrames.length} кадров)`);
 
             const animationId = Symbol('death');
             activeAnimations.add(animationId);
@@ -796,8 +792,6 @@
             }
         } else {
             // Простая анимация исчезновения для fallback
-            console.log('⚠️ Используем fade out для смерти');
-
             // Делаем полупрозрачным вместо полного исчезновения
             let alpha = 1;
             const fadeInterval = setInterval(() => {
@@ -947,11 +941,8 @@
     
     // Очистка всех магов
     function clearWizards(forceFullClear = false) {
-        console.log('🧹 Очистка магов...', forceFullClear ? '(полная)' : '(частичная)');
-        
         // Если это не полная очистка и бой активен, оставляем мертвых магов
         if (!forceFullClear && window.battleState === 'active') {
-            console.log('⚠️ Бой активен, оставляем мертвых магов');
             return;
         }
         
@@ -1144,8 +1135,6 @@
 
         const faction = wizardData.faction || 'fire';
         const config = FACTION_SPRITES_CONFIG[faction];
-
-        console.log(`🧙 Создаём демо-мага фракции ${faction} на ${col}_${row}`);
 
         const container = new PIXI.Container();
         const scale = cellData.cellScale || 1;

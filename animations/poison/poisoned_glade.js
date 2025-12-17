@@ -7,11 +7,8 @@
     function playPoisonedGladeAnimation(params) {
         const { targetCol, targetRow, onComplete } = params;
 
-        console.log('🌿 Ядовитая поляна: вызов анимации на', targetCol, targetRow);
-
         // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
         if (window.fastSimulation) {
-            console.log('⚡ Быстрая симуляция: пропуск анимации Ядовитая поляна');
             if (onComplete) onComplete();
             return;
         }
@@ -19,20 +16,14 @@
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
 
-        console.log('🌿 Контейнеры:', { effectsContainer: !!effectsContainer, gridCells: !!gridCells });
-
         if (!effectsContainer || !gridCells) {
-            console.warn('🌿 ❌ Не могу создать поляну - нет контейнера');
             if (onComplete) onComplete();
             return;
         }
 
         const targetCell = gridCells[targetCol]?.[targetRow];
 
-        console.log('🌿 Target cell:', targetCell ? 'найдена' : 'НЕ найдена');
-
         if (!targetCell) {
-            console.warn('🌿 ❌ Не найдена клетка для поляны');
             if (onComplete) onComplete();
             return;
         }
@@ -40,26 +31,12 @@
         const centerX = targetCell.x + targetCell.width / 2;
         const centerY = targetCell.y + targetCell.height / 2;
 
-        console.log('🌿 Позиция:', centerX, centerY);
-        console.log('🌿 🔍 Размеры targetCell:', { 
-            x: targetCell.x, 
-            y: targetCell.y, 
-            width: targetCell.width, 
-            height: targetCell.height,
-            cellScale: targetCell.cellScale,
-            hasScale: 'cellScale' in targetCell,
-            allKeys: Object.keys(targetCell)
-        });
-
         // Загружаем текстуру спрайтшита
         const gladeTexturePath = 'images/spells/poison/poisoned_glade/glade_spritesheet.webp';
-
-        console.log('🌿 Загрузка текстуры:', gladeTexturePath);
 
         PIXI.Assets.load(gladeTexturePath).then(texture => {
 
             if (!texture || !texture.valid) {
-                console.warn('🌿 ❌ Не удалось загрузить текстуру поляны, fallback');
                 createFallbackGlade();
                 return;
             }
@@ -98,8 +75,6 @@
                 frames.push(new PIXI.Texture(texture.baseTexture, frame));
             });
 
-            console.log('🌿 Создано кадров:', frames.length);
-
             // Создаём анимированный спрайт
             const gladeSprite = new PIXI.AnimatedSprite(frames);
             gladeSprite.x = centerX;
@@ -109,35 +84,17 @@
             // Используем cellScale как в других эффектах (foul-cloud)
             const cellScale = targetCell.cellScale || 0.3; // Fallback на 0.3 если нет
             const scale = (cellScale * 0.8) / 2.5; // Уменьшено в 2.5 раза
-            
-            console.log('🌿 🔍 Отладка масштаба:', {
-                hasCellScale: !!targetCell.cellScale,
-                cellScale: cellScale,
-                finalScale: scale,
-                frameWidth: frameWidth,
-                frameHeight: frameHeight
-            });
 
             gladeSprite.scale.set(scale);
-
-            console.log('🌿 Спрайт создан:', { 
-                x: gladeSprite.x, 
-                y: gladeSprite.y, 
-                scale: scale,
-                scaleX: gladeSprite.scale.x,
-                scaleY: gladeSprite.scale.y
-            });
 
             // Настройки анимации
             gladeSprite.animationSpeed = 0.15; // ~80ms на кадр при 60 FPS
             gladeSprite.loop = false; // Один раз
 
             effectsContainer.addChild(gladeSprite);
-            console.log('🌿 Спрайт добавлен в контейнер');
 
             // Событие окончания анимации
             gladeSprite.onComplete = () => {
-                console.log('🌿 Анимация завершена');
                 // Оставляем последний кадр на короткое время
                 setTimeout(() => {
                     if (gladeSprite.parent) {
@@ -148,12 +105,10 @@
                 }, 200); // Задержка перед исчезновением
             };
 
-            console.log('🌿 Запуск анимации (play)');
             gladeSprite.play();
             activeGlades.push(gladeSprite);
             
         }).catch(err => {
-            console.warn('Ошибка загрузки текстуры поляны:', err);
             createFallbackGlade();
         });
         
@@ -223,7 +178,6 @@
             }
         });
         activeGlades.length = 0;
-        console.log('🌿 Все поляны очищены');
     }
     
     // Регистрация
@@ -232,6 +186,4 @@
         play: playPoisonedGladeAnimation,
         clearAll: clearAll
     };
-    
-    console.log('🌿 Анимация "Ядовитая поляна" зарегистрирована');
 })();

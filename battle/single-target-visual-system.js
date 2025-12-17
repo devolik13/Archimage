@@ -41,9 +41,6 @@ function castSingleTargetSpell(params) {
         applyEffects
     } = params;
 
-    console.log(`🎯 Single Target Spell: ${spellId} от ${caster.name} к ${target.wizard.name}`);
-    console.log(`🎯 [DEBUG] casterPosition=${casterPosition}, casterType=${casterType}, target.position=${target.position}`);
-
     // Устанавливаем текущего кастера для отслеживания фракционных бонусов
     if (typeof window.setCurrentSpellCaster === 'function') {
         window.setCurrentSpellCaster(caster, casterType, casterPosition);
@@ -51,7 +48,6 @@ function castSingleTargetSpell(params) {
 
     // Определяем колонки
     const casterCol = casterType === 'player' ? 5 : 0;
-    console.log(`🎯 [DEBUG] casterCol=${casterCol}, will use fromRow=${casterPosition}`);
     
     // ШАГ 1: Рассчитываем урон через ВСЕ слои защиты
     // multi-layer-protection сама пройдёт все слои и вернёт точку остановки
@@ -64,14 +60,10 @@ function castSingleTargetSpell(params) {
     );
 
     if (!damageResult) {
-        console.warn('⚠️ Multi-layer protection недоступна');
         return;
     }
 
     const { impactCol, impactRow, finalDamage } = damageResult;
-
-    console.log(`💥 Точка столкновения: [${impactCol}, ${impactRow}]`);
-    console.log(`⚔️ Финальный урон магу: ${finalDamage}`);
 
     // ШАГ 2: Создаём ОДИН снаряд до точки столкновения
     if (typeof createProjectile === 'function') {
@@ -81,8 +73,6 @@ function castSingleTargetSpell(params) {
             toCol: impactCol,
             toRow: impactRow,
             onHit: () => {
-                console.log(`💥 Снаряд достиг точки [${impactCol}, ${impactRow}]`);
-                
                 // Логируем результат
                 if (window.logProtectionResult) {
                     window.logProtectionResult(caster, target, damageResult, getSpellDisplayName(spellId, spellLevel));
@@ -105,7 +95,6 @@ function castSingleTargetSpell(params) {
             }
         });
     } else {
-        console.warn('⚠️ Функция создания снаряда не определена');
 
         // Fallback - сразу вызываем callbacks
         if (window.logProtectionResult) {
@@ -142,5 +131,3 @@ function getSpellDisplayName(spellId, level) {
 
 // Экспорт
 window.castSingleTargetSpell = castSingleTargetSpell;
-
-console.log('🎯 Система single-target визуализации готова');
