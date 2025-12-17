@@ -57,6 +57,11 @@ ALTER TABLE trial_leaderboard ENABLE ROW LEVEL SECURITY;
 ALTER TABLE trial_rewards ENABLE ROW LEVEL SECURITY;
 
 -- === TRIAL_LEADERBOARD ===
+-- Удаляем старые политики если есть
+DROP POLICY IF EXISTS "trial_leaderboard_select_public" ON trial_leaderboard;
+DROP POLICY IF EXISTS "trial_leaderboard_insert_anon" ON trial_leaderboard;
+DROP POLICY IF EXISTS "trial_leaderboard_update_anon" ON trial_leaderboard;
+
 -- Публичный рейтинг - все могут читать
 CREATE POLICY "trial_leaderboard_select_public" ON trial_leaderboard
     FOR SELECT USING (true);
@@ -69,6 +74,10 @@ CREATE POLICY "trial_leaderboard_update_anon" ON trial_leaderboard
     FOR UPDATE USING (true) WITH CHECK (true);
 
 -- === TRIAL_REWARDS ===
+-- Удаляем старые политики если есть
+DROP POLICY IF EXISTS "trial_rewards_select_public" ON trial_rewards;
+DROP POLICY IF EXISTS "trial_rewards_update_anon" ON trial_rewards;
+
 -- Все могут читать награды (для отображения своих)
 CREATE POLICY "trial_rewards_select_public" ON trial_rewards
     FOR SELECT USING (true);
