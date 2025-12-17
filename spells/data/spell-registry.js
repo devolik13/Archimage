@@ -79,7 +79,7 @@ function playSpellAnimation(spellId, params) {
     // Добавляем проверку на существование контейнеров
     const effectsContainer = window.pixiCore?.getEffectsContainer();
     if (!effectsContainer) {
-        console.error('❌ effectsContainer не существует');
+        console.warn('⚠️ effectsContainer не существует (бой не активен или ещё загружается)');
         if (params.onComplete) params.onComplete();
         return false;
     }
