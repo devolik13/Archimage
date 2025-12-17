@@ -21,10 +21,15 @@ function addToBattleLog(message) {
             const recentEntries = window.battleLog.slice(-2500); // последние 2500 записей (увеличено с 800)
             window.battleLog = [...importantEntries, '... [записи удалены для экономии памяти] ...', ...recentEntries];
         }
-        
+
         console.log(message);
     } else {
         console.log('[LOG]', message);
+    }
+
+    // Записываем сообщение для экспорта в файл
+    if (typeof window.recordBattleMessage === 'function') {
+        window.recordBattleMessage(message);
     }
 }
 
@@ -129,11 +134,16 @@ function processEndOfTurnEffects(wizard, casterType) {
 
 // --- Логирование начала и конца боя ---
 function logBattleStart(playerTeam, enemyTeam) {
+    // Очищаем массив сообщений для экспорта
+    if (typeof window.clearBattleMessages === 'function') {
+        window.clearBattleMessages();
+    }
+
     addToBattleLog(`\n🏺 ═══ НАЧАЛО БОЯ ═══ 🏺`);
     addToBattleLog(`⚔️ Команда игрока: ${playerTeam.map(w => w.name).join(', ')}`);
     addToBattleLog(`🛡️ Команда противника: ${enemyTeam.map(w => w.name).join(', ')}`);
     addToBattleLog(`═══════════════════════════════\n`);
-    
+
     // Сброс счетчиков
     window.battleTurnCounter = 0;
     window.battleRoundCounter = 1;
@@ -148,17 +158,18 @@ function logBattleEnd(winner, totalTurns = window.battleTurnCounter, duration = 
     addToBattleLog(`   • Всего ходов: ${totalTurns}`);
     addToBattleLog(`   • Раундов: ${window.battleRoundCounter}`);
     addToBattleLog(`   • Длительность: ${Math.round(duration / 1000)} сек`);
-    
+
     if (totalTurns > 0) {
         addToBattleLog(`   • Средняя длительность хода: ${Math.round(duration / totalTurns)}мс`);
     }
-    
+
     // Статистика эффектов
     if (typeof window.showPoisonStats === 'function') {
         window.showPoisonStats();
     }
-    
+
     addToBattleLog(`═══════════════════════════════`);
+    addToBattleLog(`💾 Чтобы скачать лог боя, введите в консоли: exportBattleLog()`);
 }
 
 // --- Логирование попадания заклинания (с отступами и подробностями) ---

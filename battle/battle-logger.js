@@ -317,3 +317,104 @@ window.battleLogger = {
     current: detailedBattleLog
 };
 
+// ═══════════════════════════════════════════════════════════════════
+// НОВОЕ: Экспорт читаемого лога боя в текстовый файл
+// ═══════════════════════════════════════════════════════════════════
+
+// Массив для хранения всех сообщений боя
+let battleMessages = [];
+
+// Сохранение сообщения в массив (вызывается из addToBattleLog)
+function recordBattleMessage(message) {
+    const timestamp = new Date().toLocaleTimeString('ru-RU');
+    battleMessages.push(`[${timestamp}] ${message}`);
+}
+
+// Очистка лога (вызывается в начале боя)
+function clearBattleMessages() {
+    battleMessages = [];
+    battleMessages.push(`═══════════════════════════════════════════`);
+    battleMessages.push(`БОЙ НАЧАЛСЯ: ${new Date().toLocaleString('ru-RU')}`);
+    battleMessages.push(`═══════════════════════════════════════════`);
+
+    // Добавляем информацию о магах
+    if (window.playerFormation && window.playerWizards) {
+        battleMessages.push(`\n▶ ИГРОК:`);
+        window.playerFormation.forEach((id, pos) => {
+            if (id) {
+                const w = window.playerWizards.find(wiz => wiz.id === id);
+                if (w) {
+                    const spells = w.spells?.join(', ') || 'нет';
+                    battleMessages.push(`  [${pos}] ${w.name} (HP: ${w.hp}/${w.max_hp}) - Заклинания: ${spells}`);
+                }
+            }
+        });
+    }
+
+    if (window.enemyFormation) {
+        battleMessages.push(`\n▶ ПРОТИВНИК:`);
+        window.enemyFormation.forEach((w, pos) => {
+            if (w) {
+                const spells = w.spells?.join(', ') || 'нет';
+                battleMessages.push(`  [${pos}] ${w.name} (HP: ${w.hp}/${w.max_hp}) - Заклинания: ${spells}`);
+            }
+        });
+    }
+    battleMessages.push(`\n═══════════════════════════════════════════\n`);
+}
+
+// Экспорт лога в текстовый файл
+function exportBattleLog() {
+    // Добавляем финальную информацию
+    battleMessages.push(`\n═══════════════════════════════════════════`);
+    battleMessages.push(`БОЙ ЗАВЕРШЁН: ${new Date().toLocaleString('ru-RU')}`);
+    battleMessages.push(`═══════════════════════════════════════════`);
+
+    // Финальное состояние магов
+    if (window.playerFormation && window.playerWizards) {
+        battleMessages.push(`\n▶ ИТОГ - ИГРОК:`);
+        window.playerFormation.forEach((id, pos) => {
+            if (id) {
+                const w = window.playerWizards.find(wiz => wiz.id === id);
+                if (w) {
+                    const status = w.hp > 0 ? '✓ ЖИВ' : '✗ МЁРТВ';
+                    battleMessages.push(`  [${pos}] ${w.name}: ${w.hp}/${w.max_hp} HP - ${status}`);
+                }
+            }
+        });
+    }
+
+    if (window.enemyFormation) {
+        battleMessages.push(`\n▶ ИТОГ - ПРОТИВНИК:`);
+        window.enemyFormation.forEach((w, pos) => {
+            if (w) {
+                const status = w.hp > 0 ? '✓ ЖИВ' : '✗ МЁРТВ';
+                battleMessages.push(`  [${pos}] ${w.name}: ${w.hp}/${w.max_hp} HP - ${status}`);
+            }
+        });
+    }
+
+    // Создаём файл
+    const content = battleMessages.join('\n');
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const filename = `battle-log-${timestamp}.txt`;
+
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    console.log(`📁 Лог боя сохранён: ${filename}`);
+    return filename;
+}
+
+// Глобальный экспорт новых функций
+window.recordBattleMessage = recordBattleMessage;
+window.clearBattleMessages = clearBattleMessages;
+window.exportBattleLog = exportBattleLog;
+
