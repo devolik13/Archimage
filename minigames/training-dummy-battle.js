@@ -26,8 +26,9 @@ async function startDummyBattle() {
         return;
     }
 
-    // Проверяем формацию
-    if (!window.playerFormation || !window.playerFormation.some(id => id !== null)) {
+    // Проверяем формацию (используем тот же метод что и PvP)
+    const formation = window.userData?.formation || [null, null, null, null, null];
+    if (!formation.some(wizardId => wizardId !== null)) {
         alert('❌ Сначала выберите магов в расстановке!');
         return;
     }
