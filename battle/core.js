@@ -1096,9 +1096,55 @@ async function executeBossBattlePhase() {
                 continue;
             }
 
+            // 📊 Сохраняем HP врагов и союзников ДО хода для подсчёта опыта
+            const enemyHpBefore = {};
+            const allyHpBefore = {};
+            if (window.enemyFormation) {
+                window.enemyFormation.forEach(enemy => {
+                    if (enemy && enemy.id) enemyHpBefore[enemy.id] = enemy.hp || 0;
+                });
+            }
+            if (window.playerWizards) {
+                window.playerWizards.forEach(ally => {
+                    if (ally && ally.id) allyHpBefore[ally.id] = ally.hp || 0;
+                });
+            }
+
             // Маг использует 2 заклинания
             if (typeof window.useWizardSpellsForBoss === 'function') {
                 await window.useWizardSpellsForBoss(mageData.wizard, mageData.position, 'player', 2);
+            }
+
+            // 📊 Подсчёт нанесённого урона для опыта
+            if (typeof window.trackDamageExp === 'function') {
+                let totalDamageDealt = 0;
+                if (window.enemyFormation) {
+                    window.enemyFormation.forEach(enemy => {
+                        if (enemy && enemy.id && enemyHpBefore[enemy.id] !== undefined) {
+                            const hpLost = enemyHpBefore[enemy.id] - (enemy.hp || 0);
+                            if (hpLost > 0) totalDamageDealt += hpLost;
+                        }
+                    });
+                }
+                if (totalDamageDealt > 0) {
+                    window.trackDamageExp(mageData.wizard, totalDamageDealt);
+                }
+            }
+
+            // 💚 Подсчёт лечения для опыта
+            if (typeof window.trackHealExp === 'function') {
+                let totalHealingDone = 0;
+                if (window.playerWizards) {
+                    window.playerWizards.forEach(ally => {
+                        if (ally && ally.id && allyHpBefore[ally.id] !== undefined) {
+                            const hpGained = (ally.hp || 0) - allyHpBefore[ally.id];
+                            if (hpGained > 0) totalHealingDone += hpGained;
+                        }
+                    });
+                }
+                if (totalHealingDone > 0) {
+                    window.trackHealExp(mageData.wizard, totalHealingDone);
+                }
             }
 
             // Проверяем смерть босса после хода мага
@@ -1417,6 +1463,36 @@ async function checkBattleEnd() {
                                 window.lastUnlockedSkin = { id: skinId, name: skinName };
                             }
                         });
+                    }
+                }
+
+                // 🏆 БОНУСНЫЙ ОПЫТ ЗА БОССОВ (только при первом прохождении)
+                if (isFirstCompletion && (level.type === 'miniboss' || level.type === 'finalboss')) {
+                    // Бонус опыта: 100 за первого босса, 200 за второго и т.д.
+                    const bossExpBonus = {
+                        10: 100,    // Босс 1 - Огненный Элементаль
+                        20: 200,    // Босс 2 - Водный Элементаль
+                        30: 300,    // Босс 3 - Воздушный Элементаль
+                        40: 400,    // Босс 4 - Земной Элементаль
+                        50: 500     // Босс 5 - Повелитель Хаоса
+                    };
+
+                    const bonusExp = bossExpBonus[window.currentPvELevel];
+                    if (bonusExp && typeof window.addExperienceToWizard === 'function') {
+                        // Даём бонусный опыт ВСЕМ магам, которые участвовали в бою
+                        const participatingWizards = window.playerFormation
+                            .map(id => id ? window.playerWizards.find(w => w.id === id) : null)
+                            .filter(w => w); // Все маги в формации (даже мёртвые получают опыт за победу)
+
+                        participatingWizards.forEach(wizard => {
+                            window.addExperienceToWizard(wizard, bonusExp);
+                        });
+
+                        if (typeof window.addToBattleLog === 'function') {
+                            window.addToBattleLog(`🏆 Бонус за победу над боссом: +${bonusExp} опыта каждому магу!`);
+                        }
+
+                        console.log(`🏆 [BOSS EXP] Выдано ${bonusExp} опыта ${participatingWizards.length} магам за победу над боссом`);
                     }
                 }
             }
