@@ -109,10 +109,18 @@
         const currentTarget = targets[currentIndex];
         console.log(`⚡ [Ball Lightning] Цель ${currentIndex}:`, currentTarget);
 
-        const currentCell = gridCells[currentTarget.col]?.[currentTarget.row];
-        console.log(`⚡ [Ball Lightning] Ячейка [${currentTarget.col}][${currentTarget.row}]:`, !!currentCell);
-        
+        // Используем column и position (row) из структуры цели
+        const col = currentTarget.column ?? currentTarget.col ?? 0;
+        const row = currentTarget.position ?? currentTarget.row ?? 0;
+        const currentCell = gridCells[col]?.[row];
+        console.log(`⚡ [Ball Lightning] Ячейка [${col}][${row}]:`, !!currentCell);
+
         if (!currentCell) {
+            console.warn(`⚡ [Ball Lightning] Ячейка не найдена, применяем урон без визуала`);
+            // Применяем урон даже если ячейка не найдена!
+            if (onHitTarget) {
+                onHitTarget(currentIndex);
+            }
             setTimeout(() => {
                 strikeChain(targets, currentIndex + 1, frames, gridCells, container, onHitTarget, onComplete);
             }, 100);
@@ -133,7 +141,9 @@
         } else {
             // Последующие шары - от предыдущей цели
             const prevTarget = targets[currentIndex - 1];
-            const prevCell = gridCells[prevTarget.col]?.[prevTarget.row];
+            const prevCol = prevTarget.column ?? prevTarget.col ?? 0;
+            const prevRow = prevTarget.position ?? prevTarget.row ?? 0;
+            const prevCell = gridCells[prevCol]?.[prevRow];
             if (prevCell) {
                 const prevCellWidth = prevCell.cellWidth || prevCell.width || 60;
                 const prevCellHeight = prevCell.cellHeight || prevCell.height || 60;
@@ -344,9 +354,16 @@
             }
             
             const target = targets[currentIndex];
-            const cell = gridCells[target.col]?.[target.row];
+            // Используем column и position (row) из структуры цели
+            const col = target.column ?? target.col ?? 0;
+            const row = target.position ?? target.row ?? 0;
+            const cell = gridCells[col]?.[row];
 
             if (!cell) {
+                // Применяем урон даже если ячейка не найдена
+                if (onHitTarget) {
+                    onHitTarget(currentIndex);
+                }
                 currentIndex++;
                 setTimeout(strikeNext, 100);
                 return;
@@ -363,7 +380,9 @@
                 startY = -50;
             } else {
                 const prevTarget = targets[currentIndex - 1];
-                const prevCell = gridCells[prevTarget.col]?.[prevTarget.row];
+                const prevCol = prevTarget.column ?? prevTarget.col ?? 0;
+                const prevRow = prevTarget.position ?? prevTarget.row ?? 0;
+                const prevCell = gridCells[prevCol]?.[prevRow];
                 if (prevCell) {
                     const prevCellWidth = prevCell.cellWidth || prevCell.width || 60;
                     const prevCellHeight = prevCell.cellHeight || prevCell.height || 60;
