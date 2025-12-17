@@ -37,9 +37,13 @@
         const cacheBuster = `?v=${Date.now()}`;
         const ballTexturePath = 'images/spells/wind/ball_lightning/ball_spritesheet.webp' + cacheBuster;
 
+        console.log('⚡ [Ball Lightning] Загрузка текстуры:', ballTexturePath);
+
         PIXI.Assets.load(ballTexturePath).then(texture => {
+            console.log('⚡ [Ball Lightning] Текстура загружена:', !!texture, texture?.valid);
+
             if (!texture || !texture.valid) {
-                console.warn('⚡ Не удалось загрузить текстуру шара молнии');
+                console.warn('⚡ Не удалось загрузить текстуру шара молнии, используем fallback');
                 createFallbackChain(targets, gridCells, effectsContainer, onHitTarget);
                 return;
             }
@@ -83,7 +87,8 @@
             });
             
         }).catch(err => {
-            console.warn('Ошибка загрузки текстуры шара молнии:', err);
+            console.error('⚡ [Ball Lightning] Ошибка загрузки текстуры:', err);
+            console.log('⚡ [Ball Lightning] Используем fallback анимацию');
             createFallbackChain(targets, gridCells, effectsContainer, onHitTarget);
         });
     }
