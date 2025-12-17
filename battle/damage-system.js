@@ -271,12 +271,17 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
 // --- Применение урона с погодой ---
 function applyDamageWithWeather(caster, target, baseDamage, spellId, armorIgnorePercent = 0) {
     let damage = baseDamage;
-    
-    // Применяем погоду (если есть) — ИГНОРИРУЕМ для фракции Природа
-    if (typeof window.applyWeatherBonus === 'function' && caster && caster.faction && caster.faction !== 'nature') {
-        damage = window.applyWeatherBonus(caster.faction, damage);
+
+    // Применяем погоду на основе ШКОЛЫ ЗАКЛИНАНИЯ, а не фракции мага
+    if (typeof window.applyWeatherBonus === 'function' && spellId) {
+        // Получаем школу заклинания
+        const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
+        if (spellSchool && spellSchool !== 'nature') {
+            // Погода даёт бонус заклинаниям соответствующей стихии (кроме природы)
+            damage = window.applyWeatherBonus(spellSchool, damage);
+        }
     }
-    
+
     // Применяем эффекты и броню
     return applyDamageWithEffects(caster, target, damage, spellId, armorIgnorePercent);
 }
