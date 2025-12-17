@@ -20,14 +20,26 @@
         const gridCells = window.pixiCore?.getGridCells();
 
         console.log('⚡ [Ball Lightning] effectsContainer:', !!effectsContainer, 'gridCells:', !!gridCells);
+        console.log('⚡ [Ball Lightning] gridCells структура:', gridCells?.length, 'колонок, первая колонка:', gridCells?.[0]?.length, 'рядов');
+        console.log('⚡ [Ball Lightning] gridCells[0]:', gridCells?.[0]);
+        console.log('⚡ [Ball Lightning] gridCells[0][0]:', gridCells?.[0]?.[0]);
 
-        if (!effectsContainer || !gridCells || !targets || targets.length === 0) {
+        // Проверяем что gridCells реально содержит ячейки
+        const hasGridCells = gridCells && gridCells.length > 0 && gridCells[0] && gridCells[0].length > 0;
+        console.log('⚡ [Ball Lightning] hasGridCells:', hasGridCells, 'onHitTarget:', typeof onHitTarget);
+
+        if (!effectsContainer || !hasGridCells || !targets || targets.length === 0) {
             console.warn('⚡ Шаровая молния: нет данных для анимации, вызываем урон напрямую');
+            console.warn('⚡ Детали: effectsContainer=', !!effectsContainer, 'hasGridCells=', hasGridCells, 'targets=', targets?.length);
             // Всё равно применяем урон даже если нет визуала!
             if (onHitTarget && targets) {
                 targets.forEach((_, index) => {
                     console.log('⚡ [Ball Lightning] Fallback урон для цели', index);
-                    onHitTarget(index);
+                    try {
+                        onHitTarget(index);
+                    } catch (e) {
+                        console.error('⚡ Ошибка при применении урона:', e);
+                    }
                 });
             }
             return;
@@ -99,6 +111,7 @@
     // Рекурсивная функция для цепочки ударов шаром
     function strikeChain(targets, currentIndex, frames, gridCells, container, onHitTarget, onComplete) {
         console.log(`⚡ [Ball Lightning] strikeChain: index=${currentIndex}, всего целей=${targets.length}`);
+        console.log(`⚡ [Ball Lightning] onHitTarget в strikeChain:`, typeof onHitTarget);
 
         if (currentIndex >= targets.length) {
             console.log('⚡ [Ball Lightning] Все цели поражены, завершаем');
@@ -107,7 +120,7 @@
         }
 
         const currentTarget = targets[currentIndex];
-        console.log(`⚡ [Ball Lightning] Цель ${currentIndex}:`, currentTarget);
+        console.log(`⚡ [Ball Lightning] Цель ${currentIndex}:`, JSON.stringify(currentTarget));
 
         // Используем column и position (row) из структуры цели
         const col = currentTarget.column ?? currentTarget.col ?? 0;
@@ -116,10 +129,19 @@
         console.log(`⚡ [Ball Lightning] Ячейка [${col}][${row}]:`, !!currentCell);
 
         if (!currentCell) {
-            console.warn(`⚡ [Ball Lightning] Ячейка не найдена, применяем урон без визуала`);
+            console.warn(`⚡ [Ball Lightning] Ячейка [${col}][${row}] не найдена, применяем урон без визуала`);
+            console.log(`⚡ [Ball Lightning] gridCells[${col}]:`, gridCells?.[col]);
             // Применяем урон даже если ячейка не найдена!
             if (onHitTarget) {
-                onHitTarget(currentIndex);
+                console.log(`⚡ [Ball Lightning] Вызываем onHitTarget(${currentIndex})`);
+                try {
+                    onHitTarget(currentIndex);
+                    console.log(`⚡ [Ball Lightning] onHitTarget(${currentIndex}) выполнен успешно`);
+                } catch (e) {
+                    console.error(`⚡ [Ball Lightning] Ошибка в onHitTarget(${currentIndex}):`, e);
+                }
+            } else {
+                console.error(`⚡ [Ball Lightning] onHitTarget не определён!`);
             }
             setTimeout(() => {
                 strikeChain(targets, currentIndex + 1, frames, gridCells, container, onHitTarget, onComplete);
@@ -346,23 +368,34 @@
     
     // Fallback - простые летающие шары без spritesheet
     function createFallbackChain(targets, gridCells, container, onHitTarget) {
+        console.log(`⚡ [Ball Lightning] createFallbackChain вызван, целей: ${targets?.length}`);
         let currentIndex = 0;
-        
+
         const strikeNext = () => {
+            console.log(`⚡ [Ball Lightning] strikeNext: index=${currentIndex}`);
+
             if (currentIndex >= targets.length) {
+                console.log('⚡ [Ball Lightning] Fallback: все цели обработаны');
                 return;
             }
-            
+
             const target = targets[currentIndex];
             // Используем column и position (row) из структуры цели
             const col = target.column ?? target.col ?? 0;
             const row = target.position ?? target.row ?? 0;
             const cell = gridCells[col]?.[row];
+            console.log(`⚡ [Ball Lightning] Fallback цель ${currentIndex}: col=${col}, row=${row}, cell=${!!cell}`);
 
             if (!cell) {
                 // Применяем урон даже если ячейка не найдена
+                console.log(`⚡ [Ball Lightning] Fallback: нет ячейки, вызываем onHitTarget(${currentIndex})`);
                 if (onHitTarget) {
-                    onHitTarget(currentIndex);
+                    try {
+                        onHitTarget(currentIndex);
+                        console.log(`⚡ [Ball Lightning] Fallback: onHitTarget(${currentIndex}) успешно`);
+                    } catch (e) {
+                        console.error(`⚡ [Ball Lightning] Fallback: ошибка в onHitTarget:`, e);
+                    }
                 }
                 currentIndex++;
                 setTimeout(strikeNext, 100);

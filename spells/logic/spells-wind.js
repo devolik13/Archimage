@@ -458,7 +458,7 @@ function castStormCloud(wizard, spellData, position, casterType) {
 function castBallLightning(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
     let baseDamage, decayPercent, stunChance = 0;
-    
+
     switch (level) {
         case 1: baseDamage = 30; decayPercent = 0.20; break;
         case 2: baseDamage = 35; decayPercent = 0.20; break;
@@ -467,14 +467,14 @@ function castBallLightning(wizard, spellData, position, casterType) {
         case 5: baseDamage = 50; decayPercent = 0.10; stunChance = 0.05; break;
         default: baseDamage = 30; decayPercent = 0.20;
     }
-    
+
     // Определяем колонки для поиска целей
     const columns = casterType === 'player' ? [0, 1] : [5, 4]; // маги + призванные противника
-    
+
     // Собираем все живые цели в этих колонках
-    const targets = typeof window.findAllTargetsInColumns === 'function' ? 
+    const targets = typeof window.findAllTargetsInColumns === 'function' ?
         window.findAllTargetsInColumns(columns, casterType) : [];
-    
+
     if (targets.length === 0) {
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`⚡ ${wizard.name} использует Шаровую молнию, но цели не найдены`);
@@ -489,123 +489,70 @@ function castBallLightning(wizard, spellData, position, casterType) {
         window.addToBattleLog(`⚡ ${wizard.name} вызывает Шаровую молнию! Поражает ${shuffledTargets.length} целей, урон снижается на ${Math.round(decayPercent * 100)}%`);
     }
 
-    // ЗАПУСКАЕМ АНИМАЦИЮ
+    // ЗАПУСКАЕМ АНИМАЦИЮ (только визуальный эффект)
     if (window.spellAnimations?.ball_lightning?.play) {
-        console.log('🎯 Цели:', shuffledTargets);
-        
-        let currentDamage = baseDamage;
-        
+        console.log('⚡ [Ball Lightning] Запуск анимации, целей:', shuffledTargets.length);
         window.spellAnimations.ball_lightning.play({
             targets: shuffledTargets,
             casterType: casterType,
+            // Callback теперь не нужен для урона - урон применяется напрямую ниже
             onHitTarget: (index) => {
-                console.log(`⚡ onHitTarget вызван для цели ${index}`);
-                
-                // Наносим урон при попадании
-                const targetInfo = shuffledTargets[index];
-                const target = targetInfo.wizard;
-                
-                // Применяем фракционный бонус Ветра — 5% шанс двойного урона
-                let actualDamage = currentDamage;
-                let bonusLog = '';
-                const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
-                if (wizard.faction === 'wind' && typeof window.checkFactionDoubleDamage === 'function') {
-                    const isDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind', casterInfo);
-                    if (isDouble) {
-                        actualDamage *= 2;
-                        bonusLog = ' 💨 Двойной урон!';
-                    }
-                }
-                
-                // Применяем урон
-                const finalDamage = typeof window.applyFinalDamage === 'function' ?
-                    window.applyFinalDamage(wizard, target, actualDamage, 'ball_lightning', 0, true) : actualDamage;
-                    
-                target.hp -= finalDamage;
-                if (target.hp < 0) target.hp = 0;
-                
-                // Логируем урон
-                if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`⚡ Шаровая молния [${index + 1}] → ${target.name} (${finalDamage} урона)${bonusLog}`);
-                    const damageSteps = target._lastDamageSteps || [];
-                    if (damageSteps.length > 0) {
-                        damageSteps.forEach(step => {
-                            window.addToBattleLog(`    ├─ ${step}`);
-                        });
-                    }
-                    window.addToBattleLog(`    └─ HP: ${target.hp}/${target.max_hp}`);
-                    delete target._lastDamageSteps;
-                }
-                
-                // На 5 уровне — 5% шанс оглушить
-                if (level === 5 && stunChance > 0 && Math.random() < stunChance) {
-                    target.isStunned = true;
-                    target.stunTurns = 1;
-                    if (typeof window.addToBattleLog === 'function') {
-                        window.addToBattleLog(`⚡ ${target.name} оглушён на 1 ход!`);
-                    }
-                }
-                
-                // Уменьшаем урон для следующей цели
-                currentDamage = Math.floor(currentDamage * (1 - decayPercent));
-                if (currentDamage < 1) currentDamage = 1;
+                console.log(`⚡ [Ball Lightning] Анимация: попадание ${index}`);
             }
-        });
-    } else {
-        console.warn('❌ window.spellAnimations.ball_lightning.play не найдена!');
-        
-        // Fallback без анимации - наносим урон сразу
-        let currentDamage = baseDamage;
-        
-        shuffledTargets.forEach((targetInfo, index) => {
-            const target = targetInfo.wizard;
-            
-            // Применяем фракционный бонус Ветра
-            let actualDamage = currentDamage;
-            let bonusLog = '';
-            const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
-            if (wizard.faction === 'wind' && typeof window.checkFactionDoubleDamage === 'function') {
-                const isDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind', casterInfo);
-                if (isDouble) {
-                    actualDamage *= 2;
-                    bonusLog = ' 💨 Двойной урон!';
-                }
-            }
-            
-            // Применяем урон
-            const finalDamage = typeof window.applyFinalDamage === 'function' ?
-                window.applyFinalDamage(wizard, target, actualDamage, 'ball_lightning', 0, true) : actualDamage;
-                
-            target.hp -= finalDamage;
-            if (target.hp < 0) target.hp = 0;
-            
-            // Логируем
-            if (typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`⚡ Шаровая молния [${index + 1}] → ${target.name} (${finalDamage} урона)${bonusLog}`);
-                const damageSteps = target._lastDamageSteps || [];
-                if (damageSteps.length > 0) {
-                    damageSteps.forEach(step => {
-                        window.addToBattleLog(`    ├─ ${step}`);
-                    });
-                }
-                window.addToBattleLog(`    └─ HP: ${target.hp}/${target.max_hp}`);
-                delete target._lastDamageSteps;
-            }
-            
-            // На 5 уровне — 5% шанс оглушить
-            if (level === 5 && stunChance > 0 && Math.random() < stunChance) {
-                target.isStunned = true;
-                target.stunTurns = 1;
-                if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`⚡ ${target.name} оглушён на 1 ход!`);
-                }
-            }
-            
-            // Уменьшаем урон для следующей цели
-            currentDamage = Math.floor(currentDamage * (1 - decayPercent));
-            if (currentDamage < 1) currentDamage = 1;
         });
     }
+
+    // ПРИМЕНЯЕМ УРОН НАПРЯМУЮ (как в storm_cloud) - не зависим от анимации!
+    let currentDamage = baseDamage;
+
+    shuffledTargets.forEach((targetInfo, index) => {
+        const target = targetInfo.wizard;
+
+        // Применяем фракционный бонус Ветра — 5% шанс двойного урона
+        let actualDamage = currentDamage;
+        let bonusLog = '';
+        const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
+        if (wizard.faction === 'wind' && typeof window.checkFactionDoubleDamage === 'function') {
+            const isDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind', casterInfo);
+            if (isDouble) {
+                actualDamage *= 2;
+                bonusLog = ' 💨 Двойной урон!';
+            }
+        }
+
+        // Применяем урон
+        const finalDamage = typeof window.applyFinalDamage === 'function' ?
+            window.applyFinalDamage(wizard, target, actualDamage, 'ball_lightning', 0, true) : actualDamage;
+
+        target.hp -= finalDamage;
+        if (target.hp < 0) target.hp = 0;
+
+        // Логируем урон
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`⚡ Шаровая молния [${index + 1}] → ${target.name} (${finalDamage} урона)${bonusLog}`);
+            const damageSteps = target._lastDamageSteps || [];
+            if (damageSteps.length > 0) {
+                damageSteps.forEach(step => {
+                    window.addToBattleLog(`    ├─ ${step}`);
+                });
+            }
+            window.addToBattleLog(`    └─ HP: ${target.hp}/${target.max_hp}`);
+            delete target._lastDamageSteps;
+        }
+
+        // На 5 уровне — 5% шанс оглушить
+        if (level === 5 && stunChance > 0 && Math.random() < stunChance) {
+            target.isStunned = true;
+            target.stunTurns = 1;
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`⚡ ${target.name} оглушён на 1 ход!`);
+            }
+        }
+
+        // Уменьшаем урон для следующей цели
+        currentDamage = Math.floor(currentDamage * (1 - decayPercent));
+        if (currentDamage < 1) currentDamage = 1;
+    });
 }
 
 // Экспорт
