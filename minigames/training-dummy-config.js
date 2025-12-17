@@ -315,6 +315,11 @@ function recordAttempt(damage, remainingHp = null) {
 
     saveDummyProgress(progress);
 
+    // Сохраняем результат в Supabase для глобального рейтинга
+    if (typeof window.saveTrialResultSupabase === 'function') {
+        window.saveTrialResultSupabase(damage);
+    }
+
     return progress;
 }
 

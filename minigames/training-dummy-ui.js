@@ -558,7 +558,7 @@ function showTrialMenuInArena() {
 /**
  * Показать рейтинг испытания внутри арены
  */
-function showTrialLeaderboardInArena() {
+async function showTrialLeaderboardInArena() {
     const overlay = document.getElementById('arena-ui-overlay');
     if (!overlay) return;
 
@@ -600,8 +600,16 @@ function showTrialLeaderboardInArena() {
         padding: 10px;
     `;
 
-    // Загружаем рейтинг (заглушка - позже Supabase)
-    const leaderboard = loadTrialLeaderboardLocal();
+    // Показываем загрузку
+    listContainer.innerHTML = `
+        <div style="color: #888; text-align: center; margin-top: 100px; font-size: ${Math.max(12, 14 * scale)}px;">
+            Загрузка рейтинга...
+        </div>
+    `;
+    overlay.appendChild(listContainer);
+
+    // Загружаем рейтинг из Supabase (с fallback на localStorage)
+    const leaderboard = await loadTrialLeaderboardSupabase();
 
     if (leaderboard.length === 0) {
         listContainer.innerHTML = `
@@ -611,10 +619,11 @@ function showTrialLeaderboardInArena() {
         `;
     } else {
         let html = '';
-        const playerId = window.myPlayerId || 'local';
+        const playerId = window.myPlayerId || window.userData?.id || 'local';
         leaderboard.forEach((entry, index) => {
-            const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
-            const isMe = entry.playerId === playerId;
+            const rank = entry.rank || (index + 1);
+            const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}.`;
+            const isMe = entry.playerId == playerId;
             html += `
                 <div style="
                     display: flex;
@@ -627,13 +636,12 @@ function showTrialLeaderboardInArena() {
                     font-size: ${Math.max(12, 14 * scale)}px;
                 ">
                     <span>${medal} ${entry.playerName}</span>
-                    <span style="color: #FFD700;">${entry.damage.toLocaleString()} урона</span>
+                    <span style="color: #FFD700;">${(entry.damage || 0).toLocaleString()} урона</span>
                 </div>
             `;
         });
         listContainer.innerHTML = html;
     }
-    overlay.appendChild(listContainer);
 
     // Кнопка назад (правый нижний угол)
     const backBtn = document.createElement('button');
@@ -657,7 +665,40 @@ function showTrialLeaderboardInArena() {
 }
 
 /**
- * Загрузить локальный рейтинг (заглушка для Supabase)
+ * Загрузить рейтинг из Supabase
+ */
+async function loadTrialLeaderboardSupabase() {
+    try {
+        if (!window.supabase) {
+            console.warn('Supabase не инициализирован, используем localStorage');
+            return loadTrialLeaderboardLocal();
+        }
+
+        const { data, error } = await window.supabase
+            .rpc('get_trial_leaderboard', { p_limit: 100 });
+
+        if (error) {
+            console.error('Ошибка загрузки рейтинга:', error);
+            return loadTrialLeaderboardLocal();
+        }
+
+        // Преобразуем формат для совместимости с UI
+        return (data || []).map(entry => ({
+            playerId: entry.player_id,
+            playerName: entry.player_name,
+            damage: entry.best_damage,
+            totalDamage: entry.total_damage,
+            attempts: entry.attempts_count,
+            rank: entry.rank
+        }));
+    } catch (e) {
+        console.error('Ошибка загрузки рейтинга:', e);
+        return loadTrialLeaderboardLocal();
+    }
+}
+
+/**
+ * Загрузить локальный рейтинг (fallback)
  */
 function loadTrialLeaderboardLocal() {
     const saved = localStorage.getItem('trial_leaderboard');
@@ -670,7 +711,45 @@ function loadTrialLeaderboardLocal() {
 }
 
 /**
- * Сохранить результат в рейтинг
+ * Сохранить результат в Supabase рейтинг
+ */
+async function saveTrialResultSupabase(damage) {
+    const playerName = window.myUsername || window.userData?.name || 'Игрок';
+    const playerId = window.myPlayerId || window.userData?.id;
+
+    if (!playerId) {
+        console.warn('Нет player_id, сохраняем только локально');
+        return saveTrialResultLocal(damage);
+    }
+
+    // Всегда сохраняем локально для быстрого отображения
+    saveTrialResultLocal(damage);
+
+    try {
+        if (!window.supabase) {
+            console.warn('Supabase не инициализирован');
+            return;
+        }
+
+        const { error } = await window.supabase
+            .rpc('upsert_trial_result', {
+                p_player_id: playerId,
+                p_player_name: playerName,
+                p_damage: damage
+            });
+
+        if (error) {
+            console.error('Ошибка сохранения результата в Supabase:', error);
+        } else {
+            console.log('✅ Результат сохранён в Supabase:', damage);
+        }
+    } catch (e) {
+        console.error('Ошибка сохранения результата:', e);
+    }
+}
+
+/**
+ * Сохранить результат в локальный рейтинг (fallback)
  */
 function saveTrialResultLocal(damage) {
     const playerName = window.myUsername || 'Игрок';
@@ -694,6 +773,32 @@ function saveTrialResultLocal(damage) {
     return leaderboard;
 }
 
+/**
+ * Получить позицию игрока в рейтинге из Supabase
+ */
+async function getPlayerTrialRankSupabase() {
+    const playerId = window.myPlayerId || window.userData?.id;
+
+    if (!playerId || !window.supabase) {
+        return null;
+    }
+
+    try {
+        const { data, error } = await window.supabase
+            .rpc('get_player_trial_rank', { p_player_id: playerId });
+
+        if (error) {
+            console.error('Ошибка получения ранга:', error);
+            return null;
+        }
+
+        return data && data.length > 0 ? data[0] : null;
+    } catch (e) {
+        console.error('Ошибка получения ранга:', e);
+        return null;
+    }
+}
+
 // Экспорт
 window.showTrainingGroundScreen = showTrainingGroundScreen;
 window.addTrainingGroundButton = addTrainingGroundButton;
@@ -701,5 +806,8 @@ window.formatTimeReward = formatTimeReward;
 window.showTrialMenuInArena = showTrialMenuInArena;
 window.showTrialLeaderboardInArena = showTrialLeaderboardInArena;
 window.saveTrialResultLocal = saveTrialResultLocal;
+window.saveTrialResultSupabase = saveTrialResultSupabase;
+window.loadTrialLeaderboardSupabase = loadTrialLeaderboardSupabase;
+window.getPlayerTrialRankSupabase = getPlayerTrialRankSupabase;
 
 console.log('✅ Training Dummy UI загружен');
