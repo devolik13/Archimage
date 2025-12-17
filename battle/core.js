@@ -256,6 +256,16 @@ function startBattle() {
         window.isBossBattle = false;
     }
 
+    // ИСПРАВЛЕНИЕ: Сбрасываем флаг тренировочного манекена для обычных боёв
+    // (флаг устанавливается в training-dummy-battle.js при запуске манекена)
+    if (!window.isTrainingDummyBattle) {
+        // Не трогаем если манекен - это правильный бой
+    } else if (!window.enemyFormation?.some(e => e && e.isTrainingDummy)) {
+        // Если это НЕ бой с манекеном, сбрасываем флаг
+        window.isTrainingDummyBattle = false;
+        console.log('🎯 Сброс флага тренировочного манекена');
+    }
+
     if (window.spellAnimations?.fire_tsunami?.clearAll) {
         window.spellAnimations.fire_tsunami.clearAll();
     }
