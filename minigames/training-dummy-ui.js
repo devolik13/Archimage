@@ -327,7 +327,7 @@ function addTrainingGroundButton(container) {
  * Показать меню испытания внутри арены (на том же фоне)
  */
 function showTrialMenuInArena() {
-    const overlay = document.getElementById('pvp-arena-overlay');
+    const overlay = document.getElementById('arena-ui-overlay');
     if (!overlay) {
         console.error('Arena overlay not found');
         return;
@@ -559,7 +559,7 @@ function showTrialMenuInArena() {
  * Показать рейтинг испытания внутри арены
  */
 function showTrialLeaderboardInArena() {
-    const overlay = document.getElementById('pvp-arena-overlay');
+    const overlay = document.getElementById('arena-ui-overlay');
     if (!overlay) return;
 
     overlay.innerHTML = '';
