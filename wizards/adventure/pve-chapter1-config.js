@@ -162,6 +162,7 @@ const FINAL_BOSS = {
     hp: 700,
     armor: 150,
     faction: "fire", // визуально будет огненным
+    spriteSheet: "lord_demon", // Используем спрайты лорда демонов (5x5 сетка)
     spells: ["fireball", "blizzard", "ball_lightning", "meteor_shower", "epidemic"], // все стихии
     spell_levels: {
         'fireball': 7,       // Огонь
