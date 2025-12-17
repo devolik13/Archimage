@@ -456,7 +456,14 @@
         if (config && !config.useAtlas) {
             // Загружаем текстуры фракции
             const textures = await loadFactionTextures(faction);
-            
+
+            // ИСПРАВЛЕНИЕ: Проверяем что контейнеры ещё валидны после await
+            if (!unitsContainer || !gridCells || container.destroyed) {
+                console.warn(`⚠️ Контейнеры недоступны после загрузки текстур: ${key}`);
+                creatingSprites.delete(key);
+                return null;
+            }
+
             if (textures && textures.idle && textures.idle.length > 0) {
                 // Создаем анимированный спрайт из загруженных кадров
                 sprite = new PIXI.AnimatedSprite(textures.idle);
@@ -466,14 +473,22 @@
                 sprite.loop = true; // Зацикливаем idle анимацию
                 sprite.play();
 
-                // ИСПРАВЛЕНО: Сохраняем базовый scale для возврата после анимаций
-                sprite.baseScaleX = sprite.scale.x;
-                sprite.baseScaleY = sprite.scale.y;
+                // ИСПРАВЛЕНО: Безопасное сохранение базового scale
+                try {
+                    if (sprite.transform && !sprite.destroyed) {
+                        sprite.baseScaleX = sprite.scale.x;
+                        sprite.baseScaleY = sprite.scale.y;
 
-                // Зеркалим для игрока (смотрит влево)
-                if (type === 'player') {
-                    sprite.scale.x *= -1;
-                    sprite.baseScaleX = sprite.scale.x; // Обновляем базовый scale после зеркалирования
+                        // Зеркалим для игрока (смотрит влево)
+                        if (type === 'player') {
+                            sprite.scale.x *= -1;
+                            sprite.baseScaleX = sprite.scale.x;
+                        }
+                    }
+                } catch (e) {
+                    console.warn(`⚠️ Ошибка установки scale: ${key}`, e.message);
+                    creatingSprites.delete(key);
+                    return null;
                 }
 
                 // Сохраняем кадры для анимаций
@@ -484,11 +499,11 @@
             }
         } else if (fireAtlas) {
             // Используем старую систему с атласом для других фракций
-            
+
             const idleFrames = Object.keys(fireAtlas.textures)
                 .filter(key => key.includes('IDLE'))
                 .map(key => fireAtlas.textures[key]);
-                
+
             if (idleFrames.length > 0) {
                 sprite = new PIXI.AnimatedSprite(idleFrames);
                 sprite.animationSpeed = 0.1;
@@ -497,22 +512,30 @@
                 sprite.loop = true; // Зацикливаем idle анимацию
                 sprite.play();
 
-                // ИСПРАВЛЕНО: Сохраняем базовый scale для возврата после анимаций
-                sprite.baseScaleX = sprite.scale.x;
-                sprite.baseScaleY = sprite.scale.y;
+                // ИСПРАВЛЕНО: Безопасное сохранение базового scale
+                try {
+                    if (sprite.transform && !sprite.destroyed) {
+                        sprite.baseScaleX = sprite.scale.x;
+                        sprite.baseScaleY = sprite.scale.y;
 
-                if (type === 'player') {
-                    sprite.scale.x *= -1;
-                    sprite.baseScaleX = sprite.scale.x; // Обновляем базовый scale после зеркалирования
+                        if (type === 'player') {
+                            sprite.scale.x *= -1;
+                            sprite.baseScaleX = sprite.scale.x;
+                        }
+                    }
+                } catch (e) {
+                    console.warn(`⚠️ Ошибка установки scale (atlas): ${key}`, e.message);
+                    creatingSprites.delete(key);
+                    return null;
                 }
 
                 container.idleFrames = idleFrames;
-                
+
                 if (fireAttackAtlas) {
                     const attackFrames = Object.keys(fireAttackAtlas.textures)
                         .filter(key => key.includes('ATTACK'))
                         .map(key => fireAttackAtlas.textures[key]);
-                    
+
                     if (attackFrames.length > 0) {
                         container.attackFrames = attackFrames;
                     }
@@ -1164,6 +1187,12 @@
         // Загружаем текстуры фракции
         const textures = await loadFactionTextures(faction);
 
+        // ИСПРАВЛЕНИЕ: Проверяем что контейнеры ещё валидны после await
+        if (!unitsContainer || !gridCells || container.destroyed) {
+            console.warn(`⚠️ createDemoWizard: Контейнеры недоступны после загрузки текстур`);
+            return null;
+        }
+
         if (textures && textures.idle && textures.idle.length > 0) {
             sprite = new PIXI.AnimatedSprite(textures.idle);
             sprite.animationSpeed = config?.animationSpeed || 0.15;
@@ -1172,18 +1201,28 @@
             sprite.loop = true;
             sprite.play();
 
-            // ИСПРАВЛЕНО: Сохраняем базовый scale для возврата после анимаций
-            sprite.baseScaleX = sprite.scale.x;
-            sprite.baseScaleY = sprite.scale.y;
+            // ИСПРАВЛЕНО: Безопасное сохранение базового scale и позиции
+            try {
+                if (sprite.transform && !sprite.destroyed) {
+                    sprite.baseScaleX = sprite.scale.x;
+                    sprite.baseScaleY = sprite.scale.y;
 
-            // Зеркалим для игрока (смотрит влево)
-            if (type === 'player') {
-                sprite.scale.x *= -1;
-                sprite.baseScaleX = sprite.scale.x; // Обновляем базовый scale после зеркалирования
+                    // Зеркалим для игрока (смотрит влево)
+                    if (type === 'player') {
+                        sprite.scale.x *= -1;
+                        sprite.baseScaleX = sprite.scale.x;
+                    }
+
+                    sprite.x = cellData.x + cellData.width / 2;
+                    sprite.y = cellData.y + cellData.height / 2;
+                } else {
+                    console.warn(`⚠️ createDemoWizard: Спрайт невалиден`);
+                    return null;
+                }
+            } catch (e) {
+                console.warn(`⚠️ createDemoWizard: Ошибка установки свойств:`, e.message);
+                return null;
             }
-
-            sprite.x = cellData.x + cellData.width / 2;
-            sprite.y = cellData.y + cellData.height / 2;
 
             // Сохраняем текстуры для анимаций
             sprite.userData = {
