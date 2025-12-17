@@ -241,18 +241,22 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
             // Если Энт умирает
             if (ent.hp <= 0) {
                 ent.isAlive = false;
-                if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`🌳 Энт погибает, защищая ${target.name}`);
-                }
 
-                // Убиваем через менеджер для визуала
+                // Убиваем через менеджер для визуала (skipLog = true, мы сами логируем)
                 if (window.summonsManager && typeof window.summonsManager.killSummon === 'function') {
-                    window.summonsManager.killSummon(ent.id);
+                    window.summonsManager.killSummon(ent.id, true);
                 }
 
                 // На 5 уровне — лечим самого слабого союзного мага
                 if (ent.level === 5 && typeof window.healWeakestAlly === 'function') {
                     window.healWeakestAlly(ent.casterType);
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`💀 Энт разрушен, защищая ${target.name}! Энт исцеляет союзника перед смертью!`);
+                    }
+                } else {
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`💀 Энт разрушен, защищая ${target.name}!`);
+                    }
                 }
             }
 

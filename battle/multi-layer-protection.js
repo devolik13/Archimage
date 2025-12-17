@@ -135,13 +135,14 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
                 }
                 
                 // Удаляем существо через менеджер если доступен
+                // skipLog = true, т.к. мы сами логируем детальное сообщение ниже
                 if (window.summonsManager) {
-                    window.summonsManager.killSummon(summonedCreature.id);
+                    window.summonsManager.killSummon(summonedCreature.id, true);
                 } else if (window.activeSummons && summonedCreature.id) {
                     // Fallback на старую систему
                     window.activeSummons = window.activeSummons.filter(s => s.id !== summonedCreature.id);
                 }
-                
+
                 if (typeof window.addToBattleLog === 'function') {
                     window.addToBattleLog(deathMessage);
                 }

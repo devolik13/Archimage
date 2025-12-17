@@ -204,23 +204,26 @@ class SummonsManager {
     // ========================================
     // УДАЛЕНИЕ СУЩЕСТВА
     // ========================================
-    
-    // Убить существо
-    killSummon(summonId) {
+
+    // Убить существо (skipLog = true если вызывающий код сам логирует смерть)
+    killSummon(summonId, skipLog = false) {
         const summon = this.summons.get(summonId);
         if (!summon) return false;
-        
+
         summon.isAlive = false;
         summon.hp = 0;
-        
+
         // Анимация смерти
         this.playDeathAnimation(summonId, () => {
             this.removeVisual(summonId);
             this.summons.delete(summonId);
         });
-        
-        this.logSummon('death', summon);
-        
+
+        // Логируем только если не запрошен пропуск (skipLog)
+        if (!skipLog) {
+            this.logSummon('death', summon);
+        }
+
         return true;
     }
     
