@@ -25,14 +25,14 @@ function applyWeatherBonus(spellFaction, baseDamage) {
     if (!window.currentWeather || window.currentWeather === 'clear') {
         return baseDamage; // При ясной погоде никто не получает бонусов
     }
-    
+
     // Проверка на Метеокинез — отключаем погоду для врага на 4/5 уровне
     if (spellFaction !== 'nature' && window.activeMeteorokinesis) {
-        const enemyEffect = window.activeMeteorokinesis.find(m => 
-            m.isActive && 
-            m.disableEnemyWeather && 
+        const enemyEffect = window.activeMeteorokinesis.find(m =>
+            m.isActive &&
+            m.disableEnemyWeather &&
             (
-                (m.casterType === 'player' && spellFaction !== 'nature') || 
+                (m.casterType === 'player' && spellFaction !== 'nature') ||
                 (m.casterType === 'enemy' && spellFaction !== 'nature')
             )
         );
@@ -40,18 +40,20 @@ function applyWeatherBonus(spellFaction, baseDamage) {
             return baseDamage; // игнорируем погоду для врага
         }
     }
-    
+
     const weatherToFaction = {
         'drought': 'fire',
         'ice_fog': 'water',
         'sandstorm': 'earth',
         'storm': 'wind'
     };
-    
-    if (weatherToFaction[window.currentWeather] === spellFaction) {  // и здесь тоже
-        return Math.round(baseDamage * 1.15);
+
+    if (weatherToFaction[window.currentWeather] === spellFaction) {
+        const boostedDamage = Math.round(baseDamage * 1.15);
+        console.log(`🌤️ Погода ${window.currentWeather}: +15% урона для ${spellFaction} (${baseDamage} → ${boostedDamage})`);
+        return boostedDamage;
     }
-    
+
     return baseDamage;
 }
 
