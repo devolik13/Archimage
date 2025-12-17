@@ -257,16 +257,25 @@
         const explosionDuration = 400;
         
         const animateExplosion = () => {
-            const progress = Math.min((Date.now() - explosionStart) / explosionDuration, 1);
-            
-            // Расширение и затухание
-            explosion.scale.set(0.1 + progress * 2);
-            explosion.alpha = 0.9 * (1 - progress);
-            
-            if (progress < 1 && explosion.parent) {
-                requestAnimationFrame(animateExplosion);
-            } else {
-                if (explosion.parent) effectsContainer.removeChild(explosion);
+            // Проверяем что объект не уничтожен
+            if (!explosion || explosion.destroyed || !explosion.parent) {
+                return;
+            }
+
+            try {
+                const progress = Math.min((Date.now() - explosionStart) / explosionDuration, 1);
+
+                // Расширение и затухание
+                explosion.scale.set(0.1 + progress * 2);
+                explosion.alpha = 0.9 * (1 - progress);
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateExplosion);
+                } else {
+                    if (explosion.parent) effectsContainer.removeChild(explosion);
+                }
+            } catch (e) {
+                // Объект уничтожен
             }
         };
         animateExplosion();
@@ -304,17 +313,26 @@
             const vy = -2 - Math.random() * 2;
             
             const animateSmoke = () => {
-                const progress = Math.min((Date.now() - startTime) / duration, 1);
-                
-                smoke.x += vx;
-                smoke.y += vy;
-                smoke.scale.set(0.1 + progress * 1.5);
-                smoke.alpha = 0.5 * (1 - progress);
-                
-                if (progress < 1 && smoke.parent) {
-                    requestAnimationFrame(animateSmoke);
-                } else {
-                    if (smoke.parent) effectsContainer.removeChild(smoke);
+                // Проверяем что объект не уничтожен
+                if (!smoke || smoke.destroyed || !smoke.parent) {
+                    return;
+                }
+
+                try {
+                    const progress = Math.min((Date.now() - startTime) / duration, 1);
+
+                    smoke.x += vx;
+                    smoke.y += vy;
+                    smoke.scale.set(0.1 + progress * 1.5);
+                    smoke.alpha = 0.5 * (1 - progress);
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animateSmoke);
+                    } else {
+                        if (smoke.parent) effectsContainer.removeChild(smoke);
+                    }
+                } catch (e) {
+                    // Объект уничтожен
                 }
             };
             
@@ -350,18 +368,27 @@
             const duration = 500;
             
             const animateFragment = () => {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                
-                fragment.x += vx * (1 - progress * 0.5);
-                fragment.y += vy * (1 - progress * 0.5) + progress * 6; // Падение
-                fragment.alpha = 0.9 * (1 - progress);
-                fragment.rotation += 0.4;
-                
-                if (progress < 1 && fragment.parent) {
-                    requestAnimationFrame(animateFragment);
-                } else {
-                    if (fragment.parent) effectsContainer.removeChild(fragment);
+                // Проверяем что объект не уничтожен
+                if (!fragment || fragment.destroyed || !fragment.parent) {
+                    return;
+                }
+
+                try {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+
+                    fragment.x += vx * (1 - progress * 0.5);
+                    fragment.y += vy * (1 - progress * 0.5) + progress * 6; // Падение
+                    fragment.alpha = 0.9 * (1 - progress);
+                    fragment.rotation += 0.4;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animateFragment);
+                    } else {
+                        if (fragment.parent) effectsContainer.removeChild(fragment);
+                    }
+                } catch (e) {
+                    // Объект уничтожен, прекращаем анимацию
                 }
             };
             animateFragment();
@@ -393,17 +420,26 @@
             const duration = 400;
             
             const animateParticle = () => {
-                const progress = Math.min((Date.now() - startTime) / duration, 1);
-                
-                particle.x += vx * (1 - progress);
-                particle.y += vy * (1 - progress) + progress * 4;
-                particle.alpha = 0.8 * (1 - progress);
-                particle.scale.set(1 - progress * 0.5);
-                
-                if (progress < 1 && particle.parent) {
-                    requestAnimationFrame(animateParticle);
-                } else {
-                    if (particle.parent) effectsContainer.removeChild(particle);
+                // Проверяем что объект не уничтожен
+                if (!particle || particle.destroyed || !particle.parent) {
+                    return;
+                }
+
+                try {
+                    const progress = Math.min((Date.now() - startTime) / duration, 1);
+
+                    particle.x += vx * (1 - progress);
+                    particle.y += vy * (1 - progress) + progress * 4;
+                    particle.alpha = 0.8 * (1 - progress);
+                    particle.scale.set(1 - progress * 0.5);
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animateParticle);
+                    } else {
+                        if (particle.parent) effectsContainer.removeChild(particle);
+                    }
+                } catch (e) {
+                    // Объект уничтожен
                 }
             };
             animateParticle();
