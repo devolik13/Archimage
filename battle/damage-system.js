@@ -279,15 +279,34 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
 // --- Применение урона с погодой ---
 function applyDamageWithWeather(caster, target, baseDamage, spellId, armorIgnorePercent = 0) {
     let damage = baseDamage;
+    const weatherSteps = []; // Для записи шагов погоды
 
     // Применяем погоду на основе ШКОЛЫ ЗАКЛИНАНИЯ, а не фракции мага
     if (typeof window.applyWeatherBonus === 'function' && spellId) {
         // Получаем школу заклинания
         const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
         if (spellSchool && spellSchool !== 'nature') {
+            const damageBeforeWeather = damage;
             // Погода даёт бонус заклинаниям соответствующей стихии (кроме природы)
             damage = window.applyWeatherBonus(spellSchool, damage);
+
+            // Записываем бонус погоды если он был применён
+            if (damage !== damageBeforeWeather) {
+                const weatherNames = {
+                    'drought': 'Засуха',
+                    'ice_fog': 'Лёд. туман',
+                    'sandstorm': 'Песч. буря',
+                    'storm': 'Шторм'
+                };
+                const weatherName = weatherNames[window.currentWeather] || window.currentWeather;
+                weatherSteps.push(`${weatherName} (+15%): ${damageBeforeWeather} → ${damage}`);
+            }
         }
+    }
+
+    // Сохраняем шаги погоды для последующего объединения с остальными шагами
+    if (target && weatherSteps.length > 0) {
+        target._weatherDamageSteps = weatherSteps;
     }
 
     // Применяем эффекты и броню
@@ -298,6 +317,12 @@ function applyDamageWithWeather(caster, target, baseDamage, spellId, armorIgnore
 function applyDamageWithEffects(caster, target, baseDamage, spellId = 'basic', armorIgnorePercent = 0) {
     let finalDamage = baseDamage;
     const damageSteps = []; // Массив для хранения шагов расчёта
+
+    // Добавляем шаги погоды из applyDamageWithWeather (если есть)
+    if (target && target._weatherDamageSteps && target._weatherDamageSteps.length > 0) {
+        damageSteps.push(...target._weatherDamageSteps);
+        delete target._weatherDamageSteps; // Очищаем после использования
+    }
     
     // 1. Учет охлаждения/заморозки на КАСТЕРЕ
     if (caster && caster.effects && caster.effects.chilled_caster && caster.effects.chilled_caster.spellsLeft > 0) {
