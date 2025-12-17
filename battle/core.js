@@ -89,6 +89,11 @@ function generateEnemyFormation() {
         return;
     }
 
+    // Для тренировочного манекена враг уже настроен в training-dummy-battle.js
+    if (window.isTrainingDummyBattle && window.enemyFormation && window.enemyFormation.some(e => e && e.isTrainingDummy)) {
+        return;
+    }
+
     window.enemyFormation = [null, null, null, null, null];
     window.enemyWizards = [];
 
