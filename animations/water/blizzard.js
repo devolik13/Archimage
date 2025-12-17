@@ -188,13 +188,27 @@
 
         for (let i = 0; i < particleCount; i++) {
             setTimeout(() => {
+                // Проверяем что контейнер и ячейка ещё существуют
+                if (!container || container.destroyed || !cellData || cellData.destroyed) {
+                    return;
+                }
+
+                // Безопасно получаем координаты
+                let cellX, cellY;
+                try {
+                    cellX = cellData.x;
+                    cellY = cellData.y;
+                } catch (e) {
+                    return; // Объект уничтожен
+                }
+
                 const snowflake = new PIXI.Graphics();
                 snowflake.beginFill(0xFFFFFF, 0.8);
                 snowflake.drawCircle(0, 0, 2);
                 snowflake.endFill();
 
-                snowflake.x = cellData.x + Math.random() * cellWidth;
-                snowflake.y = cellData.y - 20;
+                snowflake.x = cellX + Math.random() * cellWidth;
+                snowflake.y = cellY - 20;
 
                 container.addChild(snowflake);
 
@@ -213,9 +227,9 @@
 
                     snowflake.y += speed;
                     snowflake.x += drift;
-                    snowflake.alpha = 0.8 - (snowflake.y - cellData.y) / cellHeight;
+                    snowflake.alpha = 0.8 - (snowflake.y - cellY) / cellHeight;
 
-                    if (snowflake.y < cellData.y + cellHeight) {
+                    if (snowflake.y < cellY + cellHeight) {
                         requestAnimationFrame(animateSnow);
                     } else {
                         // Достигли дна - удаляем
