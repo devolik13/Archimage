@@ -201,6 +201,7 @@ function startBattle() {
     window.isPaused = false;
     window.battleSpeed = 2000;
     window.battleSpeedMode = 'normal';
+    window.battlePhaseRunning = false; // 🔒 Сброс блокировки
 
     // Защита от бесконечных боёв
     window.lastTotalHP = null;
@@ -532,10 +533,20 @@ function processBlessingRegeneration(wizard) {
 }
 
 async function executeBattlePhase() {
+    // 🔒 БЛОКИРОВКА: Предотвращает параллельное выполнение фаз боя
+    if (window.battlePhaseRunning) {
+        console.log('⚠️ Фаза боя уже выполняется, пропускаем...');
+        return;
+    }
+
     if (window.battleState !== 'active' || window.isPaused) {
         return;
     }
 
+    // Устанавливаем блокировку
+    window.battlePhaseRunning = true;
+
+    try {
     // Обработка эффектов
     if (typeof window.processEffects === 'function') {
         window.processEffects();
@@ -610,6 +621,11 @@ async function executeBattlePhase() {
 
     if (typeof window.updateBattleField === 'function') {
         window.updateBattleField();
+    }
+
+    } finally {
+        // 🔓 СНИМАЕМ БЛОКИРОВКУ в любом случае
+        window.battlePhaseRunning = false;
     }
 }
 
@@ -1277,6 +1293,11 @@ async function processMagePreTurnEffects(wizard, position, casterType) {
 
 // --- Проверка окончания боя ---
 async function checkBattleEnd() {
+    // 🔒 Защита от множественных вызовов
+    if (window.battleState === 'finished' || window.battleResultShown) {
+        return true; // Бой уже завершён
+    }
+
     // ВАЖНО: Сохраняем флаг PvE в начале, чтобы избежать race conditions
     const isPvEBattle = window.isPvEBattle || false;
 

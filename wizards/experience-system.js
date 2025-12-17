@@ -182,6 +182,11 @@ function calculateAndGrantBattleExp(isVictory) {
 
     const expResults = [];
 
+    // Выводим заголовок в боевой лог
+    if (typeof window.addToBattleLog === 'function') {
+        window.addToBattleLog(`\n📊 ═══ СТАТИСТИКА БОЯ ═══`);
+    }
+
     window.playerWizards.forEach(wizard => {
         if (!wizard || !wizard.id) return;
 
@@ -197,6 +202,8 @@ function calculateAndGrantBattleExp(isVictory) {
         // Начисляем XP
         addExperienceToWizard(wizard, expGained);
 
+        const levelGained = (wizard.level || 1) - levelBefore;
+
         // Сохраняем результат для отображения
         expResults.push({
             name: stats.name,
@@ -204,12 +211,43 @@ function calculateAndGrantBattleExp(isVictory) {
             healingDone: stats.healingDone,
             kills: stats.kills,
             expGained: expGained,
-            levelGained: (wizard.level || 1) - levelBefore,
+            levelGained: levelGained,
             newLevel: wizard.level || 1
         });
 
+        // Выводим статистику в боевой лог
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`\n🧙 ${stats.name}:`);
+            window.addToBattleLog(`   ⚔️ Урон нанесён: ${stats.damageDealt}`);
+            if (stats.healingDone > 0) {
+                window.addToBattleLog(`   💚 Исцеление: ${stats.healingDone}`);
+            }
+            if (stats.kills > 0) {
+                window.addToBattleLog(`   💀 Убийств: ${stats.kills}`);
+            }
+            window.addToBattleLog(`   ✨ Опыт получен: +${expGained} XP`);
+            if (levelGained > 0) {
+                window.addToBattleLog(`   ⭐ Повышение уровня! ${levelBefore} → ${wizard.level}`);
+            }
+        }
+
         console.log(`✨ [XP] ${stats.name}: +${expGained} XP (урон: ${stats.damageDealt}, лечение: ${stats.healingDone}, убийств: ${stats.kills})`);
     });
+
+    // Выводим итог
+    if (typeof window.addToBattleLog === 'function') {
+        const totalDamage = expResults.reduce((sum, r) => sum + r.damageDealt, 0);
+        const totalHealing = expResults.reduce((sum, r) => sum + r.healingDone, 0);
+        const totalExp = expResults.reduce((sum, r) => sum + r.expGained, 0);
+
+        window.addToBattleLog(`\n📈 ИТОГО:`);
+        window.addToBattleLog(`   ⚔️ Общий урон: ${totalDamage}`);
+        if (totalHealing > 0) {
+            window.addToBattleLog(`   💚 Общее исцеление: ${totalHealing}`);
+        }
+        window.addToBattleLog(`   ✨ Общий опыт: +${totalExp} XP`);
+        window.addToBattleLog(`═══════════════════════════════`);
+    }
 
     // Очищаем статистику
     window.battleStats = null;

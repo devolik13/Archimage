@@ -456,8 +456,6 @@ function castStormCloud(wizard, spellData, position, casterType) {
 
 // --- Шаровая молния (Ball Lightning) - Тир 5, Цепочечное AOE по всем целям в колонках магов и призванных ---
 function castBallLightning(wizard, spellData, position, casterType) {
-    console.log(`⚡ [Ball Lightning] CAST START: ${wizard.name}, level=${spellData?.level}, pos=${position}, type=${casterType}`);
-
     const level = spellData.level || 1;
     let baseDamage, decayPercent, stunChance = 0;
 
@@ -477,10 +475,7 @@ function castBallLightning(wizard, spellData, position, casterType) {
     const targets = typeof window.findAllTargetsInColumns === 'function' ?
         window.findAllTargetsInColumns(columns, casterType) : [];
 
-    console.log(`⚡ [Ball Lightning] Найдено целей: ${targets.length}, columns: [${columns.join(',')}]`);
-
     if (targets.length === 0) {
-        console.log(`⚡ [Ball Lightning] НЕТ ЦЕЛЕЙ - выход`);
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`⚡ ${wizard.name} использует Шаровую молнию, но цели не найдены`);
         }
@@ -496,24 +491,17 @@ function castBallLightning(wizard, spellData, position, casterType) {
 
     // ЗАПУСКАЕМ АНИМАЦИЮ (только визуальный эффект)
     if (window.spellAnimations?.ball_lightning?.play) {
-        console.log('⚡ [Ball Lightning] Запуск анимации, целей:', shuffledTargets.length);
         window.spellAnimations.ball_lightning.play({
             targets: shuffledTargets,
-            casterType: casterType,
-            // Callback теперь не нужен для урона - урон применяется напрямую ниже
-            onHitTarget: (index) => {
-                console.log(`⚡ [Ball Lightning] Анимация: попадание ${index}`);
-            }
+            casterType: casterType
         });
     }
 
     // ПРИМЕНЯЕМ УРОН НАПРЯМУЮ (как в storm_cloud) - не зависим от анимации!
-    console.log(`⚡ [Ball Lightning] Применяем урон к ${shuffledTargets.length} целям, baseDamage=${baseDamage}`);
     let currentDamage = baseDamage;
 
     shuffledTargets.forEach((targetInfo, index) => {
         const target = targetInfo.wizard;
-        console.log(`⚡ [Ball Lightning] Цель ${index}: ${target.name}, HP=${target.hp}, currentDamage=${currentDamage}`);
 
         // Применяем фракционный бонус Ветра — 5% шанс двойного урона
         let actualDamage = currentDamage;
