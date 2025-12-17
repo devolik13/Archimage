@@ -77,38 +77,42 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     // Для AOE — сразу применяем погоду и эффекты (игнорируем многослойную защиту)
     if (isAOE) {
     	let finalDamage = baseDamage;
-    
+
+    	// Определяем тип кастера по принадлежности к массиву (а не по несуществующему свойству)
+    	const isPlayerCaster = window.playerWizards?.some(w => w.id === caster?.id) || false;
+    	const casterType = isPlayerCaster ? 'player' : 'enemy';
+
     	// СНАЧАЛА применяем Метеокинез к базовому урону
-    	if (window.activeMeteorokinesis && spellId) {
+    	if (window.activeMeteorokinesis && window.activeMeteorokinesis.length > 0 && spellId) {
     	    const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
-        
+
     	    if (['fire', 'water', 'wind', 'earth'].includes(spellSchool)) {
-    	        const activeEffect = window.activeMeteorokinesis.find(m => 
-    	            m.isActive && m.casterType === (caster.casterType || 'player')
+    	        const activeEffect = window.activeMeteorokinesis.find(m =>
+    	            m.isActive && m.casterType === casterType
     	        );
-    	        
+
     	        if (activeEffect) {
     	            const oldDamage = finalDamage;
     	            finalDamage = Math.floor(finalDamage * (1 + activeEffect.damageBonus / 100));
-    	            
+
     	            if (typeof window.addToBattleLog === 'function') {
     	                window.addToBattleLog(`🌿 Метеокинез усиливает заклинание: ${oldDamage} → ${finalDamage} (+${activeEffect.damageBonus}%)`);
     	            }
     	        }
     	    }
     	}
-    	
+
     	// ПОТОМ применяем погоду, сопротивление и броню
     	finalDamage = applyDamageWithWeather(caster, target, finalDamage, spellId, armorIgnorePercent);
-    	
+
     	// Применяем бонус урона от уровня мага
     	if (typeof window.getDamageBonusFromLevel === 'function') {
     	    const levelBonus = window.getDamageBonusFromLevel(caster);
     	    finalDamage = Math.floor(finalDamage * levelBonus);
     	}
 
-    	// ГИЛЬДИЯ: Бонус урона от гильдии
-    	if (caster.casterType === 'player' && window.guildManager?.currentGuild) {
+    	// ГИЛЬДИЯ: Бонус урона от гильдии (только для игрока)
+    	if (isPlayerCaster && window.guildManager?.currentGuild) {
     	    const guildBonuses = window.guildManager.getGuildBonuses();
     	    if (guildBonuses && guildBonuses.damageBonus > 0) {
     	        const guildDamageMultiplier = 1 + (guildBonuses.damageBonus / 100);
@@ -131,37 +135,41 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
         return finalDamage;
     }
     
+    // Определяем тип кастера для Single Target (аналогично AOE)
+    const isPlayerCasterST = window.playerWizards?.some(w => w.id === caster?.id) || false;
+    const casterTypeST = isPlayerCasterST ? 'player' : 'enemy';
+
     // Для Single Target — пробуем многослойную защиту (если функция существует)
     if (typeof window.applyDamageWithMultiLayerProtection === 'function') {
-        const result = window.applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId, caster.casterType || 'player');
+        const result = window.applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId, casterTypeST);
         if (result) {
             // Опыт начисляется централизованно в core.js
             return result.finalDamage;
         }
     }
-    
+
     // Фоллбэк - используем стандартную систему урона
     let finalDamage = applyDamageWithWeather(caster, target, baseDamage, spellId, armorIgnorePercent);
-    
+
     // Применяем множитель урона от Каменного грота (если есть)
     if (target && target.spellDamageMultiplier !== undefined) {
         finalDamage = Math.floor(finalDamage * target.spellDamageMultiplier);
     }
-    
+
     // Применяем бонус Метеокинеза для стихийных заклинаний
-    if (window.activeMeteorokinesis && spellId) {
+    if (window.activeMeteorokinesis && window.activeMeteorokinesis.length > 0 && spellId) {
         const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
-        
+
         if (['fire', 'water', 'wind', 'earth'].includes(spellSchool)) {
-            const activeEffect = window.activeMeteorokinesis.find(m => 
-                m.isActive && m.casterType === (caster.casterType || 'player')
+            const activeEffect = window.activeMeteorokinesis.find(m =>
+                m.isActive && m.casterType === casterTypeST
             );
-            
+
             if (activeEffect) {
                 const oldDamage = finalDamage;
                 finalDamage = Math.floor(finalDamage * (1 + activeEffect.damageBonus / 100));
                 console.log(`🌿 Метеокинез усиливает ${spellId}: ${oldDamage} → ${finalDamage} (+${activeEffect.damageBonus}%)`);
-                
+
                 // Визуальный эффект усиления
                 if (window.spellAnimations?.meteorokinesis?.showBoost) {
                     window.spellAnimations.meteorokinesis.showBoost(caster, target);
@@ -169,7 +177,7 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
             }
         }
     }
-    
+
     // Применяем бонус от Башни магов
     if (typeof window.getWizardTowerDamageBonus === 'function') {
         const towerBonus = window.getWizardTowerDamageBonus();
@@ -178,7 +186,7 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
             console.log(`🏰 Башня магов: урон ×${towerBonus}`);
         }
     }
-    
+
     // Применяем бонус урона от уровня мага
     if (typeof window.getDamageBonusFromLevel === 'function') {
         const levelBonus = window.getDamageBonusFromLevel(caster);
@@ -188,8 +196,8 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
         }
     }
 
-    // ГИЛЬДИЯ: Бонус урона от гильдии
-    if (caster.casterType === 'player' && window.guildManager?.currentGuild) {
+    // ГИЛЬДИЯ: Бонус урона от гильдии (только для игрока)
+    if (isPlayerCasterST && window.guildManager?.currentGuild) {
         const guildBonuses = window.guildManager.getGuildBonuses();
         if (guildBonuses && guildBonuses.damageBonus > 0) {
             const guildDamageMultiplier = 1 + (guildBonuses.damageBonus / 100);
@@ -213,7 +221,7 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     if (target) {
         console.log(`🌳 [Damage] Проверка защиты Энта для ${target.name} (id=${target.id})`);
         const ent = typeof window.findProtectingEnt === 'function' ?
-            window.findProtectingEnt(target, caster.casterType || 'player') : null;
+            window.findProtectingEnt(target, casterTypeST) : null;
         console.log(`🌳 [Damage] Результат поиска Энта:`, ent ? `найден (HP=${ent.hp}, id=${ent.id})` : 'не найден');
         if (ent && ent.isAlive) {
             // Перенаправляем урон Энту
