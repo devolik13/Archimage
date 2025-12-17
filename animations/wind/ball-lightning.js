@@ -74,7 +74,10 @@
             // Контейнер для эффектов
             const lightningContainer = new PIXI.Container();
             effectsContainer.addChild(lightningContainer);
-            
+
+            console.log('⚡ [Ball Lightning] Создано кадров:', frames.length);
+            console.log('⚡ [Ball Lightning] Первая цель:', targets[0]);
+
             // Запускаем цепочку ударов
             strikeChain(targets, 0, frames, gridCells, lightningContainer, onHitTarget, () => {
                 // Удаляем контейнер через небольшую задержку
@@ -95,13 +98,19 @@
     
     // Рекурсивная функция для цепочки ударов шаром
     function strikeChain(targets, currentIndex, frames, gridCells, container, onHitTarget, onComplete) {
+        console.log(`⚡ [Ball Lightning] strikeChain: index=${currentIndex}, всего целей=${targets.length}`);
+
         if (currentIndex >= targets.length) {
+            console.log('⚡ [Ball Lightning] Все цели поражены, завершаем');
             if (onComplete) onComplete();
             return;
         }
-        
+
         const currentTarget = targets[currentIndex];
+        console.log(`⚡ [Ball Lightning] Цель ${currentIndex}:`, currentTarget);
+
         const currentCell = gridCells[currentTarget.col]?.[currentTarget.row];
+        console.log(`⚡ [Ball Lightning] Ячейка [${currentTarget.col}][${currentTarget.row}]:`, !!currentCell);
         
         if (!currentCell) {
             setTimeout(() => {
