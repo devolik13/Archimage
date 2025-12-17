@@ -529,14 +529,13 @@ function showTrialMenuInArena() {
     }
     overlay.appendChild(startBtn);
 
-    // Кнопка назад
+    // Кнопка назад (правый нижний угол)
     const backBtn = document.createElement('button');
     backBtn.style.cssText = `
         position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
+        right: ${15 * scaleX}px;
         bottom: ${15 * scaleY}px;
-        padding: ${10 * scaleY}px ${30 * scaleX}px;
+        padding: ${10 * scaleY}px ${25 * scaleX}px;
         background: linear-gradient(180deg, #dc3545, #a71d2a);
         border: 2px solid #ff6b6b;
         border-radius: 8px;
@@ -636,14 +635,13 @@ function showTrialLeaderboardInArena() {
     }
     overlay.appendChild(listContainer);
 
-    // Кнопка назад
+    // Кнопка назад (правый нижний угол)
     const backBtn = document.createElement('button');
     backBtn.style.cssText = `
         position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
+        right: ${15 * scaleX}px;
         bottom: ${15 * scaleY}px;
-        padding: ${10 * scaleY}px ${30 * scaleX}px;
+        padding: ${10 * scaleY}px ${25 * scaleX}px;
         background: linear-gradient(180deg, #dc3545, #a71d2a);
         border: 2px solid #ff6b6b;
         border-radius: 8px;
