@@ -1,8 +1,6 @@
 // battle/spells/spells-poison.js - Заклинания школы Яд (ИСПРАВЛЕННАЯ ВЕРСИЯ)
 
 function castPoisonSpell(wizard, spellId, spellData, position, casterType) {
-    console.log(`☠️ Casting poison spell: ${spellId}`);
-    
     switch (spellId) {
         case 'poisoned_blade':
             castPoisonedBlade(wizard, spellData, position, casterType);
@@ -33,9 +31,7 @@ function castPoisonedBlade(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
     const baseDamage = [7, 8, 9, 10, 10][level - 1] || 7;
     const poisonChance = [0.20, 0.30, 0.40, 0.50, 1.00][level - 1] || 0.20;
-    
-    console.log(`☠️ Casting Poisoned Blade - Level ${level}, Damage ${baseDamage}, Poison Chance ${poisonChance * 100}%`);
-    
+
     // Находим цель
     const target = window.findTarget?.(position, casterType);
     if (!target) {
@@ -62,9 +58,7 @@ function castPoisonedBlade(wizard, spellData, position, casterType) {
         // Функция создания снаряда
         createProjectile: (params) => {
             const { fromCol, fromRow, toCol, toRow, onHit } = params;
-            
-            console.log(`☠️ Создаём снаряд Отравленного клинка: [${fromCol},${fromRow}] → [${toCol},${toRow}]`);
-            
+
             if (window.spellAnimations?.poisoned_blade?.play) {
                 // Передаём toCol как точку столкновения
                 window.spellAnimations.poisoned_blade.play({
@@ -86,15 +80,11 @@ function castPoisonedBlade(wizard, spellData, position, casterType) {
             if (Math.random() < poisonChance) {
                 if (window.applyPoisonEffect) {
                     window.applyPoisonEffect(targetWizard, 1);
-                    console.log(`☠️ Применён эффект яда к ${targetWizard.name}`);
                 }
 
                 if (window.applyPoisonFactionBonus) {
                     window.applyPoisonFactionBonus(targetWizard, wizard, casterType);
-                    console.log(`☠️ Применён фракционный бонус яда к ${targetWizard.name}`);
                 }
-            } else {
-                console.log(`☠️ Яд не сработал (шанс ${poisonChance * 100}%)`);
             }
         },
         
@@ -483,16 +473,14 @@ function castPlague(wizard, spellData, position, casterType) {
         return;
     }
     
-    // 🔥 КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Удаляем ВСЕ старые Чумы ЭТОГО кастера ПЕРЕД наложением новых
+    // Удаляем ВСЕ старые Чумы ЭТОГО кастера ПЕРЕД наложением новых
     allTargets.forEach(target => {
         if (target.effects && target.effects.plague && target.effects.plague.casterId === wizard.id) {
-            console.log(`🦠 Снимаем старую Чуму с ${target.name} перед новым кастом`);
-            
             // Удаляем визуальный эффект
             if (window.spellAnimations?.plague?.removePlagueEffect) {
                 window.spellAnimations.plague.removePlagueEffect(target.id);
             }
-            
+
             // Удаляем дебафф
             delete target.effects.plague;
         }
@@ -616,24 +604,19 @@ function processPlagueEffects(casterType) {
             }
         });
     }
-    
-    console.log(`🦠 Обработка эффектов Чумы для ${casterType}, кастеров: ${plagueCasters.length}`);
-    
+
     // Для каждого кастера — снимаем Чуму, если прошёл 1 ход
     plagueCasters.forEach(caster => {
         // Получаем всех целей с Чумой от этого кастера
-        const allTargets = casterType === 'player' ? 
-            window.enemyWizards : 
+        const allTargets = casterType === 'player' ?
+            window.enemyWizards :
             window.playerWizards;
-        
+
         allTargets.forEach(target => {
             if (target.effects && target.effects.plague && target.effects.plague.casterId === caster.id) {
-                console.log(`🦠 Проверка Чумы на ${target.name}, осталось ходов: ${target.effects.plague.turnsLeft}`);
-                
                 target.effects.plague.turnsLeft--;
-                
+
                 if (target.effects.plague.turnsLeft <= 0) {
-                    console.log(`🦠 Снимаем Чуму с ${target.name} (ID: ${target.id})`);
                     
                     // ДОБАВЛЕНО: Удаляем визуальный эффект
                     if (window.spellAnimations?.plague?.removePlagueEffect) {
@@ -875,7 +858,6 @@ function applyPoisonFactionBonus(targetWizard, caster = null, casterType = null)
             if (position !== -1) {
                 const col = casterType === 'player' ? 5 : 0;
                 window.showFactionSpeechBubble('poison', col, position);
-                console.log('☠️ БОНУС ЯДА СРАБОТАЛ! Дополнительный стак');
             }
         }
     }

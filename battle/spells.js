@@ -48,14 +48,14 @@ async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 
             castSpell(wizard, spellId, position, casterType);
         }
 
-        // Задержка между заклинаниями
+        // Задержка между заклинаниями (увеличена для завершения анимаций)
         if (i < spellsToUse.length - 1) {
-            await delay(800);
+            await delay(1500);
         }
     }
 
-    // Небольшая пауза после всех кастов мага
-    await delay(400);
+    // Пауза после всех кастов мага (увеличена для завершения анимаций)
+    await delay(1000);
 }
 
 // Вспомогательная функция задержки

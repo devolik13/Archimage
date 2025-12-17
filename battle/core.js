@@ -1048,6 +1048,12 @@ async function executeBossBattlePhase() {
         // ═══════════════════════════════════════════
         // ФАЗА ИГРОКА: Все живые маги атакуют по очереди (макс 2 заклинания каждый)
         // ═══════════════════════════════════════════
+
+        // Пауза перед ходом игрока для завершения анимаций босса
+        if (window.globalTurnCounter > 0) {
+            await new Promise(resolve => setTimeout(resolve, 800));
+        }
+
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`━━━ Ход игрока (раунд ${Math.floor(window.globalTurnCounter / 2) + 1}) ━━━`);
         }
@@ -1146,6 +1152,9 @@ async function executeBossBattlePhase() {
             if (typeof window.updateBattleField === 'function') {
                 window.updateBattleField();
             }
+
+            // Пауза между магами для завершения всех анимаций
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
 
         // Проверка на Метеокинез
@@ -1157,6 +1166,10 @@ async function executeBossBattlePhase() {
         // ═══════════════════════════════════════════
         // ФАЗА БОССА: Босс использует ВСЕ свои заклинания
         // ═══════════════════════════════════════════
+
+        // Пауза перед ходом босса для завершения анимаций игрока
+        await new Promise(resolve => setTimeout(resolve, 800));
+
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`━━━ Ход босса ━━━`);
         }
