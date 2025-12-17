@@ -177,7 +177,7 @@ function showTrainingGroundScreen() {
 
         ${info.remainingAttempts <= 0 ? `
             <div style="text-align: center; margin-top: 10px; font-size: 12px; color: #888;">
-                Новые попытки завтра в 00:00
+                ⏱️ Новые попытки через: <span style="color: #4ade80;">${info.timeUntilAttemptReset}</span>
             </div>
         ` : ''}
     `;

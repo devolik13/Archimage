@@ -186,8 +186,11 @@ async function endDummyBattle() {
 
     const totalDamage = dummyBattleState.totalDamage;
 
-    // Записываем результат
-    const progress = window.recordAttempt(totalDamage);
+    // Получаем остаток HP манекена
+    const remainingHp = dummy ? Math.max(0, dummy.hp) : 0;
+
+    // Записываем результат с остатком HP
+    const progress = window.recordAttempt(totalDamage, remainingHp);
 
     // Логируем результат
     if (typeof window.addToBattleLog === 'function') {

@@ -236,34 +236,48 @@ function getRemainingAttempts() {
 }
 
 /**
- * Загрузить прогресс игрока
+ * Загрузить прогресс игрока из базы данных
  */
 function loadDummyProgress() {
-    const saved = localStorage.getItem('training_dummy_progress');
-    if (saved) {
-        return JSON.parse(saved);
+    // Используем userData из базы данных
+    if (window.userData && window.userData.training_dummy_progress) {
+        return window.userData.training_dummy_progress;
     }
+
+    // Дефолтные значения для нового игрока
     return {
         weekNumber: getWeekNumber(),
         totalDamage: 0,
         bestAttempt: 0,
         attemptsToday: 0,
         lastAttemptDate: null,
+        lastDummyHp: null,  // Остаток HP манекена после последней попытки
+        attemptResetTime: null,  // Время следующего сброса попыток
         history: []
     };
 }
 
 /**
- * Сохранить прогресс игрока
+ * Сохранить прогресс игрока в базу данных
  */
 function saveDummyProgress(progress) {
-    localStorage.setItem('training_dummy_progress', JSON.stringify(progress));
+    // Сохраняем в userData
+    if (window.userData) {
+        window.userData.training_dummy_progress = progress;
+
+        // Помечаем данные как изменённые для автосохранения
+        if (window.dbManager && window.dbManager.markChanged) {
+            window.dbManager.markChanged();
+        }
+    }
 }
 
 /**
  * Записать результат попытки
+ * @param {number} damage - нанесённый урон
+ * @param {number} remainingHp - остаток HP манекена
  */
-function recordAttempt(damage) {
+function recordAttempt(damage, remainingHp = null) {
     const progress = loadDummyProgress();
     const today = new Date().toDateString();
     const currentWeek = getWeekNumber();
@@ -274,26 +288,74 @@ function recordAttempt(damage) {
         progress.totalDamage = 0;
         progress.bestAttempt = 0;
         progress.history = [];
+        progress.lastDummyHp = null;
     }
 
     // Сброс попыток на новый день
     if (progress.lastAttemptDate !== today) {
         progress.attemptsToday = 0;
         progress.lastAttemptDate = today;
+        // Устанавливаем время следующего сброса попыток (00:00 следующего дня)
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+        progress.attemptResetTime = tomorrow.toISOString();
     }
 
     // Записываем попытку
     progress.attemptsToday++;
     progress.totalDamage += damage;
     progress.bestAttempt = Math.max(progress.bestAttempt, damage);
+    progress.lastDummyHp = remainingHp;  // Сохраняем остаток HP манекена
     progress.history.push({
         date: new Date().toISOString(),
-        damage: damage
+        damage: damage,
+        remainingHp: remainingHp
     });
 
     saveDummyProgress(progress);
 
     return progress;
+}
+
+/**
+ * Форматировать время до сброса попыток
+ */
+function formatTimeUntilAttemptReset() {
+    const progress = loadDummyProgress();
+
+    if (!progress.attemptResetTime) {
+        // Если нет сохранённого времени, вычисляем до 00:00 следующего дня
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+        const ms = tomorrow - new Date();
+        return formatMsToTime(ms);
+    }
+
+    const resetTime = new Date(progress.attemptResetTime);
+    const ms = resetTime - new Date();
+
+    if (ms <= 0) {
+        return "Готово!";
+    }
+
+    return formatMsToTime(ms);
+}
+
+/**
+ * Форматировать миллисекунды в читаемое время
+ */
+function formatMsToTime(ms) {
+    if (ms <= 0) return "0м";
+
+    const hours = Math.floor(ms / (1000 * 60 * 60));
+    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (hours > 0) {
+        return `${hours}ч ${minutes}м`;
+    }
+    return `${minutes}м`;
 }
 
 /**
@@ -310,6 +372,7 @@ function getDummyInfo() {
         progress.totalDamage = 0;
         progress.bestAttempt = 0;
         progress.history = [];
+        progress.lastDummyHp = null;
         saveDummyProgress(progress);
     }
 
@@ -325,9 +388,11 @@ function getDummyInfo() {
         dailyAttempts: DUMMY_CONFIG.DAILY_ATTEMPTS,
         totalDamage: progress.totalDamage,
         bestAttempt: progress.bestAttempt,
+        lastDummyHp: progress.lastDummyHp,  // Остаток HP манекена после последней попытки
         currentReward: reward,
         nextReward: nextReward,
-        timeUntilReset: formatTimeUntilWeekEnd()
+        timeUntilReset: formatTimeUntilWeekEnd(),
+        timeUntilAttemptReset: formatTimeUntilAttemptReset()  // Время до сброса попыток
     };
 }
 
@@ -349,5 +414,7 @@ window.loadDummyProgress = loadDummyProgress;
 window.saveDummyProgress = saveDummyProgress;
 window.recordAttempt = recordAttempt;
 window.getDummyInfo = getDummyInfo;
+window.formatTimeUntilAttemptReset = formatTimeUntilAttemptReset;
+window.formatMsToTime = formatMsToTime;
 
 console.log('✅ Training Dummy Config загружен');

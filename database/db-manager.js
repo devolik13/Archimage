@@ -146,7 +146,8 @@ class DatabaseManager {
                 current_season: playerData.current_season || 1, // Текущий сезон
                 season_league_rewards_claimed: playerData.season_league_rewards_claimed || [], // Полученные награды за лиги
                 unlocked_skins: playerData.unlocked_skins || [], // Разблокированные скины
-                wizard_skins: playerData.wizard_skins || {} // Выбранные скины для магов
+                wizard_skins: playerData.wizard_skins || {}, // Выбранные скины для магов
+                training_dummy_progress: playerData.training_dummy_progress || null // Прогресс тренировочного полигона
             };
 
             // DEBUG: Логируем faction_changed перед отправкой в RPC (закомментировано)
@@ -309,7 +310,8 @@ class DatabaseManager {
                     daily_login: window.userData.daily_login,
                     battle_energy: window.userData.battle_energy,
                     unlocked_skins: window.userData.unlocked_skins,
-                    wizard_skins: window.userData.wizard_skins
+                    wizard_skins: window.userData.wizard_skins,
+                    training_dummy_progress: window.userData.training_dummy_progress
                 };
                 await this.savePlayer(playerData);
             }
@@ -351,7 +353,8 @@ class DatabaseManager {
                     daily_login: window.userData.daily_login,
                     battle_energy: window.userData.battle_energy,
                     unlocked_skins: window.userData.unlocked_skins,
-                    wizard_skins: window.userData.wizard_skins
+                    wizard_skins: window.userData.wizard_skins,
+                    training_dummy_progress: window.userData.training_dummy_progress
                 };
                 await this.savePlayer(playerData);
             }
