@@ -419,6 +419,10 @@ function closePvPArenaModalBg() {
     // Сбрасываем выбранного мага при закрытии арены
     window.arenaSelectedWizardId = null;
 
+    // Сбрасываем флаг показа результата (чтобы можно было показать результат следующего боя)
+    window.arenaResultShown = false;
+    window.battleResultShown = false;
+
     const screen = document.getElementById('pvp-arena-screen');
     if (screen) {
         screen.remove();

@@ -517,8 +517,11 @@ async function closeBattleFieldModal() {
         // Но нужно добавить earlyExit флаг к уже показанному результату
         // Подождем немного и если результат не показался, покажем вручную
         setTimeout(() => {
-            const resultModal = document.getElementById('battle-result-modal');
-            if (!resultModal) {
+            // Проверяем флаги и элементы - результат мог быть показан через showArenaResult
+            const resultModal = document.getElementById('battle-result-modal') || document.getElementById('pvp-arena-screen');
+            const resultAlreadyShown = window.arenaResultShown || window.battleResultShown;
+
+            if (!resultModal && !resultAlreadyShown) {
                 console.warn('⚠️ Результат боя не показан после симуляции - принудительно показываем');
                 // Определяем победителя
                 const playerAlive = window.playerFormation?.some((wizardId) => {

@@ -880,6 +880,18 @@ function showArenaResult(result, battleData = {}) {
     console.log('   result:', result);
     console.log('   battleData:', battleData);
 
+    // Предотвращаем двойной показ результата
+    if (window.arenaResultShown) {
+        console.log('⚠️ Результат арены уже показан, пропускаем повторный вызов');
+        return;
+    }
+    window.arenaResultShown = true;
+
+    // Сбрасываем флаг через 2 секунды (на случай следующего боя)
+    setTimeout(() => {
+        window.arenaResultShown = false;
+    }, 2000);
+
     const {
         opponentName = 'Противник',
         opponentRating = 1000,
