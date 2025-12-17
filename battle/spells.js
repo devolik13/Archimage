@@ -3,13 +3,10 @@
 
 // --- БОСС-БОЙ: Async функция использования заклинаний (макс 2 для игрока, все для босса) ---
 async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 2) {
-    console.log(`🧙‍♂️ [BOSS] ${wizard.name} (${casterType}) использует до ${maxSpells} заклинаний`);
-
     const spells = wizard.spells || [];
     const availableSpells = spells.filter(spell => spell !== null && spell !== undefined);
 
     if (availableSpells.length === 0) {
-        console.log(`⚔️ [BOSS] ${wizard.name} не имеет заклинаний, использует базовую атаку`);
         castBasicAttack(wizard, position, casterType);
         await delay(600);
         return;
@@ -20,13 +17,9 @@ async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 
 
     for (let i = 0; i < spellsToUse.length; i++) {
         // Проверка что маг ещё жив
-        if (wizard.hp <= 0) {
-            console.log(`💀 [BOSS] ${wizard.name} погиб, прерываем касты`);
-            break;
-        }
+        if (wizard.hp <= 0) break;
 
         const spellId = spellsToUse[i];
-        console.log(`🎯 [BOSS] ${wizard.name} кастует ${i + 1}/${spellsToUse.length}: ${spellId}`);
 
         // Проверки на прерывание (Снежная буря)
         let interrupted = false;
@@ -72,32 +65,22 @@ function delay(ms) {
 
 // --- Главная функция использования заклинаний магом ---
 function useWizardSpells(wizard, position, casterType) {
-    console.log(`🧙‍♂️ ${wizard.name} (${casterType}) использует заклинания на позиции ${position}`);
-
     const spells = wizard.spells || [];
-    console.log(`   🔍 DEBUG wizard.spells:`, wizard.spells);
-    console.log(`   🔍 DEBUG spells:`, spells);
-    console.log(`   🔍 DEBUG wizard.spell_levels:`, wizard.spell_levels);
-    console.log(`   🔍 DEBUG wizard.isElemental:`, wizard.isElemental);
-
     const availableSpells = spells.filter(spell => spell !== null && spell !== undefined);
-    console.log(`   🔍 DEBUG availableSpells после фильтра:`, availableSpells);
 
     if (availableSpells.length === 0) {
-        console.log(`⚔️ ${wizard.name} не имеет заклинаний, использует базовую атаку`);
         castBasicAttack(wizard, position, casterType);
         return;
     }
-    
+
     // Последовательное использование заклинаний с задержкой
     let spellIndex = 0;
-    
+
     function castNextSpell() {
         if (spellIndex >= availableSpells.length) return;
-        
+
         const spellId = availableSpells[spellIndex];
-        console.log(`🎯 ${wizard.name} использует заклинание ${spellIndex + 1}/${availableSpells.length}: ${spellId}`);
-        
+
         // Проверки на прерывание (Снежная буря и Абсолютный Ноль)
         if (typeof window.isWizardInBlizzard === 'function') {
             const blizzard = window.isWizardInBlizzard(wizard, casterType);
@@ -112,7 +95,7 @@ function useWizardSpells(wizard, position, casterType) {
                     }
                     return;
                 }
-                
+
                 if (blizzard.level === 5 && Math.random() < 0.1) {
                     if (typeof window.tryApplyEffect === 'function') {
                         window.tryApplyEffect(blizzard.casterFaction === 'water' ? 'freeze' : 'hoarFrost', wizard);
@@ -123,7 +106,7 @@ function useWizardSpells(wizard, position, casterType) {
                     }
                 }
             }
-            
+
             if (typeof window.isWizardInAbsoluteZero === 'function') {
                 const absoluteZero = window.isWizardInAbsoluteZero(wizard, casterType);
                 if (absoluteZero) {
@@ -148,63 +131,42 @@ function useWizardSpells(wizard, position, casterType) {
                 }
             }
         }
-        
+
         // Кастуем заклинание
         castSpell(wizard, spellId, position, casterType);
-        
+
         spellIndex++;
-        
+
         // Если есть еще заклинания, вызываем следующее через задержку
         if (spellIndex < availableSpells.length) {
-            setTimeout(castNextSpell, 800); // 800мс между заклинаниями
+            setTimeout(castNextSpell, 800);
         }
     }
-    
+
     castNextSpell();
 }
 
 // --- Функция каста заклинания ---
 function castSpell(wizard, spellId, position, casterType) {
-    console.log(`⚡ DEBUG: castSpell called`);
-    console.log(`   Wizard: ${wizard.name}`);
-    console.log(`   Spell ID: ${spellId}`);
-    console.log(`   Position: ${position}`);
-    console.log(`   Caster Type: ${casterType}`);
-    console.log(`   Wizard Faction: ${wizard.faction || 'none'}`);
-    
     // 🎬 АНИМАЦИЯ АТАКИ - запускаем для ЛЮБОГО заклинания
     const col = casterType === 'player' ? 5 : 0;
-    const wizardKey = `${col}_${position}`;
-    
-    console.log(`🎬 Запускаем анимацию атаки для ${wizardKey}`);
-    
-    // Проверяем наличие функции анимации
+
     if (typeof window.pixiWizards?.playAttack === 'function') {
-    	window.pixiWizards.playAttack(col, position, () => {
-    	});
-    } else {
-    	console.warn('⚠️ playAttack недоступна');
-    }
-    
-    if (!spellId) {
-        console.log(`⚠️ ${wizard.name} пытается использовать пустое заклинание`);
-        return;
+    	window.pixiWizards.playAttack(col, position, () => {});
     }
 
-    // ИСПРАВЛЕНИЕ: Используем правильный источник данных для врагов и игрока
-    let spellsSource = null;
+    if (!spellId) return;
+
+    // Используем правильный источник данных для врагов и игрока
     let spellData = null;
 
     if (casterType === 'player') {
-        spellsSource = window.userData?.spells;
+        const spellsSource = window.userData?.spells;
         spellData = window.findSpellInUserData ? window.findSpellInUserData(spellId, spellsSource) : null;
     } else if (casterType === 'enemy') {
         // Для PvE врагов (элементалей) с spell_levels создаем spellData напрямую
         if (wizard.spell_levels && wizard.spell_levels[spellId]) {
             const spellLevel = wizard.spell_levels[spellId];
-            console.log(`🔥 Создаем spellData для элементаля: ${spellId} уровень ${spellLevel}`);
-
-            // ИСПРАВЛЕНИЕ: Создаем spellData используя глобальные функции и данные
             const spellName = window.SPELL_NAMES?.[spellId] || spellId;
             const baseDamage = window.SPELL_BASE_DAMAGE?.[spellId] || 10;
             const spellType = window.getSpellType ? window.getSpellType(spellId) : 'single_target';
@@ -214,35 +176,29 @@ function castSpell(wizard, spellId, position, casterType) {
                 id: spellId,
                 name: spellName,
                 level: spellLevel,
-                tier: Math.ceil(spellLevel / 1), // Примерный tier
+                tier: Math.ceil(spellLevel / 1),
                 damage: damage,
                 type: spellType
             };
-
         } else {
             // Для PvP врагов используем стандартный путь
-            spellsSource = window.selectedOpponent?.spells;
+            const spellsSource = window.selectedOpponent?.spells;
             spellData = window.findSpellInUserData ? window.findSpellInUserData(spellId, spellsSource) : null;
         }
     }
 
-    console.log(`   Spell Data (from ${casterType}):`, spellData);
-
     if (!spellData) {
-        console.log(`❌ Заклинание ${spellId} не найдено в данных ${casterType}, используем базовую атаку`);
         castBasicAttack(wizard, position, casterType);
         return;
     }
 
     const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
-    console.log(`   Spell School: ${spellSchool}`);
 
     switch (spellSchool) {
         case 'fire':
             if (typeof window.castFireSpell === 'function') {
                 window.castFireSpell(wizard, spellId, spellData, position, casterType);
             } else {
-                console.error("Функция castFireSpell не найдена");
                 castBasicAttack(wizard, position, casterType);
             }
             break;
@@ -250,7 +206,6 @@ function castSpell(wizard, spellId, position, casterType) {
             if (typeof window.castWaterSpell === 'function') {
                 window.castWaterSpell(wizard, spellId, spellData, position, casterType);
             } else {
-                console.error("Функция castWaterSpell не найдена");
                 castBasicAttack(wizard, position, casterType);
             }
             break;
@@ -258,7 +213,6 @@ function castSpell(wizard, spellId, position, casterType) {
             if (typeof window.castWindSpell === 'function') {
                 window.castWindSpell(wizard, spellId, spellData, position, casterType);
             } else {
-                console.error("Функция castWindSpell не найдена");
                 castBasicAttack(wizard, position, casterType);
             }
             break;
@@ -266,7 +220,6 @@ function castSpell(wizard, spellId, position, casterType) {
             if (typeof window.castEarthSpell === 'function') {
                 window.castEarthSpell(wizard, spellId, spellData, position, casterType);
             } else {
-                console.error("Функция castEarthSpell не найдена");
                 castBasicAttack(wizard, position, casterType);
             }
             break;
@@ -274,7 +227,6 @@ function castSpell(wizard, spellId, position, casterType) {
             if (typeof window.castNatureSpell === 'function') {
                 window.castNatureSpell(wizard, spellId, spellData, position, casterType);
             } else {
-                console.error("Функция castNatureSpell не найдена");
                 castBasicAttack(wizard, position, casterType);
             }
             break;
@@ -282,47 +234,31 @@ function castSpell(wizard, spellId, position, casterType) {
             if (typeof window.castPoisonSpell === 'function') {
                 window.castPoisonSpell(wizard, spellId, spellData, position, casterType);
             } else {
-                console.error("Функция castPoisonSpell не найдена");
                 castBasicAttack(wizard, position, casterType);
             }
             break;
         default:
-            console.log(`⚠️ Неизвестная школа заклинания: ${spellSchool} для ${spellId}`);
             castBasicAttack(wizard, position, casterType);
     }
 }
 
 // --- Базовая атака если нет заклинаний ---
 function castBasicAttack(wizard, position, casterType) {
-    console.log(`⚔️ ${wizard.name} использует базовую атаку`);
-
-    // 🎬 АНИМАЦИЯ для базовой атаки тоже!
     const col = casterType === 'player' ? 5 : 0;
-    const wizardKey = `${col}_${position}`;
-
-    console.log(`🎬 Запускаем анимацию базовой атаки для ${wizardKey}`);
 
     if (typeof window.playWizardAttackAnimation === 'function') {
-    	window.playWizardAttackAnimation(col, position, () => {
-    	});
+    	window.playWizardAttackAnimation(col, position, () => {});
     }
-    console.log(`🎯 Ищем цель для ${wizard.name} (позиция: ${position}, тип: ${casterType})`);
-    console.log(`   window.findTarget существует:`, typeof window.findTarget === 'function');
 
     const target = window.findTarget ? window.findTarget(position, casterType) : null;
 
-    console.log(`   Найденная цель:`, target);
-
     if (target) {
         const baseDamage = 5 + (wizard.level || 1) * 1;
-        console.log(`💥 Базовый урон: ${baseDamage}, наносим цели: ${target.wizard.name}`);
 
-        // ИСПРАВЛЕНИЕ: Используем систему многоуровневой защиты для базовой атаки
         if (typeof window.applyDamageWithMultiLayerProtection === 'function') {
             const result = window.applyDamageWithMultiLayerProtection(wizard, target, baseDamage, 'basic_attack', casterType);
 
             if (result) {
-                // Показываем имя атакующего в названии атаки
                 const attackName = `${wizard.name}: Атака`;
                 if (typeof window.logSpellHit === 'function') {
                     window.logSpellHit(wizard, target.wizard, result.finalDamage, attackName);
@@ -331,36 +267,27 @@ function castBasicAttack(wizard, position, casterType) {
                 }
             }
         } else {
-            // Fallback на старую систему если многоуровневая защита не доступна
             const finalDamage = window.applyFinalDamage ?
                 window.applyFinalDamage(wizard, target.wizard, baseDamage, 'basic_attack', 0, false) : baseDamage;
 
             target.wizard.hp -= finalDamage;
             if (target.wizard.hp < 0) target.wizard.hp = 0;
 
-            // Показываем имя атакующего в названии атаки
             const attackName = `${wizard.name}: Атака`;
             if (typeof window.logSpellHit === 'function') {
                 window.logSpellHit(wizard, target.wizard, finalDamage, attackName);
             } else if (Array.isArray(window.battleLog)) {
-                const logEntry = `⚔️ ${attackName} → ${target.wizard.name} (${finalDamage} урона) (${target.wizard.hp}/${target.wizard.max_hp})`;
-                window.battleLog.push(logEntry);
-                console.log(logEntry);
+                window.battleLog.push(`⚔️ ${attackName} → ${target.wizard.name} (${finalDamage} урона) (${target.wizard.hp}/${target.wizard.max_hp})`);
             }
         }
     } else {
-        console.warn(`⚠️ Цель НЕ НАЙДЕНА для ${wizard.name}!`);
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`⚔️ ${wizard.name} атакует, но цель не найдена`);
-        } else if (Array.isArray(window.battleLog)) {
-            const logEntry = `⚔️ ${wizard.name} атакует, но цель не найдена`;
-            window.battleLog.push(logEntry);
-            console.log(logEntry);
         }
     }
 }
 
-// --- Вспомогательные функции остаются без изменений ---
+// --- Вспомогательные функции ---
 function selectRandomSpell(wizard) {
     const spells = wizard.spells || [];
     const availableSpells = spells.filter(spell => spell !== null && spell !== undefined);
@@ -371,7 +298,7 @@ function selectRandomSpell(wizard) {
 
 function getSpellInfo(spellId) {
     if (!spellId) return null;
-    const spellData = window.findSpellInUserData ? 
+    const spellData = window.findSpellInUserData ?
         window.findSpellInUserData(spellId, window.userData?.spells) : null;
     if (!spellData) return null;
     return {
@@ -386,7 +313,7 @@ function getSpellInfo(spellId) {
 
 // Глобальный экспорт
 window.useWizardSpells = useWizardSpells;
-window.useWizardSpellsForBoss = useWizardSpellsForBoss; // Для босс-боя
+window.useWizardSpellsForBoss = useWizardSpellsForBoss;
 window.castSpell = castSpell;
 window.castBasicAttack = castBasicAttack;
 window.selectRandomSpell = selectRandomSpell;

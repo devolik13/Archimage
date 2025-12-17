@@ -251,7 +251,6 @@ function startBattle() {
     const bossEnemy = window.enemyFormation?.find(w => w && (w.isBoss || w.isFinalBoss));
     if (bossEnemy) {
         window.isBossBattle = true;
-        console.log(`👹 [BOSS BATTLE] Обнаружен босс: ${bossEnemy.name}. Включён режим босс-боя.`);
     } else {
         window.isBossBattle = false;
     }
@@ -595,7 +594,6 @@ async function executeBattlePhase() {
     if (window.lastTotalHP !== null && currentTotalHP === window.lastTotalHP) {
         window.stalemateCounter++;
         if (window.stalemateCounter >= window.STALEMATE_TURNS_LIMIT) {
-            console.log(`⚖️ Бой закончился ничьей: ${window.stalemateCounter} ходов без изменения HP`);
             if (typeof window.addToBattleLog === 'function') {
                 window.addToBattleLog(`⚖️ НИЧЬЯ! ${window.STALEMATE_TURNS_LIMIT} ходов без изменений HP`);
             }
@@ -661,8 +659,7 @@ async function endBattleAsDraw() {
     // Начисляем опыт за ничью (считается как поражение - DEFEAT_BONUS)
     let wizardExpGained = [];
     if (typeof window.grantBattleExp === 'function') {
-        wizardExpGained = window.grantBattleExp([], false); // false = не победа
-        console.log('📊 [XP] Опыт за ничью:', wizardExpGained);
+        wizardExpGained = window.grantBattleExp([], false);
     }
 
     // Показываем результат как ничью (считается поражением для обеих сторон)
@@ -895,9 +892,7 @@ async function executeSingleMageAttack(wizard, position, casterType) {
             });
         }
         if (totalHealingDone > 0) {
-            // Лечение даёт XP по формуле HEAL_TO_EXP (8 heal = 1 XP)
             window.trackHealExp(wizard, totalHealingDone);
-            console.log(`💚 [XP] ${wizard.name} получает опыт за лечение: ${totalHealingDone} HP`);
         }
     }
 
@@ -987,7 +982,6 @@ async function executeEnemyPhase(mageCount) {
     while (magesToAttack.length < mageCount && positionsChecked < 5) {
         const wizard = window.enemyFormation[currentPos];
         if (wizard && wizard.hp > 0) {
-            console.log(`🎯 [DEBUG] executeEnemyPhase: найден враг ${wizard.name} на позиции ${currentPos}, wizard.position=${wizard.position}`);
             magesToAttack.push({ wizard, position: currentPos });
         }
         currentPos = (currentPos + 1) % 5;
@@ -1074,8 +1068,6 @@ async function executeBossBattlePhase() {
                 }
             }
         }
-
-        console.log(`👥 [BOSS BATTLE] Фаза игрока: ${alivePlayers.length} магов атакуют (по 2 заклинания)`);
 
         // Последовательно каждый маг использует 2 заклинания
         for (const mageData of alivePlayers) {
@@ -1179,7 +1171,6 @@ async function executeBossBattlePhase() {
 
         if (boss) {
             const bossPosition = window.enemyFormation.findIndex(w => w && w.id === boss.id);
-            console.log(`👹 [BOSS BATTLE] Фаза босса: ${boss.name} использует все заклинания`);
 
             // Обработка эффектов перед ходом босса
             await processMagePreTurnEffects(boss, bossPosition, 'enemy');
@@ -1204,8 +1195,6 @@ async function executeBossBattlePhase() {
             if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
                 window.checkMeteorokinesisCasterAlive();
             }
-        } else {
-            console.log('👹 [BOSS BATTLE] Босс не найден или мёртв');
         }
     }
 
@@ -1214,7 +1203,6 @@ async function executeBossBattlePhase() {
     if (window.lastTotalHP !== null && currentTotalHP === window.lastTotalHP) {
         window.stalemateCounter++;
         if (window.stalemateCounter >= window.STALEMATE_TURNS_LIMIT) {
-            console.log(`⚖️ Босс-бой закончился ничьей: ${window.stalemateCounter} ходов без изменения HP`);
             if (typeof window.addToBattleLog === 'function') {
                 window.addToBattleLog(`⚖️ НИЧЬЯ! ${window.STALEMATE_TURNS_LIMIT} ходов без изменений HP`);
             }
@@ -1338,7 +1326,6 @@ async function checkBattleEnd() {
         } else if (Array.isArray(window.battleLog)) {
             window.battleLog.push(resultLog);
         }
-        console.log(resultLog);
 
         // Начисляем опыт ВСЕМ магам игрока (не только выжившим)
         const allPlayerWizards = window.playerFormation
@@ -1352,7 +1339,6 @@ async function checkBattleEnd() {
         // grantBattleExp возвращает массив с детальной статистикой
         if (typeof window.grantBattleExp === 'function') {
             window.lastBattleExpResults = window.grantBattleExp(allPlayerWizards, isVictory);
-            console.log('📊 [XP] Результаты боя:', window.lastBattleExpResults);
         }
 
         // Начисляем airdrop очки за PvP победу (если это не PvE)
@@ -1491,8 +1477,6 @@ async function checkBattleEnd() {
                         if (typeof window.addToBattleLog === 'function') {
                             window.addToBattleLog(`🏆 Бонус за победу над боссом: +${bonusExp} опыта каждому магу!`);
                         }
-
-                        console.log(`🏆 [BOSS EXP] Выдано ${bonusExp} опыта ${participatingWizards.length} магам за победу над боссом`);
                     }
                 }
             }
@@ -1782,7 +1766,6 @@ function applyLeafCanopyEffect(wizard, level) {
                     casterType: casterType
                 };
             });
-            console.log('🌃 Отложенный вызов анимации, контейнер:', !!window.pixiCore?.getEffectsContainer());
             window.spellAnimations.leaf_canopy.play({
                 targetWizards: targetWizardsData,
                 level: level
@@ -1818,8 +1801,6 @@ function applyMeteorokinesisEffect(wizard, level) {
     if (setsClearWeather && window.currentWeather) {
         window.originalWeather = window.currentWeather;
         window.currentWeather = 'clear';
-        const duration = level === 4 ? 'на 2 хода' : 'до конца боя';
-        console.log(`🌦 Метеокинез ${level} уровня: установлена ясная погода ${duration}`);
     }
 
     setTimeout(() => {
@@ -1838,10 +1819,7 @@ function applyMeteorokinesisEffect(wizard, level) {
 function removeDeadSummons() {
     // Используем новый менеджер
     if (window.summonsManager) {
-        const removedCount = window.summonsManager.cleanupDead();
-        if (removedCount > 0) {
-            console.log(`🧹 Удалено мёртвых существ: ${removedCount}`);
-        }
+        window.summonsManager.cleanupDead();
         return;
     }
 
@@ -1874,9 +1852,7 @@ function applyAbsoluteZeroEffect(wizard, level, casterType) {
     const damage = [15, 25, 35, 45, 60][level - 1] || 15;
     const interruptChance = [5, 7, 9, 11, 15][level - 1] || 5;
 
-    console.log(`❄️ Применение Абсолютного Холода для ${wizard.name} (${casterType}), уровень ${level}, урон ${damage}`);
-
-    // 🔥 ПАТТЕРН ОГНЕННОЙ СТЕНЫ: Создаём зону в walls.js с автоудалением старой
+    // Создаём зону Абсолютного Холода
     if (typeof window.createOrUpdateAbsoluteZeroZone === 'function') {
         window.createOrUpdateAbsoluteZeroZone(wizard.id, casterType, damage, interruptChance, level);
     } else {
