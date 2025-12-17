@@ -11,7 +11,7 @@ ADD COLUMN IF NOT EXISTS trial_best_damage int DEFAULT 0;
 -- 2. Таблица рейтинга по неделям
 CREATE TABLE IF NOT EXISTS trial_leaderboard (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    player_id uuid REFERENCES players(id) ON DELETE CASCADE,
+    player_id bigint REFERENCES players(id) ON DELETE CASCADE,
     player_name text NOT NULL,
     week_year text NOT NULL, -- формат "2024-51"
     best_damage int DEFAULT 0,
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS trial_leaderboard (
 -- 3. Таблица наград
 CREATE TABLE IF NOT EXISTS trial_rewards (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    player_id uuid REFERENCES players(id) ON DELETE CASCADE,
+    player_id bigint REFERENCES players(id) ON DELETE CASCADE,
     week_year text NOT NULL,
     rank_position int NOT NULL, -- место в рейтинге
     rank_percent float NOT NULL, -- процентиль (1.5 = топ 1.5%)
@@ -49,6 +49,7 @@ CREATE INDEX IF NOT EXISTS idx_trial_rewards_unclaimed ON trial_rewards(player_i
 
 -- ============================================
 -- ROW LEVEL SECURITY (RLS)
+-- Для Telegram-авторизации (без Supabase Auth)
 -- ============================================
 
 -- Включаем RLS
@@ -56,40 +57,28 @@ ALTER TABLE trial_leaderboard ENABLE ROW LEVEL SECURITY;
 ALTER TABLE trial_rewards ENABLE ROW LEVEL SECURITY;
 
 -- === TRIAL_LEADERBOARD ===
+-- Публичный рейтинг - все могут читать
+CREATE POLICY "trial_leaderboard_select_public" ON trial_leaderboard
+    FOR SELECT USING (true);
 
--- Все могут видеть рейтинг (публичный)
-CREATE POLICY "trial_leaderboard_select_all" ON trial_leaderboard
-    FOR SELECT
-    USING (true);
+-- Вставка и обновление через anon ключ (клиент проверяет player_id)
+CREATE POLICY "trial_leaderboard_insert_anon" ON trial_leaderboard
+    FOR INSERT WITH CHECK (true);
 
--- Игрок может вставлять/обновлять только свои записи
-CREATE POLICY "trial_leaderboard_insert_own" ON trial_leaderboard
-    FOR INSERT
-    WITH CHECK (player_id = auth.uid());
-
-CREATE POLICY "trial_leaderboard_update_own" ON trial_leaderboard
-    FOR UPDATE
-    USING (player_id = auth.uid())
-    WITH CHECK (player_id = auth.uid());
-
--- Удалять может только сервис (для еженедельного сброса)
--- Без политики DELETE - только через service_role
+CREATE POLICY "trial_leaderboard_update_anon" ON trial_leaderboard
+    FOR UPDATE USING (true) WITH CHECK (true);
 
 -- === TRIAL_REWARDS ===
+-- Все могут читать награды (для отображения своих)
+CREATE POLICY "trial_rewards_select_public" ON trial_rewards
+    FOR SELECT USING (true);
 
--- Игрок видит только свои награды
-CREATE POLICY "trial_rewards_select_own" ON trial_rewards
-    FOR SELECT
-    USING (player_id = auth.uid());
+-- Обновление (для claimed) через anon
+CREATE POLICY "trial_rewards_update_anon" ON trial_rewards
+    FOR UPDATE USING (true) WITH CHECK (true);
 
--- Вставлять награды может только сервис (service_role)
--- Без политики INSERT для обычных пользователей
-
--- Игрок может обновить только claimed статус своей награды
-CREATE POLICY "trial_rewards_update_claim" ON trial_rewards
-    FOR UPDATE
-    USING (player_id = auth.uid())
-    WITH CHECK (player_id = auth.uid());
+-- Вставка только через service_role (еженедельный расчёт)
+-- Нет политики INSERT для anon - используем service_role
 
 -- ============================================
 -- ФУНКЦИИ
@@ -106,7 +95,7 @@ $$;
 
 -- Функция для обновления/вставки результата игрока
 CREATE OR REPLACE FUNCTION upsert_trial_result(
-    p_player_id uuid,
+    p_player_id bigint,
     p_player_name text,
     p_damage int
 )
@@ -126,6 +115,11 @@ BEGIN
         total_damage = trial_leaderboard.total_damage + p_damage,
         attempts_count = trial_leaderboard.attempts_count + 1,
         updated_at = now();
+
+    -- Обновляем лучший результат в players
+    UPDATE players
+    SET trial_best_damage = GREATEST(COALESCE(trial_best_damage, 0), p_damage)
+    WHERE id = p_player_id;
 END;
 $$;
 
@@ -133,7 +127,7 @@ $$;
 CREATE OR REPLACE FUNCTION get_trial_leaderboard(p_limit int DEFAULT 100)
 RETURNS TABLE (
     rank bigint,
-    player_id uuid,
+    player_id bigint,
     player_name text,
     best_damage int,
     total_damage int,
@@ -155,7 +149,33 @@ AS $$
     LIMIT p_limit;
 $$;
 
--- Функция для расчёта наград (вызывается раз в неделю)
+-- Функция для получения позиции игрока в рейтинге
+CREATE OR REPLACE FUNCTION get_player_trial_rank(p_player_id bigint)
+RETURNS TABLE (
+    rank bigint,
+    total_players bigint,
+    percent float
+)
+LANGUAGE sql
+STABLE
+AS $$
+    WITH ranked AS (
+        SELECT
+            player_id,
+            ROW_NUMBER() OVER (ORDER BY best_damage DESC) as rank,
+            COUNT(*) OVER () as total
+        FROM trial_leaderboard
+        WHERE week_year = get_current_week_year()
+    )
+    SELECT
+        rank,
+        total as total_players,
+        (rank::float / total * 100) as percent
+    FROM ranked
+    WHERE player_id = p_player_id;
+$$;
+
+-- Функция для расчёта наград (вызывается раз в неделю через service_role)
 CREATE OR REPLACE FUNCTION calculate_weekly_trial_rewards(p_week_year text)
 RETURNS int
 LANGUAGE plpgsql
@@ -216,6 +236,53 @@ BEGIN
 END;
 $$;
 
+-- Функция для получения незабранных наград игрока
+CREATE OR REPLACE FUNCTION get_unclaimed_trial_rewards(p_player_id bigint)
+RETURNS TABLE (
+    id uuid,
+    week_year text,
+    rank_position int,
+    rank_percent float,
+    reward_tier text,
+    reward_time int
+)
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT id, week_year, rank_position, rank_percent, reward_tier, reward_time
+    FROM trial_rewards
+    WHERE player_id = p_player_id AND claimed = false
+    ORDER BY created_at DESC;
+$$;
+
+-- Функция для получения награды
+CREATE OR REPLACE FUNCTION claim_trial_reward(p_reward_id uuid, p_player_id bigint)
+RETURNS int
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_reward_time int;
+BEGIN
+    -- Получаем и помечаем награду как полученную
+    UPDATE trial_rewards
+    SET claimed = true, claimed_at = now()
+    WHERE id = p_reward_id AND player_id = p_player_id AND claimed = false
+    RETURNING reward_time INTO v_reward_time;
+
+    IF v_reward_time IS NULL THEN
+        RETURN 0;
+    END IF;
+
+    -- Начисляем время игроку
+    UPDATE players
+    SET time_currency = COALESCE(time_currency, 0) + v_reward_time
+    WHERE id = p_player_id;
+
+    RETURN v_reward_time;
+END;
+$$;
+
 -- ============================================
 -- КОММЕНТАРИИ
 -- ============================================
@@ -223,4 +290,7 @@ COMMENT ON TABLE trial_leaderboard IS 'Еженедельный рейтинг �
 COMMENT ON TABLE trial_rewards IS 'Награды за испытание по итогам недели';
 COMMENT ON FUNCTION upsert_trial_result IS 'Сохраняет результат попытки испытания';
 COMMENT ON FUNCTION get_trial_leaderboard IS 'Возвращает рейтинг текущей недели';
-COMMENT ON FUNCTION calculate_weekly_trial_rewards IS 'Рассчитывает награды по итогам недели (вызывать раз в неделю)';
+COMMENT ON FUNCTION get_player_trial_rank IS 'Возвращает позицию игрока в рейтинге';
+COMMENT ON FUNCTION calculate_weekly_trial_rewards IS 'Рассчитывает награды по итогам недели';
+COMMENT ON FUNCTION get_unclaimed_trial_rewards IS 'Возвращает незабранные награды игрока';
+COMMENT ON FUNCTION claim_trial_reward IS 'Забирает награду и начисляет время';
