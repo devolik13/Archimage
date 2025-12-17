@@ -128,8 +128,20 @@
             frameWidth: 256,
             frameHeight: 256,
             frameCount: 8,
+            gridColumns: 5,  // ИСПРАВЛЕНИЕ: Изображение 1280x1280 = сетка 5×5
             animationSpeed: 0.15, // Демоны быстрые
             scale: 0.38 // Средний размер между огром и троллем
+        },
+        lord_demon: {
+            idle: 'images/enemies/lord_demon/idle.webp',
+            cast: 'images/enemies/lord_demon/cast.webp',
+            death: 'images/enemies/lord_demon/death.webp',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 8,
+            gridColumns: 5,  // Предполагаем такую же сетку как у demon
+            animationSpeed: 0.12, // Лорд демонов медленнее обычного демона
+            scale: 0.45 // Крупнее обычного демона
         },
         fire_elemental: {
             idle: 'images/enemies/fire_elemental/idle.webp',
