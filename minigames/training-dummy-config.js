@@ -91,7 +91,7 @@ const DUMMY_CONFIGURATIONS = [
 const DUMMY_CONFIG = {
     HP: 10000,
     ARMOR: 100,                    // Стандартная броня
-    MAX_TURNS: 5,                  // Ходов на попытку
+    MAX_ROUNDS: 10,                // Раундов на попытку (раунд = все маги атакуют по очереди)
     DAILY_ATTEMPTS: 3,             // Попыток в день
     WEEK_DURATION_DAYS: 7
 };
@@ -320,7 +320,7 @@ function getDummyInfo() {
         dummy: config,
         hp: DUMMY_CONFIG.HP,
         armor: DUMMY_CONFIG.ARMOR,
-        maxTurns: DUMMY_CONFIG.MAX_TURNS,
+        maxRounds: DUMMY_CONFIG.MAX_ROUNDS,
         remainingAttempts: getRemainingAttempts(),
         dailyAttempts: DUMMY_CONFIG.DAILY_ATTEMPTS,
         totalDamage: progress.totalDamage,

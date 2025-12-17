@@ -99,8 +99,8 @@ function showTrainingGroundScreen() {
                     <div style="font-size: 16px; color: #ff6b6b;">❤️ ${info.hp.toLocaleString()}</div>
                 </div>
                 <div style="flex: 1; text-align: center; background: #1a2a3a; padding: 10px; border-radius: 8px;">
-                    <div style="font-size: 12px; color: #888;">Ходов</div>
-                    <div style="font-size: 16px; color: #4a9eff;">⏱️ ${info.maxTurns}</div>
+                    <div style="font-size: 12px; color: #888;">Раундов</div>
+                    <div style="font-size: 16px; color: #4a9eff;">🔄 ${info.maxRounds}</div>
                 </div>
                 <div style="flex: 1; text-align: center; background: #1a2a3a; padding: 10px; border-radius: 8px;">
                     <div style="font-size: 12px; color: #888;">Попытки</div>

@@ -9,7 +9,8 @@
 // Состояние боя с манекеном
 let dummyBattleState = {
     active: false,
-    turnsRemaining: 0,
+    roundsRemaining: 0,
+    currentRound: 0,
     totalDamage: 0,
     dummyStartHp: 0
 };
@@ -41,7 +42,8 @@ async function startDummyBattle() {
     // Сохраняем начальное HP для подсчёта урона
     dummyBattleState = {
         active: true,
-        turnsRemaining: window.DUMMY_CONFIG.MAX_TURNS,
+        roundsRemaining: window.DUMMY_CONFIG.MAX_ROUNDS,
+        currentRound: 1,
         totalDamage: 0,
         dummyStartHp: dummy.hp
     };
@@ -62,7 +64,7 @@ async function startDummyBattle() {
         window.addToBattleLog(`📋 Манекен: ${config.name}`);
         window.addToBattleLog(`📝 ${config.description}`);
         window.addToBattleLog(`❤️ HP: ${dummy.hp.toLocaleString()}`);
-        window.addToBattleLog(`⏱️ Ходов: ${dummyBattleState.turnsRemaining}`);
+        window.addToBattleLog(`🔄 Раундов: ${dummyBattleState.roundsRemaining}`);
         window.addToBattleLog(`═══════════════════════════════\n`);
 
         // Показываем сопротивления
@@ -80,24 +82,23 @@ async function startDummyBattle() {
 
 /**
  * Специальная фаза боя для манекена
- * Переопределяет обычную логику - враг не атакует
+ * Раунд = все маги игрока атакуют по очереди
  */
 async function executeDummyBattlePhase() {
     if (!dummyBattleState.active) return;
 
-    // Проверка на конец боя по ходам
-    if (dummyBattleState.turnsRemaining <= 0) {
+    // Проверка на конец боя по раундам
+    if (dummyBattleState.roundsRemaining <= 0) {
         await endDummyBattle();
         return;
     }
 
-    // Логируем ход
-    const turnNum = window.DUMMY_CONFIG.MAX_TURNS - dummyBattleState.turnsRemaining + 1;
+    // Логируем раунд
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`\n━━━ Ход ${turnNum}/${window.DUMMY_CONFIG.MAX_TURNS} ━━━`);
+        window.addToBattleLog(`\n━━━ Раунд ${dummyBattleState.currentRound}/${window.DUMMY_CONFIG.MAX_ROUNDS} ━━━`);
     }
 
-    // Сохраняем HP манекена до хода
+    // Сохраняем HP манекена до раунда
     const dummy = window.enemyFormation.find(e => e && e.isTrainingDummy);
     const hpBefore = dummy ? dummy.hp : 0;
 
@@ -113,33 +114,37 @@ async function executeDummyBattlePhase() {
         }
     }
 
-    // Каждый маг использует заклинания
+    // Каждый маг использует заклинания по очереди
     for (const mageData of alivePlayers) {
         if (mageData.wizard.hp <= 0) continue;
+
+        // Проверяем не умер ли манекен
+        if (dummy && dummy.hp <= 0) break;
 
         // Используем заклинания
         if (typeof window.useWizardSpells === 'function') {
             window.useWizardSpells(mageData.wizard, mageData.position, 'player');
         }
 
-        // Небольшая пауза между магами
-        await new Promise(resolve => setTimeout(resolve, 300));
+        // Пауза между магами для анимаций
+        await new Promise(resolve => setTimeout(resolve, 500));
     }
 
-    // Подсчитываем нанесённый урон
-    const hpAfter = dummy ? dummy.hp : 0;
-    const damageThisTurn = Math.max(0, hpBefore - hpAfter);
-    dummyBattleState.totalDamage += damageThisTurn;
+    // Подсчитываем нанесённый урон за раунд
+    const hpAfter = dummy ? Math.max(0, dummy.hp) : 0;
+    const damageThisRound = Math.max(0, hpBefore - hpAfter);
+    dummyBattleState.totalDamage += damageThisRound;
 
-    // Уменьшаем счётчик ходов
-    dummyBattleState.turnsRemaining--;
+    // Переходим к следующему раунду
+    dummyBattleState.roundsRemaining--;
+    dummyBattleState.currentRound++;
 
-    // Логируем урон за ход
+    // Логируем урон за раунд
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`\n⚔️ Урон за ход: ${damageThisTurn.toLocaleString()}`);
+        window.addToBattleLog(`\n⚔️ Урон за раунд: ${damageThisRound.toLocaleString()}`);
         window.addToBattleLog(`📊 Всего урона: ${dummyBattleState.totalDamage.toLocaleString()}`);
-        if (dummyBattleState.turnsRemaining > 0) {
-            window.addToBattleLog(`⏱️ Осталось ходов: ${dummyBattleState.turnsRemaining}`);
+        if (dummyBattleState.roundsRemaining > 0 && (!dummy || dummy.hp > 0)) {
+            window.addToBattleLog(`🔄 Осталось раундов: ${dummyBattleState.roundsRemaining}`);
         }
     }
 
@@ -149,7 +154,7 @@ async function executeDummyBattlePhase() {
     }
 
     // Проверяем конец боя
-    if (dummyBattleState.turnsRemaining <= 0 || (dummy && dummy.hp <= 0)) {
+    if (dummyBattleState.roundsRemaining <= 0 || (dummy && dummy.hp <= 0)) {
         await endDummyBattle();
     }
 }
