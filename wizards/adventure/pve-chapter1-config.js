@@ -136,7 +136,7 @@ const ELEMENTALS = {
     },
     earth: {
         name: "Земной Элементаль",
-        hp: 600,
+        hp: 500,
         armor: 140,
         faction: "earth",
         spells: ["pebble", "stone_spike", "meteor_shower"],
