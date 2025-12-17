@@ -95,13 +95,17 @@ function getDamageBonusFromLevel(wizard) {
 // НОВАЯ СИСТЕМА: Накопление статистики боя
 // ============================================
 
-// Инициализация статистики боя для всех магов игрока
+// Инициализация статистики боя только для магов в формации (участников боя)
 function initBattleStats() {
     window.battleStats = {};
 
-    if (window.playerWizards) {
-        window.playerWizards.forEach(wizard => {
-            if (wizard && wizard.id) {
+    // Используем playerFormation - массив ID магов, которые реально в бою
+    if (window.playerFormation && window.playerWizards) {
+        window.playerFormation.forEach(wizardId => {
+            if (!wizardId) return; // Пустой слот в формации
+
+            const wizard = window.playerWizards.find(w => w.id === wizardId);
+            if (wizard) {
                 window.battleStats[wizard.id] = {
                     name: wizard.name || `Маг ${wizard.id}`,
                     damageDealt: 0,
@@ -113,7 +117,7 @@ function initBattleStats() {
         });
     }
 
-    console.log('📊 [XP] Статистика боя инициализирована:', Object.keys(window.battleStats).length, 'магов');
+    console.log('📊 [XP] Статистика боя инициализирована:', Object.keys(window.battleStats).length, 'магов в формации');
 }
 
 // Накопление урона в статистику (вызывается во время боя)
