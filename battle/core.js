@@ -571,6 +571,12 @@ async function executeBattlePhase() {
         return; // Выходим, чтобы не выполнять обычную логику
     }
 
+    // ТРЕНИРОВОЧНЫЙ МАНЕКЕН: Враг не атакует
+    if (window.isTrainingDummyBattle && typeof window.executeDummyBattlePhase === 'function') {
+        await window.executeDummyBattlePhase();
+        return; // Выходим, чтобы не выполнять обычную логику
+    }
+
     // Логика ходов зависит от того, кто атакует
     if (window.globalTurnCounter === 0) {
         // Первый ход - 1 маг атакующего

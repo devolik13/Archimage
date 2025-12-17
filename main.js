@@ -80,6 +80,11 @@ import './wizards/adventure/adventure-map.js';
 import './wizards/adventure/adventure-hub.js';
 import './wizards/adventure/pve-ui.js';
 
+// Мини-игры
+import './minigames/training-dummy-config.js';
+import './minigames/training-dummy-battle.js';
+import './minigames/training-dummy-ui.js';
+
 // ============================================
 // 6. БИБЛИОТЕКА ЗАКЛИНАНИЙ (Spells UI)
 // ============================================

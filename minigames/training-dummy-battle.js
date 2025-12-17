@@ -1,0 +1,357 @@
+// minigames/training-dummy-battle.js - Боевая логика тренировочного полигона
+/**
+ * Специальный режим боя с манекеном:
+ * - Враг не атакует
+ * - Ограниченное число ходов
+ * - Подсчёт общего урона
+ */
+
+// Состояние боя с манекеном
+let dummyBattleState = {
+    active: false,
+    turnsRemaining: 0,
+    totalDamage: 0,
+    dummyStartHp: 0
+};
+
+/**
+ * Начать бой с манекеном
+ */
+async function startDummyBattle() {
+    // Проверяем попытки
+    const remaining = window.getRemainingAttempts();
+    if (remaining <= 0) {
+        alert('❌ Попытки на сегодня закончились!\nПриходите завтра.');
+        return;
+    }
+
+    // Проверяем формацию
+    if (!window.playerFormation || !window.playerFormation.some(id => id !== null)) {
+        alert('❌ Сначала выберите магов в расстановке!');
+        return;
+    }
+
+    // Устанавливаем флаги
+    window.isTrainingDummyBattle = true;
+    window.isPvEBattle = false;
+
+    // Создаём манекена
+    const dummy = window.createDummyEnemy();
+
+    // Сохраняем начальное HP для подсчёта урона
+    dummyBattleState = {
+        active: true,
+        turnsRemaining: window.DUMMY_CONFIG.MAX_TURNS,
+        totalDamage: 0,
+        dummyStartHp: dummy.hp
+    };
+
+    // Устанавливаем врага
+    window.enemyFormation = [null, null, dummy, null, null]; // Манекен в центре
+    window.enemyWizards = [dummy];
+
+    // Показываем поле боя
+    if (typeof window.showBattleField === 'function') {
+        await window.showBattleField();
+    }
+
+    // Логируем начало
+    if (typeof window.addToBattleLog === 'function') {
+        const config = window.getCurrentDummyConfig();
+        window.addToBattleLog(`\n🎯 ═══ ТРЕНИРОВОЧНЫЙ ПОЛИГОН ═══`);
+        window.addToBattleLog(`📋 Манекен: ${config.name}`);
+        window.addToBattleLog(`📝 ${config.description}`);
+        window.addToBattleLog(`❤️ HP: ${dummy.hp.toLocaleString()}`);
+        window.addToBattleLog(`⏱️ Ходов: ${dummyBattleState.turnsRemaining}`);
+        window.addToBattleLog(`═══════════════════════════════\n`);
+
+        // Показываем сопротивления
+        window.addToBattleLog(`🛡️ Сопротивления:`);
+        const res = config.resistances;
+        if (res.fire !== 0) window.addToBattleLog(`   🔥 Огонь: ${res.fire > 0 ? '+' : ''}${res.fire}%`);
+        if (res.water !== 0) window.addToBattleLog(`   💧 Вода: ${res.water > 0 ? '+' : ''}${res.water}%`);
+        if (res.wind !== 0) window.addToBattleLog(`   🌪️ Ветер: ${res.wind > 0 ? '+' : ''}${res.wind}%`);
+        if (res.earth !== 0) window.addToBattleLog(`   🪨 Земля: ${res.earth > 0 ? '+' : ''}${res.earth}%`);
+        if (res.nature !== 0) window.addToBattleLog(`   🌿 Природа: ${res.nature > 0 ? '+' : ''}${res.nature}%`);
+        if (res.poison !== 0) window.addToBattleLog(`   ☠️ Яд: ${res.poison > 0 ? '+' : ''}${res.poison}%`);
+        window.addToBattleLog(``);
+    }
+}
+
+/**
+ * Специальная фаза боя для манекена
+ * Переопределяет обычную логику - враг не атакует
+ */
+async function executeDummyBattlePhase() {
+    if (!dummyBattleState.active) return;
+
+    // Проверка на конец боя по ходам
+    if (dummyBattleState.turnsRemaining <= 0) {
+        await endDummyBattle();
+        return;
+    }
+
+    // Логируем ход
+    const turnNum = window.DUMMY_CONFIG.MAX_TURNS - dummyBattleState.turnsRemaining + 1;
+    if (typeof window.addToBattleLog === 'function') {
+        window.addToBattleLog(`\n━━━ Ход ${turnNum}/${window.DUMMY_CONFIG.MAX_TURNS} ━━━`);
+    }
+
+    // Сохраняем HP манекена до хода
+    const dummy = window.enemyFormation.find(e => e && e.isTrainingDummy);
+    const hpBefore = dummy ? dummy.hp : 0;
+
+    // Все маги игрока атакуют (как в обычном бою)
+    const alivePlayers = [];
+    for (let pos = 0; pos < 5; pos++) {
+        const wizardId = window.playerFormation[pos];
+        if (wizardId) {
+            const wizard = window.playerWizards.find(w => w.id === wizardId);
+            if (wizard && wizard.hp > 0) {
+                alivePlayers.push({ wizard, position: pos });
+            }
+        }
+    }
+
+    // Каждый маг использует заклинания
+    for (const mageData of alivePlayers) {
+        if (mageData.wizard.hp <= 0) continue;
+
+        // Используем заклинания
+        if (typeof window.useWizardSpells === 'function') {
+            window.useWizardSpells(mageData.wizard, mageData.position, 'player');
+        }
+
+        // Небольшая пауза между магами
+        await new Promise(resolve => setTimeout(resolve, 300));
+    }
+
+    // Подсчитываем нанесённый урон
+    const hpAfter = dummy ? dummy.hp : 0;
+    const damageThisTurn = Math.max(0, hpBefore - hpAfter);
+    dummyBattleState.totalDamage += damageThisTurn;
+
+    // Уменьшаем счётчик ходов
+    dummyBattleState.turnsRemaining--;
+
+    // Логируем урон за ход
+    if (typeof window.addToBattleLog === 'function') {
+        window.addToBattleLog(`\n⚔️ Урон за ход: ${damageThisTurn.toLocaleString()}`);
+        window.addToBattleLog(`📊 Всего урона: ${dummyBattleState.totalDamage.toLocaleString()}`);
+        if (dummyBattleState.turnsRemaining > 0) {
+            window.addToBattleLog(`⏱️ Осталось ходов: ${dummyBattleState.turnsRemaining}`);
+        }
+    }
+
+    // Обновляем поле боя
+    if (typeof window.updateBattleField === 'function') {
+        window.updateBattleField();
+    }
+
+    // Проверяем конец боя
+    if (dummyBattleState.turnsRemaining <= 0 || (dummy && dummy.hp <= 0)) {
+        await endDummyBattle();
+    }
+}
+
+/**
+ * Завершить бой с манекеном
+ */
+async function endDummyBattle() {
+    if (!dummyBattleState.active) return;
+
+    dummyBattleState.active = false;
+    window.battleState = 'finished';
+
+    // Останавливаем боевой цикл
+    if (window.battleInterval) {
+        clearInterval(window.battleInterval);
+        window.battleInterval = null;
+    }
+    if (window.battleTimerManager && window.battleTimerManager.stopBattleLoop) {
+        window.battleTimerManager.stopBattleLoop();
+    }
+
+    // Финальный подсчёт урона (на случай если манекен убит)
+    const dummy = window.enemyFormation.find(e => e && e.isTrainingDummy);
+    if (dummy) {
+        const actualDamage = dummyBattleState.dummyStartHp - Math.max(0, dummy.hp);
+        dummyBattleState.totalDamage = Math.max(dummyBattleState.totalDamage, actualDamage);
+    }
+
+    const totalDamage = dummyBattleState.totalDamage;
+
+    // Записываем результат
+    const progress = window.recordAttempt(totalDamage);
+
+    // Логируем результат
+    if (typeof window.addToBattleLog === 'function') {
+        window.addToBattleLog(`\n🏁 ═══ ТРЕНИРОВКА ЗАВЕРШЕНА ═══`);
+        window.addToBattleLog(`⚔️ Урон за попытку: ${totalDamage.toLocaleString()}`);
+        window.addToBattleLog(`📊 Лучшая попытка: ${progress.bestAttempt.toLocaleString()}`);
+        window.addToBattleLog(`📈 Всего за неделю: ${progress.totalDamage.toLocaleString()}`);
+
+        const reward = window.getRewardForDamage(progress.totalDamage);
+        window.addToBattleLog(`\n🎁 Текущая награда: ${reward.description}`);
+
+        const nextReward = window.WEEKLY_REWARDS.find(r => r.minDamage > progress.totalDamage);
+        if (nextReward) {
+            const needed = nextReward.minDamage - progress.totalDamage;
+            window.addToBattleLog(`📌 До "${nextReward.description}": ещё ${needed.toLocaleString()} урона`);
+        }
+
+        const remaining = window.getRemainingAttempts();
+        window.addToBattleLog(`\n🎯 Осталось попыток сегодня: ${remaining}`);
+        window.addToBattleLog(`⏰ До конца недели: ${window.formatTimeUntilWeekEnd()}`);
+        window.addToBattleLog(`═══════════════════════════════`);
+    }
+
+    // Показываем результат
+    setTimeout(() => {
+        showDummyResult(totalDamage, progress);
+    }, 1500);
+}
+
+/**
+ * Показать окно результата
+ */
+function showDummyResult(damage, progress) {
+    // Сбрасываем флаг
+    window.isTrainingDummyBattle = false;
+
+    const reward = window.getRewardForDamage(progress.totalDamage);
+    const nextReward = window.WEEKLY_REWARDS.find(r => r.minDamage > progress.totalDamage);
+    const remaining = window.getRemainingAttempts();
+
+    // Создаём модальное окно
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+    `;
+
+    const content = document.createElement('div');
+    content.style.cssText = `
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        border: 2px solid #4a9eff;
+        border-radius: 15px;
+        padding: 25px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        color: white;
+        font-family: Arial, sans-serif;
+    `;
+
+    const config = window.getCurrentDummyConfig();
+
+    content.innerHTML = `
+        <h2 style="margin: 0 0 15px 0; color: #4a9eff;">🎯 Тренировка завершена!</h2>
+        <div style="margin-bottom: 20px;">
+            <div style="font-size: 14px; color: #888; margin-bottom: 5px;">${config.name}</div>
+        </div>
+
+        <div style="background: #0d1b2a; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+            <div style="font-size: 24px; color: #ffd700; margin-bottom: 10px;">
+                ⚔️ ${damage.toLocaleString()} урона
+            </div>
+            <div style="font-size: 14px; color: #aaa;">
+                Лучшая попытка: ${progress.bestAttempt.toLocaleString()}
+            </div>
+        </div>
+
+        <div style="background: #1a3a1a; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+            <div style="font-size: 18px; color: #4ade80; margin-bottom: 5px;">
+                📈 За неделю: ${progress.totalDamage.toLocaleString()}
+            </div>
+            <div style="font-size: 14px; color: #86efac;">
+                ${reward.description} (${Math.floor(reward.reward / 60)}ч)
+            </div>
+            ${nextReward ? `
+                <div style="font-size: 12px; color: #888; margin-top: 10px;">
+                    До "${nextReward.description}": ещё ${(nextReward.minDamage - progress.totalDamage).toLocaleString()}
+                </div>
+            ` : ''}
+        </div>
+
+        <div style="font-size: 14px; color: #888; margin-bottom: 20px;">
+            🎯 Попыток осталось: ${remaining}/3<br>
+            ⏰ До конца недели: ${window.formatTimeUntilWeekEnd()}
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            ${remaining > 0 ? `
+                <button id="dummy-retry-btn" style="
+                    background: linear-gradient(135deg, #4a9eff, #2d7dd2);
+                    border: none;
+                    padding: 12px 25px;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: 16px;
+                    cursor: pointer;
+                ">🔄 Ещё раз</button>
+            ` : ''}
+            <button id="dummy-exit-btn" style="
+                background: linear-gradient(135deg, #555, #333);
+                border: none;
+                padding: 12px 25px;
+                border-radius: 8px;
+                color: white;
+                font-size: 16px;
+                cursor: pointer;
+            ">🏠 В город</button>
+        </div>
+    `;
+
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+
+    // Обработчики кнопок
+    const retryBtn = document.getElementById('dummy-retry-btn');
+    if (retryBtn) {
+        retryBtn.onclick = () => {
+            modal.remove();
+            startDummyBattle();
+        };
+    }
+
+    document.getElementById('dummy-exit-btn').onclick = () => {
+        modal.remove();
+        if (typeof window.returnToCity === 'function') {
+            window.returnToCity();
+        }
+    };
+}
+
+/**
+ * Проверить, это бой с манекеном?
+ */
+function isTrainingDummyBattle() {
+    return window.isTrainingDummyBattle === true;
+}
+
+/**
+ * Получить состояние боя с манекеном
+ */
+function getDummyBattleState() {
+    return dummyBattleState;
+}
+
+// Экспорт
+window.startDummyBattle = startDummyBattle;
+window.executeDummyBattlePhase = executeDummyBattlePhase;
+window.endDummyBattle = endDummyBattle;
+window.showDummyResult = showDummyResult;
+window.isTrainingDummyBattle = isTrainingDummyBattle;
+window.getDummyBattleState = getDummyBattleState;
+
+console.log('✅ Training Dummy Battle загружен');
