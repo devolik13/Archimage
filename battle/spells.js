@@ -1,6 +1,75 @@
 // battle/spells.js - Система заклинаний для боя (адаптированная под новую структуру)
 
 
+// --- БОСС-БОЙ: Async функция использования заклинаний (макс 2 для игрока, все для босса) ---
+async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 2) {
+    console.log(`🧙‍♂️ [BOSS] ${wizard.name} (${casterType}) использует до ${maxSpells} заклинаний`);
+
+    const spells = wizard.spells || [];
+    const availableSpells = spells.filter(spell => spell !== null && spell !== undefined);
+
+    if (availableSpells.length === 0) {
+        console.log(`⚔️ [BOSS] ${wizard.name} не имеет заклинаний, использует базовую атаку`);
+        castBasicAttack(wizard, position, casterType);
+        await delay(600);
+        return;
+    }
+
+    // Ограничиваем количество заклинаний
+    const spellsToUse = availableSpells.slice(0, maxSpells);
+
+    for (let i = 0; i < spellsToUse.length; i++) {
+        // Проверка что маг ещё жив
+        if (wizard.hp <= 0) {
+            console.log(`💀 [BOSS] ${wizard.name} погиб, прерываем касты`);
+            break;
+        }
+
+        const spellId = spellsToUse[i];
+        console.log(`🎯 [BOSS] ${wizard.name} кастует ${i + 1}/${spellsToUse.length}: ${spellId}`);
+
+        // Проверки на прерывание (Снежная буря)
+        let interrupted = false;
+        if (typeof window.isWizardInBlizzard === 'function') {
+            const blizzard = window.isWizardInBlizzard(wizard, casterType);
+            if (blizzard && Math.random() * 100 < blizzard.interruptChance) {
+                if (typeof window.addToBattleLog === 'function') {
+                    window.addToBattleLog(`❄️ Заклинание ${wizard.name} прервано Снежной бурей!`);
+                }
+                interrupted = true;
+            }
+        }
+
+        // Проверка на Абсолютный Ноль
+        if (!interrupted && typeof window.isWizardInAbsoluteZero === 'function') {
+            const absoluteZero = window.isWizardInAbsoluteZero(wizard, casterType);
+            if (absoluteZero && Math.random() * 100 < absoluteZero.interruptChance) {
+                if (typeof window.addToBattleLog === 'function') {
+                    window.addToBattleLog(`❄️ Заклинание ${wizard.name} прервано Абсолютным Нолём!`);
+                }
+                interrupted = true;
+            }
+        }
+
+        if (!interrupted) {
+            castSpell(wizard, spellId, position, casterType);
+        }
+
+        // Задержка между заклинаниями
+        if (i < spellsToUse.length - 1) {
+            await delay(800);
+        }
+    }
+
+    // Небольшая пауза после всех кастов мага
+    await delay(400);
+}
+
+// Вспомогательная функция задержки
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 // --- Главная функция использования заклинаний магом ---
 function useWizardSpells(wizard, position, casterType) {
     console.log(`🧙‍♂️ ${wizard.name} (${casterType}) использует заклинания на позиции ${position}`);
@@ -317,6 +386,7 @@ function getSpellInfo(spellId) {
 
 // Глобальный экспорт
 window.useWizardSpells = useWizardSpells;
+window.useWizardSpellsForBoss = useWizardSpellsForBoss; // Для босс-боя
 window.castSpell = castSpell;
 window.castBasicAttack = castBasicAttack;
 window.selectRandomSpell = selectRandomSpell;

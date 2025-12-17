@@ -1043,20 +1043,22 @@ async function executeEnemyPhase(mageCount) {
 }
 
 // --- БОСС-БОЙ: Фаза боя с боссом ---
-// Все маги игрока ходят → потом босс ходит → повторяем
+// Логика: Маг1 (2 спелла) → Маг2 (2 спелла) → ... → Маг5 (2 спелла) → Босс (все спеллы) → повтор
 async function executeBossBattlePhase() {
-    // Чётные ходы (0, 2, 4...) - фаза игрока (ВСЕ маги)
-    // Нечётные ходы (1, 3, 5...) - фаза босса
+    // Чётные ходы (0, 2, 4...) - фаза игрока (ВСЕ маги по 2 заклинания)
+    // Нечётные ходы (1, 3, 5...) - фаза босса (ВСЕ заклинания)
 
     const isPlayerTurn = window.globalTurnCounter % 2 === 0;
 
     if (isPlayerTurn) {
-        // ФАЗА ИГРОКА: Все живые маги атакуют
+        // ═══════════════════════════════════════════
+        // ФАЗА ИГРОКА: Все живые маги атакуют по очереди (макс 2 заклинания каждый)
+        // ═══════════════════════════════════════════
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`━━━ Ход игрока (раунд ${Math.floor(window.globalTurnCounter / 2) + 1}) ━━━`);
         }
 
-        // Проверка на Чуму
+        // Проверка на Чуму для всех магов игрока
         if (typeof window.processPlagueEffects === 'function') {
             window.processPlagueEffects('player');
         }
@@ -1073,31 +1075,38 @@ async function executeBossBattlePhase() {
             }
         }
 
-        console.log(`👥 [BOSS BATTLE] Фаза игрока: ${alivePlayers.length} магов атакуют`);
+        console.log(`👥 [BOSS BATTLE] Фаза игрока: ${alivePlayers.length} магов атакуют (по 2 заклинания)`);
 
-        // Атакуем всеми магами
-        if (window.fastSimulation) {
-            for (const mageData of alivePlayers) {
-                if (mageData.wizard.hp > 0) {
-                    await executeSingleMageAttack(mageData.wizard, mageData.position, 'player');
-                    // Проверяем смерть босса после каждой атаки
-                    if (await checkBattleEnd()) return;
+        // Последовательно каждый маг использует 2 заклинания
+        for (const mageData of alivePlayers) {
+            // Проверяем что маг ещё жив (мог умереть от DoT)
+            if (mageData.wizard.hp <= 0) continue;
+
+            // Обработка эффектов перед ходом мага
+            await processMagePreTurnEffects(mageData.wizard, mageData.position, 'player');
+            if (mageData.wizard.hp <= 0) continue;
+
+            // Проверка на оглушение
+            if (mageData.wizard.isStunned && mageData.wizard.stunTurns > 0) {
+                if (typeof window.addToBattleLog === 'function') {
+                    window.addToBattleLog(`😵 ${mageData.wizard.name} оглушён и пропускает ход`);
                 }
+                mageData.wizard.stunTurns--;
+                if (mageData.wizard.stunTurns <= 0) mageData.wizard.isStunned = false;
+                continue;
             }
-        } else {
-            // С анимациями - последовательно с задержками
-            for (let i = 0; i < alivePlayers.length; i++) {
-                const mageData = alivePlayers[i];
-                await new Promise(resolve => {
-                    setTimeout(async () => {
-                        if (mageData.wizard.hp > 0) {
-                            await executeSingleMageAttack(mageData.wizard, mageData.position, 'player');
-                        }
-                        resolve();
-                    }, i * 1500);
-                });
-                // Проверяем смерть босса после каждой атаки
-                if (await checkBattleEnd()) return;
+
+            // Маг использует 2 заклинания
+            if (typeof window.useWizardSpellsForBoss === 'function') {
+                await window.useWizardSpellsForBoss(mageData.wizard, mageData.position, 'player', 2);
+            }
+
+            // Проверяем смерть босса после хода мага
+            if (await checkBattleEnd()) return;
+
+            // Обновляем UI после хода каждого мага
+            if (typeof window.updateBattleField === 'function') {
+                window.updateBattleField();
             }
         }
 
@@ -1107,12 +1116,14 @@ async function executeBossBattlePhase() {
         }
 
     } else {
-        // ФАЗА БОССА: Босс атакует
+        // ═══════════════════════════════════════════
+        // ФАЗА БОССА: Босс использует ВСЕ свои заклинания
+        // ═══════════════════════════════════════════
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`━━━ Ход босса ━━━`);
         }
 
-        // Проверка на Чуму
+        // Проверка на Чуму для босса
         if (typeof window.processPlagueEffects === 'function') {
             window.processPlagueEffects('enemy');
         }
@@ -1122,17 +1133,25 @@ async function executeBossBattlePhase() {
 
         if (boss) {
             const bossPosition = window.enemyFormation.findIndex(w => w && w.id === boss.id);
-            console.log(`👹 [BOSS BATTLE] Фаза босса: ${boss.name} (позиция ${bossPosition}) атакует`);
+            console.log(`👹 [BOSS BATTLE] Фаза босса: ${boss.name} использует все заклинания`);
 
-            if (window.fastSimulation) {
-                await executeSingleMageAttack(boss, bossPosition, 'enemy');
-            } else {
-                await new Promise(resolve => {
-                    setTimeout(async () => {
-                        await executeSingleMageAttack(boss, bossPosition, 'enemy');
-                        resolve();
-                    }, 500);
-                });
+            // Обработка эффектов перед ходом босса
+            await processMagePreTurnEffects(boss, bossPosition, 'enemy');
+
+            if (boss.hp > 0) {
+                // Проверка на оглушение босса
+                if (boss.isStunned && boss.stunTurns > 0) {
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`😵 ${boss.name} оглушён и пропускает ход`);
+                    }
+                    boss.stunTurns--;
+                    if (boss.stunTurns <= 0) boss.isStunned = false;
+                } else {
+                    // Босс использует ВСЕ свои заклинания (maxSpells = 99)
+                    if (typeof window.useWizardSpellsForBoss === 'function') {
+                        await window.useWizardSpellsForBoss(boss, bossPosition, 'enemy', 99);
+                    }
+                }
             }
 
             // Проверка на Метеокинез
@@ -1168,6 +1187,44 @@ async function executeBossBattlePhase() {
     // Обновление поля боя
     if (typeof window.updateBattleField === 'function') {
         window.updateBattleField();
+    }
+}
+
+// --- Обработка эффектов перед ходом мага (для босс-боя) ---
+async function processMagePreTurnEffects(wizard, position, casterType) {
+    // Яд
+    if (wizard.effects && wizard.effects.poison && wizard.effects.poison.stacks > 0) {
+        const poisonDamage = wizard.effects.poison.stacks * (wizard.effects.poison.damagePerStack || 5);
+        wizard.hp -= poisonDamage;
+        if (wizard.hp < 0) wizard.hp = 0;
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`☠️ ${wizard.name} получает ${poisonDamage} урона от яда (${wizard.hp}/${wizard.max_hp})`);
+        }
+    }
+
+    // Абсолютный Ноль
+    if (typeof window.processAbsoluteZeroForWizard === 'function') {
+        window.processAbsoluteZeroForWizard(wizard, position, casterType);
+    }
+
+    // Регенерация
+    if (wizard.effects && wizard.effects.leaf_canopy && typeof window.processRegenerationForWizard === 'function') {
+        window.processRegenerationForWizard(wizard);
+    }
+
+    // Огненная земля
+    if (typeof window.processFireGroundForWizard === 'function') {
+        window.processFireGroundForWizard(wizard, position, casterType);
+    }
+
+    // Горение
+    if (typeof window.processBurningForWizard === 'function') {
+        window.processBurningForWizard(wizard);
+    }
+
+    // Огненные стены
+    if (typeof window.processFireWallsForWizard === 'function') {
+        window.processFireWallsForWizard(wizard, casterType);
     }
 }
 
