@@ -270,29 +270,50 @@ function castStoneSpike(wizard, spellData, position, casterType) {
                 return;
             }
 
-            // Если цель — маг или призванное
-            let armorIgnorePercent = 0;
-            if (wizard.faction === 'earth') {
-                armorIgnorePercent = window.checkArmorIgnore ? window.checkArmorIgnore(false) : 0;
-            }
+            // ИСПРАВЛЕНИЕ: Используем многоуровневую защиту (включая Энта)
+            if (typeof window.applyDamageWithMultiLayerProtection === 'function') {
+                const result = window.applyDamageWithMultiLayerProtection(wizard, targetInfo.target, damagePerSpike, 'stone_spike', casterType);
 
-            const finalDamage = window.applyFinalDamage ? 
-                window.applyFinalDamage(wizard, targetInfo.target.wizard, damagePerSpike, 'stone_spike', armorIgnorePercent, true) : damagePerSpike;
-
-            targetInfo.target.wizard.hp -= finalDamage;
-            if (targetInfo.target.wizard.hp < 0) targetInfo.target.wizard.hp = 0;
-
-            if (typeof window.addToBattleLog === 'function') {
-                // Многострочный лог как у Искры
-                window.addToBattleLog(`🗿 Каменный шип (${window.getDirectionNameSimple(targetInfo.direction, level)}) → ${targetInfo.target.wizard.name} (${finalDamage} урона)`);
-                const damageSteps = targetInfo.target.wizard._lastDamageSteps || [];
-                if (damageSteps.length > 0) {
-                    damageSteps.forEach(step => {
-                        window.addToBattleLog(`    ├─ ${step}`);
-                    });
+                if (result) {
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`🗿 Каменный шип (${window.getDirectionNameSimple(targetInfo.direction, level)}) → ${targetInfo.target.wizard.name} (${result.finalDamage} урона)`);
+                        // Показываем защитные слои
+                        if (result.protectionLayers && result.protectionLayers.length > 0) {
+                            result.protectionLayers.forEach(layer => {
+                                const isProtectionLayer = layer.includes('🐺') || layer.includes('🌳') || layer.includes('🧱') || layer.includes('💨') || layer.includes('защищает') || layer.includes('поглощает') || layer.includes('ослабляет');
+                                const isFinalWizardMessage = layer.includes(targetInfo.target.wizard.name) && (layer.includes('получает') || layer.includes('не получает')) && !isProtectionLayer;
+                                if (!isFinalWizardMessage) {
+                                    window.addToBattleLog(`    ├─ ${layer}`);
+                                }
+                            });
+                        }
+                        window.addToBattleLog(`    └─ HP: ${targetInfo.target.wizard.hp}/${targetInfo.target.wizard.max_hp}`);
+                    }
                 }
-                window.addToBattleLog(`    └─ HP: ${targetInfo.target.wizard.hp}/${targetInfo.target.wizard.max_hp}`);
-                delete targetInfo.target.wizard._lastDamageSteps;
+            } else {
+                // Fallback на старую систему (без защиты Энтом)
+                let armorIgnorePercent = 0;
+                if (wizard.faction === 'earth') {
+                    armorIgnorePercent = window.checkArmorIgnore ? window.checkArmorIgnore(false) : 0;
+                }
+
+                const finalDamage = window.applyFinalDamage ?
+                    window.applyFinalDamage(wizard, targetInfo.target.wizard, damagePerSpike, 'stone_spike', armorIgnorePercent, true) : damagePerSpike;
+
+                targetInfo.target.wizard.hp -= finalDamage;
+                if (targetInfo.target.wizard.hp < 0) targetInfo.target.wizard.hp = 0;
+
+                if (typeof window.addToBattleLog === 'function') {
+                    window.addToBattleLog(`🗿 Каменный шип (${window.getDirectionNameSimple(targetInfo.direction, level)}) → ${targetInfo.target.wizard.name} (${finalDamage} урона)`);
+                    const damageSteps = targetInfo.target.wizard._lastDamageSteps || [];
+                    if (damageSteps.length > 0) {
+                        damageSteps.forEach(step => {
+                            window.addToBattleLog(`    ├─ ${step}`);
+                        });
+                    }
+                    window.addToBattleLog(`    └─ HP: ${targetInfo.target.wizard.hp}/${targetInfo.target.wizard.max_hp}`);
+                    delete targetInfo.target.wizard._lastDamageSteps;
+                }
             }
         });
     }
@@ -521,51 +542,63 @@ function castMeteorShower(wizard, spellData, position, casterType) {
             
             const targetRow = target.position;
             
+            // Функция применения урона с защитой Энта
+            function applyMeteorDamage() {
+                // ИСПРАВЛЕНИЕ: Используем многоуровневую защиту (включая Энта)
+                // Формируем объект цели в формате { wizard, position }
+                const targetInfo = { wizard: target.wizard, position: target.position };
+
+                if (typeof window.applyDamageWithMultiLayerProtection === 'function') {
+                    const result = window.applyDamageWithMultiLayerProtection(wizard, targetInfo, baseDamage, 'meteor_shower', casterType);
+
+                    if (result) {
+                        if (typeof window.addToBattleLog === 'function') {
+                            window.addToBattleLog(`☄️ Метеорит ${i + 1} → ${target.wizard.name} (${result.finalDamage} урона)`);
+                            // Показываем защитные слои
+                            if (result.protectionLayers && result.protectionLayers.length > 0) {
+                                result.protectionLayers.forEach(layer => {
+                                    const isProtectionLayer = layer.includes('🐺') || layer.includes('🌳') || layer.includes('🧱') || layer.includes('💨') || layer.includes('защищает') || layer.includes('поглощает') || layer.includes('ослабляет');
+                                    const isFinalWizardMessage = layer.includes(target.wizard.name) && (layer.includes('получает') || layer.includes('не получает')) && !isProtectionLayer;
+                                    if (!isFinalWizardMessage) {
+                                        window.addToBattleLog(`    ├─ ${layer}`);
+                                    }
+                                });
+                            }
+                            window.addToBattleLog(`    └─ HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
+                        }
+                    }
+                } else {
+                    // Fallback на старую систему (без защиты Энтом)
+                    const finalDamage = typeof window.applyFinalDamage === 'function' ?
+                        window.applyFinalDamage(wizard, target.wizard, baseDamage, 'meteor_shower', armorIgnorePercent, true) : baseDamage;
+
+                    target.wizard.hp -= finalDamage;
+                    if (target.wizard.hp < 0) target.wizard.hp = 0;
+
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`☄️ Метеорит ${i + 1} → ${target.wizard.name} (${finalDamage} урона)`);
+                        const damageSteps = target.wizard._lastDamageSteps || [];
+                        if (damageSteps.length > 0) {
+                            damageSteps.forEach(step => {
+                                window.addToBattleLog(`    ├─ ${step}`);
+                            });
+                        }
+                        window.addToBattleLog(`    └─ HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
+                        delete target.wizard._lastDamageSteps;
+                    }
+                }
+            }
+
             // Запускаем анимацию метеорита
             if (window.spellAnimations?.meteor?.play) {
                 window.spellAnimations.meteor.play({
                     targetCol: targetCol,
                     targetRow: targetRow,
-                    onHit: () => {
-                        // Применяем урон после попадания
-                        const finalDamage = typeof window.applyFinalDamage === 'function' ? 
-                            window.applyFinalDamage(wizard, target.wizard, baseDamage, 'meteor_shower', armorIgnorePercent, true) : baseDamage;
-                        
-                        target.wizard.hp -= finalDamage;
-                        if (target.wizard.hp < 0) target.wizard.hp = 0;
-                        
-                        if (typeof window.addToBattleLog === 'function') {
-                            window.addToBattleLog(`☄️ Метеорит ${i + 1} → ${target.wizard.name} (${finalDamage} урона)`);
-                            const damageSteps = target.wizard._lastDamageSteps || [];
-                            if (damageSteps.length > 0) {
-                                damageSteps.forEach(step => {
-                                    window.addToBattleLog(`    ├─ ${step}`);
-                                });
-                            }
-                            window.addToBattleLog(`    └─ HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
-                            delete target.wizard._lastDamageSteps;
-                        }
-                    }
+                    onHit: applyMeteorDamage
                 });
             } else {
                 // Fallback без анимации - наносим урон сразу
-                const finalDamage = typeof window.applyFinalDamage === 'function' ? 
-                    window.applyFinalDamage(wizard, target.wizard, baseDamage, 'meteor_shower', armorIgnorePercent, true) : baseDamage;
-                
-                target.wizard.hp -= finalDamage;
-                if (target.wizard.hp < 0) target.wizard.hp = 0;
-                
-                if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`☄️ Метеорит ${i + 1} → ${target.wizard.name} (${finalDamage} урона)`);
-                    const damageSteps = target.wizard._lastDamageSteps || [];
-                    if (damageSteps.length > 0) {
-                        damageSteps.forEach(step => {
-                            window.addToBattleLog(`    ├─ ${step}`);
-                        });
-                    }
-                    window.addToBattleLog(`    └─ HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
-                    delete target.wizard._lastDamageSteps;
-                }
+                applyMeteorDamage();
             }
             
         }, i * 800); // Задержка между метеоритами 800ms
