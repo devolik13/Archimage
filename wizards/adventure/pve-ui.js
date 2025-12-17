@@ -111,15 +111,18 @@ function showPvEChaptersMenu() {
                 margin-top: 20px;
                 padding: 12px 24px;
                 width: 100%;
-                background: #555;
+                background: linear-gradient(180deg, #dc3545, #a71d2a);
                 color: white;
-                border: none;
+                border: 2px solid #ff6b6b;
                 border-radius: 8px;
                 cursor: pointer;
-                font-size: 16px;
+                font-size: 18px;
+                font-weight: bold;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.3);
                 transition: background 0.3s;
-            " onmouseover="this.style.background='#666'" onmouseout="this.style.background='#555'">
-                Закрыть
+            " onmouseover="this.style.background='linear-gradient(180deg, #e74c5c, #b72d3d)'" onmouseout="this.style.background='linear-gradient(180deg, #dc3545, #a71d2a)'">
+                Назад
             </button>
         </div>
     `;
@@ -268,14 +271,17 @@ function showChapter1LevelsFallback() {
                 margin-top: 20px;
                 padding: 12px 24px;
                 width: 100%;
-                background: #555;
+                background: linear-gradient(180deg, #dc3545, #a71d2a);
                 color: white;
-                border: none;
+                border: 2px solid #ff6b6b;
                 border-radius: 8px;
                 cursor: pointer;
-                font-size: 16px;
-            " onmouseover="this.style.background='#666'" onmouseout="this.style.background='#555'">
-                Закрыть
+                font-size: 18px;
+                font-weight: bold;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            " onmouseover="this.style.background='linear-gradient(180deg, #e74c5c, #b72d3d)'" onmouseout="this.style.background='linear-gradient(180deg, #dc3545, #a71d2a)'">
+                Назад
             </button>
         </div>
     `;

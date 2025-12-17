@@ -40,24 +40,24 @@ function showAdventureHub() {
                 z-index: 10;
             "></div>
 
-            <!-- Кнопка закрыть -->
+            <!-- Кнопка Назад -->
             <button onclick="closeAdventureHub()" style="
                 position: absolute;
                 bottom: 15px;
-                right: 15px;
-                width: 40px;
-                height: 40px;
-                background: rgba(0, 0, 0, 0.7);
-                border: 2px solid rgba(255, 255, 255, 0.3);
-                border-radius: 50%;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 12px 30px;
+                background: linear-gradient(180deg, #dc3545, #a71d2a);
+                border: 2px solid #ff6b6b;
+                border-radius: 8px;
                 color: white;
-                font-size: 20px;
+                font-size: 18px;
+                font-weight: bold;
                 cursor: pointer;
                 z-index: 100;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            ">✕</button>
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            ">Назад</button>
         </div>
     `;
 
