@@ -170,7 +170,7 @@ function showArenaMainMenu() {
     const hasAvailableRewards = typeof window.getAvailableLeagueRewards === 'function' ?
         window.getAvailableLeagueRewards().length > 0 : false;
 
-    // Массив кнопок главного меню
+    // Массив кнопок главного меню (5 кнопок: 3 сверху, 2 снизу)
     const buttons = [
         {
             text: '🎯 Расставить войска',
@@ -209,6 +209,18 @@ function showArenaMainMenu() {
             orange: hasAvailableRewards // Новый цвет для доступных наград
         },
         {
+            text: '⚔️ Испытание',
+            onClick: () => {
+                if (typeof window.showTrialMenuInArena === 'function') {
+                    window.showTrialMenuInArena();
+                } else {
+                    alert('Система испытаний загружается...');
+                }
+            },
+            enabled: true,
+            purple: true // Фиолетовый цвет для испытания
+        },
+        {
             text: '🗺️ Приключения',
             onClick: () => {
                 closePvPArenaModalBg(); // PvE закрывает окно арены
@@ -228,23 +240,63 @@ function showArenaMainMenu() {
     drawArenaBackButton(scaleX, scaleY, overlay, closePvPArenaModalBg, '← Закрыть');
 }
 
-// Утилита для рисования кнопок арены
+// Утилита для рисования кнопок арены (поддержка 5 кнопок: 3+2)
 function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
-    const buttonCols = 2;
-    const buttonRows = 2;
-    const buttonWidth = buttonsArea.width / buttonCols;
-    const buttonHeight = buttonsArea.height / buttonRows;
-    
     const buttonFontSize = Math.max(12, 16 * Math.min(scaleX, scaleY));
     const borderRadius = Math.max(4, 8 * Math.min(scaleX, scaleY));
-    
+
+    // Для 5 кнопок: 3 сверху, 2 снизу
+    const totalButtons = buttons.length;
+    const topRowCount = totalButtons <= 4 ? 2 : 3;
+    const bottomRowCount = totalButtons - topRowCount;
+
+    const buttonHeight = buttonsArea.height / 2;
+
     buttons.forEach((button, index) => {
-        const col = index % buttonCols;
-        const row = Math.floor(index / buttonCols);
-        
-        const buttonX = buttonsArea.x + col * buttonWidth;
-        const buttonY = buttonsArea.y + row * buttonHeight;
-        
+        let buttonX, buttonY, buttonWidth;
+
+        if (index < topRowCount) {
+            // Верхний ряд
+            buttonWidth = buttonsArea.width / topRowCount;
+            buttonX = buttonsArea.x + index * buttonWidth;
+            buttonY = buttonsArea.y;
+        } else {
+            // Нижний ряд (центрируем если меньше кнопок)
+            const bottomIndex = index - topRowCount;
+            buttonWidth = buttonsArea.width / bottomRowCount;
+            const bottomRowWidth = buttonWidth * bottomRowCount;
+            const bottomStartX = buttonsArea.x + (buttonsArea.width - bottomRowWidth) / 2;
+            buttonX = bottomStartX + bottomIndex * buttonWidth;
+            buttonY = buttonsArea.y + buttonHeight;
+        }
+
+        // Получаем цвета кнопки
+        const bgColor = button.enabled ?
+            (button.highlight ? 'rgba(114, 137, 218, 0.3)' :
+             button.gold ? 'rgba(255, 215, 0, 0.2)' :
+             button.orange ? 'rgba(255, 165, 0, 0.3)' :
+             button.green ? 'rgba(76, 175, 80, 0.2)' :
+             button.purple ? 'rgba(156, 39, 176, 0.3)' :
+             'rgba(255, 255, 255, 0.1)') :
+            'rgba(0, 0, 0, 0.3)';
+
+        const borderColor = button.enabled ?
+            (button.highlight ? '#7289da' :
+             button.gold ? '#FFD700' :
+             button.orange ? '#ffa500' :
+             button.green ? '#4CAF50' :
+             button.purple ? '#9c27b0' :
+             'rgba(255, 255, 255, 0.3)') :
+            'rgba(128, 128, 128, 0.3)';
+
+        const textColor = button.enabled ?
+            (button.gold ? '#FFD700' :
+             button.orange ? '#ffa500' :
+             button.green ? '#4CAF50' :
+             button.purple ? '#ce93d8' :
+             'white') :
+            '#666';
+
         const btnElement = document.createElement('button');
         btnElement.style.cssText = `
             position: absolute;
@@ -253,26 +305,9 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
             width: ${buttonWidth}px;
             height: ${buttonHeight}px;
             box-sizing: border-box;
-            background: ${button.enabled ?
-                (button.highlight ? 'rgba(114, 137, 218, 0.3)' :
-                 button.gold ? 'rgba(255, 215, 0, 0.2)' :
-                 button.orange ? 'rgba(255, 165, 0, 0.3)' :
-                 button.green ? 'rgba(76, 175, 80, 0.2)' :
-                 'rgba(255, 255, 255, 0.1)') :
-                'rgba(0, 0, 0, 0.3)'};
-            border: 2px solid ${button.enabled ?
-                (button.highlight ? '#7289da' :
-                 button.gold ? '#FFD700' :
-                 button.orange ? '#ffa500' :
-                 button.green ? '#4CAF50' :
-                 'rgba(255, 255, 255, 0.3)') :
-                'rgba(128, 128, 128, 0.3)'};
-            color: ${button.enabled ?
-                (button.gold ? '#FFD700' :
-                 button.orange ? '#ffa500' :
-                 button.green ? '#4CAF50' :
-                 'white') :
-                '#666'};
+            background: ${bgColor};
+            border: 2px solid ${borderColor};
+            color: ${textColor};
             border-radius: ${borderRadius}px;
             font-size: ${buttonFontSize}px;
             font-weight: bold;
@@ -282,25 +317,24 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
             opacity: ${button.enabled ? 1 : 0.5};
         `;
-        
+
         btnElement.innerHTML = button.text;
         btnElement.onclick = button.onClick;
-        
+
         if (button.enabled) {
+            const hoverBg = button.highlight ? 'rgba(114, 137, 218, 0.5)' :
+                           button.gold ? 'rgba(255, 215, 0, 0.4)' :
+                           button.orange ? 'rgba(255, 165, 0, 0.5)' :
+                           button.green ? 'rgba(76, 175, 80, 0.4)' :
+                           button.purple ? 'rgba(156, 39, 176, 0.5)' :
+                           'rgba(255, 255, 255, 0.2)';
+
             btnElement.onmouseover = () => {
-                btnElement.style.background = button.highlight ? 'rgba(114, 137, 218, 0.5)' :
-                                            button.gold ? 'rgba(255, 215, 0, 0.4)' :
-                                            button.orange ? 'rgba(255, 165, 0, 0.5)' :
-                                            button.green ? 'rgba(76, 175, 80, 0.4)' :
-                                            'rgba(255, 255, 255, 0.2)';
+                btnElement.style.background = hoverBg;
                 btnElement.style.transform = 'scale(1.05)';
             };
             btnElement.onmouseout = () => {
-                btnElement.style.background = button.highlight ? 'rgba(114, 137, 218, 0.3)' :
-                                             button.gold ? 'rgba(255, 215, 0, 0.2)' :
-                                             button.orange ? 'rgba(255, 165, 0, 0.3)' :
-                                             button.green ? 'rgba(76, 175, 80, 0.2)' :
-                                             'rgba(255, 255, 255, 0.1)';
+                btnElement.style.background = bgColor;
                 btnElement.style.transform = 'scale(1)';
             };
         }
