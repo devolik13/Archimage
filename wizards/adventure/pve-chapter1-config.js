@@ -27,7 +27,7 @@ const ENEMY_TYPES = {
         baseDamage: 5,
         hpGrowth: 5,      // HP растет на 5 каждый уровень
         damageGrowth: 1,   // урон растет на 1 каждый уровень
-        armor: 120,        // немного выше стандартной
+        armor: 100,        // базовая броня
         attackType: "physical", // физическая атака
         spriteSheet: "goblin"
     },
@@ -67,7 +67,7 @@ const ENEMY_TYPES = {
         baseDamage: 50,
         hpGrowth: 20,
         damageGrowth: 5,
-        armor: 130,
+        armor: 140,
         attackType: "physical",
         spriteSheet: "demon"
     }
