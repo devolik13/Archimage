@@ -37,7 +37,7 @@ const ENEMY_TYPES = {
         baseDamage: 15,
         hpGrowth: 8,
         damageGrowth: 2,
-        armor: 130,
+        armor: 110,
         attackType: "physical",
         spriteSheet: "orc"
     },
@@ -47,7 +47,7 @@ const ENEMY_TYPES = {
         baseDamage: 25,
         hpGrowth: 12,
         damageGrowth: 3,
-        armor: 90,
+        armor: 120,
         attackType: "physical",
         spriteSheet: "troll"
     },
@@ -57,7 +57,7 @@ const ENEMY_TYPES = {
         baseDamage: 35,
         hpGrowth: 15,
         damageGrowth: 4,
-        armor: 110,
+        armor: 130,
         attackType: "physical",
         spriteSheet: "cave_beast"
     },

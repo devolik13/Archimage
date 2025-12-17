@@ -4,8 +4,11 @@
     function playBallLightningAnimation(params) {
         const { targets, casterType, onHitTarget } = params;
 
+        console.log('⚡ [Ball Lightning] Вызвана анимация, целей:', targets?.length);
+
         // КРИТИЧНО: При быстрой симуляции пропускаем анимацию
         if (window.fastSimulation) {
+            console.log('⚡ [Ball Lightning] Быстрая симуляция - пропускаем визуал');
             // Вызываем onHitTarget для всех целей сразу
             if (onHitTarget && targets) {
                 targets.forEach((_, index) => onHitTarget(index));
@@ -16,8 +19,17 @@
         const effectsContainer = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
 
+        console.log('⚡ [Ball Lightning] effectsContainer:', !!effectsContainer, 'gridCells:', !!gridCells);
+
         if (!effectsContainer || !gridCells || !targets || targets.length === 0) {
-            console.warn('⚡ Шаровая молния: нет данных для анимации');
+            console.warn('⚡ Шаровая молния: нет данных для анимации, вызываем урон напрямую');
+            // Всё равно применяем урон даже если нет визуала!
+            if (onHitTarget && targets) {
+                targets.forEach((_, index) => {
+                    console.log('⚡ [Ball Lightning] Fallback урон для цели', index);
+                    onHitTarget(index);
+                });
+            }
             return;
         }
 
