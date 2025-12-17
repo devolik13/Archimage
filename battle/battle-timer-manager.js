@@ -17,15 +17,16 @@ class BattleTimerManager {
     startBattleLoop(callback, speed = 2000) {
         // ВСЕГДА очищаем старый интервал
         this.stopBattleLoop();
-        
+
         this.battleSpeed = speed;
         this.isActive = true;
-        
+
         // Создаем новый интервал
-        this.battleInterval = setInterval(() => {
+        this.battleInterval = setInterval(async () => {
             if (this.isActive) {
                 try {
-                    callback();
+                    // ИСПРАВЛЕНИЕ: Используем await для async callback (executeBattlePhase)
+                    await callback();
                 } catch (error) {
                     console.error('❌ Ошибка в боевом цикле:', error);
                     // При ошибке останавливаем бой
@@ -33,7 +34,7 @@ class BattleTimerManager {
                 }
             }
         }, speed);
-        
+
         console.log(`▶️ Боевой цикл запущен (${speed}ms)`);
         return this.battleInterval;
     }
