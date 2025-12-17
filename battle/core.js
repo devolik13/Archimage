@@ -246,6 +246,16 @@ function startBattle() {
     window.isPlayerAttacker = true;
     window.activeTsunamis = [];
 
+    // БОСС-БОЙ: Автоопределение если враг один и он босс
+    // Можно также установить вручную: window.isBossBattle = true
+    const bossEnemy = window.enemyFormation?.find(w => w && (w.isBoss || w.isFinalBoss));
+    if (bossEnemy) {
+        window.isBossBattle = true;
+        console.log(`👹 [BOSS BATTLE] Обнаружен босс: ${bossEnemy.name}. Включён режим босс-боя.`);
+    } else {
+        window.isBossBattle = false;
+    }
+
     if (window.spellAnimations?.fire_tsunami?.clearAll) {
         window.spellAnimations.fire_tsunami.clearAll();
     }
@@ -542,6 +552,13 @@ async function executeBattlePhase() {
     }
     if (typeof window.updateFireWalls === 'function') {
         window.updateFireWalls();
+    }
+
+    // БОСС-БОЙ: Особая логика ходов
+    if (window.isBossBattle) {
+        await executeBossBattlePhase();
+        window.globalTurnCounter++;
+        return; // Выходим, чтобы не выполнять обычную логику
     }
 
     // Логика ходов зависит от того, кто атакует
@@ -1022,6 +1039,135 @@ async function executeEnemyPhase(mageCount) {
             window.enemyMageIndex = (window.enemyMageIndex + 1) % 5;
             skipCount++;
         }
+    }
+}
+
+// --- БОСС-БОЙ: Фаза боя с боссом ---
+// Все маги игрока ходят → потом босс ходит → повторяем
+async function executeBossBattlePhase() {
+    // Чётные ходы (0, 2, 4...) - фаза игрока (ВСЕ маги)
+    // Нечётные ходы (1, 3, 5...) - фаза босса
+
+    const isPlayerTurn = window.globalTurnCounter % 2 === 0;
+
+    if (isPlayerTurn) {
+        // ФАЗА ИГРОКА: Все живые маги атакуют
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`━━━ Ход игрока (раунд ${Math.floor(window.globalTurnCounter / 2) + 1}) ━━━`);
+        }
+
+        // Проверка на Чуму
+        if (typeof window.processPlagueEffects === 'function') {
+            window.processPlagueEffects('player');
+        }
+
+        // Собираем ВСЕХ живых магов игрока
+        const alivePlayers = [];
+        for (let pos = 0; pos < 5; pos++) {
+            const wizardId = window.playerFormation[pos];
+            if (wizardId) {
+                const wizard = window.playerWizards.find(w => w.id === wizardId);
+                if (wizard && wizard.hp > 0) {
+                    alivePlayers.push({ wizard, position: pos });
+                }
+            }
+        }
+
+        console.log(`👥 [BOSS BATTLE] Фаза игрока: ${alivePlayers.length} магов атакуют`);
+
+        // Атакуем всеми магами
+        if (window.fastSimulation) {
+            for (const mageData of alivePlayers) {
+                if (mageData.wizard.hp > 0) {
+                    await executeSingleMageAttack(mageData.wizard, mageData.position, 'player');
+                    // Проверяем смерть босса после каждой атаки
+                    if (await checkBattleEnd()) return;
+                }
+            }
+        } else {
+            // С анимациями - последовательно с задержками
+            for (let i = 0; i < alivePlayers.length; i++) {
+                const mageData = alivePlayers[i];
+                await new Promise(resolve => {
+                    setTimeout(async () => {
+                        if (mageData.wizard.hp > 0) {
+                            await executeSingleMageAttack(mageData.wizard, mageData.position, 'player');
+                        }
+                        resolve();
+                    }, i * 1500);
+                });
+                // Проверяем смерть босса после каждой атаки
+                if (await checkBattleEnd()) return;
+            }
+        }
+
+        // Проверка на Метеокинез
+        if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
+            window.checkMeteorokinesisCasterAlive();
+        }
+
+    } else {
+        // ФАЗА БОССА: Босс атакует
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`━━━ Ход босса ━━━`);
+        }
+
+        // Проверка на Чуму
+        if (typeof window.processPlagueEffects === 'function') {
+            window.processPlagueEffects('enemy');
+        }
+
+        // Находим живого босса
+        const boss = window.enemyFormation.find(w => w && w.hp > 0 && (w.isBoss || w.isFinalBoss));
+
+        if (boss) {
+            const bossPosition = window.enemyFormation.findIndex(w => w && w.id === boss.id);
+            console.log(`👹 [BOSS BATTLE] Фаза босса: ${boss.name} (позиция ${bossPosition}) атакует`);
+
+            if (window.fastSimulation) {
+                await executeSingleMageAttack(boss, bossPosition, 'enemy');
+            } else {
+                await new Promise(resolve => {
+                    setTimeout(async () => {
+                        await executeSingleMageAttack(boss, bossPosition, 'enemy');
+                        resolve();
+                    }, 500);
+                });
+            }
+
+            // Проверка на Метеокинез
+            if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
+                window.checkMeteorokinesisCasterAlive();
+            }
+        } else {
+            console.log('👹 [BOSS BATTLE] Босс не найден или мёртв');
+        }
+    }
+
+    // 🔄 Проверка на бесконечный бой (stalemate) для босс-боя
+    const currentTotalHP = calculateTotalHP();
+    if (window.lastTotalHP !== null && currentTotalHP === window.lastTotalHP) {
+        window.stalemateCounter++;
+        if (window.stalemateCounter >= window.STALEMATE_TURNS_LIMIT) {
+            console.log(`⚖️ Босс-бой закончился ничьей: ${window.stalemateCounter} ходов без изменения HP`);
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`⚖️ НИЧЬЯ! ${window.STALEMATE_TURNS_LIMIT} ходов без изменений HP`);
+            }
+            window.battleState = 'stalemate';
+            await endBattleAsDraw();
+            return;
+        }
+    } else {
+        window.stalemateCounter = 0;
+    }
+    window.lastTotalHP = currentTotalHP;
+
+    // Проверка окончания боя
+    await checkBattleEnd();
+
+    // Обновление поля боя
+    if (typeof window.updateBattleField === 'function') {
+        window.updateBattleField();
     }
 }
 
@@ -1635,8 +1781,9 @@ window.executeEnemyPhase = executeEnemyPhase;
 window.checkBattleEnd = checkBattleEnd;
 window.findSpellInUserData = findSpellInUserData;
 window.applyLeafCanopyEffect = applyLeafCanopyEffect;
-window.executeSingleMageAttack = executeSingleMageAttack; 
+window.executeSingleMageAttack = executeSingleMageAttack;
 window.processBlessingRegeneration = processBlessingRegeneration;
 window.removeDeadSummons = removeDeadSummons;
 window.applyMeteorokinesisEffect = applyMeteorokinesisEffect;
 window.applyAbsoluteZeroEffect = applyAbsoluteZeroEffect;
+window.executeBossBattlePhase = executeBossBattlePhase;
