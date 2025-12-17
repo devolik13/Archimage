@@ -555,10 +555,30 @@
             return null;
         }
 
-        sprite.x = cellData.x + cellData.width / 2;
-        sprite.y = cellData.y + cellData.height / 2;
+        // Вычисляем позицию заранее
+        const posX = cellData.x + cellData.width / 2;
+        const posY = cellData.y + cellData.height / 2;
+
+        // Безопасное присваивание позиции с дополнительной проверкой
+        try {
+            // Повторная проверка перед присваиванием (защита от race condition)
+            if (sprite.transform && !sprite.destroyed) {
+                sprite.x = posX;
+                sprite.y = posY;
+            } else {
+                console.warn(`⚠️ Спрайт стал невалидным при установке позиции: ${key}`);
+                creatingSprites.delete(key);
+                return null;
+            }
+        } catch (e) {
+            console.warn(`⚠️ Ошибка установки позиции спрайта ${key}:`, e.message);
+            creatingSprites.delete(key);
+            return null;
+        }
 
         container.sprite = sprite;
+        container.posX = posX;  // Сохраняем позицию для безопасного доступа
+        container.posY = posY;
 
         // HP бар
         const hpBar = new PIXI.Container();
@@ -587,8 +607,8 @@
         hpBar.addChild(hpBarBg);
         hpBar.addChild(hpBarFill);
         hpBar.addChild(hpText);
-        hpBar.x = sprite.x;
-        hpBar.y = sprite.y + 25 * scale;
+        hpBar.x = posX;  // Используем сохранённую позицию вместо sprite.x
+        hpBar.y = posY + 25 * scale;
 
         container.hpBar = hpBar;
         container.hpBarFill = hpBarFill;
