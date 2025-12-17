@@ -337,6 +337,11 @@
         let currentIndex = 0;
 
         const strikeNext = () => {
+            // Проверяем что контейнер ещё существует
+            if (!container || container.destroyed) {
+                return;
+            }
+
             if (currentIndex >= targets.length) {
                 return;
             }
@@ -347,7 +352,8 @@
             const row = target.position ?? target.row ?? 0;
             const cell = gridCells[col]?.[row];
 
-            if (!cell) {
+            // Проверяем что ячейка существует и не уничтожена
+            if (!cell || cell.destroyed) {
                 // Применяем урон даже если ячейка не найдена
                 if (onHitTarget) {
                     try {
@@ -361,33 +367,53 @@
                 return;
             }
 
-            // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
-            const cellWidth = cell.cellWidth || cell.width || 60;
-            const cellHeight = cell.cellHeight || cell.height || 60;
+            // Безопасно получаем размеры и координаты ячейки
+            let cellWidth, cellHeight, cellX, cellY;
+            try {
+                cellWidth = cell.cellWidth || cell.width || 60;
+                cellHeight = cell.cellHeight || cell.height || 60;
+                cellX = cell.x;
+                cellY = cell.y;
+            } catch (e) {
+                // Ячейка уничтожена, применяем урон без анимации
+                if (onHitTarget) {
+                    try {
+                        onHitTarget(currentIndex);
+                    } catch (err) {}
+                }
+                currentIndex++;
+                setTimeout(strikeNext, 100);
+                return;
+            }
 
             let startX, startY;
 
             if (currentIndex === 0) {
-                startX = cell.x + cellWidth / 2;
+                startX = cellX + cellWidth / 2;
                 startY = -50;
             } else {
                 const prevTarget = targets[currentIndex - 1];
                 const prevCol = prevTarget.column ?? prevTarget.col ?? 0;
                 const prevRow = prevTarget.position ?? prevTarget.row ?? 0;
                 const prevCell = gridCells[prevCol]?.[prevRow];
-                if (prevCell) {
-                    const prevCellWidth = prevCell.cellWidth || prevCell.width || 60;
-                    const prevCellHeight = prevCell.cellHeight || prevCell.height || 60;
-                    startX = prevCell.x + prevCellWidth / 2;
-                    startY = prevCell.y + prevCellHeight / 2;
+                if (prevCell && !prevCell.destroyed) {
+                    try {
+                        const prevCellWidth = prevCell.cellWidth || prevCell.width || 60;
+                        const prevCellHeight = prevCell.cellHeight || prevCell.height || 60;
+                        startX = prevCell.x + prevCellWidth / 2;
+                        startY = prevCell.y + prevCellHeight / 2;
+                    } catch (e) {
+                        startX = cellX + cellWidth / 2;
+                        startY = -50;
+                    }
                 } else {
-                    startX = cell.x + cellWidth / 2;
+                    startX = cellX + cellWidth / 2;
                     startY = -50;
                 }
             }
 
-            const endX = cell.x + cellWidth / 2;
-            const endY = cell.y + cellHeight / 2;
+            const endX = cellX + cellWidth / 2;
+            const endY = cellY + cellHeight / 2;
 
             // Простой светящийся круг
             const ball = new PIXI.Graphics();
