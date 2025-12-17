@@ -799,6 +799,215 @@ async function getPlayerTrialRankSupabase() {
     }
 }
 
+/**
+ * Получить номер прошлой недели в формате "YYYY-WW"
+ */
+function getLastWeekYear() {
+    const now = new Date();
+    // Вычитаем 7 дней
+    const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    // Получаем ISO неделю
+    const year = lastWeek.getFullYear();
+    const jan1 = new Date(year, 0, 1);
+    const days = Math.floor((lastWeek - jan1) / (24 * 60 * 60 * 1000));
+    const weekNum = Math.ceil((days + jan1.getDay() + 1) / 7);
+
+    return `${year}-${String(weekNum).padStart(2, '0')}`;
+}
+
+/**
+ * Проверить и автоматически начислить награду за прошлую неделю
+ * Вызывается при входе игрока в игру
+ */
+async function checkAndClaimTrialReward() {
+    const playerId = window.myPlayerId || window.userData?.id;
+
+    if (!playerId || !window.supabase) {
+        return null;
+    }
+
+    const lastWeek = getLastWeekYear();
+
+    try {
+        const { data, error } = await window.supabase
+            .rpc('auto_claim_trial_reward', {
+                p_player_id: playerId,
+                p_week_year: lastWeek
+            });
+
+        if (error) {
+            console.error('Ошибка проверки награды испытания:', error);
+            return null;
+        }
+
+        if (data && data.length > 0 && data[0].success) {
+            const result = data[0];
+            console.log('🏆 Награда за испытание начислена:', result);
+
+            // Показываем уведомление
+            showTrialRewardNotification(result);
+
+            // Обновляем время игрока локально
+            if (window.userData) {
+                window.userData.time_currency = (window.userData.time_currency || 0) + result.reward_time;
+            }
+
+            return result;
+        }
+
+        return null;
+    } catch (e) {
+        console.error('Ошибка проверки награды:', e);
+        return null;
+    }
+}
+
+/**
+ * Показать уведомление о награде за испытание
+ */
+function showTrialRewardNotification(result) {
+    const modal = document.createElement('div');
+    modal.className = 'trial-reward-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100000;
+        animation: fadeIn 0.3s ease;
+    `;
+
+    // Определяем цвет и название тира по проценту
+    let tierColor, tierName, tierEmoji;
+    if (result.percent <= 1) {
+        tierColor = '#FFD700'; tierName = 'Легенда'; tierEmoji = '🏆';
+    } else if (result.percent <= 5) {
+        tierColor = '#a855f7'; tierName = 'Эпик'; tierEmoji = '💎';
+    } else if (result.percent <= 10) {
+        tierColor = '#3b82f6'; tierName = 'Редкий'; tierEmoji = '💠';
+    } else if (result.percent <= 25) {
+        tierColor = '#22c55e'; tierName = 'Необычный'; tierEmoji = '✨';
+    } else if (result.percent <= 50) {
+        tierColor = '#94a3b8'; tierName = 'Обычный'; tierEmoji = '⭐';
+    } else {
+        tierColor = '#78716c'; tierName = 'Участник'; tierEmoji = '🎯';
+    }
+
+    // Форматируем награду
+    const rewardText = formatTimeReward(result.reward_time);
+
+    const content = document.createElement('div');
+    content.style.cssText = `
+        background: linear-gradient(135deg, #1a1a2e, #16213e);
+        border: 3px solid ${tierColor};
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 420px;
+        width: 90%;
+        text-align: center;
+        color: white;
+        font-family: Arial, sans-serif;
+        box-shadow: 0 0 30px ${tierColor}50;
+        animation: scaleIn 0.4s ease;
+    `;
+
+    content.innerHTML = `
+        <div style="font-size: 50px; margin-bottom: 15px;">${tierEmoji}</div>
+        <h2 style="margin: 0 0 10px 0; color: ${tierColor}; font-size: 24px;">
+            Итоги испытания!
+        </h2>
+        <div style="color: #888; font-size: 14px; margin-bottom: 20px;">
+            Результаты прошлой недели
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 15px;">
+            <div style="font-size: 14px; color: #888; margin-bottom: 5px;">Ваш лучший результат</div>
+            <div style="font-size: 28px; color: #FFD700; font-weight: bold;">
+                ⚔️ ${result.best_damage.toLocaleString()} урона
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+            <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px;">
+                <div style="font-size: 12px; color: #888;">Место</div>
+                <div style="font-size: 20px; color: #4a9eff; font-weight: bold;">
+                    #${result.rank}
+                </div>
+            </div>
+            <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px;">
+                <div style="font-size: 12px; color: #888;">Всего игроков</div>
+                <div style="font-size: 20px; color: #888;">
+                    ${result.total_players}
+                </div>
+            </div>
+            <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px;">
+                <div style="font-size: 12px; color: #888;">Топ</div>
+                <div style="font-size: 20px; color: ${tierColor}; font-weight: bold;">
+                    ${result.percent.toFixed(1)}%
+                </div>
+            </div>
+        </div>
+
+        <div style="background: linear-gradient(135deg, rgba(74,222,128,0.2), rgba(34,197,94,0.1)); border: 2px solid #22c55e; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+            <div style="font-size: 14px; color: #4ade80; margin-bottom: 5px;">
+                ${tierEmoji} ${tierName} - Ваша награда:
+            </div>
+            <div style="font-size: 26px; color: #ffd700; font-weight: bold;">
+                +${rewardText}
+            </div>
+        </div>
+
+        <button id="trial-reward-close-btn" style="
+            background: linear-gradient(135deg, ${tierColor}, ${tierColor}99);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        ">Отлично!</button>
+    `;
+
+    // Добавляем стили анимации
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+
+    // Закрытие
+    document.getElementById('trial-reward-close-btn').onclick = () => {
+        modal.style.animation = 'fadeIn 0.2s ease reverse';
+        setTimeout(() => modal.remove(), 200);
+    };
+
+    // Закрытие по клику вне окна
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            modal.style.animation = 'fadeIn 0.2s ease reverse';
+            setTimeout(() => modal.remove(), 200);
+        }
+    };
+}
+
 // Экспорт
 window.showTrainingGroundScreen = showTrainingGroundScreen;
 window.addTrainingGroundButton = addTrainingGroundButton;
@@ -809,5 +1018,7 @@ window.saveTrialResultLocal = saveTrialResultLocal;
 window.saveTrialResultSupabase = saveTrialResultSupabase;
 window.loadTrialLeaderboardSupabase = loadTrialLeaderboardSupabase;
 window.getPlayerTrialRankSupabase = getPlayerTrialRankSupabase;
+window.checkAndClaimTrialReward = checkAndClaimTrialReward;
+window.showTrialRewardNotification = showTrialRewardNotification;
 
 console.log('✅ Training Dummy UI загружен');
