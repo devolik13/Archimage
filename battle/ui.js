@@ -392,18 +392,39 @@ async function closeBattleFieldModal() {
     if (window.isTrainingDummyBattle && window.getDummyBattleState) {
         const dummyState = window.getDummyBattleState();
         if (dummyState && dummyState.active) {
-            console.warn('⚠️ Игрок закрывает незавершенное испытание - симулируем бой до конца');
+            console.warn('⚠️ Игрок закрывает незавершенное испытание - записываем текущий урон');
 
             // Останавливаем интервалы боя
             if (window.battleInterval) {
                 clearInterval(window.battleInterval);
                 window.battleInterval = null;
             }
+            if (window.battleTimerManager && window.battleTimerManager.stopBattleLoop) {
+                window.battleTimerManager.stopBattleLoop();
+            }
 
             // Останавливаем анимации
             if (window.animationManager) {
                 window.animationManager.clearAll();
             }
+
+            // Подсчитываем текущий урон (без симуляции - сразу записываем)
+            const dummy = window.enemyFormation?.find(e => e && e.isTrainingDummy);
+            if (dummy) {
+                const actualDamage = dummyState.dummyStartHp - Math.max(0, dummy.hp);
+                dummyState.totalDamage = Math.max(dummyState.totalDamage, actualDamage);
+            }
+
+            // Записываем результат
+            const remainingHp = dummy ? Math.max(0, dummy.hp) : 0;
+            const progress = window.recordAttempt ? window.recordAttempt(dummyState.totalDamage, remainingHp) : null;
+
+            console.log(`🎯 Испытание завершено досрочно. Урон: ${dummyState.totalDamage}`);
+
+            // Сбрасываем флаги
+            window.isTrainingDummyBattle = false;
+            dummyState.active = false;
+            window.battleState = 'finished';
 
             // Уничтожаем PIXI
             if (window.destroyPixiBattle) {
@@ -418,67 +439,14 @@ async function closeBattleFieldModal() {
             const pixiContainer = document.getElementById("pixi-battle-container");
             if (pixiContainer) pixiContainer.remove();
 
-            // Устанавливаем флаг быстрой симуляции
-            window.fastSimulation = true;
-
-            // Симулируем оставшиеся раунды (используем ОБЫЧНУЮ фазу боя - ту же что при нормальном бою)
-            const simulateDummyBattleToEnd = async () => {
-                const MAX_ROUNDS = 100; // Больше раундов для полной симуляции
-                let roundCount = 0;
-
-                while (window.battleState === 'active' && roundCount < MAX_ROUNDS) {
-                    // Используем ОБЫЧНУЮ фазу боя (как при нормальном бою)
-                    if (typeof window.executeBattlePhase === 'function') {
-                        await window.executeBattlePhase();
-                    }
-                    roundCount++;
-
-                    // Проверяем конец боя
-                    const dummy = window.enemyFormation?.find(e => e && e.isTrainingDummy);
-                    if (!dummy || dummy.hp <= 0) break;
-                    if (window.battleState === 'finished') break;
+            // Показываем результат (если есть progress)
+            if (progress && typeof window.showDummyResult === 'function') {
+                window.showDummyResult(dummyState.totalDamage, progress);
+            } else {
+                // Возвращаемся в меню испытаний
+                if (typeof window.showTrialMenuInArena === 'function') {
+                    window.showTrialMenuInArena();
                 }
-
-                // Подсчитываем финальный урон
-                const dummy = window.enemyFormation?.find(e => e && e.isTrainingDummy);
-                if (dummy) {
-                    const actualDamage = dummyState.dummyStartHp - Math.max(0, dummy.hp);
-                    dummyState.totalDamage = Math.max(dummyState.totalDamage, actualDamage);
-                }
-
-                // Записываем результат (если ещё не записан endDummyBattle)
-                if (dummyState.active) {
-                    if (typeof window.recordAttempt === 'function') {
-                        window.recordAttempt(dummyState.totalDamage, dummy ? Math.max(0, dummy.hp) : 0);
-                    }
-                }
-
-                console.log(`🎯 Испытание досимулировано. Урон: ${dummyState.totalDamage}`);
-            };
-
-            try {
-                await simulateDummyBattleToEnd();
-            } catch (error) {
-                console.error('❌ Ошибка симуляции испытания:', error);
-                // Всё равно записываем текущий урон
-                const dummy = window.enemyFormation?.find(e => e && e.isTrainingDummy);
-                let totalDamage = dummyState.totalDamage;
-                if (dummy) {
-                    const actualDamage = dummyState.dummyStartHp - Math.max(0, dummy.hp);
-                    totalDamage = Math.max(totalDamage, actualDamage);
-                }
-                if (typeof window.recordAttempt === 'function') {
-                    window.recordAttempt(totalDamage, dummy ? Math.max(0, dummy.hp) : 0);
-                }
-            } finally {
-                window.fastSimulation = false;
-                window.isTrainingDummyBattle = false;
-                dummyState.active = false;
-            }
-
-            // Возвращаемся в город
-            if (typeof window.returnToCity === 'function') {
-                window.returnToCity();
             }
             return;
         }

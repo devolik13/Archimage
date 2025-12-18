@@ -250,7 +250,7 @@ async function endDummyBattle() {
 }
 
 /**
- * Показать окно результата
+ * Показать окно результата (используем Modal систему как в PvP)
  */
 function showDummyResult(damage, progress) {
     // Сбрасываем флаг
@@ -259,119 +259,153 @@ function showDummyResult(damage, progress) {
     const reward = window.getRewardForDamage(progress.totalDamage);
     const nextReward = window.WEEKLY_REWARDS.find(r => r.minDamage > progress.totalDamage);
     const remaining = window.getRemainingAttempts();
-
-    // Создаём модальное окно (полупрозрачный фон чтобы арена была видна)
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 10000;
-    `;
-
-    const content = document.createElement('div');
-    content.style.cssText = `
-        background: linear-gradient(135deg, #1a1a2e, #16213e);
-        border: 2px solid #4a9eff;
-        border-radius: 15px;
-        padding: 25px;
-        max-width: 400px;
-        width: 90%;
-        text-align: center;
-        color: white;
-        font-family: Arial, sans-serif;
-    `;
-
     const config = window.getCurrentDummyConfig();
 
-    content.innerHTML = `
-        <h2 style="margin: 0 0 15px 0; color: #4a9eff;">🎯 Тренировка завершена!</h2>
-        <div style="margin-bottom: 20px;">
-            <div style="font-size: 14px; color: #888; margin-bottom: 5px;">${config.name}</div>
-        </div>
+    // Формируем HTML контент для модалки
+    const modalContent = `
+        <div style="
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid #4a9eff;
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            color: white;
+            font-family: Arial, sans-serif;
+        ">
+            <h2 style="margin: 0 0 15px 0; color: #4a9eff;">🎯 Тренировка завершена!</h2>
+            <div style="margin-bottom: 20px;">
+                <div style="font-size: 14px; color: #888; margin-bottom: 5px;">${config.name}</div>
+            </div>
 
-        <div style="background: #0d1b2a; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-            <div style="font-size: 24px; color: #ffd700; margin-bottom: 10px;">
-                ⚔️ ${damage.toLocaleString()} урона
-            </div>
-            <div style="font-size: 14px; color: #aaa;">
-                Лучшая попытка: ${progress.bestAttempt.toLocaleString()}
-            </div>
-        </div>
-
-        <div style="background: #1a3a1a; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-            <div style="font-size: 18px; color: #4ade80; margin-bottom: 5px;">
-                📈 За неделю: ${progress.totalDamage.toLocaleString()}
-            </div>
-            <div style="font-size: 14px; color: #86efac;">
-                ${reward.description} (${Math.floor(reward.reward / 60)}ч)
-            </div>
-            ${nextReward ? `
-                <div style="font-size: 12px; color: #888; margin-top: 10px;">
-                    До "${nextReward.description}": ещё ${(nextReward.minDamage - progress.totalDamage).toLocaleString()}
+            <div style="background: #0d1b2a; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <div style="font-size: 24px; color: #ffd700; margin-bottom: 10px;">
+                    ⚔️ ${damage.toLocaleString()} урона
                 </div>
-            ` : ''}
-        </div>
+                <div style="font-size: 14px; color: #aaa;">
+                    Лучшая попытка: ${progress.bestAttempt.toLocaleString()}
+                </div>
+            </div>
 
-        <div style="font-size: 14px; color: #888; margin-bottom: 20px;">
-            🎯 Попыток осталось: ${remaining}/3<br>
-            ⏰ До конца недели: ${window.formatTimeUntilWeekEnd()}
-        </div>
+            <div style="background: #1a3a1a; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <div style="font-size: 18px; color: #4ade80; margin-bottom: 5px;">
+                    📈 За неделю: ${progress.totalDamage.toLocaleString()}
+                </div>
+                <div style="font-size: 14px; color: #86efac;">
+                    ${reward.description} (${Math.floor(reward.reward / 60)}ч)
+                </div>
+                ${nextReward ? `
+                    <div style="font-size: 12px; color: #888; margin-top: 10px;">
+                        До "${nextReward.description}": ещё ${(nextReward.minDamage - progress.totalDamage).toLocaleString()}
+                    </div>
+                ` : ''}
+            </div>
 
-        <div style="display: flex; gap: 10px; justify-content: center;">
-            ${remaining > 0 ? `
-                <button id="dummy-retry-btn" style="
-                    background: linear-gradient(135deg, #4a9eff, #2d7dd2);
+            <div style="font-size: 14px; color: #888; margin-bottom: 20px;">
+                🎯 Попыток осталось: ${remaining}/3<br>
+                ⏰ До конца недели: ${window.formatTimeUntilWeekEnd()}
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                ${remaining > 0 ? `
+                    <button id="dummy-retry-btn" style="
+                        background: linear-gradient(135deg, #4a9eff, #2d7dd2);
+                        border: none;
+                        padding: 12px 25px;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: 16px;
+                        cursor: pointer;
+                    ">🔄 Ещё раз</button>
+                ` : ''}
+                <button id="dummy-exit-btn" style="
+                    background: linear-gradient(135deg, #555, #333);
                     border: none;
                     padding: 12px 25px;
                     border-radius: 8px;
                     color: white;
                     font-size: 16px;
                     cursor: pointer;
-                ">🔄 Ещё раз</button>
-            ` : ''}
-            <button id="dummy-exit-btn" style="
-                background: linear-gradient(135deg, #555, #333);
-                border: none;
-                padding: 12px 25px;
-                border-radius: 8px;
-                color: white;
-                font-size: 16px;
-                cursor: pointer;
-            ">⬅ Назад</button>
+                ">⬅ Назад</button>
+            </div>
         </div>
     `;
 
-    modal.appendChild(content);
-    document.body.appendChild(modal);
+    // Проверяем наличие Modal системы
+    if (!window.Modal) {
+        console.error('❌ Modal не найдена! Используем fallback');
+        // Fallback - создаём простую модалку
+        const modal = document.createElement('div');
+        modal.id = 'dummy-result-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        `;
+        modal.innerHTML = modalContent;
+        document.body.appendChild(modal);
+        setupDummyResultButtons(modal);
+        return;
+    }
 
-    // Обработчики кнопок
+    // Показываем через Modal систему (как в PvP)
+    window.Modal.show(modalContent, {
+        id: 'dummy-result-modal',
+        overlayId: 'dummy-result-overlay',
+        closeOnOverlay: false,
+        closeOnEscape: false,
+        onShow: () => {
+            setupDummyResultButtons();
+        }
+    });
+}
+
+/**
+ * Настроить обработчики кнопок результата
+ */
+function setupDummyResultButtons(fallbackModal = null) {
     const retryBtn = document.getElementById('dummy-retry-btn');
+    const exitBtn = document.getElementById('dummy-exit-btn');
+
     if (retryBtn) {
         retryBtn.onclick = () => {
-            modal.remove();
+            closeDummyResult(fallbackModal);
             startDummyBattle();
         };
     }
 
-    document.getElementById('dummy-exit-btn').onclick = () => {
-        modal.remove();
-        // Закрываем поле боя
-        if (typeof window.closeBattleFieldModal === 'function') {
-            window.closeBattleFieldModal();
-        }
-        // Возвращаемся в меню испытаний
-        if (typeof window.showTrialMenuInArena === 'function') {
-            window.showTrialMenuInArena();
-        }
-    };
+    if (exitBtn) {
+        exitBtn.onclick = () => {
+            closeDummyResult(fallbackModal);
+            // Закрываем поле боя
+            if (typeof window.closeBattleFieldModal === 'function') {
+                window.closeBattleFieldModal();
+            }
+            // Возвращаемся в меню испытаний
+            if (typeof window.showTrialMenuInArena === 'function') {
+                window.showTrialMenuInArena();
+            }
+        };
+    }
+}
+
+/**
+ * Закрыть окно результата
+ */
+function closeDummyResult(fallbackModal = null) {
+    if (fallbackModal) {
+        fallbackModal.remove();
+    } else if (window.Modal) {
+        window.Modal.close();
+    }
 }
 
 /**

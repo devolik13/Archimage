@@ -273,11 +273,9 @@ function saveDummyProgress(progress, immediate = false) {
         }
 
         // Немедленное сохранение в БД (для важных моментов)
+        // ВАЖНО: передаём ПОЛНЫЙ userData, иначе остальные поля сбросятся!
         if (immediate && window.dbManager && window.dbManager.savePlayer) {
-            const playerData = {
-                training_dummy_progress: progress
-            };
-            window.dbManager.savePlayer(playerData).then(() => {
+            window.dbManager.savePlayer(window.userData).then(() => {
                 console.log('✅ Trial progress saved to DB immediately');
             }).catch(err => {
                 console.error('❌ Failed to save trial progress:', err);
