@@ -421,29 +421,39 @@ async function closeBattleFieldModal() {
             // Устанавливаем флаг быстрой симуляции
             window.fastSimulation = true;
 
-            // Симулируем оставшиеся раунды
+            // Симулируем оставшиеся раунды (используем ОБЫЧНУЮ фазу боя - ту же что при нормальном бою)
             const simulateDummyBattleToEnd = async () => {
-                const MAX_ROUNDS = 50;
+                const MAX_ROUNDS = 100; // Больше раундов для полной симуляции
                 let roundCount = 0;
 
-                while (dummyState.active && dummyState.roundsRemaining > 0 && roundCount < MAX_ROUNDS) {
-                    // Выполняем фазу боя с манекеном
-                    if (typeof window.executeDummyBattlePhase === 'function') {
-                        await window.executeDummyBattlePhase();
+                while (window.battleState === 'active' && roundCount < MAX_ROUNDS) {
+                    // Используем ОБЫЧНУЮ фазу боя (как при нормальном бою)
+                    if (typeof window.executeBattlePhase === 'function') {
+                        await window.executeBattlePhase();
                     }
                     roundCount++;
 
-                    // Проверяем HP манекена
+                    // Проверяем конец боя
                     const dummy = window.enemyFormation?.find(e => e && e.isTrainingDummy);
-                    if (dummy && dummy.hp <= 0) break;
+                    if (!dummy || dummy.hp <= 0) break;
+                    if (window.battleState === 'finished') break;
                 }
 
-                // Если бой не завершился сам, завершаем вручную
+                // Подсчитываем финальный урон
+                const dummy = window.enemyFormation?.find(e => e && e.isTrainingDummy);
+                if (dummy) {
+                    const actualDamage = dummyState.dummyStartHp - Math.max(0, dummy.hp);
+                    dummyState.totalDamage = Math.max(dummyState.totalDamage, actualDamage);
+                }
+
+                // Записываем результат (если ещё не записан endDummyBattle)
                 if (dummyState.active) {
-                    if (typeof window.endDummyBattle === 'function') {
-                        await window.endDummyBattle();
+                    if (typeof window.recordAttempt === 'function') {
+                        window.recordAttempt(dummyState.totalDamage, dummy ? Math.max(0, dummy.hp) : 0);
                     }
                 }
+
+                console.log(`🎯 Испытание досимулировано. Урон: ${dummyState.totalDamage}`);
             };
 
             try {

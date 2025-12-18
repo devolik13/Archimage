@@ -438,7 +438,7 @@ function showTrialMenuInArena() {
     const progressDiv = document.createElement('div');
     progressDiv.style.cssText = `
         position: absolute;
-        top: ${270 * scaleY}px;
+        top: ${255 * scaleY}px;
         left: 50%;
         transform: translateX(-50%);
         width: ${520 * scaleX}px;
@@ -446,25 +446,54 @@ function showTrialMenuInArena() {
         border: 1px solid #4CAF50;
         border-radius: 8px;
         padding: ${10 * scaleY}px;
-        display: flex;
-        justify-content: space-around;
         color: white;
         text-align: center;
     `;
+
+    // Текущая награда
+    const currentReward = info.currentReward || { description: 'Участник', reward: 60 };
+    const nextReward = info.nextReward;
+    const rewardText = window.formatTimeReward ? window.formatTimeReward(currentReward.reward) : `${currentReward.reward} мин`;
+
+    // Прогресс до следующей награды
+    let progressBarHtml = '';
+    if (nextReward) {
+        const progress = Math.min(100, (info.totalDamage / nextReward.minDamage) * 100);
+        const needed = nextReward.minDamage - info.totalDamage;
+        progressBarHtml = `
+            <div style="margin-top: 8px;">
+                <div style="background: #1a1a2e; border-radius: 6px; height: 8px; overflow: hidden; margin-bottom: 4px;">
+                    <div style="background: linear-gradient(90deg, #4CAF50, #8BC34A); height: 100%; width: ${progress}%;"></div>
+                </div>
+                <div style="font-size: ${Math.max(9, 10 * scale)}px; color: #888;">
+                    До "${nextReward.description}": ${needed.toLocaleString()} урона
+                </div>
+            </div>
+        `;
+    }
+
     progressDiv.innerHTML = `
-        <div>
-            <div style="font-size: ${Math.max(10, 11 * scale)}px; color: #888;">Всего урона</div>
-            <div style="font-size: ${Math.max(14, 18 * scale)}px; color: #FFD700;">⚔️ ${(info.totalDamage || 0).toLocaleString()}</div>
+        <div style="display: flex; justify-content: space-around; margin-bottom: 8px;">
+            <div>
+                <div style="font-size: ${Math.max(10, 11 * scale)}px; color: #888;">Всего урона</div>
+                <div style="font-size: ${Math.max(14, 18 * scale)}px; color: #FFD700;">⚔️ ${(info.totalDamage || 0).toLocaleString()}</div>
+            </div>
+            <div>
+                <div style="font-size: ${Math.max(10, 11 * scale)}px; color: #888;">Лучшая попытка</div>
+                <div style="font-size: ${Math.max(14, 18 * scale)}px; color: #4a9eff;">🏆 ${(info.bestAttempt || 0).toLocaleString()}</div>
+            </div>
+            <div>
+                <div style="font-size: ${Math.max(10, 11 * scale)}px; color: #888;">Награда</div>
+                <div style="font-size: ${Math.max(12, 14 * scale)}px; color: #4ade80;">🎁 ${currentReward.description}</div>
+                <div style="font-size: ${Math.max(9, 10 * scale)}px; color: #86efac;">${rewardText}</div>
+            </div>
         </div>
-        <div>
-            <div style="font-size: ${Math.max(10, 11 * scale)}px; color: #888;">Лучшая попытка</div>
-            <div style="font-size: ${Math.max(14, 18 * scale)}px; color: #4a9eff;">🏆 ${(info.bestAttempt || 0).toLocaleString()}</div>
-        </div>
+        ${progressBarHtml}
     `;
     overlay.appendChild(progressDiv);
 
     // Кнопки
-    const btnY = 340 * scaleY;
+    const btnY = 370 * scaleY;
     const btnWidth = 240 * scaleX;
     const btnHeight = 45 * scaleY;
     const gap = 20 * scaleX;
