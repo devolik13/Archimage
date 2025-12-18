@@ -104,7 +104,7 @@ function deductTrialAttempt() {
 
     // Списываем попытку
     progress.attemptsToday++;
-    window.saveDummyProgress(progress);
+    window.saveDummyProgress(progress, true); // immediate save to DB
 
     console.log(`🎯 Попытка испытания списана. Осталось: ${window.DUMMY_CONFIG.DAILY_ATTEMPTS - progress.attemptsToday}`);
 }

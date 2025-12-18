@@ -259,8 +259,9 @@ function loadDummyProgress() {
 
 /**
  * Сохранить прогресс игрока в базу данных
+ * @param {boolean} immediate - немедленное сохранение в БД (по умолчанию false)
  */
-function saveDummyProgress(progress) {
+function saveDummyProgress(progress, immediate = false) {
     // Сохраняем в userData
     if (window.userData) {
         window.userData.training_dummy_progress = progress;
@@ -268,6 +269,18 @@ function saveDummyProgress(progress) {
         // Помечаем данные как изменённые для автосохранения
         if (window.dbManager && window.dbManager.markChanged) {
             window.dbManager.markChanged();
+        }
+
+        // Немедленное сохранение в БД (для важных моментов)
+        if (immediate && window.dbManager && window.dbManager.savePlayer) {
+            const playerData = {
+                training_dummy_progress: progress
+            };
+            window.dbManager.savePlayer(playerData).then(() => {
+                console.log('✅ Trial progress saved to DB immediately');
+            }).catch(err => {
+                console.error('❌ Failed to save trial progress:', err);
+            });
         }
     }
 }
@@ -302,7 +315,7 @@ function recordAttempt(damage, remainingHp = null) {
         remainingHp: remainingHp
     });
 
-    saveDummyProgress(progress);
+    saveDummyProgress(progress, true); // immediate save to DB
 
     // Сохраняем результат в Supabase для глобального рейтинга
     if (typeof window.saveTrialResultSupabase === 'function') {
