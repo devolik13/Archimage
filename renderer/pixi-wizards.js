@@ -143,6 +143,17 @@
             animationSpeed: 0.12,
             scale: 0.45
         },
+        training_dummy: {
+            idle: 'images/enemies/training_dummy/idle.webp',
+            cast: 'images/enemies/training_dummy/idle.webp', // Манекен не атакует
+            death: 'images/enemies/training_dummy/idle.webp', // Использует idle
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 25, // 5×5 сетка
+            gridColumns: 5,
+            animationSpeed: 0.10, // Медленная анимация для манекена
+            scale: 0.45
+        },
         fire_elemental: {
             idle: 'images/enemies/fire_elemental/idle.webp',
             cast: 'images/enemies/fire_elemental/cast.webp',

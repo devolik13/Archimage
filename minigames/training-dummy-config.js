@@ -217,7 +217,8 @@ function createDummyEnemy() {
         isTrainingDummy: true,
         isDummy: true,
         magicResistance: config.resistances,
-        description: config.description
+        description: config.description,
+        spriteSheet: 'training_dummy' // Спрайт пугала
     };
 }
 
