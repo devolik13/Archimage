@@ -122,8 +122,8 @@ async function executeDummyBattlePhase() {
         return;
     }
 
-    // Логируем раунд
-    if (typeof window.addToBattleLog === 'function') {
+    // Логируем раунд (пропускаем при быстрой симуляции)
+    if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
         window.addToBattleLog(`\n━━━ Раунд ${dummyBattleState.currentRound}/${window.DUMMY_CONFIG.MAX_ROUNDS} ━━━`);
     }
 
@@ -155,8 +155,10 @@ async function executeDummyBattlePhase() {
             window.useWizardSpells(mageData.wizard, mageData.position, 'player');
         }
 
-        // Пауза между магами для анимаций
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Пауза между магами для анимаций (пропускаем при быстрой симуляции)
+        if (!window.fastSimulation) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
     }
 
     // Подсчитываем нанесённый урон за раунд
@@ -168,8 +170,8 @@ async function executeDummyBattlePhase() {
     dummyBattleState.roundsRemaining--;
     dummyBattleState.currentRound++;
 
-    // Логируем урон за раунд
-    if (typeof window.addToBattleLog === 'function') {
+    // Логируем урон за раунд (пропускаем при быстрой симуляции)
+    if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
         window.addToBattleLog(`\n⚔️ Урон за раунд: ${damageThisRound.toLocaleString()}`);
         window.addToBattleLog(`📊 Всего урона: ${dummyBattleState.totalDamage.toLocaleString()}`);
         if (dummyBattleState.roundsRemaining > 0 && (!dummy || dummy.hp > 0)) {
@@ -177,13 +179,13 @@ async function executeDummyBattlePhase() {
         }
     }
 
-    // Обновляем поле боя
-    if (typeof window.updateBattleField === 'function') {
+    // Обновляем поле боя (пропускаем при быстрой симуляции)
+    if (!window.fastSimulation && typeof window.updateBattleField === 'function') {
         window.updateBattleField();
     }
 
-    // Проверяем конец боя
-    if (dummyBattleState.roundsRemaining <= 0 || (dummy && dummy.hp <= 0)) {
+    // Проверяем конец боя (при быстрой симуляции не вызываем endDummyBattle - это делает вызывающий код)
+    if (!window.fastSimulation && (dummyBattleState.roundsRemaining <= 0 || (dummy && dummy.hp <= 0))) {
         await endDummyBattle();
     }
 }

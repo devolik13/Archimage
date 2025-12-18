@@ -429,20 +429,23 @@ async function closeBattleFieldModal() {
             // Флаг быстрой симуляции (отключает задержки)
             window.fastSimulation = true;
 
-            // Быстрая симуляция оставшихся раундов (как в PvP)
+            // Быстрая симуляция оставшихся раундов
             const simulateTrialToEnd = async () => {
                 const MAX_ROUNDS = window.DUMMY_CONFIG?.MAX_ROUNDS || 10;
-                let roundsLeft = MAX_ROUNDS - dummyState.currentRound + 1;
 
-                while (roundsLeft > 0 && window.battleState !== 'finished') {
+                // Симулируем оставшиеся раунды используя executeDummyBattlePhase
+                while (dummyState.roundsRemaining > 0) {
                     const dummy = window.enemyFormation?.find(e => e && e.isTrainingDummy);
                     if (!dummy || dummy.hp <= 0) break;
 
-                    // Выполняем фазу боя без задержек
-                    if (typeof window.executeBattlePhase === 'function') {
-                        await window.executeBattlePhase();
+                    // Выполняем фазу боя для манекена (с пропуском задержек благодаря fastSimulation)
+                    if (typeof window.executeDummyBattlePhase === 'function') {
+                        await window.executeDummyBattlePhase();
+                    } else {
+                        // Fallback - просто уменьшаем счётчик раундов
+                        dummyState.roundsRemaining--;
+                        dummyState.currentRound++;
                     }
-                    roundsLeft--;
                 }
 
                 // Подсчитываем финальный урон
@@ -452,6 +455,7 @@ async function closeBattleFieldModal() {
                     dummyState.totalDamage = Math.max(dummyState.totalDamage, actualDamage);
                 }
 
+                console.log(`🎯 Симуляция завершена. Раундов: ${dummyState.currentRound}, Урон: ${dummyState.totalDamage}`);
                 return dummy ? Math.max(0, dummy.hp) : 0;
             };
 

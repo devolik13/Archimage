@@ -263,24 +263,44 @@ function loadDummyProgress() {
  * @param {boolean} immediate - немедленное сохранение в БД (по умолчанию false)
  */
 function saveDummyProgress(progress, immediate = false) {
+    console.log('📝 saveDummyProgress вызван:', { immediate, progress: JSON.stringify(progress).substring(0, 200) });
+
     // Сохраняем в userData
-    if (window.userData) {
-        window.userData.training_dummy_progress = progress;
+    if (!window.userData) {
+        console.error('❌ window.userData не существует!');
+        return;
+    }
 
-        // Помечаем данные как изменённые для автосохранения
-        if (window.dbManager && window.dbManager.markChanged) {
-            window.dbManager.markChanged();
+    window.userData.training_dummy_progress = progress;
+    console.log('📝 Progress сохранён в window.userData');
+
+    // Помечаем данные как изменённые для автосохранения
+    if (window.dbManager && window.dbManager.markChanged) {
+        window.dbManager.markChanged();
+        console.log('📝 markChanged() вызван');
+    } else {
+        console.warn('⚠️ dbManager.markChanged недоступен');
+    }
+
+    // Немедленное сохранение в БД (для важных моментов)
+    // ВАЖНО: передаём ПОЛНЫЙ userData, иначе остальные поля сбросятся!
+    if (immediate) {
+        if (!window.dbManager) {
+            console.error('❌ window.dbManager не существует!');
+            return;
+        }
+        if (!window.dbManager.savePlayer) {
+            console.error('❌ dbManager.savePlayer не существует!');
+            return;
         }
 
-        // Немедленное сохранение в БД (для важных моментов)
-        // ВАЖНО: передаём ПОЛНЫЙ userData, иначе остальные поля сбросятся!
-        if (immediate && window.dbManager && window.dbManager.savePlayer) {
-            window.dbManager.savePlayer(window.userData).then(() => {
-                console.log('✅ Trial progress saved to DB immediately');
-            }).catch(err => {
-                console.error('❌ Failed to save trial progress:', err);
-            });
-        }
+        console.log('📝 Вызываем dbManager.savePlayer с userData...');
+        window.dbManager.savePlayer(window.userData).then(() => {
+            console.log('✅ Trial progress saved to DB immediately');
+        }).catch(err => {
+            console.error('❌ Failed to save trial progress:', err);
+            console.error('❌ Error details:', err.message, err.code, err.details);
+        });
     }
 }
 
@@ -291,11 +311,16 @@ function saveDummyProgress(progress, immediate = false) {
  * @param {number} remainingHp - остаток HP манекена
  */
 function recordAttempt(damage, remainingHp = null) {
+    console.log(`🎯 recordAttempt вызван: damage=${damage}, remainingHp=${remainingHp}`);
+
     const progress = loadDummyProgress();
     const currentWeek = getWeekNumber();
 
+    console.log(`🎯 Текущий прогресс до обновления:`, JSON.stringify(progress));
+
     // Сброс на новую неделю
     if (progress.weekNumber !== currentWeek) {
+        console.log(`🎯 Новая неделя: ${progress.weekNumber} -> ${currentWeek}`);
         progress.weekNumber = currentWeek;
         progress.totalDamage = 0;
         progress.bestAttempt = 0;
@@ -313,6 +338,8 @@ function recordAttempt(damage, remainingHp = null) {
         damage: damage,
         remainingHp: remainingHp
     });
+
+    console.log(`🎯 Прогресс после обновления: totalDamage=${progress.totalDamage}, bestAttempt=${progress.bestAttempt}, attemptsToday=${progress.attemptsToday}`);
 
     saveDummyProgress(progress, true); // immediate save to DB
 
