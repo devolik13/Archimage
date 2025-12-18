@@ -669,12 +669,13 @@ async function showTrialLeaderboardInArena() {
  */
 async function loadTrialLeaderboardSupabase() {
     try {
-        if (!window.supabase) {
+        const supabase = window.dbManager?.supabase;
+        if (!supabase) {
             console.warn('Supabase не инициализирован, используем localStorage');
             return loadTrialLeaderboardLocal();
         }
 
-        const { data, error } = await window.supabase
+        const { data, error } = await supabase
             .rpc('get_trial_leaderboard', { p_limit: 100 });
 
         if (error) {
@@ -726,12 +727,13 @@ async function saveTrialResultSupabase(damage) {
     saveTrialResultLocal(damage);
 
     try {
-        if (!window.supabase) {
+        const supabase = window.dbManager?.supabase;
+        if (!supabase) {
             console.warn('Supabase не инициализирован');
             return;
         }
 
-        const { error } = await window.supabase
+        const { error } = await supabase
             .rpc('upsert_trial_result', {
                 p_player_id: playerId,
                 p_player_name: playerName,
@@ -778,13 +780,14 @@ function saveTrialResultLocal(damage) {
  */
 async function getPlayerTrialRankSupabase() {
     const playerId = window.myPlayerId || window.userData?.id;
+    const supabase = window.dbManager?.supabase;
 
-    if (!playerId || !window.supabase) {
+    if (!playerId || !supabase) {
         return null;
     }
 
     try {
-        const { data, error } = await window.supabase
+        const { data, error } = await supabase
             .rpc('get_player_trial_rank', { p_player_id: playerId });
 
         if (error) {
@@ -822,15 +825,16 @@ function getLastWeekYear() {
  */
 async function checkAndClaimTrialReward() {
     const playerId = window.myPlayerId || window.userData?.id;
+    const supabase = window.dbManager?.supabase;
 
-    if (!playerId || !window.supabase) {
+    if (!playerId || !supabase) {
         return null;
     }
 
     const lastWeek = getLastWeekYear();
 
     try {
-        const { data, error } = await window.supabase
+        const { data, error } = await supabase
             .rpc('auto_claim_trial_reward', {
                 p_player_id: playerId,
                 p_week_year: lastWeek
