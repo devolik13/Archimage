@@ -364,6 +364,11 @@
                     return elementalType;
                 }
 
+                // Если это тренировочный манекен - используем спрайт пугала
+                if (enemyWizard && enemyWizard.isTrainingDummy) {
+                    return enemyWizard.spriteSheet || 'training_dummy';
+                }
+
                 // Если это обычный PVE враг - используем спрайты по типу (goblin/orc/troll/etc)
                 if (enemyWizard && enemyWizard.isAdventureEnemy) {
                     // Используем spriteSheet из конфига врага, иначе goblin по умолчанию
