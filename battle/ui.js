@@ -408,18 +408,8 @@ async function closeBattleFieldModal() {
                 window.animationManager.clearAll();
             }
 
-            // Уничтожаем PIXI ДО симуляции
-            if (window.destroyPixiBattle) {
-                window.destroyPixiBattle();
-            }
-
-            // Удаляем UI элементы боя
-            const battleModal = document.getElementById("battle-field-modal");
-            if (battleModal) battleModal.remove();
-            const container = document.getElementById("battle-field-fullscreen-container");
-            if (container) container.remove();
-            const pixiContainer = document.getElementById("pixi-battle-container");
-            if (pixiContainer) pixiContainer.remove();
+            // НЕ удаляем арену сразу - результат покажется на её фоне!
+            // Арена будет удалена когда игрок нажмёт "Назад"
 
             // Флаг быстрой симуляции (отключает задержки)
             window.fastSimulation = true;

@@ -385,13 +385,26 @@ function setupDummyResultButtons(fallbackModal = null) {
     if (exitBtn) {
         exitBtn.onclick = () => {
             closeDummyResult(fallbackModal);
-            // Закрываем поле боя
-            if (typeof window.closeBattleFieldModal === 'function') {
-                window.closeBattleFieldModal();
+
+            // Очищаем арену боя напрямую
+            if (window.destroyPixiBattle) {
+                window.destroyPixiBattle();
             }
-            // Возвращаемся в меню испытаний
-            if (typeof window.showTrialMenuInArena === 'function') {
-                window.showTrialMenuInArena();
+            const battleModal = document.getElementById("battle-field-modal");
+            if (battleModal) battleModal.remove();
+            const container = document.getElementById("battle-field-fullscreen-container");
+            if (container) container.remove();
+            const pixiContainer = document.getElementById("pixi-battle-container");
+            if (pixiContainer) pixiContainer.remove();
+
+            // Открываем арену заново и показываем меню испытаний
+            if (typeof window.showPvPArenaModalBg === 'function') {
+                window.showPvPArenaModalBg();
+                setTimeout(() => {
+                    if (typeof window.showTrialMenuInArena === 'function') {
+                        window.showTrialMenuInArena();
+                    }
+                }, 100);
             }
         };
     }
