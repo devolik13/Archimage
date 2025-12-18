@@ -273,13 +273,13 @@ function saveDummyProgress(progress) {
 }
 
 /**
- * Записать результат попытки
+ * Записать результат попытки (урон)
+ * ВАЖНО: Попытка уже списана в deductTrialAttempt() при старте боя!
  * @param {number} damage - нанесённый урон
  * @param {number} remainingHp - остаток HP манекена
  */
 function recordAttempt(damage, remainingHp = null) {
     const progress = loadDummyProgress();
-    const today = new Date().toDateString();
     const currentWeek = getWeekNumber();
 
     // Сброс на новую неделю
@@ -291,22 +291,11 @@ function recordAttempt(damage, remainingHp = null) {
         progress.lastDummyHp = null;
     }
 
-    // Сброс попыток на новый день
-    if (progress.lastAttemptDate !== today) {
-        progress.attemptsToday = 0;
-        progress.lastAttemptDate = today;
-        // Устанавливаем время следующего сброса попыток (00:00 следующего дня)
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(0, 0, 0, 0);
-        progress.attemptResetTime = tomorrow.toISOString();
-    }
-
-    // Записываем попытку
-    progress.attemptsToday++;
+    // НЕ увеличиваем attemptsToday - это уже сделано в deductTrialAttempt()
+    // Только записываем урон
     progress.totalDamage += damage;
     progress.bestAttempt = Math.max(progress.bestAttempt, damage);
-    progress.lastDummyHp = remainingHp;  // Сохраняем остаток HP манекена
+    progress.lastDummyHp = remainingHp;
     progress.history.push({
         date: new Date().toISOString(),
         damage: damage,

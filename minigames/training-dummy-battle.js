@@ -33,6 +33,9 @@ async function startDummyBattle() {
         return;
     }
 
+    // СРАЗУ списываем попытку (как в PvP)
+    deductTrialAttempt();
+
     // Устанавливаем флаги
     window.isTrainingDummyBattle = true;
     window.isPvEBattle = false;
@@ -46,7 +49,8 @@ async function startDummyBattle() {
         roundsRemaining: window.DUMMY_CONFIG.MAX_ROUNDS,
         currentRound: 1,
         totalDamage: 0,
-        dummyStartHp: dummy.hp
+        dummyStartHp: dummy.hp,
+        attemptDeducted: true  // Попытка уже списана
     };
 
     // Устанавливаем врага
@@ -79,6 +83,30 @@ async function startDummyBattle() {
         if (res.poison !== 0) window.addToBattleLog(`   ☠️ Яд: ${res.poison > 0 ? '+' : ''}${res.poison}%`);
         window.addToBattleLog(``);
     }
+}
+
+/**
+ * Списать попытку испытания (вызывается сразу при старте)
+ */
+function deductTrialAttempt() {
+    const progress = window.loadDummyProgress();
+    const today = new Date().toDateString();
+
+    // Сброс попыток на новый день
+    if (progress.lastAttemptDate !== today) {
+        progress.attemptsToday = 0;
+        progress.lastAttemptDate = today;
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+        progress.attemptResetTime = tomorrow.toISOString();
+    }
+
+    // Списываем попытку
+    progress.attemptsToday++;
+    window.saveDummyProgress(progress);
+
+    console.log(`🎯 Попытка испытания списана. Осталось: ${window.DUMMY_CONFIG.DAILY_ATTEMPTS - progress.attemptsToday}`);
 }
 
 /**
@@ -335,6 +363,11 @@ function showDummyResult(damage, progress) {
 
     document.getElementById('dummy-exit-btn').onclick = () => {
         modal.remove();
+        // Закрываем поле боя
+        if (typeof window.closeBattleFieldModal === 'function') {
+            window.closeBattleFieldModal();
+        }
+        // Возвращаемся в город
         if (typeof window.returnToCity === 'function') {
             window.returnToCity();
         }

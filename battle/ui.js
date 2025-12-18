@@ -388,6 +388,34 @@ function updateBattleField() {
 // Управление модальным окном
 async function closeBattleFieldModal() {
 
+    // КРИТИЧНО: Проверяем закрытие незавершенного боя с манекеном
+    if (window.isTrainingDummyBattle && window.getDummyBattleState) {
+        const dummyState = window.getDummyBattleState();
+        if (dummyState && dummyState.active) {
+            console.warn('⚠️ Игрок закрывает незавершенное испытание - записываем текущий урон');
+
+            // Подсчитываем урон по текущему HP манекена
+            const dummy = window.enemyFormation?.find(e => e && e.isTrainingDummy);
+            let totalDamage = dummyState.totalDamage;
+            if (dummy) {
+                const actualDamage = dummyState.dummyStartHp - Math.max(0, dummy.hp);
+                totalDamage = Math.max(totalDamage, actualDamage);
+            }
+
+            // Записываем результат
+            const remainingHp = dummy ? Math.max(0, dummy.hp) : 0;
+            if (typeof window.recordAttempt === 'function') {
+                window.recordAttempt(totalDamage, remainingHp);
+            }
+
+            // Сбрасываем флаги
+            window.isTrainingDummyBattle = false;
+            dummyState.active = false;
+
+            console.log(`🎯 Испытание прервано. Урон: ${totalDamage}`);
+        }
+    }
+
     // КРИТИЧНО: Проверяем закрытие незавершенного PvP боя
     const isPvP = !window.isPvEBattle && window.selectedOpponent;
     const isBattleActive = window.battleState === 'active' || window.battleState === 'running';
