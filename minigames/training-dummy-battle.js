@@ -260,7 +260,7 @@ function showDummyResult(damage, progress) {
     const nextReward = window.WEEKLY_REWARDS.find(r => r.minDamage > progress.totalDamage);
     const remaining = window.getRemainingAttempts();
 
-    // Создаём модальное окно
+    // Создаём модальное окно (полупрозрачный фон чтобы арена была видна)
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.style.cssText = `
@@ -269,7 +269,7 @@ function showDummyResult(damage, progress) {
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.8);
+        background: rgba(0,0,0,0.5);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -345,7 +345,7 @@ function showDummyResult(damage, progress) {
                 color: white;
                 font-size: 16px;
                 cursor: pointer;
-            ">🏠 В город</button>
+            ">⬅ Назад</button>
         </div>
     `;
 
@@ -367,9 +367,9 @@ function showDummyResult(damage, progress) {
         if (typeof window.closeBattleFieldModal === 'function') {
             window.closeBattleFieldModal();
         }
-        // Возвращаемся в город
-        if (typeof window.returnToCity === 'function') {
-            window.returnToCity();
+        // Возвращаемся в меню испытаний
+        if (typeof window.showTrialMenuInArena === 'function') {
+            window.showTrialMenuInArena();
         }
     };
 }
