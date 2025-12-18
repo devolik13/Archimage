@@ -403,13 +403,28 @@ async function closeBattleFieldModal() {
                 window.battleTimerManager.stopBattleLoop();
             }
 
-            // Останавливаем анимации
+            // Очищаем ВСЕ анимации ДО симуляции (чтобы не было ошибок PIXI)
             if (window.animationManager) {
                 window.animationManager.clearAll();
             }
+            // Очищаем эффекты листвы если есть
+            if (window.spellAnimations?.leaf_canopy?.clearAll) {
+                window.spellAnimations.leaf_canopy.clearAll();
+            }
 
-            // НЕ удаляем арену сразу - результат покажется на её фоне!
-            // Арена будет удалена когда игрок нажмёт "Назад"
+            // КРИТИЧНО: Уничтожаем PIXI ДО симуляции (как в PvP)
+            // Это останавливает все requestAnimationFrame циклы
+            if (window.destroyPixiBattle) {
+                window.destroyPixiBattle();
+            }
+
+            // Удаляем UI элементы боя
+            const battleModal = document.getElementById("battle-field-modal");
+            if (battleModal) battleModal.remove();
+            const container = document.getElementById("battle-field-fullscreen-container");
+            if (container) container.remove();
+            const pixiContainer = document.getElementById("pixi-battle-container");
+            if (pixiContainer) pixiContainer.remove();
 
             // Флаг быстрой симуляции (отключает задержки)
             window.fastSimulation = true;
@@ -445,12 +460,19 @@ async function closeBattleFieldModal() {
                 const progress = window.recordAttempt ? window.recordAttempt(dummyState.totalDamage, remainingHp) : null;
                 console.log(`🎯 Испытание досимулировано. Урон: ${dummyState.totalDamage}`);
 
-                // Показываем результат
-                if (progress && typeof window.showDummyResult === 'function') {
-                    window.showDummyResult(dummyState.totalDamage, progress);
-                } else if (typeof window.showTrialMenuInArena === 'function') {
-                    window.showTrialMenuInArena();
+                // Показываем арену и результат (как в PvP)
+                if (typeof window.showPvPArenaModalBg === 'function') {
+                    window.showPvPArenaModalBg();
                 }
+
+                // Показываем результат с небольшой задержкой
+                setTimeout(() => {
+                    if (progress && typeof window.showDummyResult === 'function') {
+                        window.showDummyResult(dummyState.totalDamage, progress);
+                    } else if (typeof window.showTrialMenuInArena === 'function') {
+                        window.showTrialMenuInArena();
+                    }
+                }, 100);
             } catch (error) {
                 console.error('❌ Ошибка симуляции:', error);
                 // Записываем текущий урон
@@ -459,9 +481,15 @@ async function closeBattleFieldModal() {
                 if (window.recordAttempt) {
                     window.recordAttempt(dummyState.totalDamage, remainingHp);
                 }
-                if (typeof window.showTrialMenuInArena === 'function') {
-                    window.showTrialMenuInArena();
+                // Показываем арену и меню
+                if (typeof window.showPvPArenaModalBg === 'function') {
+                    window.showPvPArenaModalBg();
                 }
+                setTimeout(() => {
+                    if (typeof window.showTrialMenuInArena === 'function') {
+                        window.showTrialMenuInArena();
+                    }
+                }, 100);
             } finally {
                 window.fastSimulation = false;
                 window.isTrainingDummyBattle = false;
