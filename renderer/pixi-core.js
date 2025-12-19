@@ -354,10 +354,11 @@ function loadBattleFieldBackground() {
         // Применяем масштаб с сохранением пропорций
         fieldBg.width = textureWidth * scale;
         fieldBg.height = textureHeight * scale;
-        
-        // Центрируем изображение (обрезка будет равномерной)
-        fieldBg.x = (screenWidth - fieldBg.width) / 2;
-        fieldBg.y = (screenHeight - fieldBg.height) / 2;
+
+        // Смещаем влево - справа UI кнопки всё равно закрывают
+        // Это позволяет показать больше контента сверху/снизу
+        fieldBg.x = 0; // Прижимаем к левому краю
+        fieldBg.y = (screenHeight - fieldBg.height) / 2; // Центрируем по вертикали
         
         // Адаптивная прозрачность в зависимости от устройства
         if (isMobile) {
