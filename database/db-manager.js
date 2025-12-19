@@ -179,6 +179,16 @@ class DatabaseManager {
             }
             console.log('✅ [DB] RPC update_player_safe успешно выполнен');
 
+            // DEBUG: Проверяем training_dummy_progress ПОСЛЕ savePlayer
+            const { data: verifyData } = await this.supabase
+                .from('players')
+                .select('training_dummy_progress')
+                .eq('telegram_id', telegramId)
+                .single();
+
+            console.log('🔍 [DB VERIFY savePlayer] training_dummy_progress ПОСЛЕ savePlayer:',
+                verifyData?.training_dummy_progress ? JSON.stringify(verifyData.training_dummy_progress).substring(0, 100) : 'NULL');
+
             this.hasUnsavedChanges = false;
             return true;
 
@@ -213,6 +223,21 @@ class DatabaseManager {
             }
 
             console.log('✅ [DB] Training dummy progress сохранён!');
+
+            // DEBUG: Проверяем что реально сохранилось в БД
+            const { data: checkData, error: checkError } = await this.supabase
+                .from('players')
+                .select('training_dummy_progress')
+                .eq('telegram_id', telegramId)
+                .single();
+
+            if (checkData) {
+                console.log('🔍 [DB VERIFY] training_dummy_progress в БД ПОСЛЕ сохранения:',
+                    checkData.training_dummy_progress ? JSON.stringify(checkData.training_dummy_progress).substring(0, 200) : 'NULL');
+            } else {
+                console.warn('⚠️ [DB VERIFY] Не удалось прочитать данные:', checkError);
+            }
+
             return true;
 
         } catch (error) {
