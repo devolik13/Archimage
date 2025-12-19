@@ -294,9 +294,22 @@ function saveDummyProgress(progress, immediate = false) {
             return;
         }
 
-        console.log('📝 Вызываем dbManager.savePlayer с userData...');
-        window.dbManager.savePlayer(window.userData).then(() => {
-            console.log('✅ Trial progress saved to DB immediately');
+        // Проверяем currentPlayer
+        if (!window.dbManager.currentPlayer) {
+            console.error('❌ dbManager.currentPlayer не существует! RPC не будет вызван.');
+            return;
+        }
+
+        console.log('📝 Вызываем dbManager.savePlayer...');
+        console.log('📝 telegram_id:', window.dbManager.getTelegramId ? window.dbManager.getTelegramId() : 'N/A');
+        console.log('📝 training_dummy_progress:', JSON.stringify(window.userData.training_dummy_progress).substring(0, 100));
+
+        window.dbManager.savePlayer(window.userData).then((result) => {
+            if (result === true) {
+                console.log('✅ Trial progress РЕАЛЬНО сохранён в DB');
+            } else {
+                console.warn('⚠️ savePlayer вернул false - данные НЕ сохранены!');
+            }
         }).catch(err => {
             console.error('❌ Failed to save trial progress:', err);
             console.error('❌ Error details:', err.message, err.code, err.details);
