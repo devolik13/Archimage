@@ -344,12 +344,12 @@ function loadBattleFieldBackground() {
                          'ontouchstart' in window || 
                          navigator.maxTouchPoints > 0 ||
                          window.innerWidth <= 768;
-        
-        // РЕЖИМ "COVER" - изображение заполняет весь экран
-        // Может обрезать края, но не оставляет пустых мест
+
+        // РЕЖИМ "CONTAIN" - показывает всё изображение
+        // Могут быть пустые полосы по краям
         const scaleX = screenWidth / textureWidth;
         const scaleY = screenHeight / textureHeight;
-        const scale = Math.max(scaleX, scaleY); // Выбираем БОЛЬШИЙ масштаб для cover
+        const scale = Math.min(scaleX, scaleY); // Выбираем МЕНЬШИЙ масштаб для contain
         
         // Применяем масштаб с сохранением пропорций
         fieldBg.width = textureWidth * scale;
