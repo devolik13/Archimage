@@ -349,7 +349,7 @@ function loadBattleFieldBackground() {
         // С картинками 16:9 обрезки почти не будет
         const scaleX = screenWidth / textureWidth;
         const scaleY = screenHeight / textureHeight;
-        const scale = Math.max(scaleX, scaleY) * 0.8; // Уменьшаем на 20%
+        const scale = Math.max(scaleX, scaleY) * 0.9; // Уменьшаем на 10%
         
         // Применяем масштаб с сохранением пропорций
         fieldBg.width = textureWidth * scale;
