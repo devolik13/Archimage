@@ -83,29 +83,26 @@
                 const cellData = gridCells[targetColumn]?.[row];
                 if (!cellData) return;
 
-                // Используем cellWidth/cellHeight (PIXI getter bug: width/height = 0)
-                const cellWidth = cellData.cellWidth || cellData.width || 60;
-                const cellHeight = cellData.cellHeight || cellData.height || 60;
-
                 // Анимированный спрайт метели
                 const blizzardSprite = new PIXI.AnimatedSprite(blizzardTextures);
-                blizzardSprite.x = cellData.x + cellWidth / 2;
-                blizzardSprite.y = cellData.y + cellHeight / 2;
+                blizzardSprite.x = cellData.x + cellData.width / 2;
+                blizzardSprite.y = cellData.y + cellData.height / 2;
                 blizzardSprite.anchor.set(0.5);
 
-                // Масштабируем под размер клетки
-                const scale = (cellWidth * 1.5) / frameWidth;
-                blizzardSprite.scale.set(scale);
-                
-                blizzardSprite.animationSpeed = 0.15;
+                // Масштабируем как fire-wall
+                const baseScale = cellData.cellScale || 1.0;
+                const scaleFactor = baseScale * 0.5;
+                blizzardSprite.scale.set(scaleFactor * 0.8, scaleFactor * 0.8);
+
+                blizzardSprite.animationSpeed = 0.25;
                 blizzardSprite.loop = true;
                 blizzardSprite.play();
-                
+
                 // Эффекты
-                blizzardSprite.blendMode = PIXI.BLEND_MODES.SCREEN;
-                blizzardSprite.alpha = 0.5;
+                blizzardSprite.blendMode = PIXI.BLEND_MODES.ADD;
+                blizzardSprite.alpha = 1;
                 blizzardSprite.tint = 0xCCEEFF; // Холодный голубоватый оттенок
-                
+
                 effectsContainer.addChild(blizzardSprite);
                 
                 // Добавляем падающий снег
