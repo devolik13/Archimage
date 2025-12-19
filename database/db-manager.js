@@ -207,36 +207,26 @@ class DatabaseManager {
 
         const telegramId = this.getTelegramId();
         console.log('🎯 [DB] saveTrainingDummyProgress вызван');
-        console.log('🎯 [DB] telegram_id:', telegramId);
+        console.log('🎯 [DB] telegram_id:', telegramId, 'type:', typeof telegramId);
         console.log('🎯 [DB] progress:', JSON.stringify(progress));
 
         try {
-            // Используем RPC для безопасного обновления (только training_dummy_progress)
-            const { data, error } = await this.supabase.rpc('update_player_safe', {
-                p_telegram_id: telegramId,
-                p_data: { training_dummy_progress: progress }
-            });
-
-            if (error) {
-                console.error('❌ [DB] Ошибка RPC saveTrainingDummyProgress:', error);
-                throw error;
-            }
-
-            console.log('✅ [DB] Training dummy progress сохранён!');
-
-            // DEBUG: Проверяем что реально сохранилось в БД
-            const { data: checkData, error: checkError } = await this.supabase
+            // ТЕСТ: Используем прямой update вместо RPC
+            console.log('🔧 [DB] Пробуем прямой .update() вместо RPC...');
+            const { data: updateData, error: updateError } = await this.supabase
                 .from('players')
-                .select('training_dummy_progress')
+                .update({ training_dummy_progress: progress })
                 .eq('telegram_id', telegramId)
+                .select('training_dummy_progress')
                 .single();
 
-            if (checkData) {
-                console.log('🔍 [DB VERIFY] training_dummy_progress в БД ПОСЛЕ сохранения:',
-                    checkData.training_dummy_progress ? JSON.stringify(checkData.training_dummy_progress).substring(0, 200) : 'NULL');
-            } else {
-                console.warn('⚠️ [DB VERIFY] Не удалось прочитать данные:', checkError);
+            if (updateError) {
+                console.error('❌ [DB] Ошибка прямого update:', updateError);
+                throw updateError;
             }
+
+            console.log('✅ [DB] Прямой update выполнен! Результат:',
+                updateData?.training_dummy_progress ? JSON.stringify(updateData.training_dummy_progress).substring(0, 100) : 'NULL');
 
             return true;
 
