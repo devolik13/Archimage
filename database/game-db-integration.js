@@ -111,9 +111,8 @@ async function initGameWithDatabase() {
     window.userData.wizard_skins = player.wizard_skins || {};
     console.log('🎨 [DEBUG] Загружены unlocked_skins:', player.unlocked_skins);
 
-    // Прогресс тренировочного полигона (ВАЖНО: без этого данные стираются при автосохранении!)
+    // Прогресс тренировочного полигона
     window.userData.training_dummy_progress = player.training_dummy_progress || null;
-    console.log('🎯 [DEBUG] Загружен training_dummy_progress:', player.training_dummy_progress ? 'есть данные' : 'null');
 
     // КРИТИЧНО: Проверяем есть ли фракция
     if (!player.faction || player.faction === null) {

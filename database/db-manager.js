@@ -63,12 +63,6 @@ class DatabaseManager {
                 throw error;
             }
 
-            // DEBUG: Логируем что пришло из БД
-            console.log('🔍 [DB LOAD] Получены данные игрока:');
-            console.log('🔍 [DB LOAD] training_dummy_progress из БД:',
-                data.training_dummy_progress ? JSON.stringify(data.training_dummy_progress).substring(0, 200) : 'NULL/undefined');
-            console.log('🔍 [DB LOAD] Ключи в data:', Object.keys(data).join(', '));
-
             this.currentPlayer = data;
             return data;
 
@@ -110,15 +104,12 @@ class DatabaseManager {
 
     // Сохранить данные игрока (через безопасную RPC функцию)
     async savePlayer(playerData) {
-        console.log('🔄 [DB] savePlayer вызван');
-
         if (!this.currentPlayer) {
             console.warn('⚠️ [DB] currentPlayer не установлен - сохранение невозможно');
             return false;
         }
 
         const telegramId = this.getTelegramId();
-        console.log('🔄 [DB] telegram_id для сохранения:', telegramId);
 
         try {
             // Сохраняем constructions внутри buildings
@@ -164,9 +155,6 @@ class DatabaseManager {
                 training_dummy_progress: playerData.training_dummy_progress || null // Прогресс тренировочного полигона
             };
 
-            console.log('🔄 [DB] training_dummy_progress в rpcData:',
-                rpcData.training_dummy_progress ? JSON.stringify(rpcData.training_dummy_progress).substring(0, 100) : 'null');
-
             // Вызываем безопасную RPC функцию (обновляет только по telegram_id)
             const { data, error } = await this.supabase.rpc('update_player_safe', {
                 p_telegram_id: telegramId,
@@ -177,7 +165,6 @@ class DatabaseManager {
                 console.error('❌ [DB] Ошибка RPC:', error);
                 throw error;
             }
-            console.log('✅ [DB] RPC update_player_safe успешно выполнен');
 
             this.hasUnsavedChanges = false;
             return true;
@@ -191,28 +178,18 @@ class DatabaseManager {
     // Сохранить прогресс тренировочного полигона (через безопасную RPC)
     async saveTrainingDummyProgress(progress) {
         if (!this.currentPlayer) {
-            console.error('❌ [DB] currentPlayer не существует для saveTrainingDummyProgress!');
             return false;
         }
 
         const telegramId = this.getTelegramId();
-        console.log('🎯 [DB] saveTrainingDummyProgress вызван');
-        console.log('🎯 [DB] telegram_id:', telegramId);
-        console.log('🎯 [DB] progress:', JSON.stringify(progress).substring(0, 200));
 
         try {
-            // Используем RPC для безопасного обновления
-            const { data, error } = await this.supabase.rpc('update_player_safe', {
+            const { error } = await this.supabase.rpc('update_player_safe', {
                 p_telegram_id: telegramId,
                 p_data: { training_dummy_progress: progress }
             });
 
-            if (error) {
-                console.error('❌ [DB] Ошибка RPC saveTrainingDummyProgress:', error);
-                throw error;
-            }
-
-            console.log('✅ [DB] Training dummy progress сохранён через RPC!');
+            if (error) throw error;
             return true;
 
         } catch (error) {
