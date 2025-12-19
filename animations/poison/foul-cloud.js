@@ -147,7 +147,7 @@
             cloudSprite.animationSpeed = 0.15;
             cloudSprite.loop = true;
             cloudSprite.blendMode = PIXI.BLEND_MODES.MULTIPLY;
-            cloudSprite.alpha = 0.6;
+            cloudSprite.alpha = 0.3;
             cloudSprite.tint = 0x669900;
             cloudSprite.play();
 

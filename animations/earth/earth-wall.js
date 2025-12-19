@@ -102,8 +102,8 @@
 			wallSprite.rotation = Math.PI / 2;
 
 	                // Масштабируем под размер клетки
-	                const baseScale = (cellHeight * 0.8) / frameWidth;
-			const thickness = 3;  // Множитель толщины (1 = тонкая, 2 = средняя, 3 = толстая)
+	                const baseScale = (cellHeight * 0.4) / frameWidth;
+			const thickness = 1.5;  // Множитель толщины (уменьшено в 2 раза)
 			wallSprite.scale.set(baseScale, baseScale * thickness);
 
 	                // Настройки анимации вибрации
