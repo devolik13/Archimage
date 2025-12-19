@@ -311,21 +311,12 @@ window.pixiCore = {
 };
 
 function loadBattleFieldBackground() {
-    
-    // Массив доступных фонов
+
+    // Массив доступных фонов (тест 768x512 webp)
     const backgrounds = [
-        'images/battle/field-background-1.jpg',
-        'images/battle/field-background-2.jpg',
-        'images/battle/field-background-3.jpg',
-        'images/battle/field-background-4.jpg',
-        'images/battle/field-background-5.jpg',
-	'images/battle/field-background-6.jpg',
-        'images/battle/field-background-7.jpg',
-        'images/battle/field-background-8.jpg',
-        'images/battle/field-background-9.jpg',
-        'images/battle/field-background-10.jpg',
-	'images/battle/field-background-11.jpg',
-        'images/battle/field-background-12.jpg'
+        'images/battle/field-background-1.webp',
+        'images/battle/field-background-2.webp',
+        'images/battle/field-background-3.webp'
     ];
     
     // Выбираем случайный
