@@ -355,9 +355,9 @@ function loadBattleFieldBackground() {
         fieldBg.width = textureWidth * scale;
         fieldBg.height = textureHeight * scale;
 
-        // Центрируем изображение
+        // Центрируем по горизонтали, прижимаем к верху
         fieldBg.x = (screenWidth - fieldBg.width) / 2;
-        fieldBg.y = (screenHeight - fieldBg.height) / 2;
+        fieldBg.y = 0; // Прижимаем к верхнему краю
         
         // Адаптивная прозрачность в зависимости от устройства
         if (isMobile) {
