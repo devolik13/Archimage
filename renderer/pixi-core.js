@@ -312,9 +312,11 @@ window.pixiCore = {
 
 function loadBattleFieldBackground() {
 
-    // Массив доступных фонов (тест 768x432 webp - 16:9)
+    // Массив доступных фонов (768x512 webp)
     const backgrounds = [
-        'images/battle/field-background-1.webp'
+        'images/battle/field-background-1.webp',
+        'images/battle/field-background-2.webp',
+        'images/battle/field-background-3.webp'
     ];
     
     // Выбираем случайный
