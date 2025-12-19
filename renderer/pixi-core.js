@@ -345,11 +345,13 @@ function loadBattleFieldBackground() {
                          navigator.maxTouchPoints > 0 ||
                          window.innerWidth <= 768;
 
-        // РЕЖИМ "CONTAIN" - показывает всё изображение
-        // Могут быть пустые полосы по краям
+        // СМЕШАННЫЙ РЕЖИМ - компромисс между cover и contain
+        // Меньше обрезки чем cover, меньше полос чем contain
         const scaleX = screenWidth / textureWidth;
         const scaleY = screenHeight / textureHeight;
-        const scale = Math.min(scaleX, scaleY); // Выбираем МЕНЬШИЙ масштаб для contain
+        const coverScale = Math.max(scaleX, scaleY);
+        const containScale = Math.min(scaleX, scaleY);
+        const scale = (coverScale + containScale) / 2; // Среднее значение
         
         // Применяем масштаб с сохранением пропорций
         fieldBg.width = textureWidth * scale;
