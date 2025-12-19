@@ -321,7 +321,15 @@ function loadBattleFieldBackground() {
         'images/battle/field-background-5.webp',
         'images/battle/field-background-6.webp',
         'images/battle/field-background-7.webp',
-        'images/battle/field-background-8.webp'
+        'images/battle/field-background-8.webp',
+        'images/battle/field-background-9.webp',
+        'images/battle/field-background-10.webp',
+        'images/battle/field-background-11.webp',
+        'images/battle/field-background-12.webp',
+        'images/battle/field-background-13.webp',
+        'images/battle/field-background-14.webp',
+        'images/battle/field-background-15.webp',
+        'images/battle/field-background-16.webp'
     ];
     
     // Выбираем случайный
