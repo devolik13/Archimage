@@ -316,7 +316,12 @@ function loadBattleFieldBackground() {
     const backgrounds = [
         'images/battle/field-background-1.webp',
         'images/battle/field-background-2.webp',
-        'images/battle/field-background-3.webp'
+        'images/battle/field-background-3.webp',
+        'images/battle/field-background-4.webp',
+        'images/battle/field-background-5.webp',
+        'images/battle/field-background-6.webp',
+        'images/battle/field-background-7.webp',
+        'images/battle/field-background-8.webp'
     ];
     
     // Выбираем случайный
