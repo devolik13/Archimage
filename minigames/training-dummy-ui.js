@@ -744,8 +744,12 @@ function loadTrialLeaderboardLocal() {
  * Сохранить результат в Supabase рейтинг
  */
 async function saveTrialResultSupabase(damage) {
+    console.log('🏆 [TRIAL] saveTrialResultSupabase вызван, damage:', damage);
+
     const playerName = window.myUsername || window.userData?.username || 'Игрок';
     const playerId = window.dbManager?.currentPlayer?.telegram_id || window.userData?.user_id;
+
+    console.log('🏆 [TRIAL] playerId:', playerId, 'playerName:', playerName);
 
     if (!playerId) {
         console.warn('Нет telegram_id, сохраняем только локально');
@@ -762,6 +766,7 @@ async function saveTrialResultSupabase(damage) {
             return;
         }
 
+        console.log('🏆 [TRIAL] Вызываем RPC upsert_trial_result...');
         const { error } = await supabase
             .rpc('upsert_trial_result', {
                 p_player_id: playerId,
@@ -770,12 +775,12 @@ async function saveTrialResultSupabase(damage) {
             });
 
         if (error) {
-            console.error('Ошибка сохранения результата в Supabase:', error);
+            console.error('❌ [TRIAL] Ошибка сохранения результата в Supabase:', error);
         } else {
-            console.log('✅ Результат сохранён в Supabase:', damage);
+            console.log('✅ [TRIAL] Результат сохранён в Supabase:', damage);
         }
     } catch (e) {
-        console.error('Ошибка сохранения результата:', e);
+        console.error('❌ [TRIAL] Ошибка сохранения результата:', e);
     }
 }
 
