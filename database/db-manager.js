@@ -63,6 +63,12 @@ class DatabaseManager {
                 throw error;
             }
 
+            // DEBUG: Логируем что пришло из БД
+            console.log('🔍 [DB LOAD] Получены данные игрока:');
+            console.log('🔍 [DB LOAD] training_dummy_progress из БД:',
+                data.training_dummy_progress ? JSON.stringify(data.training_dummy_progress).substring(0, 200) : 'NULL/undefined');
+            console.log('🔍 [DB LOAD] Ключи в data:', Object.keys(data).join(', '));
+
             this.currentPlayer = data;
             return data;
 
