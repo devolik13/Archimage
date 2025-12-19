@@ -55,23 +55,24 @@
                 return;
             }
             
-            // 768×768, 3 колонки × 3 ряда = 9 кадров
-            const frameWidth = 768 / 3;  // 256px
-            const frameHeight = 768 / 3; // 256px
-            const totalFrames = 9;
-            
+            // 1280×1280, 5 колонок × 5 рядов = 25 кадров
+            const frameWidth = 1280 / 5;  // 256px
+            const frameHeight = 1280 / 5; // 256px
+            const totalFrames = 25;
+            const gridColumns = 5;
+
             const blizzardTextures = [];
             for (let i = 0; i < totalFrames; i++) {
-                const col = i % 3;
-                const row = Math.floor(i / 3);
-                
+                const col = i % gridColumns;
+                const row = Math.floor(i / gridColumns);
+
                 const rect = new PIXI.Rectangle(
                     col * frameWidth,
                     row * frameHeight,
                     frameWidth,
                     frameHeight
                 );
-                
+
                 blizzardTextures.push(new PIXI.Texture(texture.baseTexture, rect));
             }
             

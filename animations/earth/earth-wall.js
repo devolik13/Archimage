@@ -52,19 +52,22 @@
 	        return;
 	    }
     
-	    // 768×768, 1 колонка × 5 рядов = 5 кадров
-	    const frameWidth = texture.width;  // Должно быть 768
-            const frameHeight = texture.height / 5;  // Должно быть 153.6
-            const totalFrames = 5;
-    
+	    // 1280×1280, 5 колонок × 5 рядов = 25 кадров
+	    const frameWidth = 1280 / 5;  // 256px
+            const frameHeight = 1280 / 5;  // 256px
+            const totalFrames = 25;
+            const gridColumns = 5;
+
 	    console.log('🧱 Размер кадра:', frameWidth, 'x', frameHeight);
             console.log('🧱 Всего кадров:', totalFrames);
 
 	    const wallTextures = [];
 	    for (let i = 0; i < totalFrames; i++) {
+	        const col = i % gridColumns;
+	        const row = Math.floor(i / gridColumns);
 	        const rect = new PIXI.Rectangle(
-	            0,
-	            i * frameHeight,
+	            col * frameWidth,
+	            row * frameHeight,
 	            frameWidth,
 	            frameHeight
 	        );

@@ -116,24 +116,26 @@
                 return;
             }
 
-            // Изображение 500x500, делим на сетку 3x3
+            // Изображение 1280x1280, делим на сетку 5x5 = 25 кадров
             const frames = [];
-            const frameWidth = Math.floor(500 / 3);  // ~166
-            const frameHeight = Math.floor(500 / 3); // ~166
+            const frameWidth = 1280 / 5;  // 256px
+            const frameHeight = 1280 / 5; // 256px
+            const gridColumns = 5;
+            const totalFrames = 25;
 
-            for (let row = 0; row < 3; row++) {
-                for (let col = 0; col < 3; col++) {
-                    const frame = new PIXI.Texture(
-                        texture.baseTexture,
-                        new PIXI.Rectangle(
-                            col * frameWidth,
-                            row * frameHeight,
-                            frameWidth,
-                            frameHeight
-                        )
-                    );
-                    frames.push(frame);
-                }
+            for (let i = 0; i < totalFrames; i++) {
+                const col = i % gridColumns;
+                const row = Math.floor(i / gridColumns);
+                const frame = new PIXI.Texture(
+                    texture.baseTexture,
+                    new PIXI.Rectangle(
+                        col * frameWidth,
+                        row * frameHeight,
+                        frameWidth,
+                        frameHeight
+                    )
+                );
+                frames.push(frame);
             }
 
             console.log('☠️ Создано кадров:', frames.length);

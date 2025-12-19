@@ -22,9 +22,10 @@
             death: 'images/wizards/nature/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
-            scale: 0.350 // Масштаб для спрайта 256x256
+            frameCount: 25, // 5×5 сетка (1280×1280)
+            gridColumns: 5,
+            animationSpeed: 0.12,
+            scale: 0.350
         },
         fire: {
             idle: 'images/wizards/fire/idle.webp',
@@ -54,8 +55,9 @@
             death: 'images/wizards/earth/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
+            frameCount: 25, // 5×5 сетка (1280×1280)
+            gridColumns: 5,
+            animationSpeed: 0.12,
             scale: 0.350
         },
         wind: {
@@ -64,8 +66,9 @@
             death: 'images/wizards/wind/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
+            frameCount: 25, // 5×5 сетка (1280×1280)
+            gridColumns: 5,
+            animationSpeed: 0.12,
             scale: 0.350
         },
         poison: {
@@ -74,9 +77,10 @@
             death: 'images/wizards/poison/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
-            scale: 0.350, // Масштаб для спрайта 256x256
+            frameCount: 25, // 5×5 сетка (1280×1280)
+            gridColumns: 5,
+            animationSpeed: 0.12,
+            scale: 0.350,
             reverseOnDeath: true // Проигрывать анимацию смерти в обратном порядке
         },
         goblin: {
