@@ -283,37 +283,40 @@ function saveDummyProgress(progress, immediate = false) {
     }
 
     // Немедленное сохранение в БД (для важных моментов)
-    // ВАЖНО: передаём ПОЛНЫЙ userData, иначе остальные поля сбросятся!
     if (immediate) {
         if (!window.dbManager) {
             console.error('❌ window.dbManager не существует!');
             return;
         }
-        if (!window.dbManager.savePlayer) {
-            console.error('❌ dbManager.savePlayer не существует!');
-            return;
-        }
 
-        // Проверяем currentPlayer
-        if (!window.dbManager.currentPlayer) {
-            console.error('❌ dbManager.currentPlayer не существует! RPC не будет вызван.');
-            return;
-        }
-
-        console.log('📝 Вызываем dbManager.savePlayer...');
-        console.log('📝 telegram_id:', window.dbManager.getTelegramId ? window.dbManager.getTelegramId() : 'N/A');
-        console.log('📝 training_dummy_progress:', JSON.stringify(window.userData.training_dummy_progress).substring(0, 100));
-
-        window.dbManager.savePlayer(window.userData).then((result) => {
-            if (result === true) {
-                console.log('✅ Trial progress РЕАЛЬНО сохранён в DB');
-            } else {
-                console.warn('⚠️ savePlayer вернул false - данные НЕ сохранены!');
+        // Используем специальную функцию для сохранения только training_dummy_progress
+        // (как saveBattleResult сохраняет только wins/losses/rating)
+        if (window.dbManager.saveTrainingDummyProgress) {
+            console.log('📝 Используем saveTrainingDummyProgress (изолированное сохранение)');
+            window.dbManager.saveTrainingDummyProgress(progress).then((result) => {
+                if (result === true) {
+                    console.log('✅ Trial progress сохранён через saveTrainingDummyProgress!');
+                } else {
+                    console.warn('⚠️ saveTrainingDummyProgress вернул false');
+                }
+            }).catch(err => {
+                console.error('❌ Ошибка saveTrainingDummyProgress:', err);
+            });
+        } else {
+            // Fallback на старый метод
+            console.log('📝 Fallback: используем savePlayer');
+            if (window.dbManager.savePlayer && window.dbManager.currentPlayer) {
+                window.dbManager.savePlayer(window.userData).then((result) => {
+                    if (result === true) {
+                        console.log('✅ Trial progress сохранён через savePlayer');
+                    } else {
+                        console.warn('⚠️ savePlayer вернул false');
+                    }
+                }).catch(err => {
+                    console.error('❌ Failed to save trial progress:', err);
+                });
             }
-        }).catch(err => {
-            console.error('❌ Failed to save trial progress:', err);
-            console.error('❌ Error details:', err.message, err.code, err.details);
-        });
+        }
     }
 }
 

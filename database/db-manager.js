@@ -182,6 +182,39 @@ class DatabaseManager {
         }
     }
 
+    // Сохранить прогресс тренировочного полигона (через безопасную RPC)
+    async saveTrainingDummyProgress(progress) {
+        if (!this.currentPlayer) {
+            console.error('❌ [DB] currentPlayer не существует для saveTrainingDummyProgress!');
+            return false;
+        }
+
+        const telegramId = this.getTelegramId();
+        console.log('🎯 [DB] saveTrainingDummyProgress вызван');
+        console.log('🎯 [DB] telegram_id:', telegramId);
+        console.log('🎯 [DB] progress:', JSON.stringify(progress));
+
+        try {
+            // Используем RPC для безопасного обновления (только training_dummy_progress)
+            const { data, error } = await this.supabase.rpc('update_player_safe', {
+                p_telegram_id: telegramId,
+                p_data: { training_dummy_progress: progress }
+            });
+
+            if (error) {
+                console.error('❌ [DB] Ошибка RPC saveTrainingDummyProgress:', error);
+                throw error;
+            }
+
+            console.log('✅ [DB] Training dummy progress сохранён!');
+            return true;
+
+        } catch (error) {
+            console.error('❌ [DB] Ошибка сохранения training dummy progress:', error);
+            return false;
+        }
+    }
+
     // Сохранить расстановку войск (через безопасную RPC)
     async saveFormation(formation) {
         if (!this.currentPlayer) {
