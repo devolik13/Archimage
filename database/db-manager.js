@@ -104,7 +104,15 @@ class DatabaseManager {
 
     // Сохранить данные игрока (через безопасную RPC функцию)
     async savePlayer(playerData) {
-        if (!this.currentPlayer) return false;
+        console.log('🔄 [DB] savePlayer вызван');
+
+        if (!this.currentPlayer) {
+            console.warn('⚠️ [DB] currentPlayer не установлен - сохранение невозможно');
+            return false;
+        }
+
+        const telegramId = this.getTelegramId();
+        console.log('🔄 [DB] telegram_id для сохранения:', telegramId);
 
         try {
             // Сохраняем constructions внутри buildings
@@ -150,30 +158,26 @@ class DatabaseManager {
                 training_dummy_progress: playerData.training_dummy_progress || null // Прогресс тренировочного полигона
             };
 
-            // DEBUG: Логируем faction_changed перед отправкой в RPC (закомментировано)
-            // console.log(`🔍 [RPC DEBUG] Отправка в update_player_safe: faction_changed = ${rpcData.faction_changed}`);
-            // console.log(`🪂 [RPC DEBUG] Airdrop данные в rpcData:`);
-            // console.log(`  - airdrop_points: ${rpcData.airdrop_points}`);
-            // console.log(`  - airdrop_breakdown:`, rpcData.airdrop_breakdown);
-            // console.log(`  - wallet_address: ${rpcData.wallet_address}`);
+            console.log('🔄 [DB] training_dummy_progress в rpcData:',
+                rpcData.training_dummy_progress ? JSON.stringify(rpcData.training_dummy_progress).substring(0, 100) : 'null');
 
             // Вызываем безопасную RPC функцию (обновляет только по telegram_id)
             const { data, error } = await this.supabase.rpc('update_player_safe', {
-                p_telegram_id: this.getTelegramId(),
+                p_telegram_id: telegramId,
                 p_data: rpcData
             });
 
             if (error) {
-                console.error('❌ [RPC DEBUG] Ошибка RPC:', error);
+                console.error('❌ [DB] Ошибка RPC:', error);
                 throw error;
             }
-            console.log('✅ [RPC DEBUG] RPC успешно выполнен');
+            console.log('✅ [DB] RPC update_player_safe успешно выполнен');
 
             this.hasUnsavedChanges = false;
             return true;
 
         } catch (error) {
-            console.error('Ошибка сохранения игрока:', error);
+            console.error('❌ [DB] Ошибка сохранения игрока:', error);
             return false;
         }
     }
