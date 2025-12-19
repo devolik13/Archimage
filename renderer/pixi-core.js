@@ -312,11 +312,9 @@ window.pixiCore = {
 
 function loadBattleFieldBackground() {
 
-    // Массив доступных фонов (тест 768x512 webp)
+    // Массив доступных фонов (тест 768x432 webp - 16:9)
     const backgrounds = [
-        'images/battle/field-background-1.webp',
-        'images/battle/field-background-2.webp',
-        'images/battle/field-background-3.webp'
+        'images/battle/field-background-1.webp'
     ];
     
     // Выбираем случайный
@@ -355,10 +353,9 @@ function loadBattleFieldBackground() {
         fieldBg.width = textureWidth * scale;
         fieldBg.height = textureHeight * scale;
 
-        // Смещаем влево - справа UI кнопки всё равно закрывают
-        // Это позволяет показать больше контента сверху/снизу
-        fieldBg.x = 0; // Прижимаем к левому краю
-        fieldBg.y = (screenHeight - fieldBg.height) / 2; // Центрируем по вертикали
+        // Центрируем изображение
+        fieldBg.x = (screenWidth - fieldBg.width) / 2;
+        fieldBg.y = (screenHeight - fieldBg.height) / 2;
         
         // Адаптивная прозрачность в зависимости от устройства
         if (isMobile) {
