@@ -89,10 +89,10 @@
                 blizzardSprite.y = cellData.y + cellData.height / 2;
                 blizzardSprite.anchor.set(0.5);
 
-                // Масштабируем как fire-wall
+                // Масштабируем как fire-wall (уменьшено на 20%)
                 const baseScale = cellData.cellScale || 1.0;
                 const scaleFactor = baseScale * 0.5;
-                blizzardSprite.scale.set(scaleFactor * 0.8, scaleFactor * 0.8);
+                blizzardSprite.scale.set(scaleFactor * 0.64, scaleFactor * 0.64);
 
                 blizzardSprite.animationSpeed = 0.25;
                 blizzardSprite.loop = true;
