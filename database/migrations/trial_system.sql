@@ -125,10 +125,10 @@ BEGIN
         attempts_count = trial_leaderboard.attempts_count + 1,
         updated_at = now();
 
-    -- Обновляем лучший результат в players
+    -- Обновляем лучший результат в players (по telegram_id)
     UPDATE players
     SET trial_best_damage = GREATEST(COALESCE(trial_best_damage, 0), p_damage)
-    WHERE id = p_player_id;
+    WHERE telegram_id = p_player_id;
 END;
 $$;
 

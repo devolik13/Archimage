@@ -648,7 +648,7 @@ async function showTrialLeaderboardInArena() {
         `;
     } else {
         let html = '';
-        const playerId = window.myPlayerId || window.userData?.id || 'local';
+        const playerId = window.dbManager?.currentPlayer?.telegram_id || window.userData?.user_id || 'local';
         leaderboard.forEach((entry, index) => {
             const rank = entry.rank || (index + 1);
             const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}.`;
@@ -744,11 +744,11 @@ function loadTrialLeaderboardLocal() {
  * Сохранить результат в Supabase рейтинг
  */
 async function saveTrialResultSupabase(damage) {
-    const playerName = window.myUsername || window.userData?.name || 'Игрок';
-    const playerId = window.myPlayerId || window.userData?.id;
+    const playerName = window.myUsername || window.userData?.username || 'Игрок';
+    const playerId = window.dbManager?.currentPlayer?.telegram_id || window.userData?.user_id;
 
     if (!playerId) {
-        console.warn('Нет player_id, сохраняем только локально');
+        console.warn('Нет telegram_id, сохраняем только локально');
         return saveTrialResultLocal(damage);
     }
 
@@ -783,8 +783,8 @@ async function saveTrialResultSupabase(damage) {
  * Сохранить результат в локальный рейтинг (fallback)
  */
 function saveTrialResultLocal(damage) {
-    const playerName = window.myUsername || 'Игрок';
-    const playerId = window.myPlayerId || 'local';
+    const playerName = window.myUsername || window.userData?.username || 'Игрок';
+    const playerId = window.dbManager?.currentPlayer?.telegram_id || window.userData?.user_id || 'local';
 
     let leaderboard = loadTrialLeaderboardLocal();
     const existingIndex = leaderboard.findIndex(e => e.playerId === playerId);
@@ -808,7 +808,7 @@ function saveTrialResultLocal(damage) {
  * Получить позицию игрока в рейтинге из Supabase
  */
 async function getPlayerTrialRankSupabase() {
-    const playerId = window.myPlayerId || window.userData?.id;
+    const playerId = window.dbManager?.currentPlayer?.telegram_id || window.userData?.user_id;
     const supabase = window.dbManager?.supabase;
 
     if (!playerId || !supabase) {
@@ -853,7 +853,7 @@ function getLastWeekYear() {
  * Вызывается при входе игрока в игру
  */
 async function checkAndClaimTrialReward() {
-    const playerId = window.myPlayerId || window.userData?.id;
+    const playerId = window.dbManager?.currentPlayer?.telegram_id || window.userData?.user_id;
     const supabase = window.dbManager?.supabase;
 
     if (!playerId || !supabase) {
