@@ -100,7 +100,8 @@ class EventSaveManager {
                 current_season: window.userData.current_season || 1, // Текущий сезон
                 season_league_rewards_claimed: window.userData.season_league_rewards_claimed || [], // Полученные награды за лиги
                 unlocked_skins: window.userData.unlocked_skins || [], // Разблокированные скины
-                wizard_skins: window.userData.wizard_skins || {} // Выбранные скины для магов
+                wizard_skins: window.userData.wizard_skins || {}, // Выбранные скины для магов
+                training_dummy_progress: window.userData.training_dummy_progress || null // Прогресс тренировочного полигона
             });
 
             const success = await window.dbManager.savePlayer(playerData);
