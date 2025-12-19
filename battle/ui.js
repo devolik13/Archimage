@@ -43,7 +43,7 @@ function renderBattleField() {
                 flex: 1;
                 width: 100%;
                 position: relative;
-                padding: 20px 0;
+                overflow: hidden;
             "></div>
             
             <!-- НИЖНЯЯ панель с информацией (приподнята выше) -->
