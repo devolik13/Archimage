@@ -27,6 +27,9 @@ COMMENT ON COLUMN payments.payment_method IS 'Способ оплаты: stars �
 COMMENT ON COLUMN payments.ton_transaction_hash IS 'Хеш TON транзакции (BOC)';
 
 -- 6. Update get_player_purchases to include TON
+-- Сначала удаляем старую функцию (изменился тип возврата)
+DROP FUNCTION IF EXISTS get_player_purchases(BIGINT);
+
 CREATE OR REPLACE FUNCTION get_player_purchases(p_telegram_id BIGINT)
 RETURNS TABLE(
     total_spent_stars INTEGER,
