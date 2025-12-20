@@ -2,15 +2,13 @@
 -- Таблица для реферальной системы
 
 CREATE TABLE IF NOT EXISTS referrals (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id SERIAL PRIMARY KEY,
 
-    -- Кто пригласил
-    referrer_id UUID REFERENCES players(id) ON DELETE SET NULL,
-    referrer_telegram_id BIGINT NOT NULL,
+    -- Кто пригласил (по telegram_id)
+    referrer_telegram_id BIGINT NOT NULL REFERENCES players(telegram_id) ON DELETE CASCADE,
 
-    -- Кого пригласили
-    referred_id UUID REFERENCES players(id) ON DELETE CASCADE,
-    referred_telegram_id BIGINT NOT NULL,
+    -- Кого пригласили (по telegram_id)
+    referred_telegram_id BIGINT NOT NULL REFERENCES players(telegram_id) ON DELETE CASCADE,
 
     -- Награда
     reward_amount INTEGER NOT NULL DEFAULT 1440, -- Минуты времени (1 день = 1440)
@@ -27,22 +25,33 @@ CREATE TABLE IF NOT EXISTS referrals (
 );
 
 -- Индексы для быстрого поиска
-CREATE INDEX IF NOT EXISTS idx_referrals_referrer_id ON referrals(referrer_id);
-CREATE INDEX IF NOT EXISTS idx_referrals_referrer_telegram_id ON referrals(referrer_telegram_id);
-CREATE INDEX IF NOT EXISTS idx_referrals_referred_telegram_id ON referrals(referred_telegram_id);
+CREATE INDEX IF NOT EXISTS idx_referrals_referrer ON referrals(referrer_telegram_id);
+CREATE INDEX IF NOT EXISTS idx_referrals_referred ON referrals(referred_telegram_id);
 CREATE INDEX IF NOT EXISTS idx_referrals_created_at ON referrals(created_at DESC);
 
 -- Комментарии
 COMMENT ON TABLE referrals IS 'История реферальных приглашений';
-COMMENT ON COLUMN referrals.referrer_id IS 'UUID игрока, который пригласил';
 COMMENT ON COLUMN referrals.referrer_telegram_id IS 'Telegram ID пригласившего';
-COMMENT ON COLUMN referrals.referred_id IS 'UUID приглашённого игрока';
 COMMENT ON COLUMN referrals.referred_telegram_id IS 'Telegram ID приглашённого';
 COMMENT ON COLUMN referrals.reward_amount IS 'Награда в минутах времени';
 COMMENT ON COLUMN referrals.total_purchase_bonus IS 'Сумма бонусов от покупок приглашённого';
 
--- Функция для подсчёта рефералов игрока
-CREATE OR REPLACE FUNCTION get_referral_stats(p_player_id UUID)
+-- Функция для подсчёта рефералов по telegram_id
+CREATE OR REPLACE FUNCTION get_referral_count(p_telegram_id BIGINT)
+RETURNS INTEGER AS $$
+DECLARE
+    result INTEGER;
+BEGIN
+    SELECT COUNT(*)::INTEGER INTO result
+    FROM referrals
+    WHERE referrer_telegram_id = p_telegram_id;
+
+    RETURN COALESCE(result, 0);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Функция для получения статистики рефералов
+CREATE OR REPLACE FUNCTION get_referral_stats(p_telegram_id BIGINT)
 RETURNS TABLE(
     referral_count INTEGER,
     total_time_earned INTEGER,
@@ -55,21 +64,7 @@ BEGIN
         COALESCE(SUM(reward_amount), 0)::INTEGER as total_time_earned,
         COALESCE(SUM(r.total_purchase_bonus), 0)::INTEGER as total_purchase_bonus
     FROM referrals r
-    WHERE r.referrer_id = p_player_id;
-END;
-$$ LANGUAGE plpgsql;
-
--- Функция для подсчёта рефералов по telegram_id
-CREATE OR REPLACE FUNCTION get_referral_count_by_telegram(p_telegram_id BIGINT)
-RETURNS INTEGER AS $$
-DECLARE
-    result INTEGER;
-BEGIN
-    SELECT COUNT(*)::INTEGER INTO result
-    FROM referrals
-    WHERE referrer_telegram_id = p_telegram_id;
-
-    RETURN COALESCE(result, 0);
+    WHERE r.referrer_telegram_id = p_telegram_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -90,3 +85,5 @@ CREATE POLICY "Service can manage referrals" ON referrals
 -- Грантим права
 GRANT SELECT, INSERT, UPDATE ON referrals TO authenticated;
 GRANT SELECT, INSERT, UPDATE ON referrals TO anon;
+GRANT USAGE, SELECT ON SEQUENCE referrals_id_seq TO authenticated;
+GRANT USAGE, SELECT ON SEQUENCE referrals_id_seq TO anon;
