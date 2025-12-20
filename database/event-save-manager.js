@@ -8,6 +8,7 @@ class EventSaveManager {
     constructor() {
         this.saveInProgress = false;
         this.pendingSave = false;
+        this.pendingSavePromises = []; // Массив промисов ожидающих сохранения
         this.debounceTimers = {};
         this.lastSaveTime = 0;
         this.minSaveInterval = 500; // Минимум 500ms между сохранениями
@@ -15,12 +16,16 @@ class EventSaveManager {
 
     /**
      * 🔴 CRITICAL: Save immediately (battle end, building complete, etc.)
+     * ВАЖНО: Теперь функция ГАРАНТИРОВАННО дожидается завершения сохранения
      */
     async saveImmediate(reason) {
-
+        // Если сохранение уже идёт - ждём его завершения
         if (this.saveInProgress) {
             this.pendingSave = true;
-            return;
+            // Создаём промис который разрешится когда текущее сохранение завершится
+            return new Promise((resolve) => {
+                this.pendingSavePromises.push(resolve);
+            });
         }
 
         // Защита от слишком частых сохранений
@@ -28,11 +33,16 @@ class EventSaveManager {
         const timeSinceLastSave = now - this.lastSaveTime;
         if (timeSinceLastSave < this.minSaveInterval) {
             const delay = this.minSaveInterval - timeSinceLastSave;
-            setTimeout(() => this.saveImmediate(reason), delay);
-            return;
+            // ВАЖНО: Возвращаем промис который разрешится после отложенного сохранения
+            return new Promise((resolve) => {
+                setTimeout(async () => {
+                    const result = await this._performSave(reason);
+                    resolve(result);
+                }, delay);
+            });
         }
 
-        await this._performSave(reason);
+        return await this._performSave(reason);
     }
 
     /**
@@ -114,6 +124,11 @@ class EventSaveManager {
 
             this.saveInProgress = false;
 
+            // Резолвим все ожидающие промисы
+            const pendingPromises = this.pendingSavePromises;
+            this.pendingSavePromises = [];
+            pendingPromises.forEach(resolve => resolve(success));
+
             // Если было запланировано ещё одно сохранение
             if (this.pendingSave) {
                 this.pendingSave = false;
@@ -125,6 +140,12 @@ class EventSaveManager {
         } catch (error) {
             console.error('❌ Ошибка в _performSave:', error);
             this.saveInProgress = false;
+
+            // Резолвим ожидающие промисы с false при ошибке
+            const pendingPromises = this.pendingSavePromises;
+            this.pendingSavePromises = [];
+            pendingPromises.forEach(resolve => resolve(false));
+
             return false;
         }
     }

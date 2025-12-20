@@ -131,10 +131,10 @@ const SHOP_CONFIG = {
     // Курс: 1 Star = 1.79₽ = $0.0224 USD, TON курс динамический из CoinGecko API
     premium: [
         {
-            id: 'time_pack_test',
-            name: '🧪 Тест (1 час)',
-            description: '+1 час игрового времени (тест)',
-            icon: '🧪',
+            id: 'time_pack_1hour',
+            name: '⏰ 1 час',
+            description: '+1 час игрового времени',
+            icon: '⏰',
             price: 10,
             priceUSD: 0.22, // 10 Stars × $0.0224
             currency: 'dual',
@@ -1252,7 +1252,7 @@ function calculateFactionChangePrice(targetFaction) {
 }
 
 /**
- * Диалог смены фракции
+ * Диалог смены фракции (на том же фоне что и магазин)
  */
 function showChangeFactionDialog(item) {
     const isFree = !window.userData?.faction_changed;
@@ -1279,6 +1279,9 @@ function showChangeFactionDialog(item) {
     // Сохраняем цены для использования в confirmFactionChange
     window._factionChangePrices = factionPrices;
 
+    // Используем тот же фон что и магазин
+    const imagePath = `assets/ui/guild/guild_${currentFaction}.webp`;
+
     const dialog = document.createElement('div');
     dialog.id = 'faction-change-dialog';
     dialog.style.cssText = `
@@ -1287,13 +1290,14 @@ function showChangeFactionDialog(item) {
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.9);
         z-index: 9500;
         display: flex;
         align-items: center;
         justify-content: center;
     `;
 
+    // Генерируем кнопки фракций
     const factionButtons = factions
         .filter(f => f !== currentFaction)
         .map(faction => {
@@ -1315,6 +1319,7 @@ function showChangeFactionDialog(item) {
                     transition: all 0.2s;
                     text-align: center;
                     min-width: 140px;
+                    pointer-events: auto;
                 " onmouseover="this.style.borderColor='#ffd700'; this.style.background='rgba(0,0,0,0.8)'"
                    onmouseout="this.style.borderColor='rgba(255,215,0,0.3)'; this.style.background='rgba(0,0,0,0.6)'">
                     <div style="font-size: 16px; margin-bottom: 4px;">${factionNames[faction]}</div>
@@ -1332,38 +1337,73 @@ function showChangeFactionDialog(item) {
         : 'Цена зависит от изученных заклинаний';
 
     dialog.innerHTML = `
-        <div style="
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border: 2px solid #ffd700;
-            border-radius: 15px;
-            padding: 20px;
-            max-width: 400px;
-            text-align: center;
-        ">
-            <h3 style="color: #ffd700; margin: 0 0 10px 0;">🔄 Смена фракции</h3>
-            <p style="color: #aaa; font-size: 13px; margin-bottom: 10px;">
-                ${headerText}
-            </p>
-            <p style="color: #4ade80; font-size: 11px; margin-bottom: 15px;">
-                ✅ Маги, здания и заклинания сохраняются!
-            </p>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px;">
-                ${factionButtons}
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <img id="faction-change-bg" src="${imagePath}" alt="Фон" style="
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+            ">
+            <div id="faction-change-overlay" style="
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                pointer-events: none;
+            ">
+                <div style="
+                    background: rgba(0,0,0,0.85);
+                    border: 2px solid #ffd700;
+                    border-radius: 15px;
+                    padding: 20px;
+                    max-width: 380px;
+                    text-align: center;
+                    pointer-events: auto;
+                    backdrop-filter: blur(10px);
+                ">
+                    <h3 style="color: #ffd700; margin: 0 0 10px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">🔄 Смена фракции</h3>
+                    <p style="color: #ccc; font-size: 13px; margin-bottom: 10px;">
+                        ${headerText}
+                    </p>
+                    <p style="color: #4ade80; font-size: 11px; margin-bottom: 15px;">
+                        ✅ Маги, здания и заклинания сохраняются!
+                    </p>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px;">
+                        ${factionButtons}
+                    </div>
+                    <button onclick="closeFactionChangeDialog()" style="
+                        width: 100%;
+                        margin-top: 10px;
+                        padding: 10px;
+                        background: rgba(255,100,100,0.3);
+                        border: 1px solid rgba(255,100,100,0.5);
+                        border-radius: 8px;
+                        color: white;
+                        cursor: pointer;
+                        pointer-events: auto;
+                    ">Отмена</button>
+                </div>
             </div>
-            <button onclick="closeFactionChangeDialog()" style="
-                width: 100%;
-                margin-top: 10px;
-                padding: 10px;
-                background: rgba(255,100,100,0.3);
-                border: 1px solid rgba(255,100,100,0.5);
-                border-radius: 8px;
-                color: white;
-                cursor: pointer;
-            ">Отмена</button>
         </div>
     `;
 
     document.body.appendChild(dialog);
+
+    // Подстраиваем размер контента под фон
+    const bgImg = document.getElementById('faction-change-bg');
+    const overlayEl = document.getElementById('faction-change-overlay');
+
+    const setupSize = () => {
+        if (bgImg && overlayEl) {
+            const rect = bgImg.getBoundingClientRect();
+            overlayEl.style.width = rect.width + 'px';
+            overlayEl.style.height = rect.height + 'px';
+        }
+    };
+
+    bgImg.onload = setupSize;
+    if (bgImg.complete) setupSize();
 }
 
 /**

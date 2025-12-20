@@ -82,7 +82,26 @@ async function startConstruction(buildingId, cellIndex, isUpgrade = false, targe
     }
     window.userData.constructions.push(construction);
 
-    // ============ НОВЫЙ КОД: ДОБАВЛЯЕМ ВИЗУАЛИЗАЦИЮ МОЛОТКА ============
+    updateConstructionUI();
+
+    // ВАЖНО: Дожидаемся сохранения и проверяем успешность
+    const saveSuccess = await saveConstruction();
+
+    if (!saveSuccess) {
+        console.error('❌ Не удалось сохранить строительство в БД');
+        // Откатываем добавление конструкции
+        const index = window.userData.constructions.findIndex(c =>
+            c.type === 'building' && c.building_id === buildingId && c.started_at === construction.started_at
+        );
+        if (index !== -1) {
+            window.userData.constructions.splice(index, 1);
+        }
+        updateConstructionUI();
+        alert('⚠️ Ошибка сохранения! Попробуйте ещё раз.');
+        return false;
+    }
+
+    // ============ ДОБАВЛЯЕМ ВИЗУАЛИЗАЦИЮ МОЛОТКА ============
     // Показываем молоток в правильной позиции на здании
     if (!isUpgrade && window.addConstructionVisualization) {
         console.log('🔨 Добавляем визуализацию молотка для', buildingId);
@@ -96,9 +115,7 @@ async function startConstruction(buildingId, cellIndex, isUpgrade = false, targe
         }, 100);
     }
     // =====================================================================
-    
-    updateConstructionUI();
-    await saveConstruction();
+
     return true;
 }
 
@@ -130,7 +147,23 @@ async function startSpellLearning(spellId, faction, tier, currentLevel) {
     window.userData.constructions.push(construction);
 
     updateConstructionUI();
-    await saveConstruction();
+
+    // ВАЖНО: Дожидаемся сохранения и проверяем успешность
+    const saveSuccess = await saveConstruction();
+
+    if (!saveSuccess) {
+        console.error('❌ Не удалось сохранить изучение заклинания в БД');
+        // Откатываем добавление конструкции если сохранение не удалось
+        const index = window.userData.constructions.findIndex(c =>
+            c.type === 'spell' && c.spell_id === spellId && c.started_at === construction.started_at
+        );
+        if (index !== -1) {
+            window.userData.constructions.splice(index, 1);
+        }
+        updateConstructionUI();
+        alert('⚠️ Ошибка сохранения! Попробуйте ещё раз.');
+        return false;
+    }
 
     // НОВОЕ: Добавляем визуализацию исследования на библиотеке
     if (window.addSpellResearchVisualization) {
@@ -181,6 +214,25 @@ async function startWizardHire(currentWizardCount) {
     }
     window.userData.constructions.push(construction);
 
+    updateConstructionUI();
+
+    // ВАЖНО: Дожидаемся сохранения и проверяем успешность
+    const saveSuccess = await saveConstruction();
+
+    if (!saveSuccess) {
+        console.error('❌ Не удалось сохранить найм мага в БД');
+        // Откатываем добавление конструкции
+        const index = window.userData.constructions.findIndex(c =>
+            c.type === 'wizard' && c.wizard_index === currentWizardCount + 1 && c.started_at === construction.started_at
+        );
+        if (index !== -1) {
+            window.userData.constructions.splice(index, 1);
+        }
+        updateConstructionUI();
+        alert('⚠️ Ошибка сохранения! Попробуйте ещё раз.');
+        return false;
+    }
+
     // Добавляем визуализацию найма мага
     if (window.addWizardHireVisualization && timeRequired > 0) {
         console.log('🧙 Добавляем визуализацию найма мага');
@@ -188,9 +240,6 @@ async function startWizardHire(currentWizardCount) {
             window.addWizardHireVisualization();
         }, 100);
     }
-
-    updateConstructionUI();
-    await saveConstruction();
 
     // Если время = 0 (первый маг), сразу завершаем
     if (timeRequired === 0) {
@@ -1055,11 +1104,22 @@ function initConstructionSystem() {
 async function saveConstructionsToServer() {
     // ВАЖНО: Сохраняем НЕМЕДЛЕННО, а не ждём автосохранения
     if (window.eventSaveManager) {
-        await window.eventSaveManager.saveImmediate('construction_started');
-        console.log('💾 Конструкция сохранена немедленно');
+        const success = await window.eventSaveManager.saveImmediate('construction_started');
+        if (success) {
+            console.log('💾 Конструкция сохранена немедленно');
+        } else {
+            console.error('❌ Ошибка сохранения конструкции!');
+            // Показываем уведомление пользователю о проблеме с сохранением
+            if (typeof window.showNotification === 'function') {
+                window.showNotification('⚠️ Возможны проблемы с сохранением. Проверьте соединение.', 'warning');
+            }
+        }
+        return success;
     } else if (window.dbManager) {
         window.dbManager.markChanged();
+        return true;
     }
+    return false;
     
     /* СТАРЫЙ КОД - ОТКЛЮЧЕН
     if (window.dbManager) {

@@ -110,7 +110,7 @@ if (typeof window !== 'undefined') {
 // Функция определения школы заклинания
 function getSpellSchoolFallback(spellId) {
     if (!spellId) return null;
-    
+
     // Маппинг заклинаний по школам (на основе структуры проекта)
     const spellSchools = {
         // Огонь
@@ -118,36 +118,40 @@ function getSpellSchoolFallback(spellId) {
         'firebolt': 'fire',
         'fireball': 'fire',
         'fire_wall': 'fire',
+        'fire_ground': 'fire',
         'fire_tsunami': 'fire',
-        
-        // Вода  
+        'burning': 'fire',
+
+        // Вода
         'icicle': 'water',
         'frost_arrow': 'water',
         'ice_rain': 'water',
         'blizzard': 'water',
         'absolute_zero': 'water',
-        
+
         // Ветер
         'gust': 'wind',
         'wind_blade': 'wind',
         'wind_wall': 'wind',
         'storm_cloud': 'wind',
         'ball_lightning': 'wind',
-        
+
         // Земля
         'pebble': 'earth',
         'stone_spike': 'earth',
         'earth_wall': 'earth',
         'stone_grotto': 'earth',
         'meteor_shower': 'earth',
-        
+
         // Природа
         'call_wolf': 'nature',
+        'wolf_attack': 'nature',
+        'wolf_splash': 'nature',
         'bark_armor': 'nature',
         'leaf_canopy': 'nature',
         'ent': 'nature',
         'meteorokinesis': 'nature',
-        
+
         // Яд
         'poisoned_blade': 'poison',
         'poisoned_glade': 'poison',
@@ -155,8 +159,20 @@ function getSpellSchoolFallback(spellId) {
         'plague': 'poison',
         'epidemic': 'poison'
     };
-    
-    return spellSchools[spellId] || null;
+
+    // Если найдено напрямую - возвращаем
+    if (spellSchools[spellId]) {
+        return spellSchools[spellId];
+    }
+
+    // Проверяем по префиксу (для вариаций типа fire_wall_tier2)
+    for (const [spell, school] of Object.entries(spellSchools)) {
+        if (spellId.startsWith(spell)) {
+            return school;
+        }
+    }
+
+    return null;
 }
 
 // Экспорт

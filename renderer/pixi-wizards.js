@@ -828,6 +828,14 @@
             container.poisonIcon = null;
         }
 
+        // Удаляем эффект горения при смерти
+        if (window.spellAnimations?.burning?.remove) {
+            // Определяем тип (player/enemy) по колонке
+            const casterType = wizardCol === 5 ? 'player' : 'enemy';
+            const effectKey = `${casterType}_${wizardRow}`;
+            window.spellAnimations.burning.remove(effectKey);
+        }
+
         const sprite = container.sprite;
         
         if (!isSpriteValid(sprite)) {
