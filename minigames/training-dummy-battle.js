@@ -57,6 +57,11 @@ async function startDummyBattle() {
     window.enemyFormation = [null, null, dummy, null, null]; // Манекен в центре
     window.enemyWizards = [dummy];
 
+    // Инициализируем статистику боя для опыта
+    if (typeof window.initBattleStats === 'function') {
+        window.initBattleStats();
+    }
+
     // Показываем поле боя
     if (typeof window.showBattleField === 'function') {
         await window.showBattleField();
@@ -223,6 +228,22 @@ async function endDummyBattle() {
     // Записываем результат с остатком HP
     const progress = window.recordAttempt(totalDamage, remainingHp);
 
+    // Рассчитываем и начисляем опыт (тренировка всегда считается победой)
+    let expResults = [];
+    if (typeof window.calculateAndGrantBattleExp === 'function') {
+        expResults = window.calculateAndGrantBattleExp(true);
+
+        // Сохраняем опыт в базу данных
+        if (expResults.length > 0 && typeof window.onWizardsGainedExperience === 'function') {
+            const wizardIds = window.playerFormation.filter(id => id !== null);
+            const totalExp = expResults.reduce((sum, r) => sum + r.expGained, 0);
+            window.onWizardsGainedExperience(wizardIds, totalExp);
+        }
+    }
+
+    // Сохраняем результаты XP для отображения
+    dummyBattleState.expResults = expResults;
+
     // Логируем результат
     if (typeof window.addToBattleLog === 'function') {
         window.addToBattleLog(`\n🏁 ═══ ТРЕНИРОВКА ЗАВЕРШЕНА ═══`);
@@ -273,7 +294,7 @@ async function endDummyBattle() {
 
         // Показываем результат с задержкой для загрузки арены
         setTimeout(() => {
-            showDummyResult(totalDamage, progress);
+            showDummyResult(totalDamage, progress, dummyBattleState.expResults || []);
         }, 150);
     }, 1500);
 }
@@ -281,7 +302,7 @@ async function endDummyBattle() {
 /**
  * Показать окно результата (используем arena-ui-overlay как в PvP)
  */
-function showDummyResult(damage, progress) {
+function showDummyResult(damage, progress, expResults = []) {
     // Сбрасываем флаг
     window.isTrainingDummyBattle = false;
 
@@ -289,6 +310,28 @@ function showDummyResult(damage, progress) {
     const nextReward = window.WEEKLY_REWARDS.find(r => r.minDamage > progress.totalDamage);
     const remaining = window.getRemainingAttempts();
     const config = window.getCurrentDummyConfig();
+
+    // Формируем блок с опытом
+    const totalExp = expResults.reduce((sum, r) => sum + r.expGained, 0);
+    let expHtml = '';
+    if (expResults.length > 0) {
+        const expLines = expResults.map(r => {
+            let line = `<div style="font-size: 13px; color: #fbbf24;">${r.name}: +${r.expGained} XP</div>`;
+            if (r.levelGained > 0) {
+                line += `<div style="font-size: 11px; color: #4ade80;">⭐ Уровень повышен до ${r.newLevel}!</div>`;
+            }
+            return line;
+        }).join('');
+
+        expHtml = `
+            <div style="background: rgba(251, 191, 36, 0.1); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid rgba(251, 191, 36, 0.3);">
+                <div style="font-size: 14px; color: #fbbf24; margin-bottom: 8px;">
+                    ✨ Опыт получен: +${totalExp} XP
+                </div>
+                ${expLines}
+            </div>
+        `;
+    }
 
     // Получаем overlay арены (как в PvP showArenaResult)
     const overlay = document.getElementById('arena-ui-overlay');
@@ -333,6 +376,8 @@ function showDummyResult(damage, progress) {
                     Лучшая попытка: ${progress.bestAttempt.toLocaleString()}
                 </div>
             </div>
+
+            ${expHtml}
 
             <div style="background: rgba(26, 58, 26, 0.5); padding: 15px; border-radius: 10px; margin-bottom: 12px; border: 1px solid rgba(74, 222, 128, 0.3);">
                 <div style="font-size: 18px; color: #4ade80; margin-bottom: 5px;">
@@ -422,6 +467,8 @@ function showDummyResult(damage, progress) {
                         Лучшая попытка: ${progress.bestAttempt.toLocaleString()}
                     </div>
                 </div>
+
+                ${expHtml}
 
                 <div style="background: #1a3a1a; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
                     <div style="font-size: 18px; color: #4ade80; margin-bottom: 5px;">
