@@ -39,13 +39,7 @@ function castPoisonedBlade(wizard, spellData, position, casterType) {
         return;
     }
     
-    // Проверяем доступность новой системы
-    if (!window.castSingleTargetSpell) {
-        console.warn('⚠️ Single-target система не загружена, используем старую версию');
-        return castPoisonedBladeOld(wizard, spellData, position, casterType, target);
-    }
-    
-    // Запускаем через новую систему
+    // Запускаем через систему single-target
     window.castSingleTargetSpell({
         caster: wizard,
         target: target,
@@ -92,59 +86,6 @@ function castPoisonedBlade(wizard, spellData, position, casterType) {
         onComplete: (finalResult) => {
         }
     });
-}
-
-// СТАРАЯ ВЕРСИЯ для fallback
-function castPoisonedBladeOld(wizard, spellData, position, casterType, target) {
-    const level = spellData.level || 1;
-    const baseDamage = [7, 8, 9, 10, 10][level - 1] || 7;
-    const poisonChance = [0.20, 0.30, 0.40, 0.50, 1.00][level - 1] || 0.20;
-    
-    if (!target) {
-        target = window.findTarget?.(position, casterType);
-    }
-    if (!target) return;
-    
-    const casterCol = casterType === 'player' ? 5 : 0;
-    const targetCol = casterType === 'player' ? 0 : 5;
-    
-    function applyBladeDamageOld() {
-        const result = window.applyDamageWithMultiLayerProtection?.(wizard, target, baseDamage, 'poisoned_blade', casterType);
-        
-        if (result) {
-            window.logProtectionResult?.(wizard, target, result, 'Отравленный клинок');
-        } else {
-            const finalDamage = window.applyFinalDamage?.(wizard, target.wizard, baseDamage, 'poisoned_blade', 0, false) || baseDamage;
-            target.wizard.hp -= finalDamage;
-            if (target.wizard.hp < 0) target.wizard.hp = 0;
-            
-            window.logSpellHit?.(wizard, target.wizard, finalDamage, 'Отравленный клинок');
-        }
-        
-        // Проверяем шанс наложения яда
-        if (Math.random() < poisonChance) {
-            if (window.applyPoisonEffect) {
-                window.applyPoisonEffect(target.wizard, 1);
-            }
-            if (window.applyPoisonFactionBonus) {
-                window.applyPoisonFactionBonus(target.wizard);
-            }
-        }
-    }
-    
-    if (window.spellAnimations?.poisoned_blade?.play) {
-        window.spellAnimations.poisoned_blade.play({
-            casterCol: casterCol,
-            casterRow: position,
-            targetCol: targetCol,
-            targetRow: target.position,
-            onHit: () => {
-                applyBladeDamageOld();
-            }
-        });
-    } else {
-        applyBladeDamageOld();
-    }
 }
 
 // --- Ядовитая поляна (Poisoned Glade) - Tier 2, AOE по случайным позициям ---
@@ -873,4 +814,3 @@ window.applyPoisonFactionBonus = applyPoisonFactionBonus;
 window.castPlague = castPlague;
 window.processPlagueEffects = processPlagueEffects;
 window.castEpidemic = castEpidemic;
-window.castPoisonedBladeOld = castPoisonedBladeOld;

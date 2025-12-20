@@ -43,12 +43,6 @@ function castGust(wizard, spellData, position, casterType) {
         return;
     }
     
-    // Проверяем доступность новой системы
-    if (!window.castSingleTargetSpell) {
-        console.warn('⚠️ Single-target система не загружена, используем старую версию');
-        return castGustOld(wizard, spellData, position, casterType, target);
-    }
-    
     // Рассчитываем бонусы ЗАРАНЕЕ
     let totalMultiplier = 1.0;
     let bonusMessages = [];
@@ -117,77 +111,6 @@ function castGust(wizard, spellData, position, casterType) {
         onComplete: (finalResult) => {
         }
     });
-}
-
-// СТАРАЯ ВЕРСИЯ для fallback
-function castGustOld(wizard, spellData, position, casterType, target) {
-    const level = spellData.level || 1;
-    const baseDamage = [8, 12, 16, 20, 25][level - 1] || 8;
-
-    if (!target) {
-        target = window.findTarget?.(position, casterType);
-    }
-    if (!target) return;
-
-    const casterCol = casterType === 'player' ? 5 : 0;
-    const targetCol = casterType === 'player' ? 0 : 5;
-    
-    if (window.spellAnimations?.gust?.play) {
-        window.spellAnimations.gust.play({
-            casterCol: casterCol,
-            casterRow: position,
-            targetCol: targetCol,
-            targetRow: target.position,
-            onHit: () => {
-                applyGustDamageOld(wizard, target, baseDamage, level, casterType);
-            }
-        });
-    } else {
-        applyGustDamageOld(wizard, target, baseDamage, level, casterType);
-    }
-}
-
-function applyGustDamageOld(wizard, target, baseDamage, level, casterType) {
-    // Собираем бонусы
-    let totalMultiplier = 1.0;
-    let bonusLogDetails = [];
-
-    // Создаём casterInfo для баббла
-    const casterInfo = { faction: wizard.faction, casterType: casterType, position: target.position };
-
-    if (wizard.faction === 'wind' && window.checkFactionDoubleDamage) {
-        const isFactionDouble = window.checkFactionDoubleDamage(wizard.faction, 'wind', casterInfo);
-        if (isFactionDouble) {
-            totalMultiplier *= 2.0;
-            bonusLogDetails.push("💨 Двойной урон!");
-        }
-    }
-
-    if (level === 5 && window.checkCriticalHit) {
-        const isCritical = window.checkCriticalHit(50);
-        if (isCritical) {
-            totalMultiplier *= 1.5;
-            bonusLogDetails.push("⚡ Крит!");
-        }
-    }
-
-    const finalBaseDamage = Math.round(baseDamage * totalMultiplier);
-
-    const result = window.applyDamageWithMultiLayerProtection?.(wizard, target, finalBaseDamage, 'gust', casterType);
-
-    if (result) {
-        window.logProtectionResult?.(wizard, target, result, 'Порыв ветра');
-    } else {
-        const finalDamage = window.applyFinalDamage?.(wizard, target.wizard, finalBaseDamage, 'gust', 0, false) || finalBaseDamage;
-        target.wizard.hp -= finalDamage;
-        if (target.wizard.hp < 0) target.wizard.hp = 0;
-        
-        window.logSpellHit?.(wizard, target.wizard, finalDamage, 'Порыв ветра');
-    }
-
-    if (bonusLogDetails.length > 0 && window.addToBattleLog) {
-        window.addToBattleLog(`   ${bonusLogDetails.join(' ')}`);
-    }
 }
 
 // --- Ветрорез (Wind Blade) - Тир 2, AOE ---
@@ -557,5 +480,3 @@ window.castWindBlade = castWindBlade;
 window.castWindWall = castWindWall;
 window.castStormCloud = castStormCloud;
 window.castBallLightning = castBallLightning;
-window.castGustOld = castGustOld;
-window.applyGustDamageOld = applyGustDamageOld;
