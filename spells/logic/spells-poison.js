@@ -294,10 +294,15 @@ function castFoulCloud(wizard, spellData, position, casterType) {
         // Проверяем живой ли враг
         if (targetInfo.wizard.hp <= 0) return;
         
-        // Применяем урон с учётом защиты
+        // Применяем урон с учётом защиты (передаём wizard, не обёртку)
         const finalDamage = typeof window.applyFinalDamage === 'function' ?
-            window.applyFinalDamage(wizard, targetInfo, baseDamage, 'foul_cloud', 0, true) : baseDamage;
-            
+            window.applyFinalDamage(wizard, targetInfo.wizard, baseDamage, 'foul_cloud', 0, true) : baseDamage;
+
+        // Трекинг урона для опыта
+        if (typeof window.trackDamageExp === 'function') {
+            window.trackDamageExp(wizard, finalDamage);
+        }
+
         targetInfo.wizard.hp -= finalDamage;
         if (targetInfo.wizard.hp < 0) targetInfo.wizard.hp = 0;
         
@@ -664,10 +669,15 @@ function castEpidemic(wizard, spellData, position, casterType) {
         // Наносим урон и накладываем яд
         sortedTargetData.forEach((targetObj) => {
             const target = targetObj.wizard;
-            
-            // ИСПРАВЛЕНО: Передаем полный объект
-            const finalDamage = typeof window.applyFinalDamage === 'function' ? 
-                window.applyFinalDamage(wizard, targetObj, baseDamage, 'epidemic', 0, true) : baseDamage;
+
+            // ИСПРАВЛЕНО: Передаем объект мага, а не обёртку
+            const finalDamage = typeof window.applyFinalDamage === 'function' ?
+                window.applyFinalDamage(wizard, target, baseDamage, 'epidemic', 0, true) : baseDamage;
+
+            // Трекинг урона для опыта
+            if (typeof window.trackDamageExp === 'function') {
+                window.trackDamageExp(wizard, finalDamage);
+            }
                 
             target.hp -= finalDamage;
             if (target.hp < 0) target.hp = 0;
@@ -705,7 +715,12 @@ function castEpidemic(wizard, spellData, position, casterType) {
                 if (bonusDamage > 0) {
                     randomTarget.hp -= bonusDamage;
                     if (randomTarget.hp < 0) randomTarget.hp = 0;
-                    
+
+                    // Трекинг бонусного урона для опыта
+                    if (typeof window.trackDamageExp === 'function') {
+                        window.trackDamageExp(wizard, bonusDamage);
+                    }
+
                     if (typeof window.addToBattleLog === 'function') {
                         window.addToBattleLog(`💀 ${randomTarget.name} получает ${bonusDamage} бонусного урона от Эпидемии (стаков яда: ${stacks})`);
                     }
