@@ -80,8 +80,7 @@
             frameCount: 25, // 5×5 сетка (1280×1280)
             gridColumns: 5,
             animationSpeed: 0.12,
-            scale: 0.350,
-            reverseOnDeath: true // Проигрывать анимацию смерти в обратном порядке
+            scale: 0.350
         },
         goblin: {
             idle: 'images/enemies/goblin/idle.webp',
@@ -489,8 +488,9 @@
             // Загружаем текстуры фракции
             const textures = await loadFactionTextures(faction);
 
-            // ИСПРАВЛЕНИЕ: Проверяем что контейнеры ещё валидны после await
-            if (!unitsContainer || !gridCells || container.destroyed) {
+            // ИСПРАВЛЕНИЕ: Проверяем что контейнеры и ячейка ещё валидны после await
+            const cellDataAfterAwait = gridCells?.[col]?.[row];
+            if (!unitsContainer || !gridCells || container.destroyed || !cellDataAfterAwait) {
                 console.warn(`⚠️ Контейнеры недоступны после загрузки текстур: ${key}`);
                 creatingSprites.delete(key);
                 return null;
@@ -610,9 +610,17 @@
             return null;
         }
 
+        // Повторно получаем cellData после async операций (может измениться)
+        const freshCellData = gridCells?.[col]?.[row];
+        if (!freshCellData || freshCellData.destroyed) {
+            console.warn(`⚠️ Ячейка недоступна после async: ${key}`);
+            creatingSprites.delete(key);
+            return null;
+        }
+
         // Вычисляем позицию заранее
-        const posX = cellData.x + cellData.width / 2;
-        const posY = cellData.y + cellData.height / 2;
+        const posX = freshCellData.x + freshCellData.width / 2;
+        const posY = freshCellData.y + freshCellData.height / 2;
 
         // Безопасное присваивание позиции с дополнительной проверкой
         try {
