@@ -790,6 +790,11 @@ function applyPoisonEffect(targetWizard, stacks = 1) {
 
 // --- Бонус фракции: Токсичный след ---
 function applyPoisonFactionBonus(targetWizard, caster = null, casterType = null) {
+    // ИСПРАВЛЕНО: Бонус работает ТОЛЬКО для магов фракции Яд
+    if (!caster || caster.faction !== 'poison') {
+        return;
+    }
+
     const chance = 0.05; // 5% шанс
     const roll = Math.random();
 
