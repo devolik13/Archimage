@@ -108,12 +108,12 @@ BEGIN
         -- GUILD FIELDS (previously missing!)
         guild_id = CASE
             WHEN p_data ? 'guild_id'
-            THEN (p_data->>'guild_id')::BIGINT
+            THEN (p_data->>'guild_id')::INTEGER
             ELSE guild_id
         END,
         guild_contribution = CASE
             WHEN p_data ? 'guild_contribution'
-            THEN COALESCE((p_data->>'guild_contribution')::INTEGER, guild_contribution)
+            THEN COALESCE((p_data->>'guild_contribution')::BIGINT, guild_contribution)
             ELSE guild_contribution
         END,
         guild_last_active = CASE

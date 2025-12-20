@@ -152,7 +152,11 @@ class DatabaseManager {
                 season_league_rewards_claimed: playerData.season_league_rewards_claimed || [], // Полученные награды за лиги
                 unlocked_skins: playerData.unlocked_skins || [], // Разблокированные скины
                 wizard_skins: playerData.wizard_skins || {}, // Выбранные скины для магов
-                training_dummy_progress: playerData.training_dummy_progress || null // Прогресс тренировочного полигона
+                training_dummy_progress: playerData.training_dummy_progress || null, // Прогресс тренировочного полигона
+                // GUILD FIELDS
+                guild_id: playerData.guild_id ?? null, // ID гильдии (null если не в гильдии)
+                guild_contribution: playerData.guild_contribution || 0, // Вклад в гильдию
+                guild_last_active: playerData.guild_last_active || null // Последняя активность в гильдии
             };
 
             // Вызываем безопасную RPC функцию (обновляет только по telegram_id)

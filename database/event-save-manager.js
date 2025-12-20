@@ -111,7 +111,11 @@ class EventSaveManager {
                 season_league_rewards_claimed: window.userData.season_league_rewards_claimed || [], // Полученные награды за лиги
                 unlocked_skins: window.userData.unlocked_skins || [], // Разблокированные скины
                 wizard_skins: window.userData.wizard_skins || {}, // Выбранные скины для магов
-                training_dummy_progress: window.userData.training_dummy_progress || null // Прогресс тренировочного полигона
+                training_dummy_progress: window.userData.training_dummy_progress || null, // Прогресс тренировочного полигона
+                // GUILD FIELDS
+                guild_id: window.userData.guild_id ?? null, // ID гильдии
+                guild_contribution: window.userData.guild_contribution || 0, // Вклад в гильдию
+                guild_last_active: window.userData.guild_last_active || null // Последняя активность
             });
 
             const success = await window.dbManager.savePlayer(playerData);
