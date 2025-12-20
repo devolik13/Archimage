@@ -137,21 +137,22 @@ class ReferralManager {
                 }
             }
 
-            // Записываем реферал в таблицу (если она есть)
-            try {
-                await this.supabase
-                    .from('referrals')
-                    .insert([{
-                        referrer_id: referrer.id,
-                        referred_id: newPlayerId,
-                        referrer_telegram_id: parseInt(referrerTelegramId),
-                        referred_telegram_id: newPlayerTelegramId,
-                        reward_amount: REFERRAL_REWARD,
-                        created_at: new Date().toISOString()
-                    }]);
-            } catch (e) {
-                // Таблица referrals может не существовать - это OK
-                console.log('📝 Таблица referrals не найдена, пропускаем запись');
+            // Записываем реферал в таблицу
+            const { error: insertError } = await this.supabase
+                .from('referrals')
+                .insert([{
+                    referrer_id: referrer.id,
+                    referred_id: newPlayerId,
+                    referrer_telegram_id: parseInt(referrerTelegramId),
+                    referred_telegram_id: newPlayerTelegramId,
+                    reward_amount: REFERRAL_REWARD,
+                    reward_claimed: true,
+                    total_purchase_bonus: 0
+                }]);
+
+            if (insertError) {
+                console.error('❌ Ошибка записи реферала:', insertError);
+                // Не прерываем - награды уже начислены
             }
 
             console.log(`✅ Реферал обработан! ${referrer.username} пригласил нового игрока. Оба получили ${REFERRAL_REWARD} минут`);
@@ -183,7 +184,7 @@ class ReferralManager {
             // Ищем реферера этого игрока в таблице referrals
             const { data: referralRecord, error: refError } = await this.supabase
                 .from('referrals')
-                .select('referrer_id, referrer_telegram_id')
+                .select('id, referrer_id, referrer_telegram_id, total_purchase_bonus')
                 .eq('referred_telegram_id', buyerTelegramId)
                 .single();
 
@@ -222,6 +223,14 @@ class ReferralManager {
                 return null;
             }
 
+            // Обновляем статистику бонусов в таблице referrals
+            await this.supabase
+                .from('referrals')
+                .update({
+                    total_purchase_bonus: (referralRecord.total_purchase_bonus || 0) + referrerBonus
+                })
+                .eq('id', referralRecord.id);
+
             console.log(`🎁 Реферер ${referrer.username} получил +${referrerBonus} BPM coin за покупку приглашённого игрока`);
 
             return {
@@ -255,15 +264,77 @@ class ReferralManager {
         }
     }
 
+    // Получить полную статистику рефералов
+    async getReferralStats(playerId) {
+        try {
+            const { data, error } = await this.supabase
+                .from('referrals')
+                .select('reward_amount, total_purchase_bonus')
+                .eq('referrer_id', playerId);
+
+            if (error) {
+                console.error('❌ Ошибка получения статистики рефералов:', error);
+                return { count: 0, totalTime: 0, totalBonus: 0 };
+            }
+
+            const count = data?.length || 0;
+            const totalTime = data?.reduce((sum, r) => sum + (r.reward_amount || 0), 0) || 0;
+            const totalBonus = data?.reduce((sum, r) => sum + (r.total_purchase_bonus || 0), 0) || 0;
+
+            return { count, totalTime, totalBonus };
+        } catch (error) {
+            console.error('❌ Ошибка получения статистики рефералов:', error);
+            return { count: 0, totalTime: 0, totalBonus: 0 };
+        }
+    }
+
     // Показать UI реферальной ссылки
-    showReferralUI() {
+    async showReferralUI() {
         if (!window.userData || !window.dbManager?.currentPlayer) {
             console.error('Данные игрока не загружены');
             return;
         }
 
         const telegramId = window.dbManager.currentPlayer.telegram_id;
+        const playerId = window.dbManager.currentPlayer.id;
         const referralLink = this.generateReferralLink(telegramId);
+
+        // Загружаем статистику
+        const stats = await this.getReferralStats(playerId);
+        const totalDays = Math.floor(stats.totalTime / 1440);
+
+        // Формируем блок статистики
+        let statsHtml = '';
+        if (stats.count > 0) {
+            statsHtml = `
+                <div style="
+                    background: rgba(74, 222, 128, 0.1);
+                    border: 1px solid rgba(74, 222, 128, 0.3);
+                    border-radius: 8px;
+                    padding: 12px;
+                    margin: 15px 0;
+                    text-align: left;
+                ">
+                    <div style="font-size: 14px; color: #4ade80; margin-bottom: 8px; text-align: center;">
+                        📊 Твоя статистика
+                    </div>
+                    <div style="font-size: 13px; color: #ccc; display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span>👥 Приглашено друзей:</span>
+                        <span style="color: #4ade80; font-weight: bold;">${stats.count}</span>
+                    </div>
+                    <div style="font-size: 13px; color: #ccc; display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span>⏰ Получено времени:</span>
+                        <span style="color: #4ade80; font-weight: bold;">${totalDays} дн.</span>
+                    </div>
+                    ${stats.totalBonus > 0 ? `
+                    <div style="font-size: 13px; color: #ccc; display: flex; justify-content: space-between;">
+                        <span>💎 Бонус от покупок:</span>
+                        <span style="color: #ffd700; font-weight: bold;">+${stats.totalBonus} BPM</span>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
 
         const modalHTML = `
             <div style="padding: 20px; text-align: center; max-width: 350px;">
@@ -273,8 +344,10 @@ class ReferralManager {
                     Вы оба получите <span style="color: #4ade80; font-weight: bold;">1 день</span> времени + <span style="color: #ffd700; font-weight: bold;">200 BPM coin</span>!
                 </p>
                 <p style="font-size: 11px; color: #888; margin: 10px 0;">
-                    💎 Бонус: <span style="color: #ffd700;">+10%</span> BPM coin от покупок друга
+                    💎 Бонус: <span style="color: #ffd700;">+10%</span> BPM coin от покупок друга навсегда!
                 </p>
+
+                ${statsHtml}
 
                 <div style="
                     background: #3d3d5c;
