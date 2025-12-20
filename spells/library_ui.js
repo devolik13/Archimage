@@ -440,6 +440,25 @@ function setupSpellsScreen(faction) {
             status = '🔒 Недоступно';
             buttonHTML = '';
         }
+
+        // Добавляем кнопку "Описание" для всех заклинаний (кроме заблокированных)
+        const showInfoButton = spell.level > 0 || isActive || tierIndex === 0;
+        const infoButtonHTML = showInfoButton ? `
+            <button
+                style="
+                    margin-top: 4px;
+                    padding: ${8 * Math.min(scaleX, scaleY)}px ${4 * Math.min(scaleX, scaleY)}px;
+                    border: 1px solid #555;
+                    border-radius: 3px;
+                    background: rgba(50, 50, 70, 0.8);
+                    color: #aaa;
+                    font-size: ${fontSize * 0.65}px;
+                    cursor: pointer;
+                    width: 85%;
+                "
+                onclick="event.stopPropagation(); showSpellDescriptionModal('${spellId}', '${faction}')"
+            >📋 Описание</button>
+        ` : '';
         
         const spellDiv = document.createElement('div');
         spellDiv.style.cssText = `
@@ -462,6 +481,7 @@ function setupSpellsScreen(faction) {
                 <div style="font-weight: bold; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${spell.name}</div>
                 <div style="font-size: ${fontSize * 0.85}px; color: #aaa; margin-bottom: 2px;">${status}</div>
                 ${buttonHTML}
+                ${infoButtonHTML}
             </div>
         `;
         
@@ -716,6 +736,190 @@ function showSpellInfoModal(spellId, faction, currentLevel, action) {
     };
 }
 
+// ========== МОДАЛЬНОЕ ОКНО ОПИСАНИЯ ЗАКЛИНАНИЯ ==========
+function showSpellDescriptionModal(spellId, faction) {
+    const spellData = window.SPELL_FULL_DATA?.[spellId];
+    if (!spellData) {
+        console.error('Данные заклинания не найдены:', spellId);
+        return;
+    }
+
+    const tierIndex = window.SPELL_TIERS?.[faction]?.indexOf(spellId) || 0;
+    const tier = tierIndex + 1;
+    const schoolColor = window.SCHOOL_CONFIG?.[faction]?.color || '#7289da';
+    const factionName = window.getFactionName ? window.getFactionName(faction) : faction;
+
+    // Получаем текущий уровень заклинания у игрока
+    const userSpellData = window.userData?.spells?.[faction]?.[spellId];
+    const currentLevel = userSpellData?.level || 0;
+
+    // Рассчитываем урон для каждого уровня
+    const damageByLevel = [];
+    for (let lvl = 1; lvl <= 5; lvl++) {
+        const damage = window.getSpellDamage ? window.getSpellDamage(spellId, lvl) : 0;
+        damageByLevel.push(damage);
+    }
+
+    // Создаем оверлей
+    const overlay = document.createElement('div');
+    overlay.id = 'spell-description-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 10002;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        box-sizing: border-box;
+    `;
+
+    // Создаем модальное окно
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        background: linear-gradient(145deg, #2c2c3d, #1a1a2e);
+        border: 3px solid ${schoolColor};
+        border-radius: 15px;
+        padding: 20px;
+        max-width: 420px;
+        width: 100%;
+        max-height: 85vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.7), 0 0 30px ${schoolColor}33;
+        animation: modalSlideIn 0.3s ease-out;
+    `;
+
+    // Определяем тип заклинания на русском
+    const spellTypes = {
+        'single_target': '🎯 Одна цель',
+        'multi_target': '🎯🎯 Несколько целей',
+        'aoe': '💥 Область'
+    };
+    const typeText = spellTypes[spellData.type] || spellData.type;
+
+    // Генерируем таблицу урона по уровням
+    let damageTableHTML = '';
+    if (damageByLevel.some(d => d > 0)) {
+        damageTableHTML = `
+            <div style="margin-top: 15px;">
+                <div style="color: #ffa500; font-weight: bold; margin-bottom: 10px; font-size: 14px;">⚔️ Урон по уровням:</div>
+                <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;">
+                    ${[1, 2, 3, 4, 5].map(lvl => {
+                        const isCurrentLevel = lvl === currentLevel;
+                        const isLearned = lvl <= currentLevel;
+                        return `
+                            <div style="
+                                background: ${isCurrentLevel ? 'rgba(255, 165, 0, 0.3)' : 'rgba(0,0,0,0.3)'};
+                                border: 2px solid ${isCurrentLevel ? '#ffa500' : (isLearned ? '#4ade80' : '#444')};
+                                border-radius: 8px;
+                                padding: 8px 4px;
+                                text-align: center;
+                            ">
+                                <div style="color: #888; font-size: 11px;">Ур.${lvl}</div>
+                                <div style="color: ${isLearned ? '#fff' : '#666'}; font-weight: bold; font-size: 16px;">
+                                    ${damageByLevel[lvl - 1]}💥
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    // Генерируем HTML для эффектов
+    let effectsHTML = '';
+    if (spellData.effects) {
+        effectsHTML = `
+            <div style="margin-top: 15px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px;">
+                <div style="color: #9b59b6; font-weight: bold; margin-bottom: 8px; font-size: 14px;">✨ Эффекты:</div>
+                <div style="color: #ccc; font-size: 13px; line-height: 1.5;">
+                    ${spellData.effects}
+                </div>
+            </div>
+        `;
+    }
+
+    modal.innerHTML = `
+        <style>
+            @keyframes modalSlideIn {
+                from { transform: translateY(-30px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            #spell-description-overlay::-webkit-scrollbar { width: 6px; }
+            #spell-description-overlay::-webkit-scrollbar-thumb { background: ${schoolColor}; border-radius: 3px; }
+        </style>
+
+        <div style="text-align: center; margin-bottom: 15px;">
+            <div style="font-size: 56px; margin-bottom: 8px; filter: drop-shadow(0 0 10px ${schoolColor});">${spellData.icon}</div>
+            <h2 style="margin: 0; color: ${schoolColor}; font-size: 22px;">
+                ${spellData.name}
+            </h2>
+            <div style="color: #888; font-size: 13px; margin-top: 5px;">
+                ${factionName} • Тир ${tier} • ${typeText}
+            </div>
+            ${currentLevel > 0 ? `
+                <div style="margin-top: 8px; display: inline-block; background: rgba(74, 222, 128, 0.2); border: 1px solid #4ade80; padding: 4px 12px; border-radius: 12px; color: #4ade80; font-size: 12px;">
+                    ✓ Изучено: Уровень ${currentLevel}/5
+                </div>
+            ` : `
+                <div style="margin-top: 8px; display: inline-block; background: rgba(255, 107, 107, 0.2); border: 1px solid #ff6b6b; padding: 4px 12px; border-radius: 12px; color: #ff6b6b; font-size: 12px;">
+                    ✗ Не изучено
+                </div>
+            `}
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+            <div style="color: #fff; font-size: 14px; line-height: 1.6;">
+                ${spellData.description}
+            </div>
+        </div>
+
+        ${damageTableHTML}
+        ${effectsHTML}
+
+        <button id="spell-desc-close-btn" style="
+            margin-top: 20px;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to bottom, #555, #444);
+            border: 2px solid #666;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        ">Закрыть</button>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    // Обработчик закрытия
+    document.getElementById('spell-desc-close-btn').onclick = () => overlay.remove();
+
+    // Закрытие по клику вне окна
+    overlay.onclick = (e) => {
+        if (e.target === overlay) {
+            overlay.remove();
+        }
+    };
+
+    // Закрытие по Escape
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            overlay.remove();
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
+}
+
 // Экспорт
 window.showLibrary = showLibrary;
 window.closeLibrary = closeLibrary;
@@ -724,4 +928,5 @@ window.updateLibraryContent = updateLibraryContent;
 window.renderLibraryUI = updateLibraryContent; // Алиас для time-construction-system
 window.renderLibrary = renderLibrary;
 window.showSpellInfoModal = showSpellInfoModal;
+window.showSpellDescriptionModal = showSpellDescriptionModal;
 
