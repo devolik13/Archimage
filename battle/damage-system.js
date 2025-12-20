@@ -479,9 +479,9 @@ function applyDamageWithMultiLayerProtection(caster, targetInfo, baseDamage, spe
         }
     }
     
-    // 3. Применяем урон через стандартную систему (с сопротивлениями и броней)
+    // 3. Применяем урон через стандартную систему (с погодой, сопротивлениями и броней)
     if (finalDamage > 0) {
-        finalDamage = applyDamageWithEffects(caster, target, finalDamage, spellId, 0);
+        finalDamage = applyDamageWithWeather(caster, target, finalDamage, spellId, 0);
     }
     
     // 4. Применяем урон к цели
