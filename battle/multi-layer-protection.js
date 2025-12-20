@@ -179,9 +179,9 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             }
         }
     
-        // ПОТОМ применяем сопротивления и броню
-        const finalDamage = typeof window.applyDamageWithEffects === 'function' ?
-            window.applyDamageWithEffects(caster, target.wizard, remainingDamage, spellId, 0) : remainingDamage;
+        // ПОТОМ применяем погоду, сопротивления и броню
+        const finalDamage = typeof window.applyDamageWithWeather === 'function' ?
+            window.applyDamageWithWeather(caster, target.wizard, remainingDamage, spellId, 0) : remainingDamage;
 
         // Применяем урон к магу
         target.wizard.hp -= finalDamage;
