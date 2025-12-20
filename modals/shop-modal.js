@@ -1108,7 +1108,8 @@ async function createStarsInvoice(item, customPrice = null, targetFaction = null
         'https://your-project.supabase.co';
 
     const telegramId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id ||
-        window.userData?.telegram_id;
+        window.userData?.user_id ||
+        window.dbManager?.getTelegramId();
 
     if (!telegramId) {
         throw new Error('Telegram user ID not found');
@@ -1951,15 +1952,23 @@ async function buyStarterPackWithTon(packKey, tonPrice) {
  */
 async function saveTonPayment(item, tonAmount, txResult) {
     try {
+        // Используем user_id который содержит telegram_id
+        const telegramId = window.userData?.user_id || window.dbManager?.getTelegramId();
+
+        if (!telegramId) {
+            console.error('❌ Не удалось получить telegram_id для сохранения платежа');
+            return;
+        }
+
         const { error } = await window.supabaseClient.supabase
             .from('payments')
             .insert({
-                telegram_id: window.userData?.telegram_id,
+                telegram_id: telegramId,
                 product_id: item.id,
                 amount_ton: tonAmount,
                 payment_method: 'ton',
                 status: 'completed',
-                ton_transaction_hash: txResult?.boc || 'unknown',
+                ton_transaction_hash: txResult?.boc || null,
                 completed_at: new Date().toISOString()
             });
 
