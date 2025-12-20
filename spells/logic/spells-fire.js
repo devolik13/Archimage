@@ -38,11 +38,6 @@ function castSpark(wizard, spellData, position, casterType) {
         return;
     }
 
-    // Проверяем доступность новой системы
-    if (!window.castSingleTargetSpell) {
-        return castSparkOld(wizard, spellData, position, casterType, target);
-    }
-    
     // Запускаем через новую систему
     window.castSingleTargetSpell({
         caster: wizard,
@@ -99,10 +94,6 @@ function castSparkSecondary(wizard, spellData, position, casterType, target) {
     const level = spellData.level || 1;
     const baseDamage = [10, 12, 15, 20, 30][level - 1] || 10;
 
-    if (!window.castSingleTargetSpell) {
-        return castSparkOld(wizard, spellData, position, casterType, target);
-    }
-    
     window.castSingleTargetSpell({
         caster: wizard,
         target: target,
@@ -129,70 +120,6 @@ function castSparkSecondary(wizard, spellData, position, casterType, target) {
         
         onComplete: () => {}
     });
-}
-
-// СТАРАЯ ВЕРСИЯ для fallback
-function castSparkOld(wizard, spellData, position, casterType, target) {
-    const level = spellData.level || 1;
-    const baseDamage = [10, 12, 15, 20, 30][level - 1] || 10;
-    
-    if (!target) {
-        target = window.findTarget?.(position, casterType);
-    }
-    if (!target) return;
-    
-    const casterCol = casterType === 'player' ? 5 : 0;
-    const targetCol = casterType === 'player' ? 0 : 5;
-    
-    if (window.createSparkProjectile) {
-        window.createSparkProjectile(casterCol, position, targetCol, target.position, () => {
-            applySparkDamageOld(wizard, target, baseDamage, spellData, position, casterType);
-        });
-    } else {
-        applySparkDamageOld(wizard, target, baseDamage, spellData, position, casterType);
-    }
-}
-
-function applySparkDamageOld(wizard, target, baseDamage, spellData, position, casterType, isChainAttack = false) {
-    const level = spellData.level || 1;
-    
-    const result = window.applyDamageWithMultiLayerProtection?.(wizard, target, baseDamage, 'spark', casterType);
-
-    if (result) {
-        window.logProtectionResult?.(wizard, target, result, 'Искра');
-        if (result.finalDamage > 0 && wizard.faction === 'fire') {
-            const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
-            window.tryApplyEffect?.('burning', target.wizard, false, casterInfo);
-        }
-    } else {
-        const finalDamage = window.applyFinalDamage?.(wizard, target.wizard, baseDamage, 'spark', 0, false) || baseDamage;
-        target.wizard.hp -= finalDamage;
-        if (target.wizard.hp < 0) target.wizard.hp = 0;
-
-        window.logSpellHit?.(wizard, target.wizard, finalDamage, 'Искра');
-        if (wizard.faction === 'fire') {
-            const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
-            window.tryApplyEffect?.('burning', target.wizard, false, casterInfo);
-        }
-    }
-    
-    // Эффект 5 уровня
-    if (level === 5 && !isChainAttack && Math.random() < 0.5) {
-        const secondTarget = window.findTarget?.(position, casterType);
-        if (secondTarget) {
-            setTimeout(() => {
-                if (window.createSparkProjectile) {
-                    const casterCol = casterType === 'player' ? 5 : 0;
-                    const targetCol = casterType === 'player' ? 0 : 5;
-                    window.createSparkProjectile(casterCol, position, targetCol, secondTarget.position, () => {
-                        applySparkDamageOld(wizard, secondTarget, baseDamage, spellData, position, casterType, true);
-                    });
-                } else {
-                    applySparkDamageOld(wizard, secondTarget, baseDamage, spellData, position, casterType, true);
-                }
-            }, 100);
-        }
-    }
 }
 
 // --- Огненная стрела (Firebolt) - ФИНАЛЬНАЯ ВЕРСИЯ ---
@@ -662,8 +589,6 @@ function castFireTsunami(wizard, spellData, position, casterType) {
 window.castFireSpell = castFireSpell;
 window.castSpark = castSpark;
 window.castSparkSecondary = castSparkSecondary;
-window.castSparkOld = castSparkOld;
-window.applySparkDamageOld = applySparkDamageOld;
 window.castFirebolt = castFirebolt;
 window.castFireWall = castFireWall;
 window.castFireball = castFireball;
