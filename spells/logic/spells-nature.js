@@ -512,6 +512,11 @@ function castMeteorokinesis(wizard, spellData, position, casterType) {
 
 // --- Бонус фракции: Дар природы ---
 function applyNatureFactionBonus(wizard, casterType) {
+    // ИСПРАВЛЕНО: Бонус работает ТОЛЬКО для магов фракции Природа
+    if (!wizard || wizard.faction !== 'nature') {
+        return;
+    }
+
     if (Math.random() < 0.05) { // 5% шанс
         // Находим живых союзных магов (кроме себя, если есть другие)
         const allies = casterType === 'player' ?
