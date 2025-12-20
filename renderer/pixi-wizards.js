@@ -163,9 +163,10 @@
             death: 'images/enemies/fire_elemental/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
-            scale: 0.45 // Размер для одной клетки (col 0, row 2)
+            frameCount: 25, // 5×5 сетка (1280×1280)
+            gridColumns: 5,
+            animationSpeed: 0.12,
+            scale: 0.45
         },
         water_elemental: {
             idle: 'images/enemies/water_elemental/idle.webp',
