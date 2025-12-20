@@ -773,13 +773,11 @@ function applyPoisonEffect(targetWizard, stacks = 1) {
         }
 
         // Проверяем во врагах (колонка 0 - левая сторона поля)
-        if (!wizardKey && window.enemyWizards && window.enemyFormation) {
-            const enemyIndex = window.enemyWizards.findIndex(w => w && w.id === targetWizard.id);
-            if (enemyIndex !== -1) {
-                const position = window.enemyFormation.findIndex(id => id === targetWizard.id);
-                if (position !== -1) {
-                    wizardKey = `0_${position}`; // Колонка 0 для врага
-                }
+        // ИСПРАВЛЕНО: enemyFormation содержит объекты магов, не ID
+        if (!wizardKey && window.enemyFormation) {
+            const position = window.enemyFormation.findIndex(w => w && w.id === targetWizard.id);
+            if (position !== -1) {
+                wizardKey = `0_${position}`; // Колонка 0 для врага
             }
         }
 

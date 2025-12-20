@@ -816,7 +816,18 @@
         
         // Помечаем что маг мертв
         container.isDead = true;
-        
+
+        // Удаляем иконку яда при смерти
+        if (container.poisonIcon) {
+            if (container.poisonIcon.parent) {
+                container.poisonIcon.parent.removeChild(container.poisonIcon);
+            }
+            if (container.poisonIcon.destroy) {
+                container.poisonIcon.destroy({ children: true });
+            }
+            container.poisonIcon = null;
+        }
+
         const sprite = container.sprite;
         
         if (!isSpriteValid(sprite)) {
