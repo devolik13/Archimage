@@ -74,7 +74,7 @@ class ReferralManager {
         }
     }
 
-    // Обработать реферал после регистрации
+    // Обработать реферал после регистрации (использует RPC для обхода RLS)
     async processReferral(newPlayerId, newPlayerTelegramId) {
         console.log('🔗 processReferral вызван:', { newPlayerId, newPlayerTelegramId });
 
@@ -100,109 +100,40 @@ class ReferralManager {
                 return null;
             }
 
-            // Проверяем, существует ли реферер
-            console.log('🔍 Ищем реферера в БД...');
-            const { data: referrer, error: referrerError } = await supabase
-                .from('players')
-                .select('id, telegram_id, time_currency, username')
-                .eq('telegram_id', parseInt(referrerTelegramId))
-                .single();
-
-            if (referrerError || !referrer) {
-                console.log('⚠️ Реферер не найден:', referrerTelegramId, 'Ошибка:', referrerError);
-                return null;
-            }
-            console.log('✅ Реферер найден:', referrer.username, referrer.telegram_id);
-
-            // Проверяем, не обработан ли уже этот реферал
-            const alreadyProcessed = await this.checkReferralProcessed(newPlayerTelegramId);
-            console.log('🔍 Проверка уже обработанного реферала:', alreadyProcessed);
-            if (alreadyProcessed) {
-                console.log('⚠️ Реферал уже обработан для telegram_id:', newPlayerTelegramId);
-                return null;
-            }
-
-            // Начисляем награду рефереру
-            console.log('💰 Начисляем награду рефереру:', referrer.id);
-            const { error: referrerUpdateError } = await supabase
-                .from('players')
-                .update({
-                    time_currency: (referrer.time_currency || 0) + REFERRAL_REWARD,
-                    airdrop_points: (referrer.airdrop_points || 0) + 200
-                })
-                .eq('id', referrer.id);
-
-            if (referrerUpdateError) {
-                console.error('❌ Ошибка начисления награды рефереру:', referrerUpdateError);
-                return null;
-            }
-            console.log('✅ Награда рефереру начислена');
-
-            // Начисляем награду новому игроку (добавляем к стартовым 300)
-            console.log('💰 Начисляем награду новому игроку:', newPlayerId);
-            const { data: newPlayer, error: newPlayerError } = await supabase
-                .from('players')
-                .select('time_currency')
-                .eq('id', newPlayerId)
-                .single();
-
-            if (newPlayerError) {
-                console.error('❌ Ошибка получения данных нового игрока:', newPlayerError);
-            }
-
-            if (!newPlayerError && newPlayer) {
-                const { error: newPlayerUpdateError } = await supabase
-                    .from('players')
-                    .update({
-                        time_currency: (newPlayer.time_currency || 0) + REFERRAL_REWARD,
-                        airdrop_points: (newPlayer.airdrop_points || 0) + 200
-                    })
-                    .eq('id', newPlayerId);
-
-                if (newPlayerUpdateError) {
-                    console.error('❌ Ошибка начисления награды новому игроку:', newPlayerUpdateError);
-                } else {
-                    console.log('✅ Награда новому игроку начислена');
-                }
-
-                // Обновляем локальные данные
-                if (window.userData) {
-                    window.userData.time_currency = (window.userData.time_currency || 0) + REFERRAL_REWARD;
-                    window.userData.airdrop_points = (window.userData.airdrop_points || 0) + 200;
-                }
-                if (window.dbManager && window.dbManager.currentPlayer) {
-                    window.dbManager.currentPlayer.time_currency =
-                        (window.dbManager.currentPlayer.time_currency || 0) + REFERRAL_REWARD;
-                    window.dbManager.currentPlayer.airdrop_points =
-                        (window.dbManager.currentPlayer.airdrop_points || 0) + 200;
-                }
-            }
-
-            // Записываем реферал в таблицу
-            const referrerIdInt = parseInt(referrerTelegramId);
-            const referredIdInt = typeof newPlayerTelegramId === 'number' ? newPlayerTelegramId : parseInt(newPlayerTelegramId);
-            console.log('📝 Записываем реферал в таблицу:', {
-                referrer_telegram_id: referrerIdInt,
-                referred_telegram_id: referredIdInt
+            // Используем RPC функцию для обработки реферала (обходит RLS)
+            console.log('🔗 Вызываем RPC process_referral...');
+            const { data: result, error: rpcError } = await supabase.rpc('process_referral', {
+                p_referrer_telegram_id: parseInt(referrerTelegramId),
+                p_referred_telegram_id: typeof newPlayerTelegramId === 'number' ? newPlayerTelegramId : parseInt(newPlayerTelegramId),
+                p_reward_time: REFERRAL_REWARD,
+                p_reward_points: 200
             });
-            const { error: insertError } = await supabase
-                .from('referrals')
-                .insert([{
-                    referrer_telegram_id: referrerIdInt,
-                    referred_telegram_id: referredIdInt,
-                    reward_amount: REFERRAL_REWARD,
-                    reward_claimed: true,
-                    total_purchase_bonus: 0
-                }]);
 
-            if (insertError) {
-                console.error('❌ Ошибка записи реферала:', insertError);
-                // Не прерываем - награды уже начислены
-            } else {
-                console.log('✅ Реферал записан в таблицу');
+            if (rpcError) {
+                console.error('❌ Ошибка RPC process_referral:', rpcError);
+                return null;
             }
 
-            console.log(`✅ Реферал обработан! ${referrer.username} пригласил нового игрока. Оба получили ${REFERRAL_REWARD} минут`);
+            console.log('🔗 Результат RPC:', result);
+
+            if (!result.success) {
+                console.log('⚠️ Реферал не обработан:', result.error);
+                return null;
+            }
+
+            console.log(`✅ Реферал обработан! ${result.referrer_username} пригласил нового игрока. Оба получили ${result.reward_time} минут и ${result.reward_points} BPM`);
+
+            // Обновляем локальные данные нового игрока
+            if (window.userData) {
+                window.userData.time_currency = (window.userData.time_currency || 0) + REFERRAL_REWARD;
+                window.userData.airdrop_points = (window.userData.airdrop_points || 0) + 200;
+            }
+            if (window.dbManager && window.dbManager.currentPlayer) {
+                window.dbManager.currentPlayer.time_currency =
+                    (window.dbManager.currentPlayer.time_currency || 0) + REFERRAL_REWARD;
+                window.dbManager.currentPlayer.airdrop_points =
+                    (window.dbManager.currentPlayer.airdrop_points || 0) + 200;
+            }
 
             // Очищаем сохраненный параметр чтобы не засчитать дважды
             try {
@@ -213,7 +144,7 @@ class ReferralManager {
             }
 
             return {
-                referrerUsername: referrer.username,
+                referrerUsername: result.referrer_username,
                 reward: REFERRAL_REWARD
             };
 
