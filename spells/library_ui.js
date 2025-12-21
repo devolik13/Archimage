@@ -1,7 +1,15 @@
-// spells/library_ui.js - Полноэкранная библиотека v6.0 (с таймерами)
+// spells/library_ui.js - Полноэкранная библиотека v7.0 (ОПТИМИЗИРОВАННАЯ)
 
 let currentLibrarySchool = null;
 let libraryUpdateInterval = null;
+
+// === КЭШИРОВАНИЕ для быстрого открытия ===
+let libraryCache = {
+    container: null,           // Главный контейнер
+    mainScreen: null,          // Главный экран (6 школ)
+    schoolScreens: {},         // Кэш экранов школ: { fire: element, water: element, ... }
+    initialized: false
+};
 
 // ========== ГЛАВНЫЙ ЭКРАН: 6 ШКОЛ ==========
 function showLibrary() {
@@ -15,8 +23,19 @@ function showLibrary() {
 
     const cityView = document.getElementById('city-view');
     if (cityView) cityView.style.display = 'none';
-    
+
+    // ОПТИМИЗАЦИЯ: Проверяем кэш
     let libraryContainer = document.getElementById('library-fullscreen');
+
+    if (libraryContainer && libraryCache.initialized) {
+        // Кэш есть - просто показываем
+        console.log('🚀 Библиотека: используем кэш (быстрое открытие)');
+        libraryContainer.style.display = 'flex';
+        showLibraryMainScreen();
+        return;
+    }
+
+    // Создаём контейнер если нет
     if (!libraryContainer) {
         libraryContainer = document.createElement('div');
         libraryContainer.id = 'library-fullscreen';
@@ -34,8 +53,10 @@ function showLibrary() {
             overflow: hidden;
         `;
         document.body.appendChild(libraryContainer);
+        libraryCache.container = libraryContainer;
+        libraryCache.initialized = true;
     }
-    
+
     showLibraryMainScreen();
 }
 
@@ -205,21 +226,47 @@ function startLibraryAutoUpdate() {
         clearInterval(libraryUpdateInterval);
     }
 
-    // Обновлять каждые 2 секунды если есть активное изучение
+    // ОПТИМИЗАЦИЯ: Обновляем только таймеры, НЕ весь экран!
     libraryUpdateInterval = setInterval(() => {
         if (currentLibrarySchool) {
             const constructions = window.userData?.constructions || [];
-            const hasActiveSpellLearning = constructions.some(c =>
+            const activeSpellLearning = constructions.find(c =>
                 c.type === 'spell' &&
                 c.faction === currentLibrarySchool &&
                 c.time_remaining > 0
             );
 
-            if (hasActiveSpellLearning) {
+            if (activeSpellLearning) {
+                // БЫСТРОЕ обновление - только текст таймера
+                updateSpellTimerOnly(activeSpellLearning);
+            } else {
+                // Изучение завершено - нужно перерисовать чтобы показать кнопку "Улучшить"
                 setupSpellsScreen(currentLibrarySchool);
+                // Останавливаем интервал - больше нечего обновлять
+                clearInterval(libraryUpdateInterval);
+                libraryUpdateInterval = null;
             }
         }
-    }, 2000);
+    }, 1000); // Каждую секунду для более плавного таймера
+}
+
+// ОПТИМИЗАЦИЯ: Обновить только текст таймера (без пересоздания DOM)
+function updateSpellTimerOnly(activeSpellLearning) {
+    // Ищем кнопку с таймером по тексту ⏱️
+    const overlay = document.getElementById('spells-overlay');
+    if (!overlay) return;
+
+    const timerButtons = overlay.querySelectorAll('button');
+    for (const btn of timerButtons) {
+        if (btn.textContent.includes('⏱️')) {
+            // Нашли кнопку таймера - обновляем только текст
+            const formattedTime = window.formatTimeCurrency ?
+                window.formatTimeCurrency(activeSpellLearning.time_remaining) :
+                activeSpellLearning.time_remaining;
+            btn.textContent = `⏱️ ${formattedTime}`;
+            return;
+        }
+    }
 }
 
 function setupSpellsScreen(faction) {
@@ -536,8 +583,11 @@ function closeLibrary() {
 
     currentLibrarySchool = null;
 
+    // ОПТИМИЗАЦИЯ: Скрываем вместо удаления (для быстрого повторного открытия)
     const libraryContainer = document.getElementById('library-fullscreen');
-    if (libraryContainer) libraryContainer.remove();
+    if (libraryContainer) {
+        libraryContainer.style.display = 'none';
+    }
 
     const cityView = document.getElementById('city-view');
     if (cityView) cityView.style.display = 'block';
