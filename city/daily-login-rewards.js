@@ -117,10 +117,11 @@ async function checkDailyLoginReward() {
     // Начисляем airdrop очки за ежедневный вход
     if (typeof window.addAirdropPoints === 'function') {
         // Каждые 7 дней - streak бонус ВМЕСТО обычного
-        // Формула: 25 × номер_недели (макс 52 недели = год)
+        // Формула: 25 × номер_недели (макс 13 недель = 91 день)
+        // После 91 дня: фиксированно 325 BPM
         if (dailyData.day % 7 === 0) {
-            const weekNumber = Math.min(Math.floor(dailyData.day / 7), 52);
-            const streakBonus = 25 * weekNumber;
+            const weekNumber = Math.min(Math.floor(dailyData.day / 7), 13);
+            const streakBonus = 25 * weekNumber; // Макс 325 BPM
             window.addAirdropPoints(streakBonus, `Streak ${dailyData.day} дней`);
         } else {
             // Обычные дни - 20 BPM
