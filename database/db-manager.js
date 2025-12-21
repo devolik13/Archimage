@@ -147,7 +147,12 @@ class DatabaseManager {
                 airdrop_points: playerData.airdrop_points || 0, // Очки для airdrop
                 airdrop_breakdown: playerData.airdrop_breakdown || {}, // Разбивка очков по категориям
                 wallet_address: playerData.wallet_address || null, // TON кошелек
-                wallet_connected_at: playerData.wallet_connected_at || null, // Время подключения кошелька
+                // wallet_connected_at должен быть BIGINT (Date.now()), НЕ ISO строкой
+                wallet_connected_at: playerData.wallet_connected_at
+                    ? (typeof playerData.wallet_connected_at === 'string'
+                        ? new Date(playerData.wallet_connected_at).getTime()
+                        : playerData.wallet_connected_at)
+                    : null,
                 current_season: playerData.current_season || 1, // Текущий сезон
                 season_league_rewards_claimed: playerData.season_league_rewards_claimed || [], // Полученные награды за лиги
                 unlocked_skins: playerData.unlocked_skins || [], // Разблокированные скины

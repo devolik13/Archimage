@@ -123,7 +123,7 @@ function handleWalletConnected(wallet) {
     // Сохраняем в userData
     if (window.userData) {
         window.userData.wallet_address = userFriendlyAddress;
-        window.userData.wallet_connected_at = new Date().toISOString();
+        window.userData.wallet_connected_at = Date.now(); // BIGINT timestamp для БД
         console.log('✅ Адрес сохранен в window.userData:', window.userData.wallet_address);
 
         // Сохраняем в БД
@@ -139,7 +139,7 @@ function handleWalletConnected(wallet) {
         setTimeout(() => {
             if (window.userData) {
                 window.userData.wallet_address = userFriendlyAddress;
-                window.userData.wallet_connected_at = new Date().toISOString();
+                window.userData.wallet_connected_at = Date.now();
                 console.log('✅ Адрес сохранен в window.userData (отложенно):', window.userData.wallet_address);
                 if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
                     window.dbManager.savePlayer(window.userData);
