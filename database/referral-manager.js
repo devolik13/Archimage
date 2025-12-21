@@ -61,12 +61,16 @@ class ReferralManager {
 
     // Обработать реферал после регистрации
     async processReferral(newPlayerId, newPlayerTelegramId) {
+        console.log('🔗 processReferral вызван:', { newPlayerId, newPlayerTelegramId });
+
         const referrerTelegramId = this.getReferralParam();
 
         if (!referrerTelegramId) {
             console.log('📝 Нет реферального параметра');
             return null;
         }
+
+        console.log('🔗 Реферер telegram_id:', referrerTelegramId, 'Новый игрок:', newPlayerTelegramId);
 
         // Нельзя пригласить самого себя
         if (referrerTelegramId === String(newPlayerTelegramId)) {
@@ -76,6 +80,7 @@ class ReferralManager {
 
         try {
             // Проверяем, существует ли реферер
+            console.log('🔍 Ищем реферера в БД...');
             const { data: referrer, error: referrerError } = await this.supabase
                 .from('players')
                 .select('id, telegram_id, time_currency, username')
@@ -83,18 +88,21 @@ class ReferralManager {
                 .single();
 
             if (referrerError || !referrer) {
-                console.log('⚠️ Реферер не найден:', referrerTelegramId);
+                console.log('⚠️ Реферер не найден:', referrerTelegramId, 'Ошибка:', referrerError);
                 return null;
             }
+            console.log('✅ Реферер найден:', referrer.username, referrer.telegram_id);
 
             // Проверяем, не обработан ли уже этот реферал
             const alreadyProcessed = await this.checkReferralProcessed(newPlayerTelegramId);
+            console.log('🔍 Проверка уже обработанного реферала:', alreadyProcessed);
             if (alreadyProcessed) {
-                console.log('⚠️ Реферал уже обработан');
+                console.log('⚠️ Реферал уже обработан для telegram_id:', newPlayerTelegramId);
                 return null;
             }
 
             // Начисляем награду рефереру
+            console.log('💰 Начисляем награду рефереру:', referrer.id);
             const { error: referrerUpdateError } = await this.supabase
                 .from('players')
                 .update({
@@ -107,22 +115,34 @@ class ReferralManager {
                 console.error('❌ Ошибка начисления награды рефереру:', referrerUpdateError);
                 return null;
             }
+            console.log('✅ Награда рефереру начислена');
 
             // Начисляем награду новому игроку (добавляем к стартовым 300)
+            console.log('💰 Начисляем награду новому игроку:', newPlayerId);
             const { data: newPlayer, error: newPlayerError } = await this.supabase
                 .from('players')
                 .select('time_currency')
                 .eq('id', newPlayerId)
                 .single();
 
+            if (newPlayerError) {
+                console.error('❌ Ошибка получения данных нового игрока:', newPlayerError);
+            }
+
             if (!newPlayerError && newPlayer) {
-                await this.supabase
+                const { error: newPlayerUpdateError } = await this.supabase
                     .from('players')
                     .update({
                         time_currency: (newPlayer.time_currency || 0) + REFERRAL_REWARD,
                         airdrop_points: (newPlayer.airdrop_points || 0) + 200
                     })
                     .eq('id', newPlayerId);
+
+                if (newPlayerUpdateError) {
+                    console.error('❌ Ошибка начисления награды новому игроку:', newPlayerUpdateError);
+                } else {
+                    console.log('✅ Награда новому игроку начислена');
+                }
 
                 // Обновляем локальные данные
                 if (window.userData) {
@@ -138,6 +158,10 @@ class ReferralManager {
             }
 
             // Записываем реферал в таблицу
+            console.log('📝 Записываем реферал в таблицу:', {
+                referrer_telegram_id: parseInt(referrerTelegramId),
+                referred_telegram_id: newPlayerTelegramId
+            });
             const { error: insertError } = await this.supabase
                 .from('referrals')
                 .insert([{
@@ -151,6 +175,8 @@ class ReferralManager {
             if (insertError) {
                 console.error('❌ Ошибка записи реферала:', insertError);
                 // Не прерываем - награды уже начислены
+            } else {
+                console.log('✅ Реферал записан в таблицу');
             }
 
             console.log(`✅ Реферал обработан! ${referrer.username} пригласил нового игрока. Оба получили ${REFERRAL_REWARD} минут`);
