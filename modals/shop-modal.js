@@ -3,6 +3,10 @@
 // Текущая вкладка магазина
 let currentShopTab = 'free';
 
+// Кэш для оптимизации - не пересоздаём модалку каждый раз
+let shopScreenCache = null;
+let shopCachedFaction = null;
+
 // Кэш курса TON (обновляется каждые 5 минут)
 let tonPriceCache = {
     priceUSD: 5.0, // Дефолтный курс TON/USD
@@ -200,13 +204,28 @@ function showShopModal() {
     const playerAvatar = document.getElementById('player-avatar-container');
     if (playerAvatar) playerAvatar.style.display = 'none';
 
-    // Определяем фон по фракции (используем фоны гильдии)
+    // Определяем фон по фракции
     const faction = window.userData?.faction || 'fire';
     const imagePath = `assets/ui/guild/guild_${faction}.webp`;
 
-    // Удаляем старый экран
+    // ОПТИМИЗАЦИЯ: Проверяем есть ли кэшированный экран
     let screen = document.getElementById('shop-screen');
-    if (screen) screen.remove();
+
+    // Если экран есть и фракция не изменилась - просто показываем
+    if (screen && shopScreenCache && shopCachedFaction === faction) {
+        console.log('🚀 Магазин: используем кэш (быстрое открытие)');
+        screen.style.display = 'flex';
+        screen.style.opacity = '1';
+        // Обновляем только контент overlay
+        setupShopUI();
+        return;
+    }
+
+    // Если фракция изменилась - удаляем старый экран
+    if (screen) {
+        screen.remove();
+        shopScreenCache = null;
+    }
 
     // Создаём экран
     screen = document.createElement('div');
@@ -231,9 +250,14 @@ function showShopModal() {
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: opacity 0.3s;
     `;
 
     document.body.appendChild(screen);
+
+    // Сохраняем в кэш
+    shopScreenCache = screen;
+    shopCachedFaction = faction;
 
     const img = document.getElementById('shop-bg-image');
 
@@ -1618,8 +1642,11 @@ function showShopNotification(message, type = 'info') {
 function closeShopModal() {
     const screen = document.getElementById('shop-screen');
     if (screen) {
+        // ОПТИМИЗАЦИЯ: Скрываем вместо удаления (для быстрого повторного открытия)
         screen.style.opacity = '0';
-        setTimeout(() => screen.remove(), 300);
+        setTimeout(() => {
+            screen.style.display = 'none';
+        }, 300);
     }
 
     // Показываем аватар
