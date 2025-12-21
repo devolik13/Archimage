@@ -154,12 +154,21 @@ function loadAtlases() {
     updatePixiCoreAPI();
 
     // Создаем магов сразу без ожидания атласов
-    setTimeout(() => {
+    setTimeout(async () => {
         if (window.pixiWizards) {
             window.pixiWizards.init();
             window.pixiWizards.update();
         }
         startBattleSync();
+
+        // Ждём загрузки фона перед скрытием спиннера
+        if (backgroundLoadPromise) {
+            try {
+                await backgroundLoadPromise;
+            } catch (e) {
+                console.warn('⚠️ Фон не загрузился, продолжаем');
+            }
+        }
 
         // Скрываем спиннер загрузки
         hideBattleLoadingSpinner();
@@ -327,8 +336,10 @@ window.pixiCore = {
     destroy: destroyPixiBattle
 };
 
-function loadBattleFieldBackground() {
+// Глобальный Promise для отслеживания загрузки фона
+let backgroundLoadPromise = null;
 
+function loadBattleFieldBackground() {
     // Массив доступных фонов (768x512 webp)
     const backgrounds = [
         'images/battle/field-background-1.webp',
@@ -352,8 +363,9 @@ function loadBattleFieldBackground() {
     // Выбираем случайный
     const bgPath = backgrounds[Math.floor(Math.random() * backgrounds.length)];
     console.log('🎲 Выбран фон:', bgPath);
-    
-    PIXI.Assets.load(bgPath).then(texture => {
+
+    // Сохраняем Promise для отслеживания загрузки
+    backgroundLoadPromise = PIXI.Assets.load(bgPath).then(texture => {
         const fieldBg = new PIXI.Sprite(texture);
         
         // Получаем размеры экрана и текстуры
