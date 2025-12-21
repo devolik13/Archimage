@@ -376,30 +376,32 @@ function showKnowledgeBookModal() {
             border-bottom: 2px solid rgba(255,215,0,0.3);
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
+            gap: 15px;
         ">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span id="kb-back-btn" style="
-                    font-size: 24px;
-                    cursor: pointer;
-                    display: none;
-                    padding: 5px;
-                ">←</span>
-                <h2 id="kb-title" style="
-                    margin: 0;
-                    color: #ffd700;
-                    font-size: 20px;
-                    text-shadow: 0 0 10px rgba(255,215,0,0.5);
-                ">📖 Книга Знаний</h2>
-            </div>
+            <span id="kb-back-btn" style="
+                font-size: 24px;
+                cursor: pointer;
+                display: none;
+                padding: 5px 10px;
+                background: rgba(255,215,0,0.15);
+                border: 1px solid rgba(255,215,0,0.4);
+                border-radius: 8px;
+                color: #ffd700;
+            ">←</span>
+            <h2 id="kb-title" style="
+                margin: 0;
+                color: #ffd700;
+                font-size: 20px;
+                text-shadow: 0 0 10px rgba(255,215,0,0.5);
+            ">📖 Книга Знаний</h2>
             <button id="kb-close-btn" style="
                 background: rgba(255,100,100,0.2);
                 border: 1px solid rgba(255,100,100,0.5);
                 color: #ff6b6b;
-                font-size: 20px;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
+                font-size: 18px;
+                padding: 5px 12px;
+                border-radius: 8px;
                 cursor: pointer;
                 display: flex;
                 align-items: center;
