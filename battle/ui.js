@@ -44,7 +44,38 @@ function renderBattleField() {
                 width: 100%;
                 position: relative;
                 padding: 20px 0;
-            "></div>
+            ">
+                <!-- Спиннер загрузки боя -->
+                <div id="battle-loading-spinner" style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    background: #1a1a2e;
+                    z-index: 10;
+                ">
+                    <div style="
+                        width: 50px;
+                        height: 50px;
+                        border: 4px solid rgba(255,255,255,0.2);
+                        border-top: 4px solid #ffd700;
+                        border-radius: 50%;
+                        animation: battle-spin 1s linear infinite;
+                    "></div>
+                    <div style="color: #ffd700; margin-top: 15px; font-size: 16px;">Подготовка к бою...</div>
+                </div>
+                <style>
+                    @keyframes battle-spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            </div>
             
             <!-- НИЖНЯЯ панель с информацией (приподнята выше) -->
             <div style="

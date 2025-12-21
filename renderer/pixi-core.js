@@ -150,9 +150,9 @@ function updatePixiCoreAPI() {
 
 // Функция инициализации без загрузки атласов
 function loadAtlases() {
-    
+
     updatePixiCoreAPI();
-    
+
     // Создаем магов сразу без ожидания атласов
     setTimeout(() => {
         if (window.pixiWizards) {
@@ -160,7 +160,24 @@ function loadAtlases() {
             window.pixiWizards.update();
         }
         startBattleSync();
+
+        // Скрываем спиннер загрузки
+        hideBattleLoadingSpinner();
     }, 100);
+}
+
+// Скрытие спиннера загрузки боя
+function hideBattleLoadingSpinner() {
+    const spinner = document.getElementById('battle-loading-spinner');
+    if (spinner) {
+        // Плавное исчезновение
+        spinner.style.transition = 'opacity 0.3s';
+        spinner.style.opacity = '0';
+        setTimeout(() => {
+            spinner.style.display = 'none';
+        }, 300);
+        console.log('✅ Бой загружен, спиннер скрыт');
+    }
 }
 
 // Рисование сетки с перспективой (как в оригинале)
