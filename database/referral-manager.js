@@ -5,7 +5,19 @@ const REFERRAL_PURCHASE_BONUS_PERCENT = 10; // 10% от BPM coin покупат�
 
 class ReferralManager {
     constructor() {
-        this.supabase = window.supabaseClient;
+        // Supabase клиент берём динамически, т.к. может быть не инициализирован при загрузке
+        this.supabase = null;
+    }
+
+    // Получить supabase клиент (ленивая инициализация)
+    getSupabase() {
+        if (!this.supabase) {
+            this.supabase = window.supabaseClient;
+        }
+        if (!this.supabase) {
+            console.error('❌ Supabase клиент не инициализирован!');
+        }
+        return this.supabase;
     }
 
     // Получить реферальный параметр из Telegram или localStorage
@@ -46,7 +58,10 @@ class ReferralManager {
     // Проверить, был ли уже обработан реферал
     async checkReferralProcessed(newPlayerTelegramId) {
         try {
-            const { data, error } = await this.supabase
+            const supabase = this.getSupabase();
+            if (!supabase) return false;
+
+            const { data, error } = await supabase
                 .from('referrals')
                 .select('id')
                 .eq('referred_telegram_id', newPlayerTelegramId)
@@ -79,9 +94,15 @@ class ReferralManager {
         }
 
         try {
+            const supabase = this.getSupabase();
+            if (!supabase) {
+                console.error('❌ Supabase не инициализирован в processReferral');
+                return null;
+            }
+
             // Проверяем, существует ли реферер
             console.log('🔍 Ищем реферера в БД...');
-            const { data: referrer, error: referrerError } = await this.supabase
+            const { data: referrer, error: referrerError } = await supabase
                 .from('players')
                 .select('id, telegram_id, time_currency, username')
                 .eq('telegram_id', parseInt(referrerTelegramId))
@@ -103,7 +124,7 @@ class ReferralManager {
 
             // Начисляем награду рефереру
             console.log('💰 Начисляем награду рефереру:', referrer.id);
-            const { error: referrerUpdateError } = await this.supabase
+            const { error: referrerUpdateError } = await supabase
                 .from('players')
                 .update({
                     time_currency: (referrer.time_currency || 0) + REFERRAL_REWARD,
@@ -119,7 +140,7 @@ class ReferralManager {
 
             // Начисляем награду новому игроку (добавляем к стартовым 300)
             console.log('💰 Начисляем награду новому игроку:', newPlayerId);
-            const { data: newPlayer, error: newPlayerError } = await this.supabase
+            const { data: newPlayer, error: newPlayerError } = await supabase
                 .from('players')
                 .select('time_currency')
                 .eq('id', newPlayerId)
@@ -130,7 +151,7 @@ class ReferralManager {
             }
 
             if (!newPlayerError && newPlayer) {
-                const { error: newPlayerUpdateError } = await this.supabase
+                const { error: newPlayerUpdateError } = await supabase
                     .from('players')
                     .update({
                         time_currency: (newPlayer.time_currency || 0) + REFERRAL_REWARD,
@@ -158,15 +179,17 @@ class ReferralManager {
             }
 
             // Записываем реферал в таблицу
+            const referrerIdInt = parseInt(referrerTelegramId);
+            const referredIdInt = typeof newPlayerTelegramId === 'number' ? newPlayerTelegramId : parseInt(newPlayerTelegramId);
             console.log('📝 Записываем реферал в таблицу:', {
-                referrer_telegram_id: parseInt(referrerTelegramId),
-                referred_telegram_id: newPlayerTelegramId
+                referrer_telegram_id: referrerIdInt,
+                referred_telegram_id: referredIdInt
             });
-            const { error: insertError } = await this.supabase
+            const { error: insertError } = await supabase
                 .from('referrals')
                 .insert([{
-                    referrer_telegram_id: parseInt(referrerTelegramId),
-                    referred_telegram_id: newPlayerTelegramId,
+                    referrer_telegram_id: referrerIdInt,
+                    referred_telegram_id: referredIdInt,
                     reward_amount: REFERRAL_REWARD,
                     reward_claimed: true,
                     total_purchase_bonus: 0
@@ -206,7 +229,10 @@ class ReferralManager {
 
         try {
             // Ищем реферера этого игрока в таблице referrals
-            const { data: referralRecord, error: refError } = await this.supabase
+            const supabase = this.getSupabase();
+            if (!supabase) return null;
+
+            const { data: referralRecord, error: refError } = await supabase
                 .from('referrals')
                 .select('id, referrer_telegram_id, total_purchase_bonus')
                 .eq('referred_telegram_id', buyerTelegramId)
@@ -223,7 +249,7 @@ class ReferralManager {
             if (referrerBonus <= 0) return null;
 
             // Получаем текущие очки реферера
-            const { data: referrer, error: referrerError } = await this.supabase
+            const { data: referrer, error: referrerError } = await supabase
                 .from('players')
                 .select('id, airdrop_points, username')
                 .eq('telegram_id', referralRecord.referrer_telegram_id)
@@ -235,7 +261,7 @@ class ReferralManager {
             }
 
             // Начисляем бонус рефереру
-            const { error: updateError } = await this.supabase
+            const { error: updateError } = await supabase
                 .from('players')
                 .update({
                     airdrop_points: (referrer.airdrop_points || 0) + referrerBonus
@@ -248,7 +274,7 @@ class ReferralManager {
             }
 
             // Обновляем статистику бонусов в таблице referrals
-            await this.supabase
+            await supabase
                 .from('referrals')
                 .update({
                     total_purchase_bonus: (referralRecord.total_purchase_bonus || 0) + referrerBonus
@@ -271,7 +297,10 @@ class ReferralManager {
     // Получить количество приглашенных игроков (по telegram_id)
     async getReferralCount(telegramId) {
         try {
-            const { count, error } = await this.supabase
+            const supabase = this.getSupabase();
+            if (!supabase) return 0;
+
+            const { count, error } = await supabase
                 .from('referrals')
                 .select('*', { count: 'exact', head: true })
                 .eq('referrer_telegram_id', telegramId);
@@ -291,7 +320,10 @@ class ReferralManager {
     // Получить полную статистику рефералов (по telegram_id)
     async getReferralStats(telegramId) {
         try {
-            const { data, error } = await this.supabase
+            const supabase = this.getSupabase();
+            if (!supabase) return { count: 0, totalTime: 0, totalBonus: 0 };
+
+            const { data, error } = await supabase
                 .from('referrals')
                 .select('reward_amount, total_purchase_bonus')
                 .eq('referrer_telegram_id', telegramId);
