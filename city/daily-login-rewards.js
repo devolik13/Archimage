@@ -118,13 +118,14 @@ async function checkDailyLoginReward() {
     if (typeof window.addAirdropPoints === 'function') {
         window.addAirdropPoints(20, 'Ежедневный вход');
 
-        // Бонус за streak (серию входов)
-        if (dailyData.day === 7) {
-            window.addAirdropPoints(100, 'Streak 7 дней');
-        } else if (dailyData.day === 30) {
-            window.addAirdropPoints(500, 'Streak 30 дней');
-        } else if (dailyData.day === 100) {
-            window.addAirdropPoints(1000, 'Streak 100 дней');
+        // Бонус за streak каждые 7 дней (прогрессивный)
+        // Формула: 25 × номер_недели
+        // Неделя 1: 25, Неделя 2: 50, Неделя 3: 75...
+        // За 3×30 дней (сброс): 750 BPM | За 91 день подряд: 2275 BPM
+        if (dailyData.day % 7 === 0) {
+            const weekNumber = dailyData.day / 7;
+            const streakBonus = 25 * weekNumber;
+            window.addAirdropPoints(streakBonus, `Streak ${dailyData.day} дней`);
         }
     }
 
