@@ -302,7 +302,17 @@ function createBottomControlPanel() {
         align-items: center;
     `;
 
-    // Кнопка airdrop (сверху)
+    // Кнопка Книга Знаний (самый верх)
+    const knowledgeButton = createControlButton('❓', 'Помощь', () => {
+        console.log('📖 Открыть Книгу Знаний');
+        if (typeof window.showKnowledgeBookModal === 'function') {
+            window.showKnowledgeBookModal();
+        } else {
+            showNotification('Книга Знаний загружается...');
+        }
+    });
+
+    // Кнопка airdrop (середина)
     const airdropButton = createControlButton('🪂', 'Airdrop', () => {
         console.log('🪂 Открыть окно airdrop');
         if (typeof window.showAirdropModal === 'function') {
@@ -322,7 +332,8 @@ function createBottomControlPanel() {
         }
     });
 
-    // Собираем стек: airdrop сверху, магазин снизу
+    // Собираем стек: помощь сверху, airdrop, магазин снизу
+    airdropShopStack.appendChild(knowledgeButton);
     airdropShopStack.appendChild(airdropButton);
     airdropShopStack.appendChild(shopButton);
 

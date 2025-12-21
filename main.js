@@ -30,6 +30,7 @@ import './database/referral-manager.js';
 import './modals/guild-modal.js';
 import './modals/airdrop-modal.js';
 import './modals/shop-modal.js';
+import './modals/knowledge-book-modal.js';
 import './modals/faction-selection-system.js';
 
 // ============================================
