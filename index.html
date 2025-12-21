@@ -10,21 +10,7 @@
     <script>
         // JavaScript rotation теперь обрабатывается в telegram-init.js
         console.log('🎮 Инициализация игры...');
-
-        // КРИТИЧНО: Сохраняем start_param ДО того как что-либо другое запустится
-        (function saveReferralParam() {
-            try {
-                if (window.Telegram?.WebApp?.initDataUnsafe?.start_param) {
-                    const startParam = window.Telegram.WebApp.initDataUnsafe.start_param;
-                    if (startParam && startParam.startsWith('ref_')) {
-                        localStorage.setItem('archimage_referral_param', startParam);
-                        console.log('🔗 Реферальный параметр сохранен:', startParam);
-                    }
-                }
-            } catch (e) {
-                console.error('❌ Ошибка сохранения реферального параметра:', e);
-            }
-        })();
+        // Реферальный параметр сохраняется ПОСЛЕ загрузки Telegram SDK (см. ниже)
     </script>
 
     <!-- СТИЛИ -->
@@ -47,6 +33,25 @@
 
     <!-- Telegram WebApp инициализация -->
     <script>
+        // КРИТИЧНО: Сохраняем реферальный параметр СРАЗУ после загрузки Telegram SDK
+        (function saveReferralParam() {
+            try {
+                if (window.Telegram?.WebApp?.initDataUnsafe?.start_param) {
+                    const startParam = window.Telegram.WebApp.initDataUnsafe.start_param;
+                    if (startParam && startParam.startsWith('ref_')) {
+                        localStorage.setItem('archimage_referral_param', startParam);
+                        console.log('🔗 Реферальный параметр сохранен:', startParam);
+                    } else {
+                        console.log('📝 start_param не реферальный:', startParam);
+                    }
+                } else {
+                    console.log('📝 start_param отсутствует в Telegram.WebApp.initDataUnsafe');
+                }
+            } catch (e) {
+                console.error('❌ Ошибка сохранения реферального параметра:', e);
+            }
+        })();
+
         // Базовая инициализация Telegram WebApp
         if (window.Telegram?.WebApp) {
             const tg = window.Telegram.WebApp;
