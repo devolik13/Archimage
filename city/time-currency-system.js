@@ -263,20 +263,28 @@ function showOfflineEarningsNotification(earnedMinutes) {
             @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         </style>
         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-            <img id="offline-earnings-bg" src="${backgroundPath}" alt="Фон" style="
-                max-width: 100%;
-                max-height: 100%;
-                object-fit: contain;
-            ">
-            <div id="offline-earnings-overlay" style="
-                position: absolute;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-                padding: 20px;
-            "></div>
+            <div id="offline-earnings-wrapper" style="position: relative; display: inline-block;">
+                <img id="offline-earnings-bg" src="${backgroundPath}" alt="Фон" style="
+                    max-width: 100vw;
+                    max-height: 100vh;
+                    object-fit: contain;
+                    display: block;
+                ">
+                <div id="offline-earnings-overlay" style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                    padding: 20px;
+                    box-sizing: border-box;
+                "></div>
+            </div>
         </div>
     `;
 
@@ -303,19 +311,9 @@ function showOfflineEarningsNotification(earnedMinutes) {
         const contentWidth = (655 - 115) * scaleX;
         const contentHeight = (410 - 70) * scaleY;
 
-        overlay.style.cssText = `
-            position: absolute;
-            left: ${115 * scaleX + rect.left - img.parentElement.getBoundingClientRect().left}px;
-            top: ${70 * scaleY}px;
-            width: ${contentWidth}px;
-            height: ${contentHeight}px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            animation: slideUp 0.5s ease;
-        `;
+        // Overlay уже позиционирован поверх изображения через CSS
+        // Просто добавляем анимацию
+        overlay.style.animation = 'slideUp 0.5s ease';
 
         overlay.innerHTML = `
             <div style="font-size: ${iconSize}px; margin-bottom: ${15 * scale}px;">⏰</div>

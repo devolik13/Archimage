@@ -441,8 +441,9 @@ function setupSpellsScreen(faction) {
             buttonHTML = '';
         }
 
-        // Добавляем кнопку "Описание" для всех заклинаний (кроме заблокированных)
-        const showInfoButton = spell.level > 0 || isActive || tierIndex === 0;
+        // Добавляем кнопку "Описание" для ВСЕХ заклинаний
+        // Игроки должны видеть описание до изучения, чтобы решить куда тратить время
+        const showInfoButton = true;
         const infoButtonHTML = showInfoButton ? `
             <button
                 style="

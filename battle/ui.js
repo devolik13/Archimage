@@ -446,7 +446,13 @@ async function closeBattleFieldModal() {
                         dummyState.roundsRemaining--;
                         dummyState.currentRound++;
                     }
+
+                    // Минимальная задержка чтобы асинхронный урон от заклинаний успел примениться
+                    await new Promise(resolve => setTimeout(resolve, 10));
                 }
+
+                // Дополнительная задержка для завершения всех асинхронных операций урона
+                await new Promise(resolve => setTimeout(resolve, 100));
 
                 // Подсчитываем финальный урон
                 const dummy = window.enemyFormation?.find(e => e && e.isTrainingDummy);
