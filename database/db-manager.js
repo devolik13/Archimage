@@ -144,7 +144,9 @@ class DatabaseManager {
                 blessing_last_used: playerData.blessing_last_used || null,
                 last_login: playerData.last_login || new Date().toISOString(),
                 purchased_packs: playerData.purchased_packs || {}, // Купленные стартовые пакеты
-                airdrop_points: playerData.airdrop_points || 0, // Очки для airdrop
+                // airdrop_points: НЕ отправляем 0, чтобы RPC использовал текущее значение из БД
+                // Anti-cheat в RPC блокирует уменьшение очков
+                ...(playerData.airdrop_points > 0 ? { airdrop_points: playerData.airdrop_points } : {}),
                 airdrop_breakdown: playerData.airdrop_breakdown || {}, // Разбивка очков по категориям
                 wallet_address: playerData.wallet_address || null, // TON кошелек
                 // wallet_connected_at должен быть BIGINT (Date.now()), НЕ ISO строкой
