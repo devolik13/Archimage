@@ -657,7 +657,16 @@ function speedupConstruction(constructionIndex) {
         updateConstructionUI();
         updateAllConstructionTimers();
         if (typeof window.showNotification === 'function') {
-            window.showNotification(`⚡ Строительство ускорено за ${formatTimeCurrency(cost)}`);
+            // Сообщение зависит от типа процесса
+            let processName = 'Строительство';
+            if (construction.type === 'spell') {
+                processName = 'Изучение заклинания';
+            } else if (construction.type === 'wizard') {
+                processName = 'Найм мага';
+            } else if (construction.is_upgrade) {
+                processName = 'Улучшение';
+            }
+            window.showNotification(`⚡ ${processName} ускорено за ${formatTimeCurrency(cost)}`);
         }
 
         // Разблокируем через 500ms
