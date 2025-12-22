@@ -125,11 +125,12 @@ function setupGeneratorUI() {
     const production = window.calculateProduction ? window.calculateProduction() : 0;
     const storage = window.calculateMaxStorage ? window.calculateMaxStorage() : 0;
     
-    // Рассчитываем следующий уровень
-    const nextProduction = generatorLevel < maxGeneratorLevel ? 
-        60 + generatorLevel * 30 : production;
+    // Рассчитываем следующий уровень (используем те же формулы что и в time-currency-system.js)
+    const config = window.TIME_CURRENCY_CONFIG || { GENERATOR_BASE_RATE: 36, GENERATOR_PER_LEVEL: 16, STORAGE_BASE: 1037, STORAGE_PER_LEVEL: 461 };
+    const nextProduction = generatorLevel < maxGeneratorLevel ?
+        config.GENERATOR_BASE_RATE + generatorLevel * config.GENERATOR_PER_LEVEL : production;
     const nextStorage = generatorLevel < maxGeneratorLevel ?
-        1440 + generatorLevel * 720 : storage;
+        config.STORAGE_BASE + generatorLevel * config.STORAGE_PER_LEVEL : storage;
     
     // Текущая валюта игрока
     const currentCurrency = window.userData?.time_currency || 0;
