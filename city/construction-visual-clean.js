@@ -154,29 +154,30 @@
                 background: rgba(0, 0, 0, 0.7);
                 border: 2px solid ${color};
                 border-radius: 10px;
-                padding: 5px 8px;
+                padding: 8px 16px;
                 display: flex;
                 align-items: center;
-                gap: 5px;
+                gap: 8px;
                 cursor: pointer;
                 backdrop-filter: blur(5px);
                 transition: all 0.2s;
                 animation: pulse 2s infinite;
+                min-width: 80px;
             `;
 
             // Формируем иконку (изображение для строительства, эмодзи для остального)
             const iconContent = useImage
-                ? `<img src="${emoji}" alt="Строительство" style="width: 20px; height: 20px; object-fit: contain;">`
-                : `<span style="font-size: 16px;">${emoji}</span>`;
+                ? `<img src="${emoji}" alt="Строительство" style="width: 24px; height: 24px; object-fit: contain;">`
+                : `<span style="font-size: 20px;">${emoji}</span>`;
 
             icon.innerHTML = `
                 ${iconContent}
                 <span class="process-timer" style="
-                    font-size: 11px;
+                    font-size: 13px;
                     color: ${color};
                     font-weight: bold;
                     text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-                    min-width: 40px;
+                    min-width: 50px;
                 ">${window.formatTimeCurrency ? window.formatTimeCurrency(timeRemaining) : timeRemaining}</span>
             `;
 
