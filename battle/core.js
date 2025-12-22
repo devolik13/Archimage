@@ -859,9 +859,9 @@ async function executeSingleMageAttack(wizard, position, casterType) {
 
     // Прерывание от Абсолютного Ноля проверяется в spells.js для каждого заклинания отдельно
 
-    // ИСПОЛЬЗОВАНИЕ ЗАКЛИНАНИЙ
+    // ИСПОЛЬЗОВАНИЕ ЗАКЛИНАНИЙ - ждём завершения всех кастов
     if (typeof window.useWizardSpells === 'function') {
-        window.useWizardSpells(wizard, position, casterType);
+        await window.useWizardSpells(wizard, position, casterType);
     }
 
     if (window.activeMeteorokinesis && wizard && wizard.hp > 0) {
