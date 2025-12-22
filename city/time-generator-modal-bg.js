@@ -132,17 +132,6 @@ function setupGeneratorUI() {
     const nextStorage = generatorLevel < maxGeneratorLevel ?
         config.STORAGE_BASE + generatorLevel * config.STORAGE_PER_LEVEL : storage;
     
-    // Текущая валюта игрока
-    const currentCurrency = window.userData?.time_currency || 0;
-    
-    // Время до заполнения хранилища
-    const minutesToFull = storage > currentCurrency ? Math.ceil((storage - currentCurrency) / (production / 60)) : 0;
-    const hoursToFull = Math.floor(minutesToFull / 60);
-    const minsToFull = minutesToFull % 60;
-    const timeToFullText = minutesToFull > 0 ?
-        (hoursToFull > 0 ? `${hoursToFull}ч ${minsToFull}м` : `${minsToFull}м`) :
-        'Заполнено';
-    
     // Адаптивные размеры шрифтов (ТОЧНО как у башни магов)
     const baseFontSize = Math.max(12, 16 * Math.min(scaleX, scaleY));
     const titleFontSize = Math.max(16, 24 * Math.min(scaleX, scaleY));
@@ -190,14 +179,14 @@ function setupGeneratorUI() {
         gap: 8px;
     `;
     
-    // 3 КАРТОЧКИ С ИНФОРМАЦИЕЙ (прозрачные)
+    // 2 КАРТОЧКИ С ИНФОРМАЦИЕЙ (прозрачные)
     const cardsHTML = `
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; flex: 1;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1;">
             <!-- ПРОИЗВОДСТВО -->
-            <div style="background: rgba(74, 222, 128, 0.2); border: 1px solid rgba(74, 222, 128, 0.5); backdrop-filter: blur(5px); padding: 10px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="background: rgba(74, 222, 128, 0.2); border: 1px solid rgba(74, 222, 128, 0.5); backdrop-filter: blur(5px); padding: 12px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between;">
                 <div style="text-align: center;">
                     <span style="font-size: ${titleFontSize}px;">⚡</span>
-                    <h4 style="margin: 4px 0; color: #4ade80; font-size: ${smallFontSize}px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">Производство</h4>
+                    <h4 style="margin: 4px 0; color: #4ade80; font-size: ${smallFontSize}px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">Скорость добычи</h4>
                 </div>
                 <div style="font-size: ${titleFontSize * 1.2}px; color: white; text-align: center; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
                     +${production}
@@ -213,39 +202,22 @@ function setupGeneratorUI() {
             </div>
 
             <!-- ХРАНИЛИЩЕ -->
-            <div style="background: rgba(0, 188, 212, 0.2); border: 1px solid rgba(0, 188, 212, 0.5); backdrop-filter: blur(5px); padding: 10px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="background: rgba(0, 188, 212, 0.2); border: 1px solid rgba(0, 188, 212, 0.5); backdrop-filter: blur(5px); padding: 12px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between;">
                 <div style="text-align: center;">
                     <span style="font-size: ${titleFontSize}px;">📦</span>
-                    <h4 style="margin: 4px 0; color: #00bcd4; font-size: ${smallFontSize}px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">Хранилище</h4>
+                    <h4 style="margin: 4px 0; color: #00bcd4; font-size: ${smallFontSize}px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">Оффлайн хранилище</h4>
                 </div>
                 <div style="font-size: ${titleFontSize}px; color: white; text-align: center; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
                     ${window.formatTimeCurrency(storage)}
                 </div>
                 <div style="font-size: ${smallFontSize * 0.8}px; color: rgba(255,255,255,0.9); text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
-                    лимит оффлайн
+                    макс. накопление
                 </div>
                 ${generatorLevel < maxGeneratorLevel ? `
                     <div style="font-size: ${smallFontSize * 0.7}px; color: rgba(255,255,255,0.8); text-align: center; margin-top: 4px; padding: 3px; background: rgba(0,0,0,0.3); border-radius: 4px;">
                         След. ур: ${window.formatTimeCurrency(nextStorage)}
                     </div>
                 ` : ''}
-            </div>
-
-            <!-- ЗАПОЛНЕНИЕ -->
-            <div style="background: rgba(255, 165, 0, 0.2); border: 1px solid rgba(255, 165, 0, 0.5); backdrop-filter: blur(5px); padding: 10px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between;">
-                <div style="text-align: center;">
-                    <span style="font-size: ${titleFontSize}px;">⏰</span>
-                    <h4 style="margin: 4px 0; color: #ffa500; font-size: ${smallFontSize}px; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">Заполнение</h4>
-                </div>
-                <div style="font-size: ${titleFontSize}px; color: white; text-align: center; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
-                    ${timeToFullText}
-                </div>
-                <div style="font-size: ${smallFontSize * 0.8}px; color: rgba(255,255,255,0.9); text-align: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
-                    до полного
-                </div>
-                <div style="font-size: ${smallFontSize * 0.7}px; color: rgba(255,255,255,0.8); text-align: center; margin-top: 4px; padding: 3px; background: rgba(0,0,0,0.3); border-radius: 4px;">
-                    Валюта: ${window.formatTimeCurrency(currentCurrency)}
-                </div>
             </div>
         </div>
     `;
