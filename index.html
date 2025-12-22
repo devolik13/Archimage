@@ -36,6 +36,10 @@
         // КРИТИЧНО: Сохраняем реферальный параметр СРАЗУ после загрузки Telegram SDK
         (function saveReferralParam() {
             try {
+                // Детальное логирование для диагностики
+                console.log('🔍 [REFERRAL DEBUG] Telegram WebApp:', !!window.Telegram?.WebApp);
+                console.log('🔍 [REFERRAL DEBUG] initDataUnsafe:', JSON.stringify(window.Telegram?.WebApp?.initDataUnsafe || {}));
+
                 if (window.Telegram?.WebApp?.initDataUnsafe?.start_param) {
                     const startParam = window.Telegram.WebApp.initDataUnsafe.start_param;
                     if (startParam && startParam.startsWith('ref_')) {
@@ -46,6 +50,12 @@
                     }
                 } else {
                     console.log('📝 start_param отсутствует в Telegram.WebApp.initDataUnsafe');
+                    // Проверяем URL на случай если параметр в адресной строке
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const urlStartApp = urlParams.get('startapp') || urlParams.get('tgWebAppStartParam');
+                    if (urlStartApp) {
+                        console.log('🔍 [REFERRAL DEBUG] Найден параметр в URL:', urlStartApp);
+                    }
                 }
             } catch (e) {
                 console.error('❌ Ошибка сохранения реферального параметра:', e);
