@@ -599,7 +599,35 @@ function setupAirdropUI() {
         referralBtn.style.transform = 'scale(1)';
     };
 
+    // Кнопка "Новости"
+    const newsBtn = document.createElement('button');
+    newsBtn.textContent = '📢 Новости';
+    newsBtn.style.cssText = `
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        border: 2px solid #60a5fa;
+        border-radius: 10px;
+        color: white;
+        font-size: ${baseFontSize}px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    `;
+    newsBtn.onclick = () => {
+        // Открываем канал новостей в Telegram
+        window.open('https://t.me/archimage_news', '_blank');
+    };
+    newsBtn.onmouseover = () => {
+        newsBtn.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+        newsBtn.style.transform = 'scale(1.05)';
+    };
+    newsBtn.onmouseout = () => {
+        newsBtn.style.background = 'linear-gradient(135deg, #60a5fa, #3b82f6)';
+        newsBtn.style.transform = 'scale(1)';
+    };
+
     footerContainer.appendChild(closeBtn);
+    footerContainer.appendChild(newsBtn);
     footerContainer.appendChild(referralBtn);
     overlay.appendChild(footerContainer);
 
