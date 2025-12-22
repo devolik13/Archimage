@@ -1,5 +1,32 @@
 // battle/systems/single-target-visual-system.js - Система визуализации single-target заклинаний
 
+// Счётчик активных снарядов (для ожидания их завершения)
+if (typeof window.pendingProjectiles === 'undefined') {
+    window.pendingProjectiles = 0;
+}
+
+// Функция ожидания пока все снаряды долетят
+window.waitForProjectiles = function(timeout = 3000) {
+    return new Promise((resolve) => {
+        const startTime = Date.now();
+
+        function check() {
+            if (window.pendingProjectiles <= 0) {
+                resolve();
+            } else if (Date.now() - startTime > timeout) {
+                // Таймаут - сбрасываем счётчик и продолжаем
+                console.warn(`⚠️ Таймаут ожидания снарядов (${window.pendingProjectiles} осталось)`);
+                window.pendingProjectiles = 0;
+                resolve();
+            } else {
+                requestAnimationFrame(check);
+            }
+        }
+
+        check();
+    });
+};
+
 /**
  * Универсальная система для single-target заклинаний
  * Визуализирует снаряды с учётом многослойной защиты
@@ -67,12 +94,18 @@ function castSingleTargetSpell(params) {
 
     // ШАГ 2: Создаём ОДИН снаряд до точки столкновения
     if (typeof createProjectile === 'function') {
+        // Увеличиваем счётчик активных снарядов
+        window.pendingProjectiles++;
+
         createProjectile({
             fromCol: casterCol,
             fromRow: casterPosition,
             toCol: impactCol,
             toRow: impactRow,
             onHit: () => {
+                // Уменьшаем счётчик - снаряд долетел
+                window.pendingProjectiles--;
+
                 // Логируем результат
                 if (window.logProtectionResult) {
                     window.logProtectionResult(caster, target, damageResult, getSpellDisplayName(spellId, spellLevel));
