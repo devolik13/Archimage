@@ -155,14 +155,9 @@ async function executeDummyBattlePhase() {
         // Проверяем не умер ли манекен
         if (dummy && dummy.hp <= 0) break;
 
-        // Используем заклинания
+        // Используем заклинания - ждём завершения всех кастов
         if (typeof window.useWizardSpells === 'function') {
-            window.useWizardSpells(mageData.wizard, mageData.position, 'player');
-        }
-
-        // Пауза между магами для анимаций (пропускаем при быстрой симуляции)
-        if (!window.fastSimulation) {
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await window.useWizardSpells(mageData.wizard, mageData.position, 'player');
         }
     }
 
