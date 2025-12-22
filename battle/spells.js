@@ -146,47 +146,8 @@ function useWizardSpells(wizard, position, casterType) {
     castNextSpell();
 }
 
-// --- Функция каста заклинания ---
-function castSpell(wizard, spellId, position, casterType) {
-    // 🎬 АНИМАЦИЯ АТАКИ - запускаем для ЛЮБОГО заклинания
-    const col = casterType === 'player' ? 5 : 0;
-
-    if (typeof window.pixiWizards?.playAttack === 'function') {
-    	window.pixiWizards.playAttack(col, position, () => {});
-    }
-
-    if (!spellId) return;
-
-    // Используем правильный источник данных для врагов и игрока
-    let spellData = null;
-
-    if (casterType === 'player') {
-        const spellsSource = window.userData?.spells;
-        spellData = window.findSpellInUserData ? window.findSpellInUserData(spellId, spellsSource) : null;
-    } else if (casterType === 'enemy') {
-        // Для PvE врагов (элементалей) с spell_levels создаем spellData напрямую
-        if (wizard.spell_levels && wizard.spell_levels[spellId]) {
-            const spellLevel = wizard.spell_levels[spellId];
-            const spellName = window.SPELL_NAMES?.[spellId] || spellId;
-            const baseDamage = window.SPELL_BASE_DAMAGE?.[spellId] || 10;
-            const spellType = window.getSpellType ? window.getSpellType(spellId) : 'single_target';
-            const damage = window.getSpellDamage ? window.getSpellDamage(spellId, spellLevel) : baseDamage;
-
-            spellData = {
-                id: spellId,
-                name: spellName,
-                level: spellLevel,
-                tier: Math.ceil(spellLevel / 1),
-                damage: damage,
-                type: spellType
-            };
-        } else {
-            // Для PvP врагов используем стандартный путь
-            const spellsSource = window.selectedOpponent?.spells;
-            spellData = window.findSpellInUserData ? window.findSpellInUserData(spellId, spellsSource) : null;
-        }
-    }
-
+// --- Функция применения эффекта заклинания (вызывается после анимации каста) ---
+function executeSpellEffect(wizard, spellId, spellData, position, casterType) {
     if (!spellData) {
         castBasicAttack(wizard, position, casterType);
         return;
@@ -239,6 +200,58 @@ function castSpell(wizard, spellId, position, casterType) {
             break;
         default:
             castBasicAttack(wizard, position, casterType);
+    }
+}
+
+// --- Функция каста заклинания ---
+function castSpell(wizard, spellId, position, casterType) {
+    const col = casterType === 'player' ? 5 : 0;
+
+    // Подготавливаем данные заклинания заранее
+    let spellData = null;
+
+    if (spellId) {
+        if (casterType === 'player') {
+            const spellsSource = window.userData?.spells;
+            spellData = window.findSpellInUserData ? window.findSpellInUserData(spellId, spellsSource) : null;
+        } else if (casterType === 'enemy') {
+            // Для PvE врагов (элементалей) с spell_levels создаем spellData напрямую
+            if (wizard.spell_levels && wizard.spell_levels[spellId]) {
+                const spellLevel = wizard.spell_levels[spellId];
+                const spellName = window.SPELL_NAMES?.[spellId] || spellId;
+                const baseDamage = window.SPELL_BASE_DAMAGE?.[spellId] || 10;
+                const spellType = window.getSpellType ? window.getSpellType(spellId) : 'single_target';
+                const damage = window.getSpellDamage ? window.getSpellDamage(spellId, spellLevel) : baseDamage;
+
+                spellData = {
+                    id: spellId,
+                    name: spellName,
+                    level: spellLevel,
+                    tier: Math.ceil(spellLevel / 1),
+                    damage: damage,
+                    type: spellType
+                };
+            } else {
+                // Для PvP врагов используем стандартный путь
+                const spellsSource = window.selectedOpponent?.spells;
+                spellData = window.findSpellInUserData ? window.findSpellInUserData(spellId, spellsSource) : null;
+            }
+        }
+    }
+
+    // 🎬 Запускаем анимацию каста, эффект заклинания - в callback после её завершения
+    if (typeof window.pixiWizards?.playAttack === 'function') {
+        window.pixiWizards.playAttack(col, position, () => {
+            // Эффект заклинания запускается ПОСЛЕ завершения анимации каста
+            if (spellId) {
+                executeSpellEffect(wizard, spellId, spellData, position, casterType);
+            }
+        });
+    } else {
+        // Fallback: если нет анимации, сразу применяем эффект
+        if (spellId) {
+            executeSpellEffect(wizard, spellId, spellData, position, casterType);
+        }
     }
 }
 
