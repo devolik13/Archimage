@@ -49,10 +49,9 @@ class ReferralManager {
 
     // Генерация реферальной ссылки для игрока
     generateReferralLink(telegramId) {
-        // Базовый URL бота - нужно заменить на реальный
-        const botUsername = window.TELEGRAM_BOT_USERNAME || 'YourBotName';
-        const appName = window.TELEGRAM_APP_NAME || 'app';
-        return `https://t.me/${botUsername}/${appName}?startapp=ref_${telegramId}`;
+        // Используем Main App (без short_name) - открывает напрямую с параметром
+        const botUsername = window.TELEGRAM_BOT_USERNAME || 'Archimage_bot';
+        return `https://t.me/${botUsername}?startapp=ref_${telegramId}`;
     }
 
     // Проверить, был ли уже обработан реферал
@@ -482,4 +481,3 @@ window.referralManager = new ReferralManager();
 
 // Константы для настройки бота
 window.TELEGRAM_BOT_USERNAME = 'Archimage_bot'; // Имя бота
-window.TELEGRAM_APP_NAME = 'app'; // Имя Mini App
