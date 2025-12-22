@@ -45,17 +45,13 @@ async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 
         }
 
         if (!interrupted) {
-            castSpell(wizard, spellId, position, casterType);
-        }
-
-        // Задержка между заклинаниями (увеличена для завершения анимаций)
-        if (i < spellsToUse.length - 1) {
-            await delay(1500);
+            // Ждём завершения анимации каста перед следующим заклинанием
+            await castSpell(wizard, spellId, position, casterType);
         }
     }
 
-    // Пауза после всех кастов мага (увеличена для завершения анимаций)
-    await delay(1000);
+    // Небольшая пауза после всех кастов мага
+    await delay(300);
 }
 
 // Вспомогательная функция задержки
@@ -63,8 +59,8 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// --- Главная функция использования заклинаний магом ---
-function useWizardSpells(wizard, position, casterType) {
+// --- Главная функция использования заклинаний магом (async) ---
+async function useWizardSpells(wizard, position, casterType) {
     const spells = wizard.spells || [];
     const availableSpells = spells.filter(spell => spell !== null && spell !== undefined);
 
@@ -73,15 +69,12 @@ function useWizardSpells(wizard, position, casterType) {
         return;
     }
 
-    // Последовательное использование заклинаний с задержкой
-    let spellIndex = 0;
+    // Последовательное использование заклинаний
+    for (let i = 0; i < availableSpells.length; i++) {
+        const spellId = availableSpells[i];
+        let interrupted = false;
 
-    function castNextSpell() {
-        if (spellIndex >= availableSpells.length) return;
-
-        const spellId = availableSpells[spellIndex];
-
-        // Проверки на прерывание (Снежная буря и Абсолютный Ноль)
+        // Проверки на прерывание (Снежная буря)
         if (typeof window.isWizardInBlizzard === 'function') {
             const blizzard = window.isWizardInBlizzard(wizard, casterType);
             if (blizzard) {
@@ -89,14 +82,8 @@ function useWizardSpells(wizard, position, casterType) {
                     if (typeof window.addToBattleLog === 'function') {
                         window.addToBattleLog(`❄️ Заклинание ${wizard.name} прервано Снежной бурей!`);
                     }
-                    spellIndex++;
-                    if (spellIndex < availableSpells.length) {
-                        setTimeout(castNextSpell, 800);
-                    }
-                    return;
-                }
-
-                if (blizzard.level === 5 && Math.random() < 0.1) {
+                    interrupted = true;
+                } else if (blizzard.level === 5 && Math.random() < 0.1) {
                     if (typeof window.tryApplyEffect === 'function') {
                         window.tryApplyEffect(blizzard.casterFaction === 'water' ? 'freeze' : 'hoarFrost', wizard);
                     }
@@ -106,44 +93,34 @@ function useWizardSpells(wizard, position, casterType) {
                     }
                 }
             }
+        }
 
-            if (typeof window.isWizardInAbsoluteZero === 'function') {
-                const absoluteZero = window.isWizardInAbsoluteZero(wizard, casterType);
-                if (absoluteZero) {
-                    if (Math.random() * 100 < absoluteZero.interruptChance) {
-                        if (typeof window.addToBattleLog === 'function') {
-                            window.addToBattleLog(`❄️ Заклинание ${wizard.name} прервано Абсолютным Нолём!`);
-                        }
-                        spellIndex++;
-                        if (spellIndex < availableSpells.length) {
-                            setTimeout(castNextSpell, 800);
-                        }
-                        return;
-                    } else {
-                        if (typeof window.tryApplyEffect === 'function') {
-                            window.tryApplyEffect(absoluteZero.casterFaction === 'water' ? 'freeze' : 'hoarFrost', wizard);
-                        }
-                        if (typeof window.addToBattleLog === 'function') {
-                            const effectName = absoluteZero.casterFaction === 'water' ? 'заморозку' : 'иней';
-                            window.addToBattleLog(`❄️ ${wizard.name} под Абсолютным Нолём — наложен ${effectName}!`);
-                        }
+        // Проверка на Абсолютный Ноль
+        if (!interrupted && typeof window.isWizardInAbsoluteZero === 'function') {
+            const absoluteZero = window.isWizardInAbsoluteZero(wizard, casterType);
+            if (absoluteZero) {
+                if (Math.random() * 100 < absoluteZero.interruptChance) {
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`❄️ Заклинание ${wizard.name} прервано Абсолютным Нолём!`);
+                    }
+                    interrupted = true;
+                } else {
+                    if (typeof window.tryApplyEffect === 'function') {
+                        window.tryApplyEffect(absoluteZero.casterFaction === 'water' ? 'freeze' : 'hoarFrost', wizard);
+                    }
+                    if (typeof window.addToBattleLog === 'function') {
+                        const effectName = absoluteZero.casterFaction === 'water' ? 'заморозку' : 'иней';
+                        window.addToBattleLog(`❄️ ${wizard.name} под Абсолютным Нолём — наложен ${effectName}!`);
                     }
                 }
             }
         }
 
-        // Кастуем заклинание
-        castSpell(wizard, spellId, position, casterType);
-
-        spellIndex++;
-
-        // Если есть еще заклинания, вызываем следующее через задержку
-        if (spellIndex < availableSpells.length) {
-            setTimeout(castNextSpell, 800);
+        // Кастуем заклинание и ждём завершения анимации каста
+        if (!interrupted) {
+            await castSpell(wizard, spellId, position, casterType);
         }
     }
-
-    castNextSpell();
 }
 
 // --- Функция применения эффекта заклинания (вызывается после анимации каста) ---
@@ -203,56 +180,62 @@ function executeSpellEffect(wizard, spellId, spellData, position, casterType) {
     }
 }
 
-// --- Функция каста заклинания ---
+// --- Функция каста заклинания (возвращает Promise) ---
 function castSpell(wizard, spellId, position, casterType) {
-    const col = casterType === 'player' ? 5 : 0;
+    return new Promise((resolve) => {
+        const col = casterType === 'player' ? 5 : 0;
 
-    // Подготавливаем данные заклинания заранее
-    let spellData = null;
+        // Подготавливаем данные заклинания заранее
+        let spellData = null;
 
-    if (spellId) {
-        if (casterType === 'player') {
-            const spellsSource = window.userData?.spells;
-            spellData = window.findSpellInUserData ? window.findSpellInUserData(spellId, spellsSource) : null;
-        } else if (casterType === 'enemy') {
-            // Для PvE врагов (элементалей) с spell_levels создаем spellData напрямую
-            if (wizard.spell_levels && wizard.spell_levels[spellId]) {
-                const spellLevel = wizard.spell_levels[spellId];
-                const spellName = window.SPELL_NAMES?.[spellId] || spellId;
-                const baseDamage = window.SPELL_BASE_DAMAGE?.[spellId] || 10;
-                const spellType = window.getSpellType ? window.getSpellType(spellId) : 'single_target';
-                const damage = window.getSpellDamage ? window.getSpellDamage(spellId, spellLevel) : baseDamage;
-
-                spellData = {
-                    id: spellId,
-                    name: spellName,
-                    level: spellLevel,
-                    tier: Math.ceil(spellLevel / 1),
-                    damage: damage,
-                    type: spellType
-                };
-            } else {
-                // Для PvP врагов используем стандартный путь
-                const spellsSource = window.selectedOpponent?.spells;
+        if (spellId) {
+            if (casterType === 'player') {
+                const spellsSource = window.userData?.spells;
                 spellData = window.findSpellInUserData ? window.findSpellInUserData(spellId, spellsSource) : null;
+            } else if (casterType === 'enemy') {
+                // Для PvE врагов (элементалей) с spell_levels создаем spellData напрямую
+                if (wizard.spell_levels && wizard.spell_levels[spellId]) {
+                    const spellLevel = wizard.spell_levels[spellId];
+                    const spellName = window.SPELL_NAMES?.[spellId] || spellId;
+                    const baseDamage = window.SPELL_BASE_DAMAGE?.[spellId] || 10;
+                    const spellType = window.getSpellType ? window.getSpellType(spellId) : 'single_target';
+                    const damage = window.getSpellDamage ? window.getSpellDamage(spellId, spellLevel) : baseDamage;
+
+                    spellData = {
+                        id: spellId,
+                        name: spellName,
+                        level: spellLevel,
+                        tier: Math.ceil(spellLevel / 1),
+                        damage: damage,
+                        type: spellType
+                    };
+                } else {
+                    // Для PvP врагов используем стандартный путь
+                    const spellsSource = window.selectedOpponent?.spells;
+                    spellData = window.findSpellInUserData ? window.findSpellInUserData(spellId, spellsSource) : null;
+                }
             }
         }
-    }
 
-    // 🎬 Запускаем анимацию каста, эффект заклинания - в callback после её завершения
-    if (typeof window.pixiWizards?.playAttack === 'function') {
-        window.pixiWizards.playAttack(col, position, () => {
-            // Эффект заклинания запускается ПОСЛЕ завершения анимации каста
+        // 🎬 Запускаем анимацию каста, эффект заклинания - в callback после её завершения
+        if (typeof window.pixiWizards?.playAttack === 'function') {
+            window.pixiWizards.playAttack(col, position, () => {
+                // Эффект заклинания запускается ПОСЛЕ завершения анимации каста
+                if (spellId) {
+                    executeSpellEffect(wizard, spellId, spellData, position, casterType);
+                }
+                // Разрешаем следующий каст сразу после завершения анимации каста
+                // (не ждём окончания анимации заклинания)
+                resolve();
+            });
+        } else {
+            // Fallback: если нет анимации, сразу применяем эффект
             if (spellId) {
                 executeSpellEffect(wizard, spellId, spellData, position, casterType);
             }
-        });
-    } else {
-        // Fallback: если нет анимации, сразу применяем эффект
-        if (spellId) {
-            executeSpellEffect(wizard, spellId, spellData, position, casterType);
+            resolve();
         }
-    }
+    });
 }
 
 // --- Базовая атака если нет заклинаний ---
