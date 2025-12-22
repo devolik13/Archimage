@@ -730,7 +730,7 @@
                 // Переключаем на атаку
                 sprite.stop();
                 sprite.textures = container.attackFrames;
-                sprite.animationSpeed = 0.2; // Чуть быстрее для атаки
+                sprite.animationSpeed = 0.24; // Ускорено на 20% для каста
                 sprite.loop = false;
                 sprite.gotoAndPlay(0);
                 
