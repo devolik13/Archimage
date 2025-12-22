@@ -161,6 +161,11 @@ async function executeDummyBattlePhase() {
         }
     }
 
+    // Ждём пока все снаряды долетят (пропускаем при быстрой симуляции)
+    if (!window.fastSimulation) {
+        await new Promise(resolve => setTimeout(resolve, 800));
+    }
+
     // Подсчитываем нанесённый урон за раунд
     const hpAfter = dummy ? Math.max(0, dummy.hp) : 0;
     const damageThisRound = Math.max(0, hpBefore - hpAfter);
