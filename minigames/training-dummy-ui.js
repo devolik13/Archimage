@@ -825,20 +825,21 @@ async function getPlayerTrialRankSupabase() {
 }
 
 /**
- * Получить номер прошлой недели в формате "YYYY-WW"
+ * Получить ISO неделю прошлой недели в формате "YYYY-WW"
+ * Совместимо с PostgreSQL to_char(date, 'IYYY-IW')
  */
 function getLastWeekYear() {
     const now = new Date();
     // Вычитаем 7 дней
     const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    // Получаем ISO неделю
-    const year = lastWeek.getFullYear();
-    const jan1 = new Date(year, 0, 1);
-    const days = Math.floor((lastWeek - jan1) / (24 * 60 * 60 * 1000));
-    const weekNum = Math.ceil((days + jan1.getDay() + 1) / 7);
+    // Используем ISO алгоритм (четверг определяет неделю)
+    const d = new Date(Date.UTC(lastWeek.getFullYear(), lastWeek.getMonth(), lastWeek.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 
-    return `${year}-${String(weekNum).padStart(2, '0')}`;
+    return `${d.getUTCFullYear()}-${String(weekNo).padStart(2, '0')}`;
 }
 
 /**

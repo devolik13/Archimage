@@ -172,6 +172,17 @@ async function initGameWithDatabase() {
             window.checkDailyLoginReward();
         }
 
+        // Проверка награды за испытание прошлой недели
+        if (typeof window.checkAndClaimTrialReward === 'function') {
+            window.checkAndClaimTrialReward().then(result => {
+                if (result && result.success) {
+                    console.log('🏆 Награда за испытание получена:', result);
+                }
+            }).catch(err => {
+                console.warn('⚠️ Ошибка проверки награды испытания:', err);
+            });
+        }
+
         // Инициализация UI энергии боев
         if (typeof window.initBattleEnergyUI === 'function') {
             window.initBattleEnergyUI();

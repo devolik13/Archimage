@@ -120,21 +120,32 @@ const LEADERBOARD_BONUSES = [
 ];
 
 /**
- * Получить номер текущей недели года
+ * Получить ISO номер недели (совместим с PostgreSQL IYYY-IW)
+ * Возвращает строку "YYYY-WW" для совместимости с Supabase
  */
 function getWeekNumber() {
     const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 1);
-    const diff = now - start;
-    const oneWeek = 604800000; // миллисекунд в неделе
-    return Math.floor(diff / oneWeek);
+    return getISOWeekYear(now);
+}
+
+/**
+ * Получить ISO неделю в формате "YYYY-WW" (совместимо с PostgreSQL to_char(date, 'IYYY-IW'))
+ */
+function getISOWeekYear(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    // Четверг текущей недели определяет год ISO недели
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    return `${d.getUTCFullYear()}-${String(weekNo).padStart(2, '0')}`;
 }
 
 /**
  * Получить конфигурацию манекена для текущей недели
  */
 function getCurrentDummyConfig() {
-    const weekNum = getWeekNumber();
+    const weekYear = getWeekNumber(); // "YYYY-WW"
+    const weekNum = parseInt(weekYear.split('-')[1], 10); // Извлекаем номер недели
     const configIndex = weekNum % DUMMY_CONFIGURATIONS.length;
     return DUMMY_CONFIGURATIONS[configIndex];
 }
@@ -453,6 +464,7 @@ window.LEADERBOARD_BONUSES = LEADERBOARD_BONUSES;
 
 window.getCurrentDummyConfig = getCurrentDummyConfig;
 window.getWeekNumber = getWeekNumber;
+window.getISOWeekYear = getISOWeekYear;
 window.getTimeUntilWeekEnd = getTimeUntilWeekEnd;
 window.formatTimeUntilWeekEnd = formatTimeUntilWeekEnd;
 window.getRewardForDamage = getRewardForDamage;
