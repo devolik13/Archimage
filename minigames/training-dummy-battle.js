@@ -163,7 +163,7 @@ async function executeDummyBattlePhase() {
 
     // Ждём пока все снаряды долетят (пропускаем при быстрой симуляции)
     if (!window.fastSimulation) {
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await new Promise(resolve => setTimeout(resolve, 1500));
     }
 
     // Подсчитываем нанесённый урон за раунд
