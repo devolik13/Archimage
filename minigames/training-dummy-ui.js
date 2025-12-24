@@ -610,7 +610,7 @@ async function showTrialLeaderboardInArena() {
         font-weight: bold;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
     `;
-    title.innerHTML = '🏆 Рейтинг испытания';
+    title.innerHTML = '🏆 Рейтинг (Общий урон)';
     overlay.appendChild(title);
 
     // Контейнер списка
@@ -665,7 +665,7 @@ async function showTrialLeaderboardInArena() {
                     font-size: ${Math.max(12, 14 * scale)}px;
                 ">
                     <span>${medal} ${entry.playerName}</span>
-                    <span style="color: #FFD700;">${(entry.damage || 0).toLocaleString()} урона</span>
+                    <span style="color: #FFD700;">${(entry.damage || 0).toLocaleString()}</span>
                 </div>
             `;
         });
@@ -716,7 +716,8 @@ async function loadTrialLeaderboardSupabase() {
         return (data || []).map(entry => ({
             playerId: entry.player_id,
             playerName: entry.player_name,
-            damage: entry.best_damage,
+            damage: entry.total_damage,  // Показываем общий урон (по нему сортировка)
+            bestDamage: entry.best_damage,
             totalDamage: entry.total_damage,
             attempts: entry.attempts_count,
             rank: entry.rank
