@@ -204,8 +204,10 @@ function startBattle() {
     window.isVeryFirstTurn = true;
     window.currentTurn = 'player';
     window.isPaused = false;
-    window.battleSpeed = 2000;
-    window.battleSpeedMode = 'normal';
+    // НЕ сбрасываем battleSpeed и battleSpeedMode - сохраняем выбор игрока!
+    // Инициализируем только если еще не установлено
+    if (!window.battleSpeed) window.battleSpeed = 2000;
+    if (!window.battleSpeedMode) window.battleSpeedMode = 'normal';
     window.battlePhaseRunning = false; // 🔒 Сброс блокировки
 
     // Защита от бесконечных боёв

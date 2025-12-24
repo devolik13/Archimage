@@ -315,6 +315,54 @@ function setWeatherDisplay() {
 }
 
 // Функция переключения скорости боя (2 режима: обычный и быстрый)
+// Обновить скорость анимаций у уже существующих спрайтов
+function updateExistingAnimationSpeeds() {
+    if (!window.getScaledAnimationSpeed) return;
+
+    // Обновляем спрайты магов игрока
+    if (window.playerWizardSprites) {
+        Object.values(window.playerWizardSprites).forEach(container => {
+            if (container && container.sprite && container.sprite.animationSpeed !== undefined) {
+                // Сохраняем базовую скорость если её ещё нет
+                if (!container.baseAnimationSpeed) {
+                    container.baseAnimationSpeed = container.sprite.animationSpeed;
+                }
+                // Применяем масштабированную скорость
+                container.sprite.animationSpeed = window.getScaledAnimationSpeed(container.baseAnimationSpeed);
+            }
+        });
+    }
+
+    // Обновляем спрайты врагов
+    if (window.enemyWizardSprites) {
+        Object.values(window.enemyWizardSprites).forEach(container => {
+            if (container && container.sprite && container.sprite.animationSpeed !== undefined) {
+                if (!container.baseAnimationSpeed) {
+                    container.baseAnimationSpeed = container.sprite.animationSpeed;
+                }
+                container.sprite.animationSpeed = window.getScaledAnimationSpeed(container.baseAnimationSpeed);
+            }
+        });
+    }
+
+    // Обновляем дракона если есть
+    if (window.pixiDragon) {
+        const dragon = window.pixiDragon.get();
+        if (dragon) {
+            if (dragon.idleSprite && dragon.idleSprite.animationSpeed !== undefined) {
+                if (!dragon.baseIdleSpeed) dragon.baseIdleSpeed = dragon.idleSprite.animationSpeed;
+                dragon.idleSprite.animationSpeed = window.getScaledAnimationSpeed(dragon.baseIdleSpeed);
+            }
+            if (dragon.castSprite && dragon.castSprite.animationSpeed !== undefined) {
+                if (!dragon.baseCastSpeed) dragon.baseCastSpeed = dragon.castSprite.animationSpeed;
+                dragon.castSprite.animationSpeed = window.getScaledAnimationSpeed(dragon.baseCastSpeed);
+            }
+        }
+    }
+
+    console.log('🎬 Обновлены скорости анимаций существующих спрайтов');
+}
+
 function toggleBattleSpeed() {
     const speedButton = document.querySelector('#speed-button');
 
@@ -348,6 +396,9 @@ function toggleBattleSpeed() {
             }
         }
     }
+
+    // Обновляем скорость анимаций у уже существующих спрайтов
+    updateExistingAnimationSpeeds();
 
     console.log(`⚡ Скорость боя: ${window.battleSpeedMode} (${window.battleSpeed}ms)`);
 }
