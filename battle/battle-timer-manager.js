@@ -3,14 +3,15 @@
 class BattleTimerManager {
     constructor() {
         this.battleInterval = null;
+        this.battleCallback = null; // Сохраняем callback для changeSpeed
         this.activeTimeouts = new Set();
         this.animationTimeouts = new Map();
         this.isActive = false;
         this.battleSpeed = 2000;
-        
+
         // Слушаем событие закрытия/перехода
         window.addEventListener('beforeunload', () => this.cleanup());
-        
+
     }
     
     // Запуск основного цикла боя
@@ -19,6 +20,7 @@ class BattleTimerManager {
         this.stopBattleLoop();
 
         this.battleSpeed = speed;
+        this.battleCallback = callback; // Сохраняем callback для changeSpeed
         this.isActive = true;
 
         // Создаем новый интервал
@@ -44,6 +46,7 @@ class BattleTimerManager {
         if (this.battleInterval) {
             clearInterval(this.battleInterval);
             this.battleInterval = null;
+            this.battleCallback = null; // Очищаем сохранённый callback
             this.isActive = false;
             console.log('⏹️ Боевой цикл остановлен');
         }
@@ -59,6 +62,13 @@ class BattleTimerManager {
     resume() {
         if (this.battleInterval) {
             this.isActive = true;
+            // Проверяем, не изменилась ли скорость во время паузы
+            // Если да - перезапускаем с новой скоростью
+            const currentSpeed = window.battleSpeed || this.battleSpeed;
+            if (currentSpeed !== this.battleSpeed && this.battleCallback) {
+                console.log(`⚡ Применяем изменённую скорость: ${currentSpeed}ms`);
+                this.startBattleLoop(this.battleCallback, currentSpeed);
+            }
             console.log('▶️ Бой продолжен');
         }
     }
@@ -66,10 +76,14 @@ class BattleTimerManager {
     // Изменение скорости
     changeSpeed(newSpeed) {
         if (this.battleInterval && this.isActive) {
-            const callback = this.battleInterval._callback || window.executeBattlePhase;
+            // Используем сохранённый callback или fallback на executeBattlePhase
+            const callback = this.battleCallback || window.executeBattlePhase;
             this.startBattleLoop(callback, newSpeed);
+            console.log(`⚡ Скорость боя изменена на ${newSpeed}ms`);
+        } else {
+            // Если интервал не активен, просто сохраняем скорость
+            this.battleSpeed = newSpeed;
         }
-        this.battleSpeed = newSpeed;
     }
     
     // Безопасный setTimeout для анимаций
