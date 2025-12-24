@@ -150,19 +150,38 @@ function getCurrentDummyConfig() {
     return DUMMY_CONFIGURATIONS[configIndex];
 }
 
+// ТЕСТОВЫЙ РЕЖИМ: установить день окончания недели (1=пн, 2=вт, 3=ср, 4=чт, 5=пт, 6=сб, 0=вс)
+// Для теста: установить 4 (четверг) чтобы неделя закончилась 25 декабря
+// Для прода: установить null или удалить эту строку
+window.TEST_WEEK_END_DAY = 4; // null = понедельник (по умолчанию), 4 = четверг для теста
+
 /**
  * Получить время до конца недели (в миллисекундах)
  */
 function getTimeUntilWeekEnd() {
     const now = new Date();
     const dayOfWeek = now.getDay(); // 0 = воскресенье
-    const daysUntilMonday = dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
 
-    const nextMonday = new Date(now);
-    nextMonday.setDate(now.getDate() + daysUntilMonday);
-    nextMonday.setHours(0, 0, 0, 0);
+    // Тестовый режим: можно переопределить день окончания недели
+    const targetDay = window.TEST_WEEK_END_DAY !== null && window.TEST_WEEK_END_DAY !== undefined
+        ? window.TEST_WEEK_END_DAY
+        : 1; // 1 = понедельник по умолчанию
 
-    return nextMonday - now;
+    let daysUntilEnd;
+    if (targetDay === 1) {
+        // Стандартный режим - до понедельника
+        daysUntilEnd = dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
+    } else {
+        // Тестовый режим - до указанного дня
+        daysUntilEnd = (targetDay - dayOfWeek + 7) % 7;
+        if (daysUntilEnd === 0) daysUntilEnd = 7; // Если сегодня целевой день, то через неделю
+    }
+
+    const nextEnd = new Date(now);
+    nextEnd.setDate(now.getDate() + daysUntilEnd);
+    nextEnd.setHours(0, 0, 0, 0);
+
+    return nextEnd - now;
 }
 
 /**
