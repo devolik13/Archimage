@@ -163,7 +163,9 @@ async function executeDummyBattlePhase() {
 
     // Ждём пока все снаряды долетят (пропускаем при быстрой симуляции)
     if (!window.fastSimulation) {
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Используем 75% от текущей скорости боя для задержки между раундами
+        const delay = (window.battleSpeed || 2000) * 0.75;
+        await new Promise(resolve => setTimeout(resolve, delay));
     }
 
     // Подсчитываем нанесённый урон за раунд
