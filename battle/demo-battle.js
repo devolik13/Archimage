@@ -483,7 +483,7 @@ function showWelcomeMessage() {
             align-items: center;
             justify-content: center;
         ">
-            <div style="font-size: 50px; margin-bottom: 10px;">⚔️✨</div>
+            <div style="font-size: 50px; margin-bottom: 10px;">🔮✨</div>
             <h1 style="
                 margin: 0;
                 font-size: 20px;
@@ -491,9 +491,9 @@ function showWelcomeMessage() {
                 text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
                 font-weight: bold;
                 text-align: center;
-                white-space: nowrap;
+                line-height: 1.3;
             ">
-                Приветствуем<br>тебя, маг!
+                Добро пожаловать<br>в мир магии
             </h1>
         </div>
 
@@ -512,41 +512,30 @@ function showWelcomeMessage() {
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
             max-width: 500px;
         ">
-            <div style="color: #ffd700; font-size: 17px; font-weight: bold; margin-bottom: 10px;">
-                📜 Основы магии:
-            </div>
-
-            Строить: <strong style="color: #ffd700;">одно здание</strong><br>
-            Изучать: <strong style="color: #ffd700;">одно заклинание</strong><br>
-            <div style="color: #87ceeb; font-size: 15px; margin-top: 8px;">
-                ⚡ Не забывай ускорять!
-            </div>
-
-            <div style="color: #ffd700; font-weight: bold; font-size: 18px; margin-top: 12px; margin-bottom: 12px;">
-                Выбирай мудро! 🔮
+            <div style="color: #ffd700; font-size: 18px; font-weight: bold; margin-bottom: 15px;">
+                📖 Секреты игры найдешь в книге знаний<br>и в наших каналах
             </div>
 
             <!-- Ссылки на сообщество -->
             <div style="
-                border-top: 1px solid rgba(255, 215, 0, 0.2);
-                padding-top: 12px;
-                margin-top: 12px;
                 display: flex;
                 gap: 10px;
                 justify-content: center;
                 flex-wrap: wrap;
+                margin-top: 15px;
             ">
                 <a href="https://t.me/archimage_news" target="_blank" style="
                     display: inline-flex;
                     align-items: center;
                     gap: 5px;
-                    padding: 8px 12px;
+                    padding: 10px 16px;
                     background: rgba(0, 136, 204, 0.3);
                     border: 1px solid rgba(0, 136, 204, 0.5);
                     border-radius: 8px;
                     color: #87ceeb;
                     text-decoration: none;
-                    font-size: 14px;
+                    font-size: 15px;
+                    font-weight: bold;
                     transition: all 0.2s;
                 " onmouseover="this.style.background='rgba(0, 136, 204, 0.5)'" onmouseout="this.style.background='rgba(0, 136, 204, 0.3)'">
                     📢 Новости
@@ -555,13 +544,14 @@ function showWelcomeMessage() {
                     display: inline-flex;
                     align-items: center;
                     gap: 5px;
-                    padding: 8px 12px;
+                    padding: 10px 16px;
                     background: rgba(102, 126, 234, 0.3);
                     border: 1px solid rgba(102, 126, 234, 0.5);
                     border-radius: 8px;
                     color: #b8c5f0;
                     text-decoration: none;
-                    font-size: 14px;
+                    font-size: 15px;
+                    font-weight: bold;
                     transition: all 0.2s;
                 " onmouseover="this.style.background='rgba(102, 126, 234, 0.5)'" onmouseout="this.style.background='rgba(102, 126, 234, 0.3)'">
                     💬 Чат игроков
