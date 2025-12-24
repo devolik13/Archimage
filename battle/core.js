@@ -215,19 +215,7 @@ function startBattle() {
     window.stalemateCounter = 0;
     window.STALEMATE_TURNS_LIMIT = 15; // Ничья после 15 ходов без изменения HP
 
-    // Синхронизация визуала кнопки скорости с текущим режимом
-    const speedButton = document.querySelector('#speed-button');
-    if (speedButton) {
-        if (window.battleSpeedMode === 'fast') {
-            speedButton.innerHTML = '⚡';
-            speedButton.title = 'Замедлить';
-            speedButton.style.background = '#FFD700';
-        } else {
-            speedButton.innerHTML = '▶';
-            speedButton.title = 'Ускорить';
-            speedButton.style.background = '#555';
-        }
-    }
+    // Визуал кнопок управляется через BattleSpeedController
 
     // Инициализация логгера боя
     if (window.battleLogger) {
@@ -697,8 +685,8 @@ async function endBattleAsDraw() {
     window.battleState = 'finished';
 
     // Останавливаем таймер боя
-    if (window.battleTimerManager) {
-        window.battleTimerManager.stopBattle();
+    if (window.battleSpeedController) {
+        window.battleSpeedController.stopBattle();
     }
 
     // Начисляем опыт за ничью (считается как поражение - DEFEAT_BONUS)
@@ -1333,9 +1321,9 @@ async function checkBattleEnd() {
             window.battleInterval = null;
         }
 
-        // Останавливаем через battle-timer-manager если используется
-        if (window.battleTimerManager && window.battleTimerManager.stopBattleLoop) {
-            window.battleTimerManager.stopBattleLoop();
+        // Останавливаем через battle-speed-controller
+        if (window.battleSpeedController) {
+            window.battleSpeedController.stopBattle();
         }
 
         let resultLog = '';

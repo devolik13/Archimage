@@ -211,8 +211,8 @@ async function endDummyBattle() {
         clearInterval(window.battleInterval);
         window.battleInterval = null;
     }
-    if (window.battleTimerManager && window.battleTimerManager.stopBattleLoop) {
-        window.battleTimerManager.stopBattleLoop();
+    if (window.battleSpeedController) {
+        window.battleSpeedController.stopBattle();
     }
 
     // Финальный подсчёт урона (на случай если манекен убит)

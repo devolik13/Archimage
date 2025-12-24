@@ -500,7 +500,11 @@
             if (textures && textures.idle && textures.idle.length > 0) {
                 // Создаем анимированный спрайт из загруженных кадров
                 sprite = new PIXI.AnimatedSprite(textures.idle);
-                sprite.animationSpeed = config.animationSpeed || 0.15;
+                // Используем масштабируемую скорость анимации
+                const baseSpeed = config.animationSpeed || 0.15;
+                sprite.animationSpeed = window.getScaledAnimationSpeed ?
+                    window.getScaledAnimationSpeed(baseSpeed) : baseSpeed;
+                sprite.baseAnimationSpeed = baseSpeed; // Сохраняем для обновления при смене скорости
                 sprite.anchor.set(0.5);
                 sprite.scale.set(scale * (config.scale || 0.5));
                 sprite.loop = true; // Зацикливаем idle анимацию
@@ -539,7 +543,11 @@
 
             if (idleFrames.length > 0) {
                 sprite = new PIXI.AnimatedSprite(idleFrames);
-                sprite.animationSpeed = 0.1;
+                // Используем масштабируемую скорость анимации
+                const baseSpeed = 0.1;
+                sprite.animationSpeed = window.getScaledAnimationSpeed ?
+                    window.getScaledAnimationSpeed(baseSpeed) : baseSpeed;
+                sprite.baseAnimationSpeed = baseSpeed;
                 sprite.anchor.set(0.5);
                 sprite.scale.set(scale * (config?.scale || 0.15));
                 sprite.loop = true; // Зацикливаем idle анимацию
@@ -730,7 +738,10 @@
                 // Переключаем на атаку
                 sprite.stop();
                 sprite.textures = container.attackFrames;
-                sprite.animationSpeed = 0.24; // Ускорено на 20% для каста
+                // Используем масштабируемую скорость для каста
+                const castSpeed = window.getScaledAnimationSpeed ?
+                    window.getScaledAnimationSpeed(0.24) : 0.24;
+                sprite.animationSpeed = castSpeed;
                 sprite.loop = false;
                 sprite.gotoAndPlay(0);
                 
@@ -865,7 +876,9 @@
                 }
 
                 sprite.textures = deathFrames;
-                sprite.animationSpeed = 0.15;
+                // Используем масштабируемую скорость для смерти
+                sprite.animationSpeed = window.getScaledAnimationSpeed ?
+                    window.getScaledAnimationSpeed(0.15) : 0.15;
                 sprite.loop = false;
                 sprite.gotoAndPlay(0);
                 
@@ -1135,8 +1148,9 @@
         // Для магов с большим количеством кадров (25) используем более высокую скорость
         // чтобы общая длительность анимации была сопоставима с 8-кадровыми
         // 8 кадров при 0.15 = ~53 тиков, 25 кадров при 0.45 = ~55 тиков
-        const castSpeed = castFrames.length > 10 ? 0.45 : 0.15;
-        sprite.animationSpeed = castSpeed;
+        const baseCastSpeed = castFrames.length > 10 ? 0.45 : 0.15;
+        sprite.animationSpeed = window.getScaledAnimationSpeed ?
+            window.getScaledAnimationSpeed(baseCastSpeed) : baseCastSpeed;
         sprite.loop = false;
         sprite.gotoAndPlay(0);
 
@@ -1186,7 +1200,8 @@
 
         sprite.stop();
         sprite.textures = deathFrames;
-        sprite.animationSpeed = 0.15;
+        sprite.animationSpeed = window.getScaledAnimationSpeed ?
+            window.getScaledAnimationSpeed(0.15) : 0.15;
         sprite.loop = false;
         sprite.gotoAndPlay(0);
 
@@ -1255,7 +1270,11 @@
 
         if (textures && textures.idle && textures.idle.length > 0) {
             sprite = new PIXI.AnimatedSprite(textures.idle);
-            sprite.animationSpeed = config?.animationSpeed || 0.15;
+            // Используем масштабируемую скорость анимации
+            const baseSpeed = config?.animationSpeed || 0.15;
+            sprite.animationSpeed = window.getScaledAnimationSpeed ?
+                window.getScaledAnimationSpeed(baseSpeed) : baseSpeed;
+            sprite.baseAnimationSpeed = baseSpeed;
             sprite.anchor.set(0.5);
             sprite.scale.set(scale * (config?.scale || 0.5));
             sprite.loop = true;

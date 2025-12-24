@@ -126,7 +126,7 @@ import './battle/leaderboard.js';
 import './battle/opponent-selection.js';
 import './battle/battle-result-screen.js';
 import './battle/ui.js';
-import './battle/battle-timer-manager.js';
+import './battle/battle-speed-controller.js'; // Единый контроллер скорости боя
 import './battle/demo-battle.js';
 import './battle/script_battle_setup.js';
 
@@ -155,7 +155,7 @@ import './renderer/impact-detection.js';
 // 12. УТИЛИТЫ ДЛЯ АНИМАЦИЙ (Animation Utilities)
 // ============================================
 import './animations/animation-utils.js';
-import './animations/animation-speed-manager.js'; // Управление скоростью анимаций
+// animation-speed-manager.js - функции теперь в battle-speed-controller.js
 import './animations/faction-speech-bubble.js';
 
 // ============================================

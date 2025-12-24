@@ -314,121 +314,24 @@ function setWeatherDisplay() {
     }
 }
 
-// Функция переключения скорости боя (2 режима: обычный и быстрый)
-// Обновить скорость анимаций у уже существующих спрайтов
-function updateExistingAnimationSpeeds() {
-    if (!window.getScaledAnimationSpeed) return;
-
-    // Обновляем спрайты магов игрока
-    if (window.playerWizardSprites) {
-        Object.values(window.playerWizardSprites).forEach(container => {
-            if (container && container.sprite && container.sprite.animationSpeed !== undefined) {
-                // Сохраняем базовую скорость если её ещё нет
-                if (!container.baseAnimationSpeed) {
-                    container.baseAnimationSpeed = container.sprite.animationSpeed;
-                }
-                // Применяем масштабированную скорость
-                container.sprite.animationSpeed = window.getScaledAnimationSpeed(container.baseAnimationSpeed);
-            }
-        });
-    }
-
-    // Обновляем спрайты врагов
-    if (window.enemyWizardSprites) {
-        Object.values(window.enemyWizardSprites).forEach(container => {
-            if (container && container.sprite && container.sprite.animationSpeed !== undefined) {
-                if (!container.baseAnimationSpeed) {
-                    container.baseAnimationSpeed = container.sprite.animationSpeed;
-                }
-                container.sprite.animationSpeed = window.getScaledAnimationSpeed(container.baseAnimationSpeed);
-            }
-        });
-    }
-
-    // Обновляем дракона если есть
-    if (window.pixiDragon) {
-        const dragon = window.pixiDragon.get();
-        if (dragon) {
-            if (dragon.idleSprite && dragon.idleSprite.animationSpeed !== undefined) {
-                if (!dragon.baseIdleSpeed) dragon.baseIdleSpeed = dragon.idleSprite.animationSpeed;
-                dragon.idleSprite.animationSpeed = window.getScaledAnimationSpeed(dragon.baseIdleSpeed);
-            }
-            if (dragon.castSprite && dragon.castSprite.animationSpeed !== undefined) {
-                if (!dragon.baseCastSpeed) dragon.baseCastSpeed = dragon.castSprite.animationSpeed;
-                dragon.castSprite.animationSpeed = window.getScaledAnimationSpeed(dragon.baseCastSpeed);
-            }
-        }
-    }
-
-    console.log('🎬 Обновлены скорости анимаций существующих спрайтов');
-}
+// Функции управления скоростью и паузой - делегируются к BattleSpeedController
+// Реальная логика находится в battle-speed-controller.js
 
 function toggleBattleSpeed() {
-    const speedButton = document.querySelector('#speed-button');
-
-    if (window.battleSpeedMode === 'normal') {
-        window.battleSpeedMode = 'fast';
-        window.battleSpeed = 800; // Быстрее: 0.8 сек вместо 2 сек
-        if (speedButton) {
-            speedButton.innerHTML = '⚡';
-            speedButton.title = 'Замедлить';
-            speedButton.style.background = '#FFD700';
-        }
+    // Делегируем к контроллеру (загружается позже и переопределит эту функцию)
+    if (window.battleSpeedController) {
+        window.battleSpeedController.toggle();
     } else {
-        window.battleSpeedMode = 'normal';
-        window.battleSpeed = 2000; // Обычная: 2 сек
-        if (speedButton) {
-            speedButton.innerHTML = '▶';
-            speedButton.title = 'Ускорить';
-            speedButton.style.background = '#555';
-        }
+        console.warn('⚠️ BattleSpeedController не загружен');
     }
-
-    // Применяем через battleTimerManager
-    if (window.battleTimerManager) {
-        window.battleTimerManager.changeSpeed(window.battleSpeed);
-    } else {
-        // Fallback
-        if (window.battleInterval) {
-            clearInterval(window.battleInterval);
-            if (!window.isPaused && window.battleState === 'active') {
-                window.battleInterval = setInterval(window.executeBattlePhase, window.battleSpeed);
-            }
-        }
-    }
-
-    // Обновляем скорость анимаций у уже существующих спрайтов
-    updateExistingAnimationSpeeds();
-
-    console.log(`⚡ Скорость боя: ${window.battleSpeedMode} (${window.battleSpeed}ms)`);
 }
 
-// Улучшенная функция паузы
 function togglePause() {
-    const pauseButton = document.querySelector('#pause-button');
-    
-    window.isPaused = !window.isPaused;
-    
-    if (window.isPaused) {
-        if (window.battleInterval) {
-            clearInterval(window.battleInterval);
-            window.battleInterval = null;
-        }
-        if (pauseButton) {
-            pauseButton.innerHTML = '▶️';
-            pauseButton.title = 'Продолжить';
-            pauseButton.style.background = '#4CAF50';
-        }
+    // Делегируем к контроллеру
+    if (window.battleSpeedController) {
+        window.battleSpeedController.togglePause();
     } else {
-        if (window.battleInterval) {
-            clearInterval(window.battleInterval);
-        }
-        window.battleInterval = setInterval(window.executeBattlePhase, window.battleSpeed);
-        if (pauseButton) {
-            pauseButton.innerHTML = '⏸';
-            pauseButton.title = 'Пауза';
-            pauseButton.style.background = '#555';
-        }
+        console.warn('⚠️ BattleSpeedController не загружен');
     }
 }
 
@@ -481,8 +384,8 @@ async function closeBattleFieldModal() {
                 clearInterval(window.battleInterval);
                 window.battleInterval = null;
             }
-            if (window.battleTimerManager && window.battleTimerManager.stopBattleLoop) {
-                window.battleTimerManager.stopBattleLoop();
+            if (window.battleSpeedController) {
+                window.battleSpeedController.stopBattle();
             }
 
             // Очищаем ВСЕ анимации ДО симуляции (чтобы не было ошибок PIXI)
