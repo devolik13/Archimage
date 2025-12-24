@@ -510,7 +510,7 @@ function showWelcomeMessage() {
             line-height: 1.6;
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            max-width: 450px;
+            max-width: 500px;
         ">
             <div style="color: #ffd700; font-size: 17px; font-weight: bold; margin-bottom: 10px;">
                 📜 Основы магии:
@@ -522,8 +522,50 @@ function showWelcomeMessage() {
                 ⚡ Не забывай ускорять!
             </div>
 
-            <div style="color: #ffd700; font-weight: bold; font-size: 18px; margin-top: 8px;">
+            <div style="color: #ffd700; font-weight: bold; font-size: 18px; margin-top: 12px; margin-bottom: 12px;">
                 Выбирай мудро! 🔮
+            </div>
+
+            <!-- Ссылки на сообщество -->
+            <div style="
+                border-top: 1px solid rgba(255, 215, 0, 0.2);
+                padding-top: 12px;
+                margin-top: 12px;
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                flex-wrap: wrap;
+            ">
+                <a href="https://t.me/archimage_news" target="_blank" style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 5px;
+                    padding: 8px 12px;
+                    background: rgba(0, 136, 204, 0.3);
+                    border: 1px solid rgba(0, 136, 204, 0.5);
+                    border-radius: 8px;
+                    color: #87ceeb;
+                    text-decoration: none;
+                    font-size: 14px;
+                    transition: all 0.2s;
+                " onmouseover="this.style.background='rgba(0, 136, 204, 0.5)'" onmouseout="this.style.background='rgba(0, 136, 204, 0.3)'">
+                    📢 Новости
+                </a>
+                <a href="https://t.me/archimage_chat" target="_blank" style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 5px;
+                    padding: 8px 12px;
+                    background: rgba(102, 126, 234, 0.3);
+                    border: 1px solid rgba(102, 126, 234, 0.5);
+                    border-radius: 8px;
+                    color: #b8c5f0;
+                    text-decoration: none;
+                    font-size: 14px;
+                    transition: all 0.2s;
+                " onmouseover="this.style.background='rgba(102, 126, 234, 0.5)'" onmouseout="this.style.background='rgba(102, 126, 234, 0.3)'">
+                    💬 Чат игроков
+                </a>
             </div>
         </div>
 
