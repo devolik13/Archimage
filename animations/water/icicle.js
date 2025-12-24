@@ -62,8 +62,8 @@
         const targetX = endCell.x + endCell.width / 2;
         const targetY = endCell.y + endCell.height / 2;
         
-        // Параметры анимации
-        const duration = 500;
+        // Параметры анимации (с учетом скорости боя)
+        const duration = window.getScaledDuration ? window.getScaledDuration(500) : 500;
         const startTime = Date.now();
         let animationFrame = null;
         let isDestroyed = false;
@@ -189,7 +189,7 @@
                     explosion.y = y;
                     explosion.anchor.set(0.5);
                     explosion.scale.set(scale * 0.25); // Подберите масштаб
-                    explosion.animationSpeed = 0.35;   // Скорость анимации
+                    explosion.animationSpeed = window.getScaledAnimationSpeed ? window.getScaledAnimationSpeed(0.35) : 0.35;   // Скорость анимации
                     explosion.loop = false;
                     explosion.tint = 0xCCFFFF;         // Голубоватый оттенок
                     

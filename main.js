@@ -155,6 +155,7 @@ import './renderer/impact-detection.js';
 // 12. УТИЛИТЫ ДЛЯ АНИМАЦИЙ (Animation Utilities)
 // ============================================
 import './animations/animation-utils.js';
+import './animations/animation-speed-manager.js'; // Управление скоростью анимаций
 import './animations/faction-speech-bubble.js';
 
 // ============================================

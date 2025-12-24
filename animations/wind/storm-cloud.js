@@ -194,7 +194,7 @@
         container.addChild(flash);
         
         const startTime = Date.now();
-        const duration = 150;
+        const duration = window.getScaledDuration ? window.getScaledDuration(150) : 150;
         
         const animate = () => {
             // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
@@ -245,7 +245,7 @@
             container.addChild(spark);
             
             const startTime = Date.now();
-            const duration = 300;
+            const duration = window.getScaledDuration ? window.getScaledDuration(300) : 300;
             
             const animate = () => {
                 const elapsed = Date.now() - startTime;

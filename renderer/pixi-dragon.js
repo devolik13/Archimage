@@ -192,7 +192,9 @@
         } else {
             // СОЗДАЕМ ДВА ОТДЕЛЬНЫХ СПРАЙТА - для idle и cast
             idleSprite = new PIXI.AnimatedSprite(textures.idle);
-            idleSprite.animationSpeed = DRAGON_CONFIG.animationSpeed;
+            idleSprite.animationSpeed = window.getScaledAnimationSpeed ?
+                window.getScaledAnimationSpeed(DRAGON_CONFIG.animationSpeed) :
+                DRAGON_CONFIG.animationSpeed;
             idleSprite.anchor.set(0.5);
             idleSprite.loop = true;
             idleSprite.play();
@@ -208,7 +210,9 @@
 
             // Создаем cast спрайт С ТЕМ ЖЕ МАСШТАБОМ
             castSprite = new PIXI.AnimatedSprite(textures.cast);
-            castSprite.animationSpeed = 0.15;
+            castSprite.animationSpeed = window.getScaledAnimationSpeed ?
+                window.getScaledAnimationSpeed(0.15) :
+                0.15;
             castSprite.anchor.set(0.5);
             castSprite.loop = false;
 
@@ -373,7 +377,9 @@
 
             sprite.stop();
             sprite.textures = dragonContainer.deathFrames;
-            sprite.animationSpeed = 0.15;
+            sprite.animationSpeed = window.getScaledAnimationSpeed ?
+                window.getScaledAnimationSpeed(0.15) :
+                0.15;
             sprite.loop = false;
             sprite.gotoAndPlay(0);
 

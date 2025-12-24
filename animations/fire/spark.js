@@ -56,8 +56,8 @@
         const targetX = endCell.x + endCell.width / 2;
         const targetY = endCell.y + endCell.height / 2;
         
-        // Параметры анимации
-        const duration = 400;
+        // Параметры анимации (с учетом скорости боя)
+        const duration = window.getScaledDuration ? window.getScaledDuration(400) : 400;
         const startTime = Date.now();
         let animationFrame = null;
         let isDestroyed = false;
@@ -198,7 +198,7 @@
                     explosion.y = y;
                     explosion.anchor.set(0.5);
                     explosion.scale.set(scale * 0.3); // Подберите масштаб под размер клетки
-                    explosion.animationSpeed = 0.4;   // Скорость анимации
+                    explosion.animationSpeed = window.getScaledAnimationSpeed ? window.getScaledAnimationSpeed(0.4) : 0.4;   // Скорость анимации
                     explosion.loop = false;
                     
                     explosion.onComplete = () => {

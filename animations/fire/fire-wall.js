@@ -268,7 +268,7 @@
             const vy = Math.sin(angle) * speed;
             
             const startTime = Date.now();
-            const duration = 400;
+            const duration = window.getScaledDuration ? window.getScaledDuration(400) : 400;
             
             const animateSpark = () => {
                 const elapsed = Date.now() - startTime;

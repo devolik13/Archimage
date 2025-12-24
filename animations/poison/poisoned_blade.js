@@ -157,7 +157,7 @@
             effectsContainer.addChild(blade);
             
             // Анимация
-            const duration = 400;
+            const duration = window.getScaledDuration ? window.getScaledDuration(400) : 400;
             const startTime = Date.now();
             
             const animate = () => {
@@ -304,7 +304,7 @@
             const vy = Math.sin(angle) * speed - 1;
             
             const startTime = Date.now();
-            const duration = 400;
+            const duration = window.getScaledDuration ? window.getScaledDuration(400) : 400;
             
             const animateDroplet = () => {
                 if (!window.pixiAnimUtils.isValid(droplet)) return;
@@ -344,7 +344,7 @@
             effectsContainer.addChild(smoke);
             
             const startTime = Date.now();
-            const duration = 500;
+            const duration = window.getScaledDuration ? window.getScaledDuration(500) : 500;
             const vx = (Math.random() - 0.5) * 1;
             const vy = -1 - Math.random() * 1.5;
             

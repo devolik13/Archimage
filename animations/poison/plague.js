@@ -71,7 +71,7 @@
         effectsContainer.addChild(orb);
         
         // Анимация полёта
-        const duration = 600; // 600ms полёт
+        const duration = window.getScaledDuration ? window.getScaledDuration(600) : 600; // 600ms полёт
         const startTime = Date.now();
         
         const animate = () => {

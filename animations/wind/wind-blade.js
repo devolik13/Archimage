@@ -168,7 +168,7 @@
         const endX = targetCell.x + targetCell.width / 2;
         const endY = targetCell.y + targetCell.height / 2;
         
-        const duration = 200; // Быстрое перемещение
+        const duration = window.getScaledDuration ? window.getScaledDuration(200) : 200; // Быстрое перемещение
         const startTime = Date.now();
         
         const animate = () => {
@@ -216,7 +216,7 @@
             const vy = Math.sin(angle) * speed;
             
             const startTime = Date.now();
-            const duration = 300;
+            const duration = window.getScaledDuration ? window.getScaledDuration(300) : 300;
             
             const animateSpark = () => {
                 if (!window.pixiAnimUtils.isValid(spark)) return;
@@ -247,7 +247,7 @@
         
         // Анимация исчезновения
         const startTime = Date.now();
-        const duration = 300;
+        const duration = window.getScaledDuration ? window.getScaledDuration(300) : 300;
         
         const fadeOut = () => {
             if (!blade.sprite || !blade.sprite.parent) {

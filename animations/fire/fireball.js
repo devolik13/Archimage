@@ -87,7 +87,7 @@
             const targetY = centerCell.y + centerCell.height / 2;
             
             // Анимация полета
-            const duration = 600;
+            const duration = window.getScaledDuration ? window.getScaledDuration(600) : 600;
             const startTime = Date.now();
             
             const animateFlight = () => {
@@ -267,7 +267,7 @@
             effectsContainer.addChild(explosion);
             
             const startTime = Date.now();
-            const duration = 600;
+            const duration = window.getScaledDuration ? window.getScaledDuration(600) : 600;
             
             const animate = () => {
                 if (!window.pixiAnimUtils.isValid(explosion)) return;
@@ -303,7 +303,7 @@
             effectsContainer.addChild(flash);
             
             const startTime = Date.now();
-            const duration = 150;
+            const duration = window.getScaledDuration ? window.getScaledDuration(150) : 150;
             
             const animateFlash = () => {
                 if (!window.pixiAnimUtils.isValid(flash)) return;

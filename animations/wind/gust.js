@@ -215,7 +215,7 @@
         container.addChild(impactWave);
         
         const startTime = Date.now();
-        const duration = 400;
+        const duration = window.getScaledDuration ? window.getScaledDuration(400) : 400;
         
         const animateWave = () => {
             if (!window.pixiAnimUtils.isValid(impactWave)) return;
@@ -259,7 +259,7 @@
             const vy = Math.sin(angle) * speed;
             
             const startTime = Date.now();
-            const duration = 500;
+            const duration = window.getScaledDuration ? window.getScaledDuration(500) : 500;
             
             const animateParticle = () => {
                 if (!window.pixiAnimUtils.isValid(particle)) return;

@@ -97,7 +97,7 @@
                 const scale = Math.max(targetHeight / frameHeight, 0.5);
                 windSprite.scale.set(scale);
 
-                windSprite.animationSpeed = 0.1; // Плавная анимация ветра
+                windSprite.animationSpeed = window.getScaledAnimationSpeed ? window.getScaledAnimationSpeed(0.1) : 0.1; // Плавная анимация ветра
                 windSprite.loop = true;
                 windSprite.alpha = 0.7; // Полупрозрачность для ветра
                 windSprite.play();
@@ -250,7 +250,7 @@
         
         // Анимация расширения и исчезновения
         const startTime = Date.now();
-        const duration = 400;
+        const duration = window.getScaledDuration ? window.getScaledDuration(400) : 400;
         const initialScale = scale;
         
         const animate = () => {
@@ -297,7 +297,7 @@
             const vy = Math.sin(angle) * speed;
             
             const startTime = Date.now();
-            const duration = 500;
+            const duration = window.getScaledDuration ? window.getScaledDuration(500) : 500;
             
             const animateParticle = () => {
                 if (!window.pixiAnimUtils.isValid(particle)) return;

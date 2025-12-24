@@ -133,7 +133,7 @@
             
             // Анимация появления и исчезновения
             const startTime = Date.now();
-            const duration = 600;
+            const duration = window.getScaledDuration ? window.getScaledDuration(600) : 600;
             
             const animate = () => {
                 if (!window.pixiAnimUtils.isValid(glade)) return;

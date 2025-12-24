@@ -72,7 +72,7 @@
             
             // Создаем спрайт (увеличен на 20%: 0.3 → 0.36)
             const entSprite = new PIXI.AnimatedSprite(frames);
-            entSprite.animationSpeed = 0.05;
+            entSprite.animationSpeed = window.getScaledAnimationSpeed ? window.getScaledAnimationSpeed(0.05) : 0.05;
             entSprite.anchor.set(0.5, 0.5);
             const spriteScale = entCell.cellScale * 0.36;
             entSprite.scale.set(spriteScale);

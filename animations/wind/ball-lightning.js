@@ -261,7 +261,7 @@
         container.addChild(ring);
         
         const startTime = Date.now();
-        const duration = 400;
+        const duration = window.getScaledDuration ? window.getScaledDuration(400) : 400;
         
         const animate = () => {
             // Проверяем оба объекта

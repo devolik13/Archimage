@@ -152,7 +152,7 @@
             effectsContainer.addChild(circle);
             
             const startTime = Date.now();
-            const duration = 500;
+            const duration = window.getScaledDuration ? window.getScaledDuration(500) : 500;
             
             const animate = () => {
                 if (!window.pixiAnimUtils.isValid(circle)) return;
@@ -214,7 +214,7 @@
                     effectsContainer.addChild(heal);
                     
                     const startTime = Date.now();
-                    const duration = 800;
+                    const duration = window.getScaledDuration ? window.getScaledDuration(800) : 800;
                     
                     const animate = () => {
                         if (!window.pixiAnimUtils.isValid(heal)) return;

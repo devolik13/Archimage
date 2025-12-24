@@ -257,7 +257,7 @@
             effectsContainer.addChild(arrow);
             
             // Параметры анимации полета
-            const duration = 400;
+            const duration = window.getScaledDuration ? window.getScaledDuration(400) : 400;
             const startTime = Date.now();
             let animationFrame = null;
             let isDestroyed = false;

@@ -175,7 +175,7 @@
             effectsContainer.addChild(meteor);
             
             // Анимация
-            const duration = 700;
+            const duration = window.getScaledDuration ? window.getScaledDuration(700) : 700;
             const startTime = Date.now();
             const rotationSpeed = 0.1;
             
@@ -334,7 +334,7 @@
             effectsContainer.addChild(smoke);
             
             const startTime = Date.now();
-            const duration = 600;
+            const duration = window.getScaledDuration ? window.getScaledDuration(600) : 600;
             const vx = (Math.random() - 0.5) * 2;
             const vy = -2 - Math.random() * 2;
             
@@ -391,7 +391,7 @@
             const vy = Math.sin(angle) * speed - 3; // Летят вверх
             
             const startTime = Date.now();
-            const duration = 500;
+            const duration = window.getScaledDuration ? window.getScaledDuration(500) : 500;
             
             const animateFragment = () => {
                 // Проверяем что объект не уничтожен
@@ -443,7 +443,7 @@
             const vy = Math.sin(angle) * speed - 2;
             
             const startTime = Date.now();
-            const duration = 400;
+            const duration = window.getScaledDuration ? window.getScaledDuration(400) : 400;
             
             const animateParticle = () => {
                 // Проверяем что объект не уничтожен

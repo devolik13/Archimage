@@ -219,7 +219,7 @@
             
             const targetX = targetCell.x + targetCell.width / 2;
             const startX = sprite.x;
-            const duration = 600;
+            const duration = window.getScaledDuration ? window.getScaledDuration(600) : 600;
             const startTime = Date.now();
             
             // Задержка для волнового эффекта
@@ -294,7 +294,7 @@
         const vy = -2 - Math.random() * 2;
         const vx = (Math.random() - 0.5) * 1;
         const startTime = Date.now();
-        const duration = 800;
+        const duration = window.getScaledDuration ? window.getScaledDuration(800) : 800;
         
         const animate = () => {
             if (!window.pixiAnimUtils.isValid(particle)) return;

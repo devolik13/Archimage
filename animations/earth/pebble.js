@@ -154,8 +154,8 @@
             
             effectsContainer.addChild(pebble);
             
-            // Анимация
-            const duration = 500;
+            // Анимация (с учетом скорости боя)
+            const duration = window.getScaledDuration ? window.getScaledDuration(500) : 500;
             const startTime = Date.now();
             const rotationSpeed = 0.2;
             let animationActive = true;

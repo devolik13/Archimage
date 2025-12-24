@@ -158,7 +158,7 @@
             arrow.rotation = Math.atan2(dy, dx);
             
             // Настройки анимации спрайта
-            arrow.animationSpeed = 0.4;
+            arrow.animationSpeed = window.getScaledAnimationSpeed ? window.getScaledAnimationSpeed(0.4) : 0.4;
             arrow.loop = true;
             arrow.play();
             
@@ -167,7 +167,7 @@
             // Анимация полета
             const targetX = targetCell.x + targetCell.width / 2;
             const targetY = targetCell.y + targetCell.height / 2;
-            const duration = 800;
+            const duration = window.getScaledDuration ? window.getScaledDuration(800) : 800;
             const startTime = Date.now();
             const startX = casterCell.x + casterCell.width / 2;
             const startY = casterCell.y + casterCell.height / 2;
@@ -256,7 +256,7 @@
 
             const targetX = targetCell.x + targetCell.width / 2;
             const targetY = targetCell.y + targetCell.height / 2;
-            const duration = 800;
+            const duration = window.getScaledDuration ? window.getScaledDuration(800) : 800;
             const startTime = Date.now();
 
             const startX = casterCell.x + casterCell.width / 2;
@@ -346,7 +346,7 @@
                     
                     const targetX = targetCell.x + targetCell.width / 2;
                     const targetY = targetCell.y + targetCell.height / 2;
-                    const duration = 800;
+                    const duration = window.getScaledDuration ? window.getScaledDuration(800) : 800;
                     const startTime = Date.now();
                     
                     const startX = casterCell.x + casterCell.width / 2;
@@ -413,7 +413,7 @@
             effectsContainer.addChild(impact);
 
             const startTime = Date.now();
-            const duration = 300;
+            const duration = window.getScaledDuration ? window.getScaledDuration(300) : 300;
 
             const animate = () => {
                 // ПРОВЕРКА: если объект уничтожен - прерываем анимацию
@@ -502,7 +502,7 @@
                 
                 const targetX = targetCell.x + targetCell.width / 2;
                 const targetY = targetCell.y + targetCell.height / 2;
-                const duration = 800;
+                const duration = window.getScaledDuration ? window.getScaledDuration(800) : 800;
                 const startTime = Date.now();
                 const startX = casterCell.x + casterCell.width / 2;
                 const startY = casterCell.y + casterCell.height / 2;
