@@ -508,7 +508,7 @@ class ReferralManager {
         const link = this.generateReferralLink(telegramId);
 
         // URL картинки (768x768)
-        const imageUrl = window.location.origin + '/images/share-banner.png';
+        const imageUrl = window.location.origin + '/images/share-banner.jpg';
 
         // Короткий текст для картинки
         const text = `🎮 Играй в Archimage со мной!\n\n${link}`;
