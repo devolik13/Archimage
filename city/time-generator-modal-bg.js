@@ -126,7 +126,7 @@ function setupGeneratorUI() {
     const storage = window.calculateMaxStorage ? window.calculateMaxStorage() : 0;
     
     // Рассчитываем следующий уровень (используем те же формулы что и в time-currency-system.js)
-    const config = window.TIME_CURRENCY_CONFIG || { GENERATOR_BASE_RATE: 36, GENERATOR_PER_LEVEL: 16, STORAGE_BASE: 1037, STORAGE_PER_LEVEL: 461 };
+    const config = window.TIME_CURRENCY_CONFIG || { GENERATOR_BASE_RATE: 36, GENERATOR_PER_LEVEL: 7.6, STORAGE_BASE: 1037, STORAGE_PER_LEVEL: 219 };
     const nextProduction = generatorLevel < maxGeneratorLevel ?
         config.GENERATOR_BASE_RATE + generatorLevel * config.GENERATOR_PER_LEVEL : production;
     const nextStorage = generatorLevel < maxGeneratorLevel ?
