@@ -215,12 +215,18 @@ function startBattle() {
     window.stalemateCounter = 0;
     window.STALEMATE_TURNS_LIMIT = 15; // Ничья после 15 ходов без изменения HP
 
-    // Сброс визуала кнопки скорости
+    // Синхронизация визуала кнопки скорости с текущим режимом
     const speedButton = document.querySelector('#speed-button');
     if (speedButton) {
-        speedButton.innerHTML = '▶';
-        speedButton.title = 'Ускорить';
-        speedButton.style.background = '#555';
+        if (window.battleSpeedMode === 'fast') {
+            speedButton.innerHTML = '⚡';
+            speedButton.title = 'Замедлить';
+            speedButton.style.background = '#FFD700';
+        } else {
+            speedButton.innerHTML = '▶';
+            speedButton.title = 'Ускорить';
+            speedButton.style.background = '#555';
+        }
     }
 
     // Инициализация логгера боя
