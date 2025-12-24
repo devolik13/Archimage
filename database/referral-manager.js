@@ -377,7 +377,20 @@ class ReferralManager {
                     font-weight: bold;
                     cursor: pointer;
                     margin-bottom: 10px;
-                ">📤 Поделиться в Telegram</button>
+                ">📤 Поделиться текстом</button>
+
+                <button onclick="window.referralManager.shareWithImage()" style="
+                    width: 100%;
+                    padding: 12px;
+                    background: linear-gradient(135deg, #f59e0b, #d97706);
+                    border: none;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: 14px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    margin-bottom: 10px;
+                ">🖼 Поделиться с картинкой</button>
 
                 <button onclick="window.referralManager.closeReferralUI()" style="
                     width: 100%;
@@ -455,7 +468,7 @@ class ReferralManager {
         });
     }
 
-    // Поделиться в Telegram
+    // Поделиться в Telegram (только текст)
     shareToTelegram() {
         const telegramId = window.dbManager?.currentPlayer?.telegram_id;
         if (!telegramId) return;
@@ -484,6 +497,30 @@ class ReferralManager {
             // Fallback - открываем в новом окне
             const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
             window.open(shareUrl, '_blank');
+        }
+    }
+
+    // Поделиться с картинкой (для визуального контента)
+    shareWithImage() {
+        const telegramId = window.dbManager?.currentPlayer?.telegram_id;
+        if (!telegramId) return;
+
+        const link = this.generateReferralLink(telegramId);
+
+        // URL картинки (768x768)
+        const imageUrl = window.location.origin + '/images/share-banner.png';
+
+        // Короткий текст для картинки
+        const text = `🎮 Играй в Archimage со мной!\n\n${link}`;
+
+        // Используем Telegram WebApp для шаринга
+        if (window.Telegram && window.Telegram.WebApp) {
+            // Открываем Telegram share с картинкой
+            const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(imageUrl)}&text=${encodeURIComponent(text)}`;
+            window.Telegram.WebApp.openTelegramLink(shareUrl);
+        } else {
+            // Fallback - обычный шеринг
+            this.shareToTelegram();
         }
     }
 }
