@@ -52,6 +52,17 @@ const PRELOAD_ASSETS = {
         'assets/ui/guild/guild_poison.webp'
     ],
 
+    // Библиотека заклинаний
+    libraryImages: [
+        'assets/ui/modals/library_template.webp',
+        'assets/ui/modals/spells_fire.webp',
+        'assets/ui/modals/spells_water.webp',
+        'assets/ui/modals/spells_wind.webp',
+        'assets/ui/modals/spells_earth.webp',
+        'assets/ui/modals/spells_nature.webp',
+        'assets/ui/modals/spells_poison.webp'
+    ],
+
     // Выбор фракции / загрузка
     misc: [
         'assets/faction-background.png'
