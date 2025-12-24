@@ -763,7 +763,7 @@ function getBuildingMaxLevel(buildingId) {
         "library": 1,
         "wizard_tower": 10,
         "blessing_tower": 5,
-        "time_generator": 10,
+        "time_generator": 20,
         "pvp_arena": 1,
         "guild": 1,  // Гильдия - уровень здания не влияет, только уровень самой гильдии
         "arcane_lab": 15
