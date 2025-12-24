@@ -150,17 +150,43 @@ function updatePixiCoreAPI() {
 
 // Функция инициализации без загрузки атласов
 function loadAtlases() {
-    
+
     updatePixiCoreAPI();
-    
+
     // Создаем магов сразу без ожидания атласов
-    setTimeout(() => {
+    setTimeout(async () => {
         if (window.pixiWizards) {
             window.pixiWizards.init();
             window.pixiWizards.update();
         }
         startBattleSync();
+
+        // Ждём загрузки фона перед скрытием спиннера
+        if (backgroundLoadPromise) {
+            try {
+                await backgroundLoadPromise;
+            } catch (e) {
+                console.warn('⚠️ Фон не загрузился, продолжаем');
+            }
+        }
+
+        // Скрываем спиннер загрузки
+        hideBattleLoadingSpinner();
     }, 100);
+}
+
+// Скрытие спиннера загрузки боя
+function hideBattleLoadingSpinner() {
+    const spinner = document.getElementById('battle-loading-spinner');
+    if (spinner) {
+        // Плавное исчезновение
+        spinner.style.transition = 'opacity 0.3s';
+        spinner.style.opacity = '0';
+        setTimeout(() => {
+            spinner.style.display = 'none';
+        }, 300);
+        console.log('✅ Бой загружен, спиннер скрыт');
+    }
 }
 
 // Рисование сетки с перспективой (как в оригинале)
@@ -310,29 +336,36 @@ window.pixiCore = {
     destroy: destroyPixiBattle
 };
 
+// Глобальный Promise для отслеживания загрузки фона
+let backgroundLoadPromise = null;
+
 function loadBattleFieldBackground() {
-    
-    // Массив доступных фонов
+    // Массив доступных фонов (768x512 webp)
     const backgrounds = [
-        'images/battle/field-background-1.jpg',
-        'images/battle/field-background-2.jpg',
-        'images/battle/field-background-3.jpg',
-        'images/battle/field-background-4.jpg',
-        'images/battle/field-background-5.jpg',
-	'images/battle/field-background-6.jpg',
-        'images/battle/field-background-7.jpg',
-        'images/battle/field-background-8.jpg',
-        'images/battle/field-background-9.jpg',
-        'images/battle/field-background-10.jpg',
-	'images/battle/field-background-11.jpg',
-        'images/battle/field-background-12.jpg'
+        'images/battle/field-background-1.webp',
+        'images/battle/field-background-2.webp',
+        'images/battle/field-background-3.webp',
+        'images/battle/field-background-4.webp',
+        'images/battle/field-background-5.webp',
+        'images/battle/field-background-6.webp',
+        'images/battle/field-background-7.webp',
+        'images/battle/field-background-8.webp',
+        'images/battle/field-background-9.webp',
+        'images/battle/field-background-10.webp',
+        'images/battle/field-background-11.webp',
+        'images/battle/field-background-12.webp',
+        'images/battle/field-background-13.webp',
+        'images/battle/field-background-14.webp',
+        'images/battle/field-background-15.webp',
+        'images/battle/field-background-16.webp'
     ];
     
     // Выбираем случайный
     const bgPath = backgrounds[Math.floor(Math.random() * backgrounds.length)];
     console.log('🎲 Выбран фон:', bgPath);
-    
-    PIXI.Assets.load(bgPath).then(texture => {
+
+    // Сохраняем Promise для отслеживания загрузки
+    backgroundLoadPromise = PIXI.Assets.load(bgPath).then(texture => {
         const fieldBg = new PIXI.Sprite(texture);
         
         // Получаем размеры экрана и текстуры
@@ -353,18 +386,18 @@ function loadBattleFieldBackground() {
                          'ontouchstart' in window || 
                          navigator.maxTouchPoints > 0 ||
                          window.innerWidth <= 768;
-        
+
         // РЕЖИМ "COVER" - изображение заполняет весь экран
-        // Может обрезать края, но не оставляет пустых мест
+        // С картинками 16:9 обрезки почти не будет
         const scaleX = screenWidth / textureWidth;
         const scaleY = screenHeight / textureHeight;
-        const scale = Math.max(scaleX, scaleY); // Выбираем БОЛЬШИЙ масштаб для cover
+        const scale = Math.max(scaleX, scaleY); // Полный cover без уменьшения
         
         // Применяем масштаб с сохранением пропорций
         fieldBg.width = textureWidth * scale;
         fieldBg.height = textureHeight * scale;
-        
-        // Центрируем изображение (обрезка будет равномерной)
+
+        // Центрируем изображение
         fieldBg.x = (screenWidth - fieldBg.width) / 2;
         fieldBg.y = (screenHeight - fieldBg.height) / 2;
         

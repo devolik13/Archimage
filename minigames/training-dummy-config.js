@@ -120,21 +120,32 @@ const LEADERBOARD_BONUSES = [
 ];
 
 /**
- * Получить номер текущей недели года
+ * Получить ISO номер недели (совместим с PostgreSQL IYYY-IW)
+ * Возвращает строку "YYYY-WW" для совместимости с Supabase
  */
 function getWeekNumber() {
     const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 1);
-    const diff = now - start;
-    const oneWeek = 604800000; // миллисекунд в неделе
-    return Math.floor(diff / oneWeek);
+    return getISOWeekYear(now);
+}
+
+/**
+ * Получить ISO неделю в формате "YYYY-WW" (совместимо с PostgreSQL to_char(date, 'IYYY-IW'))
+ */
+function getISOWeekYear(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    // Четверг текущей недели определяет год ISO недели
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    return `${d.getUTCFullYear()}-${String(weekNo).padStart(2, '0')}`;
 }
 
 /**
  * Получить конфигурацию манекена для текущей недели
  */
 function getCurrentDummyConfig() {
-    const weekNum = getWeekNumber();
+    const weekYear = getWeekNumber(); // "YYYY-WW"
+    const weekNum = parseInt(weekYear.split('-')[1], 10); // Извлекаем номер недели
     const configIndex = weekNum % DUMMY_CONFIGURATIONS.length;
     return DUMMY_CONFIGURATIONS[configIndex];
 }
@@ -217,7 +228,8 @@ function createDummyEnemy() {
         isTrainingDummy: true,
         isDummy: true,
         magicResistance: config.resistances,
-        description: config.description
+        description: config.description,
+        spriteSheet: 'training_dummy' // Спрайт пугала
     };
 }
 
@@ -259,15 +271,62 @@ function loadDummyProgress() {
 
 /**
  * Сохранить прогресс игрока в базу данных
+ * @param {boolean} immediate - немедленное сохранение в БД (по умолчанию false)
  */
-function saveDummyProgress(progress) {
-    // Сохраняем в userData
-    if (window.userData) {
-        window.userData.training_dummy_progress = progress;
+function saveDummyProgress(progress, immediate = false) {
+    console.log('📝 saveDummyProgress вызван:', { immediate, progress: JSON.stringify(progress).substring(0, 200) });
 
-        // Помечаем данные как изменённые для автосохранения
-        if (window.dbManager && window.dbManager.markChanged) {
-            window.dbManager.markChanged();
+    // Сохраняем в userData
+    if (!window.userData) {
+        console.error('❌ window.userData не существует!');
+        return;
+    }
+
+    window.userData.training_dummy_progress = progress;
+    console.log('📝 Progress сохранён в window.userData');
+
+    // Помечаем данные как изменённые для автосохранения
+    if (window.dbManager && window.dbManager.markChanged) {
+        window.dbManager.markChanged();
+        console.log('📝 markChanged() вызван');
+    } else {
+        console.warn('⚠️ dbManager.markChanged недоступен');
+    }
+
+    // Немедленное сохранение в БД (для важных моментов)
+    if (immediate) {
+        if (!window.dbManager) {
+            console.error('❌ window.dbManager не существует!');
+            return;
+        }
+
+        // Используем специальную функцию для сохранения только training_dummy_progress
+        // (как saveBattleResult сохраняет только wins/losses/rating)
+        if (window.dbManager.saveTrainingDummyProgress) {
+            console.log('📝 Используем saveTrainingDummyProgress (изолированное сохранение)');
+            window.dbManager.saveTrainingDummyProgress(progress).then((result) => {
+                if (result === true) {
+                    console.log('✅ Trial progress сохранён через saveTrainingDummyProgress!');
+                } else {
+                    console.warn('⚠️ saveTrainingDummyProgress вернул false');
+                }
+            }).catch(err => {
+                console.error('❌ Ошибка saveTrainingDummyProgress:', err);
+            });
+        } else {
+            // Fallback на старый метод
+            console.log('📝 Fallback: используем savePlayer');
+            if (window.dbManager.savePlayer && window.dbManager.currentPlayer) {
+                window.dbManager.savePlayer(window.userData).then((result) => {
+                    if (result === true) {
+                        console.log('✅ Trial progress сохранён через savePlayer');
+                    } else {
+                        console.warn('⚠️ savePlayer вернул false');
+                    }
+                }).catch(err => {
+                    console.error('❌ Failed to save trial progress:', err);
+                });
+            }
         }
     }
 }
@@ -279,11 +338,16 @@ function saveDummyProgress(progress) {
  * @param {number} remainingHp - остаток HP манекена
  */
 function recordAttempt(damage, remainingHp = null) {
+    console.log(`🎯 recordAttempt вызван: damage=${damage}, remainingHp=${remainingHp}`);
+
     const progress = loadDummyProgress();
     const currentWeek = getWeekNumber();
 
+    console.log(`🎯 Текущий прогресс до обновления:`, JSON.stringify(progress));
+
     // Сброс на новую неделю
     if (progress.weekNumber !== currentWeek) {
+        console.log(`🎯 Новая неделя: ${progress.weekNumber} -> ${currentWeek}`);
         progress.weekNumber = currentWeek;
         progress.totalDamage = 0;
         progress.bestAttempt = 0;
@@ -302,7 +366,9 @@ function recordAttempt(damage, remainingHp = null) {
         remainingHp: remainingHp
     });
 
-    saveDummyProgress(progress);
+    console.log(`🎯 Прогресс после обновления: totalDamage=${progress.totalDamage}, bestAttempt=${progress.bestAttempt}, attemptsToday=${progress.attemptsToday}`);
+
+    saveDummyProgress(progress, true); // immediate save to DB
 
     // Сохраняем результат в Supabase для глобального рейтинга
     if (typeof window.saveTrialResultSupabase === 'function') {
@@ -398,6 +464,7 @@ window.LEADERBOARD_BONUSES = LEADERBOARD_BONUSES;
 
 window.getCurrentDummyConfig = getCurrentDummyConfig;
 window.getWeekNumber = getWeekNumber;
+window.getISOWeekYear = getISOWeekYear;
 window.getTimeUntilWeekEnd = getTimeUntilWeekEnd;
 window.formatTimeUntilWeekEnd = formatTimeUntilWeekEnd;
 window.getRewardForDamage = getRewardForDamage;

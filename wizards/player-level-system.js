@@ -334,7 +334,7 @@ function showPlayerProfile() {
 
         // Асинхронно загружаем количество рефералов
         if (window.referralManager && window.dbManager?.currentPlayer) {
-            window.referralManager.getReferralCount(window.dbManager.currentPlayer.id)
+            window.referralManager.getReferralCount(window.dbManager.currentPlayer.telegram_id)
                 .then(count => {
                     const countElement = document.getElementById('referral-count');
                     if (countElement) {

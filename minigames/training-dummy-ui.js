@@ -648,7 +648,7 @@ async function showTrialLeaderboardInArena() {
         `;
     } else {
         let html = '';
-        const playerId = window.myPlayerId || window.userData?.id || 'local';
+        const playerId = window.dbManager?.currentPlayer?.telegram_id || window.userData?.user_id || 'local';
         leaderboard.forEach((entry, index) => {
             const rank = entry.rank || (index + 1);
             const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}.`;
@@ -744,23 +744,18 @@ function loadTrialLeaderboardLocal() {
  * Сохранить результат в Supabase рейтинг
  */
 async function saveTrialResultSupabase(damage) {
-    const playerName = window.myUsername || window.userData?.name || 'Игрок';
-    const playerId = window.myPlayerId || window.userData?.id;
+    const playerName = window.myUsername || window.userData?.username || 'Игрок';
+    const playerId = window.dbManager?.currentPlayer?.telegram_id || window.userData?.user_id;
 
     if (!playerId) {
-        console.warn('Нет player_id, сохраняем только локально');
         return saveTrialResultLocal(damage);
     }
 
-    // Всегда сохраняем локально для быстрого отображения
     saveTrialResultLocal(damage);
 
     try {
         const supabase = window.dbManager?.supabase;
-        if (!supabase) {
-            console.warn('Supabase не инициализирован');
-            return;
-        }
+        if (!supabase) return;
 
         const { error } = await supabase
             .rpc('upsert_trial_result', {
@@ -770,9 +765,7 @@ async function saveTrialResultSupabase(damage) {
             });
 
         if (error) {
-            console.error('Ошибка сохранения результата в Supabase:', error);
-        } else {
-            console.log('✅ Результат сохранён в Supabase:', damage);
+            console.error('Ошибка сохранения в Trial leaderboard:', error);
         }
     } catch (e) {
         console.error('Ошибка сохранения результата:', e);
@@ -783,8 +776,8 @@ async function saveTrialResultSupabase(damage) {
  * Сохранить результат в локальный рейтинг (fallback)
  */
 function saveTrialResultLocal(damage) {
-    const playerName = window.myUsername || 'Игрок';
-    const playerId = window.myPlayerId || 'local';
+    const playerName = window.myUsername || window.userData?.username || 'Игрок';
+    const playerId = window.dbManager?.currentPlayer?.telegram_id || window.userData?.user_id || 'local';
 
     let leaderboard = loadTrialLeaderboardLocal();
     const existingIndex = leaderboard.findIndex(e => e.playerId === playerId);
@@ -808,7 +801,7 @@ function saveTrialResultLocal(damage) {
  * Получить позицию игрока в рейтинге из Supabase
  */
 async function getPlayerTrialRankSupabase() {
-    const playerId = window.myPlayerId || window.userData?.id;
+    const playerId = window.dbManager?.currentPlayer?.telegram_id || window.userData?.user_id;
     const supabase = window.dbManager?.supabase;
 
     if (!playerId || !supabase) {
@@ -832,20 +825,21 @@ async function getPlayerTrialRankSupabase() {
 }
 
 /**
- * Получить номер прошлой недели в формате "YYYY-WW"
+ * Получить ISO неделю прошлой недели в формате "YYYY-WW"
+ * Совместимо с PostgreSQL to_char(date, 'IYYY-IW')
  */
 function getLastWeekYear() {
     const now = new Date();
     // Вычитаем 7 дней
     const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    // Получаем ISO неделю
-    const year = lastWeek.getFullYear();
-    const jan1 = new Date(year, 0, 1);
-    const days = Math.floor((lastWeek - jan1) / (24 * 60 * 60 * 1000));
-    const weekNum = Math.ceil((days + jan1.getDay() + 1) / 7);
+    // Используем ISO алгоритм (четверг определяет неделю)
+    const d = new Date(Date.UTC(lastWeek.getFullYear(), lastWeek.getMonth(), lastWeek.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
 
-    return `${year}-${String(weekNum).padStart(2, '0')}`;
+    return `${d.getUTCFullYear()}-${String(weekNo).padStart(2, '0')}`;
 }
 
 /**
@@ -853,7 +847,7 @@ function getLastWeekYear() {
  * Вызывается при входе игрока в игру
  */
 async function checkAndClaimTrialReward() {
-    const playerId = window.myPlayerId || window.userData?.id;
+    const playerId = window.dbManager?.currentPlayer?.telegram_id || window.userData?.user_id;
     const supabase = window.dbManager?.supabase;
 
     if (!playerId || !supabase) {

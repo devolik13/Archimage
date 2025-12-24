@@ -8,6 +8,7 @@ class EventSaveManager {
     constructor() {
         this.saveInProgress = false;
         this.pendingSave = false;
+        this.pendingSavePromises = []; // Массив промисов ожидающих сохранения
         this.debounceTimers = {};
         this.lastSaveTime = 0;
         this.minSaveInterval = 500; // Минимум 500ms между сохранениями
@@ -15,12 +16,16 @@ class EventSaveManager {
 
     /**
      * 🔴 CRITICAL: Save immediately (battle end, building complete, etc.)
+     * ВАЖНО: Теперь функция ГАРАНТИРОВАННО дожидается завершения сохранения
      */
     async saveImmediate(reason) {
-
+        // Если сохранение уже идёт - ждём его завершения
         if (this.saveInProgress) {
             this.pendingSave = true;
-            return;
+            // Создаём промис который разрешится когда текущее сохранение завершится
+            return new Promise((resolve) => {
+                this.pendingSavePromises.push(resolve);
+            });
         }
 
         // Защита от слишком частых сохранений
@@ -28,11 +33,16 @@ class EventSaveManager {
         const timeSinceLastSave = now - this.lastSaveTime;
         if (timeSinceLastSave < this.minSaveInterval) {
             const delay = this.minSaveInterval - timeSinceLastSave;
-            setTimeout(() => this.saveImmediate(reason), delay);
-            return;
+            // ВАЖНО: Возвращаем промис который разрешится после отложенного сохранения
+            return new Promise((resolve) => {
+                setTimeout(async () => {
+                    const result = await this._performSave(reason);
+                    resolve(result);
+                }, delay);
+            });
         }
 
-        await this._performSave(reason);
+        return await this._performSave(reason);
     }
 
     /**
@@ -93,14 +103,21 @@ class EventSaveManager {
                 daily_login: window.userData.daily_login, // Данные ежедневных наград
                 battle_energy: window.userData.battle_energy, // Энергия боев
                 purchased_packs: window.userData.purchased_packs, // Купленные стартовые пакеты
-                airdrop_points: window.userData.airdrop_points || 0, // Airdrop очки
+                // ВАЖНО: airdrop_points НЕ сохраняем здесь - они защищены от уменьшения в RPC
+                // и должны обновляться только через специальные операции (addAirdropPoints)
+                // airdrop_points: window.userData.airdrop_points || 0,
                 airdrop_breakdown: window.userData.airdrop_breakdown || {}, // Разбивка по категориям
                 wallet_address: window.userData.wallet_address || null, // TON кошелек
                 wallet_connected_at: window.userData.wallet_connected_at || null, // Время подключения кошелька
                 current_season: window.userData.current_season || 1, // Текущий сезон
                 season_league_rewards_claimed: window.userData.season_league_rewards_claimed || [], // Полученные награды за лиги
                 unlocked_skins: window.userData.unlocked_skins || [], // Разблокированные скины
-                wizard_skins: window.userData.wizard_skins || {} // Выбранные скины для магов
+                wizard_skins: window.userData.wizard_skins || {}, // Выбранные скины для магов
+                training_dummy_progress: window.userData.training_dummy_progress || null, // Прогресс тренировочного полигона
+                // GUILD FIELDS
+                guild_id: window.userData.guild_id ?? null, // ID гильдии
+                guild_contribution: window.userData.guild_contribution || 0, // Вклад в гильдию
+                guild_last_active: window.userData.guild_last_active || null // Последняя активность
             });
 
             const success = await window.dbManager.savePlayer(playerData);
@@ -113,6 +130,11 @@ class EventSaveManager {
 
             this.saveInProgress = false;
 
+            // Резолвим все ожидающие промисы
+            const pendingPromises = this.pendingSavePromises;
+            this.pendingSavePromises = [];
+            pendingPromises.forEach(resolve => resolve(success));
+
             // Если было запланировано ещё одно сохранение
             if (this.pendingSave) {
                 this.pendingSave = false;
@@ -124,6 +146,12 @@ class EventSaveManager {
         } catch (error) {
             console.error('❌ Ошибка в _performSave:', error);
             this.saveInProgress = false;
+
+            // Резолвим ожидающие промисы с false при ошибке
+            const pendingPromises = this.pendingSavePromises;
+            this.pendingSavePromises = [];
+            pendingPromises.forEach(resolve => resolve(false));
+
             return false;
         }
     }

@@ -57,6 +57,11 @@ async function startDummyBattle() {
     window.enemyFormation = [null, null, dummy, null, null]; // Манекен в центре
     window.enemyWizards = [dummy];
 
+    // Инициализируем статистику боя для опыта
+    if (typeof window.initBattleStats === 'function') {
+        window.initBattleStats();
+    }
+
     // Показываем поле боя
     if (typeof window.showBattleField === 'function') {
         await window.showBattleField();
@@ -104,7 +109,7 @@ function deductTrialAttempt() {
 
     // Списываем попытку
     progress.attemptsToday++;
-    window.saveDummyProgress(progress);
+    window.saveDummyProgress(progress, true); // immediate save to DB
 
     console.log(`🎯 Попытка испытания списана. Осталось: ${window.DUMMY_CONFIG.DAILY_ATTEMPTS - progress.attemptsToday}`);
 }
@@ -122,8 +127,8 @@ async function executeDummyBattlePhase() {
         return;
     }
 
-    // Логируем раунд
-    if (typeof window.addToBattleLog === 'function') {
+    // Логируем раунд (пропускаем при быстрой симуляции)
+    if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
         window.addToBattleLog(`\n━━━ Раунд ${dummyBattleState.currentRound}/${window.DUMMY_CONFIG.MAX_ROUNDS} ━━━`);
     }
 
@@ -150,13 +155,15 @@ async function executeDummyBattlePhase() {
         // Проверяем не умер ли манекен
         if (dummy && dummy.hp <= 0) break;
 
-        // Используем заклинания
+        // Используем заклинания - ждём завершения всех кастов
         if (typeof window.useWizardSpells === 'function') {
-            window.useWizardSpells(mageData.wizard, mageData.position, 'player');
+            await window.useWizardSpells(mageData.wizard, mageData.position, 'player');
         }
+    }
 
-        // Пауза между магами для анимаций
-        await new Promise(resolve => setTimeout(resolve, 500));
+    // Ждём пока все снаряды долетят (пропускаем при быстрой симуляции)
+    if (!window.fastSimulation) {
+        await new Promise(resolve => setTimeout(resolve, 1500));
     }
 
     // Подсчитываем нанесённый урон за раунд
@@ -168,8 +175,8 @@ async function executeDummyBattlePhase() {
     dummyBattleState.roundsRemaining--;
     dummyBattleState.currentRound++;
 
-    // Логируем урон за раунд
-    if (typeof window.addToBattleLog === 'function') {
+    // Логируем урон за раунд (пропускаем при быстрой симуляции)
+    if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
         window.addToBattleLog(`\n⚔️ Урон за раунд: ${damageThisRound.toLocaleString()}`);
         window.addToBattleLog(`📊 Всего урона: ${dummyBattleState.totalDamage.toLocaleString()}`);
         if (dummyBattleState.roundsRemaining > 0 && (!dummy || dummy.hp > 0)) {
@@ -177,13 +184,13 @@ async function executeDummyBattlePhase() {
         }
     }
 
-    // Обновляем поле боя
-    if (typeof window.updateBattleField === 'function') {
+    // Обновляем поле боя (пропускаем при быстрой симуляции)
+    if (!window.fastSimulation && typeof window.updateBattleField === 'function') {
         window.updateBattleField();
     }
 
-    // Проверяем конец боя
-    if (dummyBattleState.roundsRemaining <= 0 || (dummy && dummy.hp <= 0)) {
+    // Проверяем конец боя (при быстрой симуляции не вызываем endDummyBattle - это делает вызывающий код)
+    if (!window.fastSimulation && (dummyBattleState.roundsRemaining <= 0 || (dummy && dummy.hp <= 0))) {
         await endDummyBattle();
     }
 }
@@ -221,6 +228,22 @@ async function endDummyBattle() {
     // Записываем результат с остатком HP
     const progress = window.recordAttempt(totalDamage, remainingHp);
 
+    // Рассчитываем и начисляем опыт (тренировка всегда считается победой)
+    let expResults = [];
+    if (typeof window.calculateAndGrantBattleExp === 'function') {
+        expResults = window.calculateAndGrantBattleExp(true);
+
+        // Сохраняем опыт в базу данных
+        if (expResults.length > 0 && typeof window.onWizardsGainedExperience === 'function') {
+            const wizardIds = window.playerFormation.filter(id => id !== null);
+            const totalExp = expResults.reduce((sum, r) => sum + r.expGained, 0);
+            window.onWizardsGainedExperience(wizardIds, totalExp);
+        }
+    }
+
+    // Сохраняем результаты XP для отображения
+    dummyBattleState.expResults = expResults;
+
     // Логируем результат
     if (typeof window.addToBattleLog === 'function') {
         window.addToBattleLog(`\n🏁 ═══ ТРЕНИРОВКА ЗАВЕРШЕНА ═══`);
@@ -243,135 +266,301 @@ async function endDummyBattle() {
         window.addToBattleLog(`═══════════════════════════════`);
     }
 
-    // Показываем результат
+    // Показываем результат на фоне арены (как в PvP)
     setTimeout(() => {
-        showDummyResult(totalDamage, progress);
+        // Очищаем PIXI и UI боя
+        if (window.animationManager) {
+            window.animationManager.clearAll();
+        }
+        if (window.spellAnimations?.leaf_canopy?.clearAll) {
+            window.spellAnimations.leaf_canopy.clearAll();
+        }
+        if (window.destroyPixiBattle) {
+            window.destroyPixiBattle();
+        }
+
+        // Удаляем UI боя
+        const battleModal = document.getElementById("battle-field-modal");
+        if (battleModal) battleModal.remove();
+        const container = document.getElementById("battle-field-fullscreen-container");
+        if (container) container.remove();
+        const pixiContainer = document.getElementById("pixi-battle-container");
+        if (pixiContainer) pixiContainer.remove();
+
+        // Показываем арену с фоном
+        if (typeof window.showPvPArenaModalBg === 'function') {
+            window.showPvPArenaModalBg();
+        }
+
+        // Показываем результат с задержкой для загрузки арены
+        setTimeout(() => {
+            showDummyResult(totalDamage, progress, dummyBattleState.expResults || []);
+        }, 150);
     }, 1500);
 }
 
 /**
- * Показать окно результата
+ * Показать окно результата (используем arena-ui-overlay как в PvP)
  */
-function showDummyResult(damage, progress) {
+function showDummyResult(damage, progress, expResults = []) {
     // Сбрасываем флаг
     window.isTrainingDummyBattle = false;
 
     const reward = window.getRewardForDamage(progress.totalDamage);
     const nextReward = window.WEEKLY_REWARDS.find(r => r.minDamage > progress.totalDamage);
     const remaining = window.getRemainingAttempts();
-
-    // Создаём модальное окно
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay';
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 10000;
-    `;
-
-    const content = document.createElement('div');
-    content.style.cssText = `
-        background: linear-gradient(135deg, #1a1a2e, #16213e);
-        border: 2px solid #4a9eff;
-        border-radius: 15px;
-        padding: 25px;
-        max-width: 400px;
-        width: 90%;
-        text-align: center;
-        color: white;
-        font-family: Arial, sans-serif;
-    `;
-
     const config = window.getCurrentDummyConfig();
 
-    content.innerHTML = `
-        <h2 style="margin: 0 0 15px 0; color: #4a9eff;">🎯 Тренировка завершена!</h2>
-        <div style="margin-bottom: 20px;">
-            <div style="font-size: 14px; color: #888; margin-bottom: 5px;">${config.name}</div>
-        </div>
+    // Формируем блок с опытом
+    const totalExp = expResults.reduce((sum, r) => sum + r.expGained, 0);
+    let expHtml = '';
+    if (expResults.length > 0) {
+        const expLines = expResults.map(r => {
+            let line = `<div style="font-size: 13px; color: #fbbf24;">${r.name}: +${r.expGained} XP</div>`;
+            if (r.levelGained > 0) {
+                line += `<div style="font-size: 11px; color: #4ade80;">⭐ Уровень повышен до ${r.newLevel}!</div>`;
+            }
+            return line;
+        }).join('');
 
-        <div style="background: #0d1b2a; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-            <div style="font-size: 24px; color: #ffd700; margin-bottom: 10px;">
-                ⚔️ ${damage.toLocaleString()} урона
-            </div>
-            <div style="font-size: 14px; color: #aaa;">
-                Лучшая попытка: ${progress.bestAttempt.toLocaleString()}
-            </div>
-        </div>
-
-        <div style="background: #1a3a1a; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-            <div style="font-size: 18px; color: #4ade80; margin-bottom: 5px;">
-                📈 За неделю: ${progress.totalDamage.toLocaleString()}
-            </div>
-            <div style="font-size: 14px; color: #86efac;">
-                ${reward.description} (${Math.floor(reward.reward / 60)}ч)
-            </div>
-            ${nextReward ? `
-                <div style="font-size: 12px; color: #888; margin-top: 10px;">
-                    До "${nextReward.description}": ещё ${(nextReward.minDamage - progress.totalDamage).toLocaleString()}
+        expHtml = `
+            <div style="background: rgba(251, 191, 36, 0.1); padding: 10px; border-radius: 8px; margin-bottom: 12px; border: 1px solid rgba(251, 191, 36, 0.3);">
+                <div style="font-size: 14px; color: #fbbf24; margin-bottom: 8px;">
+                    ✨ Опыт получен: +${totalExp} XP
                 </div>
-            ` : ''}
-        </div>
+                ${expLines}
+            </div>
+        `;
+    }
 
-        <div style="font-size: 14px; color: #888; margin-bottom: 20px;">
-            🎯 Попыток осталось: ${remaining}/3<br>
-            ⏰ До конца недели: ${window.formatTimeUntilWeekEnd()}
-        </div>
+    // Получаем overlay арены (как в PvP showArenaResult)
+    const overlay = document.getElementById('arena-ui-overlay');
 
-        <div style="display: flex; gap: 10px; justify-content: center;">
-            ${remaining > 0 ? `
-                <button id="dummy-retry-btn" style="
-                    background: linear-gradient(135deg, #4a9eff, #2d7dd2);
+    if (overlay) {
+        // Показываем в overlay арены (на фоне арены)
+        overlay.innerHTML = '';
+
+        const container = document.createElement('div');
+        container.id = 'dummy-result-container';
+        container.style.cssText = `
+            position: absolute;
+            top: 2%;
+            left: 5%;
+            width: 90%;
+            max-height: 96%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 2px solid rgba(74, 158, 255, 0.8);
+            border-radius: 12px;
+            padding: 15px;
+            overflow-y: auto;
+            color: white;
+            pointer-events: auto;
+            box-shadow: 0 0 30px rgba(74, 158, 255, 0.4);
+            box-sizing: border-box;
+            text-align: center;
+        `;
+
+        container.innerHTML = `
+            <h2 style="margin: 0 0 15px 0; color: #4a9eff; font-size: 22px;">🎯 Тренировка завершена!</h2>
+            <div style="margin-bottom: 15px;">
+                <div style="font-size: 14px; color: #888;">${config.name}</div>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; margin-bottom: 12px;">
+                <div style="font-size: 26px; color: #ffd700; margin-bottom: 8px;">
+                    ⚔️ ${damage.toLocaleString()} урона
+                </div>
+                <div style="font-size: 14px; color: #aaa;">
+                    Лучшая попытка: ${progress.bestAttempt.toLocaleString()}
+                </div>
+            </div>
+
+            ${expHtml}
+
+            <div style="background: rgba(26, 58, 26, 0.5); padding: 15px; border-radius: 10px; margin-bottom: 12px; border: 1px solid rgba(74, 222, 128, 0.3);">
+                <div style="font-size: 18px; color: #4ade80; margin-bottom: 5px;">
+                    📈 За неделю: ${progress.totalDamage.toLocaleString()}
+                </div>
+                <div style="font-size: 14px; color: #86efac;">
+                    ${reward.description} (${Math.floor(reward.reward / 60)}ч)
+                </div>
+                ${nextReward ? `
+                    <div style="font-size: 12px; color: #888; margin-top: 8px;">
+                        До "${nextReward.description}": ещё ${(nextReward.minDamage - progress.totalDamage).toLocaleString()}
+                    </div>
+                ` : ''}
+            </div>
+
+            <div style="font-size: 13px; color: #888; margin-bottom: 15px;">
+                🎯 Попыток осталось: ${remaining}/3<br>
+                ⏰ До конца недели: ${window.formatTimeUntilWeekEnd()}
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                ${remaining > 0 ? `
+                    <button id="dummy-retry-btn" style="
+                        background: linear-gradient(135deg, #4a9eff, #2d7dd2);
+                        border: none;
+                        padding: 12px 25px;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: 16px;
+                        cursor: pointer;
+                        min-width: 120px;
+                    ">🔄 Ещё раз</button>
+                ` : ''}
+                <button id="dummy-exit-btn" style="
+                    background: linear-gradient(135deg, #555, #333);
                     border: none;
                     padding: 12px 25px;
                     border-radius: 8px;
                     color: white;
                     font-size: 16px;
                     cursor: pointer;
-                ">🔄 Ещё раз</button>
-            ` : ''}
-            <button id="dummy-exit-btn" style="
-                background: linear-gradient(135deg, #555, #333);
-                border: none;
-                padding: 12px 25px;
-                border-radius: 8px;
+                    min-width: 120px;
+                ">⬅ Назад</button>
+            </div>
+        `;
+
+        overlay.appendChild(container);
+        setupDummyResultButtons(null);
+    } else {
+        // Fallback - создаём простую модалку если overlay не найден
+        console.warn('⚠️ arena-ui-overlay не найден, используем fallback');
+        const modal = document.createElement('div');
+        modal.id = 'dummy-result-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        `;
+        modal.innerHTML = `
+            <div style="
+                background: linear-gradient(135deg, #1a1a2e, #16213e);
+                border: 2px solid #4a9eff;
+                border-radius: 15px;
+                padding: 25px;
+                max-width: 400px;
+                width: 90%;
+                text-align: center;
                 color: white;
-                font-size: 16px;
-                cursor: pointer;
-            ">🏠 В город</button>
-        </div>
-    `;
+            ">
+                <h2 style="margin: 0 0 15px 0; color: #4a9eff;">🎯 Тренировка завершена!</h2>
+                <div style="margin-bottom: 20px;">
+                    <div style="font-size: 14px; color: #888;">${config.name}</div>
+                </div>
 
-    modal.appendChild(content);
-    document.body.appendChild(modal);
+                <div style="background: #0d1b2a; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                    <div style="font-size: 24px; color: #ffd700; margin-bottom: 10px;">
+                        ⚔️ ${damage.toLocaleString()} урона
+                    </div>
+                    <div style="font-size: 14px; color: #aaa;">
+                        Лучшая попытка: ${progress.bestAttempt.toLocaleString()}
+                    </div>
+                </div>
 
-    // Обработчики кнопок
+                ${expHtml}
+
+                <div style="background: #1a3a1a; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                    <div style="font-size: 18px; color: #4ade80; margin-bottom: 5px;">
+                        📈 За неделю: ${progress.totalDamage.toLocaleString()}
+                    </div>
+                    <div style="font-size: 14px; color: #86efac;">
+                        ${reward.description} (${Math.floor(reward.reward / 60)}ч)
+                    </div>
+                    ${nextReward ? `
+                        <div style="font-size: 12px; color: #888; margin-top: 10px;">
+                            До "${nextReward.description}": ещё ${(nextReward.minDamage - progress.totalDamage).toLocaleString()}
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div style="font-size: 14px; color: #888; margin-bottom: 20px;">
+                    🎯 Попыток осталось: ${remaining}/3<br>
+                    ⏰ До конца недели: ${window.formatTimeUntilWeekEnd()}
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    ${remaining > 0 ? `
+                        <button id="dummy-retry-btn" style="
+                            background: linear-gradient(135deg, #4a9eff, #2d7dd2);
+                            border: none;
+                            padding: 12px 25px;
+                            border-radius: 8px;
+                            color: white;
+                            font-size: 16px;
+                            cursor: pointer;
+                        ">🔄 Ещё раз</button>
+                    ` : ''}
+                    <button id="dummy-exit-btn" style="
+                        background: linear-gradient(135deg, #555, #333);
+                        border: none;
+                        padding: 12px 25px;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: 16px;
+                        cursor: pointer;
+                    ">⬅ Назад</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        setupDummyResultButtons(modal);
+    }
+}
+
+/**
+ * Настроить обработчики кнопок результата
+ */
+function setupDummyResultButtons(fallbackModal = null) {
     const retryBtn = document.getElementById('dummy-retry-btn');
+    const exitBtn = document.getElementById('dummy-exit-btn');
+
     if (retryBtn) {
         retryBtn.onclick = () => {
-            modal.remove();
+            closeDummyResult(fallbackModal);
+            // Начинаем новый бой (арена уже открыта)
             startDummyBattle();
         };
     }
 
-    document.getElementById('dummy-exit-btn').onclick = () => {
-        modal.remove();
-        // Закрываем поле боя
-        if (typeof window.closeBattleFieldModal === 'function') {
-            window.closeBattleFieldModal();
+    if (exitBtn) {
+        exitBtn.onclick = () => {
+            closeDummyResult(fallbackModal);
+            // Просто показываем меню испытаний (арена уже открыта)
+            if (typeof window.showTrialMenuInArena === 'function') {
+                window.showTrialMenuInArena();
+            }
+        };
+    }
+}
+
+/**
+ * Закрыть окно результата
+ */
+function closeDummyResult(fallbackModal = null) {
+    if (fallbackModal) {
+        fallbackModal.remove();
+    } else {
+        // Очищаем результат из overlay
+        const resultContainer = document.getElementById('dummy-result-container');
+        if (resultContainer) {
+            resultContainer.remove();
         }
-        // Возвращаемся в город
-        if (typeof window.returnToCity === 'function') {
-            window.returnToCity();
+        // Также пробуем закрыть Modal если использовался fallback
+        if (window.Modal) {
+            window.Modal.close();
         }
-    };
+    }
 }
 
 /**

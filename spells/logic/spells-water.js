@@ -44,13 +44,7 @@ function castIcicle(wizard, spellData, position, casterType) {
         return;
     }
     
-    // Проверяем доступность новой системы
-    if (!window.castSingleTargetSpell) {
-        console.warn('⚠️ Single-target система не загружена, используем старую версию');
-        return castIcicleOld(wizard, spellData, position, casterType, target);
-    }
-    
-    // Запускаем через новую систему
+    // Запускаем через систему single-target
     window.castSingleTargetSpell({
         caster: wizard,
         target: target,
@@ -99,72 +93,6 @@ function castIcicle(wizard, spellData, position, casterType) {
         }
     });
 }
-
-// СТАРАЯ ВЕРСИЯ для fallback
-function castIcicleOld(wizard, spellData, position, casterType, target) {
-    const level = spellData.level || 1;
-    const baseDamage = [10, 15, 20, 25, 30][level - 1] || 10;
-    
-    if (!target) {
-        target = window.findTarget?.(position, casterType);
-    }
-    if (!target) return;
-    
-    const casterCol = casterType === 'player' ? 5 : 0;
-    const targetCol = casterType === 'player' ? 0 : 5;
-    
-    if (window.createIcicleProjectile) {
-        window.createIcicleProjectile(casterCol, position, targetCol, target.position, () => {
-            applyIcicleDamageOld(wizard, target, baseDamage, spellData, position, casterType);
-        });
-    } else {
-        applyIcicleDamageOld(wizard, target, baseDamage, spellData, position, casterType);
-    }
-}
-
-function applyIcicleDamageOld(wizard, target, baseDamage, spellData, position, casterType) {
-    const level = spellData.level || 1;
-    const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
-
-    const result = window.applyDamageWithMultiLayerProtection?.(wizard, target, baseDamage, 'icicle', casterType);
-
-    if (result) {
-        window.logProtectionResult?.(wizard, target, result, 'Ледышка');
-        if (result.finalDamage > 0) {
-            if (level === 5) {
-                if (wizard.faction === 'water') {
-                    window.tryApplyEffect?.('freeze', target.wizard, false, casterInfo);
-                } else {
-                    window.tryApplyEffect?.('hoarFrost', target.wizard, false, casterInfo);
-                }
-            } else {
-                if (wizard.faction === 'water') {
-                    window.tryApplyEffect?.('chill', target.wizard, false, casterInfo);
-                }
-            }
-        }
-    } else {
-        const finalDamage = window.applyFinalDamage?.(wizard, target.wizard, baseDamage, 'icicle', 0, false) || baseDamage;
-        target.wizard.hp -= finalDamage;
-        if (target.wizard.hp < 0) target.wizard.hp = 0;
-
-        window.logSpellHit?.(wizard, target.wizard, finalDamage, 'Ледышка');
-        if (finalDamage > 0) {
-            if (level === 5) {
-                if (wizard.faction === 'water') {
-                    window.tryApplyEffect?.('freeze', target.wizard, false, casterInfo);
-                } else {
-                    window.tryApplyEffect?.('hoarFrost', target.wizard, false, casterInfo);
-                }
-            } else {
-                if (wizard.faction === 'water') {
-                    window.tryApplyEffect?.('chill', target.wizard, false, casterInfo);
-                }
-            }
-        }
-    }
-}
-
 
 // --- Ледяная стрела (Frost Arrow) - Тир 2, Single Target с AOE взрывом ---
 function castFrostArrow(wizard, spellData, position, casterType) {
@@ -552,5 +480,3 @@ window.castFrostArrow = castFrostArrow;
 window.castIceRain = castIceRain;
 window.castBlizzard = castBlizzard;
 window.castAbsoluteZero = castAbsoluteZero;
-window.castIcicleOld = castIcicleOld;
-window.applyIcicleDamageOld = applyIcicleDamageOld;

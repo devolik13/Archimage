@@ -40,26 +40,45 @@
         const startX = endX - 150 * targetCell.cellScale; // Смещение по диагонали
         const startY = -200 * targetCell.cellScale; // Высоко за экраном
         
-        // Загружаем текстуру метеорита
+        // Загружаем текстуру метеорита (спрайт-лист 5x5)
         const meteorTexturePath = 'images/spells/earth/meteor/meteor_sprite.webp';
-        
-        PIXI.Assets.load(meteorTexturePath).then(texture => {
-            if (!texture || !texture.valid) {
-                console.warn('Не удалось загрузить текстуру метеорита');
-                createFallbackMeteor();
-                return;
+
+        const baseTexture = PIXI.BaseTexture.from(meteorTexturePath);
+
+        const createMeteorSprite = () => {
+            // Параметры спрайт-листа 5x5 (1280x1280)
+            const cols = 5;
+            const rows = 5;
+            const frameWidth = 256;  // 1280 / 5
+            const frameHeight = 256; // 1280 / 5
+
+            // Создаем массив текстур для каждого кадра
+            const meteorTextures = [];
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const frameTexture = new PIXI.Texture(
+                        baseTexture,
+                        new PIXI.Rectangle(col * frameWidth, row * frameHeight, frameWidth, frameHeight)
+                    );
+                    meteorTextures.push(frameTexture);
+                }
             }
-            
-            // Создаем спрайт метеорита
-            const meteorSprite = new PIXI.Sprite(texture);
+
+            // Создаем анимированный спрайт метеорита
+            const meteorSprite = new PIXI.AnimatedSprite(meteorTextures);
             meteorSprite.x = startX;
             meteorSprite.y = startY;
             meteorSprite.anchor.set(0.5);
-            
-            // Масштабируем метеорит (крупнее камешка)
-            const targetSize = targetCell.cellScale * 80; // Крупный метеорит
-            const scale = targetSize / 768; // Исходный размер 768px
+
+            // Масштабируем метеорит
+            const targetSize = targetCell.cellScale * 80;
+            const scale = targetSize / 256; // Размер кадра 256px
             meteorSprite.scale.set(scale * 0.3); // Начинаем с малого размера
+
+            // Настройки анимации
+            meteorSprite.animationSpeed = 0.3;
+            meteorSprite.loop = true;
+            meteorSprite.play();
             
             // Начальный поворот по направлению падения
             meteorSprite.rotation = Math.atan2(endY - startY, endX - startX) + Math.PI / 4;
@@ -118,11 +137,18 @@
             
             animate();
             activeMeteors.push({ sprite: meteorSprite, trail: trail });
-            
-        }).catch(err => {
-            console.warn('Ошибка загрузки текстуры метеорита:', err);
-            createFallbackMeteor();
-        });
+        };
+
+        // Если текстура еще не загружена, ждем загрузки
+        if (!baseTexture.valid) {
+            baseTexture.once('loaded', createMeteorSprite);
+            baseTexture.once('error', () => {
+                console.warn('Ошибка загрузки текстуры метеорита');
+                createFallbackMeteor();
+            });
+        } else {
+            createMeteorSprite();
+        }
         
         // Fallback - простая графика
         function createFallbackMeteor() {

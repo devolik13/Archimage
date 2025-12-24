@@ -5,11 +5,12 @@ function calculateMagicResistance(wizard, spellSchool) {
     if (!spellSchool) return 0;
 
     // ИСПРАВЛЕНО: Для PvE врагов используем их кастомные сопротивления из конфига
-    // Проверяем все флаги: isPvEEnemy, isAdventureEnemy, isElemental, isBoss, isFinalBoss
-    const isPvETarget = wizard && (wizard.isPvEEnemy || wizard.isAdventureEnemy || wizard.isElemental || wizard.isBoss || wizard.isFinalBoss);
+    // Проверяем все флаги: isPvEEnemy, isAdventureEnemy, isElemental, isBoss, isFinalBoss, isTrainingDummy
+    const isPvETarget = wizard && (wizard.isPvEEnemy || wizard.isAdventureEnemy || wizard.isElemental || wizard.isBoss || wizard.isFinalBoss || wizard.isTrainingDummy);
     if (isPvETarget) {
-        // PvE враги используют только свои resistances (или 0 если не заданы)
-        return wizard.resistances ? (wizard.resistances[spellSchool] || 0) : 0;
+        // PvE враги используют только свои resistances или magicResistance (или 0 если не заданы)
+        const resistances = wizard.resistances || wizard.magicResistance;
+        return resistances ? (resistances[spellSchool] || 0) : 0;
     }
 
     // Для обычных магов считаем по изученным заклинаниям из userData
@@ -96,20 +97,21 @@ function applyMagicResistance(target, spellId, damage) {
     let totalResistance = 0;
 
     // ИСПРАВЛЕНО: Проверяем кастомные сопротивления для PvE врагов
-    // Используем все флаги: isPvEEnemy, isAdventureEnemy, isElemental, isBoss, isFinalBoss
-    const isPvETarget = target.isPvEEnemy || target.isAdventureEnemy || target.isElemental || target.isBoss || target.isFinalBoss;
+    // Используем все флаги: isPvEEnemy, isAdventureEnemy, isElemental, isBoss, isFinalBoss, isTrainingDummy
+    const isPvETarget = target.isPvEEnemy || target.isAdventureEnemy || target.isElemental || target.isBoss || target.isFinalBoss || target.isTrainingDummy;
 
     if (isPvETarget) {
-        // PvE враги: используем только их resistances (или 0 если не заданы)
-        if (target.resistances) {
+        // PvE враги: используем только их resistances или magicResistance (или 0 если не заданы)
+        const resistances = target.resistances || target.magicResistance;
+        if (resistances) {
             if (Array.isArray(spellSchool)) {
                 let resistanceSum = 0;
                 spellSchool.forEach(school => {
-                    resistanceSum += (target.resistances[school] || 0);
+                    resistanceSum += (resistances[school] || 0);
                 });
                 totalResistance = resistanceSum / spellSchool.length;
             } else if (spellSchool) {
-                totalResistance = target.resistances[spellSchool] || 0;
+                totalResistance = resistances[spellSchool] || 0;
             }
         }
         // Если resistances не заданы - totalResistance остается 0

@@ -27,9 +27,9 @@ window.sortTargetsByHpPercent = sortTargetsByHpPercent;
 if (!window.getSpellSchoolFallback) {
     window.getSpellSchoolFallback = function(spellId) {
         if (!spellId) return null;
-        
+
         // Огонь
-        if (['spark', 'firebolt', 'fireball', 'fire_wall', 'fire_tsunami'].includes(spellId)) {
+        if (['spark', 'firebolt', 'fireball', 'fire_wall', 'fire_ground', 'fire_tsunami', 'burning'].includes(spellId)) {
             return 'fire';
         }
         // Вода
@@ -45,14 +45,30 @@ if (!window.getSpellSchoolFallback) {
             return 'earth';
         }
         // Природа
-        if (['call_wolf', 'bark_armor', 'leaf_canopy', 'ent', 'meteorokinesis'].includes(spellId)) {
+        if (['call_wolf', 'wolf_attack', 'wolf_splash', 'bark_armor', 'leaf_canopy', 'ent', 'meteorokinesis'].includes(spellId)) {
             return 'nature';
         }
         // Яд
         if (['poisoned_blade', 'poisoned_glade', 'foul_cloud', 'plague', 'epidemic'].includes(spellId)) {
             return 'poison';
         }
-        
+
+        // Проверяем по префиксу
+        const prefixes = {
+            'fire': 'fire', 'spark': 'fire', 'firebolt': 'fire', 'fireball': 'fire', 'burning': 'fire',
+            'ice': 'water', 'frost': 'water', 'blizzard': 'water', 'absolute': 'water',
+            'wind': 'wind', 'gust': 'wind', 'storm': 'wind', 'ball_lightning': 'wind',
+            'stone': 'earth', 'earth': 'earth', 'pebble': 'earth', 'meteor': 'earth',
+            'wolf': 'nature', 'bark': 'nature', 'leaf': 'nature', 'ent': 'nature', 'meteoro': 'nature',
+            'poison': 'poison', 'foul': 'poison', 'plague': 'poison', 'epidemic': 'poison'
+        };
+
+        for (const [prefix, school] of Object.entries(prefixes)) {
+            if (spellId.startsWith(prefix)) {
+                return school;
+            }
+        }
+
         return null;
     };
 }
@@ -463,9 +479,9 @@ function applyDamageWithMultiLayerProtection(caster, targetInfo, baseDamage, spe
         }
     }
     
-    // 3. Применяем урон через стандартную систему (с сопротивлениями и броней)
+    // 3. Применяем урон через стандартную систему (с погодой, сопротивлениями и броней)
     if (finalDamage > 0) {
-        finalDamage = applyDamageWithEffects(caster, target, finalDamage, spellId, 0);
+        finalDamage = applyDamageWithWeather(caster, target, finalDamage, spellId, 0);
     }
     
     // 4. Применяем урон к цели

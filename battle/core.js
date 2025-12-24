@@ -859,9 +859,9 @@ async function executeSingleMageAttack(wizard, position, casterType) {
 
     // Прерывание от Абсолютного Ноля проверяется в spells.js для каждого заклинания отдельно
 
-    // ИСПОЛЬЗОВАНИЕ ЗАКЛИНАНИЙ
+    // ИСПОЛЬЗОВАНИЕ ЗАКЛИНАНИЙ - ждём завершения всех кастов
     if (typeof window.useWizardSpells === 'function') {
-        window.useWizardSpells(wizard, position, casterType);
+        await window.useWizardSpells(wizard, position, casterType);
     }
 
     if (window.activeMeteorokinesis && wizard && wizard.hp > 0) {
@@ -960,35 +960,16 @@ async function executePlayerPhase(mageCount) {
         positionsChecked++;
     }
 
-    // Атакуем - с учетом быстрой симуляции
-    if (window.fastSimulation) {
-        // Быстрая симуляция: без задержек, синхронно
-        for (const mageData of magesToAttack) {
-            if (mageData.wizard.hp > 0) {
-                await executeSingleMageAttack(mageData.wizard, mageData.position, 'player');
-            }
+    // Атакуем - последовательно, ждём завершения каждого мага
+    for (const mageData of magesToAttack) {
+        if (mageData.wizard.hp > 0) {
+            await executeSingleMageAttack(mageData.wizard, mageData.position, 'player');
         }
+    }
 
-        // Проверка на Метеокинез синхронно
-        if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
-            window.checkMeteorokinesisCasterAlive();
-        }
-    } else {
-        // Обычный режим: с анимациями и задержками
-        magesToAttack.forEach((mageData, index) => {
-            setTimeout(() => {
-                if (mageData.wizard.hp > 0) {
-                    executeSingleMageAttack(mageData.wizard, mageData.position, 'player');
-                }
-            }, index * 1500);
-        });
-
-        // Проверка на Метеокинез с задержкой
-        setTimeout(() => {
-            if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
-                window.checkMeteorokinesisCasterAlive();
-            }
-        }, magesToAttack.length * 500);
+    // Проверка на Метеокинез
+    if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
+        window.checkMeteorokinesisCasterAlive();
     }
 
     // ВАЖНО: Сохраняем позицию после последнего атаковавшего мага
@@ -1025,35 +1006,16 @@ async function executeEnemyPhase(mageCount) {
         positionsChecked++;
     }
 
-    // Атакуем - с учетом быстрой симуляции
-    if (window.fastSimulation) {
-        // Быстрая симуляция: без задержек, синхронно
-        for (const mageData of magesToAttack) {
-            if (mageData.wizard.hp > 0) {
-                await executeSingleMageAttack(mageData.wizard, mageData.position, 'enemy');
-            }
+    // Атакуем - последовательно, ждём завершения каждого мага
+    for (const mageData of magesToAttack) {
+        if (mageData.wizard.hp > 0) {
+            await executeSingleMageAttack(mageData.wizard, mageData.position, 'enemy');
         }
+    }
 
-        // Проверка на Метеокинез синхронно
-        if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
-            window.checkMeteorokinesisCasterAlive();
-        }
-    } else {
-        // Обычный режим: с анимациями и задержками
-        magesToAttack.forEach((mageData, index) => {
-            setTimeout(() => {
-                if (mageData.wizard.hp > 0) {
-                    executeSingleMageAttack(mageData.wizard, mageData.position, 'enemy');
-                }
-            }, index * 1500);
-        });
-
-        // Проверка на Метеокинез с задержкой
-        setTimeout(() => {
-            if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
-                window.checkMeteorokinesisCasterAlive();
-            }
-        }, magesToAttack.length * 500);
+    // Проверка на Метеокинез
+    if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
+        window.checkMeteorokinesisCasterAlive();
     }
 
     // Сохраняем позицию после последнего атаковавшего мага

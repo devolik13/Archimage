@@ -114,9 +114,12 @@
             // Плавное появление
             let fadeAlpha = 0;
             const fadeIn = () => {
+                // Проверяем что спрайт ещё валиден
+                if (!leafSprite || leafSprite.destroyed || !leafSprite.transform) return;
+
                 fadeAlpha += 0.05;
                 leafSprite.alpha = Math.min(fadeAlpha, 0.8); // Полупрозрачный
-                
+
                 if (fadeAlpha < 0.8) {
                     requestAnimationFrame(fadeIn);
                 }
@@ -126,11 +129,12 @@
             // Легкое покачивание
             let swayTime = 0;
             const sway = () => {
-                if (!leafSprite.parent) return;
-                
+                // Проверяем что спрайт ещё валиден
+                if (!leafSprite || leafSprite.destroyed || !leafSprite.transform || !leafSprite.parent) return;
+
                 swayTime += 0.02;
                 leafSprite.rotation = Math.sin(swayTime) * 0.1; // Легкое покачивание
-                
+
                 requestAnimationFrame(sway);
             };
             sway();
@@ -189,11 +193,12 @@
                 // Легкое покачивание
                 let swayTime = 0;
                 const sway = () => {
-                    if (!leaf.parent) return;
-                    
+                    // Проверяем что спрайт ещё валиден
+                    if (!leaf || leaf.destroyed || !leaf.transform || !leaf.parent) return;
+
                     swayTime += 0.02;
                     leaf.rotation = Math.sin(swayTime) * 0.1;
-                    
+
                     requestAnimationFrame(sway);
                 };
                 sway();

@@ -46,21 +46,24 @@
         
         // Функция создания спрайтов стены
         const createFireWallSprites = () => {
-            // Параметры спрайт-листа
-            const frameWidth = 768;
-            const frameHeight = 192; // 768/4 = 192 пикселей на кадр
-            const frameCount = 4;
-            
-            // Создаем массив текстур для каждого кадра
+            // Параметры спрайт-листа 5x5 (1280x1280)
+            const cols = 5;
+            const rows = 5;
+            const frameWidth = 256;  // 1280 / 5
+            const frameHeight = 256; // 1280 / 5
+
+            // Создаем массив текстур для каждого кадра (слева направо, сверху вниз)
             const fireTextures = [];
-            for (let i = 0; i < frameCount; i++) {
-                const frameTexture = new PIXI.Texture(
-                    baseTexture,
-                    new PIXI.Rectangle(0, i * frameHeight, frameWidth, frameHeight)
-                );
-                fireTextures.push(frameTexture);
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const frameTexture = new PIXI.Texture(
+                        baseTexture,
+                        new PIXI.Rectangle(col * frameWidth, row * frameHeight, frameWidth, frameHeight)
+                    );
+                    fireTextures.push(frameTexture);
+                }
             }
-            
+
             console.log(`🔥 Загружено ${fireTextures.length} кадров огненной стены`);
             
             // Создаем огонь для каждой позиции
@@ -82,9 +85,9 @@
                 const baseScale = cellData.cellScale || 1.0;
                 const scaleFactor = baseScale * 0.5; // Масштабируем относительно размера ячейки
 
-                fireSprite.scale.set(scaleFactor * 0.4, scaleFactor); // Ширина меньше, высота больше для вертикальной стены
-                
-                fireSprite.animationSpeed = 0.1; // Скорость анимации (4 кадра)
+                fireSprite.scale.set(scaleFactor * 0.8, scaleFactor * 0.8); // Квадратные кадры 256x256
+
+                fireSprite.animationSpeed = 0.25; // Скорость анимации (25 кадров)
                 fireSprite.loop = true; // Зацикливаем анимацию
                 fireSprite.play();
                 

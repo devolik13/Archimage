@@ -70,27 +70,59 @@ function getSpellTierById(faction, spellId) {
 
 // Расчет урона заклинания
 function getSpellDamage(spellId, spellLevel = 1) {
-    // Особая логика для каменного шипа
+    // Заклинания с особой прогрессией урона (значения из spells/logic/*.js)
+    const specialDamageByLevel = {
+        // Яд
+        'poisoned_blade': [7, 8, 9, 10, 10],
+        'poisoned_glade': [5, 6, 7, 8, 10],
+        'foul_cloud': [8, 10, 12, 14, 18],
+        'epidemic': [10, 15, 20, 25, 25],
+        // Огонь
+        'spark': [10, 12, 15, 20, 30],
+        'fire_wall': [10, 11, 12, 14, 15],
+        'fireball': [20, 30, 40, 50, 50],
+        'fire_tsunami': [30, 40, 50, 60, 70],
+        // Вода
+        'icicle': [10, 15, 20, 25, 30],
+        'frost_arrow': [15, 20, 25, 30, 35],
+        'ice_rain': [6, 7, 8, 9, 10],
+        'absolute_zero': [40, 50, 60, 70, 80],
+        // Ветер
+        'gust': [8, 10, 12, 14, 16],
+        'wind_blade': [12, 14, 16, 18, 20],
+        'storm_cloud': [15, 18, 22, 26, 30],
+        'ball_lightning': [25, 30, 35, 40, 50],
+        // Земля
+        'pebble': [10, 12, 14, 16, 18],
+        'meteor_shower': [20, 25, 30, 35, 45]
+    };
+
+    // Если есть особая прогрессия - используем её
+    if (specialDamageByLevel[spellId]) {
+        return specialDamageByLevel[spellId][spellLevel - 1] || specialDamageByLevel[spellId][0];
+    }
+
+    // Особая логика для каменного шипа (урон × количество)
     if (spellId === 'stone_spike') {
         const spikeDamageByLevel = [4, 5, 7, 9, 13];
         const spikeCountByLevel = [4, 4, 4, 4, 7];
-        
+
         const damagePerSpike = spikeDamageByLevel[spellLevel - 1] || 4;
         const spikeCount = spikeCountByLevel[spellLevel - 1] || 4;
-        
+
         return damagePerSpike * spikeCount;
     }
-    
+
     // Защитные заклинания не наносят урон
     const nonDamageSpells = ['wind_wall', 'earth_wall', 'bark_armor', 'leaf_canopy', 'stone_grotto', 'meteorokinesis', 'plague', 'ent', 'call_wolf'];
     if (nonDamageSpells.includes(spellId)) {
         return 0;
     }
-    
-    // Стандартная формула урона
+
+    // Стандартная формула урона (для заклинаний без особой прогрессии)
     const baseDamage = window.SPELL_BASE_DAMAGE?.[spellId] || 10;
     const levelBonus = Math.floor(baseDamage * 0.1 * (spellLevel - 1));
-    
+
     return baseDamage + levelBonus;
 }
 

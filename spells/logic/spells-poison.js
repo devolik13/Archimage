@@ -39,13 +39,7 @@ function castPoisonedBlade(wizard, spellData, position, casterType) {
         return;
     }
     
-    // Проверяем доступность новой системы
-    if (!window.castSingleTargetSpell) {
-        console.warn('⚠️ Single-target система не загружена, используем старую версию');
-        return castPoisonedBladeOld(wizard, spellData, position, casterType, target);
-    }
-    
-    // Запускаем через новую систему
+    // Запускаем через систему single-target
     window.castSingleTargetSpell({
         caster: wizard,
         target: target,
@@ -92,59 +86,6 @@ function castPoisonedBlade(wizard, spellData, position, casterType) {
         onComplete: (finalResult) => {
         }
     });
-}
-
-// СТАРАЯ ВЕРСИЯ для fallback
-function castPoisonedBladeOld(wizard, spellData, position, casterType, target) {
-    const level = spellData.level || 1;
-    const baseDamage = [7, 8, 9, 10, 10][level - 1] || 7;
-    const poisonChance = [0.20, 0.30, 0.40, 0.50, 1.00][level - 1] || 0.20;
-    
-    if (!target) {
-        target = window.findTarget?.(position, casterType);
-    }
-    if (!target) return;
-    
-    const casterCol = casterType === 'player' ? 5 : 0;
-    const targetCol = casterType === 'player' ? 0 : 5;
-    
-    function applyBladeDamageOld() {
-        const result = window.applyDamageWithMultiLayerProtection?.(wizard, target, baseDamage, 'poisoned_blade', casterType);
-        
-        if (result) {
-            window.logProtectionResult?.(wizard, target, result, 'Отравленный клинок');
-        } else {
-            const finalDamage = window.applyFinalDamage?.(wizard, target.wizard, baseDamage, 'poisoned_blade', 0, false) || baseDamage;
-            target.wizard.hp -= finalDamage;
-            if (target.wizard.hp < 0) target.wizard.hp = 0;
-            
-            window.logSpellHit?.(wizard, target.wizard, finalDamage, 'Отравленный клинок');
-        }
-        
-        // Проверяем шанс наложения яда
-        if (Math.random() < poisonChance) {
-            if (window.applyPoisonEffect) {
-                window.applyPoisonEffect(target.wizard, 1);
-            }
-            if (window.applyPoisonFactionBonus) {
-                window.applyPoisonFactionBonus(target.wizard);
-            }
-        }
-    }
-    
-    if (window.spellAnimations?.poisoned_blade?.play) {
-        window.spellAnimations.poisoned_blade.play({
-            casterCol: casterCol,
-            casterRow: position,
-            targetCol: targetCol,
-            targetRow: target.position,
-            onHit: () => {
-                applyBladeDamageOld();
-            }
-        });
-    } else {
-        applyBladeDamageOld();
-    }
 }
 
 // --- Ядовитая поляна (Poisoned Glade) - Tier 2, AOE по случайным позициям ---
@@ -353,10 +294,15 @@ function castFoulCloud(wizard, spellData, position, casterType) {
         // Проверяем живой ли враг
         if (targetInfo.wizard.hp <= 0) return;
         
-        // Применяем урон с учётом защиты
+        // Применяем урон с учётом защиты (передаём wizard, не обёртку)
         const finalDamage = typeof window.applyFinalDamage === 'function' ?
-            window.applyFinalDamage(wizard, targetInfo, baseDamage, 'foul_cloud', 0, true) : baseDamage;
-            
+            window.applyFinalDamage(wizard, targetInfo.wizard, baseDamage, 'foul_cloud', 0, true) : baseDamage;
+
+        // Трекинг урона для опыта
+        if (typeof window.trackDamageExp === 'function') {
+            window.trackDamageExp(wizard, finalDamage);
+        }
+
         targetInfo.wizard.hp -= finalDamage;
         if (targetInfo.wizard.hp < 0) targetInfo.wizard.hp = 0;
         
@@ -723,10 +669,15 @@ function castEpidemic(wizard, spellData, position, casterType) {
         // Наносим урон и накладываем яд
         sortedTargetData.forEach((targetObj) => {
             const target = targetObj.wizard;
-            
-            // ИСПРАВЛЕНО: Передаем полный объект
-            const finalDamage = typeof window.applyFinalDamage === 'function' ? 
-                window.applyFinalDamage(wizard, targetObj, baseDamage, 'epidemic', 0, true) : baseDamage;
+
+            // ИСПРАВЛЕНО: Передаем объект мага, а не обёртку
+            const finalDamage = typeof window.applyFinalDamage === 'function' ?
+                window.applyFinalDamage(wizard, target, baseDamage, 'epidemic', 0, true) : baseDamage;
+
+            // Трекинг урона для опыта
+            if (typeof window.trackDamageExp === 'function') {
+                window.trackDamageExp(wizard, finalDamage);
+            }
                 
             target.hp -= finalDamage;
             if (target.hp < 0) target.hp = 0;
@@ -764,7 +715,12 @@ function castEpidemic(wizard, spellData, position, casterType) {
                 if (bonusDamage > 0) {
                     randomTarget.hp -= bonusDamage;
                     if (randomTarget.hp < 0) randomTarget.hp = 0;
-                    
+
+                    // Трекинг бонусного урона для опыта
+                    if (typeof window.trackDamageExp === 'function') {
+                        window.trackDamageExp(wizard, bonusDamage);
+                    }
+
                     if (typeof window.addToBattleLog === 'function') {
                         window.addToBattleLog(`💀 ${randomTarget.name} получает ${bonusDamage} бонусного урона от Эпидемии (стаков яда: ${stacks})`);
                     }
@@ -817,13 +773,11 @@ function applyPoisonEffect(targetWizard, stacks = 1) {
         }
 
         // Проверяем во врагах (колонка 0 - левая сторона поля)
-        if (!wizardKey && window.enemyWizards && window.enemyFormation) {
-            const enemyIndex = window.enemyWizards.findIndex(w => w && w.id === targetWizard.id);
-            if (enemyIndex !== -1) {
-                const position = window.enemyFormation.findIndex(id => id === targetWizard.id);
-                if (position !== -1) {
-                    wizardKey = `0_${position}`; // Колонка 0 для врага
-                }
+        // ИСПРАВЛЕНО: enemyFormation содержит объекты магов, не ID
+        if (!wizardKey && window.enemyFormation) {
+            const position = window.enemyFormation.findIndex(w => w && w.id === targetWizard.id);
+            if (position !== -1) {
+                wizardKey = `0_${position}`; // Колонка 0 для врага
             }
         }
 
@@ -836,6 +790,11 @@ function applyPoisonEffect(targetWizard, stacks = 1) {
 
 // --- Бонус фракции: Токсичный след ---
 function applyPoisonFactionBonus(targetWizard, caster = null, casterType = null) {
+    // ИСПРАВЛЕНО: Бонус работает ТОЛЬКО для магов фракции Яд
+    if (!caster || caster.faction !== 'poison') {
+        return;
+    }
+
     const chance = 0.05; // 5% шанс
     const roll = Math.random();
 
@@ -873,4 +832,3 @@ window.applyPoisonFactionBonus = applyPoisonFactionBonus;
 window.castPlague = castPlague;
 window.processPlagueEffects = processPlagueEffects;
 window.castEpidemic = castEpidemic;
-window.castPoisonedBladeOld = castPoisonedBladeOld;

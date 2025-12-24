@@ -47,26 +47,23 @@
                 return;
             }
             
-            // Создаём кадры из спрайтшита 3×3 (768×768)
-            const frameWidth = 256; // 768 / 3
-            const frameHeight = 256; // 768 / 3
+            // Создаём кадры из спрайтшита 5×5 (1280×1280)
+            const frameWidth = 256; // 1280 / 5
+            const frameHeight = 256; // 1280 / 5
             const frames = [];
-            
-            // Порядок кадров: слева направо, сверху вниз (1-9)
-            // [1,2,3] ← row 0
-            // [4,5,6] ← row 1  
-            // [7,8,9] ← row 2
-            
-            for (let row = 0; row < 3; row++) {
-                for (let col = 0; col < 3; col++) {
-                    const frame = new PIXI.Rectangle(
-                        col * frameWidth,
-                        row * frameHeight,
-                        frameWidth,
-                        frameHeight
-                    );
-                    frames.push(new PIXI.Texture(texture.baseTexture, frame));
-                }
+            const gridColumns = 5;
+            const totalFrames = 25;
+
+            for (let i = 0; i < totalFrames; i++) {
+                const col = i % gridColumns;
+                const row = Math.floor(i / gridColumns);
+                const frame = new PIXI.Rectangle(
+                    col * frameWidth,
+                    row * frameHeight,
+                    frameWidth,
+                    frameHeight
+                );
+                frames.push(new PIXI.Texture(texture.baseTexture, frame));
             }
             
             // Создаём анимированный спрайт

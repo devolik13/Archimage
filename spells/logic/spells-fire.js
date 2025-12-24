@@ -38,11 +38,6 @@ function castSpark(wizard, spellData, position, casterType) {
         return;
     }
 
-    // Проверяем доступность новой системы
-    if (!window.castSingleTargetSpell) {
-        return castSparkOld(wizard, spellData, position, casterType, target);
-    }
-    
     // Запускаем через новую систему
     window.castSingleTargetSpell({
         caster: wizard,
@@ -99,10 +94,6 @@ function castSparkSecondary(wizard, spellData, position, casterType, target) {
     const level = spellData.level || 1;
     const baseDamage = [10, 12, 15, 20, 30][level - 1] || 10;
 
-    if (!window.castSingleTargetSpell) {
-        return castSparkOld(wizard, spellData, position, casterType, target);
-    }
-    
     window.castSingleTargetSpell({
         caster: wizard,
         target: target,
@@ -129,70 +120,6 @@ function castSparkSecondary(wizard, spellData, position, casterType, target) {
         
         onComplete: () => {}
     });
-}
-
-// СТАРАЯ ВЕРСИЯ для fallback
-function castSparkOld(wizard, spellData, position, casterType, target) {
-    const level = spellData.level || 1;
-    const baseDamage = [10, 12, 15, 20, 30][level - 1] || 10;
-    
-    if (!target) {
-        target = window.findTarget?.(position, casterType);
-    }
-    if (!target) return;
-    
-    const casterCol = casterType === 'player' ? 5 : 0;
-    const targetCol = casterType === 'player' ? 0 : 5;
-    
-    if (window.createSparkProjectile) {
-        window.createSparkProjectile(casterCol, position, targetCol, target.position, () => {
-            applySparkDamageOld(wizard, target, baseDamage, spellData, position, casterType);
-        });
-    } else {
-        applySparkDamageOld(wizard, target, baseDamage, spellData, position, casterType);
-    }
-}
-
-function applySparkDamageOld(wizard, target, baseDamage, spellData, position, casterType, isChainAttack = false) {
-    const level = spellData.level || 1;
-    
-    const result = window.applyDamageWithMultiLayerProtection?.(wizard, target, baseDamage, 'spark', casterType);
-
-    if (result) {
-        window.logProtectionResult?.(wizard, target, result, 'Искра');
-        if (result.finalDamage > 0 && wizard.faction === 'fire') {
-            const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
-            window.tryApplyEffect?.('burning', target.wizard, false, casterInfo);
-        }
-    } else {
-        const finalDamage = window.applyFinalDamage?.(wizard, target.wizard, baseDamage, 'spark', 0, false) || baseDamage;
-        target.wizard.hp -= finalDamage;
-        if (target.wizard.hp < 0) target.wizard.hp = 0;
-
-        window.logSpellHit?.(wizard, target.wizard, finalDamage, 'Искра');
-        if (wizard.faction === 'fire') {
-            const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
-            window.tryApplyEffect?.('burning', target.wizard, false, casterInfo);
-        }
-    }
-    
-    // Эффект 5 уровня
-    if (level === 5 && !isChainAttack && Math.random() < 0.5) {
-        const secondTarget = window.findTarget?.(position, casterType);
-        if (secondTarget) {
-            setTimeout(() => {
-                if (window.createSparkProjectile) {
-                    const casterCol = casterType === 'player' ? 5 : 0;
-                    const targetCol = casterType === 'player' ? 0 : 5;
-                    window.createSparkProjectile(casterCol, position, targetCol, secondTarget.position, () => {
-                        applySparkDamageOld(wizard, secondTarget, baseDamage, spellData, position, casterType, true);
-                    });
-                } else {
-                    applySparkDamageOld(wizard, secondTarget, baseDamage, spellData, position, casterType, true);
-                }
-            }, 100);
-        }
-    }
 }
 
 // --- Огненная стрела (Firebolt) - ФИНАЛЬНАЯ ВЕРСИЯ ---
@@ -350,122 +277,6 @@ function castFirebolt(wizard, spellData, position, casterType) {
             level: level,
             arrows: arrowsWithTargets
         });
-    }
-}
-
-
-// СТАРАЯ ВЕРСИЯ для fallback
-function castFireboltOld(wizard, spellData, position, casterType) {
-    const level = spellData.level || 1;
-    
-    // Вызываем анимацию В НАЧАЛЕ
-    if (window.spellRegistry?.play) {
-        window.spellRegistry.play('firebolt', {
-            casterType: casterType,
-            casterPosition: position,
-            level: level
-        });
-    } else if (window.spellAnimations?.firebolt?.play) {
-        window.spellAnimations.firebolt.play({
-            casterType: casterType,
-            casterPosition: position,
-            level: level
-        });
-    }
-    
-    // Определяем количество стрел по уровню
-    let arrows;
-    switch (level) {
-        case 1: arrows = [{ damage: 7, target: 'front' }, { damage: 7, target: 'random' }]; break;
-        case 2: arrows = [{ damage: 9, target: 'front' }, { damage: 9, target: 'random' }]; break;
-        case 3: arrows = [{ damage: 8, target: 'front' }, { damage: 8, target: 'random' }, { damage: 8, target: 'random' }]; break;
-        case 4: arrows = [{ damage: 10, target: 'front' }, { damage: 10, target: 'random' }, { damage: 10, target: 'random' }]; break;
-        case 5: arrows = [
-            { damage: 8, target: 'front' },
-            { damage: 8, target: 'random' },
-            { damage: 8, target: 'random' },
-            { damage: 8, target: 'random' },
-            { damage: 8, target: 'random' }
-        ]; break;
-    }
-    
-    // Наносим урон по целям
-    for (let i = 0; i < arrows.length; i++) {
-        const arrow = arrows[i];
-        let target = null;
-        
-        if (arrow.target === 'front') {
-            target = typeof window.findTarget === 'function' ? window.findTarget(position, casterType) : null;
-        } else {
-            target = typeof window.findRandomTarget === 'function' ? window.findRandomTarget(casterType) : null;
-        }
-        
-        if (target) {
-            const result = typeof window.applyDamageWithMultiLayerProtection === 'function' ?
-                window.applyDamageWithMultiLayerProtection(wizard, target, arrow.damage, 'firebolt', casterType) :
-                null;
-            
-            if (result) {
-                if (typeof window.logProtectionResult === 'function') {
-                    window.logProtectionResult(wizard, target, result, `Огненная стрела ${i+1}`);
-                }
-                if (result.finalDamage > 0 && wizard.faction === 'fire') {
-                    window.tryApplyEffect ? window.tryApplyEffect('burning', target.wizard, false) : null;
-                }
-            } else {
-                const finalDamage = window.applyFinalDamage ? 
-                    window.applyFinalDamage(wizard, target.wizard, arrow.damage, 'firebolt', 0, false) : arrow.damage;
-                    
-                target.wizard.hp -= finalDamage;
-                if (target.wizard.hp < 0) target.wizard.hp = 0;
-                
-                if (typeof window.logSpellHit === 'function') {
-                    window.logSpellHit(
-                        wizard, 
-                        target.wizard, 
-                        finalDamage, 
-                        `Огненная стрела ${arrow.target === 'front' ? 'напротив' : 'случайно'}`
-                    );
-                }
-                if (wizard.faction === 'fire') {
-                    window.tryApplyEffect ? window.tryApplyEffect('burning', target.wizard, false) : null;
-                }
-            }
-        }
-    }
-    
-    // Эффект 5 уровня: 20% шанс на 3 дополнительные стрелы
-    if (level === 5 && Math.random() < 0.2) {
-        for (let i = 0; i < 3; i++) {
-            const target = typeof window.findRandomTarget === 'function' ? window.findRandomTarget(casterType) : null;
-            if (target) {
-                const result = typeof window.applyDamageWithMultiLayerProtection === 'function' ?
-                    window.applyDamageWithMultiLayerProtection(wizard, target, 8, 'firebolt', casterType) :
-                    null;
-                
-                if (result) {
-                    if (typeof window.logProtectionResult === 'function') {
-                        window.logProtectionResult(wizard, target, result, 'Доп. Огненная стрела');
-                    }
-                    if (result.finalDamage > 0 && wizard.faction === 'fire') {
-                        window.tryApplyEffect ? window.tryApplyEffect('burning', target.wizard, false) : null;
-                    }
-                } else {
-                    const finalDamage = window.applyFinalDamage ? 
-                        window.applyFinalDamage(wizard, target.wizard, 8, 'firebolt', 0, false) : 8;
-                        
-                    target.wizard.hp -= finalDamage;
-                    if (target.wizard.hp < 0) target.wizard.hp = 0;
-                    
-                    if (typeof window.logSpellHit === 'function') {
-                        window.logSpellHit(wizard, target.wizard, finalDamage, 'Доп. Огненная стрела');
-                    }
-                    if (wizard.faction === 'fire') {
-                        window.tryApplyEffect ? window.tryApplyEffect('burning', target.wizard, false) : null;
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -662,10 +473,7 @@ function castFireTsunami(wizard, spellData, position, casterType) {
 window.castFireSpell = castFireSpell;
 window.castSpark = castSpark;
 window.castSparkSecondary = castSparkSecondary;
-window.castSparkOld = castSparkOld;
-window.applySparkDamageOld = applySparkDamageOld;
 window.castFirebolt = castFirebolt;
 window.castFireWall = castFireWall;
 window.castFireball = castFireball;
 window.castFireTsunami = castFireTsunami;
-window.castFireboltOld = castFireboltOld;

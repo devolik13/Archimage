@@ -123,7 +123,7 @@ function handleWalletConnected(wallet) {
     // Сохраняем в userData
     if (window.userData) {
         window.userData.wallet_address = userFriendlyAddress;
-        window.userData.wallet_connected_at = new Date().toISOString();
+        window.userData.wallet_connected_at = Date.now(); // BIGINT timestamp для БД
         console.log('✅ Адрес сохранен в window.userData:', window.userData.wallet_address);
 
         // Сохраняем в БД
@@ -139,7 +139,7 @@ function handleWalletConnected(wallet) {
         setTimeout(() => {
             if (window.userData) {
                 window.userData.wallet_address = userFriendlyAddress;
-                window.userData.wallet_connected_at = new Date().toISOString();
+                window.userData.wallet_connected_at = Date.now();
                 console.log('✅ Адрес сохранен в window.userData (отложенно):', window.userData.wallet_address);
                 if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
                     window.dbManager.savePlayer(window.userData);
@@ -530,7 +530,7 @@ function setupAirdropUI() {
     contentContainer.className = 'airdrop-content';
     overlay.appendChild(contentContainer);
 
-    // === КНОПКА ЗАКРЫТЬ ===
+    // === КНОПКИ ФУТЕРА ===
     const footerContainer = document.createElement('div');
     footerContainer.style.cssText = `
         position: absolute;
@@ -542,12 +542,14 @@ function setupAirdropUI() {
         display: flex;
         align-items: center;
         justify-content: center;
+        gap: 10px;
     `;
 
+    // Кнопка "Назад"
     const closeBtn = document.createElement('button');
-    closeBtn.textContent = 'Закрыть';
+    closeBtn.textContent = '← Назад';
     closeBtn.style.cssText = `
-        padding: 10px 40px;
+        padding: 10px 25px;
         background: rgba(0, 0, 0, 0.6);
         border: 2px solid #ffd700;
         border-radius: 10px;
@@ -567,7 +569,66 @@ function setupAirdropUI() {
         closeBtn.style.transform = 'scale(1)';
     };
 
+    // Кнопка "Пригласить друга"
+    const referralBtn = document.createElement('button');
+    referralBtn.textContent = '🎁 Пригласить';
+    referralBtn.style.cssText = `
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #4ade80, #22c55e);
+        border: 2px solid #4ade80;
+        border-radius: 10px;
+        color: white;
+        font-size: ${baseFontSize}px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    `;
+    referralBtn.onclick = () => {
+        if (window.referralManager && typeof window.referralManager.showReferralUI === 'function') {
+            window.referralManager.showReferralUI();
+        } else {
+            console.error('❌ ReferralManager не найден');
+        }
+    };
+    referralBtn.onmouseover = () => {
+        referralBtn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+        referralBtn.style.transform = 'scale(1.05)';
+    };
+    referralBtn.onmouseout = () => {
+        referralBtn.style.background = 'linear-gradient(135deg, #4ade80, #22c55e)';
+        referralBtn.style.transform = 'scale(1)';
+    };
+
+    // Кнопка "Новости"
+    const newsBtn = document.createElement('button');
+    newsBtn.textContent = '📢 Новости';
+    newsBtn.style.cssText = `
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        border: 2px solid #60a5fa;
+        border-radius: 10px;
+        color: white;
+        font-size: ${baseFontSize}px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+    `;
+    newsBtn.onclick = () => {
+        // Открываем канал новостей в Telegram
+        window.open('https://t.me/archimage_news', '_blank');
+    };
+    newsBtn.onmouseover = () => {
+        newsBtn.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+        newsBtn.style.transform = 'scale(1.05)';
+    };
+    newsBtn.onmouseout = () => {
+        newsBtn.style.background = 'linear-gradient(135deg, #60a5fa, #3b82f6)';
+        newsBtn.style.transform = 'scale(1)';
+    };
+
     footerContainer.appendChild(closeBtn);
+    footerContainer.appendChild(newsBtn);
+    footerContainer.appendChild(referralBtn);
     overlay.appendChild(footerContainer);
 
     // Добавляем обработчик кнопки кошелька

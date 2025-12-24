@@ -43,13 +43,7 @@ function castPebble(wizard, spellData, position, casterType) {
         return;
     }
     
-    // Проверяем доступность новой системы
-    if (!window.castSingleTargetSpell) {
-        console.warn('⚠️ Single-target система не загружена, используем старую версию');
-        return castPebbleOld(wizard, spellData, position, casterType, target);
-    }
-    
-    // Запускаем через новую систему
+    // Запускаем через систему single-target
     window.castSingleTargetSpell({
         caster: wizard,
         target: target,
@@ -108,11 +102,7 @@ function castPebbleSecondary(wizard, spellData, position, casterType, target) {
     const baseDamage = [10, 12, 15, 20, 30][level - 1] || 10;
     
     console.log('🪨🪨 ВТОРИЧНЫЙ КАМЕШЕК');
-    
-    if (!window.castSingleTargetSpell) {
-        return castPebbleOld(wizard, spellData, position, casterType, target);
-    }
-    
+
     window.castSingleTargetSpell({
         caster: wizard,
         target: target,
@@ -143,73 +133,6 @@ function castPebbleSecondary(wizard, spellData, position, casterType, target) {
         onComplete: () => {
         }
     });
-}
-
-// СТАРАЯ ВЕРСИЯ для fallback
-function castPebbleOld(wizard, spellData, position, casterType, target) {
-    const level = spellData.level || 1;
-    const baseDamage = [10, 12, 15, 20, 30][level - 1] || 10;
-    
-    if (!target) {
-        target = window.findTarget?.(position, casterType);
-    }
-    if (!target) return;
-
-    const casterCol = casterType === 'player' ? 5 : 0;
-    const targetCol = casterType === 'player' ? 0 : 5;
-
-    function applyPebbleDamageOld(currentTarget, isAdditional = false) {
-        const result = window.applyDamageWithMultiLayerProtection?.(wizard, currentTarget, baseDamage, 'pebble', casterType);
-
-        if (result) {
-            window.logProtectionResult?.(wizard, currentTarget, result, isAdditional ? 'Дополнительный Камешек' : 'Камешек');
-        } else {
-            let armorIgnorePercent = 0;
-            if (wizard.faction === 'earth') {
-                armorIgnorePercent = window.checkArmorIgnore?.(false) || 0;
-            }
-            
-            const finalDamage = window.applyFinalDamage?.(wizard, currentTarget.wizard, baseDamage, 'pebble', armorIgnorePercent, false) || baseDamage;
-            currentTarget.wizard.hp -= finalDamage;
-            if (currentTarget.wizard.hp < 0) currentTarget.wizard.hp = 0;
-            
-            window.logSpellHit?.(wizard, currentTarget.wizard, finalDamage, isAdditional ? 'Дополнительный Камешек' : 'Камешек');
-        }
-    }
-
-    if (window.spellAnimations?.pebble?.play) {
-        window.spellAnimations.pebble.play({
-            casterCol: casterCol,
-            casterRow: position,
-            targetCol: targetCol,
-            targetRow: target.position,
-            onHit: () => {
-                applyPebbleDamageOld(target, false);
-                
-                // Эффект 5 уровня
-                if (level === 5 && Math.random() < 0.5) {
-                    const additionalTarget = window.findRandomTarget?.(casterType);
-                    
-                    if (additionalTarget && additionalTarget.wizard !== target.wizard) {
-                        setTimeout(() => {
-                            window.spellAnimations.pebble.play({
-                                casterCol: casterCol,
-                                casterRow: position,
-                                targetCol: targetCol,
-                                targetRow: additionalTarget.position,
-                                isSecond: true,
-                                onHit: () => {
-                                    applyPebbleDamageOld(additionalTarget, true);
-                                }
-                            });
-                        }, 400);
-                    }
-                }
-            }
-        });
-    } else {
-        applyPebbleDamageOld(target, false);
-    }
 }
 
 // --- Каменный шип (Stone Spike) - Тир 2, AOE с точечными попаданиями ---
@@ -613,5 +536,4 @@ window.castEarthWall = castEarthWall;
 window.castStoneGrotto = castStoneGrotto;
 window.getWizardAndNeighbors = getWizardAndNeighbors;
 window.castMeteorShower = castMeteorShower;
-window.castPebbleOld = castPebbleOld;
 window.castPebbleSecondary = castPebbleSecondary;

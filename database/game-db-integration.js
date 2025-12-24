@@ -111,6 +111,9 @@ async function initGameWithDatabase() {
     window.userData.wizard_skins = player.wizard_skins || {};
     console.log('🎨 [DEBUG] Загружены unlocked_skins:', player.unlocked_skins);
 
+    // Прогресс тренировочного полигона
+    window.userData.training_dummy_progress = player.training_dummy_progress || null;
+
     // КРИТИЧНО: Проверяем есть ли фракция
     if (!player.faction || player.faction === null) {
         // Новый игрок - показываем выбор фракции
@@ -167,6 +170,17 @@ async function initGameWithDatabase() {
         // Проверка ежедневной награды
         if (typeof window.checkDailyLoginReward === 'function') {
             window.checkDailyLoginReward();
+        }
+
+        // Проверка награды за испытание прошлой недели
+        if (typeof window.checkAndClaimTrialReward === 'function') {
+            window.checkAndClaimTrialReward().then(result => {
+                if (result && result.success) {
+                    console.log('🏆 Награда за испытание получена:', result);
+                }
+            }).catch(err => {
+                console.warn('⚠️ Ошибка проверки награды испытания:', err);
+            });
         }
 
         // Инициализация UI энергии боев

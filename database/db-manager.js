@@ -104,7 +104,12 @@ class DatabaseManager {
 
     // Сохранить данные игрока (через безопасную RPC функцию)
     async savePlayer(playerData) {
-        if (!this.currentPlayer) return false;
+        if (!this.currentPlayer) {
+            console.warn('⚠️ [DB] currentPlayer не установлен - сохранение невозможно');
+            return false;
+        }
+
+        const telegramId = this.getTelegramId();
 
         try {
             // Сохраняем constructions внутри buildings
@@ -139,41 +144,68 @@ class DatabaseManager {
                 blessing_last_used: playerData.blessing_last_used || null,
                 last_login: playerData.last_login || new Date().toISOString(),
                 purchased_packs: playerData.purchased_packs || {}, // Купленные стартовые пакеты
-                airdrop_points: playerData.airdrop_points || 0, // Очки для airdrop
+                // ВАЖНО: airdrop_points НЕ отправляем при обычном сохранении!
+                // Они защищены от уменьшения в RPC и должны обновляться
+                // только через addAirdropPoints() который добавляет к текущему значению
+                // airdrop_points: REMOVED - вызывает ошибку "Попытка уменьшить airdrop_points"
                 airdrop_breakdown: playerData.airdrop_breakdown || {}, // Разбивка очков по категориям
                 wallet_address: playerData.wallet_address || null, // TON кошелек
-                wallet_connected_at: playerData.wallet_connected_at || null, // Время подключения кошелька
+                // wallet_connected_at должен быть BIGINT (Date.now()), НЕ ISO строкой
+                wallet_connected_at: playerData.wallet_connected_at
+                    ? (typeof playerData.wallet_connected_at === 'string'
+                        ? new Date(playerData.wallet_connected_at).getTime()
+                        : playerData.wallet_connected_at)
+                    : null,
                 current_season: playerData.current_season || 1, // Текущий сезон
                 season_league_rewards_claimed: playerData.season_league_rewards_claimed || [], // Полученные награды за лиги
                 unlocked_skins: playerData.unlocked_skins || [], // Разблокированные скины
                 wizard_skins: playerData.wizard_skins || {}, // Выбранные скины для магов
-                training_dummy_progress: playerData.training_dummy_progress || null // Прогресс тренировочного полигона
+                training_dummy_progress: playerData.training_dummy_progress || null, // Прогресс тренировочного полигона
+                // GUILD FIELDS
+                guild_id: playerData.guild_id ?? null, // ID гильдии (null если не в гильдии)
+                guild_contribution: playerData.guild_contribution || 0, // Вклад в гильдию
+                guild_last_active: playerData.guild_last_active || null // Последняя активность в гильдии
             };
-
-            // DEBUG: Логируем faction_changed перед отправкой в RPC (закомментировано)
-            // console.log(`🔍 [RPC DEBUG] Отправка в update_player_safe: faction_changed = ${rpcData.faction_changed}`);
-            // console.log(`🪂 [RPC DEBUG] Airdrop данные в rpcData:`);
-            // console.log(`  - airdrop_points: ${rpcData.airdrop_points}`);
-            // console.log(`  - airdrop_breakdown:`, rpcData.airdrop_breakdown);
-            // console.log(`  - wallet_address: ${rpcData.wallet_address}`);
 
             // Вызываем безопасную RPC функцию (обновляет только по telegram_id)
             const { data, error } = await this.supabase.rpc('update_player_safe', {
-                p_telegram_id: this.getTelegramId(),
+                p_telegram_id: telegramId,
                 p_data: rpcData
             });
 
             if (error) {
-                console.error('❌ [RPC DEBUG] Ошибка RPC:', error);
+                console.error('❌ [DB] Ошибка RPC:', error);
                 throw error;
             }
-            console.log('✅ [RPC DEBUG] RPC успешно выполнен');
 
             this.hasUnsavedChanges = false;
             return true;
 
         } catch (error) {
-            console.error('Ошибка сохранения игрока:', error);
+            console.error('❌ [DB] Ошибка сохранения игрока:', error);
+            return false;
+        }
+    }
+
+    // Сохранить прогресс тренировочного полигона (через безопасную RPC)
+    async saveTrainingDummyProgress(progress) {
+        if (!this.currentPlayer) {
+            return false;
+        }
+
+        const telegramId = this.getTelegramId();
+
+        try {
+            const { error } = await this.supabase.rpc('update_player_safe', {
+                p_telegram_id: telegramId,
+                p_data: { training_dummy_progress: progress }
+            });
+
+            if (error) throw error;
+            return true;
+
+        } catch (error) {
+            console.error('❌ [DB] Ошибка сохранения training dummy progress:', error);
             return false;
         }
     }

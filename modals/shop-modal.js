@@ -3,6 +3,10 @@
 // Текущая вкладка магазина
 let currentShopTab = 'free';
 
+// Кэш для оптимизации - не пересоздаём модалку каждый раз
+let shopScreenCache = null;
+let shopCachedFaction = null;
+
 // Кэш курса TON (обновляется каждые 5 минут)
 let tonPriceCache = {
     priceUSD: 5.0, // Дефолтный курс TON/USD
@@ -131,10 +135,10 @@ const SHOP_CONFIG = {
     // Курс: 1 Star = 1.79₽ = $0.0224 USD, TON курс динамический из CoinGecko API
     premium: [
         {
-            id: 'time_pack_test',
-            name: '🧪 Тест (1 час)',
-            description: '+1 час игрового времени (тест)',
-            icon: '🧪',
+            id: 'time_pack_1hour',
+            name: '⏰ 1 час',
+            description: '+1 час игрового времени',
+            icon: '⏰',
             price: 10,
             priceUSD: 0.22, // 10 Stars × $0.0224
             currency: 'dual',
@@ -200,13 +204,28 @@ function showShopModal() {
     const playerAvatar = document.getElementById('player-avatar-container');
     if (playerAvatar) playerAvatar.style.display = 'none';
 
-    // Определяем фон по фракции (используем фоны гильдии)
+    // Определяем фон по фракции
     const faction = window.userData?.faction || 'fire';
     const imagePath = `assets/ui/guild/guild_${faction}.webp`;
 
-    // Удаляем старый экран
+    // ОПТИМИЗАЦИЯ: Проверяем есть ли кэшированный экран
     let screen = document.getElementById('shop-screen');
-    if (screen) screen.remove();
+
+    // Если экран есть и фракция не изменилась - просто показываем
+    if (screen && shopScreenCache && shopCachedFaction === faction) {
+        console.log('🚀 Магазин: используем кэш (быстрое открытие)');
+        screen.style.display = 'flex';
+        screen.style.opacity = '1';
+        // Обновляем только контент overlay
+        setupShopUI();
+        return;
+    }
+
+    // Если фракция изменилась - удаляем старый экран
+    if (screen) {
+        screen.remove();
+        shopScreenCache = null;
+    }
 
     // Создаём экран
     screen = document.createElement('div');
@@ -231,9 +250,14 @@ function showShopModal() {
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: opacity 0.3s;
     `;
 
     document.body.appendChild(screen);
+
+    // Сохраняем в кэш
+    shopScreenCache = screen;
+    shopCachedFaction = faction;
 
     const img = document.getElementById('shop-bg-image');
 
@@ -1108,7 +1132,8 @@ async function createStarsInvoice(item, customPrice = null, targetFaction = null
         'https://your-project.supabase.co';
 
     const telegramId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id ||
-        window.userData?.telegram_id;
+        window.userData?.user_id ||
+        window.dbManager?.getTelegramId();
 
     if (!telegramId) {
         throw new Error('Telegram user ID not found');
@@ -1252,12 +1277,34 @@ function calculateFactionChangePrice(targetFaction) {
 }
 
 /**
- * Диалог смены фракции
+ * Диалог смены фракции (внутри overlay магазина)
  */
 function showChangeFactionDialog(item) {
-    const isFree = !window.userData?.faction_changed;
+    const overlay = document.getElementById('shop-ui-overlay');
+    if (!overlay) {
+        console.error('shop-ui-overlay не найден');
+        return;
+    }
 
-    // Показываем выбор фракции
+    const img = document.getElementById('shop-bg-image');
+    const rect = img ? img.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
+
+    renderFactionChangeContent(overlay, rect);
+}
+
+/**
+ * Рендер содержимого смены фракции в overlay магазина
+ */
+function renderFactionChangeContent(container, rect) {
+    const scaleX = rect.width / 768;
+    const scaleY = rect.height / 512;
+    const scale = Math.min(scaleX, scaleY);
+
+    const titleFontSize = Math.max(18, 24 * scale);
+    const baseFontSize = Math.max(12, 14 * scale);
+    const smallFontSize = Math.max(10, 12 * scale);
+
+    const isFree = !window.userData?.faction_changed;
     const factions = ['fire', 'water', 'earth', 'wind', 'nature', 'poison'];
     const currentFaction = window.userData?.faction || 'fire';
 
@@ -1279,21 +1326,7 @@ function showChangeFactionDialog(item) {
     // Сохраняем цены для использования в confirmFactionChange
     window._factionChangePrices = factionPrices;
 
-    const dialog = document.createElement('div');
-    dialog.id = 'faction-change-dialog';
-    dialog.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.8);
-        z-index: 9500;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    `;
-
+    // Генерируем кнопки фракций
     const factionButtons = factions
         .filter(f => f !== currentFaction)
         .map(faction => {
@@ -1305,21 +1338,21 @@ function showChangeFactionDialog(item) {
 
             return `
                 <button onclick="confirmFactionChange('${faction}')" style="
-                    padding: 12px 16px;
+                    padding: ${12 * scale}px ${16 * scale}px;
                     background: rgba(0,0,0,0.6);
                     border: 1px solid rgba(255,215,0,0.3);
                     border-radius: 10px;
                     color: white;
-                    font-size: 14px;
+                    font-size: ${baseFontSize}px;
                     cursor: pointer;
                     transition: all 0.2s;
                     text-align: center;
-                    min-width: 140px;
+                    min-width: ${120 * scale}px;
                 " onmouseover="this.style.borderColor='#ffd700'; this.style.background='rgba(0,0,0,0.8)'"
                    onmouseout="this.style.borderColor='rgba(255,215,0,0.3)'; this.style.background='rgba(0,0,0,0.6)'">
-                    <div style="font-size: 16px; margin-bottom: 4px;">${factionNames[faction]}</div>
-                    <div style="font-size: 11px; color: #888; margin-bottom: 4px;">${timeSpentText}</div>
-                    <div style="font-size: 13px; color: ${priceColor}; font-weight: bold;">
+                    <div style="font-size: ${baseFontSize * 1.1}px; margin-bottom: 4px;">${factionNames[faction]}</div>
+                    <div style="font-size: ${smallFontSize}px; color: #888; margin-bottom: 4px;">${timeSpentText}</div>
+                    <div style="font-size: ${baseFontSize}px; color: ${priceColor}; font-weight: bold;">
                         ${isFree ? '🆓 Бесплатно' : `⭐${priceInfo.price}`}
                     </div>
                 </button>
@@ -1331,39 +1364,93 @@ function showChangeFactionDialog(item) {
         ? '<span style="color: #4ade80;">Первая смена бесплатно!</span>'
         : 'Цена зависит от изученных заклинаний';
 
-    dialog.innerHTML = `
-        <div style="
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border: 2px solid #ffd700;
-            border-radius: 15px;
-            padding: 20px;
-            max-width: 400px;
-            text-align: center;
-        ">
-            <h3 style="color: #ffd700; margin: 0 0 10px 0;">🔄 Смена фракции</h3>
-            <p style="color: #aaa; font-size: 13px; margin-bottom: 10px;">
-                ${headerText}
-            </p>
-            <p style="color: #4ade80; font-size: 11px; margin-bottom: 15px;">
-                ✅ Маги, здания и заклинания сохраняются!
-            </p>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 10px;">
-                ${factionButtons}
+    container.innerHTML = `
+        <div style="padding: 15px; height: 100%; display: flex; flex-direction: column; pointer-events: auto;">
+            <!-- Заголовок -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div>
+                    <h2 style="margin: 0; color: #ffd700; font-size: ${titleFontSize}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+                        🔄 Смена фракции
+                    </h2>
+                    <div style="color: #ccc; font-size: ${smallFontSize}px; margin-top: 5px;">
+                        ${headerText}
+                    </div>
+                </div>
+                <button onclick="closeShopModal()" style="
+                    background: rgba(255,100,100,0.3);
+                    border: 1px solid rgba(255,100,100,0.5);
+                    color: white;
+                    font-size: ${titleFontSize}px;
+                    cursor: pointer;
+                    padding: 5px 15px;
+                    border-radius: 8px;
+                    transition: all 0.2s;
+                " onmouseover="this.style.background='rgba(255,100,100,0.5)'"
+                   onmouseout="this.style.background='rgba(255,100,100,0.3)'">✕</button>
             </div>
-            <button onclick="closeFactionChangeDialog()" style="
+
+            <!-- Информация -->
+            <div style="
+                background: rgba(0,100,0,0.2);
+                border: 1px solid rgba(74,222,128,0.3);
+                border-radius: 10px;
+                padding: ${10 * scale}px;
+                margin-bottom: 15px;
+                text-align: center;
+            ">
+                <div style="color: #4ade80; font-size: ${baseFontSize}px;">
+                    ✅ Маги, здания и заклинания сохраняются!
+                </div>
+            </div>
+
+            <!-- Текущая фракция -->
+            <div style="
+                background: rgba(0,0,0,0.4);
+                border: 1px solid rgba(255,215,0,0.3);
+                border-radius: 10px;
+                padding: ${10 * scale}px;
+                margin-bottom: 15px;
+                text-align: center;
+            ">
+                <div style="color: #888; font-size: ${smallFontSize}px; margin-bottom: 5px;">Текущая фракция:</div>
+                <div style="color: #ffd700; font-size: ${titleFontSize}px;">${factionNames[currentFaction]}</div>
+            </div>
+
+            <!-- Выбор новой фракции -->
+            <div style="flex: 1; overflow-y: auto;">
+                <div style="color: #ccc; font-size: ${baseFontSize}px; margin-bottom: 10px; text-align: center;">
+                    Выберите новую фракцию:
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: ${10 * scale}px;">
+                    ${factionButtons}
+                </div>
+            </div>
+
+            <!-- Кнопка назад -->
+            <button onclick="backToShopFromFaction()" style="
                 width: 100%;
-                margin-top: 10px;
-                padding: 10px;
-                background: rgba(255,100,100,0.3);
-                border: 1px solid rgba(255,100,100,0.5);
+                margin-top: 15px;
+                padding: ${12 * scale}px;
+                background: rgba(100,100,100,0.3);
+                border: 1px solid rgba(150,150,150,0.5);
                 border-radius: 8px;
                 color: white;
+                font-size: ${baseFontSize}px;
                 cursor: pointer;
-            ">Отмена</button>
+                transition: all 0.2s;
+            " onmouseover="this.style.background='rgba(100,100,100,0.5)'"
+               onmouseout="this.style.background='rgba(100,100,100,0.3)'">
+                ← Назад в магазин
+            </button>
         </div>
     `;
+}
 
-    document.body.appendChild(dialog);
+/**
+ * Вернуться в магазин из смены фракции
+ */
+function backToShopFromFaction() {
+    setupShopUI();
 }
 
 /**
@@ -1476,11 +1563,15 @@ function applyFactionChange(newFaction) {
 }
 
 /**
- * Закрыть диалог смены фракции
+ * Закрыть диалог смены фракции (возврат в магазин)
  */
 function closeFactionChangeDialog() {
+    // Старый диалог (если остался)
     const dialog = document.getElementById('faction-change-dialog');
     if (dialog) dialog.remove();
+
+    // Возвращаемся в магазин
+    backToShopFromFaction();
 }
 
 /**
@@ -1551,8 +1642,11 @@ function showShopNotification(message, type = 'info') {
 function closeShopModal() {
     const screen = document.getElementById('shop-screen');
     if (screen) {
+        // ОПТИМИЗАЦИЯ: Скрываем вместо удаления (для быстрого повторного открытия)
         screen.style.opacity = '0';
-        setTimeout(() => screen.remove(), 300);
+        setTimeout(() => {
+            screen.style.display = 'none';
+        }, 300);
     }
 
     // Показываем аватар
@@ -1911,15 +2005,23 @@ async function buyStarterPackWithTon(packKey, tonPrice) {
  */
 async function saveTonPayment(item, tonAmount, txResult) {
     try {
+        // Используем user_id который содержит telegram_id
+        const telegramId = window.userData?.user_id || window.dbManager?.getTelegramId();
+
+        if (!telegramId) {
+            console.error('❌ Не удалось получить telegram_id для сохранения платежа');
+            return;
+        }
+
         const { error } = await window.supabaseClient.supabase
             .from('payments')
             .insert({
-                telegram_id: window.userData?.telegram_id,
+                telegram_id: telegramId,
                 product_id: item.id,
                 amount_ton: tonAmount,
                 payment_method: 'ton',
                 status: 'completed',
-                ton_transaction_hash: txResult?.boc || 'unknown',
+                ton_transaction_hash: txResult?.boc || null,
                 completed_at: new Date().toISOString()
             });
 
@@ -1943,5 +2045,6 @@ window.applyExpScroll = applyExpScroll;
 window.closeWizardSelectDialog = closeWizardSelectDialog;
 window.confirmFactionChange = confirmFactionChange;
 window.closeFactionChangeDialog = closeFactionChangeDialog;
+window.backToShopFromFaction = backToShopFromFaction;
 
 console.log('🛒 Модуль магазина загружен');

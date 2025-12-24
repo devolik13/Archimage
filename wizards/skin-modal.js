@@ -307,14 +307,14 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
     `;
 }
 
-// Конфигурация анимаций для скинов магов
+// Конфигурация анимаций для скинов магов (все используют 5×5 сетку 1280×1280)
 const SKIN_ANIMATION_CONFIG = {
-    fire: { frameCount: 25, gridColumns: 5 }, // 5×5 сетка
-    water: { frameCount: 25, gridColumns: 5 },
-    wind: { frameCount: 8, gridColumns: null },
-    earth: { frameCount: 8, gridColumns: null },
-    nature: { frameCount: 8, gridColumns: null },
-    poison: { frameCount: 8, gridColumns: null }
+    fire: { frameCount: 25, gridColumns: 5 },    // 5×5 сетка
+    water: { frameCount: 25, gridColumns: 5 },   // 5×5 сетка
+    wind: { frameCount: 25, gridColumns: 5 },    // 5×5 сетка
+    earth: { frameCount: 25, gridColumns: 5 },   // 5×5 сетка
+    nature: { frameCount: 25, gridColumns: 5 },  // 5×5 сетка
+    poison: { frameCount: 25, gridColumns: 5 }   // 5×5 сетка
 };
 
 // Хранилище для текущей анимации превью
@@ -450,7 +450,7 @@ function selectSkin(skinId) {
 }
 
 /**
- * Запускает анимацию превью скина
+ * Запускает анимацию превью скина (чередование idle → cast)
  */
 function startSkinPreviewAnimation(skin, canvasId) {
     const canvas = document.getElementById(canvasId);
@@ -458,31 +458,44 @@ function startSkinPreviewAnimation(skin, canvasId) {
 
     const ctx = canvas.getContext('2d');
 
-    // Определяем путь к спрайту
-    let spritePath;
+    // Определяем пути к спрайтам idle и cast
+    let idlePath, castPath;
     let animConfig;
 
     if (skin.isDefault) {
-        spritePath = `images/wizards/${skin.faction}/idle.webp`;
-        animConfig = SKIN_ANIMATION_CONFIG[skin.faction] || { frameCount: 8, gridColumns: null };
+        idlePath = `images/wizards/${skin.faction}/idle.webp`;
+        castPath = `images/wizards/${skin.faction}/cast.webp`;
+        animConfig = SKIN_ANIMATION_CONFIG[skin.faction] || { frameCount: 25, gridColumns: 5 };
     } else {
-        spritePath = `images/enemies/${skin.spriteConfig}/idle.webp`;
-        animConfig = SKIN_ANIMATION_CONFIG[skin.spriteConfig] || { frameCount: 8, gridColumns: null };
+        idlePath = `images/enemies/${skin.spriteConfig}/idle.webp`;
+        castPath = `images/enemies/${skin.spriteConfig}/cast.webp`;
+        animConfig = SKIN_ANIMATION_CONFIG[skin.spriteConfig] || { frameCount: 25, gridColumns: 5 };
     }
 
     const frameSize = 256;
     const { frameCount, gridColumns } = animConfig;
     let currentFrame = 0;
+    let currentAnimation = 'idle'; // 'idle' или 'cast'
+    let cycleCount = 0; // Счётчик циклов для переключения анимации
 
-    const img = new Image();
-    img.onload = () => {
+    // Загружаем оба изображения
+    const idleImg = new Image();
+    const castImg = new Image();
+    let idleLoaded = false;
+    let castLoaded = false;
+
+    const startAnimation = () => {
+        if (!idleLoaded || !castLoaded) return;
+
         // Функция отрисовки кадра
         const drawFrame = () => {
             ctx.clearRect(0, 0, 256, 256);
 
+            const img = currentAnimation === 'idle' ? idleImg : castImg;
+
             let srcX, srcY;
             if (gridColumns) {
-                // Сетка (например 5x5)
+                // Сетка (5x5)
                 const col = currentFrame % gridColumns;
                 const row = Math.floor(currentFrame / gridColumns);
                 srcX = col * frameSize;
@@ -495,20 +508,42 @@ function startSkinPreviewAnimation(skin, canvasId) {
 
             ctx.drawImage(img, srcX, srcY, frameSize, frameSize, 0, 0, 256, 256);
 
-            currentFrame = (currentFrame + 1) % frameCount;
+            currentFrame++;
+
+            // Если закончили цикл - переключаем анимацию
+            if (currentFrame >= frameCount) {
+                currentFrame = 0;
+                cycleCount++;
+
+                // Переключаем между idle и cast каждый цикл
+                if (currentAnimation === 'idle') {
+                    currentAnimation = 'cast';
+                } else {
+                    currentAnimation = 'idle';
+                }
+            }
         };
 
         // Первый кадр сразу
         drawFrame();
 
-        // Запускаем анимацию - подбираем интервал чтобы цикл длился ~1.2с
-        // Для 8 кадров: 150ms, для 25 кадров: ~50ms
-        const targetCycleDuration = 1200; // мс для полного цикла
-        const interval = Math.max(40, Math.floor(targetCycleDuration / frameCount));
+        // Запускаем анимацию (~80ms на кадр для плавности)
+        const interval = 80;
         skinPreviewAnimationId = setInterval(drawFrame, interval);
     };
 
-    img.src = spritePath;
+    idleImg.onload = () => {
+        idleLoaded = true;
+        startAnimation();
+    };
+
+    castImg.onload = () => {
+        castLoaded = true;
+        startAnimation();
+    };
+
+    idleImg.src = idlePath;
+    castImg.src = castPath;
 }
 
 /**

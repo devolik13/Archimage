@@ -22,9 +22,10 @@
             death: 'images/wizards/nature/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
-            scale: 0.350 // Масштаб для спрайта 256x256
+            frameCount: 25, // 5×5 сетка (1280×1280)
+            gridColumns: 5,
+            animationSpeed: 0.12,
+            scale: 0.350
         },
         fire: {
             idle: 'images/wizards/fire/idle.webp',
@@ -54,8 +55,9 @@
             death: 'images/wizards/earth/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
+            frameCount: 25, // 5×5 сетка (1280×1280)
+            gridColumns: 5,
+            animationSpeed: 0.12,
             scale: 0.350
         },
         wind: {
@@ -64,8 +66,9 @@
             death: 'images/wizards/wind/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
+            frameCount: 25, // 5×5 сетка (1280×1280)
+            gridColumns: 5,
+            animationSpeed: 0.12,
             scale: 0.350
         },
         poison: {
@@ -74,10 +77,10 @@
             death: 'images/wizards/poison/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
-            scale: 0.350, // Масштаб для спрайта 256x256
-            reverseOnDeath: true // Проигрывать анимацию смерти в обратном порядке
+            frameCount: 25, // 5×5 сетка (1280×1280)
+            gridColumns: 5,
+            animationSpeed: 0.12,
+            scale: 0.350
         },
         goblin: {
             idle: 'images/enemies/goblin/idle.webp',
@@ -143,15 +146,27 @@
             animationSpeed: 0.12,
             scale: 0.45
         },
+        training_dummy: {
+            idle: 'images/enemies/training_dummy/idle.webp',
+            cast: 'images/enemies/training_dummy/idle.webp', // Манекен не атакует
+            death: 'images/enemies/training_dummy/idle.webp', // Использует idle
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 25, // 5×5 сетка
+            gridColumns: 5,
+            animationSpeed: 0.10, // Медленная анимация для манекена
+            scale: 0.45
+        },
         fire_elemental: {
             idle: 'images/enemies/fire_elemental/idle.webp',
             cast: 'images/enemies/fire_elemental/cast.webp',
             death: 'images/enemies/fire_elemental/death.webp',
             frameWidth: 256,
             frameHeight: 256,
-            frameCount: 8,
-            animationSpeed: 0.15,
-            scale: 0.45 // Размер для одной клетки (col 0, row 2)
+            frameCount: 25, // 5×5 сетка (1280×1280)
+            gridColumns: 5,
+            animationSpeed: 0.12,
+            scale: 0.45
         },
         water_elemental: {
             idle: 'images/enemies/water_elemental/idle.webp',
@@ -353,6 +368,11 @@
                     return elementalType;
                 }
 
+                // Если это тренировочный манекен - используем спрайт пугала
+                if (enemyWizard && enemyWizard.isTrainingDummy) {
+                    return enemyWizard.spriteSheet || 'training_dummy';
+                }
+
                 // Если это обычный PVE враг - используем спрайты по типу (goblin/orc/troll/etc)
                 if (enemyWizard && enemyWizard.isAdventureEnemy) {
                     // Используем spriteSheet из конфига врага, иначе goblin по умолчанию
@@ -469,8 +489,9 @@
             // Загружаем текстуры фракции
             const textures = await loadFactionTextures(faction);
 
-            // ИСПРАВЛЕНИЕ: Проверяем что контейнеры ещё валидны после await
-            if (!unitsContainer || !gridCells || container.destroyed) {
+            // ИСПРАВЛЕНИЕ: Проверяем что контейнеры и ячейка ещё валидны после await
+            const cellDataAfterAwait = gridCells?.[col]?.[row];
+            if (!unitsContainer || !gridCells || container.destroyed || !cellDataAfterAwait) {
                 console.warn(`⚠️ Контейнеры недоступны после загрузки текстур: ${key}`);
                 creatingSprites.delete(key);
                 return null;
@@ -590,9 +611,17 @@
             return null;
         }
 
+        // Повторно получаем cellData после async операций (может измениться)
+        const freshCellData = gridCells?.[col]?.[row];
+        if (!freshCellData || freshCellData.destroyed) {
+            console.warn(`⚠️ Ячейка недоступна после async: ${key}`);
+            creatingSprites.delete(key);
+            return null;
+        }
+
         // Вычисляем позицию заранее
-        const posX = cellData.x + cellData.width / 2;
-        const posY = cellData.y + cellData.height / 2;
+        const posX = freshCellData.x + freshCellData.width / 2;
+        const posY = freshCellData.y + freshCellData.height / 2;
 
         // Безопасное присваивание позиции с дополнительной проверкой
         try {
@@ -701,7 +730,7 @@
                 // Переключаем на атаку
                 sprite.stop();
                 sprite.textures = container.attackFrames;
-                sprite.animationSpeed = 0.2; // Чуть быстрее для атаки
+                sprite.animationSpeed = 0.24; // Ускорено на 20% для каста
                 sprite.loop = false;
                 sprite.gotoAndPlay(0);
                 
@@ -787,7 +816,26 @@
         
         // Помечаем что маг мертв
         container.isDead = true;
-        
+
+        // Удаляем иконку яда при смерти
+        if (container.poisonIcon) {
+            if (container.poisonIcon.parent) {
+                container.poisonIcon.parent.removeChild(container.poisonIcon);
+            }
+            if (container.poisonIcon.destroy) {
+                container.poisonIcon.destroy({ children: true });
+            }
+            container.poisonIcon = null;
+        }
+
+        // Удаляем эффект горения при смерти
+        if (window.spellAnimations?.burning?.remove) {
+            // Определяем тип (player/enemy) по колонке
+            const casterType = wizardCol === 5 ? 'player' : 'enemy';
+            const effectKey = `${casterType}_${wizardRow}`;
+            window.spellAnimations.burning.remove(effectKey);
+        }
+
         const sprite = container.sprite;
         
         if (!isSpriteValid(sprite)) {
