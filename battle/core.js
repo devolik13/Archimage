@@ -1050,7 +1050,9 @@ async function executeBossBattlePhase() {
 
         // Пауза перед ходом игрока для завершения анимаций босса
         if (window.globalTurnCounter > 0) {
-            await new Promise(resolve => setTimeout(resolve, 800));
+            // 40% от текущей скорости боя (800ms при обычной, 320ms при быстрой)
+            const delay = (window.battleSpeed || 2000) * 0.4;
+            await new Promise(resolve => setTimeout(resolve, delay));
         }
 
         if (typeof window.addToBattleLog === 'function') {
@@ -1153,7 +1155,9 @@ async function executeBossBattlePhase() {
             }
 
             // Пауза между магами для завершения всех анимаций
-            await new Promise(resolve => setTimeout(resolve, 500));
+            // 25% от текущей скорости боя (500ms при обычной, 200ms при быстрой)
+            const delay = (window.battleSpeed || 2000) * 0.25;
+            await new Promise(resolve => setTimeout(resolve, delay));
         }
 
         // Проверка на Метеокинез
@@ -1167,7 +1171,9 @@ async function executeBossBattlePhase() {
         // ═══════════════════════════════════════════
 
         // Пауза перед ходом босса для завершения анимаций игрока
-        await new Promise(resolve => setTimeout(resolve, 800));
+        // 40% от текущей скорости боя (800ms при обычной, 320ms при быстрой)
+        const delay = (window.battleSpeed || 2000) * 0.4;
+        await new Promise(resolve => setTimeout(resolve, delay));
 
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`━━━ Ход босса ━━━`);
