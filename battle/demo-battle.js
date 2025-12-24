@@ -483,7 +483,7 @@ function showWelcomeMessage() {
             align-items: center;
             justify-content: center;
         ">
-            <div style="font-size: 50px; margin-bottom: 10px;">⚔️✨</div>
+            <div style="font-size: 50px; margin-bottom: 10px;">🔮✨</div>
             <h1 style="
                 margin: 0;
                 font-size: 20px;
@@ -493,7 +493,7 @@ function showWelcomeMessage() {
                 text-align: center;
                 white-space: nowrap;
             ">
-                Приветствуем<br>тебя, маг!
+                Добро<br>пожаловать!
             </h1>
         </div>
 
@@ -512,18 +512,41 @@ function showWelcomeMessage() {
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
             max-width: 450px;
         ">
-            <div style="color: #ffd700; font-size: 17px; font-weight: bold; margin-bottom: 10px;">
-                📜 Основы магии:
+            <div style="color: #ffd700; font-size: 18px; font-weight: bold; margin-bottom: 12px;">
+                🌟 Добро пожаловать в мир магов!
             </div>
 
-            Строить: <strong style="color: #ffd700;">одно здание</strong><br>
-            Изучать: <strong style="color: #ffd700;">одно заклинание</strong><br>
-            <div style="color: #87ceeb; font-size: 15px; margin-top: 8px;">
-                ⚡ Не забывай ускорять!
+            <div style="margin-bottom: 15px; font-size: 15px;">
+                Присоединяйся к нашему сообществу:
             </div>
 
-            <div style="color: #ffd700; font-weight: bold; font-size: 18px; margin-top: 8px;">
-                Выбирай мудро! 🔮
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <a href="https://t.me/archimage_news" target="_blank" style="
+                    display: block;
+                    padding: 10px 15px;
+                    background: rgba(0, 136, 204, 0.3);
+                    border: 1px solid rgba(0, 136, 204, 0.6);
+                    border-radius: 8px;
+                    color: #4FC3F7;
+                    text-decoration: none;
+                    font-weight: bold;
+                    transition: all 0.3s;
+                " onmouseover="this.style.background='rgba(0, 136, 204, 0.5)'" onmouseout="this.style.background='rgba(0, 136, 204, 0.3)'">
+                    📢 Новости @archimage_news
+                </a>
+                <a href="https://t.me/archimage_chat" target="_blank" style="
+                    display: block;
+                    padding: 10px 15px;
+                    background: rgba(76, 175, 80, 0.3);
+                    border: 1px solid rgba(76, 175, 80, 0.6);
+                    border-radius: 8px;
+                    color: #81C784;
+                    text-decoration: none;
+                    font-weight: bold;
+                    transition: all 0.3s;
+                " onmouseover="this.style.background='rgba(76, 175, 80, 0.5)'" onmouseout="this.style.background='rgba(76, 175, 80, 0.3)'">
+                    💬 Чат @archimage_chat
+                </a>
             </div>
         </div>
 
