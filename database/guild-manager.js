@@ -20,8 +20,8 @@ function getExpToNextLevel(level) {
     // После макс уровня - используем формулу как для уровня 31
     const calcLevel = level > GUILD_CONFIG.MAX_LEVEL ? (GUILD_CONFIG.MAX_LEVEL + 1) : level;
 
-    // Базовая квадратичная прогрессия: (100 + level^2 * 50) * 3
-    const baseExp = (100 + (calcLevel * calcLevel * 50)) * 3;
+    // Базовая квадратичная прогрессия: (100 + level^2 * 50) * 6 (удвоено)
+    const baseExp = (100 + (calcLevel * calcLevel * 50)) * 6;
 
     // Множитель на основе вместимости: +3% за каждого игрока сверх базы
     const capacity = getGuildCapacity(Math.min(level, GUILD_CONFIG.MAX_LEVEL));
