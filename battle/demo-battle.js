@@ -624,6 +624,7 @@ function closeWelcomeMessage() {
 // Экспорт функций
 window.startDemoBattle = startDemoBattle;
 window.closeDemoBattle = closeDemoBattle;
+window.showWelcomeMessage = showWelcomeMessage;
 window.closeWelcomeMessage = closeWelcomeMessage;
 
 // Удобная консольная команда
