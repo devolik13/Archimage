@@ -14,19 +14,15 @@ const HINT_IMAGE_HEIGHT = 512;
 let currentHintIndex = 0;
 
 /**
- * Вычислить размеры картинки для адаптации как фон города
+ * Вычислить размеры картинки (85% высоты экрана, центрировано)
  */
 function calculateHintImageSize() {
-    const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
     const imageAspect = HINT_IMAGE_WIDTH / HINT_IMAGE_HEIGHT;
-    const screenAspect = screenWidth / screenHeight;
 
-    let width, height;
-
-    // Масштабируем по высоте экрана, сохраняя пропорции
-    height = screenHeight;
-    width = height * imageAspect;
+    // 85% высоты экрана для картинки (оставляем место для кнопки внизу)
+    const height = screenHeight * 0.85;
+    const width = height * imageAspect;
 
     return { width, height };
 }
@@ -64,39 +60,20 @@ function showHintSliderModal() {
     `;
 
     overlay.innerHTML = `
-        <!-- Картинка адаптированная как фон города -->
+        <!-- Картинка уменьшенная и центрированная -->
         <img id="hint-slider-image"
              src="${HINT_IMAGES[0]}"
              alt="Подсказка"
              style="
                 position: absolute;
-                top: 0;
+                top: 50%;
                 left: 50%;
-                transform: translateX(-50%);
+                transform: translate(-50%, -55%);
                 width: ${width}px;
                 height: ${height}px;
              "
              onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22><rect fill=%22%23222%22 width=%22400%22 height=%22300%22/><text x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2220%22>Картинка не найдена</text></svg>'"
         />
-
-        <!-- Кнопка закрытия -->
-        <button id="hint-close-btn" onclick="closeHintSlider()" style="
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        ">✕</button>
 
         <!-- Левая стрелка -->
         <button id="hint-prev-btn" onclick="changeHintSlide(-1)" style="
@@ -138,27 +115,46 @@ function showHintSliderModal() {
             justify-content: center;
         ">›</button>
 
-        <!-- Индикатор страниц (точки) -->
-        <div id="hint-dots-container" style="
+        <!-- Нижняя панель: точки + кнопка закрыть -->
+        <div style="
             position: absolute;
-            bottom: 20px;
+            bottom: 15px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 12px;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
             z-index: 10;
         ">
-            ${HINT_IMAGES.map((_, index) => `
-                <div onclick="goToHintSlide(${index})" style="
-                    width: 10px;
-                    height: 10px;
-                    border-radius: 50%;
-                    background: ${index === 0 ? 'white' : 'rgba(255, 255, 255, 0.4)'};
-                    border: 1px solid rgba(255, 255, 255, 0.5);
-                    cursor: pointer;
-                    transition: all 0.3s;
-                " class="hint-dot" data-index="${index}"></div>
-            `).join('')}
+            <!-- Индикатор страниц (точки) -->
+            <div id="hint-dots-container" style="
+                display: flex;
+                gap: 12px;
+            ">
+                ${HINT_IMAGES.map((_, index) => `
+                    <div onclick="goToHintSlide(${index})" style="
+                        width: 10px;
+                        height: 10px;
+                        border-radius: 50%;
+                        background: ${index === 0 ? 'white' : 'rgba(255, 255, 255, 0.4)'};
+                        border: 1px solid rgba(255, 255, 255, 0.5);
+                        cursor: pointer;
+                        transition: all 0.3s;
+                    " class="hint-dot" data-index="${index}"></div>
+                `).join('')}
+            </div>
+
+            <!-- Кнопка закрыть -->
+            <button id="hint-close-btn" onclick="closeHintSlider()" style="
+                background: rgba(0, 0, 0, 0.6);
+                border: 2px solid rgba(255, 255, 255, 0.4);
+                border-radius: 8px;
+                padding: 10px 30px;
+                color: white;
+                font-size: 16px;
+                cursor: pointer;
+            ">Закрыть</button>
         </div>
     `;
 
