@@ -609,6 +609,14 @@ function closeWelcomeMessage() {
             window.dbManager.markChanged();
         }
     }
+
+    // Показываем подсказки после приветственного окна
+    setTimeout(() => {
+        if (typeof window.showHintSliderModal === 'function') {
+            console.log('💡 Показываем подсказки для нового игрока');
+            window.showHintSliderModal();
+        }
+    }, 300);
 }
 
 // Экспорт функций
