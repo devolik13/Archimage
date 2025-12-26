@@ -87,14 +87,15 @@ function showHintSliderModal() {
                 z-index: 10;
             ">‹</button>
 
-            <!-- Картинка на весь экран -->
+            <!-- Картинка с отступами -->
             <img id="hint-slider-image"
                  src="${HINT_IMAGES[0]}"
                  alt="Подсказка"
                  style="
-                    max-width: 100%;
-                    max-height: 100%;
+                    max-width: 90%;
+                    max-height: 85%;
                     object-fit: contain;
+                    border-radius: 8px;
                  "
                  onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22><rect fill=%22%23222%22 width=%22400%22 height=%22300%22/><text x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2220%22>Картинка не найдена</text></svg>'"
             />
