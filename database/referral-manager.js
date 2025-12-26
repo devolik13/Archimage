@@ -366,7 +366,7 @@ class ReferralManager {
                     margin-bottom: 10px;
                 ">📋 Скопировать ссылку</button>
 
-                <button onclick="window.referralManager.shareToTelegram()" style="
+                <button onclick="window.referralManager.shareWithImage()" style="
                     width: 100%;
                     padding: 12px;
                     background: linear-gradient(135deg, #0088cc, #0077b5);
@@ -377,20 +377,7 @@ class ReferralManager {
                     font-weight: bold;
                     cursor: pointer;
                     margin-bottom: 10px;
-                ">📤 Поделиться текстом</button>
-
-                <button onclick="window.referralManager.shareWithImage()" style="
-                    width: 100%;
-                    padding: 12px;
-                    background: linear-gradient(135deg, #f59e0b, #d97706);
-                    border: none;
-                    border-radius: 8px;
-                    color: white;
-                    font-size: 14px;
-                    font-weight: bold;
-                    cursor: pointer;
-                    margin-bottom: 10px;
-                ">🖼 Поделиться с картинкой</button>
+                ">📤 Поделиться в Телеграме</button>
 
                 <button onclick="window.referralManager.closeReferralUI()" style="
                     width: 100%;
