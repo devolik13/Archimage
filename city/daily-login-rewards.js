@@ -180,20 +180,28 @@ function showDailyRewardModal(day, hours) {
             @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         </style>
         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-            <img id="daily-reward-bg" src="${backgroundPath}" alt="Фон" style="
-                max-width: 100%;
-                max-height: 100%;
-                object-fit: contain;
-            ">
-            <div id="daily-reward-overlay" style="
-                position: absolute;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-                padding: 20px;
-            "></div>
+            <div id="daily-reward-wrapper" style="position: relative; display: inline-block;">
+                <img id="daily-reward-bg" src="${backgroundPath}" alt="Фон" style="
+                    max-width: 100vw;
+                    max-height: 100vh;
+                    object-fit: contain;
+                    display: block;
+                ">
+                <div id="daily-reward-overlay" style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                    padding: 20px;
+                    box-sizing: border-box;
+                "></div>
+            </div>
         </div>
     `;
 
@@ -217,23 +225,9 @@ function showDailyRewardModal(day, hours) {
         const btnSize = Math.max(14, 18 * scale);
         const iconSize = Math.max(40, 60 * scale);
 
-        // Центральная область (115,70 : 655,410 в оригинале 768x512)
-        const contentWidth = (655 - 115) * scaleX;
-        const contentHeight = (410 - 70) * scaleY;
-
-        overlay.style.cssText = `
-            position: absolute;
-            left: ${115 * scaleX + rect.left - img.parentElement.getBoundingClientRect().left}px;
-            top: ${70 * scaleY}px;
-            width: ${contentWidth}px;
-            height: ${contentHeight}px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            animation: slideUp 0.5s ease;
-        `;
+        // Overlay уже позиционирован поверх изображения через CSS
+        // Просто добавляем анимацию
+        overlay.style.animation = 'slideUp 0.5s ease';
 
         const hoursText = hours === 1 ? 'час' : hours < 5 ? 'часа' : 'часов';
         const tomorrowHours = day + 1;
