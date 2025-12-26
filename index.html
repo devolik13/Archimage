@@ -75,6 +75,54 @@
 
             // Говорим Telegram что приложение готово
             tg.ready();
+
+            // КРИТИЧНО: Раскрываем на полный экран (для запуска из чата)
+            // Вызываем expand() сразу и с задержками для надежности
+            console.log('📱 [EXPAND] Попытка раскрытия на полный экран...');
+            tg.expand();
+
+            // Повторные попытки для случая запуска из чата
+            setTimeout(() => {
+                if (tg.viewportHeight < window.innerHeight * 0.9) {
+                    console.log('📱 [EXPAND] Повторная попытка (100ms)...');
+                    tg.expand();
+                }
+            }, 100);
+
+            setTimeout(() => {
+                if (tg.viewportHeight < window.innerHeight * 0.9) {
+                    console.log('📱 [EXPAND] Повторная попытка (300ms)...');
+                    tg.expand();
+                }
+            }, 300);
+
+            setTimeout(() => {
+                if (tg.viewportHeight < window.innerHeight * 0.9) {
+                    console.log('📱 [EXPAND] Повторная попытка (600ms)...');
+                    tg.expand();
+                }
+            }, 600);
+
+            // Используем requestFullscreen если доступен (Bot API 7.7+)
+            if (tg.requestFullscreen) {
+                setTimeout(() => {
+                    try {
+                        tg.requestFullscreen();
+                        console.log('📱 [EXPAND] requestFullscreen вызван');
+                    } catch (e) {
+                        console.log('📱 [EXPAND] requestFullscreen недоступен:', e.message);
+                    }
+                }, 500);
+            }
+
+            // Слушаем изменение viewport
+            tg.onEvent('viewportChanged', (event) => {
+                console.log('📱 [VIEWPORT] Изменение:', event);
+                if (!event.isStateStable && tg.viewportHeight < window.innerHeight * 0.9) {
+                    console.log('📱 [EXPAND] Раскрытие после изменения viewport...');
+                    tg.expand();
+                }
+            });
         }
     </script>
 

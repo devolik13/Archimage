@@ -981,15 +981,18 @@ window.addEventListener('resize', () => {
     }
 });
 
-// Для Telegram Web App - максимизируем область просмотра
-if (window.Telegram && window.Telegram.WebApp) {
-    console.log('📱 Telegram WebApp обнаружен');
-    window.Telegram.WebApp.expand();
-    window.Telegram.WebApp.enableClosingConfirmation();
-
+// Для Telegram Web App - дополнительная проверка раскрытия
+if (window.Telegram?.WebApp) {
+    const tg = window.Telegram.WebApp;
     // Убираем отступы Telegram
     document.body.style.paddingTop = '0';
     document.body.style.paddingBottom = '0';
+
+    // Дополнительная попытка раскрытия если не раскрыто
+    if (tg.viewportHeight < window.innerHeight * 0.9) {
+        console.log('📱 [city-view] Дополнительное раскрытие...');
+        tg.expand();
+    }
 }
 
 // Экспортируем функции в глобальную область
