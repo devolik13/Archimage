@@ -63,6 +63,13 @@ const PRELOAD_ASSETS = {
         'assets/ui/modals/spells_poison.webp'
     ],
 
+    // Подсказки (768x512 webp)
+    hintImages: [
+        'assets/hints/hint1.webp',
+        'assets/hints/hint2.webp',
+        'assets/hints/hint3.webp'
+    ],
+
     // Выбор фракции / загрузка
     misc: [
         'assets/faction-background.png'

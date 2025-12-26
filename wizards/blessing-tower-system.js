@@ -447,9 +447,18 @@ function updateBlessingTowerUI() {
 // Инициализация системы благословений
 function initBlessingSystem() {
     // Проверяем активные благословения при загрузке
+    const activeBlessing = getActiveBlessing();
+    const now = Date.now();
+
+    // Если есть активное благословение которое еще не истекло - применяем эффекты
+    if (activeBlessing && activeBlessing.expires_at > now) {
+        console.log(`🙏 Восстановление активного благословения: ${activeBlessing.name}`);
+        applyBlessingEffects(activeBlessing);
+    }
+
     updateBlessingStatus();
     startBlessingTimer();
-    
+
 }
 async function upgradeBlessingTower() {
     const currentLevel = window.getBuildingLevel('blessing_tower');
