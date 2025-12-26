@@ -7,7 +7,29 @@ const HINT_IMAGES = [
     'assets/hints/hint3.webp'
 ];
 
+// Размеры оригинальных изображений
+const HINT_IMAGE_WIDTH = 768;
+const HINT_IMAGE_HEIGHT = 512;
+
 let currentHintIndex = 0;
+
+/**
+ * Вычислить размеры картинки для адаптации как фон города
+ */
+function calculateHintImageSize() {
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const imageAspect = HINT_IMAGE_WIDTH / HINT_IMAGE_HEIGHT;
+    const screenAspect = screenWidth / screenHeight;
+
+    let width, height;
+
+    // Масштабируем по высоте экрана, сохраняя пропорции
+    height = screenHeight;
+    width = height * imageAspect;
+
+    return { width, height };
+}
 
 /**
  * Показать полноэкранные подсказки
@@ -24,6 +46,9 @@ function showHintSliderModal() {
         existingOverlay.remove();
     }
 
+    // Вычисляем размеры картинки
+    const { width, height } = calculateHintImageSize();
+
     // Создаём полноэкранный оверлей
     const overlay = document.createElement('div');
     overlay.id = 'hint-fullscreen-overlay';
@@ -35,20 +60,32 @@ function showHintSliderModal() {
         height: 100vh;
         background: #000;
         z-index: 999999;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        overflow: hidden;
     `;
 
     overlay.innerHTML = `
+        <!-- Картинка адаптированная как фон города -->
+        <img id="hint-slider-image"
+             src="${HINT_IMAGES[0]}"
+             alt="Подсказка"
+             style="
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: ${width}px;
+                height: ${height}px;
+             "
+             onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22><rect fill=%22%23222%22 width=%22400%22 height=%22300%22/><text x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2220%22>Картинка не найдена</text></svg>'"
+        />
+
         <!-- Кнопка закрытия -->
         <button id="hint-close-btn" onclick="closeHintSlider()" style="
             position: absolute;
             top: 15px;
             right: 15px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             width: 44px;
             height: 44px;
@@ -61,75 +98,63 @@ function showHintSliderModal() {
             justify-content: center;
         ">✕</button>
 
-        <!-- Контейнер картинки -->
-        <div style="
-            flex: 1;
-            width: 100%;
+        <!-- Левая стрелка -->
+        <button id="hint-prev-btn" onclick="changeHintSlide(-1)" style="
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 10;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-        ">
-            <!-- Левая стрелка -->
-            <button id="hint-prev-btn" onclick="changeHintSlide(-1)" style="
-                position: absolute;
-                left: 10px;
-                top: 50%;
-                transform: translateY(-50%);
-                background: rgba(255, 255, 255, 0.2);
-                border: none;
-                border-radius: 50%;
-                width: 50px;
-                height: 50px;
-                color: white;
-                font-size: 28px;
-                cursor: pointer;
-                z-index: 10;
-            ">‹</button>
+        ">‹</button>
 
-            <!-- Картинка с отступами -->
-            <img id="hint-slider-image"
-                 src="${HINT_IMAGES[0]}"
-                 alt="Подсказка"
-                 style="
-                    max-width: 90%;
-                    max-height: 85%;
-                    object-fit: contain;
-                    border-radius: 8px;
-                 "
-                 onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22><rect fill=%22%23222%22 width=%22400%22 height=%22300%22/><text x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2220%22>Картинка не найдена</text></svg>'"
-            />
-
-            <!-- Правая стрелка -->
-            <button id="hint-next-btn" onclick="changeHintSlide(1)" style="
-                position: absolute;
-                right: 10px;
-                top: 50%;
-                transform: translateY(-50%);
-                background: rgba(255, 255, 255, 0.2);
-                border: none;
-                border-radius: 50%;
-                width: 50px;
-                height: 50px;
-                color: white;
-                font-size: 28px;
-                cursor: pointer;
-                z-index: 10;
-            ">›</button>
-        </div>
+        <!-- Правая стрелка -->
+        <button id="hint-next-btn" onclick="changeHintSlide(1)" style="
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        ">›</button>
 
         <!-- Индикатор страниц (точки) -->
         <div id="hint-dots-container" style="
-            padding: 20px;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             gap: 12px;
+            z-index: 10;
         ">
             ${HINT_IMAGES.map((_, index) => `
                 <div onclick="goToHintSlide(${index})" style="
                     width: 10px;
                     height: 10px;
                     border-radius: 50%;
-                    background: ${index === 0 ? 'white' : 'rgba(255, 255, 255, 0.3)'};
+                    background: ${index === 0 ? 'white' : 'rgba(255, 255, 255, 0.4)'};
+                    border: 1px solid rgba(255, 255, 255, 0.5);
                     cursor: pointer;
                     transition: all 0.3s;
                 " class="hint-dot" data-index="${index}"></div>
@@ -139,13 +164,22 @@ function showHintSliderModal() {
 
     document.body.appendChild(overlay);
 
-    // Закрытие по клику на фон (но не на элементы управления)
+    // Обработчик изменения размера окна
+    const resizeHandler = () => {
+        const { width, height } = calculateHintImageSize();
+        const img = document.getElementById('hint-slider-image');
+        if (img) {
+            img.style.width = `${width}px`;
+            img.style.height = `${height}px`;
+        }
+    };
+    window.addEventListener('resize', resizeHandler);
+    overlay.dataset.resizeHandler = 'true';
+
+    // Клик по картинке - следующий слайд
     overlay.addEventListener('click', (e) => {
-        if (e.target === overlay || e.target.tagName === 'IMG') {
-            // Клик по картинке - следующий слайд
-            if (e.target.tagName === 'IMG') {
-                changeHintSlide(1);
-            }
+        if (e.target.tagName === 'IMG') {
+            changeHintSlide(1);
         }
     });
 
@@ -154,6 +188,7 @@ function showHintSliderModal() {
         if (e.key === 'Escape') {
             closeHintSlider();
             document.removeEventListener('keydown', escHandler);
+            window.removeEventListener('resize', resizeHandler);
         }
     };
     document.addEventListener('keydown', escHandler);
@@ -234,7 +269,7 @@ function updateHintSlide() {
             dot.style.background = 'white';
             dot.style.transform = 'scale(1.3)';
         } else {
-            dot.style.background = 'rgba(255, 255, 255, 0.3)';
+            dot.style.background = 'rgba(255, 255, 255, 0.4)';
             dot.style.transform = 'scale(1)';
         }
     });
@@ -246,4 +281,4 @@ window.closeHintSlider = closeHintSlider;
 window.changeHintSlide = changeHintSlide;
 window.goToHintSlide = goToHintSlide;
 
-console.log('💡 Hint Slider Modal загружен (fullscreen)');
+console.log('💡 Hint Slider Modal загружен (fullscreen adaptive)');
