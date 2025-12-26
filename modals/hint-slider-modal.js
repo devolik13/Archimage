@@ -1,10 +1,10 @@
 // modals/hint-slider-modal.js - Модалка с подсказками (слайдер картинок)
 
-// Конфигурация подсказок
+// Конфигурация подсказок (768x512 webp)
 const HINT_IMAGES = [
-    'assets/hints/hint1.png',
-    'assets/hints/hint2.png',
-    'assets/hints/hint3.png'
+    'assets/hints/hint1.webp',
+    'assets/hints/hint2.webp',
+    'assets/hints/hint3.webp'
 ];
 
 let currentHintIndex = 0;
