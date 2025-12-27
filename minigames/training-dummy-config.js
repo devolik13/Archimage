@@ -180,7 +180,8 @@ function getCurrentDummyConfig() {
 // === ТЕСТОВЫЙ РЕЖИМ ===
 // Установить конкретное время окончания недели (ISO строка или null для стандартного режима)
 // Пример: window.TEST_WEEK_END_TIME = '2025-12-27T10:50:00' - неделя закончится в 10:50
-window.TEST_WEEK_END_TIME = null; // ТЕСТ ВЫКЛЮЧЕН
+// ТЕСТ: Сброс 28 декабря 2025 в 00:01 UTC
+window.TEST_WEEK_END_TIME = '2025-12-28T00:01:00Z';
 
 // Счётчик тестовых недель (увеличивается при каждом "сбросе" в тестовом режиме)
 window.TEST_WEEK_OFFSET = window.TEST_WEEK_OFFSET || 0;
@@ -597,10 +598,40 @@ window.triggerTestWeekReset = triggerTestWeekReset;
 window.setTestWeekEndIn = setTestWeekEndIn;
 window.getCurrentTime = getCurrentTime;
 
-// === ТЕСТ: Установить сброс через 15 минут ===
+/**
+ * Автоматическая проверка и сброс недели если время истекло
+ * Вызывается периодически и при открытии UI испытания
+ */
+function checkAndTriggerWeekReset() {
+    if (window.TEST_WEEK_END_TIME && isTestWeekEnded()) {
+        console.log('⏰ Время испытания истекло! Автоматический сброс...');
+        const result = triggerTestWeekReset();
+
+        // Устанавливаем новое время сброса (следующий день 00:01 UTC)
+        const now = getCurrentTime();
+        const nextReset = new Date(now);
+        nextReset.setUTCDate(nextReset.getUTCDate() + 1);
+        nextReset.setUTCHours(0, 1, 0, 0);
+        window.TEST_WEEK_END_TIME = nextReset.toISOString();
+
+        console.log(`📅 Следующий сброс: ${nextReset.toISOString()}`);
+        return result;
+    }
+    return null;
+}
+
+// Экспорт функции
+window.checkAndTriggerWeekReset = checkAndTriggerWeekReset;
+
+// Проверять каждую минуту
+setInterval(() => {
+    checkAndTriggerWeekReset();
+}, 60000);
+
+// Первая проверка через 3 секунды после загрузки
 setTimeout(() => {
-    setTestWeekEndIn(15);
-    console.log('🧪 ТЕСТ АКТИВЕН: Сброс испытания через 15 минут!');
-}, 2000); // Ждём синхронизацию серверного времени
+    console.log(`🧪 ТЕСТ: Сброс испытания установлен на ${window.TEST_WEEK_END_TIME}`);
+    checkAndTriggerWeekReset();
+}, 3000);
 
 console.log('✅ Training Dummy Config загружен');
