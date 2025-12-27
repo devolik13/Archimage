@@ -56,6 +56,14 @@ const SPELL_TIERS = {
         "rainbow_shield",  // Tier 3 - Радужный щит
         "sun_radiance",    // Tier 4 - Сияние солнца
         "dawn"             // Tier 5 - Рассвет
+    ],
+
+    "dark": [
+        "dark_clot",       // Tier 1 - Сгусток тьмы
+        "weakness",        // Tier 2 - Слабость
+        "miasma",          // Tier 3 - Миазма
+        "shadow_realm",    // Tier 4 - Мир теней
+        "fading"           // Tier 5 - Угасание
     ]
 };
 

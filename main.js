@@ -141,6 +141,7 @@ import './spells/logic/spells-earth.js';
 import './spells/logic/spells-nature.js';
 import './spells/logic/spells-poison.js';
 import './spells/logic/spells-light.js';
+import './spells/logic/spells-dark.js';
 
 // ============================================
 // 11. PIXI.JS РЕНДЕРИНГ (Renderer)
@@ -225,6 +226,15 @@ import './animations/light/light-beam.js';
 import './animations/light/rainbow-shield.js';
 import './animations/light/sun-radiance.js';
 import './animations/light/dawn.js';
+
+// ============================================
+// 20. АНИМАЦИИ ЗАКЛИНАНИЙ - ТЬМА (Dark)
+// ============================================
+import './animations/dark/dark-clot.js';
+import './animations/dark/weakness.js';
+import './animations/dark/miasma.js';
+import './animations/dark/shadow-realm.js';
+import './animations/dark/fading.js';
 
 // ============================================
 // ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ

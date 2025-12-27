@@ -78,6 +78,17 @@ const SCHOOL_CONFIG = {
         battlefieldColor: "rgba(255, 215, 0, 0.2)"
     },
 
+    "dark": {
+        id: "dark",
+        name: "Тьма",
+        emoji: "🌑",
+        color: "#4a0080",
+        description: "Школа тёмной магии. Дебаффы врагов, снижение брони и урона.",
+        strengths: ["Дебаффы", "Пробитие брони", "Ослабление"],
+        weaknesses: ["Мало прямого урона"],
+        battlefieldColor: "rgba(74, 0, 128, 0.2)"
+    },
+
     "hybrid": {
         id: "hybrid",
         name: "Гибрид",
@@ -175,7 +186,14 @@ function getSpellSchoolFallback(spellId) {
         'light_beam': 'light',
         'rainbow_shield': 'light',
         'sun_radiance': 'light',
-        'dawn': 'light'
+        'dawn': 'light',
+
+        // Тьма
+        'dark_clot': 'dark',
+        'weakness': 'dark',
+        'miasma': 'dark',
+        'shadow_realm': 'dark',
+        'fading': 'dark'
     };
 
     // Если найдено напрямую - возвращаем

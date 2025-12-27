@@ -49,7 +49,14 @@ const SPELL_NAMES = {
     "light_beam": "Луч света",
     "rainbow_shield": "Радужный щит",
     "sun_radiance": "Сияние солнца",
-    "dawn": "Рассвет"
+    "dawn": "Рассвет",
+
+    // Тьма
+    "dark_clot": "Сгусток тьмы",
+    "weakness": "Слабость",
+    "miasma": "Миазма",
+    "shadow_realm": "Мир теней",
+    "fading": "Угасание"
 };
 
 // Базовый урон заклинаний
@@ -62,7 +69,8 @@ const SPELL_BASE_DAMAGE = {
     "call_wolf": 8,
     "poisoned_blade": 9,
     "flash": 10,
-    
+    "dark_clot": 15,
+
     // Tier 2 - базовый урон 20-30
     "firebolt": 25,
     "frost_arrow": 22,
@@ -71,7 +79,8 @@ const SPELL_BASE_DAMAGE = {
     "bark_armor": 0,  // защитное
     "poisoned_glade": 20,
     "light_beam": 10, // + DoT
-    
+    "weakness": 0,    // дебафф
+
     // Tier 3 - базовый урон 35-50
     "fire_wall": 40,
     "ice_rain": 38,
@@ -80,7 +89,8 @@ const SPELL_BASE_DAMAGE = {
     "leaf_canopy": 0, // защитное
     "foul_cloud": 35,
     "rainbow_shield": 0, // бафф
-    
+    "miasma": 0,         // бафф/дебафф
+
     // Tier 4 - базовый урон 60-80
     "fireball": 75,
     "blizzard": 65,
@@ -89,7 +99,8 @@ const SPELL_BASE_DAMAGE = {
     "ent": 50,          // призыв
     "plague": 60,
     "sun_radiance": 0,  // дебафф
-    
+    "shadow_realm": 0,  // % от потерянного HP
+
     // Tier 5 - базовый урон 100-150
     "fire_tsunami": 120,
     "absolute_zero": 110,
@@ -97,7 +108,8 @@ const SPELL_BASE_DAMAGE = {
     "meteor_shower": 140,
     "meteorokinesis": 0,  // усиление
     "epidemic": 100,
-    "dawn": 0             // бафф
+    "dawn": 0,            // бафф
+    "fading": 0           // дебафф
 };
 
 // Типы заклинаний
@@ -111,6 +123,8 @@ const SPELL_TYPE_CONFIG = {
     "frost_arrow": "single_target",
     "flash": "single_target",
     "light_beam": "single_target",
+    "dark_clot": "single_target",
+    "weakness": "single_target",
     
     // Множественные цели
     "firebolt": "multi_target",
@@ -132,6 +146,8 @@ const SPELL_TYPE_CONFIG = {
     "meteor_shower": "aoe",
     "epidemic": "aoe",
     "sun_radiance": "aoe",
+    "shadow_realm": "aoe",
+    "fading": "aoe",
 
     // Защитные/утилити
     "wind_wall": "utility",
@@ -142,6 +158,7 @@ const SPELL_TYPE_CONFIG = {
     "meteorokinesis": "buff",
     "rainbow_shield": "buff",
     "dawn": "buff",
+    "miasma": "buff",
 
     // Призыв
     "call_wolf": "summon",

@@ -6,7 +6,9 @@ let effectCounters = {
     doubleDamage: 0,
     armorIgnored: 0,
     blinded: 0,
-    radiance: 0
+    radiance: 0,
+    weakened: 0,
+    fading: 0
 };
 
 // --- Универсальный хелпер для применения эффектов ---

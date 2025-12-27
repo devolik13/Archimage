@@ -502,7 +502,7 @@ function applyLightFactionBonus(wizard, casterType) {
             window.enemyFormation.filter(w => w && w.hp > 0);
 
         // Список дебаффов которые можно снять
-        const removableDebuffs = ['burning', 'poison', 'chilled', 'frozen', 'stunned', 'blinded', 'plague'];
+        const removableDebuffs = ['burning', 'poison', 'chilled', 'frozen', 'stunned', 'blinded', 'plague', 'weakened'];
 
         // Ищем союзника с любым дебаффом
         for (const ally of allies) {
@@ -548,7 +548,8 @@ function getDebuffName(debuffId) {
         'frozen': 'Заморозка',
         'stunned': 'Оглушение',
         'blinded': 'Ослепление',
-        'plague': 'Чума'
+        'plague': 'Чума',
+        'weakened': 'Слабость'
     };
     return names[debuffId] || debuffId;
 }

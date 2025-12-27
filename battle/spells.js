@@ -182,6 +182,13 @@ function executeSpellEffect(wizard, spellId, spellData, position, casterType) {
                 castBasicAttack(wizard, position, casterType);
             }
             break;
+        case 'dark':
+            if (typeof window.castDarkSpell === 'function') {
+                window.castDarkSpell(wizard, spellId, spellData, position, casterType);
+            } else {
+                castBasicAttack(wizard, position, casterType);
+            }
+            break;
         default:
             castBasicAttack(wizard, position, casterType);
     }
