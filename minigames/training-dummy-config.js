@@ -585,4 +585,10 @@ window.triggerTestWeekReset = triggerTestWeekReset;
 window.setTestWeekEndIn = setTestWeekEndIn;
 window.getCurrentTime = getCurrentTime;
 
+// === ТЕСТ: Установить сброс через 15 минут ===
+setTimeout(() => {
+    setTestWeekEndIn(15);
+    console.log('🧪 ТЕСТ АКТИВЕН: Сброс испытания через 15 минут!');
+}, 2000); // Ждём синхронизацию серверного времени
+
 console.log('✅ Training Dummy Config загружен');
