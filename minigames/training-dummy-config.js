@@ -125,7 +125,8 @@ const LEADERBOARD_BONUSES = [
  * В тестовом режиме добавляет offset для симуляции новой недели
  */
 function getWeekNumber() {
-    const now = new Date();
+    // Используем функцию getCurrentTime только если она уже определена
+    const now = typeof getCurrentTime === 'function' ? getCurrentTime() : new Date();
     const baseWeek = getISOWeekYear(now);
 
     // В тестовом режиме добавляем offset для симуляции новой недели
@@ -167,16 +168,37 @@ function getCurrentDummyConfig() {
 // === ТЕСТОВЫЙ РЕЖИМ ===
 // Установить конкретное время окончания недели (ISO строка или null для стандартного режима)
 // Пример: window.TEST_WEEK_END_TIME = '2025-12-27T10:50:00' - неделя закончится в 10:50
-window.TEST_WEEK_END_TIME = null; // ВЫКЛЮЧЕНО (было '2025-12-27T10:50:00')
+window.TEST_WEEK_END_TIME = null; // ТЕСТ ВЫКЛЮЧЕН
 
 // Счётчик тестовых недель (увеличивается при каждом "сбросе" в тестовом режиме)
 window.TEST_WEEK_OFFSET = window.TEST_WEEK_OFFSET || 0;
 
 /**
+ * Получить текущее время (серверное если доступно, иначе локальное)
+ */
+function getCurrentTime() {
+    if (typeof window.getServerTime === 'function' && window.isServerTimeSynced?.()) {
+        return window.getServerTime();
+    }
+    return new Date();
+}
+
+/**
+ * Установить тестовое время сброса через N минут от текущего момента
+ */
+function setTestWeekEndIn(minutes) {
+    const now = getCurrentTime();
+    const testEnd = new Date(now.getTime() + minutes * 60 * 1000);
+    window.TEST_WEEK_END_TIME = testEnd.toISOString();
+    console.log(`⏰ Тестовый сброс установлен на: ${testEnd.toLocaleTimeString()} (через ${minutes} мин)`);
+    return testEnd;
+}
+
+/**
  * Получить время до конца недели (в миллисекундах)
  */
 function getTimeUntilWeekEnd() {
-    const now = new Date();
+    const now = getCurrentTime();
 
     // Тестовый режим: конкретное время окончания
     if (window.TEST_WEEK_END_TIME) {
@@ -202,7 +224,7 @@ function getTimeUntilWeekEnd() {
  */
 function isTestWeekEnded() {
     if (!window.TEST_WEEK_END_TIME) return false;
-    return new Date() >= new Date(window.TEST_WEEK_END_TIME);
+    return getCurrentTime() >= new Date(window.TEST_WEEK_END_TIME);
 }
 
 /**
@@ -560,5 +582,7 @@ window.formatTimeUntilAttemptReset = formatTimeUntilAttemptReset;
 window.formatMsToTime = formatMsToTime;
 window.isTestWeekEnded = isTestWeekEnded;
 window.triggerTestWeekReset = triggerTestWeekReset;
+window.setTestWeekEndIn = setTestWeekEndIn;
+window.getCurrentTime = getCurrentTime;
 
 console.log('✅ Training Dummy Config загружен');
