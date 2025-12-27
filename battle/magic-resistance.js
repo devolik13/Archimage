@@ -50,16 +50,18 @@ function hybridContainsSchool(hybridId, school) {
     return hybridId.includes(`_${school}_`) || hybridId.includes(`${school}_`);
 }
 
-// Определение школы заклинания - ПОЛНЫЙ СПИСОК всех 6 школ
+// Определение школы заклинания - ПОЛНЫЙ СПИСОК всех 8 школ
 function getSpellSchool(spellId) {
-    // Стандартные заклинания - ВСЕ 6 школ по 5 заклинаний каждая
+    // Стандартные заклинания - ВСЕ 8 школ по 5 заклинаний каждая
     const schoolSpells = {
         fire: ['spark', 'firebolt', 'fire_wall', 'fireball', 'fire_tsunami'],
         water: ['icicle', 'frost_arrow', 'ice_rain', 'blizzard', 'absolute_zero'],
         wind: ['gust', 'wind_blade', 'wind_wall', 'storm_cloud', 'ball_lightning'],
         earth: ['pebble', 'stone_spike', 'earth_wall', 'stone_grotto', 'meteor_shower'],
         nature: ['call_wolf', 'bark_armor', 'leaf_canopy', 'ent', 'meteorokinesis'],
-        poison: ['poisoned_blade', 'poisoned_glade', 'foul_cloud', 'plague', 'epidemic']
+        poison: ['poisoned_blade', 'poisoned_glade', 'foul_cloud', 'plague', 'epidemic'],
+        light: ['flash', 'ray_of_light', 'healing_glow', 'purification', 'divine_shield'],
+        dark: ['dark_clot', 'weakness', 'miasma', 'shadow_realm', 'fading']
     };
     
     for (const [school, spells] of Object.entries(schoolSpells)) {
@@ -77,6 +79,8 @@ function getSpellSchool(spellId) {
         if (hybridContainsSchool(spellId, 'earth')) schools.push('earth');
         if (hybridContainsSchool(spellId, 'nature')) schools.push('nature');
         if (hybridContainsSchool(spellId, 'poison')) schools.push('poison');
+        if (hybridContainsSchool(spellId, 'light')) schools.push('light');
+        if (hybridContainsSchool(spellId, 'dark')) schools.push('dark');
         return schools;
     }
     // Эффекты зон
@@ -139,7 +143,7 @@ function applyMagicResistance(target, spellId, damage) {
     return damage;
 }
 
-// Функция отображения сопротивлений мага - ВСЕ 6 ШКОЛ
+// Функция отображения сопротивлений мага - ВСЕ 8 ШКОЛ
 function getWizardResistances(wizard) {
     return {
         fire: Math.floor(calculateMagicResistance(wizard, 'fire')),
@@ -147,16 +151,18 @@ function getWizardResistances(wizard) {
         wind: Math.floor(calculateMagicResistance(wizard, 'wind')),
         earth: Math.floor(calculateMagicResistance(wizard, 'earth')),
         nature: Math.floor(calculateMagicResistance(wizard, 'nature')),
-        poison: Math.floor(calculateMagicResistance(wizard, 'poison'))
+        poison: Math.floor(calculateMagicResistance(wizard, 'poison')),
+        light: Math.floor(calculateMagicResistance(wizard, 'light')),
+        dark: Math.floor(calculateMagicResistance(wizard, 'dark'))
     };
 }
 
 // Функция для тестирования системы
 function testMagicResistanceSystem() {
     console.log('🧪 Тестирование системы сопротивления магии...');
-    
+
     // Тестируем все школы
-    const testSchools = ['fire', 'water', 'wind', 'earth', 'nature', 'poison'];
+    const testSchools = ['fire', 'water', 'wind', 'earth', 'nature', 'poison', 'light', 'dark'];
     testSchools.forEach(school => {
         const testSpellIds = window.SPELL_TIERS ? window.SPELL_TIERS[school] : [];
         if (testSpellIds && testSpellIds.length > 0) {

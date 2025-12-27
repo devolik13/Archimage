@@ -59,14 +59,66 @@ const SPELL_CONFIG = {
         targeting: 'standard',
         effects: []
     },
-    "wind_blade": { 
+    "wind_blade": {
         type: SPELL_TYPES.PROJECTILE,
         targeting: 'projectile_path',
         movement: 'circular',
         effects: []
+    },
+
+    // Свет
+    "flash": {
+        type: SPELL_TYPES.SINGLE_TARGET,
+        targeting: 'standard',
+        effects: ['blind']
+    },
+    "ray_of_light": {
+        type: SPELL_TYPES.MULTI_TARGET,
+        targeting: 'multi_random',
+        effects: ['blind']
+    },
+    "healing_glow": {
+        type: SPELL_TYPES.BUFF,
+        targeting: 'ally',
+        effects: ['heal']
+    },
+    "purification": {
+        type: SPELL_TYPES.BUFF,
+        targeting: 'all_allies',
+        effects: ['cleanse']
+    },
+    "divine_shield": {
+        type: SPELL_TYPES.BUFF,
+        targeting: 'all_allies',
+        effects: ['shield']
+    },
+
+    // Тьма
+    "dark_clot": {
+        type: SPELL_TYPES.SINGLE_TARGET,
+        targeting: 'standard',
+        effects: ['armor_break']
+    },
+    "weakness": {
+        type: SPELL_TYPES.SINGLE_TARGET,
+        targeting: 'standard',
+        effects: ['weakened']
+    },
+    "miasma": {
+        type: SPELL_TYPES.BUFF,
+        targeting: 'all',
+        effects: ['poison_modifier']
+    },
+    "shadow_realm": {
+        type: SPELL_TYPES.MULTI_TARGET,
+        targeting: 'wounded',
+        effects: ['percent_damage']
+    },
+    "fading": {
+        type: SPELL_TYPES.SINGLE_TARGET,
+        targeting: 'standard',
+        effects: ['fading']
     }
-    
-    // Добавить остальные заклинания...
 };
 
 // Функция получения конфигурации заклинания

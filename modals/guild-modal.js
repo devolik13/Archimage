@@ -505,10 +505,12 @@ function renderGuildInfo(container) {
     const capacity = window.getGuildCapacity(guild.level);
 
     const schoolNames = {
-        fire: 'Огонь', water: 'Вода', earth: 'Земля', wind: 'Ветер', poison: 'Яд'
+        fire: 'Огонь', water: 'Вода', earth: 'Земля', wind: 'Ветер',
+        nature: 'Природа', poison: 'Яд', light: 'Свет', dark: 'Тьма'
     };
     const schoolEmojis = {
-        fire: '🔥', water: '💧', earth: '🪨', wind: '💨', poison: '☠️'
+        fire: '🔥', water: '💧', earth: '🪨', wind: '💨',
+        nature: '🌿', poison: '☠️', light: '✨', dark: '🌑'
     };
 
     container.innerHTML = `
@@ -526,7 +528,7 @@ function renderGuildInfo(container) {
         </div>
 
         <h4 style="color: #ffd700; margin: 0 0 10px 0;">Сопротивления</h4>
-        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px;">
             ${Object.entries(bonuses.resistances).map(([school, res]) => `
                 <div style="background: rgba(255,255,255,0.05); padding: 10px 5px; border-radius: 8px; text-align: center;">
                     <div style="font-size: 20px;">${schoolEmojis[school]}</div>
@@ -741,10 +743,10 @@ function renderGuildResearch(container) {
     const research = guild.research || {};
 
     const schoolNames = {
-        fire: 'Огонь', water: 'Вода', earth: 'Земля', wind: 'Ветер', poison: 'Яд'
+        fire: 'Огонь', water: 'Вода', earth: 'Земля', wind: 'Ветер', nature: 'Природа', poison: 'Яд', light: 'Свет', dark: 'Тьма'
     };
     const schoolEmojis = {
-        fire: '🔥', water: '💧', earth: '🪨', wind: '💨', poison: '☠️'
+        fire: '🔥', water: '💧', earth: '🪨', wind: '💨', nature: '🌿', poison: '☠️', light: '✨', dark: '🌑'
     };
 
     container.innerHTML = `

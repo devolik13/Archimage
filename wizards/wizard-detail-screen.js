@@ -67,8 +67,8 @@ function renderWizardDetailScreen(wizardIndex) {
     if (typeof window.getWizardResistances === 'function') {
         wizardData.magicResistance = window.getWizardResistances(wizardData);
     } else {
-        wizardData.magicResistance = { 
-            fire: 0, water: 0, wind: 0, earth: 0, nature: 0, poison: 0 
+        wizardData.magicResistance = {
+            fire: 0, water: 0, wind: 0, earth: 0, nature: 0, poison: 0, light: 0, dark: 0
         };
     }
 
@@ -356,7 +356,8 @@ function showResistancesModal(wizardIndex) {
 
     const schoolNames = {
         fire: 'Огонь', water: 'Вода', wind: 'Ветер',
-        earth: 'Земля', nature: 'Природа', poison: 'Яд'
+        earth: 'Земля', nature: 'Природа', poison: 'Яд',
+        light: 'Свет', dark: 'Тьма'
     };
 
     const resistancesHTML = Object.entries(resistances).map(([school, value]) => {
@@ -674,7 +675,7 @@ function calculateWizardStats(wizardData) {
         wizardData.magicResistance = window.getWizardResistances(wizardData);
     } else {
         wizardData.magicResistance = {
-            fire: 0, water: 0, wind: 0, earth: 0, nature: 0, poison: 0
+            fire: 0, water: 0, wind: 0, earth: 0, nature: 0, poison: 0, light: 0, dark: 0
         };
     }
 
