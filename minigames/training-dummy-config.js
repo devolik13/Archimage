@@ -122,10 +122,24 @@ const LEADERBOARD_BONUSES = [
 /**
  * Получить ISO номер недели (совместим с PostgreSQL IYYY-IW)
  * Возвращает строку "YYYY-WW" для совместимости с Supabase
+ * В тестовом режиме добавляет offset для симуляции новой недели
  */
 function getWeekNumber() {
     const now = new Date();
-    return getISOWeekYear(now);
+    const baseWeek = getISOWeekYear(now);
+
+    // В тестовом режиме добавляем offset для симуляции новой недели
+    if (window.TEST_WEEK_OFFSET && window.TEST_WEEK_OFFSET > 0) {
+        const [year, week] = baseWeek.split('-').map(Number);
+        const newWeek = week + window.TEST_WEEK_OFFSET;
+        // Простая логика: если неделя > 52, переносим на следующий год
+        if (newWeek > 52) {
+            return `${year + 1}-${String(newWeek - 52).padStart(2, '0')}`;
+        }
+        return `${year}-${String(newWeek).padStart(2, '0')}`;
+    }
+
+    return baseWeek;
 }
 
 /**
@@ -153,7 +167,10 @@ function getCurrentDummyConfig() {
 // === ТЕСТОВЫЙ РЕЖИМ ===
 // Установить конкретное время окончания недели (ISO строка или null для стандартного режима)
 // Пример: window.TEST_WEEK_END_TIME = '2025-12-27T10:50:00' - неделя закончится в 10:50
-window.TEST_WEEK_END_TIME = '2025-12-27T10:50:00'; // ТЕСТ: неделя закончится в 10:50
+window.TEST_WEEK_END_TIME = null; // ВЫКЛЮЧЕНО (было '2025-12-27T10:50:00')
+
+// Счётчик тестовых недель (увеличивается при каждом "сбросе" в тестовом режиме)
+window.TEST_WEEK_OFFSET = window.TEST_WEEK_OFFSET || 0;
 
 /**
  * Получить время до конца недели (в миллисекундах)
@@ -186,6 +203,47 @@ function getTimeUntilWeekEnd() {
 function isTestWeekEnded() {
     if (!window.TEST_WEEK_END_TIME) return false;
     return new Date() >= new Date(window.TEST_WEEK_END_TIME);
+}
+
+/**
+ * Сбросить тестовую неделю (вызывается вручную для теста)
+ * Увеличивает offset и сбрасывает локальный прогресс
+ */
+function triggerTestWeekReset() {
+    console.log('🔄 Принудительный сброс тестовой недели...');
+
+    window.TEST_WEEK_OFFSET = (window.TEST_WEEK_OFFSET || 0) + 1;
+    console.log(`📅 Новый TEST_WEEK_OFFSET: ${window.TEST_WEEK_OFFSET}`);
+
+    // Сбрасываем локальный прогресс
+    const newWeek = getWeekNumber();
+    const progress = loadDummyProgress();
+
+    console.log(`📅 Старая неделя: ${progress.weekNumber}, новая: ${newWeek}`);
+
+    // Принудительный сброс
+    progress.weekNumber = newWeek;
+    progress.totalDamage = 0;
+    progress.bestAttempt = 0;
+    progress.history = [];
+    progress.lastDummyHp = null;
+    progress.attemptsToday = 0;
+    progress.lastAttemptDate = null;
+
+    saveDummyProgress(progress, true);
+
+    console.log('✅ Прогресс сброшен!');
+    console.log(`🎯 Новый голем: ${getCurrentDummyConfig().name}`);
+
+    // Автоматически начисляем награды за прошлую неделю
+    if (typeof window.checkAndClaimTrialReward === 'function') {
+        window.checkAndClaimTrialReward();
+    }
+
+    return {
+        newWeek: newWeek,
+        newGolem: getCurrentDummyConfig().name
+    };
 }
 
 /**
@@ -501,5 +559,6 @@ window.getDummyInfo = getDummyInfo;
 window.formatTimeUntilAttemptReset = formatTimeUntilAttemptReset;
 window.formatMsToTime = formatMsToTime;
 window.isTestWeekEnded = isTestWeekEnded;
+window.triggerTestWeekReset = triggerTestWeekReset;
 
 console.log('✅ Training Dummy Config загружен');
