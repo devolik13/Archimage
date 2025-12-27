@@ -150,36 +150,42 @@ function getCurrentDummyConfig() {
     return DUMMY_CONFIGURATIONS[configIndex];
 }
 
-// Тестовый режим: переопределить день окончания недели (null = понедельник по умолчанию, 4 = четверг для теста)
-window.TEST_WEEK_END_DAY = null; // null = стандартный режим (понедельник)
+// === ТЕСТОВЫЙ РЕЖИМ ===
+// Установить конкретное время окончания недели (ISO строка или null для стандартного режима)
+// Пример: window.TEST_WEEK_END_TIME = '2025-12-27T10:50:00' - неделя закончится в 10:50
+window.TEST_WEEK_END_TIME = '2025-12-27T10:50:00'; // ТЕСТ: неделя закончится в 10:50
 
 /**
  * Получить время до конца недели (в миллисекундах)
  */
 function getTimeUntilWeekEnd() {
     const now = new Date();
-    const dayOfWeek = now.getDay(); // 0 = воскресенье
 
-    // Тестовый режим: можно переопределить день окончания недели
-    const targetDay = window.TEST_WEEK_END_DAY !== null && window.TEST_WEEK_END_DAY !== undefined
-        ? window.TEST_WEEK_END_DAY
-        : 1; // 1 = понедельник по умолчанию
-
-    let daysUntilEnd;
-    if (targetDay === 1) {
-        // Стандартный режим - до понедельника
-        daysUntilEnd = dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
-    } else {
-        // Тестовый режим - до указанного дня
-        daysUntilEnd = (targetDay - dayOfWeek + 7) % 7;
-        if (daysUntilEnd === 0) daysUntilEnd = 7; // Если сегодня целевой день, то через неделю
+    // Тестовый режим: конкретное время окончания
+    if (window.TEST_WEEK_END_TIME) {
+        const testEnd = new Date(window.TEST_WEEK_END_TIME);
+        const remaining = testEnd - now;
+        // Если время уже прошло, возвращаем 0 (неделя закончилась)
+        return Math.max(0, remaining);
     }
 
+    // Стандартный режим: до понедельника 00:00
+    const dayOfWeek = now.getDay(); // 0 = воскресенье
+    const daysUntilMonday = dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
+
     const nextWeekEnd = new Date(now);
-    nextWeekEnd.setDate(now.getDate() + daysUntilEnd);
+    nextWeekEnd.setDate(now.getDate() + daysUntilMonday);
     nextWeekEnd.setHours(0, 0, 0, 0);
 
     return nextWeekEnd - now;
+}
+
+/**
+ * Проверить, закончилась ли тестовая неделя
+ */
+function isTestWeekEnded() {
+    if (!window.TEST_WEEK_END_TIME) return false;
+    return new Date() >= new Date(window.TEST_WEEK_END_TIME);
 }
 
 /**
@@ -494,5 +500,6 @@ window.recordAttempt = recordAttempt;
 window.getDummyInfo = getDummyInfo;
 window.formatTimeUntilAttemptReset = formatTimeUntilAttemptReset;
 window.formatMsToTime = formatMsToTime;
+window.isTestWeekEnded = isTestWeekEnded;
 
 console.log('✅ Training Dummy Config загружен');
