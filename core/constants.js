@@ -90,8 +90,10 @@ window.SPELL_LEARNING_TIME = {
 // ============ ВРЕМЯ НАЙМА МАГОВ ============
 window.WIZARD_HIRE_TIME = {
     getHireTime: function(wizardCount) {
-        const daySchedule = [0, 5, 15, 25, 35];
-        const day = daySchedule[wizardCount] || 37;
-        return day * 1440 * window.TIME_MULTIPLIER;
+        // ТЕСТ: 3 секунды (0.05 минуты) для всех магов кроме первого
+        // Оригинал: const daySchedule = [0, 5, 15, 25, 35];
+        // Оригинал: return day * 1440 * window.TIME_MULTIPLIER;
+        if (wizardCount === 0) return 0; // Первый маг бесплатно
+        return 0.05; // 3 секунды для остальных
     }
 };
