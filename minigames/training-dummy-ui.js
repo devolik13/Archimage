@@ -775,23 +775,34 @@ async function saveTrialResultSupabase(damage) {
 
 /**
  * Сохранить результат в локальный рейтинг (fallback)
+ * Накапливает total_damage для соответствия с Supabase рейтингом
  */
 function saveTrialResultLocal(damage) {
     const playerName = window.myUsername || window.userData?.username || 'Игрок';
     const playerId = window.dbManager?.currentPlayer?.telegram_id || window.userData?.user_id || 'local';
+    const currentWeek = window.getWeekNumber ? window.getWeekNumber() : 'unknown';
 
     let leaderboard = loadTrialLeaderboardLocal();
     const existingIndex = leaderboard.findIndex(e => e.playerId === playerId);
 
     if (existingIndex >= 0) {
-        if (damage > leaderboard[existingIndex].damage) {
+        // Проверяем неделю - если новая, сбрасываем
+        if (leaderboard[existingIndex].weekYear !== currentWeek) {
             leaderboard[existingIndex].damage = damage;
+            leaderboard[existingIndex].bestDamage = damage;
+            leaderboard[existingIndex].weekYear = currentWeek;
+        } else {
+            // Накапливаем общий урон (как в Supabase)
+            leaderboard[existingIndex].damage = (leaderboard[existingIndex].damage || 0) + damage;
+            leaderboard[existingIndex].bestDamage = Math.max(leaderboard[existingIndex].bestDamage || 0, damage);
         }
+        leaderboard[existingIndex].playerName = playerName;
     } else {
-        leaderboard.push({ playerId, playerName, damage });
+        leaderboard.push({ playerId, playerName, damage, bestDamage: damage, weekYear: currentWeek });
     }
 
-    leaderboard.sort((a, b) => b.damage - a.damage);
+    // Сортируем по общему урону (как в Supabase)
+    leaderboard.sort((a, b) => (b.damage || 0) - (a.damage || 0));
     leaderboard = leaderboard.slice(0, 100);
     localStorage.setItem('trial_leaderboard', JSON.stringify(leaderboard));
 
