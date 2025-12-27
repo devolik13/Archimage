@@ -94,7 +94,10 @@ function getSpellDamage(spellId, spellLevel = 1) {
         'ball_lightning': [25, 30, 35, 40, 50],
         // Земля
         'pebble': [10, 12, 14, 16, 18],
-        'meteor_shower': [20, 25, 30, 35, 45]
+        'meteor_shower': [20, 25, 30, 35, 45],
+        // Свет
+        'flash': [10, 12, 15, 20, 30],
+        'light_beam': [10, 12, 15, 18, 20]
     };
 
     // Если есть особая прогрессия - используем её
@@ -114,7 +117,7 @@ function getSpellDamage(spellId, spellLevel = 1) {
     }
 
     // Защитные заклинания не наносят урон
-    const nonDamageSpells = ['wind_wall', 'earth_wall', 'bark_armor', 'leaf_canopy', 'stone_grotto', 'meteorokinesis', 'plague', 'ent', 'call_wolf'];
+    const nonDamageSpells = ['wind_wall', 'earth_wall', 'bark_armor', 'leaf_canopy', 'stone_grotto', 'meteorokinesis', 'plague', 'ent', 'call_wolf', 'rainbow_shield', 'dawn', 'sun_radiance'];
     if (nonDamageSpells.includes(spellId)) {
         return 0;
     }

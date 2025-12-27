@@ -66,7 +66,18 @@ const SCHOOL_CONFIG = {
         weaknesses: ["Медленный урон"],
         battlefieldColor: "rgba(132, 204, 22, 0.2)"
     },
-    
+
+    "light": {
+        id: "light",
+        name: "Свет",
+        emoji: "✨",
+        color: "#ffd700",
+        description: "Школа магии света. Баффы союзников, ослепление врагов и очищение.",
+        strengths: ["Баффы", "Ослепление", "Очищение"],
+        weaknesses: ["Мало прямого урона"],
+        battlefieldColor: "rgba(255, 215, 0, 0.2)"
+    },
+
     "hybrid": {
         id: "hybrid",
         name: "Гибрид",
@@ -157,7 +168,14 @@ function getSpellSchoolFallback(spellId) {
         'poisoned_glade': 'poison',
         'foul_cloud': 'poison',
         'plague': 'poison',
-        'epidemic': 'poison'
+        'epidemic': 'poison',
+
+        // Свет
+        'flash': 'light',
+        'light_beam': 'light',
+        'rainbow_shield': 'light',
+        'sun_radiance': 'light',
+        'dawn': 'light'
     };
 
     // Если найдено напрямую - возвращаем

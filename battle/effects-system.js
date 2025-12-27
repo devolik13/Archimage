@@ -4,7 +4,9 @@ let effectCounters = {
     burning: 0,
     chilled: 0,
     doubleDamage: 0,
-    armorIgnored: 0
+    armorIgnored: 0,
+    blinded: 0,
+    radiance: 0
 };
 
 // --- Универсальный хелпер для применения эффектов ---
@@ -13,7 +15,9 @@ function tryApplyEffect(effectName, target, isHybrid = false, casterInfo = null)
         'burning': applyBurningEffect,
         'chill': applyChillEffect,
         'hoarFrost': applyHoarFrostEffect,
-        'freeze': applyFreezeEffect
+        'freeze': applyFreezeEffect,
+        'blinded': window.applyBlindedEffect,
+        'radiance': window.applyRadianceEffect
     };
 
     const effectFn = effectMap[effectName];

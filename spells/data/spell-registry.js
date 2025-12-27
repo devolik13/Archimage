@@ -42,7 +42,14 @@ const SPELL_ANIMATIONS_REGISTRY = {
     poisoned_glade: 'poison/poisoned-glade',
     foul_cloud: 'poison/foul-cloud',
     plague: 'poison/plague',
-    epidemic: 'poison/epidemic'
+    epidemic: 'poison/epidemic',
+
+    // Свет
+    flash: 'light/flash',
+    light_beam: 'light/light-beam',
+    rainbow_shield: 'light/rainbow-shield',
+    sun_radiance: 'light/sun-radiance',
+    dawn: 'light/dawn'
 };
 
 // Хранилище загруженных модулей анимаций

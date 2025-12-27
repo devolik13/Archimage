@@ -42,7 +42,14 @@ const SPELL_NAMES = {
     "poisoned_glade": "Ядовитая поляна",
     "foul_cloud": "Мерзкое облако",
     "plague": "Чума",
-    "epidemic": "Эпидемия"
+    "epidemic": "Эпидемия",
+
+    // Свет
+    "flash": "Вспышка",
+    "light_beam": "Луч света",
+    "rainbow_shield": "Радужный щит",
+    "sun_radiance": "Сияние солнца",
+    "dawn": "Рассвет"
 };
 
 // Базовый урон заклинаний
@@ -54,6 +61,7 @@ const SPELL_BASE_DAMAGE = {
     "pebble": 13,
     "call_wolf": 8,
     "poisoned_blade": 9,
+    "flash": 10,
     
     // Tier 2 - базовый урон 20-30
     "firebolt": 25,
@@ -62,6 +70,7 @@ const SPELL_BASE_DAMAGE = {
     "stone_spike": 28,
     "bark_armor": 0,  // защитное
     "poisoned_glade": 20,
+    "light_beam": 10, // + DoT
     
     // Tier 3 - базовый урон 35-50
     "fire_wall": 40,
@@ -70,6 +79,7 @@ const SPELL_BASE_DAMAGE = {
     "earth_wall": 0,  // защитное
     "leaf_canopy": 0, // защитное
     "foul_cloud": 35,
+    "rainbow_shield": 0, // бафф
     
     // Tier 4 - базовый урон 60-80
     "fireball": 75,
@@ -78,6 +88,7 @@ const SPELL_BASE_DAMAGE = {
     "stone_grotto": 0,  // защитное
     "ent": 50,          // призыв
     "plague": 60,
+    "sun_radiance": 0,  // дебафф
     
     // Tier 5 - базовый урон 100-150
     "fire_tsunami": 120,
@@ -85,7 +96,8 @@ const SPELL_BASE_DAMAGE = {
     "ball_lightning": 115,
     "meteor_shower": 140,
     "meteorokinesis": 0,  // усиление
-    "epidemic": 100
+    "epidemic": 100,
+    "dawn": 0             // бафф
 };
 
 // Типы заклинаний
@@ -97,6 +109,8 @@ const SPELL_TYPE_CONFIG = {
     "pebble": "single_target",
     "poisoned_blade": "single_target",
     "frost_arrow": "single_target",
+    "flash": "single_target",
+    "light_beam": "single_target",
     
     // Множественные цели
     "firebolt": "multi_target",
@@ -117,7 +131,8 @@ const SPELL_TYPE_CONFIG = {
     "ball_lightning": "aoe",
     "meteor_shower": "aoe",
     "epidemic": "aoe",
-    
+    "sun_radiance": "aoe",
+
     // Защитные/утилити
     "wind_wall": "utility",
     "earth_wall": "utility",
@@ -125,7 +140,9 @@ const SPELL_TYPE_CONFIG = {
     "leaf_canopy": "buff",
     "stone_grotto": "buff",
     "meteorokinesis": "buff",
-    
+    "rainbow_shield": "buff",
+    "dawn": "buff",
+
     // Призыв
     "call_wolf": "summon",
     "ent": "summon"

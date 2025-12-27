@@ -140,6 +140,7 @@ import './spells/logic/spells-wind.js';
 import './spells/logic/spells-earth.js';
 import './spells/logic/spells-nature.js';
 import './spells/logic/spells-poison.js';
+import './spells/logic/spells-light.js';
 
 // ============================================
 // 11. PIXI.JS РЕНДЕРИНГ (Renderer)
@@ -215,6 +216,15 @@ import './animations/poison/poisoned_glade.js';
 import './animations/poison/foul-cloud.js';
 import './animations/poison/plague.js';
 import './animations/poison/epidemic.js';
+
+// ============================================
+// 19. АНИМАЦИИ ЗАКЛИНАНИЙ - СВЕТ (Light)
+// ============================================
+import './animations/light/flash.js';
+import './animations/light/light-beam.js';
+import './animations/light/rainbow-shield.js';
+import './animations/light/sun-radiance.js';
+import './animations/light/dawn.js';
 
 // ============================================
 // ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ

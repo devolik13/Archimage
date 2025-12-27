@@ -48,6 +48,14 @@ const SPELL_TIERS = {
         "foul_cloud",      // Tier 3
         "plague",          // Tier 4
         "epidemic"         // Tier 5
+    ],
+
+    "light": [
+        "flash",           // Tier 1 - Вспышка
+        "light_beam",      // Tier 2 - Луч света
+        "rainbow_shield",  // Tier 3 - Радужный щит
+        "sun_radiance",    // Tier 4 - Сияние солнца
+        "dawn"             // Tier 5 - Рассвет
     ]
 };
 
