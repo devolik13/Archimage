@@ -208,7 +208,9 @@ function formatResistances(resistances) {
         wind: '🌪️',
         earth: '🪨',
         nature: '🌿',
-        poison: '☠️'
+        poison: '☠️',
+        light: '✨',
+        dark: '🌑'
     };
 
     const names = {
@@ -217,7 +219,9 @@ function formatResistances(resistances) {
         wind: 'Ветер',
         earth: 'Земля',
         nature: 'Природа',
-        poison: 'Яд'
+        poison: 'Яд',
+        light: 'Свет',
+        dark: 'Тьма'
     };
 
     let html = '';

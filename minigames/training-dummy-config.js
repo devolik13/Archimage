@@ -17,73 +17,85 @@ const DUMMY_CONFIGURATIONS = [
         id: 1,
         name: "Огненный Голем",
         description: "Устойчив к огню, уязвим к воде",
-        resistances: { fire: 50, water: -50, wind: 0, earth: 0, nature: 0, poison: 0 }
+        resistances: { fire: 50, water: -50, wind: 0, earth: 0, nature: 0, poison: 0, light: 0, dark: 0 }
     },
     {
         id: 2,
         name: "Ледяной Голем",
         description: "Устойчив к воде, уязвим к огню",
-        resistances: { fire: -50, water: 50, wind: 0, earth: 0, nature: 0, poison: 0 }
+        resistances: { fire: -50, water: 50, wind: 0, earth: 0, nature: 0, poison: 0, light: 0, dark: 0 }
     },
     {
         id: 3,
         name: "Каменный Голем",
         description: "Устойчив к земле, уязвим к ветру",
-        resistances: { fire: 0, water: 0, wind: -50, earth: 50, nature: 0, poison: 0 }
+        resistances: { fire: 0, water: 0, wind: -50, earth: 50, nature: 0, poison: 0, light: 0, dark: 0 }
     },
     {
         id: 4,
         name: "Воздушный Голем",
         description: "Устойчив к ветру, уязвим к земле",
-        resistances: { fire: 0, water: 0, wind: 50, earth: -50, nature: 0, poison: 0 }
+        resistances: { fire: 0, water: 0, wind: 50, earth: -50, nature: 0, poison: 0, light: 0, dark: 0 }
     },
     {
         id: 5,
         name: "Древесный Голем",
         description: "Устойчив к природе, уязвим к огню",
-        resistances: { fire: -50, water: 0, wind: 0, earth: 0, nature: 50, poison: 0 }
+        resistances: { fire: -50, water: 0, wind: 0, earth: 0, nature: 50, poison: 0, light: 0, dark: 0 }
     },
     {
         id: 6,
         name: "Токсичный Голем",
         description: "Устойчив к яду, уязвим к природе",
-        resistances: { fire: 0, water: 0, wind: 0, earth: 0, nature: -50, poison: 50 }
+        resistances: { fire: 0, water: 0, wind: 0, earth: 0, nature: -50, poison: 50, light: 0, dark: 0 }
     },
     {
         id: 7,
         name: "Элементальный Голем",
         description: "Устойчив ко всем стихиям",
-        resistances: { fire: 30, water: 30, wind: 30, earth: 30, nature: 30, poison: 30 }
+        resistances: { fire: 30, water: 30, wind: 30, earth: 30, nature: 30, poison: 30, light: 30, dark: 30 }
     },
     {
         id: 8,
         name: "Хрупкий Голем",
         description: "Уязвим ко всем стихиям",
-        resistances: { fire: -25, water: -25, wind: -25, earth: -25, nature: -25, poison: -25 }
+        resistances: { fire: -25, water: -25, wind: -25, earth: -25, nature: -25, poison: -25, light: -25, dark: -25 }
     },
     {
         id: 9,
         name: "Штормовой Голем",
         description: "Устойчив к ветру и воде, уязвим к земле и огню",
-        resistances: { fire: -30, water: 40, wind: 40, earth: -30, nature: 0, poison: 0 }
+        resistances: { fire: -30, water: 40, wind: 40, earth: -30, nature: 0, poison: 0, light: 0, dark: 0 }
     },
     {
         id: 10,
         name: "Вулканический Голем",
         description: "Устойчив к огню и земле, уязвим к воде",
-        resistances: { fire: 40, water: -50, wind: 0, earth: 40, nature: 0, poison: 0 }
+        resistances: { fire: 40, water: -50, wind: 0, earth: 40, nature: 0, poison: 0, light: 0, dark: 0 }
     },
     {
         id: 11,
         name: "Болотный Голем",
         description: "Устойчив к воде и яду, уязвим к ветру",
-        resistances: { fire: 0, water: 40, wind: -50, earth: 0, nature: 20, poison: 40 }
+        resistances: { fire: 0, water: 40, wind: -50, earth: 0, nature: 20, poison: 40, light: 0, dark: 0 }
     },
     {
         id: 12,
         name: "Нейтральный Голем",
         description: "Нет сопротивлений - чистый тест урона",
-        resistances: { fire: 0, water: 0, wind: 0, earth: 0, nature: 0, poison: 0 }
+        resistances: { fire: 0, water: 0, wind: 0, earth: 0, nature: 0, poison: 0, light: 0, dark: 0 }
+    },
+    {
+        id: 13,
+        name: "Светлый Голем",
+        description: "Устойчив к свету, уязвим к тьме",
+        resistances: { fire: 0, water: 0, wind: 0, earth: 0, nature: 0, poison: 0, light: 50, dark: -50 }
+    },
+    {
+        id: 14,
+        name: "Тёмный Голем",
+        description: "Устойчив к тьме, уязвим к свету",
+        resistances: { fire: 0, water: 0, wind: 0, earth: 0, nature: 0, poison: 0, light: -50, dark: 50 }
     }
 ];
 
