@@ -158,12 +158,12 @@ function showArenaMainMenu() {
     
     overlay.appendChild(energyDiv);
     
-    // ОБЛАСТЬ КНОПОК (122,186 : 647,384) - увеличено на 15% вверх
+    // ОБЛАСТЬ КНОПОК (122,156 : 647,384) - увеличено на 30% вверх
     const buttonsArea = {
         x: 122 * scaleX,
-        y: 186 * scaleY,
+        y: 156 * scaleY,
         width: (647 - 122) * scaleX,
-        height: (384 - 186) * scaleY
+        height: (384 - 156) * scaleY
     };
     
     // Проверяем доступные награды за лиги
