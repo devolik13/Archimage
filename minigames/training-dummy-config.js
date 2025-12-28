@@ -316,91 +316,169 @@ function triggerTestWeekReset() {
 }
 
 /**
- * Показать уведомление о сбросе испытания и награде
+ * Показать уведомление о сбросе испытания и награде (адаптивное как ежедневная награда)
  */
 function showTrialResetNotification(totalDamage, bestAttempt, reward) {
+    // Удаляем старую модалку если есть
+    const oldModal = document.getElementById('trial-reset-notification');
+    if (oldModal) oldModal.remove();
+
     // Форматируем награду
     const formatTime = (minutes) => {
-        if (minutes >= 1440) return `${Math.floor(minutes / 1440)}д ${Math.floor((minutes % 1440) / 60)}ч`;
-        if (minutes >= 60) return `${Math.floor(minutes / 60)}ч ${minutes % 60}м`;
+        if (minutes >= 1440) {
+            const days = Math.floor(minutes / 1440);
+            const hours = Math.floor((minutes % 1440) / 60);
+            return hours > 0 ? `${days}д ${hours}ч` : `${days}д`;
+        }
+        if (minutes >= 60) {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return mins > 0 ? `${hours}ч ${mins}м` : `${hours}ч`;
+        }
         return `${minutes}м`;
     };
 
-    const modal = document.createElement('div');
-    modal.id = 'trial-reset-notification';
-    modal.style.cssText = `
+    // Фон по фракции игрока
+    const faction = window.userData?.faction || 'fire';
+    const backgroundPath = `assets/ui/window/tower_${faction}.webp`;
+
+    // Создаём экран
+    const screen = document.createElement('div');
+    screen.id = 'trial-reset-notification';
+    screen.style.cssText = `
         position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
         z-index: 100000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         animation: fadeIn 0.3s ease;
     `;
 
-    modal.innerHTML = `
-        <div style="
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border: 3px solid #FFD700;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            color: white;
-            font-family: Arial, sans-serif;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
-        ">
-            <div style="font-size: 50px; margin-bottom: 15px;">🎯</div>
-            <h2 style="margin: 0 0 10px 0; color: #FFD700; font-size: 22px;">
+    screen.innerHTML = `
+        <style>
+            @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        </style>
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <div id="trial-reward-wrapper" style="position: relative; display: inline-block;">
+                <img id="trial-reward-bg" src="${backgroundPath}" alt="Фон" style="
+                    max-width: 100vw;
+                    max-height: 100vh;
+                    object-fit: contain;
+                    display: block;
+                ">
+                <div id="trial-reward-overlay" style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                    padding: 20px;
+                    box-sizing: border-box;
+                "></div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(screen);
+
+    // Ждём загрузку изображения для масштабирования
+    const img = document.getElementById('trial-reward-bg');
+    const rewardText = formatTime(reward.reward);
+
+    const setupUI = () => {
+        const overlay = document.getElementById('trial-reward-overlay');
+        if (!overlay || !img) return;
+
+        const rect = img.getBoundingClientRect();
+        const scaleX = rect.width / 768;
+        const scaleY = rect.height / 512;
+        const scale = Math.min(scaleX, scaleY);
+
+        const titleSize = Math.max(18, 28 * scale);
+        const subtitleSize = Math.max(14, 20 * scale);
+        const textSize = Math.max(12, 16 * scale);
+        const valueSize = Math.max(22, 32 * scale);
+        const btnSize = Math.max(14, 18 * scale);
+        const iconSize = Math.max(40, 60 * scale);
+
+        overlay.style.animation = 'slideUp 0.5s ease';
+
+        overlay.innerHTML = `
+            <div style="font-size: ${iconSize}px; margin-bottom: ${10 * scale}px; animation: pulse 2s infinite;">🎯</div>
+            <div style="font-size: ${titleSize}px; font-weight: bold; color: #ffd700; margin-bottom: ${5 * scale}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
                 Испытание завершено!
-            </h2>
-            <div style="color: #888; font-size: 14px; margin-bottom: 20px;">
+            </div>
+            <div style="font-size: ${subtitleSize}px; color: #fff; margin-bottom: ${15 * scale}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
                 Новый голем появился
             </div>
 
-            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 15px;">
-                <div style="font-size: 14px; color: #888; margin-bottom: 5px;">Ваш результат</div>
-                <div style="font-size: 24px; color: #4a9eff; font-weight: bold;">
+            <div style="
+                background: rgba(0,0,0,0.4);
+                border: 2px solid rgba(74,158,255,0.6);
+                border-radius: ${12 * scale}px;
+                padding: ${12 * scale}px ${20 * scale}px;
+                margin-bottom: ${12 * scale}px;
+            ">
+                <div style="font-size: ${textSize}px; color: #888; margin-bottom: ${5 * scale}px;">Ваш результат</div>
+                <div style="font-size: ${valueSize}px; font-weight: bold; color: #4a9eff; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
                     ⚔️ ${totalDamage.toLocaleString()} урона
                 </div>
-                <div style="font-size: 12px; color: #888; margin-top: 5px;">
+                <div style="font-size: ${textSize * 0.9}px; color: #888; margin-top: ${5 * scale}px;">
                     Лучшая попытка: ${bestAttempt.toLocaleString()}
                 </div>
             </div>
 
-            <div style="background: rgba(74, 222, 128, 0.15); border: 2px solid #4ade80; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                <div style="font-size: 14px; color: #888; margin-bottom: 5px;">Награда: ${reward.description}</div>
-                <div style="font-size: 28px; color: #4ade80; font-weight: bold;">
-                    ⏰ +${formatTime(reward.reward)}
+            <div style="
+                background: rgba(0,0,0,0.4);
+                border: 2px solid rgba(74,222,128,0.6);
+                border-radius: ${12 * scale}px;
+                padding: ${15 * scale}px ${25 * scale}px;
+                margin-bottom: ${15 * scale}px;
+            ">
+                <div style="font-size: ${textSize}px; color: #888; margin-bottom: ${5 * scale}px;">Награда: ${reward.description}</div>
+                <div style="font-size: ${iconSize * 0.7}px; margin-bottom: ${5 * scale}px;">⏰</div>
+                <div style="font-size: ${valueSize * 1.1}px; font-weight: bold; color: #4ade80; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+                    +${rewardText}
                 </div>
             </div>
 
             <button onclick="document.getElementById('trial-reset-notification').remove()" style="
-                padding: 12px 30px;
-                background: linear-gradient(180deg, #4a9eff, #2563eb);
-                border: 2px solid #60a5fa;
-                border-radius: 10px;
+                background: linear-gradient(145deg, #667eea, #764ba2);
+                border: none;
+                padding: ${12 * scale}px ${35 * scale}px;
+                border-radius: ${25 * scale}px;
                 color: white;
-                font-size: 16px;
+                font-size: ${btnSize}px;
                 font-weight: bold;
                 cursor: pointer;
-            ">Отлично!</button>
-        </div>
-    `;
+                transition: transform 0.2s;
+                box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                Отлично! 🏆
+            </button>
+        `;
+    };
 
-    document.body.appendChild(modal);
+    img.onload = setupUI;
+    if (img.complete) setupUI();
 
-    // Автозакрытие через 10 секунд
+    // Автозакрытие через 15 секунд
     setTimeout(() => {
-        if (document.getElementById('trial-reset-notification')) {
-            document.getElementById('trial-reset-notification').remove();
-        }
-    }, 10000);
+        const notification = document.getElementById('trial-reset-notification');
+        if (notification) notification.remove();
+    }, 15000);
 }
 
 /**
