@@ -183,11 +183,11 @@ function getCurrentDummyConfig() {
 // === ТЕСТОВЫЙ РЕЖИМ ===
 // Установить конкретное время окончания недели (ISO строка или null для стандартного режима)
 // Пример: window.TEST_WEEK_END_TIME = '2025-12-27T10:50:00' - неделя закончится в 10:50
-// ТЕСТ: Сброс через 10 минут (12:07 UTC 28 декабря 2025)
-window.TEST_WEEK_END_TIME = '2025-12-28T12:07:00Z';
+// PRODUCTION: Тестовый режим отключен, сброс по понедельникам в 00:00 UTC
+window.TEST_WEEK_END_TIME = null;
 
-// Счётчик тестовых недель (увеличивается при каждом "сбросе" в тестовом режиме)
-window.TEST_WEEK_OFFSET = window.TEST_WEEK_OFFSET || 0;
+// Счётчик тестовых недель (не используется в production)
+window.TEST_WEEK_OFFSET = 0;
 
 /**
  * Получить текущее время (серверное если доступно, иначе локальное)
@@ -224,13 +224,13 @@ function getTimeUntilWeekEnd() {
         return Math.max(0, remaining);
     }
 
-    // Стандартный режим: до понедельника 00:00
-    const dayOfWeek = now.getDay(); // 0 = воскресенье
+    // Стандартный режим: до понедельника 00:00 UTC
+    const dayOfWeek = now.getUTCDay(); // 0 = воскресенье (UTC)
     const daysUntilMonday = dayOfWeek === 0 ? 1 : 8 - dayOfWeek;
 
     const nextWeekEnd = new Date(now);
-    nextWeekEnd.setDate(now.getDate() + daysUntilMonday);
-    nextWeekEnd.setHours(0, 0, 0, 0);
+    nextWeekEnd.setUTCDate(now.getUTCDate() + daysUntilMonday);
+    nextWeekEnd.setUTCHours(0, 0, 0, 0);
 
     return nextWeekEnd - now;
 }
@@ -844,7 +844,11 @@ setInterval(() => {
 
 // Первая проверка через 3 секунды после загрузки
 setTimeout(() => {
-    console.log(`🧪 ТЕСТ: Сброс испытания установлен на ${window.TEST_WEEK_END_TIME}`);
+    if (window.TEST_WEEK_END_TIME) {
+        console.log(`🧪 ТЕСТ: Сброс испытания установлен на ${window.TEST_WEEK_END_TIME}`);
+    } else {
+        console.log(`📅 Испытание: сброс каждый понедельник в 00:00 UTC. До сброса: ${formatTimeUntilWeekEnd()}`);
+    }
     checkAndTriggerWeekReset();
 }, 3000);
 
