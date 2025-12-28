@@ -1,9 +1,10 @@
 -- ============================================
--- Migration: Add leaderboard position bonus with 1000+ participants check
+-- Migration: Fix reward system - damage-based base + position bonus
+-- Базовая награда по УРОНУ, бонус за место при 1000+ участников
 -- ============================================
 
--- Обновляем функцию get_player_week_result чтобы добавить бонус за место
--- Бонус за место выдаётся ТОЛЬКО если участников >= 1000
+-- Обновляем функцию get_player_week_result
+-- Базовая награда теперь по урону (WEEKLY_REWARDS), бонус за место отдельно
 CREATE OR REPLACE FUNCTION get_player_week_result(p_player_id bigint, p_week_year text)
 RETURNS TABLE (
     rank bigint,
@@ -30,14 +31,18 @@ AS $$
         r.total as total_players,
         (r.rank::float / r.total * 100) as percent,
         r.best_damage,
-        -- Базовая награда по проценту
+        -- Базовая награда по УРОНУ (WEEKLY_REWARDS)
         CASE
-            WHEN (r.rank::float / r.total * 100) <= 1 THEN 10080   -- 7 дней
-            WHEN (r.rank::float / r.total * 100) <= 5 THEN 4320   -- 3 дня
-            WHEN (r.rank::float / r.total * 100) <= 10 THEN 2880  -- 2 дня
-            WHEN (r.rank::float / r.total * 100) <= 25 THEN 1440  -- 1 день
-            WHEN (r.rank::float / r.total * 100) <= 50 THEN 720   -- 12 часов
-            ELSE 360                                               -- 6 часов
+            WHEN r.best_damage >= 100000 THEN 10080  -- Легенда: 7 дней
+            WHEN r.best_damage >= 75000 THEN 7200   -- Грандмастер: 5 дней
+            WHEN r.best_damage >= 50000 THEN 4320   -- Мастер: 3 дня
+            WHEN r.best_damage >= 35000 THEN 2880   -- Элита: 2 дня
+            WHEN r.best_damage >= 20000 THEN 1440   -- Ветеран: 1 день
+            WHEN r.best_damage >= 10000 THEN 720    -- Воин: 12 часов
+            WHEN r.best_damage >= 5000 THEN 480     -- Боец: 8 часов
+            WHEN r.best_damage >= 3000 THEN 240     -- Ученик: 4 часа
+            WHEN r.best_damage >= 1000 THEN 120     -- Новичок: 2 часа
+            ELSE 60                                  -- Участник: 1 час
         END as reward_time,
         -- Бонус за место (только если участников >= 1000)
         CASE
@@ -53,7 +58,7 @@ AS $$
     WHERE r.player_id = p_player_id;
 $$;
 
--- Обновляем функцию auto_claim_trial_reward чтобы начислять бонус за место
+-- Обновляем функцию auto_claim_trial_reward
 CREATE OR REPLACE FUNCTION auto_claim_trial_reward(p_player_id bigint, p_week_year text)
 RETURNS TABLE (
     success boolean,
@@ -92,7 +97,7 @@ BEGIN
         RETURN;
     END IF;
 
-    -- Получаем результат игрока за неделю (теперь включает position_bonus)
+    -- Получаем результат игрока за неделю
     SELECT * INTO v_result FROM get_player_week_result(p_player_id, p_week_year);
 
     IF v_result IS NULL OR v_result.rank IS NULL THEN
@@ -108,30 +113,36 @@ BEGIN
         RETURN;
     END IF;
 
-    -- Считаем общую награду (базовая + бонус за место)
+    -- Общая награда = базовая (по урону) + бонус за место
     v_total_reward := v_result.reward_time + COALESCE(v_result.position_bonus, 0);
 
-    -- Начисляем время игроку (базовая + бонус)
+    -- Начисляем время игроку
     UPDATE players
     SET time_currency = COALESCE(time_currency, 0) + v_total_reward
     WHERE id = p_player_id;
 
-    -- Записываем что награда получена (сохраняем общую сумму)
+    -- Определяем тир по урону (для записи в БД)
+    -- Записываем что награда получена
     INSERT INTO trial_rewards (player_id, week_year, rank_position, rank_percent, reward_tier, reward_time, claimed, claimed_at)
     VALUES (
         p_player_id,
         p_week_year,
         v_result.rank,
         v_result.percent,
+        -- Тир по урону
         CASE
-            WHEN v_result.percent <= 1 THEN 'legendary'
-            WHEN v_result.percent <= 5 THEN 'epic'
-            WHEN v_result.percent <= 10 THEN 'rare'
-            WHEN v_result.percent <= 25 THEN 'uncommon'
-            WHEN v_result.percent <= 50 THEN 'common'
-            ELSE 'participation'
+            WHEN v_result.best_damage >= 100000 THEN 'legendary'
+            WHEN v_result.best_damage >= 75000 THEN 'grandmaster'
+            WHEN v_result.best_damage >= 50000 THEN 'master'
+            WHEN v_result.best_damage >= 35000 THEN 'elite'
+            WHEN v_result.best_damage >= 20000 THEN 'veteran'
+            WHEN v_result.best_damage >= 10000 THEN 'warrior'
+            WHEN v_result.best_damage >= 5000 THEN 'fighter'
+            WHEN v_result.best_damage >= 3000 THEN 'student'
+            WHEN v_result.best_damage >= 1000 THEN 'novice'
+            ELSE 'participant'
         END,
-        v_total_reward,  -- Сохраняем общую награду (базовая + бонус)
+        v_total_reward,
         true,
         now()
     );
@@ -145,11 +156,11 @@ BEGIN
         v_result.reward_time,
         COALESCE(v_result.position_bonus, 0)::int,
         CASE
-            WHEN v_result.position_bonus > 0 THEN 'Награда начислена! + бонус за место'
+            WHEN v_result.position_bonus > 0 THEN 'Награда + бонус за место!'
             ELSE 'Награда начислена!'
         END::text;
 END;
 $$;
 
-COMMENT ON FUNCTION get_player_week_result IS 'Возвращает результат игрока за неделю с расчётом награды и бонуса за место';
-COMMENT ON FUNCTION auto_claim_trial_reward IS 'Автоматически начисляет награду за прошлую неделю (включая бонус за место при 1000+ участников)';
+COMMENT ON FUNCTION get_player_week_result IS 'Результат игрока: базовая награда по УРОНУ + бонус за место (при 1000+ участников)';
+COMMENT ON FUNCTION auto_claim_trial_reward IS 'Автоначисление награды: урон + бонус за место';
