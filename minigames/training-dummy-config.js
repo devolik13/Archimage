@@ -131,6 +131,9 @@ const LEADERBOARD_BONUSES = [
     { place: 50, bonus: 240, title: "⭐ Топ-50" }        // +4 часа (места 11-50)
 ];
 
+// Минимальное количество участников для выдачи бонусов за места в рейтинге
+const MIN_PARTICIPANTS_FOR_LEADERBOARD = 1000;
+
 /**
  * Получить ISO номер недели (совместим с PostgreSQL IYYY-IW)
  * Возвращает строку "YYYY-WW" для совместимости с Supabase
@@ -180,8 +183,8 @@ function getCurrentDummyConfig() {
 // === ТЕСТОВЫЙ РЕЖИМ ===
 // Установить конкретное время окончания недели (ISO строка или null для стандартного режима)
 // Пример: window.TEST_WEEK_END_TIME = '2025-12-27T10:50:00' - неделя закончится в 10:50
-// ТЕСТ: Сброс через 15 минут (11:26 UTC 28 декабря 2025)
-window.TEST_WEEK_END_TIME = '2025-12-28T11:26:00Z';
+// ТЕСТ: Сброс через 10 минут (11:54 UTC 28 декабря 2025)
+window.TEST_WEEK_END_TIME = '2025-12-28T11:54:00Z';
 
 // Счётчик тестовых недель (увеличивается при каждом "сбросе" в тестовом режиме)
 window.TEST_WEEK_OFFSET = window.TEST_WEEK_OFFSET || 0;
@@ -516,8 +519,17 @@ function getRewardForDamage(totalDamage) {
 
 /**
  * Получить бонус за место в лидерборде
+ * @param {number} place - место игрока в рейтинге
+ * @param {number} totalParticipants - общее количество участников за неделю
+ * @returns {Object|null} - бонус или null если не достигнут порог участников
  */
-function getLeaderboardBonus(place) {
+function getLeaderboardBonus(place, totalParticipants = 0) {
+    // Бонусы за места выдаются только если участников >= 1000
+    if (totalParticipants < MIN_PARTICIPANTS_FOR_LEADERBOARD) {
+        console.log(`📊 Бонус за место не выдаётся: участников ${totalParticipants} < ${MIN_PARTICIPANTS_FOR_LEADERBOARD}`);
+        return null;
+    }
+
     for (const bonus of LEADERBOARD_BONUSES) {
         if (place <= bonus.place) {
             return bonus;
@@ -777,6 +789,7 @@ window.DUMMY_CONFIGURATIONS = DUMMY_CONFIGURATIONS;
 window.DUMMY_CONFIG = DUMMY_CONFIG;
 window.WEEKLY_REWARDS = WEEKLY_REWARDS;
 window.LEADERBOARD_BONUSES = LEADERBOARD_BONUSES;
+window.MIN_PARTICIPANTS_FOR_LEADERBOARD = MIN_PARTICIPANTS_FOR_LEADERBOARD;
 
 window.getCurrentDummyConfig = getCurrentDummyConfig;
 window.getWeekNumber = getWeekNumber;
