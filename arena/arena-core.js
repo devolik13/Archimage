@@ -96,12 +96,12 @@ function showArenaMainMenu() {
     const scaleX = overlayRect.width / 768;
     const scaleY = overlayRect.height / 512;
     
-    // ОБЛАСТЬ ИНФОРМАЦИИ О ПОПЫТКАХ (249,140 : 516,198)
+    // ОБЛАСТЬ ИНФОРМАЦИИ О ПОПЫТКАХ (249,110 : 516,155) - поднято выше
     const energyArea = {
         x: 249 * scaleX,
-        y: 140 * scaleY,
+        y: 110 * scaleY,
         width: (516 - 249) * scaleX,
-        height: (198 - 140) * scaleY
+        height: (155 - 110) * scaleY
     };
     
     // Получаем данные энергии
