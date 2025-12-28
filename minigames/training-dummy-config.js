@@ -247,38 +247,160 @@ function isTestWeekEnded() {
 function triggerTestWeekReset() {
     console.log('🔄 Принудительный сброс тестовой недели...');
 
+    // Сохраняем старый прогресс ДО сброса для расчёта награды
+    const oldProgress = loadDummyProgress();
+    const oldTotalDamage = oldProgress.totalDamage || 0;
+    const oldBestAttempt = oldProgress.bestAttempt || 0;
+    const oldWeek = oldProgress.weekNumber;
+
     window.TEST_WEEK_OFFSET = (window.TEST_WEEK_OFFSET || 0) + 1;
     console.log(`📅 Новый TEST_WEEK_OFFSET: ${window.TEST_WEEK_OFFSET}`);
 
     // Сбрасываем локальный прогресс
     const newWeek = getWeekNumber();
-    const progress = loadDummyProgress();
 
-    console.log(`📅 Старая неделя: ${progress.weekNumber}, новая: ${newWeek}`);
+    console.log(`📅 Старая неделя: ${oldWeek}, новая: ${newWeek}`);
 
-    // Принудительный сброс
-    progress.weekNumber = newWeek;
-    progress.totalDamage = 0;
-    progress.bestAttempt = 0;
-    progress.history = [];
-    progress.lastDummyHp = null;
-    progress.attemptsToday = 0;
-    progress.lastAttemptDate = null;
+    // Рассчитываем награду за прошлую неделю
+    const reward = getRewardForDamage(oldTotalDamage);
+    console.log(`🏆 Награда за прошлую неделю: ${reward.description} (${reward.reward} мин)`);
+
+    // Начисляем награду локально
+    if (oldTotalDamage > 0 && window.userData) {
+        const rewardMinutes = reward.reward;
+        window.userData.time_currency = (window.userData.time_currency || 0) + rewardMinutes;
+        console.log(`💰 Начислено ${rewardMinutes} минут времени`);
+
+        // Сохраняем в БД
+        if (window.dbManager && window.dbManager.savePlayer) {
+            window.dbManager.savePlayer(window.userData).catch(err => {
+                console.error('Ошибка сохранения награды:', err);
+            });
+        }
+
+        // Показываем уведомление о награде
+        showTrialResetNotification(oldTotalDamage, oldBestAttempt, reward);
+    }
+
+    // Принудительный сброс прогресса
+    const progress = {
+        weekNumber: newWeek,
+        totalDamage: 0,
+        bestAttempt: 0,
+        history: [],
+        lastDummyHp: null,
+        attemptsToday: 0,
+        lastAttemptDate: null
+    };
 
     saveDummyProgress(progress, true);
+
+    // Очищаем локальный рейтинг (новая неделя)
+    localStorage.removeItem('trial_leaderboard');
+    console.log('📊 Локальный рейтинг очищен');
 
     console.log('✅ Прогресс сброшен!');
     console.log(`🎯 Новый голем: ${getCurrentDummyConfig().name}`);
 
-    // Автоматически начисляем награды за прошлую неделю
+    // Также пробуем через Supabase (может не сработать для тестовых недель)
     if (typeof window.checkAndClaimTrialReward === 'function') {
-        window.checkAndClaimTrialReward();
+        window.checkAndClaimTrialReward().catch(() => {});
     }
 
     return {
         newWeek: newWeek,
-        newGolem: getCurrentDummyConfig().name
+        newGolem: getCurrentDummyConfig().name,
+        reward: reward,
+        oldDamage: oldTotalDamage
     };
+}
+
+/**
+ * Показать уведомление о сбросе испытания и награде
+ */
+function showTrialResetNotification(totalDamage, bestAttempt, reward) {
+    // Форматируем награду
+    const formatTime = (minutes) => {
+        if (minutes >= 1440) return `${Math.floor(minutes / 1440)}д ${Math.floor((minutes % 1440) / 60)}ч`;
+        if (minutes >= 60) return `${Math.floor(minutes / 60)}ч ${minutes % 60}м`;
+        return `${minutes}м`;
+    };
+
+    const modal = document.createElement('div');
+    modal.id = 'trial-reset-notification';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100000;
+        animation: fadeIn 0.3s ease;
+    `;
+
+    modal.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 3px solid #FFD700;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        ">
+            <div style="font-size: 50px; margin-bottom: 15px;">🎯</div>
+            <h2 style="margin: 0 0 10px 0; color: #FFD700; font-size: 22px;">
+                Испытание завершено!
+            </h2>
+            <div style="color: #888; font-size: 14px; margin-bottom: 20px;">
+                Новый голем появился
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 15px;">
+                <div style="font-size: 14px; color: #888; margin-bottom: 5px;">Ваш результат</div>
+                <div style="font-size: 24px; color: #4a9eff; font-weight: bold;">
+                    ⚔️ ${totalDamage.toLocaleString()} урона
+                </div>
+                <div style="font-size: 12px; color: #888; margin-top: 5px;">
+                    Лучшая попытка: ${bestAttempt.toLocaleString()}
+                </div>
+            </div>
+
+            <div style="background: rgba(74, 222, 128, 0.15); border: 2px solid #4ade80; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                <div style="font-size: 14px; color: #888; margin-bottom: 5px;">Награда: ${reward.description}</div>
+                <div style="font-size: 28px; color: #4ade80; font-weight: bold;">
+                    ⏰ +${formatTime(reward.reward)}
+                </div>
+            </div>
+
+            <button onclick="document.getElementById('trial-reset-notification').remove()" style="
+                padding: 12px 30px;
+                background: linear-gradient(180deg, #4a9eff, #2563eb);
+                border: 2px solid #60a5fa;
+                border-radius: 10px;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+            ">Отлично!</button>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Автозакрытие через 10 секунд
+    setTimeout(() => {
+        if (document.getElementById('trial-reset-notification')) {
+            document.getElementById('trial-reset-notification').remove();
+        }
+    }, 10000);
 }
 
 /**
@@ -597,6 +719,7 @@ window.isTestWeekEnded = isTestWeekEnded;
 window.triggerTestWeekReset = triggerTestWeekReset;
 window.setTestWeekEndIn = setTestWeekEndIn;
 window.getCurrentTime = getCurrentTime;
+window.showTrialResetNotification = showTrialResetNotification;
 
 /**
  * Автоматическая проверка и сброс недели если время истекло

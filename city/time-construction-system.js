@@ -178,23 +178,14 @@ async function startSpellLearning(spellId, faction, tier, currentLevel) {
 
 // Начать найм мага - ИСПРАВЛЕННАЯ ВЕРСИЯ
 async function startWizardHire(currentWizardCount) {
-    // Проверяем активные стройки
-    if (hasActiveConstruction('any_building_or_wizard')) {
-        const constructions = window.userData.constructions || [];
-        const activeConstruction = constructions.find(c => 
-            (c.type === 'building' || c.type === 'wizard') && 
-            c.time_remaining > 0
-        );
-        
-        if (activeConstruction) {
-            if (activeConstruction.type === 'wizard') {
-                alert('⚠️ Уже идет найм другого мага!');
-            } else if (activeConstruction.is_upgrade) {
-                alert('⚠️ Нельзя нанимать мага пока идет улучшение здания!');
-            } else {
-                alert('⚠️ Нельзя нанимать мага пока идет строительство!');
-            }
-        }
+    // Проверяем ТОЛЬКО активный найм мага (строительство НЕ блокирует найм!)
+    const constructions = window.userData.constructions || [];
+    const activeWizardHire = constructions.find(c =>
+        c.type === 'wizard' && c.time_remaining > 0
+    );
+
+    if (activeWizardHire) {
+        alert('⚠️ Уже идет найм другого мага!');
         return false;
     }
     
