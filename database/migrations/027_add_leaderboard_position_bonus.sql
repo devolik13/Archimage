@@ -3,7 +3,11 @@
 -- Базовая награда по УРОНУ, бонус за место при 1000+ участников
 -- ============================================
 
--- Обновляем функцию get_player_week_result
+-- Сначала удаляем старые функции (т.к. меняется тип возвращаемых данных)
+DROP FUNCTION IF EXISTS get_player_week_result(bigint, text);
+DROP FUNCTION IF EXISTS auto_claim_trial_reward(bigint, text);
+
+-- Создаём функцию get_player_week_result
 -- Базовая награда теперь по урону (WEEKLY_REWARDS), бонус за место отдельно
 CREATE OR REPLACE FUNCTION get_player_week_result(p_player_id bigint, p_week_year text)
 RETURNS TABLE (
