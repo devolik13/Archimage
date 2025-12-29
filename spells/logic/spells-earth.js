@@ -2,7 +2,7 @@
 
 
 function castEarthSpell(wizard, spellId, spellData, position, casterType) {
-    console.log(`🌿 Casting earth spell: ${spellId}`);
+    console.log(`🪨 Casting earth spell: ${spellId}`);
     
     switch (spellId) {
         case 'pebble':

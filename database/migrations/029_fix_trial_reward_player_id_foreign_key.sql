@@ -4,6 +4,14 @@
 -- Solution: Look up players.id from telegram_id before INSERT
 -- ============================================
 
+-- ВАЖНО: Сначала удаляем старые функции (т.к. меняется тип возврата)
+DROP FUNCTION IF EXISTS auto_claim_trial_reward(bigint, text);
+DROP FUNCTION IF EXISTS claim_trial_reward(uuid, bigint);
+DROP FUNCTION IF EXISTS upsert_trial_result(bigint, text, int);
+DROP FUNCTION IF EXISTS get_player_week_result(bigint, text);
+DROP FUNCTION IF EXISTS get_player_trial_rank(bigint);
+DROP FUNCTION IF EXISTS get_unclaimed_trial_rewards(bigint);
+
 -- Исправляем auto_claim_trial_reward
 CREATE OR REPLACE FUNCTION auto_claim_trial_reward(p_player_id bigint, p_week_year text)
 RETURNS TABLE (
