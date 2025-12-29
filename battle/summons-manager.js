@@ -323,9 +323,9 @@ class SummonsManager {
             
             // Нарезаем кадры анимации
             const frames = [];
-            const cols = 3;
-            const rows = Math.ceil(config.frames / cols);
-            
+            const cols = config.framesX || 3;  // Используем из конфига или 3 по умолчанию
+            const rows = config.framesY || Math.ceil(config.frames / cols);
+
             for (let row = 0; row < rows; row++) {
                 for (let col = 0; col < cols; col++) {
                     if (frames.length >= config.frames) break;
