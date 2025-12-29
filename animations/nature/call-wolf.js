@@ -54,11 +54,12 @@
             }
             
             const frames = [];
-            const frameWidth = 204;
-            const frameHeight = 204;
-            
-            for (let row = 0; row < 2; row++) {
-                for (let col = 0; col < 3; col++) {
+            const frameWidth = 102;  // 512 / 5 = 102.4 → 102
+            const frameHeight = 102;
+
+            // Сетка 5x5 = 25 кадров
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 5; col++) {
                     const frame = new PIXI.Texture(
                         baseTexture,
                         new PIXI.Rectangle(
@@ -77,7 +78,7 @@
             wolf.y = summonCell.y + summonCell.height * 0.7;
             wolf.anchor.set(0.5, 0.5);
             
-            const scale = summonCell.cellScale * 0.30;
+            const scale = summonCell.cellScale * 0.60; // Увеличили т.к. кадр теперь меньше (102 vs 204)
             const direction = casterType === 'player' ? -1 : 1;
             wolf.scale.set(scale * direction, scale);
             

@@ -17,11 +17,13 @@ class SummonsManager {
             'nature_wolf': {
                 name: 'Волк Природы',
                 sprite: 'images/spells/nature/call_wolf/wolf_idle_sheet.webp',
-                frameWidth: 204,
-                frameHeight: 204,
-                frames: 6,
+                frameWidth: 102,   // 512 / 5
+                frameHeight: 102,  // 512 / 5
+                framesX: 5,        // колонок
+                framesY: 5,        // рядов
+                frames: 25,        // всего кадров
                 animationSpeed: 0.08,
-                scale: 0.30,
+                scale: 0.60,       // увеличили т.к. кадр теперь меньше (102 vs 204)
                 yOffset: 0.7,
                 attackAnimation: 'bite'
             },
