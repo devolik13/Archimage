@@ -217,7 +217,14 @@ function castStoneSpike(wizard, spellData, position, casterType) {
                 // Fallback на старую систему (без защиты Энтом)
                 let armorIgnorePercent = 0;
                 if (wizard.faction === 'earth') {
-                    armorIgnorePercent = window.checkArmorIgnore ? window.checkArmorIgnore(false) : 0;
+                    // Передаём casterInfo для показа bubble
+                    const casterInfo = {
+                        wizard: wizard,
+                        faction: wizard.faction,
+                        casterType: casterType,
+                        position: position
+                    };
+                    armorIgnorePercent = window.checkArmorIgnore ? window.checkArmorIgnore(false, casterInfo) : 0;
                 }
 
                 const finalDamage = window.applyFinalDamage ?

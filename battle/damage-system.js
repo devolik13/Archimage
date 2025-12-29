@@ -453,9 +453,9 @@ function applyDamageWithMultiLayerProtection(caster, targetInfo, baseDamage, spe
     let finalDamage = baseDamage;
     let blocked = 0;
     let protection_layers = [];
-    
+
     // Проверяем все виды защиты
-    
+
     // 1. Стены (земляные, огненные, ветряные)
     const wallProtection = checkWallProtection(targetInfo.position, casterType, spellId);
     if (wallProtection.blocked > 0) {
@@ -468,7 +468,7 @@ function applyDamageWithMultiLayerProtection(caster, targetInfo, baseDamage, spe
         finalDamage = Math.floor(finalDamage * wallProtection.damageMultiplier);
         protection_layers.push(`Ослабление урона на ${Math.round((1 - wallProtection.damageMultiplier) * 100)}%`);
     }
-    
+
     // 2. Призванные существа (только если цель не AOE)
     if (!window.isAOESpell || !window.isAOESpell(spellId)) {
         const summonProtection = checkSummonProtection(targetInfo.position, casterType);
@@ -478,22 +478,60 @@ function applyDamageWithMultiLayerProtection(caster, targetInfo, baseDamage, spe
             protection_layers.push(summonProtection.type);
         }
     }
-    
-    // 3. Применяем урон через стандартную систему (с погодой, сопротивлениями и броней)
-    if (finalDamage > 0) {
-        finalDamage = applyDamageWithWeather(caster, target, finalDamage, spellId, 0);
+
+    // 3. Проверяем бонус фракции Земли (Несокрушимость) - игнорирование брони
+    let armorIgnorePercent = 0;
+    if (caster && caster.faction === 'earth') {
+        // Определяем школу заклинания
+        const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
+
+        // Бонус работает только для заклинаний школы земли
+        if (spellSchool === 'earth') {
+            // Формируем casterInfo для показа bubble
+            const casterInfo = window.currentSpellCaster || {
+                wizard: caster,
+                faction: caster.faction,
+                casterType: casterType,
+                position: findCasterPosition(caster, casterType)
+            };
+
+            // Проверяем срабатывание бонуса (10% шанс, возвращает 10% игнорирования)
+            armorIgnorePercent = checkArmorIgnore(false, casterInfo);
+
+            if (armorIgnorePercent > 0) {
+                protection_layers.push(`🪨 Несокрушимость: игнорирует ${armorIgnorePercent}% брони`);
+            }
+        }
     }
-    
-    // 4. Применяем урон к цели
+
+    // 4. Применяем урон через стандартную систему (с погодой, сопротивлениями и броней)
+    if (finalDamage > 0) {
+        finalDamage = applyDamageWithWeather(caster, target, finalDamage, spellId, armorIgnorePercent);
+    }
+
+    // 5. Применяем урон к цели
     target.hp -= finalDamage;
     if (target.hp < 0) target.hp = 0;
-    
+
     return {
         finalDamage: finalDamage,
         blocked: blocked,
         protection_layers: protection_layers,
         target: target
     };
+}
+
+// --- Вспомогательная функция для поиска позиции кастера ---
+function findCasterPosition(caster, casterType) {
+    if (!caster) return 0;
+
+    if (casterType === 'player') {
+        const pos = window.playerFormation?.findIndex(id => id === caster.id);
+        return pos !== -1 ? pos : 0;
+    } else {
+        const pos = window.enemyFormation?.findIndex(w => w && w.id === caster.id);
+        return pos !== -1 ? pos : 0;
+    }
 }
 
 // --- Проверка защиты стен ---

@@ -490,24 +490,7 @@ function checkDoubleDamage(isHybrid = false) {
     return isDouble;
 }
 
-function checkArmorIgnore(isHybrid = false, casterInfo = null) {
-    const chance = isHybrid ? 0.05 : 0.10;
-    const ignore = Math.random() < chance;
-    if (ignore) {
-        effectCounters.armorIgnored++;
-
-        // Речевой пузырь для бонуса земли
-        if (typeof window.showFactionSpeechBubble === 'function') {
-            const info = casterInfo || window.currentSpellCaster;
-            if (info && info.faction === 'earth') {
-                const col = info.casterType === 'player' ? 5 : 0;
-                window.showFactionSpeechBubble('earth', col, info.position);
-                console.log('🪨 БОНУС ЗЕМЛИ СРАБОТАЛ! Пробивание брони');
-            }
-        }
-    }
-    return ignore ? 20 : 0;
-}
+// checkArmorIgnore перенесён в damage-system.js (единая версия, возвращает 10%)
 
 // --- Устаревшая функция для совместимости ---
 function processEffects() {
@@ -526,6 +509,6 @@ window.processBurningForWizard = processBurningForWizard;
 window.checkCriticalHit = checkCriticalHit;
 window.checkFactionDoubleDamage = checkFactionDoubleDamage;
 window.checkDoubleDamage = checkDoubleDamage;
-window.checkArmorIgnore = checkArmorIgnore;
+// window.checkArmorIgnore экспортируется из damage-system.js
 window.processEffects = processEffects;
 window.effectCounters = effectCounters;
