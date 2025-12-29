@@ -284,17 +284,16 @@ class GuildManager {
                 }
             }
 
-            // Выходим из гильдии через безопасную RPC
-            const { error } = await this.supabase.rpc('update_player_safe', {
-                p_telegram_id: telegramId,
-                p_data: {
-                    guild_id: null,
-                    guild_contribution: 0,
-                    guild_last_active: null
-                }
+            // Выходим из гильдии через специальную RPC
+            const { data, error } = await this.supabase.rpc('leave_guild', {
+                p_telegram_id: telegramId
             });
 
             if (error) throw error;
+
+            if (!data || !data.success) {
+                return { success: false, error: data?.error || 'Ошибка выхода из гильдии' };
+            }
 
             window.userData.guild_id = null;
             window.userData.guild_contribution = 0;
