@@ -165,12 +165,12 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
         // СНАЧАЛА проверка Метеокинеза для стихийных заклинаний
         if (window.activeMeteorokinesis && spellId) {
             const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
-            
+
             if (['fire', 'water', 'wind', 'earth'].includes(spellSchool)) {
-                const activeEffect = window.activeMeteorokinesis.find(m => 
+                const activeEffect = window.activeMeteorokinesis.find(m =>
                     m.isActive && m.casterType === casterType
                 );
-                
+
                 if (activeEffect) {
                     const oldDamage = remainingDamage;
                     remainingDamage = Math.floor(remainingDamage * (1 + activeEffect.damageBonus / 100));
@@ -178,10 +178,45 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
                 }
             }
         }
-    
+
+        // ПРОВЕРКА БОНУСА ФРАКЦИИ ЗЕМЛИ (Несокрушимость) - игнорирование брони
+        let armorIgnorePercent = 0;
+        if (caster && caster.faction === 'earth') {
+            const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
+
+            // Бонус работает только для заклинаний школы земли
+            if (spellSchool === 'earth') {
+                // Формируем casterInfo для показа bubble
+                // Находим позицию кастера
+                let casterPosition = 0;
+                if (casterType === 'player') {
+                    const pos = window.playerFormation?.findIndex(id => id === caster.id);
+                    casterPosition = pos !== -1 ? pos : 0;
+                } else {
+                    const pos = window.enemyFormation?.findIndex(w => w && w.id === caster.id);
+                    casterPosition = pos !== -1 ? pos : 0;
+                }
+
+                const casterInfo = window.currentSpellCaster || {
+                    wizard: caster,
+                    faction: caster.faction,
+                    casterType: casterType,
+                    position: casterPosition
+                };
+
+                // Проверяем срабатывание бонуса (10% шанс, возвращает 10% игнорирования)
+                armorIgnorePercent = typeof window.checkArmorIgnore === 'function' ?
+                    window.checkArmorIgnore(false, casterInfo) : 0;
+
+                if (armorIgnorePercent > 0) {
+                    protectionLayers.push(`🪨 Несокрушимость: игнорирует ${armorIgnorePercent}% брони`);
+                }
+            }
+        }
+
         // ПОТОМ применяем погоду, сопротивления и броню
         const finalDamage = typeof window.applyDamageWithWeather === 'function' ?
-            window.applyDamageWithWeather(caster, target.wizard, remainingDamage, spellId, 0) : remainingDamage;
+            window.applyDamageWithWeather(caster, target.wizard, remainingDamage, spellId, armorIgnorePercent) : remainingDamage;
 
         // Применяем урон к магу
         target.wizard.hp -= finalDamage;
