@@ -48,7 +48,7 @@ function showPvPArenaModal() {
     	? "if (!checkFormationBeforeBattle()) return; closePvPArenaModal(); window.showOpponentSelection()"
     	: "alert('⚠️ Постройте Арену чтобы участвовать в PvP боях!')";
     const modalContent = `
-    	<div style="padding: 24px; width: 640px; max-width: 100%; background: #2c2c3d; border-radius: 12px; color: white;">
+    	<div style="padding: 24px; max-width: 800px; background: #2c2c3d; border-radius: 12px; color: white;">
     	    <h3 style="margin: 0 0 16px 0; color: #7289da; font-size: 28px;">⚔️ PvP Арена</h3>
     	    <p style="margin: 0 0 20px 0; font-size: 18px;">Добро пожаловать на арену! Здесь вы можете сражаться с другими магами.</p>
 
