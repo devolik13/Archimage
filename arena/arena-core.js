@@ -270,10 +270,10 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
             buttonY = buttonsArea.y + buttonHeight;
         }
 
-        // Получаем цвета кнопки (как в расстановке войск - #3d3d5c)
+        // Получаем цвета кнопки (как в результате боя - полупрозрачный чёрный)
         const bgColor = button.enabled ?
-            'rgba(61, 61, 92, 0.85)' :
-            'rgba(30, 30, 46, 0.7)';
+            'rgba(0, 0, 0, 0.3)' :
+            'rgba(0, 0, 0, 0.2)';
 
         const borderColor = button.enabled ?
             (button.highlight ? '#7289da' :
@@ -317,8 +317,8 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
         btnElement.onclick = button.onClick;
 
         if (button.enabled) {
-            // Hover - чуть светлее (#444466 как в расстановке)
-            const hoverBg = 'rgba(68, 68, 102, 0.9)';
+            // Hover - чуть светлее
+            const hoverBg = 'rgba(0, 0, 0, 0.5)';
 
             btnElement.onmouseover = () => {
                 btnElement.style.background = hoverBg;
