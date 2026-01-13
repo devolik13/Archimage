@@ -393,18 +393,18 @@ function showTrialMenuInArena() {
     }
     overlay.appendChild(attemptsDiv);
 
-    // Информация о манекене
+    // Информация о манекене (поднято вверх и увеличено на 10%)
     const dummyInfo = document.createElement('div');
     dummyInfo.style.cssText = `
         position: absolute;
-        top: ${130 * scaleY}px;
+        top: ${100 * scaleY}px;
         left: 50%;
         transform: translateX(-50%);
-        width: ${520 * scaleX}px;
+        width: ${560 * scaleX}px;
         background: rgba(0, 0, 0, 0.7);
         border: 2px solid #7289da;
         border-radius: 10px;
-        padding: ${12 * scaleY}px;
+        padding: ${15 * scaleY}px;
         color: white;
         text-align: center;
     `;
@@ -438,18 +438,18 @@ function showTrialMenuInArena() {
     `;
     overlay.appendChild(dummyInfo);
 
-    // Прогресс игрока
+    // Прогресс игрока (поднято вверх и увеличено на 10%)
     const progressDiv = document.createElement('div');
     progressDiv.style.cssText = `
         position: absolute;
-        top: ${255 * scaleY}px;
+        top: ${225 * scaleY}px;
         left: 50%;
         transform: translateX(-50%);
-        width: ${520 * scaleX}px;
+        width: ${560 * scaleX}px;
         background: rgba(0, 50, 0, 0.5);
         border: 1px solid #4CAF50;
         border-radius: 8px;
-        padding: ${10 * scaleY}px;
+        padding: ${12 * scaleY}px;
         color: white;
         text-align: center;
     `;
@@ -496,11 +496,11 @@ function showTrialMenuInArena() {
     `;
     overlay.appendChild(progressDiv);
 
-    // Кнопки (увеличенные как в арене)
-    const btnY = 340 * scaleY;
-    const btnWidth = 320 * scaleX;
-    const btnHeight = 65 * scaleY;
-    const gap = 25 * scaleX;
+    // Кнопки (уменьшенные в 2 раза)
+    const btnY = 355 * scaleY;
+    const btnWidth = 160 * scaleX;
+    const btnHeight = 35 * scaleY;
+    const gap = 15 * scaleX;
 
     // Кнопка рейтинга
     const ratingBtn = document.createElement('button');
@@ -512,9 +512,9 @@ function showTrialMenuInArena() {
         height: ${btnHeight}px;
         background: rgba(255, 215, 0, 0.2);
         border: 2px solid #FFD700;
-        border-radius: 10px;
+        border-radius: 6px;
         color: #FFD700;
-        font-size: ${Math.max(16, 20 * scale)}px;
+        font-size: ${Math.max(12, 14 * scale)}px;
         font-weight: bold;
         cursor: pointer;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
@@ -537,9 +537,9 @@ function showTrialMenuInArena() {
         height: ${btnHeight}px;
         background: ${canStart ? 'rgba(76, 175, 80, 0.3)' : 'rgba(100, 100, 100, 0.3)'};
         border: 2px solid ${canStart ? '#4CAF50' : '#666'};
-        border-radius: 10px;
+        border-radius: 6px;
         color: ${canStart ? '#4CAF50' : '#666'};
-        font-size: ${Math.max(16, 20 * scale)}px;
+        font-size: ${Math.max(12, 14 * scale)}px;
         font-weight: bold;
         cursor: ${canStart ? 'pointer' : 'not-allowed'};
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
@@ -562,19 +562,19 @@ function showTrialMenuInArena() {
     }
     overlay.appendChild(startBtn);
 
-    // Кнопка назад (по центру внизу, как в арене)
+    // Кнопка назад (по центру внизу)
     const backBtn = document.createElement('button');
     backBtn.style.cssText = `
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
         bottom: ${15 * scaleY}px;
-        padding: ${12 * scaleY}px ${40 * scaleX}px;
+        padding: ${8 * scaleY}px ${25 * scaleX}px;
         background: linear-gradient(180deg, #dc3545, #a71d2a);
         border: 2px solid #ff6b6b;
-        border-radius: 10px;
+        border-radius: 6px;
         color: white;
-        font-size: ${Math.max(16, 20 * scale)}px;
+        font-size: ${Math.max(12, 14 * scale)}px;
         font-weight: bold;
         cursor: pointer;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
