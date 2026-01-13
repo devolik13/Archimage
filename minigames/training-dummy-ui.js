@@ -359,27 +359,12 @@ function showTrialMenuInArena() {
     const scaleY = bgImg ? bgImg.offsetHeight / 480 : 1;
     const scale = Math.min(scaleX, scaleY);
 
-    // Заголовок (поднято выше)
-    const title = document.createElement('div');
-    title.style.cssText = `
-        position: absolute;
-        top: ${35 * scaleY}px;
-        left: 50%;
-        transform: translateX(-50%);
-        color: #FFD700;
-        font-size: ${Math.max(18, 26 * scale)}px;
-        font-weight: bold;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-    `;
-    title.innerHTML = '⚔️ Испытание';
-    overlay.appendChild(title);
-
-    // Попытки (ещё выше)
+    // Попытки (на самом верху)
     const attemptsDiv = document.createElement('div');
     const attemptsColor = info.remainingAttempts > 0 ? '#4CAF50' : '#f44336';
     attemptsDiv.style.cssText = `
         position: absolute;
-        top: ${50 * scaleY}px;
+        top: ${15 * scaleY}px;
         left: 50%;
         transform: translateX(-50%);
         color: ${attemptsColor};
@@ -393,11 +378,11 @@ function showTrialMenuInArena() {
     }
     overlay.appendChild(attemptsDiv);
 
-    // Информация о манекене (ещё выше)
+    // Информация о манекене
     const dummyInfo = document.createElement('div');
     dummyInfo.style.cssText = `
         position: absolute;
-        top: ${60 * scaleY}px;
+        top: ${45 * scaleY}px;
         left: 50%;
         transform: translateX(-50%);
         width: ${560 * scaleX}px;
@@ -438,18 +423,18 @@ function showTrialMenuInArena() {
     `;
     overlay.appendChild(dummyInfo);
 
-    // Прогресс игрока (поднято выше)
+    // Прогресс игрока (увеличен вниз)
     const progressDiv = document.createElement('div');
     progressDiv.style.cssText = `
         position: absolute;
-        top: ${205 * scaleY}px;
+        top: ${175 * scaleY}px;
         left: 50%;
         transform: translateX(-50%);
         width: ${560 * scaleX}px;
         background: rgba(0, 50, 0, 0.5);
         border: 1px solid #4CAF50;
         border-radius: 8px;
-        padding: ${12 * scaleY}px;
+        padding: ${18 * scaleY}px;
         color: white;
         text-align: center;
     `;
@@ -496,8 +481,8 @@ function showTrialMenuInArena() {
     `;
     overlay.appendChild(progressDiv);
 
-    // Кнопки (+20% размер, раздвинуты)
-    const btnY = 330 * scaleY;
+    // Кнопки (сдвинуты вниз)
+    const btnY = 360 * scaleY;
     const btnWidth = 192 * scaleX;
     const btnHeight = 42 * scaleY;
     const gap = 40 * scaleX;
