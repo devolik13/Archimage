@@ -29,11 +29,11 @@ function showPvPArenaModal() {
 
         const color = current > 0 ? '#4ade80' : '#ff6b6b';
         battleEnergyInfo = `
-            <div style="background: #3d3d5c; padding: 10px; border-radius: 6px; margin-bottom: 12px; text-align: center;">
-                <div style="font-size: 14px; color: ${color}; font-weight: bold;">
+            <div style="background: #3d3d5c; padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
+                <div style="font-size: 22px; color: ${color}; font-weight: bold;">
                     ⚡ Попытки боев: ${current}/${max}${regenText}
                 </div>
-                <div style="font-size: 11px; color: #aaa; margin-top: 4px;">
+                <div style="font-size: 16px; color: #aaa; margin-top: 8px;">
                     Каждые 2 часа восстанавливается 1 попытка
                 </div>
             </div>
@@ -48,35 +48,35 @@ function showPvPArenaModal() {
     	? "if (!checkFormationBeforeBattle()) return; closePvPArenaModal(); window.showOpponentSelection()"
     	: "alert('⚠️ Постройте Арену чтобы участвовать в PvP боях!')";
     const modalContent = `
-    	<div style="padding: 12px; max-width: 320px; background: #2c2c3d; border-radius: 8px; color: white;">
-    	    <h3 style="margin: 0 0 8px 0; color: #7289da; font-size: 18px;">⚔️ PvP Арена</h3>
-    	    <p style="margin: 0 0 12px 0; font-size: 12px;">Добро пожаловать на арену! Здесь вы можете сражаться с другими магами.</p>
+    	<div style="padding: 24px; max-width: 500px; background: #2c2c3d; border-radius: 12px; color: white;">
+    	    <h3 style="margin: 0 0 16px 0; color: #7289da; font-size: 28px;">⚔️ PvP Арена</h3>
+    	    <p style="margin: 0 0 20px 0; font-size: 18px;">Добро пожаловать на арену! Здесь вы можете сражаться с другими магами.</p>
 
     	    ${battleEnergyInfo}
 
-    	    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-    	        <button style="padding: 10px 8px; border: none; border-radius: 6px; background: #7289da; color: white; cursor: pointer; font-size: 14px;"
+    	    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+    	        <button style="padding: 20px 16px; border: none; border-radius: 10px; background: #7289da; color: white; cursor: pointer; font-size: 22px;"
     	                onclick="window.showBattleSetup()">
     	            🎯 Расставить войска
     	        </button>
-    	        <button style="${battleButtonStyle.replace('padding: 12px', 'padding: 10px 8px').replace('font-size: 16px', 'font-size: 14px')}"
+    	        <button style="${battleButtonStyle.replace('padding: 12px', 'padding: 20px 16px').replace('font-size: 16px', 'font-size: 22px').replace('border-radius: 6px', 'border-radius: 10px')}"
     	                onclick="${battleButtonOnClick}"
     	                ${hasArena ? '' : 'disabled'}>
     	            ⚔️ В бой (PvP) ${hasArena ? '' : '🔒'}
     	        </button>
-    	        <button style="padding: 10px 8px; border: none; border-radius: 6px; background: #FFD700; color: #333; cursor: pointer; font-size: 14px; font-weight: bold;"
+    	        <button style="padding: 20px 16px; border: none; border-radius: 10px; background: #FFD700; color: #333; cursor: pointer; font-size: 22px; font-weight: bold;"
     	                onclick="closePvPArenaModal(); window.showLeaderboard()">
     	            🏆 Рейтинг
     	        </button>
-    	        <button style="padding: 10px 8px; border: none; border-radius: 6px; background: #4CAF50; color: white; cursor: pointer; font-size: 14px; font-weight: bold;"
+    	        <button style="padding: 20px 16px; border: none; border-radius: 10px; background: #4CAF50; color: white; cursor: pointer; font-size: 22px; font-weight: bold;"
     	                onclick="closePvPArenaModal(); window.showAdventureHub()">
     	            🗺️ Приключения (PvE)
     	        </button>
     	    </div>
 
-    	    ${!hasArena ? '<p style="color: #ff6b6b; font-size: 11px; text-align: center; margin: 0 0 8px 0;">⚠️ Постройте Арену для PvP боёв</p>' : ''}
+    	    ${!hasArena ? '<p style="color: #ff6b6b; font-size: 18px; text-align: center; margin: 0 0 16px 0;">⚠️ Постройте Арену для PvP боёв</p>' : ''}
 
-    	    <button style="margin-top: 0; padding: 8px; width: 100%; border: 1px solid #7289da; border-radius: 6px; background: transparent; color: #7289da; cursor: pointer; font-size: 13px;"
+    	    <button style="margin-top: 0; padding: 16px; width: 100%; border: 2px solid #7289da; border-radius: 10px; background: transparent; color: #7289da; cursor: pointer; font-size: 20px;"
     	            onclick="closePvPArenaModal()">
     	        ❌ Закрыть
     	    </button>
