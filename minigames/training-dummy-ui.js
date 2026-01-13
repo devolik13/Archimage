@@ -423,11 +423,11 @@ function showTrialMenuInArena() {
     `;
     overlay.appendChild(dummyInfo);
 
-    // Прогресс игрока (увеличен вниз)
+    // Прогресс игрока (опущен ниже)
     const progressDiv = document.createElement('div');
     progressDiv.style.cssText = `
         position: absolute;
-        top: ${175 * scaleY}px;
+        top: ${195 * scaleY}px;
         left: 50%;
         transform: translateX(-50%);
         width: ${560 * scaleX}px;
@@ -481,11 +481,11 @@ function showTrialMenuInArena() {
     `;
     overlay.appendChild(progressDiv);
 
-    // Кнопки (сдвинуты вниз)
+    // Кнопки (раздвинуты шире)
     const btnY = 360 * scaleY;
     const btnWidth = 192 * scaleX;
     const btnHeight = 42 * scaleY;
-    const gap = 40 * scaleX;
+    const gap = 70 * scaleX;
 
     // Кнопка рейтинга (левее)
     const ratingBtn = document.createElement('button');
