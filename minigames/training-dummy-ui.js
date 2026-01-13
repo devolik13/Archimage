@@ -359,11 +359,11 @@ function showTrialMenuInArena() {
     const scaleY = bgImg ? bgImg.offsetHeight / 480 : 1;
     const scale = Math.min(scaleX, scaleY);
 
-    // Заголовок
+    // Заголовок (поднято выше)
     const title = document.createElement('div');
     title.style.cssText = `
         position: absolute;
-        top: ${50 * scaleY}px;
+        top: ${35 * scaleY}px;
         left: 50%;
         transform: translateX(-50%);
         color: #FFD700;
@@ -374,12 +374,12 @@ function showTrialMenuInArena() {
     title.innerHTML = '⚔️ Испытание';
     overlay.appendChild(title);
 
-    // Попытки
+    // Попытки (поднято выше)
     const attemptsDiv = document.createElement('div');
     const attemptsColor = info.remainingAttempts > 0 ? '#4CAF50' : '#f44336';
     attemptsDiv.style.cssText = `
         position: absolute;
-        top: ${85 * scaleY}px;
+        top: ${65 * scaleY}px;
         left: 50%;
         transform: translateX(-50%);
         color: ${attemptsColor};
@@ -393,11 +393,11 @@ function showTrialMenuInArena() {
     }
     overlay.appendChild(attemptsDiv);
 
-    // Информация о манекене (поднято вверх и увеличено на 10%)
+    // Информация о манекене (поднято выше)
     const dummyInfo = document.createElement('div');
     dummyInfo.style.cssText = `
         position: absolute;
-        top: ${100 * scaleY}px;
+        top: ${80 * scaleY}px;
         left: 50%;
         transform: translateX(-50%);
         width: ${560 * scaleX}px;
@@ -438,11 +438,11 @@ function showTrialMenuInArena() {
     `;
     overlay.appendChild(dummyInfo);
 
-    // Прогресс игрока (поднято вверх и увеличено на 10%)
+    // Прогресс игрока (поднято выше)
     const progressDiv = document.createElement('div');
     progressDiv.style.cssText = `
         position: absolute;
-        top: ${225 * scaleY}px;
+        top: ${205 * scaleY}px;
         left: 50%;
         transform: translateX(-50%);
         width: ${560 * scaleX}px;
@@ -496,13 +496,13 @@ function showTrialMenuInArena() {
     `;
     overlay.appendChild(progressDiv);
 
-    // Кнопки (уменьшенные в 2 раза)
-    const btnY = 355 * scaleY;
-    const btnWidth = 160 * scaleX;
-    const btnHeight = 35 * scaleY;
-    const gap = 15 * scaleX;
+    // Кнопки (+20% размер, раздвинуты)
+    const btnY = 330 * scaleY;
+    const btnWidth = 192 * scaleX;
+    const btnHeight = 42 * scaleY;
+    const gap = 40 * scaleX;
 
-    // Кнопка рейтинга
+    // Кнопка рейтинга (левее)
     const ratingBtn = document.createElement('button');
     ratingBtn.style.cssText = `
         position: absolute;
@@ -512,9 +512,9 @@ function showTrialMenuInArena() {
         height: ${btnHeight}px;
         background: rgba(255, 215, 0, 0.2);
         border: 2px solid #FFD700;
-        border-radius: 6px;
+        border-radius: 8px;
         color: #FFD700;
-        font-size: ${Math.max(12, 14 * scale)}px;
+        font-size: ${Math.max(13, 16 * scale)}px;
         font-weight: bold;
         cursor: pointer;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
@@ -526,7 +526,7 @@ function showTrialMenuInArena() {
     ratingBtn.onclick = () => showTrialLeaderboardInArena();
     overlay.appendChild(ratingBtn);
 
-    // Кнопка начать
+    // Кнопка начать (правее)
     const canStart = info.remainingAttempts > 0;
     const startBtn = document.createElement('button');
     startBtn.style.cssText = `
@@ -537,9 +537,9 @@ function showTrialMenuInArena() {
         height: ${btnHeight}px;
         background: ${canStart ? 'rgba(76, 175, 80, 0.3)' : 'rgba(100, 100, 100, 0.3)'};
         border: 2px solid ${canStart ? '#4CAF50' : '#666'};
-        border-radius: 6px;
+        border-radius: 8px;
         color: ${canStart ? '#4CAF50' : '#666'};
-        font-size: ${Math.max(12, 14 * scale)}px;
+        font-size: ${Math.max(13, 16 * scale)}px;
         font-weight: bold;
         cursor: ${canStart ? 'pointer' : 'not-allowed'};
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
@@ -562,19 +562,19 @@ function showTrialMenuInArena() {
     }
     overlay.appendChild(startBtn);
 
-    // Кнопка назад (по центру внизу)
+    // Кнопка назад (ниже, +20% размер)
     const backBtn = document.createElement('button');
     backBtn.style.cssText = `
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
-        bottom: ${15 * scaleY}px;
-        padding: ${8 * scaleY}px ${25 * scaleX}px;
+        bottom: ${5 * scaleY}px;
+        padding: ${10 * scaleY}px ${30 * scaleX}px;
         background: linear-gradient(180deg, #dc3545, #a71d2a);
         border: 2px solid #ff6b6b;
-        border-radius: 6px;
+        border-radius: 8px;
         color: white;
-        font-size: ${Math.max(12, 14 * scale)}px;
+        font-size: ${Math.max(13, 16 * scale)}px;
         font-weight: bold;
         cursor: pointer;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
