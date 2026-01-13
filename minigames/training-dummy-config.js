@@ -132,7 +132,7 @@ const LEADERBOARD_BONUSES = [
 ];
 
 // Минимальное количество участников для выдачи бонусов за места в рейтинге
-const MIN_PARTICIPANTS_FOR_LEADERBOARD = 1000;
+const MIN_PARTICIPANTS_FOR_LEADERBOARD = 10000;
 
 /**
  * Получить ISO номер недели (совместим с PostgreSQL IYYY-IW)
@@ -246,15 +246,17 @@ function isTestWeekEnded() {
 /**
  * Сбросить тестовую неделю (вызывается вручную для теста)
  * Увеличивает offset и сбрасывает локальный прогресс
+ * ВАЖНО: Награды за урон уже выданы сразу при достижении уровней!
  */
 function triggerTestWeekReset() {
     console.log('🔄 Принудительный сброс тестовой недели...');
 
-    // Сохраняем старый прогресс ДО сброса для расчёта награды
+    // Сохраняем старый прогресс для отображения итогов
     const oldProgress = loadDummyProgress();
     const oldTotalDamage = oldProgress.totalDamage || 0;
     const oldBestAttempt = oldProgress.bestAttempt || 0;
     const oldWeek = oldProgress.weekNumber;
+    const claimedTiers = oldProgress.claimedTiers || [];
 
     window.TEST_WEEK_OFFSET = (window.TEST_WEEK_OFFSET || 0) + 1;
     console.log(`📅 Новый TEST_WEEK_OFFSET: ${window.TEST_WEEK_OFFSET}`);
@@ -264,25 +266,14 @@ function triggerTestWeekReset() {
 
     console.log(`📅 Старая неделя: ${oldWeek}, новая: ${newWeek}`);
 
-    // Рассчитываем награду за прошлую неделю
-    const reward = getRewardForDamage(oldTotalDamage);
-    console.log(`🏆 Награда за прошлую неделю: ${reward.description} (${reward.reward} мин)`);
+    // Показываем итоговый уровень (награда уже выдана сразу!)
+    const achievedTier = getRewardForDamage(oldTotalDamage);
+    console.log(`🏆 Достигнутый уровень: ${achievedTier.description}`);
+    console.log(`💰 Награды уже выданы сразу при достижении уровней: ${claimedTiers.length} уровней`);
 
-    // Начисляем награду локально
-    if (oldTotalDamage > 0 && window.userData) {
-        const rewardMinutes = reward.reward;
-        window.userData.time_currency = (window.userData.time_currency || 0) + rewardMinutes;
-        console.log(`💰 Начислено ${rewardMinutes} минут времени`);
-
-        // Сохраняем в БД
-        if (window.dbManager && window.dbManager.savePlayer) {
-            window.dbManager.savePlayer(window.userData).catch(err => {
-                console.error('Ошибка сохранения награды:', err);
-            });
-        }
-
-        // Показываем уведомление о награде
-        showTrialResetNotification(oldTotalDamage, oldBestAttempt, reward);
+    // Показываем уведомление о завершении недели (БЕЗ награды - она уже выдана)
+    if (oldTotalDamage > 0) {
+        showTrialResetNotification(oldTotalDamage, oldBestAttempt, achievedTier, true);
     }
 
     // Принудительный сброс прогресса
@@ -293,7 +284,8 @@ function triggerTestWeekReset() {
         history: [],
         lastDummyHp: null,
         attemptsToday: 0,
-        lastAttemptDate: null
+        lastAttemptDate: null,
+        claimedTiers: []  // Сброс полученных наград
     };
 
     saveDummyProgress(progress, true);
@@ -305,7 +297,7 @@ function triggerTestWeekReset() {
     console.log('✅ Прогресс сброшен!');
     console.log(`🎯 Новый голем: ${getCurrentDummyConfig().name}`);
 
-    // Также пробуем через Supabase (может не сработать для тестовых недель)
+    // Также пробуем через Supabase для рейтинговой награды (если 10000+ участников)
     if (typeof window.checkAndClaimTrialReward === 'function') {
         window.checkAndClaimTrialReward().catch(() => {});
     }
@@ -313,15 +305,16 @@ function triggerTestWeekReset() {
     return {
         newWeek: newWeek,
         newGolem: getCurrentDummyConfig().name,
-        reward: reward,
+        achievedTier: achievedTier,
         oldDamage: oldTotalDamage
     };
 }
 
 /**
  * Показать уведомление о сбросе испытания и награде (адаптивное как ежедневная награда)
+ * @param {boolean} alreadyRewarded - награда уже была выдана сразу при достижении уровней
  */
-function showTrialResetNotification(totalDamage, bestAttempt, reward) {
+function showTrialResetNotification(totalDamage, bestAttempt, reward, alreadyRewarded = false) {
     // Удаляем старую модалку если есть
     const oldModal = document.getElementById('trial-reset-notification');
     if (oldModal) oldModal.remove();
@@ -450,10 +443,10 @@ function showTrialResetNotification(totalDamage, bestAttempt, reward) {
                 padding: ${15 * scale}px ${25 * scale}px;
                 margin-bottom: ${15 * scale}px;
             ">
-                <div style="font-size: ${textSize}px; color: #888; margin-bottom: ${5 * scale}px;">Награда: ${reward.description}</div>
-                <div style="font-size: ${iconSize * 0.7}px; margin-bottom: ${5 * scale}px;">⏰</div>
+                <div style="font-size: ${textSize}px; color: #888; margin-bottom: ${5 * scale}px;">Уровень: ${reward.description}</div>
+                <div style="font-size: ${iconSize * 0.7}px; margin-bottom: ${5 * scale}px;">${alreadyRewarded ? '✅' : '⏰'}</div>
                 <div style="font-size: ${valueSize * 1.1}px; font-weight: bold; color: #4ade80; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
-                    +${rewardText}
+                    ${alreadyRewarded ? 'Награда получена!' : '+' + rewardText}
                 </div>
             </div>
 
@@ -673,6 +666,9 @@ function recordAttempt(damage, remainingHp = null) {
 
     console.log(`🎯 Текущий прогресс до обновления:`, JSON.stringify(progress));
 
+    // Сохраняем старый урон для проверки новых уровней
+    const oldTotalDamage = progress.totalDamage || 0;
+
     // Сброс на новую неделю
     if (progress.weekNumber !== currentWeek) {
         console.log(`🎯 Новая неделя: ${progress.weekNumber} -> ${currentWeek}`);
@@ -681,6 +677,12 @@ function recordAttempt(damage, remainingHp = null) {
         progress.bestAttempt = 0;
         progress.history = [];
         progress.lastDummyHp = null;
+        progress.claimedTiers = [];  // Сброс полученных наград за урон
+    }
+
+    // Инициализируем claimedTiers если нет
+    if (!progress.claimedTiers) {
+        progress.claimedTiers = [];
     }
 
     // НЕ увеличиваем attemptsToday - это уже сделано в deductTrialAttempt()
@@ -696,6 +698,17 @@ function recordAttempt(damage, remainingHp = null) {
 
     console.log(`🎯 Прогресс после обновления: totalDamage=${progress.totalDamage}, bestAttempt=${progress.bestAttempt}, attemptsToday=${progress.attemptsToday}`);
 
+    // Проверяем и выдаём награды за новые уровни урона
+    const newRewards = checkAndClaimDamageTierRewards(oldTotalDamage, progress.totalDamage, progress.claimedTiers);
+    if (newRewards.length > 0) {
+        // Обновляем список полученных наград
+        newRewards.forEach(tier => {
+            if (!progress.claimedTiers.includes(tier.minDamage)) {
+                progress.claimedTiers.push(tier.minDamage);
+            }
+        });
+    }
+
     saveDummyProgress(progress, true); // immediate save to DB
 
     // Сохраняем результат в Supabase для глобального рейтинга
@@ -704,6 +717,123 @@ function recordAttempt(damage, remainingHp = null) {
     }
 
     return progress;
+}
+
+/**
+ * Проверить и выдать награды за достигнутые уровни урона
+ * @param {number} oldDamage - урон до этой попытки
+ * @param {number} newDamage - урон после этой попытки
+ * @param {Array} claimedTiers - уже полученные уровни
+ * @returns {Array} - список новых полученных наград
+ */
+function checkAndClaimDamageTierRewards(oldDamage, newDamage, claimedTiers = []) {
+    const newRewards = [];
+
+    for (const tier of WEEKLY_REWARDS) {
+        // Пропускаем уже полученные награды
+        if (claimedTiers.includes(tier.minDamage)) {
+            continue;
+        }
+
+        // Проверяем достигли ли мы этого уровня
+        if (newDamage >= tier.minDamage) {
+            // Вычисляем награду (разница с предыдущим уровнем)
+            const prevTierIndex = WEEKLY_REWARDS.indexOf(tier) - 1;
+            const prevReward = prevTierIndex >= 0 ? WEEKLY_REWARDS[prevTierIndex].reward : 0;
+            const tierReward = tier.reward - prevReward;
+
+            if (tierReward > 0) {
+                newRewards.push({
+                    ...tier,
+                    actualReward: tierReward
+                });
+
+                // Начисляем награду
+                if (window.userData) {
+                    window.userData.time_currency = (window.userData.time_currency || 0) + tierReward;
+                    console.log(`🏆 Награда за урон: ${tier.description} +${tierReward} мин`);
+
+                    // Сохраняем в БД
+                    if (window.dbManager && window.dbManager.savePlayer) {
+                        window.dbManager.savePlayer(window.userData).catch(err => {
+                            console.error('Ошибка сохранения награды:', err);
+                        });
+                    }
+                }
+
+                // Показываем уведомление
+                showDamageTierRewardNotification(tier, tierReward);
+            }
+        }
+    }
+
+    return newRewards;
+}
+
+/**
+ * Показать уведомление о награде за уровень урона
+ */
+function showDamageTierRewardNotification(tier, rewardMinutes) {
+    // Форматируем награду
+    const formatTime = (minutes) => {
+        if (minutes >= 1440) {
+            const days = Math.floor(minutes / 1440);
+            const hours = Math.floor((minutes % 1440) / 60);
+            return hours > 0 ? `${days}д ${hours}ч` : `${days}д`;
+        }
+        if (minutes >= 60) {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return mins > 0 ? `${hours}ч ${mins}м` : `${hours}ч`;
+        }
+        return `${minutes}м`;
+    };
+
+    // Создаём тост-уведомление
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        top: 20%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(145deg, rgba(74, 222, 128, 0.95), rgba(34, 197, 94, 0.95));
+        border: 2px solid #4ade80;
+        border-radius: 16px;
+        padding: 20px 30px;
+        z-index: 100001;
+        text-align: center;
+        animation: tierRewardPopup 0.5s ease;
+        box-shadow: 0 8px 32px rgba(74, 222, 128, 0.4);
+    `;
+
+    toast.innerHTML = `
+        <style>
+            @keyframes tierRewardPopup {
+                0% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+                50% { transform: translateX(-50%) scale(1.1); }
+                100% { opacity: 1; transform: translateX(-50%) scale(1); }
+            }
+        </style>
+        <div style="font-size: 36px; margin-bottom: 8px;">🎉</div>
+        <div style="font-size: 18px; font-weight: bold; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+            Новый уровень!
+        </div>
+        <div style="font-size: 22px; font-weight: bold; color: #ffd700; margin: 8px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+            ${tier.description}
+        </div>
+        <div style="font-size: 16px; color: #fff;">
+            ⏰ +${formatTime(rewardMinutes)}
+        </div>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Удаляем через 3 секунды
+    setTimeout(() => {
+        toast.style.transition = 'opacity 0.5s';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
 }
 
 /**
@@ -803,6 +933,8 @@ window.getRemainingAttempts = getRemainingAttempts;
 window.loadDummyProgress = loadDummyProgress;
 window.saveDummyProgress = saveDummyProgress;
 window.recordAttempt = recordAttempt;
+window.checkAndClaimDamageTierRewards = checkAndClaimDamageTierRewards;
+window.showDamageTierRewardNotification = showDamageTierRewardNotification;
 window.getDummyInfo = getDummyInfo;
 window.formatTimeUntilAttemptReset = formatTimeUntilAttemptReset;
 window.formatMsToTime = formatMsToTime;
