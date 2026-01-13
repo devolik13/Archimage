@@ -154,7 +154,7 @@
                 background: rgba(0, 0, 0, 0.75);
                 border: 2px solid ${color};
                 border-radius: 8px;
-                padding: 4px 8px;
+                padding: 6px 8px;
                 display: flex;
                 align-items: center;
                 gap: 6px;
