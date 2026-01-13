@@ -374,12 +374,12 @@ function showTrialMenuInArena() {
     title.innerHTML = '⚔️ Испытание';
     overlay.appendChild(title);
 
-    // Попытки (поднято выше)
+    // Попытки (ещё выше)
     const attemptsDiv = document.createElement('div');
     const attemptsColor = info.remainingAttempts > 0 ? '#4CAF50' : '#f44336';
     attemptsDiv.style.cssText = `
         position: absolute;
-        top: ${65 * scaleY}px;
+        top: ${50 * scaleY}px;
         left: 50%;
         transform: translateX(-50%);
         color: ${attemptsColor};
@@ -393,11 +393,11 @@ function showTrialMenuInArena() {
     }
     overlay.appendChild(attemptsDiv);
 
-    // Информация о манекене (поднято выше)
+    // Информация о манекене (ещё выше)
     const dummyInfo = document.createElement('div');
     dummyInfo.style.cssText = `
         position: absolute;
-        top: ${80 * scaleY}px;
+        top: ${60 * scaleY}px;
         left: 50%;
         transform: translateX(-50%);
         width: ${560 * scaleX}px;
