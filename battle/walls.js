@@ -26,11 +26,18 @@ function createOrUpdateEarthWallWithHP(casterId, casterType, wallColumn, wallRow
     if (existingWallIndex !== -1) {
         const existingWall = window.activeWalls[existingWallIndex];
         existingWall.rows = [...wallRows];
-        existingWall.hp = Math.min(existingWall.hp + wallHP, existingWall.maxHP);
+        // ИСПРАВЛЕНО: HP обновляется (сбрасывается), а не складывается
+        existingWall.hp = wallHP;
+        existingWall.maxHP = wallHP;
         existingWall.level = level;
-        
+
         if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`🧱 Земляная стена усилена (${existingWall.hp}/${existingWall.maxHP} HP)`);
+            window.addToBattleLog(`🧱 Земляная стена обновлена (${existingWall.hp}/${existingWall.maxHP} HP)`);
+        }
+
+        // Обновляем визуал HP бара (используем existingWall.id)
+        if (window.spellAnimations?.earth_wall?.updateHP) {
+            window.spellAnimations.earth_wall.updateHP(existingWall.id, existingWall.hp, existingWall.maxHP);
         }
     } else {
         const earthWall = {
@@ -69,9 +76,9 @@ function damageEarthWall(wallId, damage) {
     wall.hp = Math.max(0, wall.hp - damage);
     
     // Обновляем визуальное отображение HP
+    // ИСПРАВЛЕНО: используем wall.id (который уже содержит casterId)
     if (window.spellAnimations?.earth_wall?.updateHP) {
-        const visualWallId = `earth_wall_hp_${wall.casterType}_${wall.column}`;
-        window.spellAnimations.earth_wall.updateHP(visualWallId, wall.hp, wall.maxHP);
+        window.spellAnimations.earth_wall.updateHP(wall.id, wall.hp, wall.maxHP);
     }
     
     if (typeof window.addToBattleLog === 'function') {
