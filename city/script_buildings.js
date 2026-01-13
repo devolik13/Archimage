@@ -48,7 +48,7 @@ function showPvPArenaModal() {
     	? "if (!checkFormationBeforeBattle()) return; closePvPArenaModal(); window.showOpponentSelection()"
     	: "alert('⚠️ Постройте Арену чтобы участвовать в PvP боях!')";
     const modalContent = `
-    	<div style="padding: 24px; max-width: 800px; background: #2c2c3d; border-radius: 12px; color: white;">
+    	<div class="modal-content" style="padding: 24px; max-width: 800px;">
     	    <h3 style="margin: 0 0 16px 0; color: #7289da; font-size: 28px;">⚔️ PvP Арена</h3>
     	    <p style="margin: 0 0 20px 0; font-size: 18px;">Добро пожаловать на арену! Здесь вы можете сражаться с другими магами.</p>
 
@@ -85,10 +85,10 @@ function showPvPArenaModal() {
     const modal = document.createElement('div');
     modal.innerHTML = modalContent;
     modal.id = 'pvp-arena-modal-container';
-    modal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0, 0, 0, 0.8); padding: 20px; border-radius: 12px; z-index: 1000; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5); max-width: 95vw; max-height: 95vh; overflow-y: auto;';
+    modal.className = 'modal-container';
     const overlay = document.createElement('div');
     overlay.id = 'pvp-arena-overlay';
-    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 999;';
+    overlay.className = 'modal-overlay';
     overlay.onclick = closePvPArenaModal;
     document.body.appendChild(overlay);
     document.body.appendChild(modal);
