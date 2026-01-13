@@ -270,15 +270,10 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
             buttonY = buttonsArea.y + buttonHeight;
         }
 
-        // Получаем цвета кнопки (все максимально прозрачные)
+        // Получаем цвета кнопки (как в расстановке войск - #3d3d5c)
         const bgColor = button.enabled ?
-            (button.highlight ? 'rgba(114, 137, 218, 0.05)' :
-             button.gold ? 'rgba(255, 215, 0, 0.05)' :
-             button.orange ? 'rgba(255, 165, 0, 0.05)' :
-             button.green ? 'rgba(76, 175, 80, 0.05)' :
-             button.purple ? 'rgba(156, 39, 176, 0.05)' :
-             'rgba(255, 255, 255, 0.05)') :
-            'rgba(0, 0, 0, 0.1)';
+            'rgba(61, 61, 92, 0.85)' :
+            'rgba(30, 30, 46, 0.7)';
 
         const borderColor = button.enabled ?
             (button.highlight ? '#7289da' :
@@ -322,12 +317,8 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
         btnElement.onclick = button.onClick;
 
         if (button.enabled) {
-            const hoverBg = button.highlight ? 'rgba(114, 137, 218, 0.15)' :
-                           button.gold ? 'rgba(255, 215, 0, 0.15)' :
-                           button.orange ? 'rgba(255, 165, 0, 0.15)' :
-                           button.green ? 'rgba(76, 175, 80, 0.15)' :
-                           button.purple ? 'rgba(156, 39, 176, 0.15)' :
-                           'rgba(255, 255, 255, 0.15)';
+            // Hover - чуть светлее (#444466 как в расстановке)
+            const hoverBg = 'rgba(68, 68, 102, 0.9)';
 
             btnElement.onmouseover = () => {
                 btnElement.style.background = hoverBg;
