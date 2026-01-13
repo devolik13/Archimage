@@ -96,12 +96,12 @@ function showArenaMainMenu() {
     const scaleX = overlayRect.width / 768;
     const scaleY = overlayRect.height / 512;
     
-    // ОБЛАСТЬ ИНФОРМАЦИИ О ПОПЫТКАХ (249,110 : 516,155) - поднято выше
+    // ОБЛАСТЬ ИНФОРМАЦИИ О ПОПЫТКАХ (249,60 : 516,105) - поднято выше кнопок
     const energyArea = {
         x: 249 * scaleX,
-        y: 110 * scaleY,
+        y: 60 * scaleY,
         width: (516 - 249) * scaleX,
-        height: (155 - 110) * scaleY
+        height: (105 - 60) * scaleY
     };
     
     // Получаем данные энергии
@@ -346,9 +346,9 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
 // Утилита для рисования кнопки "Назад"
 function drawArenaBackButton(scaleX, scaleY, overlay, onClick, text = '← Назад') {
     const backX = 258 * scaleX;
-    const backY = 411 * scaleY;
+    const backY = 450 * scaleY;
     const backWidth = (522 - 258) * scaleX;
-    const backHeight = (456 - 411) * scaleY;
+    const backHeight = (495 - 450) * scaleY;
     
     const backFontSize = Math.max(12, 16 * Math.min(scaleX, scaleY));
     const backBorderRadius = Math.max(4, 8 * Math.min(scaleX, scaleY));
