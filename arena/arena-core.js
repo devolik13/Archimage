@@ -158,12 +158,12 @@ function showArenaMainMenu() {
     
     overlay.appendChild(energyDiv);
     
-    // ОБЛАСТЬ КНОПОК (27,115 : 753,439) - ширина +10%, высота +20%
+    // ОБЛАСТЬ КНОПОК (27,66 : 753,390) - поднято на 15% вверх
     const buttonsArea = {
         x: 27 * scaleX,
-        y: 115 * scaleY,
+        y: 66 * scaleY,
         width: (753 - 27) * scaleX,
-        height: (439 - 115) * scaleY
+        height: (390 - 66) * scaleY
     };
     
     // Проверяем доступные награды за лиги
@@ -270,15 +270,15 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
             buttonY = buttonsArea.y + buttonHeight;
         }
 
-        // Получаем цвета кнопки
+        // Получаем цвета кнопки (более прозрачные)
         const bgColor = button.enabled ?
-            (button.highlight ? 'rgba(114, 137, 218, 0.3)' :
-             button.gold ? 'rgba(255, 215, 0, 0.2)' :
-             button.orange ? 'rgba(255, 165, 0, 0.3)' :
-             button.green ? 'rgba(76, 175, 80, 0.2)' :
-             button.purple ? 'rgba(156, 39, 176, 0.3)' :
-             'rgba(255, 255, 255, 0.1)') :
-            'rgba(0, 0, 0, 0.3)';
+            (button.highlight ? 'rgba(114, 137, 218, 0.15)' :
+             button.gold ? 'rgba(255, 215, 0, 0.1)' :
+             button.orange ? 'rgba(255, 165, 0, 0.15)' :
+             button.green ? 'rgba(76, 175, 80, 0.1)' :
+             button.purple ? 'rgba(156, 39, 176, 0.15)' :
+             'rgba(255, 255, 255, 0.05)') :
+            'rgba(0, 0, 0, 0.2)';
 
         const borderColor = button.enabled ?
             (button.highlight ? '#7289da' :
@@ -322,12 +322,12 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
         btnElement.onclick = button.onClick;
 
         if (button.enabled) {
-            const hoverBg = button.highlight ? 'rgba(114, 137, 218, 0.5)' :
-                           button.gold ? 'rgba(255, 215, 0, 0.4)' :
-                           button.orange ? 'rgba(255, 165, 0, 0.5)' :
-                           button.green ? 'rgba(76, 175, 80, 0.4)' :
-                           button.purple ? 'rgba(156, 39, 176, 0.5)' :
-                           'rgba(255, 255, 255, 0.2)';
+            const hoverBg = button.highlight ? 'rgba(114, 137, 218, 0.25)' :
+                           button.gold ? 'rgba(255, 215, 0, 0.2)' :
+                           button.orange ? 'rgba(255, 165, 0, 0.25)' :
+                           button.green ? 'rgba(76, 175, 80, 0.2)' :
+                           button.purple ? 'rgba(156, 39, 176, 0.25)' :
+                           'rgba(255, 255, 255, 0.15)';
 
             btnElement.onmouseover = () => {
                 btnElement.style.background = hoverBg;
