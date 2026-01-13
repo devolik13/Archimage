@@ -270,10 +270,10 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
             buttonY = buttonsArea.y + buttonHeight;
         }
 
-        // Получаем цвета кнопки (ТЕСТ - красный фон для проверки)
+        // Получаем цвета кнопки (переопределяется CSS)
         const bgColor = button.enabled ?
-            'rgba(255, 0, 0, 0.5)' :
-            'rgba(100, 0, 0, 0.3)';
+            'rgba(0, 0, 0, 0.3)' :
+            'rgba(0, 0, 0, 0.2)';
 
         const borderColor = button.enabled ?
             (button.highlight ? '#7289da' :
