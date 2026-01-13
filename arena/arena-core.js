@@ -96,12 +96,12 @@ function showArenaMainMenu() {
     const scaleX = overlayRect.width / 768;
     const scaleY = overlayRect.height / 512;
     
-    // ОБЛАСТЬ ИНФОРМАЦИИ О ПОПЫТКАХ (249,60 : 516,105) - поднято выше кнопок
+    // ОБЛАСТЬ ИНФОРМАЦИИ О ПОПЫТКАХ (249,15 : 516,55) - на самом верху
     const energyArea = {
         x: 249 * scaleX,
-        y: 60 * scaleY,
+        y: 15 * scaleY,
         width: (516 - 249) * scaleX,
-        height: (105 - 60) * scaleY
+        height: (55 - 15) * scaleY
     };
     
     // Получаем данные энергии
@@ -158,12 +158,12 @@ function showArenaMainMenu() {
     
     overlay.appendChild(energyDiv);
     
-    // ОБЛАСТЬ КНОПОК (27,66 : 753,390) - поднято на 15% вверх
+    // ОБЛАСТЬ КНОПОК (27,60 : 753,420) - начинается ниже энергии, выше + больше
     const buttonsArea = {
         x: 27 * scaleX,
-        y: 66 * scaleY,
+        y: 60 * scaleY,
         width: (753 - 27) * scaleX,
-        height: (390 - 66) * scaleY
+        height: (420 - 60) * scaleY
     };
     
     // Проверяем доступные награды за лиги
@@ -270,15 +270,15 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
             buttonY = buttonsArea.y + buttonHeight;
         }
 
-        // Получаем цвета кнопки (более прозрачные)
+        // Получаем цвета кнопки (все максимально прозрачные)
         const bgColor = button.enabled ?
-            (button.highlight ? 'rgba(114, 137, 218, 0.15)' :
-             button.gold ? 'rgba(255, 215, 0, 0.1)' :
-             button.orange ? 'rgba(255, 165, 0, 0.15)' :
-             button.green ? 'rgba(76, 175, 80, 0.1)' :
-             button.purple ? 'rgba(156, 39, 176, 0.15)' :
+            (button.highlight ? 'rgba(114, 137, 218, 0.05)' :
+             button.gold ? 'rgba(255, 215, 0, 0.05)' :
+             button.orange ? 'rgba(255, 165, 0, 0.05)' :
+             button.green ? 'rgba(76, 175, 80, 0.05)' :
+             button.purple ? 'rgba(156, 39, 176, 0.05)' :
              'rgba(255, 255, 255, 0.05)') :
-            'rgba(0, 0, 0, 0.2)';
+            'rgba(0, 0, 0, 0.1)';
 
         const borderColor = button.enabled ?
             (button.highlight ? '#7289da' :
@@ -322,11 +322,11 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
         btnElement.onclick = button.onClick;
 
         if (button.enabled) {
-            const hoverBg = button.highlight ? 'rgba(114, 137, 218, 0.25)' :
-                           button.gold ? 'rgba(255, 215, 0, 0.2)' :
-                           button.orange ? 'rgba(255, 165, 0, 0.25)' :
-                           button.green ? 'rgba(76, 175, 80, 0.2)' :
-                           button.purple ? 'rgba(156, 39, 176, 0.25)' :
+            const hoverBg = button.highlight ? 'rgba(114, 137, 218, 0.15)' :
+                           button.gold ? 'rgba(255, 215, 0, 0.15)' :
+                           button.orange ? 'rgba(255, 165, 0, 0.15)' :
+                           button.green ? 'rgba(76, 175, 80, 0.15)' :
+                           button.purple ? 'rgba(156, 39, 176, 0.15)' :
                            'rgba(255, 255, 255, 0.15)';
 
             btnElement.onmouseover = () => {
