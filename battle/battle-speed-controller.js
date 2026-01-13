@@ -5,8 +5,8 @@ class BattleSpeedController {
     constructor() {
         // Режимы скорости
         this.SPEEDS = {
-            normal: { interval: 2000, multiplier: 1.0, icon: '▶', title: 'Ускорить', bg: 'rgba(85, 85, 85, 0.9)' },
-            fast: { interval: 800, multiplier: 2.5, icon: '⚡', title: 'Замедлить', bg: '#FFD700' }
+            normal: { interval: 1700, multiplier: 1.0, icon: '▶', title: 'Ускорить', bg: 'rgba(85, 85, 85, 0.9)' },
+            fast: { interval: 700, multiplier: 2.5, icon: '⚡', title: 'Замедлить', bg: '#FFD700' }
         };
 
         // Текущее состояние
