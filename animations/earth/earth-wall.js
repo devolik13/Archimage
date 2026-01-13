@@ -101,8 +101,8 @@
 
 			wallSprite.rotation = Math.PI / 2;
 
-	                // Масштабируем под размер клетки (+15% к размеру)
-	                const baseScale = (cellHeight * 0.46) / frameWidth;
+	                // Масштабируем под размер клетки (+38% к размеру)
+	                const baseScale = (cellHeight * 0.55) / frameWidth;
 			const thickness = 1.5;  // Множитель толщины
 			wallSprite.scale.set(baseScale, baseScale * thickness);
 
