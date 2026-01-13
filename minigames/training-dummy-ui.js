@@ -496,11 +496,11 @@ function showTrialMenuInArena() {
     `;
     overlay.appendChild(progressDiv);
 
-    // Кнопки
-    const btnY = 370 * scaleY;
-    const btnWidth = 240 * scaleX;
-    const btnHeight = 45 * scaleY;
-    const gap = 20 * scaleX;
+    // Кнопки (увеличенные как в арене)
+    const btnY = 340 * scaleY;
+    const btnWidth = 320 * scaleX;
+    const btnHeight = 65 * scaleY;
+    const gap = 25 * scaleX;
 
     // Кнопка рейтинга
     const ratingBtn = document.createElement('button');
@@ -512,9 +512,9 @@ function showTrialMenuInArena() {
         height: ${btnHeight}px;
         background: rgba(255, 215, 0, 0.2);
         border: 2px solid #FFD700;
-        border-radius: 8px;
+        border-radius: 10px;
         color: #FFD700;
-        font-size: ${Math.max(14, 16 * scale)}px;
+        font-size: ${Math.max(16, 20 * scale)}px;
         font-weight: bold;
         cursor: pointer;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
@@ -537,9 +537,9 @@ function showTrialMenuInArena() {
         height: ${btnHeight}px;
         background: ${canStart ? 'rgba(76, 175, 80, 0.3)' : 'rgba(100, 100, 100, 0.3)'};
         border: 2px solid ${canStart ? '#4CAF50' : '#666'};
-        border-radius: 8px;
+        border-radius: 10px;
         color: ${canStart ? '#4CAF50' : '#666'};
-        font-size: ${Math.max(14, 16 * scale)}px;
+        font-size: ${Math.max(16, 20 * scale)}px;
         font-weight: bold;
         cursor: ${canStart ? 'pointer' : 'not-allowed'};
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
@@ -562,24 +562,25 @@ function showTrialMenuInArena() {
     }
     overlay.appendChild(startBtn);
 
-    // Кнопка назад (правый нижний угол)
+    // Кнопка назад (по центру внизу, как в арене)
     const backBtn = document.createElement('button');
     backBtn.style.cssText = `
         position: absolute;
-        right: ${15 * scaleX}px;
+        left: 50%;
+        transform: translateX(-50%);
         bottom: ${15 * scaleY}px;
-        padding: ${10 * scaleY}px ${25 * scaleX}px;
+        padding: ${12 * scaleY}px ${40 * scaleX}px;
         background: linear-gradient(180deg, #dc3545, #a71d2a);
         border: 2px solid #ff6b6b;
-        border-radius: 8px;
+        border-radius: 10px;
         color: white;
-        font-size: ${Math.max(14, 16 * scale)}px;
+        font-size: ${Math.max(16, 20 * scale)}px;
         font-weight: bold;
         cursor: pointer;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         box-shadow: 0 4px 8px rgba(0,0,0,0.3);
     `;
-    backBtn.innerHTML = 'Назад';
+    backBtn.innerHTML = '← Назад';
     backBtn.onclick = () => {
         if (typeof showArenaMainMenu === 'function') {
             showArenaMainMenu();

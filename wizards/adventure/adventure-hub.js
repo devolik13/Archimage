@@ -196,19 +196,26 @@ function setupAdventureChapters() {
 }
 
 /**
- * Закрыть экран выбора глав
+ * Закрыть экран выбора глав и вернуться в арену
  */
 function closeAdventureHub() {
     const screen = document.getElementById('adventure-hub-screen');
     if (screen) {
         screen.style.opacity = '0';
         screen.style.transition = 'opacity 0.3s';
-        setTimeout(() => screen.remove(), 300);
+        setTimeout(() => {
+            screen.remove();
+            // Возвращаемся в арену
+            if (typeof window.showPvPArenaModalBg === 'function') {
+                window.showPvPArenaModalBg();
+            }
+        }, 300);
+    } else {
+        // Если экран уже удалён, просто открываем арену
+        if (typeof window.showPvPArenaModalBg === 'function') {
+            window.showPvPArenaModalBg();
+        }
     }
-
-    // Показываем аватар
-    const playerAvatar = document.getElementById('player-avatar-container');
-    if (playerAvatar) playerAvatar.style.display = 'flex';
 }
 
 // Экспорт
