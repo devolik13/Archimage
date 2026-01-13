@@ -378,7 +378,7 @@ function showTrialMenuInArena() {
     }
     overlay.appendChild(attemptsDiv);
 
-    // Информация о манекене
+    // Информация о манекене (такая же ширина как у прогресса)
     const dummyInfo = document.createElement('div');
     dummyInfo.style.cssText = `
         position: absolute;
@@ -389,7 +389,7 @@ function showTrialMenuInArena() {
         background: rgba(0, 0, 0, 0.7);
         border: 2px solid #7289da;
         border-radius: 10px;
-        padding: ${15 * scaleY}px;
+        padding: ${21 * scaleY}px;
         color: white;
         text-align: center;
     `;
@@ -423,11 +423,11 @@ function showTrialMenuInArena() {
     `;
     overlay.appendChild(dummyInfo);
 
-    // Прогресс игрока (увеличен вниз на 15%)
+    // Прогресс игрока (опущен ниже)
     const progressDiv = document.createElement('div');
     progressDiv.style.cssText = `
         position: absolute;
-        top: ${195 * scaleY}px;
+        top: ${215 * scaleY}px;
         left: 50%;
         transform: translateX(-50%);
         width: ${560 * scaleX}px;
