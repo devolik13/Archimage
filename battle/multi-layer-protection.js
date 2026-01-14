@@ -232,7 +232,12 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
         }
     
         protectionLayers.push(`${target.wizard.name} получает ${finalDamage} финального урона`);
-        
+
+        // Учитываем урон для системы опыта (только для игрока)
+        if (casterType === 'player' && finalDamage > 0 && typeof window.trackBattleDamage === 'function') {
+            window.trackBattleDamage(caster, finalDamage);
+        }
+
         return {
             totalDamage: baseDamage,
             finalDamage: finalDamage,

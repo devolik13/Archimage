@@ -233,6 +233,11 @@ function castStoneSpike(wizard, spellData, position, casterType) {
                 targetInfo.target.wizard.hp -= finalDamage;
                 if (targetInfo.target.wizard.hp < 0) targetInfo.target.wizard.hp = 0;
 
+                // Учитываем урон для опыта
+                if (casterType === 'player' && typeof window.trackBattleDamage === 'function') {
+                    window.trackBattleDamage(wizard, finalDamage);
+                }
+
                 if (typeof window.addToBattleLog === 'function') {
                     window.addToBattleLog(`🗿 Каменный шип (${window.getDirectionNameSimple(targetInfo.direction, level)}) → ${targetInfo.target.wizard.name} (${finalDamage} урона)`);
                     const damageSteps = targetInfo.target.wizard._lastDamageSteps || [];
@@ -504,6 +509,11 @@ function castMeteorShower(wizard, spellData, position, casterType) {
 
                     target.wizard.hp -= finalDamage;
                     if (target.wizard.hp < 0) target.wizard.hp = 0;
+
+                    // Учитываем урон для опыта
+                    if (casterType === 'player' && typeof window.trackBattleDamage === 'function') {
+                        window.trackBattleDamage(wizard, finalDamage);
+                    }
 
                     if (typeof window.addToBattleLog === 'function') {
                         window.addToBattleLog(`☄️ Метеорит ${i + 1} → ${target.wizard.name} (${finalDamage} урона)`);
