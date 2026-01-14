@@ -333,53 +333,53 @@
     </div>
 
     <script>
-        // Конфигурация заклинаний с реальными путями
+        // Конфигурация заклинаний с реальными путями и настройками сетки
         const SPELL_PATHS = {
             // Огонь
-            'fire/spark': 'fire/spark/explosion_sheet.webp',
-            'fire/firebolt': 'fire/firebolt/firebolt_sheet.webp',
-            'fire/fireball': 'fire/fireball/fireball_sheet.webp',
-            'fire/fire_wall': 'fire/fire_wall/fire_wall_spritesheet.webp',
-            'fire/fire_tsunami': 'fire/fire_tsunami/tsunami_sheet.webp',
-            'fire/burning_ground': 'fire/fire_tsunami/burning_ground_sheet.webp',
+            'fire/spark': { path: 'fire/spark/explosion_sheet.webp', grid: 5 },
+            'fire/firebolt': { path: 'fire/firebolt/firebolt_sheet.webp', grid: 5 },
+            'fire/fireball': { path: 'fire/fireball/fireball_sheet.webp', grid: 5 },
+            'fire/fire_wall': { path: 'fire/fire_wall/fire_wall_spritesheet.webp', grid: 5 },
+            'fire/fire_tsunami': { path: 'fire/fire_tsunami/tsunami_sheet.webp', grid: 5 },
+            'fire/burning_ground': { path: 'fire/fire_tsunami/burning_ground_sheet.webp', grid: 5 },
 
             // Вода
-            'water/icicle': 'water/icicle/ice_explosion_sheet.webp',
-            'water/frost_arrow': 'water/frost_arrow/frost_arrow_sprite.webp',
-            'water/frost_explosion': 'water/frost_arrow/frost_explosion_sprite.webp',
-            'water/ice_rain': 'water/ice_rain/ice_drop_sprite.webp',
-            'water/blizzard': 'water/blizzard/blizzard_sprite.webp',
-            'water/absolute_zero': 'water/absolute_zero/snowflakes_spritesheet.webp',
+            'water/icicle': { path: 'water/icicle/ice_explosion_sheet.webp', grid: 5 },
+            'water/frost_arrow': { path: 'water/frost_arrow/frost_arrow_sprite.webp', grid: 5 },
+            'water/frost_explosion': { path: 'water/frost_arrow/frost_explosion_sprite.webp', grid: 5 },
+            'water/ice_rain': { path: 'water/ice_rain/ice_drop_sprite.webp', grid: 5 },
+            'water/blizzard': { path: 'water/blizzard/blizzard_sprite.webp', grid: 5 },
+            'water/absolute_zero': { path: 'water/absolute_zero/snowflakes_spritesheet.webp', grid: 5 },
 
             // Ветер
-            'wind/gust': 'wind/gust/gust_spritesheet.webp',
-            'wind/wind_blade': 'wind/wind_blade/wind_blade_spritesheet.webp',
-            'wind/wind_wall': 'wind/wind_wall/wind_wall_spritesheet.webp',
-            'wind/storm_cloud': 'wind/storm_cloud/lightning_spritesheet.webp',
-            'wind/ball_lightning': 'wind/ball_lightning/ball_spritesheet.webp',
+            'wind/gust': { path: 'wind/gust/gust_spritesheet.webp', grid: 5 },
+            'wind/wind_blade': { path: 'wind/wind_blade/wind_blade_spritesheet.webp', grid: 5 },
+            'wind/wind_wall': { path: 'wind/wind_wall/wind_wall_spritesheet.webp', grid: 5 },
+            'wind/storm_cloud': { path: 'wind/storm_cloud/lightning_spritesheet.webp', grid: 5 },
+            'wind/ball_lightning': { path: 'wind/ball_lightning/ball_spritesheet.webp', grid: 5 },
 
             // Земля
-            'earth/pebble': 'earth/pebble/pebble_sprite.webp',
-            'earth/stone_spike': 'earth/stone_spike/spike_sprite.webp',
-            'earth/earth_wall': 'earth/earth_wall/wall_sprite.webp',
-            'earth/stone_grotto': 'earth/stone_grotto/grotto_shield.webp',
-            'earth/meteor': 'earth/meteor/meteor_sprite.webp',
+            'earth/pebble': { path: 'earth/pebble/pebble_sprite.webp', grid: 5 },
+            'earth/stone_spike': { path: 'earth/stone_spike/spike_sprite.webp', grid: 5 },
+            'earth/earth_wall': { path: 'earth/earth_wall/wall_sprite.webp', grid: 5 },
+            'earth/stone_grotto': { path: 'earth/stone_grotto/grotto_shield.webp', grid: 5 },
+            'earth/meteor': { path: 'earth/meteor/meteor_sprite.webp', grid: 5 },
 
             // Природа
-            'nature/call_wolf': 'nature/call_wolf/wolf_idle_sheet.webp',
-            'nature/bark_armor': 'nature/bark_armor/bark_shield.webp',
-            'nature/leaf_canopy': 'nature/leaf_canopy/leaves_sheet.webp',
-            'nature/ent': 'nature/ent/ent_sheet.webp',
+            'nature/call_wolf': { path: 'nature/call_wolf/wolf_idle_sheet.webp', grid: 5 },
+            'nature/bark_armor': { path: 'nature/bark_armor/bark_shield.webp', grid: 5 },
+            'nature/leaf_canopy': { path: 'nature/leaf_canopy/leaves_sheet.webp', grid: 5 },
+            'nature/ent': { path: 'nature/ent/ent_sheet.webp', grid: 5 },
 
             // Яд
-            'poison/poisoned_blade': 'poison/poisoned_blade/blade_sprite.webp',
-            'poison/poisoned_glade': 'poison/poisoned_glade/glade_spritesheet.webp',
-            'poison/foul_cloud': 'poison/foul_cloud/cloud.webp',
-            'poison/plague': 'poison/plague/plague_spritesheet.webp',
-            'poison/epidemic': 'poison/epidemic/epidemic_spritesheet.webp',
+            'poison/poisoned_blade': { path: 'poison/poisoned_blade/blade_sprite.webp', grid: 5 },
+            'poison/poisoned_glade': { path: 'poison/poisoned_glade/glade_spritesheet.webp', grid: 5 },
+            'poison/foul_cloud': { path: 'poison/foul_cloud/cloud.webp', grid: 5 },
+            'poison/plague': { path: 'poison/plague/plague_spritesheet.webp', grid: 5 },
+            'poison/epidemic': { path: 'poison/epidemic/epidemic_spritesheet.webp', grid: 5 },
 
             // Свет
-            'light/flash': 'light/flash_sprite.webp',
+            'light/flash': { path: 'light/flash_sprite.webp', grid: 4 },
 
             // Тьма - пока нет спрайтов
         };
@@ -470,21 +470,28 @@
         document.getElementById('loadSpell').addEventListener('click', () => {
             const school = document.getElementById('spellSchool').value;
             const spell = document.getElementById('spellName').value;
-            const grid = document.getElementById('spellGridSize').value;
+            const manualGrid = document.getElementById('spellGridSize').value;
             const key = `${school}/${spell}`;
-
-            // Устанавливаем сетку из выбора
-            if (grid === '8') {
-                gridColumns = 8;
-                totalFrames = 8;
-            } else {
-                gridColumns = parseInt(grid);
-                totalFrames = gridColumns * gridColumns;
-            }
 
             // Используем точный путь из маппинга
             if (SPELL_PATHS[key]) {
-                const path = `../images/spells/${SPELL_PATHS[key]}`;
+                const config = SPELL_PATHS[key];
+                const path = `../images/spells/${config.path}`;
+
+                // Используем сетку из конфига или ручной выбор
+                const grid = config.grid || parseInt(manualGrid);
+
+                if (grid === 8) {
+                    gridColumns = 8;
+                    totalFrames = 8;
+                } else {
+                    gridColumns = grid;
+                    totalFrames = grid * grid;
+                }
+
+                // Обновляем выпадающий список чтобы показать актуальную сетку
+                document.getElementById('spellGridSize').value = String(grid);
+
                 loadSpriteWithGrid(path);
             } else {
                 alert(`Спрайт для ${spell} не найден в базе`);
