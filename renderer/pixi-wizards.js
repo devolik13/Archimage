@@ -82,6 +82,17 @@
             animationSpeed: 0.12,
             scale: 0.350
         },
+        light: {
+            idle: 'images/wizards/light/idle.webp',
+            cast: 'images/wizards/light/cast.webp',
+            death: 'images/wizards/light/death.webp',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 25, // 5×5 сетка (1280×1280)
+            gridColumns: 5,
+            animationSpeed: 0.12,
+            scale: 0.350
+        },
         goblin: {
             idle: 'images/enemies/goblin/idle.webp',
             cast: 'images/enemies/goblin/attack.webp',
