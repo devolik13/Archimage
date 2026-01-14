@@ -504,13 +504,14 @@ function renderGuildInfo(container) {
     const bonuses = window.guildManager.getGuildBonuses();
     const capacity = window.getGuildCapacity(guild.level);
 
+    // Природа исключена - у неё нет атакующих заклинаний
     const schoolNames = {
         fire: 'Огонь', water: 'Вода', earth: 'Земля', wind: 'Ветер',
-        nature: 'Природа', poison: 'Яд', light: 'Свет', dark: 'Тьма'
+        poison: 'Яд', light: 'Свет', dark: 'Тьма'
     };
     const schoolEmojis = {
         fire: '🔥', water: '💧', earth: '🪨', wind: '💨',
-        nature: '🌿', poison: '☠️', light: '✨', dark: '🌑'
+        poison: '☠️', light: '✨', dark: '🌑'
     };
 
     container.innerHTML = `
@@ -742,11 +743,12 @@ function renderGuildResearch(container) {
     const isLeader = window.guildManager.isLeader();
     const research = guild.research || {};
 
+    // Природа исключена - у неё нет атакующих заклинаний
     const schoolNames = {
-        fire: 'Огонь', water: 'Вода', earth: 'Земля', wind: 'Ветер', nature: 'Природа', poison: 'Яд', light: 'Свет', dark: 'Тьма'
+        fire: 'Огонь', water: 'Вода', earth: 'Земля', wind: 'Ветер', poison: 'Яд', light: 'Свет', dark: 'Тьма'
     };
     const schoolEmojis = {
-        fire: '🔥', water: '💧', earth: '🪨', wind: '💨', nature: '🌿', poison: '☠️', light: '✨', dark: '🌑'
+        fire: '🔥', water: '💧', earth: '🪨', wind: '💨', poison: '☠️', light: '✨', dark: '🌑'
     };
 
     container.innerHTML = `

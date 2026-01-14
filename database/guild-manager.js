@@ -12,7 +12,7 @@ const GUILD_CONFIG = {
     RESISTANCE_PER_POINT: 0.5,       // 0.5% сопротивления за 1 очко
     MAX_RESISTANCE_POINTS: 30,       // Макс очков на школу
     INACTIVE_DAYS_FOR_TRANSFER: 7,   // Дней неактивности для передачи лидерства
-    SCHOOLS: ['fire', 'water', 'earth', 'wind', 'nature', 'poison', 'light', 'dark'] // Школы для исследований
+    SCHOOLS: ['fire', 'water', 'earth', 'wind', 'poison', 'light', 'dark'] // Школы для исследований (без nature - нет атакующих)
 };
 
 // Прогрессия опыта гильдии (квадратичная с учетом вместимости)
