@@ -322,16 +322,67 @@
     </div>
 
     <script>
-        // Конфигурация заклинаний по школам
+        // Конфигурация заклинаний с реальными путями
+        const SPELL_PATHS = {
+            // Огонь
+            'fire/spark': 'fire/spark/explosion_sheet.webp',
+            'fire/firebolt': 'fire/firebolt/firebolt_sheet.webp',
+            'fire/fireball': 'fire/fireball/fireball_sheet.webp',
+            'fire/fire_wall': 'fire/fire_wall/fire_wall_spritesheet.webp',
+            'fire/fire_tsunami': 'fire/fire_tsunami/tsunami_sheet.webp',
+            'fire/burning_ground': 'fire/fire_tsunami/burning_ground_sheet.webp',
+
+            // Вода
+            'water/icicle': 'water/icicle/ice_explosion_sheet.webp',
+            'water/frost_arrow': 'water/frost_arrow/frost_arrow_sprite.webp',
+            'water/frost_explosion': 'water/frost_arrow/frost_explosion_sprite.webp',
+            'water/ice_rain': 'water/ice_rain/ice_drop_sprite.webp',
+            'water/blizzard': 'water/blizzard/blizzard_sprite.webp',
+            'water/absolute_zero': 'water/absolute_zero/snowflakes_spritesheet.webp',
+
+            // Ветер
+            'wind/gust': 'wind/gust/gust_spritesheet.webp',
+            'wind/wind_blade': 'wind/wind_blade/wind_blade_spritesheet.webp',
+            'wind/wind_wall': 'wind/wind_wall/wind_wall_spritesheet.webp',
+            'wind/storm_cloud': 'wind/storm_cloud/lightning_spritesheet.webp',
+            'wind/ball_lightning': 'wind/ball_lightning/ball_spritesheet.webp',
+
+            // Земля
+            'earth/pebble': 'earth/pebble/pebble_sprite.webp',
+            'earth/stone_spike': 'earth/stone_spike/spike_sprite.webp',
+            'earth/earth_wall': 'earth/earth_wall/wall_sprite.webp',
+            'earth/stone_grotto': 'earth/stone_grotto/grotto_shield.webp',
+            'earth/meteor': 'earth/meteor/meteor_sprite.webp',
+
+            // Природа
+            'nature/call_wolf': 'nature/call_wolf/wolf_idle_sheet.webp',
+            'nature/bark_armor': 'nature/bark_armor/bark_shield.webp',
+            'nature/leaf_canopy': 'nature/leaf_canopy/leaves_sheet.webp',
+            'nature/ent': 'nature/ent/ent_sheet.webp',
+
+            // Яд
+            'poison/poisoned_blade': 'poison/poisoned_blade/blade_sprite.webp',
+            'poison/poisoned_glade': 'poison/poisoned_glade/glade_spritesheet.webp',
+            'poison/foul_cloud': 'poison/foul_cloud/cloud.webp',
+            'poison/plague': 'poison/plague/plague_spritesheet.webp',
+            'poison/epidemic': 'poison/epidemic/epidemic_spritesheet.webp',
+
+            // Свет
+            'light/flash': 'light/flash_sprite.webp',
+
+            // Тьма - пока нет спрайтов
+        };
+
+        // Список заклинаний по школам для выпадающего списка
         const SPELLS_CONFIG = {
-            fire: ['spark', 'firebolt', 'fireball', 'fire_wall', 'fire_tsunami'],
-            water: ['icicle', 'frost_arrow', 'ice_rain', 'blizzard', 'absolute_zero'],
+            fire: ['spark', 'firebolt', 'fireball', 'fire_wall', 'fire_tsunami', 'burning_ground'],
+            water: ['icicle', 'frost_arrow', 'frost_explosion', 'ice_rain', 'blizzard', 'absolute_zero'],
             wind: ['gust', 'wind_blade', 'wind_wall', 'storm_cloud', 'ball_lightning'],
             earth: ['pebble', 'stone_spike', 'earth_wall', 'stone_grotto', 'meteor'],
             nature: ['call_wolf', 'bark_armor', 'leaf_canopy', 'ent'],
             poison: ['poisoned_blade', 'poisoned_glade', 'foul_cloud', 'plague', 'epidemic'],
-            light: ['flash', 'light_beam', 'rainbow_shield', 'sun_radiance', 'dawn'],
-            dark: ['dark_clot', 'weakness', 'miasma', 'shadow_realm', 'fading']
+            light: ['flash'],
+            dark: []
         };
 
         // Состояние
@@ -408,17 +459,67 @@
         document.getElementById('loadSpell').addEventListener('click', () => {
             const school = document.getElementById('spellSchool').value;
             const spell = document.getElementById('spellName').value;
+            const key = `${school}/${spell}`;
 
-            // Пробуем разные пути
-            const paths = [
-                `../images/spells/${school}/${spell}/${spell}_sprite.webp`,
-                `../images/spells/${school}/${spell}/${spell}_spritesheet.webp`,
-                `../images/spells/${school}/${spell}/sprite.webp`,
-                `../images/spells/${school}/${spell}.webp`
-            ];
-
-            tryLoadPaths(paths);
+            // Используем точный путь из маппинга
+            if (SPELL_PATHS[key]) {
+                const path = `../images/spells/${SPELL_PATHS[key]}`;
+                loadSpriteAuto(path);
+            } else {
+                alert(`Спрайт для ${spell} не найден в базе`);
+            }
         });
+
+        // Загрузка с автоопределением сетки
+        function loadSpriteAuto(path) {
+            const img = new Image();
+            img.onload = () => {
+                currentImage = img;
+                fullSheet.src = path;
+
+                // Автоопределение сетки по размерам
+                const cols = Math.round(img.width / 256);
+                const rows = Math.round(img.height / 256);
+
+                if (cols === rows && cols > 0) {
+                    gridColumns = cols;
+                    totalFrames = cols * cols;
+                    frameWidth = Math.round(img.width / cols);
+                    frameHeight = Math.round(img.height / rows);
+                } else if (rows === 1) {
+                    gridColumns = cols;
+                    totalFrames = cols;
+                    frameWidth = Math.round(img.width / cols);
+                    frameHeight = img.height;
+                } else {
+                    // Пробуем другие размеры кадра
+                    const possibleSizes = [128, 256, 512, 64];
+                    for (const size of possibleSizes) {
+                        const c = Math.round(img.width / size);
+                        const r = Math.round(img.height / size);
+                        if (c * size === img.width && r * size === img.height) {
+                            gridColumns = c;
+                            totalFrames = c * r;
+                            frameWidth = size;
+                            frameHeight = size;
+                            break;
+                        }
+                    }
+                }
+
+                animCanvas.width = frameWidth;
+                animCanvas.height = frameHeight;
+
+                currentFrame = 0;
+                sheetInfo.textContent = `Размер: ${img.width}×${img.height} | Кадр: ${frameWidth}×${frameHeight} | Сетка: ${gridColumns}×${Math.ceil(totalFrames/gridColumns)} | Кадров: ${totalFrames}`;
+
+                if (isPlaying) startAnimation();
+            };
+            img.onerror = () => {
+                alert(`Не удалось загрузить: ${path}`);
+            };
+            img.src = path;
+        }
 
         // Загрузка по своему пути
         document.getElementById('loadCustom').addEventListener('click', () => {
