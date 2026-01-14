@@ -30,68 +30,194 @@ function castLightSpell(wizard, spellId, spellData, position, casterType) {
 }
 
 // --- Вспышка (Flash) - Тир 1, Single Target ---
+// Особенность: ×3 урон по саммонам на 5 уровне, остаточный урон пробивает к магу
 function castFlash(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
     const baseDamage = [10, 12, 15, 20, 30][level - 1] || 10;
 
-    console.log(`✨ Casting Flash - Level ${level}, Damage ${baseDamage}`);
+    console.log(`✨ Casting Flash - Level ${level}, Base Damage ${baseDamage}`);
 
-    // Находим цель
+    // Устанавливаем текущего кастера для отслеживания фракционных бонусов
+    if (typeof window.setCurrentSpellCaster === 'function') {
+        window.setCurrentSpellCaster(wizard, casterType, position);
+    }
+
+    // Находим цель (маг)
     const target = window.findTarget?.(position, casterType);
     if (!target) {
         console.warn('⚠️ Цель не найдена');
         return;
     }
 
-    // Проверяем, призванное ли существо (для бонуса 5 уровня)
-    const isSummoned = target.wizard.isSummoned || target.wizard.type === 'wolf' || target.wizard.type === 'ent';
-    let actualDamage = baseDamage;
+    // Определяем колонки
+    const casterCol = casterType === 'player' ? 5 : 0;
+    const summonColumn = casterType === 'player' ? 1 : 4;
+    const targetCol = casterType === 'player' ? 0 : 5;
 
-    // Бонус 5 уровня: ×3 урон по призванным
-    if (level === 5 && isSummoned) {
-        actualDamage = baseDamage * 3;
-        if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`✨ Вспышка наносит тройной урон призванному существу!`);
+    // Проверяем наличие саммона на пути
+    let summonedCreature = typeof window.findSummonedCreatureAt === 'function' ?
+        window.findSummonedCreatureAt(summonColumn, position) : null;
+
+    // Также проверяем защищающего Энта
+    const targetType = casterType === 'player' ? 'enemy' : 'player';
+    if (!summonedCreature && typeof window.findProtectingEnt === 'function' && target.wizard) {
+        const protectingEnt = window.findProtectingEnt(target.wizard, targetType);
+        if (protectingEnt && protectingEnt.hp > 0 && protectingEnt.isAlive) {
+            summonedCreature = protectingEnt;
         }
     }
 
-    // Запускаем через систему single-target
-    window.castSingleTargetSpell({
-        caster: wizard,
-        target: target,
-        casterPosition: position,
-        casterType: casterType,
-        spellId: 'flash',
-        baseDamage: actualDamage,
-        spellLevel: level,
+    let remainingDamage = baseDamage;
+    let impactCol = targetCol;
+    let impactRow = position;
+    let totalDamageDealt = 0;
+    const protectionLayers = [];
 
-        // Функция создания снаряда
-        createProjectile: (params) => {
-            const { fromCol, fromRow, toCol, toRow, onHit } = params;
+    // === СЛОЙ 1: САММОНЫ (с бонусом ×3 на 5 уровне) ===
+    if (summonedCreature && summonedCreature.hp > 0) {
+        const isSummon = summonedCreature.isSummoned ||
+                         summonedCreature.type === 'wolf' ||
+                         summonedCreature.type === 'nature_wolf' ||
+                         summonedCreature.type === 'ent' ||
+                         summonedCreature.type === 'nature_ent';
 
-            console.log(`✨ Создаём снаряд Вспышки: [${fromCol},${fromRow}] → [${toCol},${toRow}]`);
-
-            if (window.spellAnimations?.flash?.play) {
-                window.spellAnimations.flash.play({
-                    casterCol: fromCol,
-                    casterRow: fromRow,
-                    targetCol: toCol,
-                    targetRow: toRow,
-                    onHit: onHit
-                });
-            } else {
-                console.warn('⚠️ Анимация flash не найдена');
-                setTimeout(onHit, 300);
+        // Бонус 5 уровня: ×3 урон по саммонам
+        let damageToSummon = remainingDamage;
+        if (level === 5 && isSummon) {
+            damageToSummon = remainingDamage * 3;
+            protectionLayers.push(`✨ Вспышка наносит тройной урон призванному существу! (${remainingDamage} → ${damageToSummon})`);
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`✨ Вспышка наносит тройной урон призванному существу!`);
             }
-        },
-
-        applyEffects: null,
-
-        onComplete: (finalResult) => {
-            // Применяем бонус фракции
-            applyLightFactionBonus(wizard, casterType);
         }
-    });
+
+        const creatureDamage = Math.min(damageToSummon, summonedCreature.hp);
+        const creatureRemainder = Math.max(0, damageToSummon - summonedCreature.hp);
+
+        // Если саммон полностью блокирует - это точка столкновения
+        if (summonedCreature.hp >= damageToSummon) {
+            impactCol = summonColumn;
+        }
+
+        // Наносим урон саммону
+        summonedCreature.hp -= creatureDamage;
+        if (summonedCreature.hp < 0) summonedCreature.hp = 0;
+        totalDamageDealt += creatureDamage;
+
+        // Обновляем HP бар саммона
+        if (window.summonsManager && typeof window.summonsManager.updateHP === 'function') {
+            window.summonsManager.updateHP(summonedCreature.id, summonedCreature.hp);
+        }
+
+        // Логирование
+        const creatureTypeName = summonedCreature.type === 'nature_wolf' || summonedCreature.type === 'wolf' ? '🐺 Волк' :
+                                 summonedCreature.type === 'nature_ent' || summonedCreature.type === 'ent' ? '🌳 Энт' :
+                                 summonedCreature.name || 'Существо';
+
+        if (summonedCreature.hp > 0) {
+            protectionLayers.push(`${creatureTypeName} получает ${creatureDamage} урона (осталось ${summonedCreature.hp} HP)`);
+        } else {
+            protectionLayers.push(`${creatureTypeName} получает ${creatureDamage} урона и погибает!`);
+
+            // Удаляем существо
+            if (window.summonsManager) {
+                window.summonsManager.killSummon(summonedCreature.id, true);
+            }
+
+            // Лечение при смерти Энта 5 уровня
+            if ((summonedCreature.type === 'nature_ent' || summonedCreature.type === 'ent') &&
+                summonedCreature.level === 5 && typeof window.healWeakestAlly === 'function') {
+                window.healWeakestAlly(summonedCreature.casterType);
+                protectionLayers.push(`✨ Энт исцеляет союзника перед смертью!`);
+            }
+        }
+
+        // Остаточный урон (без множителя ×3, только базовый)
+        // Если урон с множителем убил саммона - остаток идёт базовым уроном
+        if (creatureRemainder > 0) {
+            // Пересчитываем остаточный урон от базового (не от умноженного)
+            const baseRemainder = Math.max(0, remainingDamage - Math.ceil(summonedCreature.maxHP || creatureDamage) / (level === 5 && isSummon ? 3 : 1));
+            remainingDamage = Math.max(0, creatureRemainder / (level === 5 && isSummon ? 3 : 1));
+            protectionLayers.push(`Остаточный урон: ${Math.round(remainingDamage)} пробивает к магу`);
+        } else {
+            remainingDamage = 0;
+        }
+    }
+
+    // === СЛОЙ 2: МАГ (если остался урон) ===
+    if (remainingDamage > 0 && target.wizard && target.wizard.hp > 0) {
+        // Применяем полную систему урона (броня, сопротивления, погода)
+        const finalDamage = typeof window.applyDamageWithWeather === 'function' ?
+            window.applyDamageWithWeather(wizard, target.wizard, remainingDamage, 'flash', 0) :
+            Math.round(remainingDamage);
+
+        target.wizard.hp -= finalDamage;
+        if (target.wizard.hp < 0) target.wizard.hp = 0;
+        totalDamageDealt += finalDamage;
+
+        // Обновляем HP бар мага
+        if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
+            const wizCol = target.wizard.id && target.wizard.id.startsWith('enemy_') ? 0 : 5;
+            const key = `${wizCol}_${position}`;
+            window.pixiWizards.updateHP(key, target.wizard.hp, target.wizard.max_hp);
+        }
+
+        protectionLayers.push(`${target.wizard.name} получает ${finalDamage} урона (осталось ${target.wizard.hp}/${target.wizard.max_hp} HP)`);
+
+        // Трекинг урона для опыта (только для игрока)
+        if (casterType === 'player' && finalDamage > 0 && typeof window.trackBattleDamage === 'function') {
+            window.trackBattleDamage(wizard, finalDamage);
+        }
+    }
+
+    // Итоговый результат
+    const damageResult = {
+        totalDamage: baseDamage,
+        finalDamage: totalDamageDealt,
+        protectionLayers: protectionLayers,
+        impactCol: impactCol,
+        impactRow: impactRow,
+        targetSurvived: target.wizard.hp > 0
+    };
+
+    // Запускаем анимацию снаряда
+    if (window.spellAnimations?.flash?.play) {
+        window.spellAnimations.flash.play({
+            casterCol: casterCol,
+            casterRow: position,
+            targetCol: impactCol,
+            targetRow: impactRow,
+            onHit: () => {
+                // Логируем результат
+                protectionLayers.forEach(layer => {
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`    ├─ ${layer}`);
+                    }
+                });
+
+                // Применяем бонус фракции
+                applyLightFactionBonus(wizard, casterType);
+
+                // Очищаем текущего кастера
+                if (typeof window.clearCurrentSpellCaster === 'function') {
+                    window.clearCurrentSpellCaster();
+                }
+            },
+            onComplete: () => {}
+        });
+    } else {
+        console.warn('⚠️ Анимация flash не найдена');
+        // Fallback - логируем сразу
+        protectionLayers.forEach(layer => {
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`    ├─ ${layer}`);
+            }
+        });
+        applyLightFactionBonus(wizard, casterType);
+        if (typeof window.clearCurrentSpellCaster === 'function') {
+            window.clearCurrentSpellCaster();
+        }
+    }
 }
 
 // --- Луч света (Light Beam) - Тир 2, Single Target + Burn DoT ---
