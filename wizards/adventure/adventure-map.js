@@ -424,19 +424,26 @@ function updateNavigationArrows(range) {
 }
 
 /**
- * Закрыть карту приключений
+ * Закрыть карту приключений и вернуться к выбору главы
  */
 function closeAdventureMap() {
     const screen = document.getElementById('adventure-map-screen');
     if (screen) {
         screen.style.opacity = '0';
         screen.style.transition = 'opacity 0.3s';
-        setTimeout(() => screen.remove(), 300);
+        setTimeout(() => {
+            screen.remove();
+            // Возвращаемся к выбору главы (adventure-hub)
+            if (typeof window.showAdventureHub === 'function') {
+                window.showAdventureHub();
+            }
+        }, 300);
+    } else {
+        // Если экран уже удалён, просто открываем hub
+        if (typeof window.showAdventureHub === 'function') {
+            window.showAdventureHub();
+        }
     }
-
-    // Показываем аватар
-    const playerAvatar = document.getElementById('player-avatar-container');
-    if (playerAvatar) playerAvatar.style.display = 'flex';
 }
 
 /**
