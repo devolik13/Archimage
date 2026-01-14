@@ -132,13 +132,11 @@ function castFlash(wizard, spellData, position, casterType) {
             }
         }
 
-        // Остаточный урон (без множителя ×3, только базовый)
-        // Если урон с множителем убил саммона - остаток идёт базовым уроном
+        // Остаточный урон идёт напрямую к магу (ФИШКА заклинания - убийца саммонеров!)
+        // Если ×3 урон убил саммона - весь остаток пробивает к магу
         if (creatureRemainder > 0) {
-            // Пересчитываем остаточный урон от базового (не от умноженного)
-            const baseRemainder = Math.max(0, remainingDamage - Math.ceil(summonedCreature.maxHP || creatureDamage) / (level === 5 && isSummon ? 3 : 1));
-            remainingDamage = Math.max(0, creatureRemainder / (level === 5 && isSummon ? 3 : 1));
-            protectionLayers.push(`Остаточный урон: ${Math.round(remainingDamage)} пробивает к магу`);
+            remainingDamage = creatureRemainder;
+            protectionLayers.push(`⚡ Остаточный урон: ${Math.round(remainingDamage)} пробивает к магу!`);
         } else {
             remainingDamage = 0;
         }
