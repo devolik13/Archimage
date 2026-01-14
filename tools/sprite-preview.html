@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprite Preview - Archimage</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        select, input {
+            padding: 10px 15px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background: #2a2a4a;
+            color: #fff;
+            font-size: 14px;
+            min-width: 150px;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #ffd700;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #ffd700;
+            color: #1a1a2e;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #ffed4a;
+            transform: scale(1.05);
+        }
+
+        button.active {
+            background: #4ade80;
+        }
+
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .preview-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        .preview-box h3 {
+            margin-bottom: 15px;
+            color: #4ade80;
+        }
+
+        .sprite-canvas {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            image-rendering: pixelated;
+        }
+
+        .full-sheet {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 1px solid #444;
+        }
+
+        .info {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .animation-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 25px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid #444;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .tab.active {
+            background: #ffd700;
+            color: #1a1a2e;
+            border-color: #ffd700;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #customPath {
+            width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧙 Sprite Preview - Archimage</h1>
+
+    <div class="tabs">
+        <div class="tab active" data-tab="wizards">Маги</div>
+        <div class="tab" data-tab="spells">Заклинания</div>
+        <div class="tab" data-tab="custom">Свой путь</div>
+    </div>
+
+    <!-- Wizards Tab -->
+    <div id="wizards-tab" class="tab-content">
+        <div class="controls">
+            <div class="control-group">
+                <label>Фракция</label>
+                <select id="faction">
+                    <option value="fire">🔥 Огонь</option>
+                    <option value="water">💧 Вода</option>
+                    <option value="wind">🌪️ Ветер</option>
+                    <option value="earth">🪨 Земля</option>
+                    <option value="nature">🌿 Природа</option>
+                    <option value="poison">☠️ Яд</option>
+                    <option value="light">✨ Свет</option>
+                    <option value="dark">🌑 Тьма</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Анимация</label>
+                <select id="animation">
+                    <option value="idle">Idle (покой)</option>
+                    <option value="cast">Cast (каст)</option>
+                    <option value="death">Death (смерть)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Размер кадра</label>
+                <select id="frameSize">
+                    <option value="256">256×256</option>
+                    <option value="128">128×128</option>
+                    <option value="512">512×512</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Сетка</label>
+                <select id="gridSize">
+                    <option value="5">5×5 (25 кадров)</option>
+                    <option value="4">4×4 (16 кадров)</option>
+                    <option value="8">8×1 (8 кадров)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button id="loadWizard">Загрузить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spells Tab -->
+    <div id="spells-tab" class="tab-content hidden">
+        <div class="controls">
+            <div class="control-group">
+                <label>Школа</label>
+                <select id="spellSchool">
+                    <option value="fire">🔥 Огонь</option>
+                    <option value="water">💧 Вода</option>
+                    <option value="wind">🌪️ Ветер</option>
+                    <option value="earth">🪨 Земля</option>
+                    <option value="nature">🌿 Природа</option>
+                    <option value="poison">☠️ Яд</option>
+                    <option value="light">✨ Свет</option>
+                    <option value="dark">🌑 Тьма</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Заклинание</label>
+                <select id="spellName">
+                    <!-- Будет заполнено динамически -->
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button id="loadSpell">Загрузить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Tab -->
+    <div id="custom-tab" class="tab-content hidden">
+        <div class="controls">
+            <div class="control-group">
+                <label>Путь к файлу (относительно корня)</label>
+                <input type="text" id="customPath" placeholder="images/wizards/light/idle.webp">
+            </div>
+
+            <div class="control-group">
+                <label>Размер кадра</label>
+                <select id="customFrameSize">
+                    <option value="256">256×256</option>
+                    <option value="128">128×128</option>
+                    <option value="512">512×512</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Сетка</label>
+                <select id="customGridSize">
+                    <option value="5">5×5 (25 кадров)</option>
+                    <option value="4">4×4 (16 кадров)</option>
+                    <option value="8">8×1 (8 кадров)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>&nbsp;</label>
+                <button id="loadCustom">Загрузить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Area -->
+    <div class="preview-container">
+        <div class="preview-box">
+            <h3>Анимация</h3>
+            <canvas id="animCanvas" class="sprite-canvas" width="256" height="256"></canvas>
+            <div class="animation-controls">
+                <button id="playBtn" class="active">▶ Play</button>
+                <button id="stopBtn">⏹ Stop</button>
+                <button id="prevFrame">◀ Prev</button>
+                <button id="nextFrame">Next ▶</button>
+            </div>
+            <div class="speed-control">
+                <label>Скорость:</label>
+                <input type="range" id="speed" min="1" max="30" value="12">
+                <span id="speedValue">12 FPS</span>
+            </div>
+            <div class="info" id="frameInfo">Кадр: 0 / 0</div>
+        </div>
+
+        <div class="preview-box">
+            <h3>Полный спрайт-лист</h3>
+            <img id="fullSheet" class="full-sheet" src="" alt="Sprite Sheet">
+            <div class="info" id="sheetInfo">Размер: -</div>
+        </div>
+    </div>
+
+    <script>
+        // Конфигурация заклинаний по школам
+        const SPELLS_CONFIG = {
+            fire: ['spark', 'firebolt', 'fireball', 'fire_wall', 'fire_tsunami'],
+            water: ['icicle', 'frost_arrow', 'ice_rain', 'blizzard', 'absolute_zero'],
+            wind: ['gust', 'wind_blade', 'wind_wall', 'storm_cloud', 'ball_lightning'],
+            earth: ['pebble', 'stone_spike', 'earth_wall', 'stone_grotto', 'meteor'],
+            nature: ['call_wolf', 'bark_armor', 'leaf_canopy', 'ent'],
+            poison: ['poisoned_blade', 'poisoned_glade', 'foul_cloud', 'plague', 'epidemic'],
+            light: ['flash', 'light_beam', 'rainbow_shield', 'sun_radiance', 'dawn'],
+            dark: ['dark_clot', 'weakness', 'miasma', 'shadow_realm', 'fading']
+        };
+
+        // Состояние
+        let currentImage = null;
+        let currentFrame = 0;
+        let totalFrames = 25;
+        let frameWidth = 256;
+        let frameHeight = 256;
+        let gridColumns = 5;
+        let isPlaying = true;
+        let animationId = null;
+        let lastFrameTime = 0;
+        let fps = 12;
+
+        // DOM элементы
+        const animCanvas = document.getElementById('animCanvas');
+        const ctx = animCanvas.getContext('2d');
+        const fullSheet = document.getElementById('fullSheet');
+        const frameInfo = document.getElementById('frameInfo');
+        const sheetInfo = document.getElementById('sheetInfo');
+        const speedSlider = document.getElementById('speed');
+        const speedValue = document.getElementById('speedValue');
+
+        // Табы
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+                tab.classList.add('active');
+                document.getElementById(`${tab.dataset.tab}-tab`).classList.remove('hidden');
+            });
+        });
+
+        // Заполняем список заклинаний
+        function updateSpellList() {
+            const school = document.getElementById('spellSchool').value;
+            const spellSelect = document.getElementById('spellName');
+            spellSelect.innerHTML = '';
+
+            SPELLS_CONFIG[school].forEach(spell => {
+                const option = document.createElement('option');
+                option.value = spell;
+                option.textContent = spell;
+                spellSelect.appendChild(option);
+            });
+        }
+
+        document.getElementById('spellSchool').addEventListener('change', updateSpellList);
+        updateSpellList();
+
+        // Загрузка спрайта мага
+        document.getElementById('loadWizard').addEventListener('click', () => {
+            const faction = document.getElementById('faction').value;
+            const animation = document.getElementById('animation').value;
+            const size = parseInt(document.getElementById('frameSize').value);
+            const grid = document.getElementById('gridSize').value;
+
+            frameWidth = size;
+            frameHeight = size;
+
+            if (grid === '8') {
+                gridColumns = 8;
+                totalFrames = 8;
+            } else {
+                gridColumns = parseInt(grid);
+                totalFrames = gridColumns * gridColumns;
+            }
+
+            const path = `../images/wizards/${faction}/${animation}.webp`;
+            loadSprite(path);
+        });
+
+        // Загрузка заклинания
+        document.getElementById('loadSpell').addEventListener('click', () => {
+            const school = document.getElementById('spellSchool').value;
+            const spell = document.getElementById('spellName').value;
+
+            // Пробуем разные пути
+            const paths = [
+                `../images/spells/${school}/${spell}/${spell}_sprite.webp`,
+                `../images/spells/${school}/${spell}/${spell}_spritesheet.webp`,
+                `../images/spells/${school}/${spell}/sprite.webp`,
+                `../images/spells/${school}/${spell}.webp`
+            ];
+
+            tryLoadPaths(paths);
+        });
+
+        // Загрузка по своему пути
+        document.getElementById('loadCustom').addEventListener('click', () => {
+            const path = '../' + document.getElementById('customPath').value;
+            const size = parseInt(document.getElementById('customFrameSize').value);
+            const grid = document.getElementById('customGridSize').value;
+
+            frameWidth = size;
+            frameHeight = size;
+
+            if (grid === '8') {
+                gridColumns = 8;
+                totalFrames = 8;
+            } else {
+                gridColumns = parseInt(grid);
+                totalFrames = gridColumns * gridColumns;
+            }
+
+            loadSprite(path);
+        });
+
+        // Попробовать загрузить из списка путей
+        function tryLoadPaths(paths, index = 0) {
+            if (index >= paths.length) {
+                alert('Спрайт не найден по стандартным путям');
+                return;
+            }
+
+            const img = new Image();
+            img.onload = () => {
+                currentImage = img;
+                fullSheet.src = paths[index];
+
+                // Автоопределение сетки
+                const cols = Math.round(img.width / 256);
+                const rows = Math.round(img.height / 256);
+
+                if (cols === rows) {
+                    gridColumns = cols;
+                    totalFrames = cols * cols;
+                    frameWidth = 256;
+                    frameHeight = 256;
+                } else if (rows === 1) {
+                    gridColumns = cols;
+                    totalFrames = cols;
+                    frameWidth = img.width / cols;
+                    frameHeight = img.height;
+                }
+
+                animCanvas.width = frameWidth;
+                animCanvas.height = frameHeight;
+
+                currentFrame = 0;
+                sheetInfo.textContent = `Размер: ${img.width}×${img.height} | Сетка: ${gridColumns}×${Math.ceil(totalFrames/gridColumns)} | Кадров: ${totalFrames}`;
+
+                if (isPlaying) startAnimation();
+            };
+            img.onerror = () => tryLoadPaths(paths, index + 1);
+            img.src = paths[index];
+        }
+
+        // Загрузка спрайта
+        function loadSprite(path) {
+            const img = new Image();
+            img.onload = () => {
+                currentImage = img;
+                fullSheet.src = path;
+
+                animCanvas.width = frameWidth;
+                animCanvas.height = frameHeight;
+
+                currentFrame = 0;
+                sheetInfo.textContent = `Размер: ${img.width}×${img.height} | Сетка: ${gridColumns}×${Math.ceil(totalFrames/gridColumns)} | Кадров: ${totalFrames}`;
+
+                if (isPlaying) startAnimation();
+            };
+            img.onerror = () => {
+                alert(`Не удалось загрузить: ${path}`);
+            };
+            img.src = path;
+        }
+
+        // Отрисовка кадра
+        function drawFrame(frameIndex) {
+            if (!currentImage) return;
+
+            ctx.clearRect(0, 0, animCanvas.width, animCanvas.height);
+
+            const col = frameIndex % gridColumns;
+            const row = Math.floor(frameIndex / gridColumns);
+
+            ctx.drawImage(
+                currentImage,
+                col * frameWidth, row * frameHeight, frameWidth, frameHeight,
+                0, 0, frameWidth, frameHeight
+            );
+
+            frameInfo.textContent = `Кадр: ${frameIndex + 1} / ${totalFrames}`;
+        }
+
+        // Анимация
+        function animate(timestamp) {
+            if (!isPlaying) return;
+
+            const frameInterval = 1000 / fps;
+
+            if (timestamp - lastFrameTime >= frameInterval) {
+                currentFrame = (currentFrame + 1) % totalFrames;
+                drawFrame(currentFrame);
+                lastFrameTime = timestamp;
+            }
+
+            animationId = requestAnimationFrame(animate);
+        }
+
+        function startAnimation() {
+            if (animationId) cancelAnimationFrame(animationId);
+            isPlaying = true;
+            document.getElementById('playBtn').classList.add('active');
+            document.getElementById('stopBtn').classList.remove('active');
+            lastFrameTime = 0;
+            animationId = requestAnimationFrame(animate);
+        }
+
+        function stopAnimation() {
+            isPlaying = false;
+            document.getElementById('playBtn').classList.remove('active');
+            document.getElementById('stopBtn').classList.add('active');
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+
+        // Управление
+        document.getElementById('playBtn').addEventListener('click', startAnimation);
+        document.getElementById('stopBtn').addEventListener('click', stopAnimation);
+
+        document.getElementById('prevFrame').addEventListener('click', () => {
+            stopAnimation();
+            currentFrame = (currentFrame - 1 + totalFrames) % totalFrames;
+            drawFrame(currentFrame);
+        });
+
+        document.getElementById('nextFrame').addEventListener('click', () => {
+            stopAnimation();
+            currentFrame = (currentFrame + 1) % totalFrames;
+            drawFrame(currentFrame);
+        });
+
+        speedSlider.addEventListener('input', () => {
+            fps = parseInt(speedSlider.value);
+            speedValue.textContent = `${fps} FPS`;
+        });
+
+        // Загружаем мага света по умолчанию
+        document.getElementById('faction').value = 'light';
+        document.getElementById('loadWizard').click();
+    </script>
+</body>
+</html>
