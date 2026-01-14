@@ -971,6 +971,7 @@ window.showCreateGuildForm = showCreateGuildForm;
 window.showSearchGuilds = showSearchGuilds;
 window.createGuild = createGuild;
 window.searchGuilds = searchGuilds;
+window.renderNoGuildView = renderNoGuildView;
 window.joinGuild = joinGuild;
 window.switchGuildTab = switchGuildTab;
 window.spendResearchPoint = spendResearchPoint;
