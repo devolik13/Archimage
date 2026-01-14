@@ -256,6 +256,17 @@
             </div>
 
             <div class="control-group">
+                <label>Сетка</label>
+                <select id="spellGridSize">
+                    <option value="5">5×5 (25 кадров)</option>
+                    <option value="4">4×4 (16 кадров)</option>
+                    <option value="8">8×1 (8 кадров)</option>
+                    <option value="3">3×3 (9 кадров)</option>
+                    <option value="2">2×2 (4 кадра)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
                 <label>&nbsp;</label>
                 <button id="loadSpell">Загрузить</button>
             </div>
@@ -459,59 +470,44 @@
         document.getElementById('loadSpell').addEventListener('click', () => {
             const school = document.getElementById('spellSchool').value;
             const spell = document.getElementById('spellName').value;
+            const grid = document.getElementById('spellGridSize').value;
             const key = `${school}/${spell}`;
+
+            // Устанавливаем сетку из выбора
+            if (grid === '8') {
+                gridColumns = 8;
+                totalFrames = 8;
+            } else {
+                gridColumns = parseInt(grid);
+                totalFrames = gridColumns * gridColumns;
+            }
 
             // Используем точный путь из маппинга
             if (SPELL_PATHS[key]) {
                 const path = `../images/spells/${SPELL_PATHS[key]}`;
-                loadSpriteAuto(path);
+                loadSpriteWithGrid(path);
             } else {
                 alert(`Спрайт для ${spell} не найден в базе`);
             }
         });
 
-        // Загрузка с автоопределением сетки
-        function loadSpriteAuto(path) {
+        // Загрузка с заданной сеткой (вычисляет размер кадра из изображения)
+        function loadSpriteWithGrid(path) {
             const img = new Image();
             img.onload = () => {
                 currentImage = img;
                 fullSheet.src = path;
 
-                // Автоопределение сетки по размерам
-                const cols = Math.round(img.width / 256);
-                const rows = Math.round(img.height / 256);
-
-                if (cols === rows && cols > 0) {
-                    gridColumns = cols;
-                    totalFrames = cols * cols;
-                    frameWidth = Math.round(img.width / cols);
-                    frameHeight = Math.round(img.height / rows);
-                } else if (rows === 1) {
-                    gridColumns = cols;
-                    totalFrames = cols;
-                    frameWidth = Math.round(img.width / cols);
-                    frameHeight = img.height;
-                } else {
-                    // Пробуем другие размеры кадра
-                    const possibleSizes = [128, 256, 512, 64];
-                    for (const size of possibleSizes) {
-                        const c = Math.round(img.width / size);
-                        const r = Math.round(img.height / size);
-                        if (c * size === img.width && r * size === img.height) {
-                            gridColumns = c;
-                            totalFrames = c * r;
-                            frameWidth = size;
-                            frameHeight = size;
-                            break;
-                        }
-                    }
-                }
+                // Вычисляем размер кадра на основе выбранной сетки
+                const rows = (totalFrames === 8) ? 1 : gridColumns;
+                frameWidth = Math.round(img.width / gridColumns);
+                frameHeight = Math.round(img.height / rows);
 
                 animCanvas.width = frameWidth;
                 animCanvas.height = frameHeight;
 
                 currentFrame = 0;
-                sheetInfo.textContent = `Размер: ${img.width}×${img.height} | Кадр: ${frameWidth}×${frameHeight} | Сетка: ${gridColumns}×${Math.ceil(totalFrames/gridColumns)} | Кадров: ${totalFrames}`;
+                sheetInfo.textContent = `Размер: ${img.width}×${img.height} | Кадр: ${frameWidth}×${frameHeight} | Сетка: ${gridColumns}×${rows} | Кадров: ${totalFrames}`;
 
                 if (isPlaying) startAnimation();
             };
