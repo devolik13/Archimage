@@ -426,13 +426,37 @@ function initializeWizardHealth() {
         }
 
         if (wizard.spells && wizard.spells.includes('bark_armor')) {
-            const spellData = window.findSpellInUserData ? 
+            const spellData = window.findSpellInUserData ?
                 window.findSpellInUserData('bark_armor', window.userData?.spells) : null;
             if (spellData && spellData.level > 0) {
                 // Находим позицию мага
                 const position = window.playerFormation.findIndex(id => id === wizard.id);
                 if (position !== -1) {
                     window.applyBarkArmorAtStart(wizard, spellData.level, position, 'player');
+                }
+            }
+        }
+
+        // Применение "Радужного щита" (Свет, Tier 3)
+        if (wizard.spells && wizard.spells.includes('rainbow_shield')) {
+            const spellData = window.findSpellInUserData ?
+                window.findSpellInUserData('rainbow_shield', window.userData?.spells) : null;
+            if (spellData && spellData.level > 0) {
+                const position = window.playerFormation.findIndex(id => id === wizard.id);
+                if (position !== -1 && typeof window.applyRainbowShieldAtStart === 'function') {
+                    window.applyRainbowShieldAtStart(wizard, spellData.level, position, 'player');
+                }
+            }
+        }
+
+        // Применение "Рассвета" (Свет, Tier 5)
+        if (wizard.spells && wizard.spells.includes('dawn')) {
+            const spellData = window.findSpellInUserData ?
+                window.findSpellInUserData('dawn', window.userData?.spells) : null;
+            if (spellData && spellData.level > 0) {
+                const position = window.playerFormation.findIndex(id => id === wizard.id);
+                if (position !== -1 && typeof window.applyDawnAtStart === 'function') {
+                    window.applyDawnAtStart(wizard, spellData.level, position, 'player');
                 }
             }
         }
@@ -495,11 +519,43 @@ function initializeWizardHealth() {
             const originalId = wizard.id.replace('enemy_', '');
             const originalWizard = window.playerWizards.find(w => w.id === originalId);
             if (originalWizard && originalWizard.spells) {
-                const spellData = window.findSpellInUserData ? 
+                const spellData = window.findSpellInUserData ?
                     window.findSpellInUserData('absolute_zero', window.userData?.spells) : null;
                 if (spellData && spellData.level) level = spellData.level;
             }
             applyAbsoluteZeroEffect(wizard, level, 'enemy');
+        }
+
+        // Применение "Радужного щита" для врагов (Свет, Tier 3)
+        if (wizard.spells && wizard.spells.includes('rainbow_shield')) {
+            let level = 1;
+            const originalId = wizard.id.replace('enemy_', '');
+            const originalWizard = window.playerWizards.find(w => w.id === originalId);
+            if (originalWizard && originalWizard.spells) {
+                const spellData = window.findSpellInUserData ?
+                    window.findSpellInUserData('rainbow_shield', window.userData?.spells) : null;
+                if (spellData && spellData.level) level = spellData.level;
+            }
+            const position = window.enemyFormation.findIndex(w => w && w.id === wizard.id);
+            if (position !== -1 && typeof window.applyRainbowShieldAtStart === 'function') {
+                window.applyRainbowShieldAtStart(wizard, level, position, 'enemy');
+            }
+        }
+
+        // Применение "Рассвета" для врагов (Свет, Tier 5)
+        if (wizard.spells && wizard.spells.includes('dawn')) {
+            let level = 1;
+            const originalId = wizard.id.replace('enemy_', '');
+            const originalWizard = window.playerWizards.find(w => w.id === originalId);
+            if (originalWizard && originalWizard.spells) {
+                const spellData = window.findSpellInUserData ?
+                    window.findSpellInUserData('dawn', window.userData?.spells) : null;
+                if (spellData && spellData.level) level = spellData.level;
+            }
+            const position = window.enemyFormation.findIndex(w => w && w.id === wizard.id);
+            if (position !== -1 && typeof window.applyDawnAtStart === 'function') {
+                window.applyDawnAtStart(wizard, level, position, 'enemy');
+            }
         }
     });
 
