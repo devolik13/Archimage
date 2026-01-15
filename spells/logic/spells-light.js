@@ -92,7 +92,7 @@ function castFlash(wizard, spellData, position, casterType) {
 
     let remainingDamage = baseDamage;
     let impactCol = targetCol;
-    let impactRow = position;
+    let impactRow = target.position; // Используем позицию ЦЕЛИ, а не кастера!
     let totalDamageDealt = 0;
     const protectionLayers = [];
 
