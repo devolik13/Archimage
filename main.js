@@ -226,6 +226,7 @@ import './animations/light/light-beam.js';
 import './animations/light/rainbow-shield.js';
 import './animations/light/sun-radiance.js';
 import './animations/light/dawn.js';
+import './animations/light/blinded-effect.js';
 
 // ============================================
 // 20. АНИМАЦИИ ЗАКЛИНАНИЙ - ТЬМА (Dark)

@@ -676,6 +676,27 @@ function applyBlindedEffect(targetWizard, caster, missChance, duration, casterTy
     if (typeof window.addToBattleLog === 'function') {
         window.addToBattleLog(`👁️ ${targetWizard.name} ослеплён! (${missChance}% шанс случайной клетки)`);
     }
+
+    // Показываем визуальный эффект солнца
+    if (window.spellAnimations?.blinded?.show) {
+        let position = -1;
+        let targetSide = '';
+
+        // Ищем позицию ослеплённого мага
+        position = window.playerFormation?.findIndex(id => id === targetWizard.id);
+        if (position !== -1) {
+            targetSide = 'player';
+        } else {
+            position = window.enemyFormation?.findIndex(w => w && w.id === targetWizard.id);
+            if (position !== -1) {
+                targetSide = 'enemy';
+            }
+        }
+
+        if (position !== -1 && targetSide) {
+            window.spellAnimations.blinded.show(targetWizard, position, targetSide);
+        }
+    }
 }
 
 // --- Проверка ослепления перед кастом ---
@@ -722,6 +743,26 @@ function processBlindedEffectAfterTurn(wizard) {
             delete wizard.effects.blinded;
             if (typeof window.addToBattleLog === 'function') {
                 window.addToBattleLog(`👁️ ${wizard.name} больше не ослеплён`);
+            }
+
+            // Убираем визуальный эффект
+            if (window.spellAnimations?.blinded?.remove) {
+                let position = -1;
+                let targetSide = '';
+
+                position = window.playerFormation?.findIndex(id => id === wizard.id);
+                if (position !== -1) {
+                    targetSide = 'player';
+                } else {
+                    position = window.enemyFormation?.findIndex(w => w && w.id === wizard.id);
+                    if (position !== -1) {
+                        targetSide = 'enemy';
+                    }
+                }
+
+                if (position !== -1 && targetSide) {
+                    window.spellAnimations.blinded.remove(`${targetSide}_${position}`);
+                }
             }
         }
     }
@@ -800,6 +841,32 @@ function applyLightFactionBonus(wizard, casterType) {
                 if (ally.effects[debuff]) {
                     // Снимаем дебафф
                     delete ally.effects[debuff];
+
+                    // Убираем визуальный эффект если есть
+                    let allyPos = -1;
+                    let allySide = '';
+
+                    allyPos = window.playerFormation?.findIndex(id => id === ally.id);
+                    if (allyPos !== -1) {
+                        allySide = 'player';
+                    } else {
+                        allyPos = window.enemyFormation?.findIndex(w => w && w.id === ally.id);
+                        if (allyPos !== -1) {
+                            allySide = 'enemy';
+                        }
+                    }
+
+                    if (allyPos !== -1 && allySide) {
+                        const effectKey = `${allySide}_${allyPos}`;
+                        // Удаляем соответствующий визуальный эффект
+                        if (debuff === 'blinded' && window.spellAnimations?.blinded?.remove) {
+                            window.spellAnimations.blinded.remove(effectKey);
+                        } else if (debuff === 'burning' && window.spellAnimations?.burning?.remove) {
+                            window.spellAnimations.burning.remove(effectKey);
+                        } else if (debuff === 'chilled_caster' && window.spellAnimations?.chilled?.remove) {
+                            window.spellAnimations.chilled.remove(effectKey);
+                        }
+                    }
 
                     if (typeof window.addToBattleLog === 'function') {
                         window.addToBattleLog(`✨ Свет очищает ${ally.name} от эффекта ${getDebuffName(debuff)}!`);
