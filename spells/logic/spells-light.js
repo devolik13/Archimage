@@ -595,13 +595,13 @@ function getWizardNeighbors(wizard, casterType) {
 }
 
 // --- Сияние солнца (Sun Radiance) - Тир 4, Ослепление всех врагов ---
-// Ослепление: заклинания бьют по СЛУЧАЙНОЙ цели вместо выбранной
+// Ослепление: БОЕВЫЕ заклинания бьют в случайную клетку
 function castSunRadiance(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
 
-    // Параметры по уровням
-    const missChance = [10, 15, 20, 25, 30][level - 1] || 10;
-    const duration = level >= 4 ? 2 : 1; // 4-5 уровни - 2 хода
+    // Параметры по уровням (из записей)
+    const missChance = [10, 12, 14, 16, 20][level - 1] || 10;
+    const duration = 1; // Действует 1 ход
 
     // Находим всех вражеских магов
     const enemies = casterType === 'player' ?
@@ -650,9 +650,8 @@ function applyBlindedEffect(targetWizard, caster, missChance, duration, casterTy
         appliedAt: Date.now()
     };
 
-    const turnWord = duration === 1 ? 'ход' : 'хода';
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`👁️ ${targetWizard.name} ослеплён! (${missChance}% шанс случайной цели, ${duration} ${turnWord})`);
+        window.addToBattleLog(`👁️ ${targetWizard.name} ослеплён! (${missChance}% шанс случайной клетки)`);
     }
 }
 
