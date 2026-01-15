@@ -25,40 +25,32 @@
 
         console.log(`✨ Light Beam animation: [${casterCol},${casterRow}] → [${targetCol},${targetRow}], warmup: ${warmupLevel}`);
 
+        // Получаем необходимые объекты из ядра (как в spark.js)
         const container = window.pixiCore?.getEffectsContainer();
-        if (!container) {
+        const gridCells = window.pixiCore?.getGridCells();
+
+        if (!container || !gridCells) {
+            console.warn('⚠️ Не могу создать луч - нет контейнера или сетки');
             if (onHit) onHit();
             if (onComplete) onComplete();
             return;
         }
 
-        // Получаем позиции спрайтов
-        const startSprite = window.wizardSprites?.[`${casterCol}_${casterRow}`];
+        const startCell = gridCells[casterCol]?.[casterRow];
+        const endCell = gridCells[targetCol]?.[targetRow];
 
-        // Для цели можем использовать разные источники координат
-        let endX, endY;
-        const endSprite = window.wizardSprites?.[`${targetCol}_${targetRow}`];
-
-        if (endSprite) {
-            endX = endSprite.x;
-            endY = endSprite.y;
-        } else {
-            // Fallback - вычисляем по сетке
-            const gridInfo = window.pixiCore?.getGridInfo?.();
-            if (gridInfo) {
-                endX = gridInfo.startX + targetCol * gridInfo.cellWidth + gridInfo.cellWidth / 2;
-                endY = gridInfo.startY + targetRow * gridInfo.cellHeight + gridInfo.cellHeight / 2;
-            }
-        }
-
-        if (!startSprite || endX === undefined) {
+        if (!startCell || !endCell) {
+            console.warn('⚠️ Не могу создать луч - нет данных ячеек');
             if (onHit) onHit();
             if (onComplete) onComplete();
             return;
         }
 
-        const startX = startSprite.x;
-        const startY = startSprite.y;
+        // Координаты из центров ячеек
+        const startX = startCell.x + startCell.width / 2;
+        const startY = startCell.y + startCell.height / 2;
+        const endX = endCell.x + endCell.width / 2;
+        const endY = endCell.y + endCell.height / 2;
 
         // Вычисляем угол и расстояние
         const angle = Math.atan2(endY - startY, endX - startX);
