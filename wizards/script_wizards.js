@@ -124,7 +124,7 @@ function openSpellSelection(wizardIndex, spellSlotIndex) {
     });
     const currentWizard = userData.wizards[wizardIndex];
     const currentSpellInSlot = currentWizard.spells?.[spellSlotIndex];
-    ['fire', 'water', 'wind', 'earth', 'nature', 'poison'].forEach(faction => {
+    ['fire', 'water', 'wind', 'earth', 'nature', 'poison', 'light', 'dark'].forEach(faction => {
         const factionSpells = userSpells[faction];
         if (factionSpells) {
             Object.entries(factionSpells).forEach(([spellId, spellData]) => {
