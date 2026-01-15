@@ -203,7 +203,7 @@
                 flashSprite.scale.set(scale * 0.35);
                 flashSprite.animationSpeed = window.getScaledAnimationSpeed ? window.getScaledAnimationSpeed(0.4) : 0.4;
                 flashSprite.loop = false;
-                // Без blend mode - используем прозрачность изображения напрямую
+                flashSprite.blendMode = PIXI.BLEND_MODES.ADD; // ADD скрывает тёмный фон
 
                 flashSprite.onComplete = () => {
                     if (flashSprite.parent) {
