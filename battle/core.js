@@ -821,14 +821,10 @@ async function executeSingleMageAttack(wizard, position, casterType) {
         return true;
     }
 
-    // 👁️ Проверка ослепления (Сияние солнца) - шанс промаха
-    let blindedMiss = false;
+    // 👁️ Проверка ослепления (Сияние солнца) - шанс случайной цели
+    // checkBlindedMiss устанавливает wizard.blindedTargetPosition если сработал шанс
     if (typeof window.checkBlindedMiss === 'function') {
-        blindedMiss = window.checkBlindedMiss(wizard);
-    }
-    // Снимаем эффект после проверки (действует 1 ход)
-    if (typeof window.processBlindedEffectAfterTurn === 'function') {
-        window.processBlindedEffectAfterTurn(wizard);
+        window.checkBlindedMiss(wizard);
     }
 
     // Призванные существа
@@ -866,15 +862,18 @@ async function executeSingleMageAttack(wizard, position, casterType) {
     // Прерывание от Абсолютного Ноля проверяется в spells.js для каждого заклинания отдельно
 
     // ИСПОЛЬЗОВАНИЕ ЗАКЛИНАНИЙ - ждём завершения всех кастов
-    // Если ослеплён и промазал - пропускаем каст заклинаний
-    if (blindedMiss) {
-        // Промах из-за ослепления - маг не кастует в этот ход
-        return true;
-    }
-
+    // Если маг ослеплён (wizard.blindedTargetPosition установлен) - findTarget будет использовать случайную позицию
     if (typeof window.useWizardSpells === 'function') {
         await window.useWizardSpells(wizard, position, casterType);
     }
+
+    // 👁️ Снимаем эффект ослепления после хода (счётчик ходов)
+    if (typeof window.processBlindedEffectAfterTurn === 'function') {
+        window.processBlindedEffectAfterTurn(wizard);
+    }
+
+    // Сбрасываем флаг случайной позиции после хода
+    delete wizard.blindedTargetPosition;
 
     if (window.activeMeteorokinesis && wizard && wizard.hp > 0) {
         window.activeMeteorokinesis.forEach(effect => {

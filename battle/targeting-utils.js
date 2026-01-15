@@ -1,6 +1,14 @@
 
 // --- Поиск цели для атаки ---
-function findTarget(position, attackerType) {
+// Третий параметр caster опционален - используется для проверки ослепления
+function findTarget(position, attackerType, caster = null) {
+    // 👁️ Проверяем ослепление кастера (Сияние солнца)
+    // Если ослеплён и blindedTargetPosition установлен - используем случайную позицию
+    const actualCaster = caster || window.currentSpellCaster?.wizard;
+    if (actualCaster && actualCaster.blindedTargetPosition !== undefined) {
+        position = actualCaster.blindedTargetPosition;
+    }
+
     if (attackerType === 'player') {
         for (let i = 0; i < 5; i++) {
             const targetPosition = (position + i) % 5;

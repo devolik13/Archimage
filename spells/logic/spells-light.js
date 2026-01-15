@@ -595,9 +595,13 @@ function getWizardNeighbors(wizard, casterType) {
 }
 
 // --- Сияние солнца (Sun Radiance) - Тир 4, Ослепление всех врагов ---
+// Ослепление: заклинания бьют по СЛУЧАЙНОЙ цели вместо выбранной
 function castSunRadiance(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
-    const missChance = 10; // 10% шанс промаха для ослеплённых
+
+    // Параметры по уровням
+    const missChance = [10, 15, 20, 25, 30][level - 1] || 10;
+    const duration = level >= 4 ? 2 : 1; // 4-5 уровни - 2 хода
 
     // Находим всех вражеских магов
     const enemies = casterType === 'player' ?
@@ -626,7 +630,7 @@ function castSunRadiance(wizard, spellData, position, casterType) {
 
     // Накладываем ослепление на всех врагов
     enemies.forEach(enemy => {
-        applyBlindedEffect(enemy, wizard, missChance, casterType);
+        applyBlindedEffect(enemy, wizard, missChance, duration, casterType);
     });
 
     // Применяем бонус фракции
@@ -634,24 +638,31 @@ function castSunRadiance(wizard, spellData, position, casterType) {
 }
 
 // --- Применить эффект "Ослепление" ---
-function applyBlindedEffect(targetWizard, caster, missChance, casterType) {
+// Ослепление: шанс что заклинание попадёт по случайной цели вместо выбранной
+function applyBlindedEffect(targetWizard, caster, missChance, duration, casterType) {
     if (!targetWizard.effects) targetWizard.effects = {};
 
     targetWizard.effects.blinded = {
         missChance: missChance,
         casterId: caster.id,
         casterType: casterType,
-        turnsLeft: 1, // Действует 1 ход цели
+        turnsLeft: duration,
         appliedAt: Date.now()
     };
 
+    const turnWord = duration === 1 ? 'ход' : 'хода';
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`👁️ ${targetWizard.name} ослеплён! (${missChance}% шанс промаха на 1 ход)`);
+        window.addToBattleLog(`👁️ ${targetWizard.name} ослеплён! (${missChance}% шанс случайной цели, ${duration} ${turnWord})`);
     }
 }
 
 // --- Проверка ослепления перед кастом ---
+// Если ослеплён и сработал шанс - устанавливает случайную цель для этого хода
+// Возвращает true если маг ослеплён и бьёт по случайной цели
 function checkBlindedMiss(wizard) {
+    // Сбрасываем флаг с прошлого хода
+    delete wizard.blindedTargetPosition;
+
     if (!wizard.effects || !wizard.effects.blinded) {
         return false; // Не ослеплён
     }
@@ -660,16 +671,20 @@ function checkBlindedMiss(wizard) {
     const roll = Math.random() * 100;
 
     if (roll < blinded.missChance) {
+        // Случайная позиция цели (0-4)
+        const randomPos = Math.floor(Math.random() * 5);
+        wizard.blindedTargetPosition = randomPos;
+
         if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`👁️ ${wizard.name} промахивается из-за ослепления!`);
+            window.addToBattleLog(`👁️ ${wizard.name} ослеплён и бьёт по случайной позиции!`);
         }
-        return true; // Промах
+        return true; // Ослеплён, цель перенаправлена
     }
 
-    return false; // Попадание
+    return false; // Попадание по нормальной цели
 }
 
-// --- Получить случайную позицию для промаха ---
+// --- Получить случайную позицию для ослепления ---
 function getBlindedRandomTarget(originalPosition, casterType) {
     // Выбираем случайную позицию 0-4
     const randomPos = Math.floor(Math.random() * 5);
