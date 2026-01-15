@@ -18,18 +18,22 @@ function findTarget(position, attackerType, caster = null, spellId = null) {
         if (isAffected) {
             const blinded = actualCaster.effects.blinded;
             const roll = Math.random() * 100;
+            const isMiss = roll < blinded.missChance;
 
-            console.log(`👁️ [Blinded check] ${actualCaster.name}: roll=${roll.toFixed(1)}, missChance=${blinded.missChance}`);
+            // Логируем проверку ослепления в бой
+            if (typeof window.addToBattleLog === 'function') {
+                if (isMiss) {
+                    window.addToBattleLog(`👁️ ${actualCaster.name} ослеплён — заклинание летит в случайную клетку! (${roll.toFixed(0)}/${blinded.missChance})`);
+                } else {
+                    window.addToBattleLog(`👁️ ${actualCaster.name} ослеплён, но попадает в цель (${roll.toFixed(0)}/${blinded.missChance})`);
+                }
+            }
 
-            if (roll < blinded.missChance) {
+            if (isMiss) {
                 // Случайная позиция (0-4)
                 const randomPos = Math.floor(Math.random() * 5);
                 position = randomPos;
                 isBlindedMiss = true; // Флаг что это ослеплённый удар
-
-                if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`👁️ ${actualCaster.name} ослеплён — заклинание летит в случайную клетку!`);
-                }
             }
         }
     }
