@@ -140,12 +140,12 @@ function castWeakness(wizard, spellData, position, casterType) {
     applyDarkFactionBonus(wizard, [targetWizard], casterType);
 }
 
-// --- Миазма (Miasma) - Тир 3, Poison Amp/Resistance ---
-function castMiasma(wizard, spellData, position, casterType) {
-    const level = spellData.level || 1;
+// --- Миазма (Miasma) - Тир 3, Пассивный бафф/дебафф яда ---
+// Применяется в начале боя
+function applyMiasmaAtStart(wizard, level, position, casterType) {
     const percentModifier = [20, 40, 60, 80, 100][level - 1] || 20;
 
-    console.log(`🌑 Casting Miasma - Level ${level}, Modifier ${percentModifier}%`);
+    console.log(`🌑 Applying Miasma at start - Level ${level}, Modifier ${percentModifier}%`);
 
     // Получаем всех союзников и врагов
     const allies = casterType === 'player' ?
@@ -180,20 +180,44 @@ function castMiasma(wizard, spellData, position, casterType) {
     if (typeof window.addToBattleLog === 'function') {
         const resistText = percentModifier === 100 ? 'иммунитет к яду' : `-${percentModifier}% урона от яда`;
         const ampText = percentModifier === 100 ? 'удвоенный урон от яда' : `+${percentModifier}% урона от яда`;
-        window.addToBattleLog(`🌑 ${wizard.name} создаёт Миазму! Союзники: ${resistText}. Враги: ${ampText}`);
+        window.addToBattleLog(`☣️ Миазма ${wizard.name} окутывает поле боя! Союзники: ${resistText}. Враги: ${ampText}`);
     }
 
-    // Анимация
+    // Анимация заклинания
     if (window.spellAnimations?.miasma?.play) {
-        window.spellAnimations.miasma.play({
-            casterType: casterType,
-            casterPosition: position,
-            level: level
+        setTimeout(() => {
+            window.spellAnimations.miasma.play({
+                casterType: casterType,
+                casterPosition: position,
+                level: level
+            });
+        }, 300);
+    }
+
+    // Показываем постоянный визуальный эффект на всех союзниках
+    if (window.spellAnimations?.miasma_buff?.show) {
+        allies.forEach((ally, index) => {
+            let allyPos = -1;
+
+            if (casterType === 'player') {
+                allyPos = window.playerFormation?.findIndex(id => id === ally.id);
+            } else {
+                allyPos = window.enemyFormation?.findIndex(w => w && w.id === ally.id);
+            }
+
+            if (allyPos !== -1) {
+                setTimeout(() => {
+                    window.spellAnimations.miasma_buff.show(ally, allyPos, casterType);
+                }, 500 + index * 100);
+            }
         });
     }
+}
 
-    // Применяем бонус фракции на всех врагов
-    applyDarkFactionBonus(wizard, enemies, casterType);
+// Старая функция castMiasma - для обратной совместимости (не используется)
+function castMiasma(wizard, spellData, position, casterType) {
+    // Миазма теперь пассивная, применяется в начале боя
+    console.log(`⚠️ castMiasma вызвана, но Миазма теперь пассивное заклинание`);
 }
 
 // --- Мир теней (Shadow Realm) - Тир 4, % от потерянного HP ---
@@ -481,6 +505,7 @@ window.castDarkSpell = castDarkSpell;
 window.castDarkClot = castDarkClot;
 window.castWeakness = castWeakness;
 window.castMiasma = castMiasma;
+window.applyMiasmaAtStart = applyMiasmaAtStart;
 window.castShadowRealm = castShadowRealm;
 window.castFading = castFading;
 window.applyArmorReduction = applyArmorReduction;

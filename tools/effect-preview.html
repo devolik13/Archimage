@@ -74,6 +74,7 @@
         <button onclick="showLightBeam(5)">Light Beam (warmup 5)</button>
         <button onclick="showLightBeam(10)">Light Beam (warmup 10)</button>
         <button onclick="showWeakenedEffect()">Weakened</button>
+        <button onclick="showMiasmaEffect()">Miasma</button>
         <button onclick="clearEffects()">Clear</button>
     </div>
 
@@ -488,6 +489,84 @@
                 <p>6 частиц движутся по овальной траектории</p>
                 <p>Длительность: 1 ход ослаблённого</p>
                 <p>Снимается: окончание хода или очищение Светом</p>
+            `;
+        }
+
+        // Miasma Effect (poison protection glow)
+        function showMiasmaEffect() {
+            clearEffects();
+            const pos = drawWizardPlaceholder(300, 200, 'Wizard with Miasma');
+
+            const miasmaContainer = new PIXI.Container();
+            miasmaContainer.x = pos.x;
+            miasmaContainer.y = pos.y;
+            effectsContainer.addChild(miasmaContainer);
+
+            // Glow ring
+            const glowRing = new PIXI.Graphics();
+            miasmaContainer.addChild(glowRing);
+
+            // Particles
+            const particles = [];
+            const particleCount = 4;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = new PIXI.Graphics();
+                particles.push({
+                    sprite: particle,
+                    angle: (i / particleCount) * Math.PI * 2,
+                    phase: Math.random() * Math.PI * 2,
+                    speed: 0.3 + Math.random() * 0.2
+                });
+                miasmaContainer.addChild(particle);
+            }
+
+            function animate() {
+                const time = Date.now() * 0.001;
+
+                // Pulsing ring
+                glowRing.clear();
+                const ringPulse = 0.6 + Math.sin(time * 2) * 0.2;
+                const ringSize = 28 + Math.sin(time * 1.5) * 3;
+
+                // Outer glow
+                glowRing.beginFill(0x00ff00, 0.08 * ringPulse);
+                glowRing.drawCircle(0, 0, ringSize + 8);
+                glowRing.endFill();
+
+                // Main ring
+                glowRing.lineStyle(1.5, 0x4aff4a, 0.25 * ringPulse);
+                glowRing.drawCircle(0, 0, ringSize);
+
+                // Particles
+                particles.forEach((p) => {
+                    const { sprite, angle, phase, speed } = p;
+                    sprite.clear();
+
+                    const currentAngle = angle + time * speed;
+                    const radius = 20;
+                    const x = Math.cos(currentAngle) * radius;
+                    const yOffset = Math.sin(time * 2 + phase) * 8;
+                    const y = -5 + yOffset;
+
+                    const alpha = 0.3 + Math.sin(time * 3 + phase) * 0.15;
+                    const size = 2 + Math.sin(time * 2 + phase) * 0.5;
+
+                    sprite.beginFill(0x7fff7f, alpha);
+                    sprite.drawCircle(x, y, size);
+                    sprite.endFill();
+                });
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            document.getElementById('info').innerHTML = `
+                <h3>Miasma Effect (Миазма)</h3>
+                <p>Лёгкое зеленоватое ядовитое свечение</p>
+                <p>Пульсирующее кольцо + парящие частицы</p>
+                <p>Постоянный бафф: защита от яда</p>
+                <p>Пассивное заклинание (начало боя)</p>
             `;
         }
 
