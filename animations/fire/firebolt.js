@@ -222,7 +222,8 @@
             const targetRow = arrowData.impactRow;
             const targetCell = gridCells[targetCol]?.[targetRow];
 
-            if (!targetCell) {
+            // Проверка что и casterCell и targetCell валидны
+            if (!targetCell || !casterCell) {
                 completedArrows++;
                 checkComplete();
                 return;
