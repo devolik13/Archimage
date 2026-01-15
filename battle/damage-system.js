@@ -418,7 +418,24 @@ function applyDamageWithEffects(caster, target, baseDamage, spellId = 'basic', a
     	    damageSteps.push(`Сопротивление магии: ${damageBeforeResist} → ${finalDamage} (-${realResistance}%)`);
     	}
     }
-    
+
+    // 3.5 Радужный щит - защита от стихийных школ (fire, water, earth, wind)
+    if (target && target.buffs && target.buffs.rainbow_shield) {
+        const shield = target.buffs.rainbow_shield;
+        const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
+
+        // Проверяем, что заклинание принадлежит стихийной школе
+        if (spellSchool && shield.affectedSchools && shield.affectedSchools.includes(spellSchool)) {
+            const damageBeforeShield = finalDamage;
+            const resistMultiplier = 1 - (shield.resistancePercent / 100);
+            finalDamage = Math.floor(finalDamage * resistMultiplier);
+
+            if (damageBeforeShield !== finalDamage) {
+                damageSteps.push(`🌈 Радужный щит: ${damageBeforeShield} → ${finalDamage} (-${shield.resistancePercent}%)`);
+            }
+        }
+    }
+
     // 4. Учет брони ЦЕЛИ
     const totalArmor = (target.armor || 0) + (target.armorBonus || 0);
     if (target && totalArmor > 0) {
