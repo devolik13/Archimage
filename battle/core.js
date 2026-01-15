@@ -821,6 +821,16 @@ async function executeSingleMageAttack(wizard, position, casterType) {
         return true;
     }
 
+    // 👁️ Проверка ослепления (Сияние солнца) - шанс промаха
+    let blindedMiss = false;
+    if (typeof window.checkBlindedMiss === 'function') {
+        blindedMiss = window.checkBlindedMiss(wizard);
+    }
+    // Снимаем эффект после проверки (действует 1 ход)
+    if (typeof window.processBlindedEffectAfterTurn === 'function') {
+        window.processBlindedEffectAfterTurn(wizard);
+    }
+
     // Призванные существа
     if (window.summonsManager) {
         for (const [id, summon] of window.summonsManager.summons) {
@@ -856,6 +866,12 @@ async function executeSingleMageAttack(wizard, position, casterType) {
     // Прерывание от Абсолютного Ноля проверяется в spells.js для каждого заклинания отдельно
 
     // ИСПОЛЬЗОВАНИЕ ЗАКЛИНАНИЙ - ждём завершения всех кастов
+    // Если ослеплён и промазал - пропускаем каст заклинаний
+    if (blindedMiss) {
+        // Промах из-за ослепления - маг не кастует в этот ход
+        return true;
+    }
+
     if (typeof window.useWizardSpells === 'function') {
         await window.useWizardSpells(wizard, position, casterType);
     }
