@@ -52,6 +52,14 @@ if (!window.getSpellSchoolFallback) {
         if (['poisoned_blade', 'poisoned_glade', 'foul_cloud', 'plague', 'epidemic'].includes(spellId)) {
             return 'poison';
         }
+        // Свет
+        if (['flash', 'light_beam', 'rainbow_shield', 'sun_radiance', 'dawn'].includes(spellId)) {
+            return 'light';
+        }
+        // Тьма
+        if (['dark_clot', 'weakness', 'miasma', 'shadow_realm', 'fading'].includes(spellId)) {
+            return 'dark';
+        }
 
         // Проверяем по префиксу
         const prefixes = {
@@ -60,7 +68,9 @@ if (!window.getSpellSchoolFallback) {
             'wind': 'wind', 'gust': 'wind', 'storm': 'wind', 'ball_lightning': 'wind',
             'stone': 'earth', 'earth': 'earth', 'pebble': 'earth', 'meteor': 'earth',
             'wolf': 'nature', 'bark': 'nature', 'leaf': 'nature', 'ent': 'nature', 'meteoro': 'nature',
-            'poison': 'poison', 'foul': 'poison', 'plague': 'poison', 'epidemic': 'poison'
+            'poison': 'poison', 'foul': 'poison', 'plague': 'poison', 'epidemic': 'poison',
+            'flash': 'light', 'light': 'light', 'rainbow': 'light', 'sun': 'light', 'dawn': 'light',
+            'dark': 'dark', 'weakness': 'dark', 'miasma': 'dark', 'shadow': 'dark', 'fading': 'dark'
         };
 
         for (const [prefix, school] of Object.entries(prefixes)) {

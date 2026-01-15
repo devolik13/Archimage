@@ -60,7 +60,7 @@ function getSpellSchool(spellId) {
         earth: ['pebble', 'stone_spike', 'earth_wall', 'stone_grotto', 'meteor_shower'],
         nature: ['call_wolf', 'bark_armor', 'leaf_canopy', 'ent', 'meteorokinesis'],
         poison: ['poisoned_blade', 'poisoned_glade', 'foul_cloud', 'plague', 'epidemic'],
-        light: ['flash', 'ray_of_light', 'healing_glow', 'purification', 'divine_shield'],
+        light: ['flash', 'light_beam', 'rainbow_shield', 'sun_radiance', 'dawn'],
         dark: ['dark_clot', 'weakness', 'miasma', 'shadow_realm', 'fading']
     };
     
