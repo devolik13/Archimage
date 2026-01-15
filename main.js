@@ -233,6 +233,7 @@ import './animations/light/dawn-effect.js';
 // 20. АНИМАЦИИ ЗАКЛИНАНИЙ - ТЬМА (Dark)
 // ============================================
 import './animations/dark/dark-clot.js';
+import './animations/dark/weakened-effect.js';
 import './animations/dark/weakness.js';
 import './animations/dark/miasma.js';
 import './animations/dark/shadow-realm.js';

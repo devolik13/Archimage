@@ -115,6 +115,12 @@ function castWeakness(wizard, spellData, position, casterType) {
         appliedAt: Date.now()
     };
 
+    // Показываем визуальный эффект тёмного дымка
+    const targetType = casterType === 'player' ? 'enemy' : 'player';
+    if (window.spellAnimations?.weakened?.show) {
+        window.spellAnimations.weakened.show(targetWizard, target.position, targetType);
+    }
+
     if (typeof window.addToBattleLog === 'function') {
         window.addToBattleLog(`🌑 ${wizard.name} накладывает Слабость на ${targetWizard.name} (-${damageReduction}% урона на 1 ход)`);
     }
@@ -416,12 +422,19 @@ function applyDarkFactionBonus(wizard, targets, casterType) {
 }
 
 // --- Обработка снятия эффекта Слабости после хода ---
-function processWeakenedEffectAfterTurn(wizard) {
+function processWeakenedEffectAfterTurn(wizard, position, wizardType) {
     if (wizard.effects && wizard.effects.weakened) {
         wizard.effects.weakened.turnsLeft--;
 
         if (wizard.effects.weakened.turnsLeft <= 0) {
             delete wizard.effects.weakened;
+
+            // Убираем визуальный эффект
+            if (window.spellAnimations?.weakened?.remove) {
+                const effectKey = `${wizardType}_${position}`;
+                window.spellAnimations.weakened.remove(effectKey);
+            }
+
             if (typeof window.addToBattleLog === 'function') {
                 window.addToBattleLog(`🌑 Слабость на ${wizard.name} рассеялась`);
             }

@@ -884,6 +884,8 @@ function applyLightFactionBonus(wizard, casterType) {
                             window.spellAnimations.burning.remove(effectKey);
                         } else if (debuff === 'chilled_caster' && window.spellAnimations?.chilled?.remove) {
                             window.spellAnimations.chilled.remove(effectKey);
+                        } else if (debuff === 'weakened' && window.spellAnimations?.weakened?.remove) {
+                            window.spellAnimations.weakened.remove(effectKey);
                         }
                     }
 
