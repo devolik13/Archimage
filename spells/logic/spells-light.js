@@ -72,6 +72,11 @@ function castFlash(wizard, spellData, position, casterType) {
         return;
     }
 
+    // Лог в боевой журнал
+    if (typeof window.addToBattleLog === 'function') {
+        window.addToBattleLog(`✨ ${wizard.name} использует Вспышку на ${target.wizard.name}`);
+    }
+
     // Определяем колонки
     const casterCol = casterType === 'player' ? 5 : 0;
     const summonColumn = casterType === 'player' ? 1 : 4;
