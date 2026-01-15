@@ -200,10 +200,10 @@
                 flashSprite.x = x;
                 flashSprite.y = y;
                 flashSprite.anchor.set(0.5);
-                flashSprite.scale.set(scale * 0.35);
-                flashSprite.animationSpeed = window.getScaledAnimationSpeed ? window.getScaledAnimationSpeed(0.4) : 0.4;
+                flashSprite.scale.set(scale * 0.5);
+                flashSprite.animationSpeed = window.getScaledAnimationSpeed ? window.getScaledAnimationSpeed(0.25) : 0.25;
                 flashSprite.loop = false;
-                flashSprite.blendMode = PIXI.BLEND_MODES.ADD;
+                // Убрал ADD blend mode - может скрывать на светлом фоне
 
                 flashSprite.onComplete = () => {
                     if (flashSprite.parent) {
