@@ -238,8 +238,9 @@ function castLightBeam(wizard, spellData, position, casterType) {
     }
 
     // Проверяем прерывающие дебаффы на кастере (сбрасывают разогрев)
-    const interruptingDebuffs = ['stunned', 'frozen', 'silenced'];
-    const hasInterrupt = interruptingDebuffs.some(debuff => wizard.effects?.[debuff]);
+    // chilled_caster - единственный существующий эффект прерывания (заморозка от Воды)
+    // TODO: добавить stunned, silenced когда будут реализованы
+    const hasInterrupt = wizard.effects?.chilled_caster;
 
     if (hasInterrupt) {
         wizard.lightBeams = {}; // Сбрасываем все лучи
@@ -717,8 +718,8 @@ function applyLightFactionBonus(wizard, casterType) {
             window.playerWizards.filter(w => w.hp > 0) :
             window.enemyFormation.filter(w => w && w.hp > 0);
 
-        // Список дебаффов которые можно снять
-        const removableDebuffs = ['burning', 'poison', 'chilled', 'frozen', 'stunned', 'blinded', 'plague', 'weakened'];
+        // Список дебаффов которые можно снять (только существующие эффекты)
+        const removableDebuffs = ['burning', 'poison', 'chilled_caster', 'blinded', 'plague', 'weakened', 'fading'];
 
         // Ищем союзника с любым дебаффом
         for (const ally of allies) {
@@ -760,12 +761,11 @@ function getDebuffName(debuffId) {
     const names = {
         'burning': 'Горение',
         'poison': 'Яд',
-        'chilled': 'Охлаждение',
-        'frozen': 'Заморозка',
-        'stunned': 'Оглушение',
+        'chilled_caster': 'Заморозка',
         'blinded': 'Ослепление',
         'plague': 'Чума',
-        'weakened': 'Слабость'
+        'weakened': 'Слабость',
+        'fading': 'Угасание'
     };
     return names[debuffId] || debuffId;
 }
