@@ -45,10 +45,16 @@
         const gridCells = window.pixiCore?.getGridCells();
         const cell = gridCells?.[col]?.[row];
 
-        if (!cell) return;
+        console.log(`🌈 [Shield] Creating at col=${col}, row=${row}, cell=`, cell);
+
+        if (!cell) {
+            console.warn(`🌈 [Shield] No cell found for col=${col}, row=${row}`);
+            return;
+        }
 
         const centerX = cell.x + cell.width / 2;
         const centerY = cell.y + cell.height / 2;
+        console.log(`🌈 [Shield] Position: centerX=${centerX}, centerY=${centerY}`);
 
         const shieldKey = `${col}_${row}`;
 
