@@ -1,7 +1,15 @@
 // animations/light/light-beam.js - Анимация заклинания "Луч света"
+// Луч соединяет кастера с целью, толщина растёт с разогревом
 
 (function() {
     const ANIMATION_ID = 'light_beam';
+
+    // Базовые параметры луча
+    const BASE_THICKNESS = 4;      // Начальная толщина
+    const MAX_THICKNESS = 12;      // Максимальная толщина
+    const GLOW_MULTIPLIER = 2.5;   // Множитель свечения
+    const BEAM_COLOR = 0xFFD700;   // Золотой цвет
+    const GLOW_COLOR = 0xFFFFAA;   // Светло-жёлтый
 
     function play(params) {
         const {
@@ -9,11 +17,13 @@
             casterRow,
             targetCol,
             targetRow,
+            warmupLevel = 1,   // Уровень разогрева (1 = старт, растёт каждый ход)
+            isSecondBeam = false, // Дополнительный луч (для другого оттенка?)
             onHit,
             onComplete
         } = params;
 
-        console.log(`✨ Light Beam animation: [${casterCol},${casterRow}] → [${targetCol},${targetRow}]`);
+        console.log(`✨ Light Beam animation: [${casterCol},${casterRow}] → [${targetCol},${targetRow}], warmup: ${warmupLevel}`);
 
         const container = window.pixiCore?.getEffectsContainer();
         if (!container) {
@@ -22,10 +32,26 @@
             return;
         }
 
+        // Получаем позиции спрайтов
         const startSprite = window.wizardSprites?.[`${casterCol}_${casterRow}`];
+
+        // Для цели можем использовать разные источники координат
+        let endX, endY;
         const endSprite = window.wizardSprites?.[`${targetCol}_${targetRow}`];
 
-        if (!startSprite || !endSprite) {
+        if (endSprite) {
+            endX = endSprite.x;
+            endY = endSprite.y;
+        } else {
+            // Fallback - вычисляем по сетке
+            const gridInfo = window.pixiCore?.getGridInfo?.();
+            if (gridInfo) {
+                endX = gridInfo.startX + targetCol * gridInfo.cellWidth + gridInfo.cellWidth / 2;
+                endY = gridInfo.startY + targetRow * gridInfo.cellHeight + gridInfo.cellHeight / 2;
+            }
+        }
+
+        if (!startSprite || endX === undefined) {
             if (onHit) onHit();
             if (onComplete) onComplete();
             return;
@@ -33,12 +59,18 @@
 
         const startX = startSprite.x;
         const startY = startSprite.y;
-        const endX = endSprite.x;
-        const endY = endSprite.y;
 
-        // Вычисляем угол луча
+        // Вычисляем угол и расстояние
         const angle = Math.atan2(endY - startY, endX - startX);
         const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+
+        // Толщина зависит от разогрева (плавно растёт)
+        const warmupFactor = Math.min(warmupLevel / 10, 1); // Максимум на 10 ходах
+        const thickness = BASE_THICKNESS + (MAX_THICKNESS - BASE_THICKNESS) * warmupFactor;
+        const glowThickness = thickness * GLOW_MULTIPLIER;
+
+        // Цвет может немного меняться с разогревом (к белому)
+        const beamColor = lerpColor(BEAM_COLOR, 0xFFFFFF, warmupFactor * 0.3);
 
         // Создаём контейнер луча
         const beamContainer = new PIXI.Container();
@@ -47,117 +79,110 @@
         beamContainer.rotation = angle;
         container.addChild(beamContainer);
 
-        // Луч света (линия)
+        // Внешнее свечение
+        const outerGlow = new PIXI.Graphics();
+        beamContainer.addChild(outerGlow);
+
+        // Основной луч
         const beam = new PIXI.Graphics();
-        beam.lineStyle(6, 0xFFD700, 0.8);
-        beam.moveTo(0, 0);
-        beam.lineTo(0, 0); // Начинаем с нулевой длины
         beamContainer.addChild(beam);
 
-        // Свечение вокруг луча
-        const glow = new PIXI.Graphics();
-        glow.lineStyle(12, 0xFFFFAA, 0.3);
-        glow.moveTo(0, 0);
-        glow.lineTo(0, 0);
-        beamContainer.addChild(glow);
+        // Яркое ядро
+        const core = new PIXI.Graphics();
+        beamContainer.addChild(core);
 
         // Анимация расширения луча
-        const duration = 250;
+        const extendDuration = 200; // Время выстрела
+        const holdDuration = 100;   // Время удержания
+        const fadeDuration = 150;   // Время затухания
         const startTime = Date.now();
 
         function animate() {
             const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / duration, 1);
 
-            // Рисуем луч с текущей длиной
-            const currentLength = distance * progress;
+            // Фаза 1: Расширение луча
+            if (elapsed < extendDuration) {
+                const progress = elapsed / extendDuration;
+                const easeProgress = easeOutQuad(progress);
+                const currentLength = distance * easeProgress;
 
-            beam.clear();
-            beam.lineStyle(6, 0xFFD700, 0.8);
-            beam.moveTo(0, 0);
-            beam.lineTo(currentLength, 0);
-
-            glow.clear();
-            glow.lineStyle(12, 0xFFFFAA, 0.3);
-            glow.moveTo(0, 0);
-            glow.lineTo(currentLength, 0);
-
-            if (progress < 1) {
+                drawBeam(currentLength, thickness, glowThickness, beamColor, 1.0);
                 requestAnimationFrame(animate);
-            } else {
-                // Луч достиг цели
-                if (onHit) onHit();
-
-                // Эффект свечения на цели
-                createRadianceEffect(endX, endY, container);
-
-                // Затухание луча
-                fadeOutBeam(beamContainer, container, onComplete);
             }
+            // Фаза 2: Удержание + пульсация
+            else if (elapsed < extendDuration + holdDuration) {
+                const pulsePhase = (elapsed - extendDuration) / holdDuration;
+                const pulse = 1 + Math.sin(pulsePhase * Math.PI * 2) * 0.1;
+
+                drawBeam(distance, thickness * pulse, glowThickness * pulse, beamColor, 1.0);
+
+                // Вызываем onHit в середине удержания
+                if (elapsed >= extendDuration + holdDuration / 2 && !beamContainer._hitCalled) {
+                    beamContainer._hitCalled = true;
+                    if (onHit) onHit();
+                }
+
+                requestAnimationFrame(animate);
+            }
+            // Фаза 3: Затухание
+            else if (elapsed < extendDuration + holdDuration + fadeDuration) {
+                const fadeProgress = (elapsed - extendDuration - holdDuration) / fadeDuration;
+                const alpha = 1 - easeOutQuad(fadeProgress);
+
+                drawBeam(distance, thickness, glowThickness, beamColor, alpha);
+                requestAnimationFrame(animate);
+            }
+            // Завершение
+            else {
+                container.removeChild(beamContainer);
+                beamContainer.destroy({ children: true });
+                if (onComplete) onComplete();
+            }
+        }
+
+        function drawBeam(length, thick, glowThick, color, alpha) {
+            // Внешнее свечение
+            outerGlow.clear();
+            outerGlow.lineStyle(glowThick, GLOW_COLOR, 0.2 * alpha);
+            outerGlow.moveTo(0, 0);
+            outerGlow.lineTo(length, 0);
+
+            // Основной луч
+            beam.clear();
+            beam.lineStyle(thick, color, 0.8 * alpha);
+            beam.moveTo(0, 0);
+            beam.lineTo(length, 0);
+
+            // Яркое ядро (тонкая белая линия по центру)
+            core.clear();
+            core.lineStyle(thick * 0.3, 0xFFFFFF, 0.9 * alpha);
+            core.moveTo(0, 0);
+            core.lineTo(length, 0);
         }
 
         animate();
     }
 
-    function createRadianceEffect(x, y, container) {
-        // Эффект сияния (DoT визуализация)
-        const radiance = new PIXI.Container();
-        radiance.x = x;
-        radiance.y = y;
-        container.addChild(radiance);
+    // Интерполяция цвета
+    function lerpColor(color1, color2, t) {
+        const r1 = (color1 >> 16) & 0xFF;
+        const g1 = (color1 >> 8) & 0xFF;
+        const b1 = color1 & 0xFF;
 
-        // Создаём несколько лучей
-        for (let i = 0; i < 8; i++) {
-            const ray = new PIXI.Graphics();
-            ray.lineStyle(2, 0xFFD700, 0.6);
-            ray.moveTo(0, 0);
-            ray.lineTo(25, 0);
-            ray.rotation = (i / 8) * Math.PI * 2;
-            radiance.addChild(ray);
-        }
+        const r2 = (color2 >> 16) & 0xFF;
+        const g2 = (color2 >> 8) & 0xFF;
+        const b2 = color2 & 0xFF;
 
-        const startTime = Date.now();
-        const duration = 500;
+        const r = Math.round(r1 + (r2 - r1) * t);
+        const g = Math.round(g1 + (g2 - g1) * t);
+        const b = Math.round(b1 + (b2 - b1) * t);
 
-        function animateRadiance() {
-            const elapsed = Date.now() - startTime;
-            const progress = elapsed / duration;
-
-            radiance.rotation = elapsed * 0.005;
-            radiance.scale.set(1 + progress * 0.5);
-            radiance.alpha = 0.8 * (1 - progress);
-
-            if (progress < 1) {
-                requestAnimationFrame(animateRadiance);
-            } else {
-                container.removeChild(radiance);
-                radiance.destroy();
-            }
-        }
-
-        animateRadiance();
+        return (r << 16) | (g << 8) | b;
     }
 
-    function fadeOutBeam(beamContainer, container, onComplete) {
-        const startTime = Date.now();
-        const duration = 150;
-
-        function fade() {
-            const elapsed = Date.now() - startTime;
-            const progress = elapsed / duration;
-
-            beamContainer.alpha = 1 - progress;
-
-            if (progress < 1) {
-                requestAnimationFrame(fade);
-            } else {
-                container.removeChild(beamContainer);
-                beamContainer.destroy();
-                if (onComplete) onComplete();
-            }
-        }
-
-        fade();
+    // Easing функция
+    function easeOutQuad(t) {
+        return t * (2 - t);
     }
 
     // Регистрация

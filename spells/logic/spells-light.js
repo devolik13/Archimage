@@ -359,6 +359,10 @@ function castBeamAtTarget(wizard, target, casterPosition, casterType, baseDamage
     const { impactCol, impactRow } = damageResult;
 
     const beamLabel = beamName === 'основной' ? 'Луч' : 'Доп. луч';
+    const isSecondBeam = beamName !== 'основной';
+
+    // Вычисляем уровень разогрева для анимации (1 = старт, растёт каждый ход)
+    const warmupLevel = Math.floor((damage - beam.baseDamage) / beam.increment) + 1;
 
     // Запускаем анимацию до точки столкновения
     if (window.spellAnimations?.light_beam?.play) {
@@ -367,6 +371,8 @@ function castBeamAtTarget(wizard, target, casterPosition, casterType, baseDamage
             casterRow: casterPosition,
             targetCol: impactCol,
             targetRow: impactRow,
+            warmupLevel: warmupLevel,
+            isSecondBeam: isSecondBeam,
             onHit: () => {
                 // Логируем результат
                 if (window.logProtectionResult) {
