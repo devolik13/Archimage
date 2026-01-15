@@ -238,16 +238,15 @@ function castLightBeam(wizard, spellData, position, casterType) {
     }
 
     // Проверяем прерывающие дебаффы на кастере (сбрасывают разогрев)
-    // - chilled_caster: заморозка от Воды (chill/hoarFrost/freeze → chilled_caster)
     // - isStunned: оглушение от Ветра (Storm Cloud, Ball Lightning 5 лв)
-    const isChilled = wizard.effects?.chilled_caster;
+    // Примечание: chilled_caster (Вода) только снижает урон, НЕ прерывает луч
+    // Примечание: Blizzard/Absolute Zero прерывают каст в battle/spells.js до вызова заклинания
     const isStunned = wizard.isStunned && wizard.stunTurns > 0;
 
-    if (isChilled || isStunned) {
+    if (isStunned) {
         wizard.lightBeams = {}; // Сбрасываем все лучи
-        const reason = isStunned ? 'оглушением' : 'заморозкой';
         if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`✨ Луч света прерван ${reason}! Разогрев сброшен.`);
+            window.addToBattleLog(`✨ Луч света прерван оглушением! Разогрев сброшен.`);
         }
         return;
     }
