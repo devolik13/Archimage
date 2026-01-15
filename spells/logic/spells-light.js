@@ -272,10 +272,11 @@ function castLightBeam(wizard, spellData, position, casterType) {
     // Обрабатываем основной луч
     castBeamAtPosition(wizard, mainTarget, position, casterType, baseDamage, increment, beamKey);
 
-    // На 5 уровне - второй луч по случайной позиции
+    // На 5 уровне - второй луч по случайной цели (может быть той же что и основная!)
     if (hasSecondBeam) {
         setTimeout(() => {
-            const secondTarget = window.findRandomTarget?.(casterType, [mainTarget.wizard?.id]);
+            // Не исключаем основную цель - второй луч может бить туда же
+            const secondTarget = window.findRandomTarget?.(casterType);
             if (secondTarget) {
                 const secondBeamKey = `pos_${secondTarget.position}`;
 
