@@ -2,8 +2,6 @@
 
 (function() {
     const ANIMATION_ID = 'flash';
-    const SPRITE_SHEET_PATH = 'images/spells/light/flash_sprite.webp';
-    const GRID_SIZE = 3; // 3x3 сетка (9 фреймов, 1024x1024)
 
     function play(params) {
         const { casterCol, casterRow, targetCol, targetRow, onHit, onComplete } = params;
@@ -170,63 +168,9 @@
         animate();
     }
 
-    // Создание эффекта взрыва вспышки
+    // Создание эффекта взрыва вспышки (через PIXI Graphics)
     function createFlashExplosion(x, y, scale, effectsContainer, onComplete) {
-        // Пробуем загрузить спрайт-лист
-        PIXI.Assets.load(SPRITE_SHEET_PATH).then(texture => {
-            if (texture && texture.valid) {
-                // Создаем текстуры из спрайт-листа 4x4
-                const frames = [];
-                const frameWidth = Math.floor(texture.width / GRID_SIZE);
-                const frameHeight = Math.floor(texture.height / GRID_SIZE);
-
-                for (let row = 0; row < GRID_SIZE; row++) {
-                    for (let col = 0; col < GRID_SIZE; col++) {
-                        const frame = new PIXI.Texture(
-                            texture.baseTexture,
-                            new PIXI.Rectangle(
-                                col * frameWidth,
-                                row * frameHeight,
-                                frameWidth,
-                                frameHeight
-                            )
-                        );
-                        frames.push(frame);
-                    }
-                }
-
-                // Создаем анимированный спрайт
-                const flashSprite = new PIXI.AnimatedSprite(frames);
-                flashSprite.x = x;
-                flashSprite.y = y;
-                flashSprite.anchor.set(0.5);
-                flashSprite.scale.set(scale * 0.35);
-                flashSprite.animationSpeed = window.getScaledAnimationSpeed ? window.getScaledAnimationSpeed(0.4) : 0.4;
-                flashSprite.loop = false;
-                flashSprite.blendMode = PIXI.BLEND_MODES.ADD; // ADD скрывает тёмный фон
-
-                flashSprite.onComplete = () => {
-                    if (flashSprite.parent) {
-                        effectsContainer.removeChild(flashSprite);
-                        flashSprite.destroy({ texture: false, baseTexture: false });
-                    }
-                    if (onComplete) onComplete();
-                };
-
-                effectsContainer.addChild(flashSprite);
-                flashSprite.play();
-
-                console.log('✨ Flash sprite animation started');
-            } else {
-                console.warn('⚠️ Flash sprite sheet not loaded, using fallback');
-                createFallbackExplosion(x, y, scale, effectsContainer, onComplete);
-            }
-        }).catch(err => {
-            console.warn('⚠️ Failed to load flash sprite sheet:', err);
-            createFallbackExplosion(x, y, scale, effectsContainer, onComplete);
-        });
-
-        // Вспышка при ударе (всегда показываем)
+        // Яркая вспышка при ударе
         const flash = new PIXI.Graphics();
         flash.beginFill(0xFFFFFF, 0.7);
         flash.drawCircle(0, 0, 25 * scale);
@@ -260,10 +204,7 @@
         };
 
         animateFlash();
-    }
 
-    // Fallback эффект без спрайт-листа
-    function createFallbackExplosion(x, y, scale, effectsContainer, onComplete) {
         // Создаем частицы света
         for (let i = 0; i < 10; i++) {
             const particle = new PIXI.Graphics();
