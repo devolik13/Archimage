@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Effect Preview - Archimage</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        button.active {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        #canvas-container {
+            background: #0a0a15;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            max-width: 600px;
+            text-align: center;
+        }
+        .info h3 { color: #ffd700; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Effect Preview</h1>
+
+    <div class="controls">
+        <button onclick="showRainbowShield()">Rainbow Shield</button>
+        <button onclick="showLightBeam(1)">Light Beam (warmup 1)</button>
+        <button onclick="showLightBeam(5)">Light Beam (warmup 5)</button>
+        <button onclick="showLightBeam(10)">Light Beam (warmup 10)</button>
+        <button onclick="clearEffects()">Clear</button>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div class="info" id="info">
+        <h3>Select an effect to preview</h3>
+        <p>Click buttons above to see PIXI.Graphics effects</p>
+    </div>
+
+    <script>
+        // PIXI Setup
+        const app = new PIXI.Application({
+            width: 600,
+            height: 400,
+            backgroundColor: 0x0a0a15,
+            antialias: true
+        });
+        document.getElementById('canvas-container').appendChild(app.view);
+
+        // Container for effects
+        const effectsContainer = new PIXI.Container();
+        app.stage.addChild(effectsContainer);
+
+        // Draw wizard placeholder
+        function drawWizardPlaceholder(x, y, label) {
+            const g = new PIXI.Graphics();
+            g.beginFill(0x333355);
+            g.drawCircle(0, 0, 30);
+            g.endFill();
+            g.lineStyle(2, 0x5555aa);
+            g.drawCircle(0, 0, 30);
+            g.x = x;
+            g.y = y;
+
+            const text = new PIXI.Text(label, {
+                fontSize: 12,
+                fill: 0xaaaaaa
+            });
+            text.anchor.set(0.5);
+            text.x = x;
+            text.y = y + 50;
+
+            effectsContainer.addChild(g);
+            effectsContainer.addChild(text);
+            return { x, y };
+        }
+
+        // Clear all effects
+        function clearEffects() {
+            effectsContainer.removeChildren();
+            document.getElementById('info').innerHTML = '<h3>Cleared</h3><p>Select an effect</p>';
+        }
+
+        // Rainbow Shield Effect
+        function showRainbowShield() {
+            clearEffects();
+            const pos = drawWizardPlaceholder(300, 200, 'Wizard');
+
+            const shield = new PIXI.Container();
+            shield.x = pos.x;
+            shield.y = pos.y;
+            effectsContainer.addChild(shield);
+
+            // Rainbow colors
+            const colors = [0xFF0000, 0xFF7F00, 0xFFFF00, 0x00FF00, 0x0000FF, 0x4B0082, 0x9400D3];
+
+            // Create rings
+            for (let i = 0; i < 3; i++) {
+                const ring = new PIXI.Graphics();
+                const color = colors[(i * 2) % colors.length];
+                ring.lineStyle(2, color, 0.4);
+                ring.drawCircle(0, 0, 40 + i * 8);
+                shield.addChild(ring);
+            }
+
+            // Animate
+            shield.scale.set(0);
+            let startTime = Date.now();
+
+            function animate() {
+                const elapsed = Date.now() - startTime;
+
+                if (elapsed < 300) {
+                    const progress = elapsed / 300;
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    shield.scale.set(eased);
+                    shield.alpha = eased * 0.8;
+                } else {
+                    shield.rotation += 0.01;
+                    shield.alpha = 0.5 + Math.sin(Date.now() * 0.003) * 0.2;
+                }
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            document.getElementById('info').innerHTML = `
+                <h3>Rainbow Shield</h3>
+                <p>3 радужных кольца с вращением и пульсацией альфы</p>
+                <p>Уровень 1-2: только кастер | Уровень 3-4: +соседи | Уровень 5: все союзники</p>
+            `;
+        }
+
+        // Light Beam Effect
+        function showLightBeam(warmupLevel) {
+            clearEffects();
+            const caster = drawWizardPlaceholder(100, 200, 'Caster');
+            const target = drawWizardPlaceholder(500, 200, 'Target');
+
+            // Calculate thickness based on warmup
+            const BASE_THICKNESS = 4;
+            const MAX_THICKNESS = 12;
+            const warmupFactor = Math.min(warmupLevel / 10, 1);
+            const thickness = BASE_THICKNESS + (MAX_THICKNESS - BASE_THICKNESS) * warmupFactor;
+            const glowThickness = thickness * 2.5;
+
+            // Lerp color towards white
+            function lerpColor(c1, c2, t) {
+                const r1 = (c1 >> 16) & 0xFF, g1 = (c1 >> 8) & 0xFF, b1 = c1 & 0xFF;
+                const r2 = (c2 >> 16) & 0xFF, g2 = (c2 >> 8) & 0xFF, b2 = c2 & 0xFF;
+                const r = Math.round(r1 + (r2 - r1) * t);
+                const g = Math.round(g1 + (g2 - g1) * t);
+                const b = Math.round(b1 + (b2 - b1) * t);
+                return (r << 16) | (g << 8) | b;
+            }
+
+            const beamColor = lerpColor(0xFFD700, 0xFFFFFF, warmupFactor * 0.3);
+            const distance = target.x - caster.x;
+
+            // Beam container
+            const beamContainer = new PIXI.Container();
+            beamContainer.x = caster.x;
+            beamContainer.y = caster.y;
+            effectsContainer.addChild(beamContainer);
+
+            const outerGlow = new PIXI.Graphics();
+            const beam = new PIXI.Graphics();
+            const core = new PIXI.Graphics();
+            beamContainer.addChild(outerGlow);
+            beamContainer.addChild(beam);
+            beamContainer.addChild(core);
+
+            // Animate beam
+            let startTime = Date.now();
+            const extendDuration = 200;
+            const holdDuration = 500;
+
+            function animate() {
+                const elapsed = Date.now() - startTime;
+
+                let length, alpha, pulseScale;
+
+                if (elapsed < extendDuration) {
+                    const progress = elapsed / extendDuration;
+                    const eased = progress * (2 - progress); // easeOutQuad
+                    length = distance * eased;
+                    alpha = 1;
+                    pulseScale = 1;
+                } else {
+                    length = distance;
+                    const pulsePhase = ((elapsed - extendDuration) % 500) / 500;
+                    pulseScale = 1 + Math.sin(pulsePhase * Math.PI * 2) * 0.1;
+                    alpha = 1;
+                }
+
+                // Draw
+                outerGlow.clear();
+                outerGlow.lineStyle(glowThickness * pulseScale, 0xFFFFAA, 0.2 * alpha);
+                outerGlow.moveTo(0, 0);
+                outerGlow.lineTo(length, 0);
+
+                beam.clear();
+                beam.lineStyle(thickness * pulseScale, beamColor, 0.8 * alpha);
+                beam.moveTo(0, 0);
+                beam.lineTo(length, 0);
+
+                core.clear();
+                core.lineStyle(thickness * 0.3 * pulseScale, 0xFFFFFF, 0.9 * alpha);
+                core.moveTo(0, 0);
+                core.lineTo(length, 0);
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            document.getElementById('info').innerHTML = `
+                <h3>Light Beam - Warmup ${warmupLevel}</h3>
+                <p>Толщина: ${thickness.toFixed(1)}px (base: ${BASE_THICKNESS}, max: ${MAX_THICKNESS})</p>
+                <p>Цвет: ${warmupLevel === 1 ? 'Золотой' : warmupLevel >= 10 ? 'Почти белый' : 'Светлее'}</p>
+                <p>3 слоя: внешнее свечение, основной луч, яркое ядро</p>
+            `;
+        }
+
+        // Show initial state
+        drawWizardPlaceholder(300, 200, 'Click a button');
+    </script>
+</body>
+</html>
