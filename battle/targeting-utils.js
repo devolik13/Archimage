@@ -19,6 +19,8 @@ function findTarget(position, attackerType, caster = null, spellId = null) {
             const blinded = actualCaster.effects.blinded;
             const roll = Math.random() * 100;
 
+            console.log(`👁️ [Blinded check] ${actualCaster.name}: roll=${roll.toFixed(1)}, missChance=${blinded.missChance}`);
+
             if (roll < blinded.missChance) {
                 // Случайная позиция (0-4)
                 const randomPos = Math.floor(Math.random() * 5);
