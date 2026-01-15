@@ -804,7 +804,7 @@ function applyDawnAtStart(wizard, level, position, casterType) {
         window.addToBattleLog(`🌅 Рассвет озаряет всех союзников! (+${hpBonus}% HP, +${damageBonus}% урона)`);
     }
 
-    // Анимация
+    // Анимация заклинания
     if (window.spellAnimations?.dawn?.play) {
         setTimeout(() => {
             window.spellAnimations.dawn.play({
@@ -812,6 +812,25 @@ function applyDawnAtStart(wizard, level, position, casterType) {
                 level: level
             });
         }, 300);
+    }
+
+    // Показываем постоянный визуальный эффект на всех союзниках
+    if (window.spellAnimations?.dawn_buff?.show) {
+        allies.forEach((ally, index) => {
+            let allyPos = -1;
+
+            if (casterType === 'player') {
+                allyPos = window.playerFormation?.findIndex(id => id === ally.id);
+            } else {
+                allyPos = window.enemyFormation?.findIndex(w => w && w.id === ally.id);
+            }
+
+            if (allyPos !== -1) {
+                setTimeout(() => {
+                    window.spellAnimations.dawn_buff.show(ally, allyPos, casterType);
+                }, 500 + index * 100);
+            }
+        });
     }
 }
 
