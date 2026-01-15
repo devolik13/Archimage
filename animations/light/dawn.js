@@ -22,42 +22,6 @@
 
         if (!allies || allies.length === 0) return;
 
-        // Создаём эффект рассвета на фоне (горизонтальная полоса света)
-        const dawn = new PIXI.Graphics();
-        const centerY = window.innerHeight * 0.5;
-
-        dawn.beginFill(0xFFD700, 0);
-        dawn.drawRect(0, centerY - 100, window.innerWidth, 200);
-        dawn.endFill();
-
-        container.addChild(dawn);
-
-        // Анимация свечения рассвета
-        const glowDuration = 800;
-        const startTime = Date.now();
-
-        function animateGlow() {
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / glowDuration, 1);
-
-            // Пульсация яркости
-            const intensity = Math.sin(progress * Math.PI) * 0.3;
-
-            dawn.clear();
-            dawn.beginFill(0xFFD700, intensity);
-            dawn.drawRect(0, centerY - 100 + (1 - progress) * 50, window.innerWidth, 200);
-            dawn.endFill();
-
-            if (progress < 1) {
-                requestAnimationFrame(animateGlow);
-            } else {
-                container.removeChild(dawn);
-                dawn.destroy();
-            }
-        }
-
-        animateGlow();
-
         // Создаём эффект усиления на каждом союзнике
         allies.forEach((ally, index) => {
             setTimeout(() => {

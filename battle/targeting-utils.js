@@ -50,7 +50,7 @@ function findTarget(position, attackerType, caster = null, spellId = null) {
         }
         // Клетка пуста — промах, урон уходит в никуда
         if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`👁️ Заклинание уходит в пустоту!`);
+            window.addToBattleLog(`❌ Промах! Заклинание уходит в пустоту`);
         }
         return null;
     }

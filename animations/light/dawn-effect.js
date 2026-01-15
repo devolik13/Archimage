@@ -51,7 +51,7 @@
             const rayData = {
                 sprite: ray,
                 angle: angle,
-                baseLength: 25 + Math.random() * 10,
+                baseLength: 12 + Math.random() * 5, // 2x меньше
                 phase: Math.random() * Math.PI * 2,
                 speed: 0.8 + Math.random() * 0.4
             };
@@ -82,7 +82,7 @@
 
                 const tipX = Math.cos(angle) * length;
                 const tipY = Math.sin(angle) * length;
-                const width = 4;
+                const width = 2; // 2x меньше
 
                 // Основание луча
                 const baseLeftX = Math.cos(angle + Math.PI / 2) * width;
@@ -97,16 +97,16 @@
                 sprite.endFill();
             });
 
-            // Полукруг солнца внизу
+            // Полукруг солнца внизу (2x меньше)
             sunBase.clear();
             const sunPulse = 0.8 + Math.sin(time * 1.5) * 0.2;
             sunBase.beginFill(0xFFD700, 0.4 * sunPulse);
-            sunBase.arc(0, 5, 12, Math.PI, 0);
+            sunBase.arc(0, 3, 6, Math.PI, 0);
             sunBase.endFill();
 
             // Внутренний более яркий полукруг
             sunBase.beginFill(0xFFF8DC, 0.6 * sunPulse);
-            sunBase.arc(0, 5, 7, Math.PI, 0);
+            sunBase.arc(0, 3, 3, Math.PI, 0);
             sunBase.endFill();
         };
 

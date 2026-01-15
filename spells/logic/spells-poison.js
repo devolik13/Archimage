@@ -189,7 +189,7 @@ function castPoisonedGlade(wizard, spellData, position, casterType) {
                             // Промах - атака в пустую позицию
                             missCount++;
                             if (typeof window.addToBattleLog === 'function') {
-                                window.addToBattleLog(`☠️ Ядовитая поляна появляется на позиции ${row + 1} (пусто)`);
+                                window.addToBattleLog(`☠️ Ядовитая поляна на позиции ${row + 1} (пусто)`);
                             }
                         }
                     }
