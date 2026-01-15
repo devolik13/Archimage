@@ -220,8 +220,8 @@ function castFlash(wizard, spellData, position, casterType) {
 
 // --- Луч света (Light Beam) - Тир 2, Канализируемый урон ---
 // Механика: Луч бьёт через ВСЕ слои защиты (стена → саммон → маг) с нарастающим уроном
-// Разогрев НЕ сбрасывается при уничтожении стены/саммона
-// Разогрев сбрасывается ТОЛЬКО когда: маг-цель умер ИЛИ кастер получил прерывающий дебафф
+// Каждый луч (основной и дополнительный) имеет СОБСТВЕННЫЙ независимый разогрев
+// Разогрев сбрасывается ТОЛЬКО когда: маг-цель умер ИЛИ кастер оглушён
 function castLightBeam(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
 
@@ -251,41 +251,51 @@ function castLightBeam(wizard, spellData, position, casterType) {
         return;
     }
 
-    // Находим основную цель (маг напротив)
+    // === ОСНОВНОЙ ЛУЧ ===
+    // Всегда бьёт мага напротив (по позиции кастера)
     const mainTarget = window.findTarget?.(position, casterType);
     if (!mainTarget) {
         console.warn('⚠️ Цель не найдена');
         return;
     }
 
-    // Ключ для состояния - позиция цели (не конкретный объект!)
-    const beamKey = `pos_${position}`;
+    // Ключ для основного луча - фиксированный
+    const mainBeamKey = 'beam_main';
 
-    // Проверяем, жив ли маг-цель (если мёртв - сбрасываем для этой позиции)
-    if (mainTarget.wizard && mainTarget.wizard.hp <= 0 && wizard.lightBeams[beamKey]) {
-        delete wizard.lightBeams[beamKey];
-        if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`✨ Маг на позиции ${position} уничтожен, луч готов к новой цели`);
+    // Проверяем, сменилась ли цель основного луча (маг умер)
+    const mainBeam = wizard.lightBeams[mainBeamKey];
+    if (mainBeam && mainBeam.targetId && mainTarget.wizard) {
+        // Если текущая цель мертва или это другой маг - сброс
+        if (mainTarget.wizard.hp <= 0 || mainBeam.targetId !== mainTarget.wizard.id) {
+            delete wizard.lightBeams[mainBeamKey];
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`✨ Основной луч: цель уничтожена, разогрев сброшен`);
+            }
         }
     }
 
-    // Обрабатываем основной луч
-    castBeamAtPosition(wizard, mainTarget, position, casterType, baseDamage, increment, beamKey);
+    castBeamAtTarget(wizard, mainTarget, position, casterType, baseDamage, increment, mainBeamKey, 'основной');
 
-    // На 5 уровне - второй луч по случайной цели (может быть той же что и основная!)
+    // === ДОПОЛНИТЕЛЬНЫЙ ЛУЧ (5 уровень) ===
     if (hasSecondBeam) {
         setTimeout(() => {
-            // Не исключаем основную цель - второй луч может бить туда же
+            // Случайная цель (может совпасть с основной)
             const secondTarget = window.findRandomTarget?.(casterType);
             if (secondTarget) {
-                const secondBeamKey = `pos_${secondTarget.position}`;
+                const secondBeamKey = 'beam_second';
 
-                // Проверяем жив ли маг на второй позиции
-                if (secondTarget.wizard && secondTarget.wizard.hp <= 0 && wizard.lightBeams[secondBeamKey]) {
-                    delete wizard.lightBeams[secondBeamKey];
+                // Проверяем, сменилась ли цель дополнительного луча
+                const secondBeam = wizard.lightBeams[secondBeamKey];
+                if (secondBeam && secondBeam.targetId && secondTarget.wizard) {
+                    if (secondTarget.wizard.hp <= 0 || secondBeam.targetId !== secondTarget.wizard.id) {
+                        delete wizard.lightBeams[secondBeamKey];
+                        if (typeof window.addToBattleLog === 'function') {
+                            window.addToBattleLog(`✨ Дополнительный луч: цель уничтожена, разогрев сброшен`);
+                        }
+                    }
                 }
 
-                castBeamAtPosition(wizard, secondTarget, position, casterType, baseDamage, increment, secondBeamKey);
+                castBeamAtTarget(wizard, secondTarget, position, casterType, baseDamage, increment, secondBeamKey, 'дополнительный');
             }
         }, 300);
     }
@@ -294,22 +304,26 @@ function castLightBeam(wizard, spellData, position, casterType) {
     applyLightFactionBonus(wizard, casterType);
 }
 
-// Каст луча по позиции - урон проходит через все слои multi-layer
-function castBeamAtPosition(wizard, target, casterPosition, casterType, baseDamage, increment, beamKey) {
+// Каст луча по цели - урон проходит через все слои multi-layer
+function castBeamAtTarget(wizard, target, casterPosition, casterType, baseDamage, increment, beamKey, beamName) {
     // Инициализируем состояние луча если нет
     if (!wizard.lightBeams[beamKey]) {
         wizard.lightBeams[beamKey] = {
             currentDamage: baseDamage,
             baseDamage: baseDamage,
-            increment: increment
+            increment: increment,
+            targetId: target.wizard?.id || null
         };
 
         if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`✨ Луч света фокусируется (стартовый урон: ${baseDamage})`);
+            window.addToBattleLog(`✨ ${beamName === 'основной' ? 'Луч' : 'Доп. луч'} фокусируется на ${target.wizard?.name || 'цели'} (старт: ${baseDamage})`);
         }
     }
 
     const beam = wizard.lightBeams[beamKey];
+    // Обновляем targetId на случай если цель сменилась
+    beam.targetId = target.wizard?.id || null;
+
     const damage = beam.currentDamage;
     const casterCol = casterType === 'player' ? 5 : 0;
 
@@ -334,6 +348,8 @@ function castBeamAtPosition(wizard, target, casterPosition, casterType, baseDama
 
     const { impactCol, impactRow } = damageResult;
 
+    const beamLabel = beamName === 'основной' ? 'Луч' : 'Доп. луч';
+
     // Запускаем анимацию до точки столкновения
     if (window.spellAnimations?.light_beam?.play) {
         window.spellAnimations.light_beam.play({
@@ -344,21 +360,21 @@ function castBeamAtPosition(wizard, target, casterPosition, casterType, baseDama
             onHit: () => {
                 // Логируем результат
                 if (window.logProtectionResult) {
-                    window.logProtectionResult(wizard, target, damageResult, `Луч света (${damage} урона)`);
+                    window.logProtectionResult(wizard, target, damageResult, `${beamLabel} (${damage} урона)`);
                 }
 
                 // Увеличиваем урон для следующего хода (разогрев ПРОДОЛЖАЕТСЯ!)
                 beam.currentDamage += beam.increment;
 
                 if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`    └─ Луч разогревается: следующий урон ${beam.currentDamage} (+${beam.increment})`);
+                    window.addToBattleLog(`    └─ ${beamLabel} разогревается: следующий урон ${beam.currentDamage} (+${beam.increment})`);
                 }
 
                 // Сбрасываем ТОЛЬКО если маг-цель умер (не стена/саммон!)
                 if (target.wizard && target.wizard.hp <= 0) {
                     delete wizard.lightBeams[beamKey];
                     if (typeof window.addToBattleLog === 'function') {
-                        window.addToBattleLog(`✨ Маг уничтожен! Луч готов к новой цели`);
+                        window.addToBattleLog(`✨ ${beamLabel}: цель уничтожена! Готов к новой цели`);
                     }
                 }
 
@@ -372,7 +388,7 @@ function castBeamAtPosition(wizard, target, casterPosition, casterType, baseDama
     } else {
         // Fallback без анимации
         if (window.logProtectionResult) {
-            window.logProtectionResult(wizard, target, damageResult, `Луч света (${damage} урона)`);
+            window.logProtectionResult(wizard, target, damageResult, `${beamLabel} (${damage} урона)`);
         }
 
         beam.currentDamage += beam.increment;
