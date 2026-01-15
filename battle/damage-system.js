@@ -398,7 +398,15 @@ function applyDamageWithEffects(caster, target, baseDamage, spellId = 'basic', a
         const bonusPercent = Math.round((caster.blessingEffects.damageMultiplier - 1) * 100);
         damageSteps.push(`Благословение: ${oldDamage} → ${finalDamage} (+${bonusPercent}%)`);
     }
-    
+
+    // 2.5 Применение множителя урона от Рассвета (Dawn)
+    if (caster && caster.buffs?.dawn && caster.damageMultiplier > 1) {
+        const oldDamage = finalDamage;
+        finalDamage = Math.floor(finalDamage * caster.damageMultiplier);
+        const bonusPercent = Math.round((caster.damageMultiplier - 1) * 100);
+        damageSteps.push(`🌅 Рассвет: ${oldDamage} → ${finalDamage} (+${bonusPercent}%)`);
+    }
+
     // 3. Учет магического сопротивления ЦЕЛИ
     if (typeof window.applyMagicResistance === 'function' && spellId && target) {
     	const damageBeforeResist = finalDamage;
