@@ -1451,4 +1451,7 @@
     // КРИТИЧЕСКИ ВАЖНО: Прямой экспорт для базовой атаки!
     window.playWizardAttackAnimation = playWizardAttackAnimation;
 
+    // Экспорт wizardSprites для анимаций заклинаний
+    window.wizardSprites = wizardSprites;
+
 })();
