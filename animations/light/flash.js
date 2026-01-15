@@ -3,7 +3,7 @@
 (function() {
     const ANIMATION_ID = 'flash';
     const SPRITE_SHEET_PATH = 'images/spells/light/flash_sprite.webp';
-    const GRID_SIZE = 4; // 4x4 сетка
+    const GRID_SIZE = 3; // 3x3 сетка (9 фреймов, 1024x1024)
 
     function play(params) {
         const { casterCol, casterRow, targetCol, targetRow, onHit, onComplete } = params;
