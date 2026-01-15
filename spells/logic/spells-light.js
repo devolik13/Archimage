@@ -1,5 +1,28 @@
 // battle/spells/spells-light.js - Заклинания школы Света
 
+// Список заклинаний, подверженных ослеплению (только боевые, выбирающие цель)
+const BLINDED_AFFECTED_SPELLS = [
+    // Огонь
+    'spark', 'fire_arrow', 'fireball',
+    // Вода
+    'icicle', 'frost_arrow',
+    // Ветер
+    'gust', 'lightning', 'ball_lightning',
+    // Земля
+    'stone', 'stone_spike', 'meteor_shower',
+    // Яд
+    'poisoned_blade',
+    // Свет
+    'flash',
+    // Тьма
+    'dark_clot'
+];
+
+// Проверка: подвержено ли заклинание ослеплению
+function isSpellAffectedByBlind(spellId) {
+    return BLINDED_AFFECTED_SPELLS.includes(spellId);
+}
+
 function castLightSpell(wizard, spellId, spellData, position, casterType) {
     console.log(`✨ Casting light spell: ${spellId}`);
 
@@ -832,3 +855,5 @@ window.checkBlindedMiss = checkBlindedMiss;
 window.getBlindedRandomTarget = getBlindedRandomTarget;
 window.processBlindedEffectAfterTurn = processBlindedEffectAfterTurn;
 window.applyLightFactionBonus = applyLightFactionBonus;
+window.BLINDED_AFFECTED_SPELLS = BLINDED_AFFECTED_SPELLS;
+window.isSpellAffectedByBlind = isSpellAffectedByBlind;

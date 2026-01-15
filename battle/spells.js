@@ -130,6 +130,9 @@ function executeSpellEffect(wizard, spellId, spellData, position, casterType) {
         return;
     }
 
+    // 👁️ Устанавливаем текущее заклинание для проверки ослепления в findTarget
+    window.currentCastingSpellId = spellId;
+
     const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
 
     switch (spellSchool) {

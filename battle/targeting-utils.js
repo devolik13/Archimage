@@ -1,14 +1,61 @@
 
 // --- Поиск цели для атаки ---
-// Третий параметр caster опционален - используется для проверки ослепления
-function findTarget(position, attackerType, caster = null) {
+// Параметры: position, attackerType, caster (опционально), spellId (опционально)
+// spellId нужен для проверки ослепления - только боевые заклинания подвержены
+function findTarget(position, attackerType, caster = null, spellId = null) {
     // 👁️ Проверяем ослепление кастера (Сияние солнца)
-    // Если ослеплён и blindedTargetPosition установлен - используем случайную позицию
+    // Ослепление действует ТОЛЬКО на боевые заклинания из списка
     const actualCaster = caster || window.currentSpellCaster?.wizard;
-    if (actualCaster && actualCaster.blindedTargetPosition !== undefined) {
-        position = actualCaster.blindedTargetPosition;
+    const actualSpellId = spellId || window.currentCastingSpellId;
+    let isBlindedMiss = false;
+
+    if (actualCaster && actualCaster.effects && actualCaster.effects.blinded && actualSpellId) {
+        // Проверяем, подвержено ли заклинание ослеплению
+        const isAffected = window.isSpellAffectedByBlind ?
+            window.isSpellAffectedByBlind(actualSpellId) :
+            (window.BLINDED_AFFECTED_SPELLS && window.BLINDED_AFFECTED_SPELLS.includes(actualSpellId));
+
+        if (isAffected) {
+            const blinded = actualCaster.effects.blinded;
+            const roll = Math.random() * 100;
+
+            if (roll < blinded.missChance) {
+                // Случайная позиция (0-4)
+                const randomPos = Math.floor(Math.random() * 5);
+                position = randomPos;
+                isBlindedMiss = true; // Флаг что это ослеплённый удар
+
+                if (typeof window.addToBattleLog === 'function') {
+                    window.addToBattleLog(`👁️ ${actualCaster.name} ослеплён — заклинание летит в случайную клетку!`);
+                }
+            }
+        }
     }
 
+    // При ослеплении проверяем ТОЛЬКО указанную клетку (без поиска по циклу)
+    if (isBlindedMiss) {
+        if (attackerType === 'player') {
+            const targetWizard = window.enemyFormation[position];
+            if (targetWizard && targetWizard.hp > 0) {
+                return { wizard: targetWizard, position: position };
+            }
+        } else {
+            const wizardId = window.playerFormation[position];
+            if (wizardId) {
+                const targetWizard = window.playerWizards.find(w => w.id === wizardId);
+                if (targetWizard && targetWizard.hp > 0) {
+                    return { wizard: targetWizard, position: position };
+                }
+            }
+        }
+        // Клетка пуста — промах, урон уходит в никуда
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`👁️ Заклинание уходит в пустоту!`);
+        }
+        return null;
+    }
+
+    // Обычный поиск (без ослепления) - ищем по циклу
     if (attackerType === 'player') {
         for (let i = 0; i < 5; i++) {
             const targetPosition = (position + i) % 5;
