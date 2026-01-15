@@ -41,8 +41,14 @@
     }
 
     function createShieldEffect(col, row, level, container) {
-        const sprite = window.wizardSprites?.[`${col}_${row}`];
-        if (!sprite) return;
+        // Используем gridCells как в других анимациях
+        const gridCells = window.pixiCore?.getGridCells();
+        const cell = gridCells?.[col]?.[row];
+
+        if (!cell) return;
+
+        const centerX = cell.x + cell.width / 2;
+        const centerY = cell.y + cell.height / 2;
 
         const shieldKey = `${col}_${row}`;
 
@@ -56,8 +62,8 @@
 
         // Создаём контейнер щита
         const shield = new PIXI.Container();
-        shield.x = sprite.x;
-        shield.y = sprite.y;
+        shield.x = centerX;
+        shield.y = centerY;
         container.addChild(shield);
 
         // Радужные цвета

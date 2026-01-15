@@ -46,32 +46,31 @@
         // Создаем солнце
         const sun = new PIXI.Graphics();
 
-        // Рисуем солнце с лучами
+        // Рисуем солнце с лучами (уменьшено в 2 раза)
         const drawSun = (scale, glowIntensity) => {
             sun.clear();
 
             // Внешнее свечение
             sun.beginFill(0xffff00, 0.2 * glowIntensity);
-            sun.drawCircle(0, 0, 18 * scale);
+            sun.drawCircle(0, 0, 9 * scale);
             sun.endFill();
 
             // Средний круг (оранжевый)
             sun.beginFill(0xffa500, 0.6);
-            sun.drawCircle(0, 0, 12 * scale);
+            sun.drawCircle(0, 0, 6 * scale);
             sun.endFill();
 
             // Центральный круг (желтый)
             sun.beginFill(0xffff00, 0.9);
-            sun.drawCircle(0, 0, 8 * scale);
+            sun.drawCircle(0, 0, 4 * scale);
             sun.endFill();
 
             // Лучи солнца
             const rayCount = 8;
             for (let i = 0; i < rayCount; i++) {
                 const angle = (i / rayCount) * Math.PI * 2;
-                const innerRadius = 10 * scale;
-                const outerRadius = 20 * scale;
-                const rayWidth = 3 * scale;
+                const innerRadius = 5 * scale;
+                const outerRadius = 10 * scale;
 
                 sun.beginFill(0xffff00, 0.8);
 
