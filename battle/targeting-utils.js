@@ -9,6 +9,14 @@ function findTarget(position, attackerType, caster = null, spellId = null) {
     const actualSpellId = spellId || window.currentCastingSpellId;
     let isBlindedMiss = false;
 
+    // DEBUG: Логируем состояние для отладки ослепления
+    if (actualCaster && actualSpellId) {
+        const hasBlinded = actualCaster.effects?.blinded;
+        if (hasBlinded) {
+            window.addToBattleLog?.(`🔍 [DEBUG] Проверка ослепления: ${actualCaster.name}, spell=${actualSpellId}, blinded=${!!hasBlinded}`);
+        }
+    }
+
     if (actualCaster && actualCaster.effects && actualCaster.effects.blinded && actualSpellId) {
         // Проверяем, подвержено ли заклинание ослеплению
         const isAffected = window.isSpellAffectedByBlind ?
