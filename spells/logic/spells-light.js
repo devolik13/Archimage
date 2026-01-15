@@ -238,14 +238,16 @@ function castLightBeam(wizard, spellData, position, casterType) {
     }
 
     // Проверяем прерывающие дебаффы на кастере (сбрасывают разогрев)
-    // chilled_caster - единственный существующий эффект прерывания (заморозка от Воды)
-    // TODO: добавить stunned, silenced когда будут реализованы
-    const hasInterrupt = wizard.effects?.chilled_caster;
+    // - chilled_caster: заморозка от Воды (chill/hoarFrost/freeze → chilled_caster)
+    // - isStunned: оглушение от Ветра (Storm Cloud, Ball Lightning 5 лв)
+    const isChilled = wizard.effects?.chilled_caster;
+    const isStunned = wizard.isStunned && wizard.stunTurns > 0;
 
-    if (hasInterrupt) {
+    if (isChilled || isStunned) {
         wizard.lightBeams = {}; // Сбрасываем все лучи
+        const reason = isStunned ? 'оглушением' : 'заморозкой';
         if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`✨ Луч света прерван дебаффом! Разогрев сброшен.`);
+            window.addToBattleLog(`✨ Луч света прерван ${reason}! Разогрев сброшен.`);
         }
         return;
     }
