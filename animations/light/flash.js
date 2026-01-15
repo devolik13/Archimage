@@ -4,17 +4,9 @@
     const ANIMATION_ID = 'flash';
     const SPRITE_SHEET_PATH = 'images/spells/light/flash_sprite.webp';
     const GRID_SIZE = 4; // 4x4 сетка
-    const FRAME_COUNT = 16;
 
     function play(params) {
-        const {
-            casterCol,
-            casterRow,
-            targetCol,
-            targetRow,
-            onHit,
-            onComplete
-        } = params;
+        const { casterCol, casterRow, targetCol, targetRow, onHit, onComplete } = params;
 
         console.log(`✨ Flash animation: [${casterCol},${casterRow}] → [${targetCol},${targetRow}]`);
 
@@ -26,179 +18,308 @@
             return;
         }
 
-        const container = window.pixiCore?.getEffectsContainer();
-        if (!container) {
-            console.warn('⚠️ Effects container not found');
+        // Получаем необходимые объекты из ядра (как в spark.js)
+        const effectsContainer = window.pixiCore?.getEffectsContainer();
+        const gridCells = window.pixiCore?.getGridCells();
+
+        if (!effectsContainer || !gridCells) {
+            console.warn('⚠️ Не могу создать вспышку - нет контейнера или сетки');
             if (onHit) onHit();
             if (onComplete) onComplete();
             return;
         }
 
-        // Получаем координаты
-        const startSprite = window.wizardSprites?.[`${casterCol}_${casterRow}`];
-        const endSprite = window.wizardSprites?.[`${targetCol}_${targetRow}`];
+        const startCell = gridCells[casterCol]?.[casterRow];
+        const endCell = gridCells[targetCol]?.[targetRow];
 
-        if (!startSprite || !endSprite) {
-            console.warn('⚠️ Wizard sprites not found');
+        if (!startCell || !endCell) {
+            console.warn('⚠️ Не могу создать вспышку - нет данных ячеек');
             if (onHit) onHit();
             if (onComplete) onComplete();
             return;
         }
 
-        const startX = startSprite.x;
-        const startY = startSprite.y;
-        const endX = endSprite.x;
-        const endY = endSprite.y;
+        // Начальная и целевая позиции
+        const startX = startCell.x + startCell.width / 2;
+        const startY = startCell.y + startCell.height / 2;
+        const targetX = endCell.x + endCell.width / 2;
+        const targetY = endCell.y + endCell.height / 2;
 
-        // Создаём простой снаряд для полёта
+        // Создаём светящийся снаряд
         const projectile = new PIXI.Graphics();
-        projectile.beginFill(0xFFFFFF);
-        projectile.drawCircle(0, 0, 8);
+        projectile.beginFill(0xFFFFFF, 0.9);
+        projectile.drawCircle(0, 0, 5);
         projectile.endFill();
 
-        const glow = new PIXI.Graphics();
-        glow.beginFill(0xFFD700, 0.5);
-        glow.drawCircle(0, 0, 15);
-        glow.endFill();
+        // Добавляем золотое свечение
+        projectile.beginFill(0xFFD700, 0.4);
+        projectile.drawCircle(0, 0, 10);
+        projectile.endFill();
 
-        const projectileContainer = new PIXI.Container();
-        projectileContainer.addChild(glow);
-        projectileContainer.addChild(projectile);
-        projectileContainer.x = startX;
-        projectileContainer.y = startY;
-        projectileContainer.blendMode = PIXI.BLEND_MODES.ADD;
-        container.addChild(projectileContainer);
+        projectile.x = startX;
+        projectile.y = startY;
+        projectile.blendMode = PIXI.BLEND_MODES.ADD;
 
-        // Анимация полёта
-        const flightDuration = window.getScaledDuration ? window.getScaledDuration(300) : 300;
+        effectsContainer.addChild(projectile);
+
+        // Параметры анимации
+        const duration = window.getScaledDuration ? window.getScaledDuration(350) : 350;
         const startTime = Date.now();
+        let animationFrame = null;
+        let isDestroyed = false;
 
-        function animateFlight() {
+        // Функция анимации полёта
+        const animate = () => {
+            if (isDestroyed || !window.pixiAnimUtils?.isValid(projectile) || !effectsContainer) {
+                if (animationFrame) cancelAnimationFrame(animationFrame);
+                if (projectile && projectile.parent) {
+                    try {
+                        effectsContainer.removeChild(projectile);
+                    } catch (e) {}
+                }
+                if (onHit) onHit();
+                if (onComplete) onComplete();
+                return;
+            }
+
             const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / flightDuration, 1);
+            const progress = Math.min(elapsed / duration, 1);
 
-            // Линейное перемещение
-            projectileContainer.x = startX + (endX - startX) * progress;
-            projectileContainer.y = startY + (endY - startY) * progress;
+            try {
+                // Интерполяция позиции
+                projectile.x = startX + (targetX - startX) * progress;
+                projectile.y = startY + (targetY - startY) * progress;
 
-            // Пульсация
-            const pulse = 1 + Math.sin(elapsed * 0.02) * 0.2;
-            projectileContainer.scale.set(pulse);
+                // Пульсация
+                const pulse = 1 + Math.sin(elapsed * 0.03) * 0.3;
+                projectile.scale.set(pulse);
+
+                // След от вспышки (золотистые искры)
+                if (Math.random() > 0.6) {
+                    createFlashTrail(projectile.x, projectile.y, effectsContainer);
+                }
+            } catch (e) {
+                isDestroyed = true;
+                if (onHit) onHit();
+                if (onComplete) onComplete();
+                return;
+            }
 
             if (progress < 1) {
-                requestAnimationFrame(animateFlight);
+                animationFrame = requestAnimationFrame(animate);
             } else {
                 // Удаляем снаряд
-                container.removeChild(projectileContainer);
-                projectileContainer.destroy();
+                if (projectile.parent && effectsContainer) {
+                    try {
+                        effectsContainer.removeChild(projectile);
+                        projectile.destroy();
+                    } catch (e) {}
+                }
 
                 // Вызываем onHit
                 if (onHit) onHit();
 
-                // Запускаем эффект вспышки из спрайт-листа
-                createSpriteSheetEffect(endX, endY, container, onComplete);
+                // Создаем эффект взрыва вспышки
+                createFlashExplosion(targetX, targetY, endCell.cellScale || 1, effectsContainer, onComplete);
             }
-        }
+        };
 
-        animateFlight();
-    }
+        // Создание следа
+        function createFlashTrail(x, y, container) {
+            const trail = new PIXI.Graphics();
+            trail.beginFill(0xFFD700, 0.6);
+            trail.drawCircle(0, 0, 3);
+            trail.endFill();
 
-    function createSpriteSheetEffect(x, y, container, onComplete) {
-        PIXI.Assets.load(SPRITE_SHEET_PATH).then(baseTexture => {
-            if (!baseTexture) {
-                console.warn('⚠️ Flash sprite sheet not loaded, using fallback');
-                createFallbackEffect(x, y, container, onComplete);
-                return;
-            }
+            trail.x = x;
+            trail.y = y;
+            trail.blendMode = PIXI.BLEND_MODES.ADD;
 
-            // Создаем кадры из спрайт-листа 4x4
-            const frames = [];
-            const frameWidth = Math.floor(baseTexture.width / GRID_SIZE);
-            const frameHeight = Math.floor(baseTexture.height / GRID_SIZE);
+            container.addChild(trail);
 
-            for (let row = 0; row < GRID_SIZE; row++) {
-                for (let col = 0; col < GRID_SIZE; col++) {
-                    const frame = new PIXI.Texture(
-                        baseTexture,
-                        new PIXI.Rectangle(
-                            col * frameWidth,
-                            row * frameHeight,
-                            frameWidth,
-                            frameHeight
-                        )
-                    );
-                    frames.push(frame);
+            const fadeStartTime = Date.now();
+            const fadeDuration = 250;
+
+            const fadeAnimate = () => {
+                if (!trail || trail.destroyed || !trail.transform) {
+                    return;
                 }
-            }
 
-            // Создаем анимированный спрайт
-            const flashSprite = new PIXI.AnimatedSprite(frames);
-            flashSprite.x = x;
-            flashSprite.y = y;
-            flashSprite.anchor.set(0.5);
+                const elapsed = Date.now() - fadeStartTime;
+                const progress = Math.min(elapsed / fadeDuration, 1);
 
-            // Масштаб - подбираем под размер эффекта
-            const PIXI_CONFIG = window.PIXI_CONFIG || { cellWidth: 60, cellHeight: 60 };
-            const scale = (PIXI_CONFIG.cellWidth * 2) / frameWidth;
-            flashSprite.scale.set(scale);
+                trail.alpha = 0.6 * (1 - progress);
+                trail.scale.set(1 - progress * 0.5);
 
-            flashSprite.animationSpeed = 0.4; // Скорость анимации
-            flashSprite.loop = false;
-            flashSprite.blendMode = PIXI.BLEND_MODES.ADD;
-
-            flashSprite.onComplete = () => {
-                container.removeChild(flashSprite);
-                flashSprite.destroy();
-                if (onComplete) onComplete();
+                if (progress < 1 && trail.parent) {
+                    requestAnimationFrame(fadeAnimate);
+                } else {
+                    if (trail.parent) {
+                        container.removeChild(trail);
+                    }
+                    if (!trail.destroyed) {
+                        trail.destroy();
+                    }
+                }
             };
 
-            container.addChild(flashSprite);
-            flashSprite.play();
-
-            console.log('✨ Flash sprite animation started');
-
-        }).catch(err => {
-            console.warn('⚠️ Failed to load flash sprite sheet:', err);
-            createFallbackEffect(x, y, container, onComplete);
-        });
-    }
-
-    function createFallbackEffect(x, y, container, onComplete) {
-        // Фолбэк - простой круговой эффект
-        const impact = new PIXI.Graphics();
-        impact.beginFill(0xFFD700, 0.8);
-        impact.drawCircle(0, 0, 20);
-        impact.endFill();
-        impact.x = x;
-        impact.y = y;
-        impact.blendMode = PIXI.BLEND_MODES.ADD;
-        container.addChild(impact);
-
-        const startTime = Date.now();
-        const duration = 200;
-
-        function animateImpact() {
-            const elapsed = Date.now() - startTime;
-            const progress = elapsed / duration;
-
-            impact.scale.set(1 + progress * 2);
-            impact.alpha = 0.8 * (1 - progress);
-
-            if (progress < 1) {
-                requestAnimationFrame(animateImpact);
-            } else {
-                container.removeChild(impact);
-                impact.destroy();
-                if (onComplete) onComplete();
-            }
+            fadeAnimate();
         }
 
-        animateImpact();
+        // Запуск анимации
+        animate();
+    }
+
+    // Создание эффекта взрыва вспышки
+    function createFlashExplosion(x, y, scale, effectsContainer, onComplete) {
+        // Пробуем загрузить спрайт-лист
+        PIXI.Assets.load(SPRITE_SHEET_PATH).then(texture => {
+            if (texture && texture.valid) {
+                // Создаем текстуры из спрайт-листа 4x4
+                const frames = [];
+                const frameWidth = Math.floor(texture.width / GRID_SIZE);
+                const frameHeight = Math.floor(texture.height / GRID_SIZE);
+
+                for (let row = 0; row < GRID_SIZE; row++) {
+                    for (let col = 0; col < GRID_SIZE; col++) {
+                        const frame = new PIXI.Texture(
+                            texture.baseTexture,
+                            new PIXI.Rectangle(
+                                col * frameWidth,
+                                row * frameHeight,
+                                frameWidth,
+                                frameHeight
+                            )
+                        );
+                        frames.push(frame);
+                    }
+                }
+
+                // Создаем анимированный спрайт
+                const flashSprite = new PIXI.AnimatedSprite(frames);
+                flashSprite.x = x;
+                flashSprite.y = y;
+                flashSprite.anchor.set(0.5);
+                flashSprite.scale.set(scale * 0.35);
+                flashSprite.animationSpeed = window.getScaledAnimationSpeed ? window.getScaledAnimationSpeed(0.4) : 0.4;
+                flashSprite.loop = false;
+                flashSprite.blendMode = PIXI.BLEND_MODES.ADD;
+
+                flashSprite.onComplete = () => {
+                    if (flashSprite.parent) {
+                        effectsContainer.removeChild(flashSprite);
+                        flashSprite.destroy({ texture: false, baseTexture: false });
+                    }
+                    if (onComplete) onComplete();
+                };
+
+                effectsContainer.addChild(flashSprite);
+                flashSprite.play();
+
+                console.log('✨ Flash sprite animation started');
+            } else {
+                console.warn('⚠️ Flash sprite sheet not loaded, using fallback');
+                createFallbackExplosion(x, y, scale, effectsContainer, onComplete);
+            }
+        }).catch(err => {
+            console.warn('⚠️ Failed to load flash sprite sheet:', err);
+            createFallbackExplosion(x, y, scale, effectsContainer, onComplete);
+        });
+
+        // Вспышка при ударе (всегда показываем)
+        const flash = new PIXI.Graphics();
+        flash.beginFill(0xFFFFFF, 0.7);
+        flash.drawCircle(0, 0, 25 * scale);
+        flash.endFill();
+        flash.x = x;
+        flash.y = y;
+        flash.blendMode = PIXI.BLEND_MODES.ADD;
+
+        effectsContainer.addChild(flash);
+
+        const flashStartTime = Date.now();
+        const flashDuration = 200;
+
+        const animateFlash = () => {
+            if (!window.pixiAnimUtils?.isValid(flash)) return;
+
+            const elapsed = Date.now() - flashStartTime;
+            const progress = Math.min(elapsed / flashDuration, 1);
+
+            flash.scale.set(1 + progress * 1.5);
+            flash.alpha = 0.7 * (1 - progress);
+
+            if (progress < 1) {
+                requestAnimationFrame(animateFlash);
+            } else {
+                if (flash.parent) {
+                    effectsContainer.removeChild(flash);
+                    flash.destroy();
+                }
+            }
+        };
+
+        animateFlash();
+    }
+
+    // Fallback эффект без спрайт-листа
+    function createFallbackExplosion(x, y, scale, effectsContainer, onComplete) {
+        // Создаем частицы света
+        for (let i = 0; i < 10; i++) {
+            const particle = new PIXI.Graphics();
+            particle.beginFill(0xFFD700, 0.8);
+            particle.drawCircle(0, 0, 4);
+            particle.endFill();
+
+            particle.x = x;
+            particle.y = y;
+            particle.blendMode = PIXI.BLEND_MODES.ADD;
+
+            effectsContainer.addChild(particle);
+
+            const angle = (Math.PI * 2 / 10) * i;
+            const speed = 3 + Math.random() * 2;
+            const vx = Math.cos(angle) * speed;
+            const vy = Math.sin(angle) * speed;
+
+            const particleStartTime = Date.now();
+            const particleDuration = 350;
+
+            const animateParticle = () => {
+                if (!window.pixiAnimUtils?.isValid(particle)) return;
+
+                const elapsed = Date.now() - particleStartTime;
+                const progress = Math.min(elapsed / particleDuration, 1);
+
+                particle.x += vx * (1 - progress);
+                particle.y += vy * (1 - progress);
+                particle.alpha = 0.8 * (1 - progress);
+                particle.scale.set(1 - progress * 0.5);
+
+                if (progress < 1 && particle.parent) {
+                    requestAnimationFrame(animateParticle);
+                } else {
+                    if (particle.parent) {
+                        effectsContainer.removeChild(particle);
+                    }
+                    if (!particle.destroyed) {
+                        particle.destroy();
+                    }
+                }
+            };
+
+            animateParticle();
+        }
+
+        // Завершаем после анимации частиц
+        setTimeout(() => {
+            if (onComplete) onComplete();
+        }, 400);
     }
 
     // Регистрация
     window.spellAnimations = window.spellAnimations || {};
     window.spellAnimations[ANIMATION_ID] = { play };
 
-    console.log(`✨ Анимация ${ANIMATION_ID} зарегистрирована (со спрайт-листом)`);
+    console.log(`✨ Анимация ${ANIMATION_ID} зарегистрирована`);
 })();
