@@ -1,5 +1,4 @@
 // test/dlc-test-commands.js - Консольные команды для тестирования DLC Света и Тьмы
-// ТОЛЬКО для боя - не меняет город, окна магов, иконки и т.д.
 
 (function() {
     console.log('🧪 Загружены тестовые команды DLC Света и Тьмы');
@@ -12,91 +11,118 @@
 
     // Заклинания по школам (все 5 уровня для тестирования)
     const SCHOOL_SPELLS = {
-        light: ['flash', 'light_beam', 'rainbow_shield', 'sun_radiance', 'dawn'],
-        dark: ['dark_clot', 'weakness', 'miasma', 'shadow_realm', 'fading']
+        light: {
+            flash: { level: 5, name: 'Вспышка' },
+            light_beam: { level: 5, name: 'Луч света' },
+            rainbow_shield: { level: 5, name: 'Радужный щит' },
+            sun_radiance: { level: 5, name: 'Сияние солнца' },
+            dawn: { level: 5, name: 'Рассвет' }
+        },
+        dark: {
+            dark_clot: { level: 5, name: 'Сгусток тьмы' },
+            weakness: { level: 5, name: 'Слабость' },
+            miasma: { level: 5, name: 'Миазма' },
+            shadow_realm: { level: 5, name: 'Мир теней' },
+            fading: { level: 5, name: 'Угасание' }
+        }
     };
 
     /**
-     * Активировать магию Света для боя
+     * Активировать магию Света
      * Использование в консоли: activateLight()
      */
     window.activateLight = function() {
-        applyDLCForBattle('light');
+        applyDLCFaction('light');
     };
 
     /**
-     * Активировать магию Тьмы для боя
+     * Активировать магию Тьмы
      * Использование в консоли: activateDark()
      */
     window.activateDark = function() {
-        applyDLCForBattle('dark');
+        applyDLCFaction('dark');
     };
 
     /**
-     * Применить DLC ТОЛЬКО для текущего боя
-     * Не трогает userData, окна магов, город - только playerWizards
+     * Применить DLC фракцию
+     * Меняет: wizard.faction (спрайт), learnedSpells, userData.spells (для UI)
+     * НЕ меняет: userData.faction (город остаётся прежним)
      */
-    function applyDLCForBattle(newFaction) {
-        // Проверяем что мы в бою
-        if (!window.playerWizards || window.playerWizards.length === 0) {
-            console.error('❌ playerWizards не найден. Команда работает только в бою!');
-            console.log('   Начните бой и введите команду снова.');
+    function applyDLCFaction(newFaction) {
+        if (!window.userData) {
+            console.error('❌ userData не найден');
             return;
         }
 
-        console.log(`🔄 Активация DLC ${FACTION_NAMES[newFaction]} для боя...`);
+        console.log(`🔄 Активация DLC: ${FACTION_NAMES[newFaction]}`);
 
-        // Обновляем ТОЛЬКО playerWizards (данные текущего боя)
-        window.playerWizards.forEach(wizard => {
-            // Меняем фракцию (влияет на спрайт)
-            wizard.faction = newFaction;
+        // 1. Добавляем заклинания в userData.spells (для фильтров в окне мага)
+        if (!window.userData.spells) {
+            window.userData.spells = {};
+        }
+        window.userData.spells[newFaction] = SCHOOL_SPELLS[newFaction];
+        console.log(`📚 Добавлены заклинания в userData.spells`);
 
-            // Добавляем изученные заклинания
-            if (!wizard.learnedSpells) wizard.learnedSpells = {};
-            SCHOOL_SPELLS[newFaction].forEach(spellId => {
-                wizard.learnedSpells[spellId] = 5;
+        // 2. Обновляем магов в userData.wizards (для окна выбора заклинаний)
+        if (window.userData.wizards && window.userData.wizards.length > 0) {
+            window.userData.wizards.forEach(wizard => {
+                // Меняем фракцию мага (для спрайта в бою)
+                wizard.faction = newFaction;
+
+                // Добавляем изученные заклинания
+                if (!wizard.learnedSpells) wizard.learnedSpells = {};
+                for (const [spellId, spellData] of Object.entries(SCHOOL_SPELLS[newFaction])) {
+                    wizard.learnedSpells[spellId] = spellData.level;
+                }
             });
+            console.log(`🧙 Обновлено ${window.userData.wizards.length} магов в userData.wizards`);
+        }
 
-            // Устанавливаем заклинания в слоты
-            wizard.spells = [
-                { id: SCHOOL_SPELLS[newFaction][0], level: 5 },
-                { id: SCHOOL_SPELLS[newFaction][1], level: 5 }
-            ];
-        });
+        // 3. Обновляем playerWizards если в бою
+        if (window.playerWizards && window.playerWizards.length > 0) {
+            window.playerWizards.forEach(wizard => {
+                wizard.faction = newFaction;
 
-        console.log(`🧙 Обновлено ${window.playerWizards.length} магов`);
+                if (!wizard.learnedSpells) wizard.learnedSpells = {};
+                for (const [spellId, spellData] of Object.entries(SCHOOL_SPELLS[newFaction])) {
+                    wizard.learnedSpells[spellId] = spellData.level;
+                }
+            });
+            console.log(`⚔️ Обновлены playerWizards`);
 
-        // Обновляем спрайты
-        if (window.pixiWizards?.refreshAllSprites) {
-            window.pixiWizards.refreshAllSprites();
-            console.log(`🎮 Спрайты обновлены`);
+            // Обновляем спрайты
+            if (window.pixiWizards?.refreshAllSprites) {
+                window.pixiWizards.refreshAllSprites();
+                console.log(`🎮 Спрайты обновлены`);
+            }
         }
 
         console.log(`✅ DLC ${FACTION_NAMES[newFaction]} активирован!`);
         console.log('');
-        console.log(`📋 Слоты: ${SCHOOL_SPELLS[newFaction][0]}, ${SCHOOL_SPELLS[newFaction][1]}`);
-        console.log(`   Все заклинания: ${SCHOOL_SPELLS[newFaction].join(', ')}`);
+        console.log('📋 Теперь откройте экран мага и выберите заклинания в слоты');
     }
 
     /**
-     * Показать статус боя
+     * Показать статус
      */
     window.showDLCStatus = function() {
-        if (!window.playerWizards || window.playerWizards.length === 0) {
-            console.log('❌ Не в бою');
-            return;
+        console.log('📋 Статус DLC:');
+
+        if (window.userData?.wizards) {
+            window.userData.wizards.forEach((w, i) => {
+                const learned = w.learnedSpells ? Object.keys(w.learnedSpells).join(', ') : 'нет';
+                console.log(`   ${i}: ${w.name} | Фракция: ${w.faction} | Изучено: ${learned}`);
+            });
         }
 
-        console.log('📋 Статус боя:');
-        window.playerWizards.forEach((w, i) => {
-            const spellIds = w.spells?.map(s => s.id || s).join(', ') || 'нет';
-            console.log(`   ${i}: ${w.name} | Фракция: ${w.faction} | Слоты: ${spellIds}`);
-        });
+        if (window.userData?.spells) {
+            console.log('   Школы в spells:', Object.keys(window.userData.spells));
+        }
     };
 
     // Вывод справки
     console.log('');
-    console.log('📖 Команды (работают ТОЛЬКО в бою):');
+    console.log('📖 Доступные команды:');
     console.log('   activateLight()   - Активировать СВЕТ');
     console.log('   activateDark()    - Активировать ТЬМУ');
     console.log('   showDLCStatus()   - Показать статус');
