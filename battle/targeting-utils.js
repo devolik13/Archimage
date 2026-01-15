@@ -229,9 +229,38 @@ function findAllTargetsInColumns(columns, casterType) {
     return targets;
 }
 
+// --- Поиск цели по ID мага ---
+function findTargetById(targetId, casterType) {
+    if (!targetId) return null;
+
+    if (casterType === 'player') {
+        // Игрок атакует противника - ищем среди врагов
+        for (let i = 0; i < 5; i++) {
+            const enemy = window.enemyFormation[i];
+            if (enemy && enemy.id === targetId && enemy.hp > 0) {
+                return { wizard: enemy, position: i };
+            }
+        }
+    } else {
+        // Враг атакует игрока - ищем среди игроков
+        for (let i = 0; i < 5; i++) {
+            const wizardId = window.playerFormation[i];
+            if (wizardId) {
+                const wizard = window.playerWizards.find(w => w.id === wizardId);
+                if (wizard && wizard.id === targetId && wizard.hp > 0) {
+                    return { wizard: wizard, position: i };
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
 // Экспорт
 window.findTarget = findTarget;
 window.findRandomTarget = findRandomTarget;
+window.findTargetById = findTargetById;
 window.findTargetAtPosition = findTargetAtPosition;
 window.findTargetsInPattern = findTargetsInPattern;
 window.findStoneSpikeTargets = findStoneSpikeTargets; // Для обратной совместимости

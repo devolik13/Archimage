@@ -277,24 +277,34 @@ function castLightBeam(wizard, spellData, position, casterType) {
     castBeamAtTarget(wizard, mainTarget, position, casterType, baseDamage, increment, mainBeamKey, 'основной');
 
     // === ДОПОЛНИТЕЛЬНЫЙ ЛУЧ (5 уровень) ===
+    // Работает так же как основной - фиксируется на цели до её смерти
     if (hasSecondBeam) {
         setTimeout(() => {
-            // Случайная цель (может совпасть с основной)
-            const secondTarget = window.findRandomTarget?.(casterType);
-            if (secondTarget) {
-                const secondBeamKey = 'beam_second';
+            const secondBeamKey = 'beam_second';
+            const secondBeam = wizard.lightBeams[secondBeamKey];
 
-                // Проверяем, сменилась ли цель дополнительного луча
-                const secondBeam = wizard.lightBeams[secondBeamKey];
-                if (secondBeam && secondBeam.targetId && secondTarget.wizard) {
-                    if (secondTarget.wizard.hp <= 0 || secondBeam.targetId !== secondTarget.wizard.id) {
-                        delete wizard.lightBeams[secondBeamKey];
-                        if (typeof window.addToBattleLog === 'function') {
-                            window.addToBattleLog(`✨ Дополнительный луч: цель уничтожена, разогрев сброшен`);
-                        }
+            let secondTarget = null;
+
+            // Если уже есть цель - пытаемся её найти
+            if (secondBeam && secondBeam.targetId) {
+                secondTarget = window.findTargetById?.(secondBeam.targetId, casterType);
+
+                // Если цель мертва - сбрасываем и выберем новую
+                if (!secondTarget || secondTarget.wizard.hp <= 0) {
+                    delete wizard.lightBeams[secondBeamKey];
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`✨ Дополнительный луч: цель уничтожена, разогрев сброшен`);
                     }
+                    secondTarget = null;
                 }
+            }
 
+            // Если цели нет - выбираем случайную
+            if (!secondTarget) {
+                secondTarget = window.findRandomTarget?.(casterType);
+            }
+
+            if (secondTarget) {
                 castBeamAtTarget(wizard, secondTarget, position, casterType, baseDamage, increment, secondBeamKey, 'дополнительный');
             }
         }, 300);
