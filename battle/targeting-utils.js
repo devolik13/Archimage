@@ -9,12 +9,11 @@ function findTarget(position, attackerType, caster = null, spellId = null) {
     const actualSpellId = spellId || window.currentCastingSpellId;
     let isBlindedMiss = false;
 
-    // DEBUG: Логируем состояние для отладки ослепления
-    if (actualCaster && actualSpellId) {
-        const hasBlinded = actualCaster.effects?.blinded;
-        if (hasBlinded) {
-            window.addToBattleLog?.(`🔍 [DEBUG] Проверка ослепления: ${actualCaster.name}, spell=${actualSpellId}, blinded=${!!hasBlinded}`);
-        }
+    // DEBUG: Всегда логируем для отладки
+    console.log(`👁️ [findTarget] actualCaster=${actualCaster?.name}, spellId=${actualSpellId}, hasEffects=${!!actualCaster?.effects}, blinded=${!!actualCaster?.effects?.blinded}`);
+
+    if (actualCaster && actualSpellId && actualCaster.effects?.blinded) {
+        window.addToBattleLog?.(`🔍 [DEBUG] Проверка ослепления: ${actualCaster.name}, spell=${actualSpellId}`);
     }
 
     if (actualCaster && actualCaster.effects && actualCaster.effects.blinded && actualSpellId) {
