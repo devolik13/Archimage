@@ -9,11 +9,15 @@ function findTarget(position, attackerType, caster = null, spellId = null) {
     const actualSpellId = spellId || window.currentCastingSpellId;
     let isBlindedMiss = false;
 
-    // DEBUG: Всегда логируем для отладки
-    console.log(`👁️ [findTarget] actualCaster=${actualCaster?.name}, spellId=${actualSpellId}, hasEffects=${!!actualCaster?.effects}, blinded=${!!actualCaster?.effects?.blinded}`);
+    // DEBUG: Логируем только для боевых заклинаний (не для wolf_attack и т.п.)
+    if (actualSpellId && actualSpellId !== 'wolf_attack') {
+        console.log(`👁️ [findTarget] actualCaster=${actualCaster?.name}, spellId=${actualSpellId}, hasEffects=${!!actualCaster?.effects}, blinded=${!!actualCaster?.effects?.blinded}`);
+    }
 
-    if (actualCaster && actualSpellId && actualCaster.effects?.blinded) {
-        window.addToBattleLog?.(`🔍 [DEBUG] Проверка ослепления: ${actualCaster.name}, spell=${actualSpellId}`);
+    // DEBUG: Показываем в бой-логе информацию о проверке ослепления
+    if (actualCaster && actualSpellId && window.BLINDED_AFFECTED_SPELLS?.includes(actualSpellId)) {
+        const isBlinded = !!actualCaster.effects?.blinded;
+        window.addToBattleLog?.(`🔍 [DEBUG] Проверка ослепления ${actualCaster.name}: blinded=${isBlinded}, spell=${actualSpellId}`);
     }
 
     if (actualCaster && actualCaster.effects && actualCaster.effects.blinded && actualSpellId) {

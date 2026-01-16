@@ -43,11 +43,13 @@ function castCallWolf(wizard, spellData, position, casterType) {
 }
 
 // Модифицированная функция атаки волка
+// Волки НЕ подвержены ослеплению хозяина - это атаки существа, не заклинания
 function performWolfAttack(wolf, caster) {
     if (!wolf || wolf.hp <= 0) return;
-    
-    const target = typeof window.findTarget === 'function' ? 
-        window.findTarget(wolf.position, wolf.casterType) : null;
+
+    // Передаём null для caster и 'wolf_attack' для spellId чтобы обойти проверку ослепления
+    const target = typeof window.findTarget === 'function' ?
+        window.findTarget(wolf.position, wolf.casterType, null, 'wolf_attack') : null;
     
     if (target) {
         // Анимация атаки (если визуал есть)
