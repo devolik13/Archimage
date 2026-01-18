@@ -1,7 +1,62 @@
 // battle/targeting.js - Система поиска целей
 
 // --- Поиск цели для атаки ---
-function findTarget(position, attackerType) {
+// caster - маг-кастер (для проверки ослепления)
+function findTarget(position, attackerType, caster = null) {
+    // Получаем кастера для проверки ослепления
+    const actualCaster = caster || window.currentSpellCaster?.wizard;
+
+    // 👁️ Проверка ослепления - если кастер ослеплён, бьём в случайную клетку
+    if (actualCaster && actualCaster._blindedTargetPosition !== undefined) {
+        const { col, row } = actualCaster._blindedTargetPosition;
+
+        console.log(`👁️ BLINDED HIT: col=${col}, row=${row}`);
+
+        // Колонка 0: вражеские маги
+        if (col === 0) {
+            const targetWizard = window.enemyFormation[row];
+            if (targetWizard && targetWizard.hp > 0) {
+                return { wizard: targetWizard, position: row };
+            }
+        }
+        // Колонка 5: маги игрока
+        else if (col === 5) {
+            const wizardId = window.playerFormation[row];
+            if (wizardId) {
+                const targetWizard = window.playerWizards.find(w => w.id === wizardId);
+                if (targetWizard && targetWizard.hp > 0) {
+                    return { wizard: targetWizard, position: row, isFriendlyFire: attackerType === 'player' };
+                }
+            }
+        }
+        // Колонки 1 и 4: призванные существа
+        else if (col === 1 || col === 4) {
+            if (typeof window.findSummonedCreatureAt === 'function') {
+                const summoned = window.findSummonedCreatureAt(col, row);
+                if (summoned && summoned.hp > 0) {
+                    const isFriendly = (attackerType === 'player' && col === 4) || (attackerType === 'enemy' && col === 1);
+                    return { wizard: summoned, position: row, isSummoned: true, isFriendlyFire: isFriendly };
+                }
+            }
+        }
+        // Колонки 2 и 3: стены
+        else if (col === 2 || col === 3) {
+            if (typeof window.findEarthWallAt === 'function') {
+                const wall = window.findEarthWallAt(col, row);
+                if (wall && wall.hp > 0) {
+                    return { wizard: { ...wall, type: 'earth_wall_hp' }, position: row };
+                }
+            }
+        }
+
+        // Клетка пуста — промах!
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`❌ Промах! Клетка [${col},${row + 1}] пуста`);
+        }
+        return null;
+    }
+
+    // === Обычный поиск цели ===
     // attackerType: 'player' или 'enemy'
     if (attackerType === 'player') {
         // Игрок атакует противника
