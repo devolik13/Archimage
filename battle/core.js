@@ -104,15 +104,18 @@ function generateEnemyFormation() {
         const opponentFormation = window.selectedOpponent.formation || [null, null, null, null, null];
 
         // Создаем врагов на основе расстановки противника
+        const opponentSpellsData = window.selectedOpponent?.spells;
         opponentFormation.forEach((wizardId, position) => {
             if (wizardId) {
                 const opponentWizard = opponentWizards.find(w => w.id === wizardId);
                 if (opponentWizard) {
+                    const wizardSpells = opponentWizard.spells || [];
                     window.enemyFormation[position] = {
                         ...opponentWizard,
                         id: `enemy_${opponentWizard.id}`,
                         original_id: opponentWizard.id, // Сохраняем оригинальный ID
-                        spells: opponentWizard.spells || [],
+                        spells: wizardSpells,
+                        spellLevels: buildSpellLevels(wizardSpells, opponentSpellsData),
                         effects: {}
                     };
                 }
@@ -122,30 +125,8 @@ function generateEnemyFormation() {
         window.enemyWizards = window.enemyFormation.filter(w => w !== null);
 
     } else {
-        // FALLBACK: Создаем зеркало игрока (для тестирования)
-        console.warn('⚠️ Противник не выбран, создаём зеркало игрока');
-        const playerWizardsCopy = [...window.playerWizards];
-        if (playerWizardsCopy.length > 0) {
-            for (let i = 0; i < Math.min(3, playerWizardsCopy.length); i++) {
-                if (window.playerFormation[i]) {
-                    const playerWizard = playerWizardsCopy.find(w => w.id === window.playerFormation[i]);
-                    if (playerWizard) {
-                        window.enemyFormation[i] = {
-                            ...playerWizard,
-                            id: `enemy_${playerWizard.id}`,
-                            name: `Тень ${playerWizard.name}`,
-                            spells: playerWizard.spells,
-                            hp: playerWizard.hp,
-                            max_hp: playerWizard.max_hp,
-                            armor: playerWizard.armor,
-                            max_armor: playerWizard.max_armor,
-                            effects: {}
-                        };
-                    }
-                }
-            }
-        }
-        window.enemyWizards = window.enemyFormation.filter(w => w !== null);
+        // Противник не выбран - бой невозможен
+        console.error('❌ Противник не выбран, бой невозможен');
     }
 }
 
@@ -330,6 +311,9 @@ function initializeWizardHealth() {
         wizard.stunTurns = 0;
         wizard.stoneGrottoBonus = undefined;
 
+        // Инициализация уровней заклинаний из данных игрока
+        wizard.spellLevels = buildSpellLevels(wizard.spells, window.userData?.spells);
+
         // Инициализация сопротивления магии
         if (typeof window.getWizardResistances === 'function') {
             wizard.magicResistance = window.getWizardResistances(wizard);
@@ -402,62 +386,54 @@ function initializeWizardHealth() {
 
         // Применение "Покрова листвы" (если есть)
         if (wizard.spells && wizard.spells.includes('leaf_canopy')) {
-            const spellData = window.findSpellInUserData ? 
-                window.findSpellInUserData('leaf_canopy', window.userData?.spells) : null;
-            if (spellData && spellData.level > 0) {
-                applyLeafCanopyEffect(wizard, spellData.level);
+            const level = wizard.spellLevels?.['leaf_canopy'] || 1;
+            if (level > 0) {
+                applyLeafCanopyEffect(wizard, level);
             }
         }
 
         if (wizard.spells && wizard.spells.includes('meteorokinesis')) {
-            const spellData = window.findSpellInUserData ? 
-                window.findSpellInUserData('meteorokinesis', window.userData?.spells) : null;
-            if (spellData && spellData.level > 0) {
-                applyMeteorokinesisEffect(wizard, spellData.level);
+            const level = wizard.spellLevels?.['meteorokinesis'] || 1;
+            if (level > 0) {
+                applyMeteorokinesisEffect(wizard, level);
             }
         }
 
         if (wizard.spells && wizard.spells.includes('absolute_zero')) {
-            const spellData = window.findSpellInUserData ? 
-                window.findSpellInUserData('absolute_zero', window.userData?.spells) : null;
-            if (spellData && spellData.level > 0) {
-                const level = spellData.level || 1; // 🔥 ИСПРАВЛЕНО: извлекаем число
+            const level = wizard.spellLevels?.['absolute_zero'] || 1;
+            if (level > 0) {
                 applyAbsoluteZeroEffect(wizard, level, 'player');
             }
         }
 
         if (wizard.spells && wizard.spells.includes('bark_armor')) {
-            const spellData = window.findSpellInUserData ?
-                window.findSpellInUserData('bark_armor', window.userData?.spells) : null;
-            if (spellData && spellData.level > 0) {
-                // Находим позицию мага
+            const level = wizard.spellLevels?.['bark_armor'] || 1;
+            if (level > 0) {
                 const position = window.playerFormation.findIndex(id => id === wizard.id);
                 if (position !== -1) {
-                    window.applyBarkArmorAtStart(wizard, spellData.level, position, 'player');
+                    window.applyBarkArmorAtStart(wizard, level, position, 'player');
                 }
             }
         }
 
         // Применение "Радужного щита" (Свет, Tier 3)
         if (wizard.spells && wizard.spells.includes('rainbow_shield')) {
-            const spellData = window.findSpellInUserData ?
-                window.findSpellInUserData('rainbow_shield', window.userData?.spells) : null;
-            if (spellData && spellData.level > 0) {
+            const level = wizard.spellLevels?.['rainbow_shield'] || 1;
+            if (level > 0) {
                 const position = window.playerFormation.findIndex(id => id === wizard.id);
                 if (position !== -1 && typeof window.applyRainbowShieldAtStart === 'function') {
-                    window.applyRainbowShieldAtStart(wizard, spellData.level, position, 'player');
+                    window.applyRainbowShieldAtStart(wizard, level, position, 'player');
                 }
             }
         }
 
         // Применение "Рассвета" (Свет, Tier 5)
         if (wizard.spells && wizard.spells.includes('dawn')) {
-            const spellData = window.findSpellInUserData ?
-                window.findSpellInUserData('dawn', window.userData?.spells) : null;
-            if (spellData && spellData.level > 0) {
+            const level = wizard.spellLevels?.['dawn'] || 1;
+            if (level > 0) {
                 const position = window.playerFormation.findIndex(id => id === wizard.id);
                 if (position !== -1 && typeof window.applyDawnAtStart === 'function') {
-                    window.applyDawnAtStart(wizard, spellData.level, position, 'player');
+                    window.applyDawnAtStart(wizard, level, position, 'player');
                 }
             }
         }
@@ -502,37 +478,20 @@ function initializeWizardHealth() {
             wizard.magicResistance = window.getWizardResistances(wizard);
         }
 
-        // Для врагов используем selectedOpponent.spells (данные ПРОТИВНИКА, не игрока!)
-        const enemySpellsData = window.selectedOpponent?.spells;
-
+        // Теперь используем wizard.spellLevels (уже заполнен при создании врага)
         if (wizard.spells && wizard.spells.includes('leaf_canopy')) {
-            let level = 1;
-            if (enemySpellsData) {
-                const spellData = window.findSpellInUserData ?
-                    window.findSpellInUserData('leaf_canopy', enemySpellsData) : null;
-                if (spellData && spellData.level) level = spellData.level;
-            }
+            const level = wizard.spellLevels?.['leaf_canopy'] || 1;
             applyLeafCanopyEffect(wizard, level);
         }
 
         if (wizard.spells && wizard.spells.includes('absolute_zero')) {
-            let level = 1;
-            if (enemySpellsData) {
-                const spellData = window.findSpellInUserData ?
-                    window.findSpellInUserData('absolute_zero', enemySpellsData) : null;
-                if (spellData && spellData.level) level = spellData.level;
-            }
+            const level = wizard.spellLevels?.['absolute_zero'] || 1;
             applyAbsoluteZeroEffect(wizard, level, 'enemy');
         }
 
         // Применение "Радужного щита" для врагов (Свет, Tier 3)
         if (wizard.spells && wizard.spells.includes('rainbow_shield')) {
-            let level = 1;
-            if (enemySpellsData) {
-                const spellData = window.findSpellInUserData ?
-                    window.findSpellInUserData('rainbow_shield', enemySpellsData) : null;
-                if (spellData && spellData.level) level = spellData.level;
-            }
+            const level = wizard.spellLevels?.['rainbow_shield'] || 1;
             const position = window.enemyFormation.findIndex(w => w && w.id === wizard.id);
             if (position !== -1 && typeof window.applyRainbowShieldAtStart === 'function') {
                 window.applyRainbowShieldAtStart(wizard, level, position, 'enemy');
@@ -541,12 +500,7 @@ function initializeWizardHealth() {
 
         // Применение "Рассвета" для врагов (Свет, Tier 5)
         if (wizard.spells && wizard.spells.includes('dawn')) {
-            let level = 1;
-            if (enemySpellsData) {
-                const spellData = window.findSpellInUserData ?
-                    window.findSpellInUserData('dawn', enemySpellsData) : null;
-                if (spellData && spellData.level) level = spellData.level;
-            }
+            const level = wizard.spellLevels?.['dawn'] || 1;
             const position = window.enemyFormation.findIndex(w => w && w.id === wizard.id);
             if (position !== -1 && typeof window.applyDawnAtStart === 'function') {
                 window.applyDawnAtStart(wizard, level, position, 'enemy');
@@ -1779,6 +1733,20 @@ function findSpellInUserData(spellId, userSpells) {
     }
     return null;
 }
+
+// --- Создание объекта spellLevels из списка заклинаний мага и данных spells ---
+function buildSpellLevels(wizardSpells, spellsData) {
+    const levels = {};
+    if (!wizardSpells || !Array.isArray(wizardSpells)) return levels;
+
+    for (const spellId of wizardSpells) {
+        if (!spellId) continue;
+        const spellData = findSpellInUserData(spellId, spellsData);
+        levels[spellId] = spellData?.level || 1;
+    }
+    return levels;
+}
+window.buildSpellLevels = buildSpellLevels;
 
 function applyLeafCanopyEffect(wizard, level) {
     // Определяем количество целей
