@@ -32,8 +32,8 @@ function castSpark(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
     const baseDamage = [10, 12, 15, 20, 30][level - 1] || 10;
 
-    // Находим цель
-    const target = window.findTarget?.(position, casterType);
+    // Находим цель (передаём wizard для проверки ослепления)
+    const target = window.findTarget?.(position, casterType, wizard);
     if (!target) {
         return;
     }
@@ -79,7 +79,7 @@ function castSpark(wizard, spellData, position, casterType) {
             if (level === 5 && Math.random() < 0.5) {
                 
                 setTimeout(() => {
-                    const newTarget = window.findTarget?.(position, casterType);
+                    const newTarget = window.findTarget?.(position, casterType, wizard);
                     if (newTarget) {
                         castSparkSecondary(wizard, spellData, position, casterType, newTarget);
                     }

@@ -35,8 +35,8 @@ function castDarkClot(wizard, spellData, position, casterType) {
 
     console.log(`🌑 Casting Dark Clot - Level ${level}, Damage ${baseDamage}`);
 
-    // Находим цель
-    const target = window.findTarget?.(position, casterType);
+    // Находим цель (передаём wizard для проверки ослепления)
+    const target = window.findTarget?.(position, casterType, wizard);
     if (!target) {
         console.warn('⚠️ Цель не найдена');
         return;
@@ -92,8 +92,8 @@ function castWeakness(wizard, spellData, position, casterType) {
 
     console.log(`🌑 Casting Weakness - Level ${level}, Reduction ${damageReduction}%`);
 
-    // Находим цель
-    const target = window.findTarget?.(position, casterType);
+    // Находим цель (передаём wizard для проверки ослепления)
+    const target = window.findTarget?.(position, casterType, wizard);
     if (!target) {
         console.warn('⚠️ Цель не найдена');
         if (typeof window.addToBattleLog === 'function') {

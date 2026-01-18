@@ -2,18 +2,18 @@
 // --- Поиск цели для атаки ---
 // Ослепление проверяется в useWizardSpells и устанавливает _blindedTargetPosition
 function findTarget(position, attackerType, caster = null, spellId = null) {
+    console.log(`🎯 findTarget ВЫЗВАН! pos=${position}, type=${attackerType}, caster=${caster?.name || 'null'}`);
+
     // Получаем текущего кастера (для проверки ослепления)
     const actualCaster = caster || window.currentSpellCaster?.wizard;
 
     // DEBUG: проверка ослепления
-    console.log(`🔍 findTarget DEBUG:`, {
-        hasCaster: !!caster,
-        hasCurrentSpellCaster: !!window.currentSpellCaster,
+    console.log(`👁️ findTarget BLINDING CHECK:`, {
+        casterProvided: !!caster,
+        casterBlindedPos: caster?._blindedTargetPosition,
+        currentSpellCasterBlindedPos: window.currentSpellCaster?.wizard?._blindedTargetPosition,
         actualCasterName: actualCaster?.name,
-        actualCasterId: actualCaster?.id,
-        hasBlindedEffect: !!actualCaster?.effects?.blinded,
-        blindedTargetPosition: actualCaster?._blindedTargetPosition,
-        attackerType
+        actualCasterBlindedPos: actualCaster?._blindedTargetPosition
     });
 
     // 👁️ Если кастер ослеплён и бросок не прошёл - бьём в случайную клетку (может попасть по своим!)

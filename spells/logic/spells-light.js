@@ -65,8 +65,8 @@ function castFlash(wizard, spellData, position, casterType) {
         window.setCurrentSpellCaster(wizard, casterType, position);
     }
 
-    // Находим цель (маг)
-    const target = window.findTarget?.(position, casterType);
+    // Находим цель (маг, передаём wizard для проверки ослепления)
+    const target = window.findTarget?.(position, casterType, wizard);
     if (!target) {
         console.warn('⚠️ Цель не найдена');
         return;
@@ -280,8 +280,8 @@ function castLightBeam(wizard, spellData, position, casterType) {
     }
 
     // === ОСНОВНОЙ ЛУЧ ===
-    // Всегда бьёт мага напротив (по позиции кастера)
-    const mainTarget = window.findTarget?.(position, casterType);
+    // Всегда бьёт мага напротив (по позиции кастера), передаём wizard для ослепления
+    const mainTarget = window.findTarget?.(position, casterType, wizard);
     if (!mainTarget) {
         console.warn('⚠️ Цель не найдена');
         return;

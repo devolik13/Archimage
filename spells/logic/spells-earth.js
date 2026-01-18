@@ -35,9 +35,9 @@ function castPebble(wizard, spellData, position, casterType) {
     const baseDamage = [10, 12, 15, 20, 30][level - 1] || 10;
     
     console.log(`🪨 Casting Pebble - Level ${level}, Damage ${baseDamage}`);
-    
-    // Находим цель
-    const target = window.findTarget?.(position, casterType);
+
+    // Находим цель (передаём wizard для проверки ослепления)
+    const target = window.findTarget?.(position, casterType, wizard);
     if (!target) {
         console.warn('⚠️ Цель не найдена');
         return;

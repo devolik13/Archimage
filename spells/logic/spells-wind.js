@@ -35,9 +35,9 @@ function castGust(wizard, spellData, position, casterType) {
     const baseDamage = [8, 12, 16, 20, 25][level - 1] || 8;
 
     console.log(`💨 Casting Gust - Level ${level}, Damage ${baseDamage}`);
-    
-    // Находим цель
-    const target = window.findTarget?.(position, casterType);
+
+    // Находим цель (передаём wizard для проверки ослепления)
+    const target = window.findTarget?.(position, casterType, wizard);
     if (!target) {
         console.warn('⚠️ Цель не найдена');
         return;

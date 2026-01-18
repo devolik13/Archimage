@@ -32,13 +32,13 @@ function castPoisonedBlade(wizard, spellData, position, casterType) {
     const baseDamage = [7, 8, 9, 10, 10][level - 1] || 7;
     const poisonChance = [0.20, 0.30, 0.40, 0.50, 1.00][level - 1] || 0.20;
 
-    // Находим цель
-    const target = window.findTarget?.(position, casterType);
+    // Находим цель (передаём wizard для проверки ослепления)
+    const target = window.findTarget?.(position, casterType, wizard);
     if (!target) {
         console.warn('⚠️ Цель не найдена');
         return;
     }
-    
+
     // Запускаем через систему single-target
     window.castSingleTargetSpell({
         caster: wizard,

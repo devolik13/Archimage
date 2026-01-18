@@ -34,11 +34,15 @@ function castWaterSpell(wizard, spellId, spellData, position, casterType) {
 function castIcicle(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
     const baseDamage = [10, 15, 20, 25, 30][level - 1] || 10;
-    
+
     console.log(`💧 Casting Icicle - Level ${level}, Damage ${baseDamage}`);
-    
-    // Находим цель
-    const target = window.findTarget?.(position, casterType);
+    console.log(`👁️ ICICLE BLINDED CHECK:`, {
+        blindedPos: wizard._blindedTargetPosition,
+        hasBlindedEffect: !!wizard.effects?.blinded
+    });
+
+    // Находим цель (передаём wizard напрямую для проверки ослепления)
+    const target = window.findTarget?.(position, casterType, wizard);
     if (!target) {
         console.warn('⚠️ Цель не найдена');
         return;
