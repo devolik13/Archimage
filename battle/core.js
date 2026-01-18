@@ -322,6 +322,7 @@ function initializeWizardHealth() {
         wizard.armor = trueBaseArmor;
         wizard.max_armor = trueBaseArmor;
         wizard.effects = {};
+        wizard.buffs = {};  // Очищаем баффы (rainbow_shield, dawn и др.)
         wizard.armorBonus = 0;
         wizard.armorBonuses = {};
         wizard.spellDamageMultiplier = undefined;
@@ -489,6 +490,7 @@ function initializeWizardHealth() {
         }
 
         wizard.effects = {};
+        wizard.buffs = {};  // Очищаем баффы (rainbow_shield, dawn и др.)
         wizard.armorBonus = 0;
         wizard.isStunned = false;
         wizard.spellDamageMultiplier = undefined;
