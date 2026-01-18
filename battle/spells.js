@@ -55,9 +55,8 @@ async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 
                 const roll = Math.random() * 100;
 
                 if (roll < blinded.missChance) {
-                    // Выбираем случайную клетку на вражеской территории (3 колонки × 5 рядов)
-                    const enemyCols = casterType === 'player' ? [0, 1, 2] : [5, 4, 3];
-                    const randomCol = enemyCols[Math.floor(Math.random() * 3)];
+                    // Выбираем случайную клетку на ВСЁМ поле (6 колонок × 5 рядов) - можно попасть по своим!
+                    const randomCol = Math.floor(Math.random() * 6);
                     const randomRow = Math.floor(Math.random() * 5);
                     wizard._blindedTargetPosition = { col: randomCol, row: randomRow };
 
@@ -156,9 +155,8 @@ async function useWizardSpells(wizard, position, casterType) {
                 const roll = Math.random() * 100;
 
                 if (roll < blinded.missChance) {
-                    // Выбираем случайную клетку на вражеской территории (3 колонки × 5 рядов)
-                    const enemyCols = casterType === 'player' ? [0, 1, 2] : [5, 4, 3];
-                    const randomCol = enemyCols[Math.floor(Math.random() * 3)];
+                    // Выбираем случайную клетку на ВСЁМ поле (6 колонок × 5 рядов) - можно попасть по своим!
+                    const randomCol = Math.floor(Math.random() * 6);
                     const randomRow = Math.floor(Math.random() * 5);
                     wizard._blindedTargetPosition = { col: randomCol, row: randomRow };
 

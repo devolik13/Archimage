@@ -5,38 +5,39 @@ function findTarget(position, attackerType, caster = null, spellId = null) {
     // Получаем текущего кастера (для проверки ослепления)
     const actualCaster = caster || window.currentSpellCaster?.wizard;
 
-    // 👁️ Если кастер ослеплён и бросок не прошёл - бьём в случайную клетку
+    // 👁️ Если кастер ослеплён и бросок не прошёл - бьём в случайную клетку (может попасть по своим!)
     if (actualCaster && actualCaster._blindedTargetPosition !== undefined) {
         const { col, row } = actualCaster._blindedTargetPosition;
 
-        // Ищем цель в указанной клетке по колонке
-        let targetWizard = null;
-
-        // Колонка магов (0 для player, 5 для enemy)
-        if ((attackerType === 'player' && col === 0) || (attackerType === 'enemy' && col === 5)) {
-            if (attackerType === 'player') {
-                targetWizard = window.enemyFormation[row];
-            } else {
-                const wizardId = window.playerFormation[row];
-                if (wizardId) {
-                    targetWizard = window.playerWizards.find(w => w.id === wizardId);
-                }
-            }
+        // Колонка 0: вражеские маги
+        if (col === 0) {
+            const targetWizard = window.enemyFormation[row];
             if (targetWizard && targetWizard.hp > 0) {
                 return { wizard: targetWizard, position: row };
             }
         }
-        // Колонка призванных (1 для player, 4 для enemy)
-        else if ((attackerType === 'player' && col === 1) || (attackerType === 'enemy' && col === 4)) {
-            if (typeof window.findSummonedCreatureAt === 'function') {
-                const summoned = window.findSummonedCreatureAt(col, row);
-                if (summoned && summoned.hp > 0) {
-                    return { wizard: summoned, position: row, isSummoned: true };
+        // Колонка 5: маги игрока
+        else if (col === 5) {
+            const wizardId = window.playerFormation[row];
+            if (wizardId) {
+                const targetWizard = window.playerWizards.find(w => w.id === wizardId);
+                if (targetWizard && targetWizard.hp > 0) {
+                    return { wizard: targetWizard, position: row, isFriendlyFire: attackerType === 'player' };
                 }
             }
         }
-        // Колонка стен (2 для player, 3 для enemy)
-        else if ((attackerType === 'player' && col === 2) || (attackerType === 'enemy' && col === 3)) {
+        // Колонки 1 и 4: призванные существа
+        else if (col === 1 || col === 4) {
+            if (typeof window.findSummonedCreatureAt === 'function') {
+                const summoned = window.findSummonedCreatureAt(col, row);
+                if (summoned && summoned.hp > 0) {
+                    const isFriendly = (attackerType === 'player' && col === 4) || (attackerType === 'enemy' && col === 1);
+                    return { wizard: summoned, position: row, isSummoned: true, isFriendlyFire: isFriendly };
+                }
+            }
+        }
+        // Колонки 2 и 3: стены
+        else if (col === 2 || col === 3) {
             if (typeof window.findEarthWallAt === 'function') {
                 const wall = window.findEarthWallAt(col, row);
                 if (wall && wall.hp > 0) {
