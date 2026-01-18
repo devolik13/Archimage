@@ -13,7 +13,13 @@ function calculateMagicResistance(wizard, spellSchool) {
         return resistances ? (resistances[spellSchool] || 0) : 0;
     }
 
-    // Для обычных магов считаем по изученным заклинаниям из userData
+    // ИСПРАВЛЕНО: Для PvP врагов считаем по ИХ заклинаниям, а не по userData игрока
+    const isPvPEnemy = wizard && wizard.id && wizard.id.startsWith('enemy_');
+    if (isPvPEnemy) {
+        return calculateResistanceFromSpells(wizard.spells, spellSchool);
+    }
+
+    // Для магов игрока считаем по изученным заклинаниям из userData
     const userSpells = window.userData?.spells;
     if (!userSpells) return 0;
 
@@ -34,6 +40,28 @@ function calculateMagicResistance(wizard, spellSchool) {
             if (spellData.level > 0 && hybridContainsSchool(hybridId, spellSchool)) {
                 resistance += spellData.level * 0.5;
             }
+        }
+    }
+
+    return resistance;
+}
+
+// Расчёт сопротивления по списку заклинаний мага (для PvP врагов)
+function calculateResistanceFromSpells(spells, targetSchool) {
+    if (!spells || !Array.isArray(spells)) return 0;
+
+    let resistance = 0;
+
+    for (const spellId of spells) {
+        if (!spellId) continue;
+
+        const school = getSpellSchool(spellId);
+        if (school === targetSchool) {
+            // Для врагов предполагаем уровень 3 (средний) для каждого заклинания
+            resistance += 3 * 1.5;
+        } else if (Array.isArray(school) && school.includes(targetSchool)) {
+            // Гибридное заклинание
+            resistance += 3 * 0.5;
         }
     }
 
