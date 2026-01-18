@@ -7,27 +7,47 @@ function findTarget(position, attackerType, caster = null, spellId = null) {
 
     // 👁️ Если кастер ослеплён и бросок не прошёл - бьём в случайную клетку
     if (actualCaster && actualCaster._blindedTargetPosition !== undefined) {
-        const blindedPos = actualCaster._blindedTargetPosition;
+        const { col, row } = actualCaster._blindedTargetPosition;
 
-        // Ищем цель ТОЛЬКО в указанной клетке (без цикла!)
-        if (attackerType === 'player') {
-            const targetWizard = window.enemyFormation[blindedPos];
-            if (targetWizard && targetWizard.hp > 0) {
-                return { wizard: targetWizard, position: blindedPos };
+        // Ищем цель в указанной клетке по колонке
+        let targetWizard = null;
+
+        // Колонка магов (0 для player, 5 для enemy)
+        if ((attackerType === 'player' && col === 0) || (attackerType === 'enemy' && col === 5)) {
+            if (attackerType === 'player') {
+                targetWizard = window.enemyFormation[row];
+            } else {
+                const wizardId = window.playerFormation[row];
+                if (wizardId) {
+                    targetWizard = window.playerWizards.find(w => w.id === wizardId);
+                }
             }
-        } else {
-            const wizardId = window.playerFormation[blindedPos];
-            if (wizardId) {
-                const targetWizard = window.playerWizards.find(w => w.id === wizardId);
-                if (targetWizard && targetWizard.hp > 0) {
-                    return { wizard: targetWizard, position: blindedPos };
+            if (targetWizard && targetWizard.hp > 0) {
+                return { wizard: targetWizard, position: row };
+            }
+        }
+        // Колонка призванных (1 для player, 4 для enemy)
+        else if ((attackerType === 'player' && col === 1) || (attackerType === 'enemy' && col === 4)) {
+            if (typeof window.findSummonedCreatureAt === 'function') {
+                const summoned = window.findSummonedCreatureAt(col, row);
+                if (summoned && summoned.hp > 0) {
+                    return { wizard: summoned, position: row, isSummoned: true };
+                }
+            }
+        }
+        // Колонка стен (2 для player, 3 для enemy)
+        else if ((attackerType === 'player' && col === 2) || (attackerType === 'enemy' && col === 3)) {
+            if (typeof window.findEarthWallAt === 'function') {
+                const wall = window.findEarthWallAt(col, row);
+                if (wall && wall.hp > 0) {
+                    return { wizard: { ...wall, type: 'earth_wall_hp' }, position: row };
                 }
             }
         }
 
         // Клетка пуста — промах!
         if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`❌ Промах! Клетка ${blindedPos + 1} пуста`);
+            window.addToBattleLog(`❌ Промах! Клетка [${col},${row + 1}] пуста`);
         }
         return null;
     }

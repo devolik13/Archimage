@@ -55,11 +55,14 @@ async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 
                 const roll = Math.random() * 100;
 
                 if (roll < blinded.missChance) {
-                    const randomPos = Math.floor(Math.random() * 5);
-                    wizard._blindedTargetPosition = randomPos;
+                    // Выбираем случайную клетку на вражеской территории (3 колонки × 5 рядов)
+                    const enemyCols = casterType === 'player' ? [0, 1, 2] : [5, 4, 3];
+                    const randomCol = enemyCols[Math.floor(Math.random() * 3)];
+                    const randomRow = Math.floor(Math.random() * 5);
+                    wizard._blindedTargetPosition = { col: randomCol, row: randomRow };
 
                     if (typeof window.addToBattleLog === 'function') {
-                        window.addToBattleLog(`👁️ ${wizard.name} ослеплён (${roll.toFixed(0)}/${blinded.missChance}) — заклинание летит в клетку ${randomPos + 1}!`);
+                        window.addToBattleLog(`👁️ ${wizard.name} ослеплён (${roll.toFixed(0)}/${blinded.missChance}) — заклинание летит в клетку [${randomCol},${randomRow + 1}]!`);
                     }
                 } else {
                     delete wizard._blindedTargetPosition;
@@ -153,12 +156,14 @@ async function useWizardSpells(wizard, position, casterType) {
                 const roll = Math.random() * 100;
 
                 if (roll < blinded.missChance) {
-                    // Случайная позиция (0-4)
-                    const randomPos = Math.floor(Math.random() * 5);
-                    wizard._blindedTargetPosition = randomPos;
+                    // Выбираем случайную клетку на вражеской территории (3 колонки × 5 рядов)
+                    const enemyCols = casterType === 'player' ? [0, 1, 2] : [5, 4, 3];
+                    const randomCol = enemyCols[Math.floor(Math.random() * 3)];
+                    const randomRow = Math.floor(Math.random() * 5);
+                    wizard._blindedTargetPosition = { col: randomCol, row: randomRow };
 
                     if (typeof window.addToBattleLog === 'function') {
-                        window.addToBattleLog(`👁️ ${wizard.name} ослеплён (${roll.toFixed(0)}/${blinded.missChance}) — заклинание летит в клетку ${randomPos + 1}!`);
+                        window.addToBattleLog(`👁️ ${wizard.name} ослеплён (${roll.toFixed(0)}/${blinded.missChance}) — заклинание летит в клетку [${randomCol},${randomRow + 1}]!`);
                     }
                 } else {
                     // Попадает нормально - сбрасываем флаг
