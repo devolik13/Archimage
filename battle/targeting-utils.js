@@ -5,6 +5,17 @@ function findTarget(position, attackerType, caster = null, spellId = null) {
     // Получаем текущего кастера (для проверки ослепления)
     const actualCaster = caster || window.currentSpellCaster?.wizard;
 
+    // DEBUG: проверка ослепления
+    console.log(`🔍 findTarget DEBUG:`, {
+        hasCaster: !!caster,
+        hasCurrentSpellCaster: !!window.currentSpellCaster,
+        actualCasterName: actualCaster?.name,
+        actualCasterId: actualCaster?.id,
+        hasBlindedEffect: !!actualCaster?.effects?.blinded,
+        blindedTargetPosition: actualCaster?._blindedTargetPosition,
+        attackerType
+    });
+
     // 👁️ Если кастер ослеплён и бросок не прошёл - бьём в случайную клетку (может попасть по своим!)
     if (actualCaster && actualCaster._blindedTargetPosition !== undefined) {
         const { col, row } = actualCaster._blindedTargetPosition;
