@@ -45,6 +45,7 @@ async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 
         }
 
         // 👁️ Проверка на ослепление (Сияние солнца)
+        // При ослеплении заклинание летит в случайную клетку (не прерывается!)
         if (!interrupted && wizard.effects && wizard.effects.blinded) {
             const isAffected = window.BLINDED_AFFECTED_SPELLS &&
                                window.BLINDED_AFFECTED_SPELLS.includes(spellId);
@@ -53,15 +54,15 @@ async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 
                 const blinded = wizard.effects.blinded;
                 const roll = Math.random() * 100;
 
-                if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`👁️ ${wizard.name} ослеплён: бросок ${roll.toFixed(0)} vs ${blinded.missChance}%`);
-                }
-
                 if (roll < blinded.missChance) {
+                    const randomPos = Math.floor(Math.random() * 5);
+                    wizard._blindedTargetPosition = randomPos;
+
                     if (typeof window.addToBattleLog === 'function') {
-                        window.addToBattleLog(`❌ Промах! Заклинание уходит в пустоту`);
+                        window.addToBattleLog(`👁️ ${wizard.name} ослеплён (${roll.toFixed(0)}/${blinded.missChance}) — заклинание летит в клетку ${randomPos + 1}!`);
                     }
-                    interrupted = true;
+                } else {
+                    delete wizard._blindedTargetPosition;
                 }
             }
         }
@@ -70,6 +71,9 @@ async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 
             // Ждём завершения анимации каста перед следующим заклинанием
             await castSpell(wizard, spellId, position, casterType);
         }
+
+        // Сбрасываем флаг ослепления после каста
+        delete wizard._blindedTargetPosition;
     }
 
     // Небольшая пауза после всех кастов мага
@@ -139,8 +143,8 @@ async function useWizardSpells(wizard, position, casterType) {
         }
 
         // 👁️ Проверка на ослепление (Сияние солнца)
+        // При ослеплении заклинание летит в случайную клетку (не прерывается!)
         if (!interrupted && wizard.effects && wizard.effects.blinded) {
-            // Проверяем, подвержено ли заклинание ослеплению
             const isAffected = window.BLINDED_AFFECTED_SPELLS &&
                                window.BLINDED_AFFECTED_SPELLS.includes(spellId);
 
@@ -148,15 +152,17 @@ async function useWizardSpells(wizard, position, casterType) {
                 const blinded = wizard.effects.blinded;
                 const roll = Math.random() * 100;
 
-                if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`👁️ ${wizard.name} ослеплён: бросок ${roll.toFixed(0)} vs ${blinded.missChance}%`);
-                }
-
                 if (roll < blinded.missChance) {
+                    // Случайная позиция (0-4)
+                    const randomPos = Math.floor(Math.random() * 5);
+                    wizard._blindedTargetPosition = randomPos;
+
                     if (typeof window.addToBattleLog === 'function') {
-                        window.addToBattleLog(`❌ Промах! Заклинание уходит в пустоту`);
+                        window.addToBattleLog(`👁️ ${wizard.name} ослеплён (${roll.toFixed(0)}/${blinded.missChance}) — заклинание летит в клетку ${randomPos + 1}!`);
                     }
-                    interrupted = true;
+                } else {
+                    // Попадает нормально - сбрасываем флаг
+                    delete wizard._blindedTargetPosition;
                 }
             }
         }
@@ -165,6 +171,9 @@ async function useWizardSpells(wizard, position, casterType) {
         if (!interrupted) {
             await castSpell(wizard, spellId, position, casterType);
         }
+
+        // Сбрасываем флаг ослепления после каста
+        delete wizard._blindedTargetPosition;
     }
 }
 

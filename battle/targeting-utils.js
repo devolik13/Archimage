@@ -1,7 +1,37 @@
 
 // --- Поиск цели для атаки ---
-// Ослепление теперь проверяется в useWizardSpells (spells.js) ДО вызова заклинания
+// Ослепление проверяется в useWizardSpells и устанавливает _blindedTargetPosition
 function findTarget(position, attackerType, caster = null, spellId = null) {
+    // Получаем текущего кастера (для проверки ослепления)
+    const actualCaster = caster || window.currentSpellCaster?.wizard;
+
+    // 👁️ Если кастер ослеплён и бросок не прошёл - бьём в случайную клетку
+    if (actualCaster && actualCaster._blindedTargetPosition !== undefined) {
+        const blindedPos = actualCaster._blindedTargetPosition;
+
+        // Ищем цель ТОЛЬКО в указанной клетке (без цикла!)
+        if (attackerType === 'player') {
+            const targetWizard = window.enemyFormation[blindedPos];
+            if (targetWizard && targetWizard.hp > 0) {
+                return { wizard: targetWizard, position: blindedPos };
+            }
+        } else {
+            const wizardId = window.playerFormation[blindedPos];
+            if (wizardId) {
+                const targetWizard = window.playerWizards.find(w => w.id === wizardId);
+                if (targetWizard && targetWizard.hp > 0) {
+                    return { wizard: targetWizard, position: blindedPos };
+                }
+            }
+        }
+
+        // Клетка пуста — промах!
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`❌ Промах! Клетка ${blindedPos + 1} пуста`);
+        }
+        return null;
+    }
+
     // Обычный поиск - ищем по циклу начиная с указанной позиции
     if (attackerType === 'player') {
         for (let i = 0; i < 5; i++) {
