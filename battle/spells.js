@@ -44,6 +44,28 @@ async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 
             }
         }
 
+        // 👁️ Проверка на ослепление (Сияние солнца)
+        if (!interrupted && wizard.effects && wizard.effects.blinded) {
+            const isAffected = window.BLINDED_AFFECTED_SPELLS &&
+                               window.BLINDED_AFFECTED_SPELLS.includes(spellId);
+
+            if (isAffected) {
+                const blinded = wizard.effects.blinded;
+                const roll = Math.random() * 100;
+
+                if (typeof window.addToBattleLog === 'function') {
+                    window.addToBattleLog(`👁️ ${wizard.name} ослеплён: бросок ${roll.toFixed(0)} vs ${blinded.missChance}%`);
+                }
+
+                if (roll < blinded.missChance) {
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`❌ Промах! Заклинание уходит в пустоту`);
+                    }
+                    interrupted = true;
+                }
+            }
+        }
+
         if (!interrupted) {
             // Ждём завершения анимации каста перед следующим заклинанием
             await castSpell(wizard, spellId, position, casterType);
@@ -112,6 +134,29 @@ async function useWizardSpells(wizard, position, casterType) {
                         const effectName = absoluteZero.casterFaction === 'water' ? 'заморозку' : 'иней';
                         window.addToBattleLog(`❄️ ${wizard.name} под Абсолютным Нолём — наложен ${effectName}!`);
                     }
+                }
+            }
+        }
+
+        // 👁️ Проверка на ослепление (Сияние солнца)
+        if (!interrupted && wizard.effects && wizard.effects.blinded) {
+            // Проверяем, подвержено ли заклинание ослеплению
+            const isAffected = window.BLINDED_AFFECTED_SPELLS &&
+                               window.BLINDED_AFFECTED_SPELLS.includes(spellId);
+
+            if (isAffected) {
+                const blinded = wizard.effects.blinded;
+                const roll = Math.random() * 100;
+
+                if (typeof window.addToBattleLog === 'function') {
+                    window.addToBattleLog(`👁️ ${wizard.name} ослеплён: бросок ${roll.toFixed(0)} vs ${blinded.missChance}%`);
+                }
+
+                if (roll < blinded.missChance) {
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`❌ Промах! Заклинание уходит в пустоту`);
+                    }
+                    interrupted = true;
                 }
             }
         }

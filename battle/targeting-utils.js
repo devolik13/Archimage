@@ -1,78 +1,8 @@
 
 // --- Поиск цели для атаки ---
-// Параметры: position, attackerType, caster (опционально), spellId (опционально)
-// spellId нужен для проверки ослепления - только боевые заклинания подвержены
+// Ослепление теперь проверяется в useWizardSpells (spells.js) ДО вызова заклинания
 function findTarget(position, attackerType, caster = null, spellId = null) {
-    // 👁️ Проверяем ослепление кастера (Сияние солнца)
-    // Ослепление действует ТОЛЬКО на боевые заклинания из списка
-    const actualCaster = caster || window.currentSpellCaster?.wizard;
-    const actualSpellId = spellId || window.currentCastingSpellId;
-    let isBlindedMiss = false;
-
-    // DEBUG: Логируем только для боевых заклинаний (не для wolf_attack и т.п.)
-    if (actualSpellId && actualSpellId !== 'wolf_attack') {
-        console.log(`👁️ [findTarget] actualCaster=${actualCaster?.name}, spellId=${actualSpellId}, hasEffects=${!!actualCaster?.effects}, blinded=${!!actualCaster?.effects?.blinded}`);
-    }
-
-    // DEBUG: Показываем в бой-логе информацию о проверке ослепления
-    if (actualCaster && actualSpellId && window.BLINDED_AFFECTED_SPELLS?.includes(actualSpellId)) {
-        const isBlinded = !!actualCaster.effects?.blinded;
-        window.addToBattleLog?.(`🔍 [DEBUG] Проверка ослепления ${actualCaster.name}: blinded=${isBlinded}, spell=${actualSpellId}`);
-    }
-
-    if (actualCaster && actualCaster.effects && actualCaster.effects.blinded && actualSpellId) {
-        // Проверяем, подвержено ли заклинание ослеплению
-        const isAffected = window.isSpellAffectedByBlind ?
-            window.isSpellAffectedByBlind(actualSpellId) :
-            (window.BLINDED_AFFECTED_SPELLS && window.BLINDED_AFFECTED_SPELLS.includes(actualSpellId));
-
-        if (isAffected) {
-            const blinded = actualCaster.effects.blinded;
-            const roll = Math.random() * 100;
-            const isMiss = roll < blinded.missChance;
-
-            // Логируем проверку ослепления в бой
-            if (typeof window.addToBattleLog === 'function') {
-                if (isMiss) {
-                    window.addToBattleLog(`👁️ ${actualCaster.name} ослеплён — заклинание летит в случайную клетку! (${roll.toFixed(0)}/${blinded.missChance})`);
-                } else {
-                    window.addToBattleLog(`👁️ ${actualCaster.name} ослеплён, но попадает в цель (${roll.toFixed(0)}/${blinded.missChance})`);
-                }
-            }
-
-            if (isMiss) {
-                // Случайная позиция (0-4)
-                const randomPos = Math.floor(Math.random() * 5);
-                position = randomPos;
-                isBlindedMiss = true; // Флаг что это ослеплённый удар
-            }
-        }
-    }
-
-    // При ослеплении проверяем ТОЛЬКО указанную клетку (без поиска по циклу)
-    if (isBlindedMiss) {
-        if (attackerType === 'player') {
-            const targetWizard = window.enemyFormation[position];
-            if (targetWizard && targetWizard.hp > 0) {
-                return { wizard: targetWizard, position: position };
-            }
-        } else {
-            const wizardId = window.playerFormation[position];
-            if (wizardId) {
-                const targetWizard = window.playerWizards.find(w => w.id === wizardId);
-                if (targetWizard && targetWizard.hp > 0) {
-                    return { wizard: targetWizard, position: position };
-                }
-            }
-        }
-        // Клетка пуста — промах, урон уходит в никуда
-        if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`❌ Промах! Заклинание уходит в пустоту`);
-        }
-        return null;
-    }
-
-    // Обычный поиск (без ослепления) - ищем по циклу
+    // Обычный поиск - ищем по циклу начиная с указанной позиции
     if (attackerType === 'player') {
         for (let i = 0; i < 5; i++) {
             const targetPosition = (position + i) % 5;
