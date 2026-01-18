@@ -849,6 +849,11 @@ function applyLightFactionBonus(wizard, casterType) {
     const chance = 0.05; // 5%
 
     if (Math.random() < chance) {
+        // ✨ Шанс сработал - логируем
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`✨ [Очищение] Сработал бонус фракции Света (5%)! ${wizard.name} ищет союзника с негативным эффектом...`);
+        }
+
         // Находим союзника с дебаффом
         const allies = casterType === 'player' ?
             window.playerWizards.filter(w => w.hp > 0) :
@@ -895,7 +900,7 @@ function applyLightFactionBonus(wizard, casterType) {
                     }
 
                     if (typeof window.addToBattleLog === 'function') {
-                        window.addToBattleLog(`✨ Свет очищает ${ally.name} от эффекта ${getDebuffName(debuff)}!`);
+                        window.addToBattleLog(`✨ [Очищение] С ${ally.name} снят эффект "${getDebuffName(debuff)}"!`);
                     }
 
                     // Речевой пузырь
@@ -916,6 +921,11 @@ function applyLightFactionBonus(wizard, casterType) {
                     return; // Снимаем только один дебафф за раз
                 }
             }
+        }
+
+        // Не найдено ни одного дебаффа
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`✨ [Очищение] Негативных эффектов у союзников не найдено`);
         }
     }
 }
