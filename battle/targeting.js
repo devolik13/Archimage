@@ -49,11 +49,18 @@ function findTarget(position, attackerType, caster = null) {
             }
         }
 
-        // Клетка пуста — промах!
+        // Клетка пуста — возвращаем виртуальную цель для анимации промаха
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`❌ Промах! Клетка [${col},${row + 1}] пуста`);
         }
-        return null;
+        // Возвращаем виртуальную "цель" чтобы снаряд всё равно полетел
+        return {
+            wizard: { name: 'Промах', hp: 0, max_hp: 0 },
+            position: row,
+            isBlindedMiss: true,
+            blindedCol: col,
+            blindedRow: row
+        };
     }
 
     // === Обычный поиск цели ===

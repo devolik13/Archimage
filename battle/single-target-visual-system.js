@@ -48,7 +48,32 @@ function castSingleTargetSpell(params) {
 
     // Определяем колонки
     const casterCol = casterType === 'player' ? 5 : 0;
-    
+
+    // 👁️ Проверка на промах от ослепления - снаряд летит в пустую клетку
+    if (target.isBlindedMiss) {
+        const { blindedCol, blindedRow } = target;
+
+        // Создаём снаряд в пустую клетку (без урона)
+        if (typeof createProjectile === 'function') {
+            createProjectile({
+                fromCol: casterCol,
+                fromRow: casterPosition,
+                toCol: blindedCol,
+                toRow: blindedRow,
+                onHit: () => {
+                    // Промах - ничего не делаем, урон уже залогирован в findTarget
+                    if (onComplete) {
+                        onComplete({ finalDamage: 0, isBlindedMiss: true });
+                    }
+                    if (typeof window.clearCurrentSpellCaster === 'function') {
+                        window.clearCurrentSpellCaster();
+                    }
+                }
+            });
+        }
+        return;
+    }
+
     // ШАГ 1: Рассчитываем урон через ВСЕ слои защиты
     // multi-layer-protection сама пройдёт все слои и вернёт точку остановки
     const damageResult = window.applyDamageWithMultiLayerProtection?.(

@@ -61,7 +61,8 @@ async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 
                     wizard._blindedTargetPosition = { col: randomCol, row: randomRow };
 
                     if (typeof window.addToBattleLog === 'function') {
-                        window.addToBattleLog(`👁️ ${wizard.name} ослеплён (${roll.toFixed(0)}/${blinded.missChance}) — заклинание летит в клетку [${randomCol},${randomRow + 1}]!`);
+                        const spellName = window.SPELL_NAMES?.[spellId] || spellId;
+                        window.addToBattleLog(`👁️ ${wizard.name} ослеплён (${roll.toFixed(0)}/${blinded.missChance}) — ${spellName} летит в клетку [${randomCol},${randomRow + 1}]!`);
                     }
                 } else {
                     delete wizard._blindedTargetPosition;
