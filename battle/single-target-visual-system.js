@@ -90,6 +90,12 @@ function castSingleTargetSpell(params) {
 
     const { impactCol, impactRow, finalDamage } = damageResult;
 
+    // 📝 ЛОГИРУЕМ СРАЗУ после расчёта урона (до анимации снаряда)
+    // Это гарантирует правильный порядок логов — по порядку кастов, а не попаданий
+    if (window.logProtectionResult) {
+        window.logProtectionResult(caster, target, damageResult, getSpellDisplayName(spellId, spellLevel));
+    }
+
     // ШАГ 2: Создаём ОДИН снаряд до точки столкновения
     if (typeof createProjectile === 'function') {
         createProjectile({
@@ -98,12 +104,7 @@ function castSingleTargetSpell(params) {
             toCol: impactCol,
             toRow: impactRow,
             onHit: () => {
-                // Логируем результат
-                if (window.logProtectionResult) {
-                    window.logProtectionResult(caster, target, damageResult, getSpellDisplayName(spellId, spellLevel));
-                }
-
-                // Применяем эффекты если нанесли урон магу
+                // Применяем эффекты когда снаряд долетел
                 if (applyEffects && finalDamage > 0) {
                     applyEffects(target.wizard, spellLevel, caster.faction);
                 }
@@ -120,11 +121,7 @@ function castSingleTargetSpell(params) {
             }
         });
     } else {
-
         // Fallback - сразу вызываем callbacks
-        if (window.logProtectionResult) {
-            window.logProtectionResult(caster, target, damageResult, getSpellDisplayName(spellId, spellLevel));
-        }
         if (applyEffects && finalDamage > 0) {
             applyEffects(target.wizard, spellLevel, caster.faction);
         }
