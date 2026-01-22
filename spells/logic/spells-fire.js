@@ -162,9 +162,9 @@ function castFirebolt(wizard, spellData, position, casterType) {
         
         // Определяем целевой ряд
         if (config.target === 'front') {
-            // Для 'front' - ищем ближайшего мага
-            const frontTarget = typeof window.findTarget === 'function' ? 
-                window.findTarget(position, casterType) : null;
+            // Для 'front' - ищем ближайшего мага (передаём wizard для ослепления)
+            const frontTarget = typeof window.findTarget === 'function' ?
+                window.findTarget(position, casterType, wizard) : null;
             
             if (frontTarget) {
                 targetRow = frontTarget.position;
@@ -319,8 +319,9 @@ function castFireWall(wizard, spellData, position, casterType) {
 function castFireball(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
     const baseDamage = [20, 30, 40, 50, 50][level - 1] || 20;
-    
-    const target = typeof window.findTarget === 'function' ? window.findTarget(position, casterType) : null;
+
+    // Передаём wizard для проверки ослепления
+    const target = typeof window.findTarget === 'function' ? window.findTarget(position, casterType, wizard) : null;
     if (!target) {
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`🔥 ${wizard.name} использует Огненный шар, но цель не найдена`);

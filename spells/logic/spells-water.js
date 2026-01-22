@@ -103,7 +103,8 @@ function castFrostArrow(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
     const baseDamage = [15, 20, 25, 30, 35][level - 1] || 15;
 
-    const mainTarget = typeof window.findTarget === 'function' ? window.findTarget(position, casterType) : null;
+    // Передаём wizard для проверки ослепления
+    const mainTarget = typeof window.findTarget === 'function' ? window.findTarget(position, casterType, wizard) : null;
     if (!mainTarget) return;
 
     // Определяем позиции для визуального снаряда

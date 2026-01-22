@@ -141,7 +141,8 @@ function castStoneSpike(wizard, spellData, position, casterType) {
     const damagePerSpike = [4, 5, 7, 9, 13][level - 1] || 4;
     const spikeCount = level === 5 ? 7 : 4;
 
-    const mainTarget = typeof window.findTarget === 'function' ? window.findTarget(position, casterType) : null;
+    // Передаём wizard для проверки ослепления
+    const mainTarget = typeof window.findTarget === 'function' ? window.findTarget(position, casterType, wizard) : null;
     if (!mainTarget) {
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`🗿 ${wizard.name} использует Каменный шип, но основная цель не найдена`);
