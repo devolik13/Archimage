@@ -99,6 +99,14 @@ async function initGameWithDatabase() {
     console.log('🪂 [DEBUG] Загружены airdrop_points из БД:', player.airdrop_points);
     console.log('🪂 [DEBUG] Загружен airdrop_breakdown из БД:', player.airdrop_breakdown);
 
+    // Автопересчёт airdrop_points из breakdown (исправление для старых данных)
+    const breakdownSum = Object.values(window.userData.airdrop_breakdown || {})
+        .reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+    if (breakdownSum > window.userData.airdrop_points) {
+        console.log(`🪂 [FIX] Пересчёт airdrop_points: ${window.userData.airdrop_points} → ${breakdownSum}`);
+        window.userData.airdrop_points = breakdownSum;
+    }
+
     // Данные сезона
     window.userData.current_season = player.current_season || 1;
     window.userData.season_league_rewards_claimed = player.season_league_rewards_claimed || [];
