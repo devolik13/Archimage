@@ -431,7 +431,7 @@ function setupAirdropUI() {
             transition: all 0.2s;
         " onmouseover="this.style.background='linear-gradient(135deg, rgba(255,215,0,0.3) 0%, rgba(255,165,0,0.2) 100%)'" onmouseout="this.style.background='linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,165,0,0.1) 100%)'">
             <div style="font-size: ${smallFontSize}px; color: #aaa; margin-bottom: 5px;">Твои BPM coin 🪙</div>
-            <div style="font-size: ${bigFontSize}px; color: #ffd700; font-weight: bold;">${airdropPoints.toLocaleString()} <span style="font-size: ${baseFontSize}px;">BPM</span></div>
+            <div id="airdrop-points-value" style="font-size: ${bigFontSize}px; color: #ffd700; font-weight: bold;">${airdropPoints.toLocaleString()} <span style="font-size: ${baseFontSize}px;">BPM</span></div>
             <div style="font-size: ${smallFontSize}px; color: #888; margin-top: 5px;">
                 📊 Нажми для детализации
             </div>
@@ -782,6 +782,21 @@ async function loadAirdropLeaderboard() {
 }
 
 /**
+ * Обновить отображение очков в модалке (без перезагрузки)
+ */
+function updateAirdropPointsDisplay() {
+    const pointsElement = document.getElementById('airdrop-points-value');
+    if (pointsElement && window.userData) {
+        const points = window.userData.airdrop_points || 0;
+        // Сохраняем текущий стиль span с "BPM"
+        const currentHTML = pointsElement.innerHTML;
+        const spanMatch = currentHTML.match(/<span[^>]*>BPM<\/span>/);
+        const spanPart = spanMatch ? ` ${spanMatch[0]}` : ' <span style="font-size: inherit;">BPM</span>';
+        pointsElement.innerHTML = `${points.toLocaleString()}${spanPart}`;
+    }
+}
+
+/**
  * Добавить очки airdrop игроку
  */
 function addAirdropPoints(points, reason = '') {
@@ -816,6 +831,9 @@ function addAirdropPoints(points, reason = '') {
     if (window.showNotification && points > 0) {
         window.showNotification(`🪙 +${points} BPM coin!`);
     }
+
+    // Обновляем UI модалки если она открыта
+    updateAirdropPointsDisplay();
 }
 
 /**
@@ -1048,6 +1066,7 @@ function closeAirdropBreakdown() {
 window.showAirdropModal = showAirdropModal;
 window.closeAirdropModal = closeAirdropModal;
 window.addAirdropPoints = addAirdropPoints;
+window.updateAirdropPointsDisplay = updateAirdropPointsDisplay;
 window.connectWallet = connectWallet;
 window.disconnectWallet = disconnectWallet;
 window.showAirdropPointsBreakdown = showAirdropPointsBreakdown;
