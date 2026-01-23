@@ -783,12 +783,12 @@ async function loadAirdropLeaderboard() {
 
 /**
  * Добавить очки airdrop игроку
- * Напрямую обновляет БД чтобы избежать проблем с RPC anti-cheat
+ * Использует RPC для обхода RLS, читает текущие значения из БД для безопасности
  */
 async function addAirdropPoints(points, reason = '') {
     if (!window.userData) return;
 
-    // Обновляем локальные данные
+    // Обновляем локальные данные сразу (для отображения)
     const oldPoints = window.userData.airdrop_points || 0;
     window.userData.airdrop_points = oldPoints + points;
 
@@ -801,13 +801,13 @@ async function addAirdropPoints(points, reason = '') {
 
     console.log(`🪂 Airdrop: +${points} очков (${reason}). Всего: ${window.userData.airdrop_points}`);
 
-    // Напрямую обновляем БД (как делает webhook)
+    // Сохраняем в БД через RPC (обходит RLS)
     const supabase = window.dbManager?.supabase || window.supabaseClient;
     const telegramId = window.dbManager?.getTelegramId?.();
 
     if (supabase && telegramId) {
         try {
-            // Читаем текущие значения из БД для безопасности
+            // Читаем текущие значения из БД
             const { data: player } = await supabase
                 .from('players')
                 .select('airdrop_points, airdrop_breakdown')
@@ -815,19 +815,19 @@ async function addAirdropPoints(points, reason = '') {
                 .single();
 
             if (player) {
-                // Вычисляем новые значения на основе БД (не локальных данных)
+                // Вычисляем новые значения на основе БД (гарантированно >= старых)
                 const newPoints = (player.airdrop_points || 0) + points;
                 const breakdown = player.airdrop_breakdown || {};
                 breakdown[category] = (breakdown[category] || 0) + points;
 
-                // Обновляем БД напрямую
-                const { error } = await supabase
-                    .from('players')
-                    .update({
+                // Используем RPC для обновления (обходит RLS, anti-cheat не сработает т.к. newPoints >= old)
+                const { error } = await supabase.rpc('update_player_safe', {
+                    p_telegram_id: telegramId,
+                    p_data: {
                         airdrop_points: newPoints,
                         airdrop_breakdown: breakdown
-                    })
-                    .eq('telegram_id', telegramId);
+                    }
+                });
 
                 if (error) {
                     console.error('❌ Ошибка сохранения airdrop в БД:', error);
