@@ -342,7 +342,12 @@ class DatabaseManager {
                     battle_energy: window.userData.battle_energy,
                     unlocked_skins: window.userData.unlocked_skins,
                     wizard_skins: window.userData.wizard_skins,
-                    training_dummy_progress: window.userData.training_dummy_progress
+                    training_dummy_progress: window.userData.training_dummy_progress,
+                    // Season rewards - КРИТИЧНО для сохранения полученных наград за лиги
+                    current_season: window.userData.current_season,
+                    season_league_rewards_claimed: window.userData.season_league_rewards_claimed,
+                    // Airdrop breakdown - КРИТИЧНО для накопления BPM по категориям
+                    airdrop_breakdown: window.userData.airdrop_breakdown
                 };
                 await this.savePlayer(playerData);
             }
@@ -385,7 +390,12 @@ class DatabaseManager {
                     battle_energy: window.userData.battle_energy,
                     unlocked_skins: window.userData.unlocked_skins,
                     wizard_skins: window.userData.wizard_skins,
-                    training_dummy_progress: window.userData.training_dummy_progress
+                    training_dummy_progress: window.userData.training_dummy_progress,
+                    // Season rewards - КРИТИЧНО для сохранения полученных наград за лиги
+                    current_season: window.userData.current_season,
+                    season_league_rewards_claimed: window.userData.season_league_rewards_claimed,
+                    // Airdrop breakdown - КРИТИЧНО для накопления BPM по категориям
+                    airdrop_breakdown: window.userData.airdrop_breakdown
                 };
                 await this.savePlayer(playerData);
             }
