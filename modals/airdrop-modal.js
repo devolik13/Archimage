@@ -783,64 +783,33 @@ async function loadAirdropLeaderboard() {
 
 /**
  * Добавить очки airdrop игроку
- * Использует RPC для обхода RLS, читает текущие значения из БД для безопасности
  */
-async function addAirdropPoints(points, reason = '') {
+function addAirdropPoints(points, reason = '') {
     if (!window.userData) return;
 
-    // Обновляем локальные данные сразу (для отображения)
     const oldPoints = window.userData.airdrop_points || 0;
     window.userData.airdrop_points = oldPoints + points;
 
-    // Накапливаем суммы по категориям
+    // Накапливаем суммы по категориям (вместо истории)
     if (!window.userData.airdrop_breakdown) {
         window.userData.airdrop_breakdown = {};
     }
+
+    // Добавляем очки к категории
     const category = reason || 'Другое';
     window.userData.airdrop_breakdown[category] = (window.userData.airdrop_breakdown[category] || 0) + points;
 
     console.log(`🪂 Airdrop: +${points} очков (${reason}). Всего: ${window.userData.airdrop_points}`);
+    console.log(`🪂 [DEBUG] window.userData.airdrop_points = ${window.userData.airdrop_points}`);
+    console.log(`🪂 [DEBUG] window.userData.airdrop_breakdown:`, window.userData.airdrop_breakdown);
 
-    // Сохраняем в БД через RPC (обходит RLS)
-    const supabase = window.dbManager?.supabase || window.supabaseClient;
-    const telegramId = window.dbManager?.getTelegramId?.();
-
-    if (supabase && telegramId) {
-        try {
-            // Читаем текущие значения из БД
-            const { data: player } = await supabase
-                .from('players')
-                .select('airdrop_points, airdrop_breakdown')
-                .eq('telegram_id', telegramId)
-                .single();
-
-            if (player) {
-                // Вычисляем новые значения на основе БД (гарантированно >= старых)
-                const newPoints = (player.airdrop_points || 0) + points;
-                const breakdown = player.airdrop_breakdown || {};
-                breakdown[category] = (breakdown[category] || 0) + points;
-
-                // Используем RPC для обновления (обходит RLS, anti-cheat не сработает т.к. newPoints >= old)
-                const { error } = await supabase.rpc('update_player_safe', {
-                    p_telegram_id: telegramId,
-                    p_data: {
-                        airdrop_points: newPoints,
-                        airdrop_breakdown: breakdown
-                    }
-                });
-
-                if (error) {
-                    console.error('❌ Ошибка сохранения airdrop в БД:', error);
-                } else {
-                    // Синхронизируем локальные данные с БД
-                    window.userData.airdrop_points = newPoints;
-                    window.userData.airdrop_breakdown = breakdown;
-                    console.log(`✅ Airdrop сохранён в БД: ${newPoints} очков`);
-                }
-            }
-        } catch (err) {
-            console.error('❌ Ошибка при обновлении airdrop:', err);
-        }
+    // Сохраняем в БД
+    if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+        console.log('🪂 [DEBUG] Вызов dbManager.savePlayer() для сохранения airdrop очков...');
+        const saveResult = window.dbManager.savePlayer(window.userData);
+        console.log('🪂 [DEBUG] savePlayer вызван, результат:', saveResult);
+    } else {
+        console.error('❌ [DEBUG] dbManager.savePlayer не доступен!');
     }
 
     // Показываем уведомление
