@@ -103,8 +103,7 @@ class EventSaveManager {
                 daily_login: window.userData.daily_login, // Данные ежедневных наград
                 battle_energy: window.userData.battle_energy, // Энергия боев
                 purchased_packs: window.userData.purchased_packs, // Купленные стартовые пакеты
-                // airdrop_points защищены от уменьшения в RPC (anti-cheat)
-                airdrop_points: window.userData.airdrop_points || 0,
+                // ВАЖНО: airdrop_points НЕ отправляем - они сохраняются через addAirdropPoints
                 airdrop_breakdown: window.userData.airdrop_breakdown || {}, // Разбивка по категориям
                 wallet_address: window.userData.wallet_address || null, // TON кошелек
                 wallet_connected_at: window.userData.wallet_connected_at || null, // Время подключения кошелька

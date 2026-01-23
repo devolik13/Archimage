@@ -783,33 +783,64 @@ async function loadAirdropLeaderboard() {
 
 /**
  * Добавить очки airdrop игроку
+ * Напрямую обновляет БД чтобы избежать проблем с RPC anti-cheat
  */
-function addAirdropPoints(points, reason = '') {
+async function addAirdropPoints(points, reason = '') {
     if (!window.userData) return;
 
+    // Обновляем локальные данные
     const oldPoints = window.userData.airdrop_points || 0;
     window.userData.airdrop_points = oldPoints + points;
 
-    // Накапливаем суммы по категориям (вместо истории)
+    // Накапливаем суммы по категориям
     if (!window.userData.airdrop_breakdown) {
         window.userData.airdrop_breakdown = {};
     }
-
-    // Добавляем очки к категории
     const category = reason || 'Другое';
     window.userData.airdrop_breakdown[category] = (window.userData.airdrop_breakdown[category] || 0) + points;
 
     console.log(`🪂 Airdrop: +${points} очков (${reason}). Всего: ${window.userData.airdrop_points}`);
-    console.log(`🪂 [DEBUG] window.userData.airdrop_points = ${window.userData.airdrop_points}`);
-    console.log(`🪂 [DEBUG] window.userData.airdrop_breakdown:`, window.userData.airdrop_breakdown);
 
-    // Сохраняем в БД
-    if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
-        console.log('🪂 [DEBUG] Вызов dbManager.savePlayer() для сохранения airdrop очков...');
-        const saveResult = window.dbManager.savePlayer(window.userData);
-        console.log('🪂 [DEBUG] savePlayer вызван, результат:', saveResult);
-    } else {
-        console.error('❌ [DEBUG] dbManager.savePlayer не доступен!');
+    // Напрямую обновляем БД (как делает webhook)
+    const supabase = window.dbManager?.supabase || window.supabaseClient;
+    const telegramId = window.dbManager?.getTelegramId?.();
+
+    if (supabase && telegramId) {
+        try {
+            // Читаем текущие значения из БД для безопасности
+            const { data: player } = await supabase
+                .from('players')
+                .select('airdrop_points, airdrop_breakdown')
+                .eq('telegram_id', telegramId)
+                .single();
+
+            if (player) {
+                // Вычисляем новые значения на основе БД (не локальных данных)
+                const newPoints = (player.airdrop_points || 0) + points;
+                const breakdown = player.airdrop_breakdown || {};
+                breakdown[category] = (breakdown[category] || 0) + points;
+
+                // Обновляем БД напрямую
+                const { error } = await supabase
+                    .from('players')
+                    .update({
+                        airdrop_points: newPoints,
+                        airdrop_breakdown: breakdown
+                    })
+                    .eq('telegram_id', telegramId);
+
+                if (error) {
+                    console.error('❌ Ошибка сохранения airdrop в БД:', error);
+                } else {
+                    // Синхронизируем локальные данные с БД
+                    window.userData.airdrop_points = newPoints;
+                    window.userData.airdrop_breakdown = breakdown;
+                    console.log(`✅ Airdrop сохранён в БД: ${newPoints} очков`);
+                }
+            }
+        } catch (err) {
+            console.error('❌ Ошибка при обновлении airdrop:', err);
+        }
     }
 
     // Показываем уведомление
