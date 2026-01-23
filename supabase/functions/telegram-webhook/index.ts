@@ -104,7 +104,7 @@ serve(async (req) => {
       const starsAmount = payment.total_amount;
       const airdropPoints = Math.floor(starsAmount / 10);
       if (airdropPoints > 0) {
-        await addAirdropPoints(supabase, telegramId, airdropPoints, `Покупка ${starsAmount} Telegram Stars`);
+        await addAirdropPoints(supabase, telegramId, airdropPoints, 'Покупка Telegram Stars');
       }
 
       console.log(`🎁 Rewards applied for ${telegramId}: ${productId}`);

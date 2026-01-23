@@ -610,7 +610,7 @@ async function buyStarterPack(packKey) {
                 if (typeof window.addAirdropPoints === 'function' && pack.price) {
                     const airdropPoints = Math.floor(pack.price / 10);
                     if (airdropPoints > 0) {
-                        window.addAirdropPoints(airdropPoints, `Покупка ${pack.price} Telegram Stars`);
+                        window.addAirdropPoints(airdropPoints, 'Покупка Telegram Stars');
 
                         // Бонус рефереру (10% от BPM coin покупателя)
                         const buyerTelegramId = window.dbManager?.currentPlayer?.telegram_id;
@@ -1090,7 +1090,7 @@ async function buyTimePack(item) {
                 if (typeof window.addAirdropPoints === 'function' && item.price) {
                     const airdropPoints = Math.floor(item.price / 10);
                     if (airdropPoints > 0) {
-                        window.addAirdropPoints(airdropPoints, `Покупка ${item.price} Telegram Stars`);
+                        window.addAirdropPoints(airdropPoints, 'Покупка Telegram Stars');
 
                         // Бонус рефереру (10% от BPM coin покупателя)
                         const buyerTelegramId = window.dbManager?.currentPlayer?.telegram_id;
@@ -1488,7 +1488,7 @@ async function confirmFactionChange(newFaction) {
                     if (typeof window.addAirdropPoints === 'function' && dynamicPrice) {
                         const airdropPoints = Math.floor(dynamicPrice / 10);
                         if (airdropPoints > 0) {
-                            window.addAirdropPoints(airdropPoints, `Покупка ${dynamicPrice} Telegram Stars`);
+                            window.addAirdropPoints(airdropPoints, 'Покупка Telegram Stars');
 
                             // Бонус рефереру (10% от BPM coin покупателя)
                             const buyerTelegramId = window.dbManager?.currentPlayer?.telegram_id;
@@ -1898,7 +1898,7 @@ async function buyTimePackWithTon(item, tonPrice) {
         if (typeof window.addAirdropPoints === 'function' && item.priceUSD) {
             const airdropPoints = Math.floor((item.priceUSD / 0.013) / 10);
             if (airdropPoints > 0) {
-                window.addAirdropPoints(airdropPoints, `TON покупка ${tonPrice} TON`);
+                window.addAirdropPoints(airdropPoints, 'Покупка TON');
             }
         }
 
@@ -1977,7 +1977,7 @@ async function buyStarterPackWithTon(packKey, tonPrice) {
         if (typeof window.addAirdropPoints === 'function' && pack.priceUSD) {
             const airdropPoints = Math.floor((pack.priceUSD / 0.013) / 10);
             if (airdropPoints > 0) {
-                window.addAirdropPoints(airdropPoints, `TON покупка ${pack.name}`);
+                window.addAirdropPoints(airdropPoints, 'Покупка TON');
             }
         }
 

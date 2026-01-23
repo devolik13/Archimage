@@ -108,7 +108,7 @@ async function claimLeagueReward(leagueId) {
     }
 
     if (rewards.airdrop_points && typeof window.addAirdropPoints === 'function') {
-        window.addAirdropPoints(rewards.airdrop_points, `Достижение лиги: ${league.name}`);
+        window.addAirdropPoints(rewards.airdrop_points, 'Достижение лиги');
     }
 
     // Добавляем лигу в список полученных наград

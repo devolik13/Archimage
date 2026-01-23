@@ -122,7 +122,7 @@ async function checkDailyLoginReward() {
         if (dailyData.day % 7 === 0) {
             const weekNumber = Math.min(Math.floor(dailyData.day / 7), 13);
             const streakBonus = 25 * weekNumber; // Макс 325 BPM
-            window.addAirdropPoints(streakBonus, `Streak ${dailyData.day} дней`);
+            window.addAirdropPoints(streakBonus, 'Бонус за серию входов');
         } else {
             // Обычные дни - 20 BPM
             window.addAirdropPoints(20, 'Ежедневный вход');
