@@ -297,6 +297,9 @@ function setupAirdropUI() {
 
     if (!img || !overlay) return;
 
+    // Очищаем overlay перед добавлением контента (предотвращает дублирование)
+    overlay.innerHTML = '';
+
     const rect = img.getBoundingClientRect();
 
     // Устанавливаем размеры overlay по размеру изображения
