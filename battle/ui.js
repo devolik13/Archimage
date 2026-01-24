@@ -709,6 +709,14 @@ function cleanupBattleResources() {
         window.spellAnimations.dawn.clearAll();
     }
 
+    // Очищаем эффекты земли (stone_grotto, earth_wall)
+    if (window.spellAnimations?.stone_grotto?.clearAll) {
+        window.spellAnimations.stone_grotto.clearAll();
+    }
+    if (window.spellAnimations?.earth_wall?.clearAll) {
+        window.spellAnimations.earth_wall.clearAll();
+    }
+
     // Удаляем элементы UI боя
     const battleModal = document.getElementById("battle-field-modal");
     if (battleModal) {
