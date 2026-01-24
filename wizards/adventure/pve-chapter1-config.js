@@ -91,7 +91,9 @@ const ELEMENTALS = {
             wind: 30,
             earth: 30,
             nature: 30,
-            poison: 30
+            poison: 30,
+            light: 30,
+            dark: 30
         }
     },
     water: {
@@ -111,7 +113,9 @@ const ELEMENTALS = {
             wind: 30,
             earth: 30,
             nature: 30,
-            poison: 30
+            poison: 30,
+            light: 30,
+            dark: 30
         }
     },
     wind: {
@@ -131,7 +135,9 @@ const ELEMENTALS = {
             wind: 75,    // 75% сопротивление воздуху
             earth: 30,
             nature: 30,
-            poison: 30
+            poison: 30,
+            light: 30,
+            dark: 30
         }
     },
     earth: {
@@ -151,7 +157,9 @@ const ELEMENTALS = {
             wind: 30,
             earth: 75,   // 75% сопротивление земле
             nature: 30,
-            poison: 30
+            poison: 30,
+            light: 30,
+            dark: 30
         }
     }
 };
@@ -177,7 +185,9 @@ const FINAL_BOSS = {
         wind: 50,
         earth: 50,
         nature: 50,
-        poison: 50  // 50% ко всем стихиям включая яд
+        poison: 50,
+        light: 50,   // 50% сопротивление свету
+        dark: 50     // 50% сопротивление тьме
     }
 };
 
