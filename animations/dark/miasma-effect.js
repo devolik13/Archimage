@@ -61,6 +61,8 @@
 
         // Анимация
         const animate = () => {
+            // Проверяем, существует ли ещё эффект в карте (предотвращает утечку памяти)
+            if (!activeMiasmaEffects.has(effectKey)) return;
             if (!window.pixiAnimUtils?.isValid(miasmaContainer)) return;
 
             const time = Date.now() * 0.001;

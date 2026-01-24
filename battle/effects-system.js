@@ -392,7 +392,33 @@ function processPoisonForWizard(wizard) {
     if (!wizard.effects || !wizard.effects.poison || wizard.hp <= 0) return;
 
     const poisonEffect = wizard.effects.poison;
-    const damage = poisonEffect.stacks * (poisonEffect.damagePerStack || 5);
+    let damage = poisonEffect.stacks * (poisonEffect.damagePerStack || 5);
+
+    // Применяем модификатор Миазмы (защита союзников / усиление урона по врагам)
+    if (typeof window.getMiasmaPoisonModifier === 'function') {
+        // Проверяем бафф защиты (для союзников кастера миазмы)
+        if (wizard.buffs?.miasma_protection) {
+            const modifier = window.getMiasmaPoisonModifier(wizard, true, null);
+            if (modifier < 1) {
+                const oldDamage = damage;
+                damage = Math.floor(damage * modifier);
+                if (typeof window.addToBattleLog === 'function' && oldDamage !== damage) {
+                    window.addToBattleLog(`☣️ Миазма защищает ${wizard.name}: урон от яда ${oldDamage} → ${damage}`);
+                }
+            }
+        }
+        // Проверяем дебафф усиления урона (для врагов кастера миазмы)
+        else if (wizard.effects?.miasma_vulnerability) {
+            const modifier = window.getMiasmaPoisonModifier(wizard, false, null);
+            if (modifier > 1) {
+                const oldDamage = damage;
+                damage = Math.floor(damage * modifier);
+                if (typeof window.addToBattleLog === 'function' && oldDamage !== damage) {
+                    window.addToBattleLog(`☣️ Миазма усиливает яд на ${wizard.name}: урон ${oldDamage} → ${damage}`);
+                }
+            }
+        }
+    }
 
     // Наносим урон от яда
     const oldHP = wizard.hp;

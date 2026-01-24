@@ -407,6 +407,17 @@ function applyDamageWithEffects(caster, target, baseDamage, spellId = 'basic', a
         damageSteps.push(`🌅 Рассвет: ${oldDamage} → ${finalDamage} (+${bonusPercent}%)`);
     }
 
+    // 2.6 Применение дебаффов тьмы на КАСТЕРЕ (Слабость и Угасание снижают урон)
+    if (caster && typeof window.getDarkDebuffDamageMultiplier === 'function') {
+        const darkMultiplier = window.getDarkDebuffDamageMultiplier(caster);
+        if (darkMultiplier < 1) {
+            const oldDamage = finalDamage;
+            finalDamage = Math.floor(finalDamage * darkMultiplier);
+            const reductionPercent = Math.round((1 - darkMultiplier) * 100);
+            damageSteps.push(`🌑 Дебафф тьмы: ${oldDamage} → ${finalDamage} (-${reductionPercent}%)`);
+        }
+    }
+
     // 3. Учет магического сопротивления ЦЕЛИ
     if (typeof window.applyMagicResistance === 'function' && spellId && target) {
     	const damageBeforeResist = finalDamage;

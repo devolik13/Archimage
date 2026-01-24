@@ -693,6 +693,22 @@ function cleanupBattleResources() {
         window.animationManager.clearAll();
     }
 
+    // Очищаем эффекты тьмы
+    if (window.spellAnimations?.weakened?.clearAll) {
+        window.spellAnimations.weakened.clearAll();
+    }
+    if (window.spellAnimations?.miasma_buff?.clearAll) {
+        window.spellAnimations.miasma_buff.clearAll();
+    }
+
+    // Очищаем эффекты света
+    if (window.spellAnimations?.blinded?.clearAll) {
+        window.spellAnimations.blinded.clearAll();
+    }
+    if (window.spellAnimations?.dawn?.clearAll) {
+        window.spellAnimations.dawn.clearAll();
+    }
+
     // Удаляем элементы UI боя
     const battleModal = document.getElementById("battle-field-modal");
     if (battleModal) {

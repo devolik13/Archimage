@@ -437,6 +437,17 @@ function initializeWizardHealth() {
                 }
             }
         }
+
+        // Применение "Миазмы" (Тьма, Tier 3) - пассивный бафф/дебафф
+        if (wizard.spells && wizard.spells.includes('miasma')) {
+            const level = wizard.spellLevels?.['miasma'] || 1;
+            if (level > 0) {
+                const position = window.playerFormation.findIndex(id => id === wizard.id);
+                if (position !== -1 && typeof window.applyMiasmaAtStart === 'function') {
+                    window.applyMiasmaAtStart(wizard, level, position, 'player');
+                }
+            }
+        }
     });
 
     // То же самое для врагов
@@ -504,6 +515,15 @@ function initializeWizardHealth() {
             const position = window.enemyFormation.findIndex(w => w && w.id === wizard.id);
             if (position !== -1 && typeof window.applyDawnAtStart === 'function') {
                 window.applyDawnAtStart(wizard, level, position, 'enemy');
+            }
+        }
+
+        // Применение "Миазмы" для врагов (Тьма, Tier 3)
+        if (wizard.spells && wizard.spells.includes('miasma')) {
+            const level = wizard.spellLevels?.['miasma'] || 1;
+            const position = window.enemyFormation.findIndex(w => w && w.id === wizard.id);
+            if (position !== -1 && typeof window.applyMiasmaAtStart === 'function') {
+                window.applyMiasmaAtStart(wizard, level, position, 'enemy');
             }
         }
     });
@@ -869,6 +889,11 @@ async function executeSingleMageAttack(wizard, position, casterType) {
     // 👁️ Снимаем эффект ослепления после хода (счётчик ходов)
     if (typeof window.processBlindedEffectAfterTurn === 'function') {
         window.processBlindedEffectAfterTurn(wizard);
+    }
+
+    // 🌑 Снимаем эффект слабости после хода (счётчик ходов)
+    if (typeof window.processWeakenedEffectAfterTurn === 'function') {
+        window.processWeakenedEffectAfterTurn(wizard, position, casterType);
     }
 
     if (window.activeMeteorokinesis && wizard && wizard.hp > 0) {
