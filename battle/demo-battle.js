@@ -513,38 +513,20 @@ function showWelcomeMessage() {
             max-width: 500px;
         ">
             <div style="color: #ffd700; font-size: 18px; font-weight: bold; margin-bottom: 15px;">
-                📖 Секреты игры найдешь в книге знаний<br>и в наших каналах
+                📖 Секреты игры найдешь в книге знаний<br>и в нашем канале
             </div>
 
-            <!-- Ссылки на сообщество -->
+            <!-- Ссылка на сообщество -->
             <div style="
                 display: flex;
-                gap: 10px;
                 justify-content: center;
-                flex-wrap: wrap;
                 margin-top: 15px;
             ">
-                <a href="https://t.me/archimage_news" target="_blank" style="
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 5px;
-                    padding: 10px 16px;
-                    background: rgba(0, 136, 204, 0.3);
-                    border: 1px solid rgba(0, 136, 204, 0.5);
-                    border-radius: 8px;
-                    color: #87ceeb;
-                    text-decoration: none;
-                    font-size: 15px;
-                    font-weight: bold;
-                    transition: all 0.2s;
-                " onmouseover="this.style.background='rgba(0, 136, 204, 0.5)'" onmouseout="this.style.background='rgba(0, 136, 204, 0.3)'">
-                    📢 Новости
-                </a>
                 <a href="https://t.me/archimage_chat" target="_blank" style="
                     display: inline-flex;
                     align-items: center;
                     gap: 5px;
-                    padding: 10px 16px;
+                    padding: 10px 20px;
                     background: rgba(102, 126, 234, 0.3);
                     border: 1px solid rgba(102, 126, 234, 0.5);
                     border-radius: 8px;
@@ -554,7 +536,7 @@ function showWelcomeMessage() {
                     font-weight: bold;
                     transition: all 0.2s;
                 " onmouseover="this.style.background='rgba(102, 126, 234, 0.5)'" onmouseout="this.style.background='rgba(102, 126, 234, 0.3)'">
-                    💬 Чат игроков
+                    📢 Сообщество
                 </a>
             </div>
         </div>

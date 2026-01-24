@@ -617,8 +617,8 @@ function setupAirdropUI() {
         transition: all 0.3s;
     `;
     newsBtn.onclick = () => {
-        // Открываем канал новостей в Telegram
-        window.open('https://t.me/archimage_news', '_blank');
+        // Открываем официальный канал в Telegram
+        window.open('https://t.me/archimage_chat', '_blank');
     };
     newsBtn.onmouseover = () => {
         newsBtn.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
