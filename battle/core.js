@@ -794,7 +794,34 @@ async function executeSingleMageAttack(wizard, position, casterType) {
 
     // ☠️ ОБРАБОТКА УРОНА ОТ ЯДА В НАЧАЛЕ ХОДА МАГА
     if (wizard.effects && wizard.effects.poison && wizard.effects.poison.stacks > 0) {
-        const poisonDamage = wizard.effects.poison.stacks * (wizard.effects.poison.damagePerStack || 5);
+        let poisonDamage = wizard.effects.poison.stacks * (wizard.effects.poison.damagePerStack || 5);
+
+        // 🌑 Применяем модификатор Миазмы (защита союзников / усиление урона по врагам)
+        if (typeof window.getMiasmaPoisonModifier === 'function') {
+            // Проверяем бафф защиты (для союзников кастера миазмы)
+            if (wizard.buffs?.miasma_protection) {
+                const miasmaModifier = window.getMiasmaPoisonModifier(wizard, true, null);
+                if (miasmaModifier < 1) {
+                    const oldDamage = poisonDamage;
+                    poisonDamage = Math.floor(poisonDamage * miasmaModifier);
+                    if (typeof window.addToBattleLog === 'function' && oldDamage !== poisonDamage) {
+                        window.addToBattleLog(`☣️ Миазма защищает ${wizard.name}: урон от яда ${oldDamage} → ${poisonDamage}`);
+                    }
+                }
+            }
+            // Проверяем дебафф усиления урона (для врагов кастера миазмы)
+            else if (wizard.effects?.miasma_vulnerability) {
+                const miasmaModifier = window.getMiasmaPoisonModifier(wizard, false, null);
+                if (miasmaModifier > 1) {
+                    const oldDamage = poisonDamage;
+                    poisonDamage = Math.floor(poisonDamage * miasmaModifier);
+                    if (typeof window.addToBattleLog === 'function' && oldDamage !== poisonDamage) {
+                        window.addToBattleLog(`☣️ Миазма усиливает яд на ${wizard.name}: урон ${oldDamage} → ${poisonDamage}`);
+                    }
+                }
+            }
+        }
+
         wizard.hp -= poisonDamage;
         if (wizard.hp < 0) wizard.hp = 0;
 
@@ -1287,7 +1314,34 @@ async function executeBossBattlePhase() {
 async function processMagePreTurnEffects(wizard, position, casterType) {
     // Яд
     if (wizard.effects && wizard.effects.poison && wizard.effects.poison.stacks > 0) {
-        const poisonDamage = wizard.effects.poison.stacks * (wizard.effects.poison.damagePerStack || 5);
+        let poisonDamage = wizard.effects.poison.stacks * (wizard.effects.poison.damagePerStack || 5);
+
+        // 🌑 Применяем модификатор Миазмы (защита союзников / усиление урона по врагам)
+        if (typeof window.getMiasmaPoisonModifier === 'function') {
+            // Проверяем бафф защиты (для союзников кастера миазмы)
+            if (wizard.buffs?.miasma_protection) {
+                const miasmaModifier = window.getMiasmaPoisonModifier(wizard, true, null);
+                if (miasmaModifier < 1) {
+                    const oldDamage = poisonDamage;
+                    poisonDamage = Math.floor(poisonDamage * miasmaModifier);
+                    if (typeof window.addToBattleLog === 'function' && oldDamage !== poisonDamage) {
+                        window.addToBattleLog(`☣️ Миазма защищает ${wizard.name}: урон от яда ${oldDamage} → ${poisonDamage}`);
+                    }
+                }
+            }
+            // Проверяем дебафф усиления урона (для врагов кастера миазмы)
+            else if (wizard.effects?.miasma_vulnerability) {
+                const miasmaModifier = window.getMiasmaPoisonModifier(wizard, false, null);
+                if (miasmaModifier > 1) {
+                    const oldDamage = poisonDamage;
+                    poisonDamage = Math.floor(poisonDamage * miasmaModifier);
+                    if (typeof window.addToBattleLog === 'function' && oldDamage !== poisonDamage) {
+                        window.addToBattleLog(`☣️ Миазма усиливает яд на ${wizard.name}: урон ${oldDamage} → ${poisonDamage}`);
+                    }
+                }
+            }
+        }
+
         wizard.hp -= poisonDamage;
         if (wizard.hp < 0) wizard.hp = 0;
         if (typeof window.addToBattleLog === 'function') {
