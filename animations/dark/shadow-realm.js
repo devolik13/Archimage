@@ -14,9 +14,18 @@
 
         console.log(`🌑 Shadow Realm animation for ${targets?.length || 0} targets`);
 
+        // При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Shadow Realm');
+            if (onComplete) onComplete();
+            return;
+        }
+
         const container = window.pixiCore?.getEffectsContainer();
-        if (!container) {
-            console.warn('⚠️ Effects container not found');
+        const gridCells = window.pixiCore?.getGridCells();
+
+        if (!container || !gridCells) {
+            console.warn('⚠️ Effects container or grid not found');
             if (onComplete) onComplete();
             return;
         }
@@ -37,11 +46,14 @@
 
             if (targetRow === -1) return;
 
-            const targetSprite = window.wizardSprites?.[`${targetCol}_${targetRow}`];
-            if (!targetSprite) return;
+            const targetCell = gridCells[targetCol]?.[targetRow];
+            if (!targetCell) return;
+
+            const targetX = targetCell.x + targetCell.width / 2;
+            const targetY = targetCell.y + targetCell.height / 2;
 
             setTimeout(() => {
-                const vortex = createVortex(targetSprite.x, targetSprite.y);
+                const vortex = createVortex(targetX, targetY);
                 container.addChild(vortex);
                 vortices.push(vortex);
             }, index * 150);

@@ -14,22 +14,31 @@
 
         console.log(`🌑 Weakness animation on [${targetCol},${targetRow}]`);
 
+        // При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Weakness');
+            if (onComplete) onComplete();
+            return;
+        }
+
         const container = window.pixiCore?.getEffectsContainer();
-        if (!container) {
-            console.warn('⚠️ Effects container not found');
+        const gridCells = window.pixiCore?.getGridCells();
+
+        if (!container || !gridCells) {
+            console.warn('⚠️ Effects container or grid not found');
             if (onComplete) onComplete();
             return;
         }
 
-        const targetSprite = window.wizardSprites?.[`${targetCol}_${targetRow}`];
-        if (!targetSprite) {
-            console.warn('⚠️ Target sprite not found');
+        const targetCell = gridCells[targetCol]?.[targetRow];
+        if (!targetCell) {
+            console.warn('⚠️ Target cell not found');
             if (onComplete) onComplete();
             return;
         }
 
-        const x = targetSprite.x;
-        const y = targetSprite.y;
+        const x = targetCell.x + targetCell.width / 2;
+        const y = targetCell.y + targetCell.height / 2;
 
         // Создаём тёмное облако над целью
         const cloud = new PIXI.Container();

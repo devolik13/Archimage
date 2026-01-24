@@ -15,29 +15,40 @@
 
         console.log(`🌑 Dark Clot animation: [${casterCol},${casterRow}] → [${targetCol},${targetRow}]`);
 
-        const container = window.pixiCore?.getEffectsContainer();
-        if (!container) {
-            console.warn('⚠️ Effects container not found');
+        // При быстрой симуляции пропускаем анимацию
+        if (window.fastSimulation) {
+            console.log('⚡ Быстрая симуляция: пропуск анимации Dark Clot');
             if (onHit) onHit();
             if (onComplete) onComplete();
             return;
         }
 
-        // Получаем координаты
-        const startSprite = window.wizardSprites?.[`${casterCol}_${casterRow}`];
-        const endSprite = window.wizardSprites?.[`${targetCol}_${targetRow}`];
+        // Получаем необходимые объекты из ядра (как в flash.js)
+        const effectsContainer = window.pixiCore?.getEffectsContainer();
+        const gridCells = window.pixiCore?.getGridCells();
 
-        if (!startSprite || !endSprite) {
-            console.warn('⚠️ Wizard sprites not found');
+        if (!effectsContainer || !gridCells) {
+            console.warn('⚠️ Effects container or grid not found');
             if (onHit) onHit();
             if (onComplete) onComplete();
             return;
         }
 
-        const startX = startSprite.x;
-        const startY = startSprite.y;
-        const endX = endSprite.x;
-        const endY = endSprite.y;
+        const startCell = gridCells[casterCol]?.[casterRow];
+        const endCell = gridCells[targetCol]?.[targetRow];
+
+        if (!startCell || !endCell) {
+            console.warn('⚠️ Grid cells not found');
+            if (onHit) onHit();
+            if (onComplete) onComplete();
+            return;
+        }
+
+        // Координаты центров ячеек
+        const startX = startCell.x + startCell.width / 2;
+        const startY = startCell.y + startCell.height / 2;
+        const endX = endCell.x + endCell.width / 2;
+        const endY = endCell.y + endCell.height / 2;
 
         // Создаём снаряд - тёмный сгусток
         const projectile = new PIXI.Container();
@@ -69,7 +80,7 @@
 
         projectile.x = startX;
         projectile.y = startY;
-        container.addChild(projectile);
+        effectsContainer.addChild(projectile);
 
         // Анимация полёта
         const duration = 350;
@@ -94,11 +105,11 @@
                 requestAnimationFrame(animate);
             } else {
                 // Попадание
-                container.removeChild(projectile);
+                effectsContainer.removeChild(projectile);
                 projectile.destroy();
 
                 // Эффект тёмного взрыва на цели
-                createImpactEffect(endX, endY, container);
+                createImpactEffect(endX, endY, effectsContainer);
 
                 if (onHit) onHit();
                 if (onComplete) setTimeout(onComplete, 200);
