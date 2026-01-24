@@ -63,6 +63,8 @@
 
         // Анимация дыма
         const animate = () => {
+            // Проверяем, существует ли ещё эффект в карте (предотвращает утечку памяти)
+            if (!activeWeakenedEffects.has(effectKey)) return;
             if (!window.pixiAnimUtils?.isValid(smokeContainer)) return;
 
             const time = Date.now() * 0.001;
