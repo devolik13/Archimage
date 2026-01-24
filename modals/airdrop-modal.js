@@ -870,7 +870,7 @@ async function checkGroupSubscription() {
     // Делаем запрос на проверку через 2 секунды
     setTimeout(async () => {
         try {
-            const SUPABASE_URL = window.supabase?.supabaseUrl || 'https://bazefoffsnsidxlqqfsc.supabase.co';
+            const SUPABASE_URL = window.supabase?.supabaseUrl || 'https://legianiryweinxtsuqoh.supabase.co';
 
             const response = await fetch(`${SUPABASE_URL}/functions/v1/check-group-subscription`, {
                 method: 'POST',
