@@ -74,8 +74,11 @@ function showTimeGeneratorModalBg() {
 function setupGeneratorUI() {
     const img = document.getElementById('generator-bg-image');
     const overlay = document.getElementById('generator-ui-overlay');
-    
+
     if (!img || !overlay) return;
+
+    // Очищаем overlay перед добавлением контента (предотвращает дублирование)
+    overlay.innerHTML = '';
     
     const rect = img.getBoundingClientRect();
     

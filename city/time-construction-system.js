@@ -330,6 +330,9 @@ function showConstructionModal(constructionIndex) {
         const overlay = document.getElementById('construction-ui-overlay');
         if (!img || !overlay) return;
 
+        // Очищаем overlay перед добавлением контента (предотвращает дублирование)
+        overlay.innerHTML = '';
+
         const rect = img.getBoundingClientRect();
 
         overlay.style.cssText = `
