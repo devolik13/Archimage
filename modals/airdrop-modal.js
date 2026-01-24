@@ -515,6 +515,57 @@ function setupAirdropUI() {
             </div>
         </div>
 
+        <!-- Задания -->
+        <div style="
+            background: rgba(0,0,0,0.4);
+            border: 1px solid #4ade80;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+        ">
+            <div style="font-size: ${baseFontSize}px; color: #4ade80; font-weight: bold; margin-bottom: 10px;">
+                🎯 Задания
+            </div>
+            <div id="group-reward-task" style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(74, 222, 128, 0.1);
+                border: 1px solid rgba(74, 222, 128, 0.3);
+                border-radius: 8px;
+                padding: 10px;
+            ">
+                <div style="flex: 1;">
+                    <div style="font-size: ${baseFontSize}px; color: #fff;">
+                        👥 Вступить в группу
+                    </div>
+                    <div style="font-size: ${smallFontSize}px; color: #4ade80; margin-top: 4px;">
+                        +500 BPM + ⏰ 2 дня
+                    </div>
+                </div>
+                ${window.userData?.group_reward_claimed ? `
+                    <div style="
+                        padding: 8px 16px;
+                        background: #333;
+                        border-radius: 8px;
+                        color: #888;
+                        font-size: ${smallFontSize}px;
+                    ">✓ Получено</div>
+                ` : `
+                    <button onclick="window.checkGroupSubscription()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #4ade80, #22c55e);
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: ${smallFontSize}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Проверить</button>
+                `}
+            </div>
+        </div>
+
         <!-- Топ игроков -->
         <div style="
             background: rgba(0,0,0,0.4);
@@ -798,6 +849,75 @@ function updateAirdropPointsDisplay() {
         pointsElement.innerHTML = `${points.toLocaleString()}${spanPart}`;
     }
 }
+
+/**
+ * Проверка подписки на группу и получение награды
+ */
+async function checkGroupSubscription() {
+    const telegramId = window.dbManager?.getTelegramId?.() || window.userData?.user_id;
+
+    if (!telegramId) {
+        window.showNotification?.('❌ Ошибка: не удалось определить пользователя');
+        return;
+    }
+
+    // Сначала открываем группу
+    window.open('https://t.me/archimage_chat', '_blank');
+
+    // Показываем уведомление
+    window.showNotification?.('👥 Вступите в группу и нажмите "Проверить" снова');
+
+    // Делаем запрос на проверку через 2 секунды
+    setTimeout(async () => {
+        try {
+            const SUPABASE_URL = window.supabase?.supabaseUrl || 'https://bazefoffsnsidxlqqfsc.supabase.co';
+
+            const response = await fetch(`${SUPABASE_URL}/functions/v1/check-group-subscription`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ telegram_id: telegramId })
+            });
+
+            const result = await response.json();
+            console.log('📱 Group subscription check result:', result);
+
+            if (result.success) {
+                // Обновляем локальные данные
+                window.userData.group_reward_claimed = true;
+                window.userData.time_currency = (window.userData.time_currency || 0) + result.reward.time_minutes;
+                window.userData.airdrop_points = (window.userData.airdrop_points || 0) + result.reward.bpm_points;
+
+                if (!window.userData.airdrop_breakdown) {
+                    window.userData.airdrop_breakdown = {};
+                }
+                window.userData.airdrop_breakdown['Вступление в группу'] = result.reward.bpm_points;
+
+                window.showNotification?.(`🎉 Награда получена! +${result.reward.bpm_points} BPM + ⏰ 2 дня`);
+
+                // Обновляем UI
+                refreshAirdropModalUI();
+
+                // Обновляем таймер если функция есть
+                if (typeof window.updateTimerDisplay === 'function') {
+                    window.updateTimerDisplay();
+                }
+            } else if (result.error === 'already_claimed') {
+                window.showNotification?.('✓ Награда уже получена ранее');
+            } else if (result.error === 'not_subscribed') {
+                window.showNotification?.('❌ Вы не подписаны на группу. Вступите и попробуйте снова.');
+            } else {
+                window.showNotification?.('❌ Ошибка проверки. Попробуйте позже.');
+            }
+        } catch (error) {
+            console.error('Error checking group subscription:', error);
+            window.showNotification?.('❌ Ошибка сети. Попробуйте позже.');
+        }
+    }, 2000);
+}
+
+window.checkGroupSubscription = checkGroupSubscription;
 
 /**
  * Добавить очки airdrop игроку
