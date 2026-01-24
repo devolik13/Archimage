@@ -887,6 +887,9 @@ function applyLightFactionBonus(wizard, casterType) {
 
                     if (allyPos !== -1 && allySide) {
                         const effectKey = `${allySide}_${allyPos}`;
+                        // Ключ для pixiWizards (формат col_pos: 5_2 для игрока, 0_2 для врага)
+                        const pixiKey = `${allySide === 'player' ? 5 : 0}_${allyPos}`;
+
                         // Удаляем соответствующий визуальный эффект
                         if (debuff === 'blinded' && window.spellAnimations?.blinded?.remove) {
                             window.spellAnimations.blinded.remove(effectKey);
@@ -896,6 +899,11 @@ function applyLightFactionBonus(wizard, casterType) {
                             window.spellAnimations.chilled.remove(effectKey);
                         } else if (debuff === 'weakened' && window.spellAnimations?.weakened?.remove) {
                             window.spellAnimations.weakened.remove(effectKey);
+                        } else if (debuff === 'poison' && window.pixiWizards?.updatePoisonIcon) {
+                            // Яд использует pixiKey формат (col_pos)
+                            window.pixiWizards.updatePoisonIcon(pixiKey, 0);
+                        } else if (debuff === 'plague' && window.spellAnimations?.plague?.removePlagueEffect) {
+                            window.spellAnimations.plague.removePlagueEffect(ally.id);
                         }
                     }
 
