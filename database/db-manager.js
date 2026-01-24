@@ -343,7 +343,11 @@ class DatabaseManager {
                     training_dummy_progress: window.userData.training_dummy_progress,
                     // Season rewards - КРИТИЧНО для сохранения полученных наград за лиги
                     current_season: window.userData.current_season,
-                    season_league_rewards_claimed: window.userData.season_league_rewards_claimed
+                    season_league_rewards_claimed: window.userData.season_league_rewards_claimed,
+                    // Airdrop данные - КРИТИЧНО для сохранения очков и детализации
+                    airdrop_points: window.userData.airdrop_points || 0,
+                    airdrop_breakdown: window.userData.airdrop_breakdown || {},
+                    purchased_packs: window.userData.purchased_packs || {}
                 };
                 await this.savePlayer(playerData);
             }
@@ -389,7 +393,11 @@ class DatabaseManager {
                     training_dummy_progress: window.userData.training_dummy_progress,
                     // Season rewards - КРИТИЧНО для сохранения полученных наград за лиги
                     current_season: window.userData.current_season,
-                    season_league_rewards_claimed: window.userData.season_league_rewards_claimed
+                    season_league_rewards_claimed: window.userData.season_league_rewards_claimed,
+                    // Airdrop данные - КРИТИЧНО для сохранения очков и детализации
+                    airdrop_points: window.userData.airdrop_points || 0,
+                    airdrop_breakdown: window.userData.airdrop_breakdown || {},
+                    purchased_packs: window.userData.purchased_packs || {}
                 };
                 await this.savePlayer(playerData);
             }
