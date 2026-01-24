@@ -107,6 +107,28 @@ async function initGameWithDatabase() {
         window.userData.airdrop_points = breakdownSum;
     }
 
+    // Миграция: объединяем старые категории "Достижение лиги: *" в одну "Достижение лиги"
+    const breakdown = window.userData.airdrop_breakdown;
+    if (breakdown) {
+        let leagueTotal = 0;
+        const keysToRemove = [];
+
+        for (const key of Object.keys(breakdown)) {
+            if (key.startsWith('Достижение лиги:')) {
+                leagueTotal += parseInt(breakdown[key]) || 0;
+                keysToRemove.push(key);
+            }
+        }
+
+        if (keysToRemove.length > 0) {
+            // Удаляем старые ключи
+            keysToRemove.forEach(key => delete breakdown[key]);
+            // Добавляем к общей категории
+            breakdown['Достижение лиги'] = (breakdown['Достижение лиги'] || 0) + leagueTotal;
+            console.log(`🪂 [FIX] Объединено ${keysToRemove.length} старых записей лиг в "Достижение лиги": +${leagueTotal}`);
+        }
+    }
+
     // Данные сезона
     window.userData.current_season = player.current_season || 1;
     window.userData.season_league_rewards_claimed = player.season_league_rewards_claimed || [];
