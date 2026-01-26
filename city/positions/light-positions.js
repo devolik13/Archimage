@@ -44,8 +44,8 @@ window.CITY_POSITIONS.light = {
         buildingId: 'library',
         points: [
             {x: 20, y: 335},
-            {x: 200, y: 325},
-            {x: 200, y: 50},
+            {x: 150, y: 325},
+            {x: 150, y: 50},
             {x: 20, y: 50}
         ]
     },
