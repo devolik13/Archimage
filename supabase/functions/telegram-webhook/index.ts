@@ -44,6 +44,32 @@ serve(async (req) => {
     const update = await req.json();
     console.log("Webhook received:", JSON.stringify(update, null, 2));
 
+    // Обработка команды /start
+    if (update.message?.text === '/start') {
+      const chatId = update.message.chat.id;
+      const firstName = update.message.from.first_name || 'Маг';
+
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          photo: "https://archimage.vercel.app/images/promo/welcome.png",
+          caption: `✨ Добро пожаловать, ${firstName}!\n\n🔥 Битва Магов — выбери свою стихию и открой таинства магии!\n\n⚔️ Сражайся с другими игроками\n🏰 Строй свой город\n📚 Изучай заклинания`,
+          reply_markup: {
+            inline_keyboard: [[
+              {
+                text: "🎮 Играть",
+                web_app: { url: "https://archimage.vercel.app" }
+              }
+            ]]
+          }
+        })
+      });
+
+      return new Response("OK", { headers: corsHeaders });
+    }
+
     // Обработка pre_checkout_query (подтверждение перед оплатой)
     if (update.pre_checkout_query) {
       const query = update.pre_checkout_query;
