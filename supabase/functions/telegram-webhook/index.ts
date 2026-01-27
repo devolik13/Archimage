@@ -49,12 +49,12 @@ serve(async (req) => {
       const chatId = update.message.chat.id;
       const firstName = update.message.from.first_name || 'Маг';
 
-      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendAnimation`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
-          photo: "https://archimage.vercel.app/images/promo/welcome.png",
+          animation: "https://archimage.vercel.app/images/promo/welcome.gif",
           caption: `✨ Добро пожаловать, ${firstName}!\n\n🔥 Битва Магов — выбери свою стихию и открой таинства магии!\n\n⚔️ Сражайся с другими игроками\n🏰 Строй свой город\n📚 Изучай заклинания`,
           reply_markup: {
             inline_keyboard: [[
