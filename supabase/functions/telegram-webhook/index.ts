@@ -46,10 +46,11 @@ serve(async (req) => {
 
     // Обработка команды /start
     if (update.message?.text === '/start') {
+      console.log("🎮 Processing /start command");
       const chatId = update.message.chat.id;
       const firstName = update.message.from.first_name || 'Маг';
 
-      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendAnimation`, {
+      const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendAnimation`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -66,6 +67,9 @@ serve(async (req) => {
           }
         })
       });
+
+      const result = await response.json();
+      console.log("📤 Telegram API response:", JSON.stringify(result));
 
       return new Response("OK", { headers: corsHeaders });
     }
