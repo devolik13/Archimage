@@ -54,7 +54,7 @@ serve(async (req) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
-          animation: "https://archimage.vercel.app/images/promo/welcome.gif",
+          animation: "https://archimage.vercel.app/images/promo/welcome.mp4",
           caption: `✨ Добро пожаловать, ${firstName}!\n\n🔥 Битва Магов — выбери свою стихию и открой таинства магии!\n\n⚔️ Сражайся с другими игроками\n🏰 Строй свой город\n📚 Изучай заклинания`,
           reply_markup: {
             inline_keyboard: [[
