@@ -74,6 +74,17 @@ serve(async (req) => {
       return new Response("OK", { headers: corsHeaders });
     }
 
+    // Временно: логируем file_id входящих анимаций/видео
+    if (update.message?.animation) {
+      console.log("🎬 ANIMATION file_id:", update.message.animation.file_id);
+    }
+    if (update.message?.video) {
+      console.log("🎥 VIDEO file_id:", update.message.video.file_id);
+    }
+    if (update.message?.document) {
+      console.log("📄 DOCUMENT file_id:", update.message.document.file_id);
+    }
+
     // Обработка pre_checkout_query (подтверждение перед оплатой)
     if (update.pre_checkout_query) {
       const query = update.pre_checkout_query;
