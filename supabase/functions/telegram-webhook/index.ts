@@ -55,7 +55,7 @@ serve(async (req) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
-          animation: "CgACAgIAAxkBAAFBXqNpedWmGYjyAiJj9OL43BwSXIQFOQACQZkAAlEdyUuk3Bb1K8M4VzgE",
+          animation: "CgACAgIAAxkBAAODaXoC15EHqbtDYrCVUPxW-UJMvqoAAmKSAAJR1dBLhXURdnYtaqQ4BA",
           caption: `✨ Добро пожаловать, ${firstName}!\n\n🔥 Битва Магов — выбери свою стихию и открой таинства магии!\n\n⚔️ Сражайся с другими игроками\n🏰 Строй свой город\n📚 Изучай заклинания`,
           reply_markup: {
             inline_keyboard: [[
