@@ -50,12 +50,12 @@ serve(async (req) => {
       const chatId = update.message.chat.id;
       const firstName = update.message.from.first_name || 'Маг';
 
-      const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendVideo`, {
+      const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendAnimation`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
-          video: "https://archimage.vercel.app/images/promo/welcome.mp4",
+          animation: "CgACAgIAAxkBAAFBXqNpedWmGYjyAiJj9OL43BwSXIQFOQACQZkAAlEdyUuk3Bb1K8M4VzgE",
           caption: `✨ Добро пожаловать, ${firstName}!\n\n🔥 Битва Магов — выбери свою стихию и открой таинства магии!\n\n⚔️ Сражайся с другими игроками\n🏰 Строй свой город\n📚 Изучай заклинания`,
           reply_markup: {
             inline_keyboard: [[
