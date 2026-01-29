@@ -6,12 +6,12 @@ let libraryUpdateInterval = null;
 // === КЭШИРОВАНИЕ для быстрого открытия ===
 let libraryCache = {
     container: null,           // Главный контейнер
-    mainScreen: null,          // Главный экран (6 школ)
+    mainScreen: null,          // Главный экран (8 школ)
     schoolScreens: {},         // Кэш экранов школ: { fire: element, water: element, ... }
     initialized: false
 };
 
-// ========== ГЛАВНЫЙ ЭКРАН: 6 ШКОЛ ==========
+// ========== ГЛАВНЫЙ ЭКРАН: 8 ШКОЛ ==========
 function showLibrary() {
     console.log('📚 Открытие библиотеки');
 
@@ -133,6 +133,8 @@ function setupLibraryClickableZones() {
             'earth': { name: 'Земля', icon: '🪨', color: '#8b7355' },
             'nature': { name: 'Природа', icon: '🌿', color: '#4ade80' },
             'poison': { name: 'Яд', icon: '☠️', color: '#9b59b6' },
+            'light': { name: 'Свет', icon: '✨', color: '#ffd700' },
+            'dark': { name: 'Тьма', icon: '🌑', color: '#4a0080' },
             'back': { name: 'Назад', icon: '←', color: '#FFFFFF' }
         };
 
