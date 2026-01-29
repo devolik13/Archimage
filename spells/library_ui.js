@@ -124,33 +124,6 @@ function setupLibraryClickableZones() {
             justify-content: center;
         `;
 
-        // Добавляем текст на каждую кнопку
-        const fontSize = Math.max(14, 18 * Math.min(scaleX, scaleY));
-        const schoolNames = {
-            'fire': { name: 'Огонь', icon: '🔥', color: '#ff6b35' },
-            'water': { name: 'Вода', icon: '💧', color: '#4da6ff' },
-            'wind': { name: 'Ветер', icon: '💨', color: '#a0d8ef' },
-            'earth': { name: 'Земля', icon: '🪨', color: '#8b7355' },
-            'nature': { name: 'Природа', icon: '🌿', color: '#4ade80' },
-            'poison': { name: 'Яд', icon: '☠️', color: '#9b59b6' },
-            'light': { name: 'Свет', icon: '✨', color: '#ffd700' },
-            'dark': { name: 'Тьма', icon: '🌑', color: '#4a0080' },
-            'back': { name: 'Назад', icon: '←', color: '#FFFFFF' }
-        };
-
-        const schoolInfo = schoolNames[zone.id];
-        if (schoolInfo) {
-            zoneDiv.innerHTML = `<div style="
-                font-size: ${fontSize}px;
-                color: ${schoolInfo.color};
-                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.8);
-                font-weight: bold;
-                pointer-events: none;
-                text-align: center;
-                line-height: 1.2;
-            ">${schoolInfo.name}</div>`;
-        }
-
         // DEV: Подсветка кликабельных зон
         if (window.DEV_MODE) {
             zoneDiv.addEventListener('mouseenter', () => zoneDiv.style.background = 'rgba(114, 137, 218, 0.3)');
