@@ -98,13 +98,14 @@ function setupLibraryClickableZones() {
     zonesContainer.innerHTML = '';
     
     const zones = [
-        { id: 'fire', coords: [55, 130, 220, 260], faction: 'fire' },
-        { id: 'water', coords: [290, 130, 460, 255], faction: 'water' },
-        { id: 'wind', coords: [535, 130, 700, 255], faction: 'wind' },
-        { id: 'earth', coords: [55, 300, 220, 430], faction: 'earth' },
-        { id: 'nature', coords: [290, 300, 460, 430], faction: 'nature' },
-        { id: 'poison', coords: [535, 300, 700, 430], faction: 'poison' },
-        { id: 'back', coords: [290, 440, 460, 500], faction: null }
+        { id: 'fire', coords: [150, 70, 225, 225], faction: 'fire' },
+        { id: 'water', coords: [255, 70, 340, 225], faction: 'water' },
+        { id: 'earth', coords: [150, 230, 240, 360], faction: 'earth' },
+        { id: 'wind', coords: [250, 235, 340, 350], faction: 'wind' },
+        { id: 'nature', coords: [410, 70, 520, 230], faction: 'nature' },
+        { id: 'poison', coords: [520, 70, 625, 225], faction: 'poison' },
+        { id: 'light', coords: [410, 240, 515, 360], faction: 'light' },
+        { id: 'dark', coords: [520, 240, 620, 360], faction: 'dark' }
     ];
     
     zones.forEach(zone => {
