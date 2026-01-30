@@ -142,6 +142,27 @@ function setupLibraryClickableZones() {
         zoneDiv.addEventListener('touchend', (e) => { e.preventDefault(); clickHandler(); });
         zonesContainer.appendChild(zoneDiv);
     });
+
+    // Кнопка "Назад" для возврата в город
+    const backBtn = document.createElement('div');
+    const backScaleX = currentWidth / originalWidth;
+    const backScaleY = currentHeight / originalHeight;
+    backBtn.style.cssText = `
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: ${20 * backScaleY}px;
+        padding: ${10 * Math.min(backScaleX, backScaleY)}px ${30 * Math.min(backScaleX, backScaleY)}px;
+        cursor: pointer;
+        font-size: ${24 * Math.min(backScaleX, backScaleY)}px;
+        font-weight: bold;
+        color: #7289da;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    `;
+    backBtn.textContent = 'Назад';
+    backBtn.addEventListener('click', closeLibrary);
+    backBtn.addEventListener('touchend', (e) => { e.preventDefault(); closeLibrary(); });
+    zonesContainer.appendChild(backBtn);
 }
 
 // ========== ЭКРАН ШКОЛЫ: С ТАЙМЕРАМИ ==========
@@ -300,7 +321,7 @@ function setupSpellsScreen(faction) {
         color: ${factionColor};
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
     `;
-    nameOverlay.textContent = factionName;
+    nameOverlay.textContent = faction === 'light' ? '' : factionName;
     
     // Получаем данные
     const factionSpells = (window.userData?.spells || {})[faction] || {};
