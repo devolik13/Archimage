@@ -29,7 +29,9 @@ function getFactionName(faction) {
         "wind": "🌪 Ветер",
         "earth": "🌿 Земля",
         "nature": "🌱 Природа",
-        "poison": "☣️ Яд"
+        "poison": "☣️ Яд",
+        "light": "✨ Свет",
+        "dark": "🌑 Тьма"
     };
     return factionNames[faction] || faction;
 }
@@ -45,13 +47,15 @@ async function selectFaction(faction) {
         "wind": "gust",
         "earth": "pebble",
         "nature": "call_wolf",
-        "poison": "poisoned_blade"
+        "poison": "poisoned_blade",
+        "light": "flash",
+        "dark": "dark_clot"
     };
 
     const factionSpell = factionSpellMap[faction];
 
     // Выбираем случайное второе заклинание tier 1 (не родное)
-    const allTier1Spells = ["spark", "icicle", "gust", "pebble", "call_wolf", "poisoned_blade"];
+    const allTier1Spells = ["spark", "icicle", "gust", "pebble", "call_wolf", "poisoned_blade", "flash", "dark_clot"];
     const otherSpells = allTier1Spells.filter(spell => spell !== factionSpell);
     const randomSecondSpell = otherSpells[Math.floor(Math.random() * otherSpells.length)];
 
@@ -75,7 +79,9 @@ async function selectFaction(faction) {
         "wind": { "gust": { name: "Порыв", level: 1, tier: 1 } },
         "earth": { "pebble": { name: "Камешек", level: 1, tier: 1 } },
         "nature": { "call_wolf": { name: "Зов волка", level: 1, tier: 1 } },
-        "poison": { "poisoned_blade": { name: "Отравленный клинок", level: 1, tier: 1 } }
+        "poison": { "poisoned_blade": { name: "Отравленный клинок", level: 1, tier: 1 } },
+        "light": { "flash": { name: "Вспышка", level: 1, tier: 1 } },
+        "dark": { "dark_clot": { name: "Сгусток тьмы", level: 1, tier: 1 } }
     };
     
     // Стартовые здания: Библиотека и Генератор времени (арена работает без здания)
