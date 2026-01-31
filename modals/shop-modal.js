@@ -2043,6 +2043,7 @@ window.showShopModal = showShopModal;
 window.closeShopModal = closeShopModal;
 window.switchShopTab = switchShopTab;
 window.buyShopItem = buyShopItem;
+window.showChangeFactionDialog = showChangeFactionDialog;
 window.buyStarterPack = buyStarterPack;
 window.applyExpScroll = applyExpScroll;
 window.closeWizardSelectDialog = closeWizardSelectDialog;
