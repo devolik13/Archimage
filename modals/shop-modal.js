@@ -328,7 +328,7 @@ function renderShopContent(container, rect) {
             <!-- Заголовок -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <div>
-                    <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 24px;">
                         <h2 style="margin: 0; color: #ffd700; font-size: ${titleFontSize}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
                             🛒 Магазин
                         </h2>
@@ -338,7 +338,7 @@ function renderShopContent(container, rect) {
                             color: white;
                             font-size: ${baseFontSize}px;
                             cursor: pointer;
-                            padding: 4px 10px;
+                            padding: 4px 20px;
                             border-radius: 8px;
                             transition: all 0.2s;
                             white-space: nowrap;
