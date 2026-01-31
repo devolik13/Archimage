@@ -188,6 +188,16 @@ async function selectFaction(faction) {
 
             // Показываем город напрямую (демо батл отключён)
             document.getElementById('game-area').style.display = 'block';
+
+            // Показываем приветствие и подсказки для нового игрока
+            if (!window.userData.welcome_shown) {
+                setTimeout(() => {
+                    if (typeof window.showWelcomeMessage === 'function') {
+                        console.log('👋 Показываем приветственное сообщение');
+                        window.showWelcomeMessage();
+                    }
+                }, 500);
+            }
             
         } catch (error) {
             console.error('❌ Ошибка сохранения фракции:', error);
