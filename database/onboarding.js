@@ -186,14 +186,8 @@ async function selectFaction(faction) {
                 window.renderCityGrid();
             }
 
-            // Запускаем демо батл вместо прямого показа города
-            if (typeof window.startDemoBattle === 'function') {
-                console.log('🎬 Запуск демо батла для фракции:', faction);
-                window.startDemoBattle(faction);
-            } else {
-                console.warn('⚠️ startDemoBattle не найден, показываем город напрямую');
-                document.getElementById('game-area').style.display = 'block';
-            }
+            // Показываем город напрямую (демо батл отключён)
+            document.getElementById('game-area').style.display = 'block';
             
         } catch (error) {
             console.error('❌ Ошибка сохранения фракции:', error);
