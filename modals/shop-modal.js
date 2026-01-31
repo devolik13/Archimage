@@ -177,19 +177,6 @@ const SHOP_CONFIG = {
             currency: 'dual',
             action: 'buyTimePack',
             amount: 43200
-        },
-        {
-            id: 'faction_change',
-            name: 'Смена фракции',
-            description: 'Цена зависит от изученных заклинаний',
-            icon: '🔄',
-            price: 280, // Базовая цена ≈500₽
-            priceUSD: 6.3, // 280 Stars × $0.0224
-            currency: 'dual',
-            action: 'changeFaction',
-            amount: 1,
-            checkFree: true,
-            dynamicPrice: true
         }
     ]
 };
@@ -341,9 +328,23 @@ function renderShopContent(container, rect) {
             <!-- Заголовок -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <div>
-                    <h2 style="margin: 0; color: #ffd700; font-size: ${titleFontSize}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
-                        🛒 Магазин
-                    </h2>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <h2 style="margin: 0; color: #ffd700; font-size: ${titleFontSize}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+                            🛒 Магазин
+                        </h2>
+                        <button onclick="showChangeFactionDialog({id:'faction_change',price:280,priceUSD:6.3,currency:'dual',amount:1,checkFree:true,dynamicPrice:true})" style="
+                            background: rgba(100,150,255,0.3);
+                            border: 1px solid rgba(100,150,255,0.5);
+                            color: white;
+                            font-size: ${baseFontSize}px;
+                            cursor: pointer;
+                            padding: 4px 10px;
+                            border-radius: 8px;
+                            transition: all 0.2s;
+                            white-space: nowrap;
+                        " onmouseover="this.style.background='rgba(100,150,255,0.5)'"
+                           onmouseout="this.style.background='rgba(100,150,255,0.3)'">🔄 Смена фракции</button>
+                    </div>
                     <div style="color: #ffa500; font-size: ${baseFontSize}px; margin-top: 5px;">
                         ⏰ Баланс: ${formattedTime}
                     </div>
