@@ -1305,7 +1305,7 @@ function renderFactionChangeContent(container, rect) {
     const smallFontSize = Math.max(10, 12 * scale);
 
     const isFree = !window.userData?.faction_changed;
-    const factions = ['fire', 'water', 'earth', 'wind', 'nature', 'poison'];
+    const factions = ['fire', 'water', 'earth', 'wind', 'nature', 'poison', 'light', 'dark'];
     const currentFaction = window.userData?.faction || 'fire';
 
     const factionNames = {
@@ -1314,7 +1314,9 @@ function renderFactionChangeContent(container, rect) {
         earth: '🪨 Земля',
         wind: '💨 Ветер',
         nature: '🌿 Природа',
-        poison: '☠️ Яд'
+        poison: '☠️ Яд',
+        light: '✨ Свет',
+        dark: '🌑 Тьма'
     };
 
     // Рассчитываем цену для каждой целевой фракции
