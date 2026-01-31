@@ -1197,7 +1197,7 @@ function formatTimePurchase(minutes) {
  * Данные берутся напрямую из userData.spells - всегда актуальны
  */
 function calculateSpellTimeFromDB() {
-    const spellTime = { fire: 0, water: 0, earth: 0, wind: 0, nature: 0, poison: 0 };
+    const spellTime = { fire: 0, water: 0, earth: 0, wind: 0, nature: 0, poison: 0, light: 0, dark: 0 };
     const spells = window.userData?.spells || {};
 
     // Базовое время по тирам (в минутах)
@@ -1457,12 +1457,70 @@ function backToShopFromFaction() {
 }
 
 /**
+ * Показать диалог подтверждения смены фракции
+ */
+function showFactionChangeConfirmation(factionName, priceText) {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.id = 'faction-confirm-overlay';
+        overlay.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: flex; align-items: center;
+            justify-content: center; z-index: 10001; pointer-events: auto;
+        `;
+        overlay.innerHTML = `
+            <div style="
+                background: linear-gradient(135deg, #1a1a2e, #16213e);
+                border: 2px solid rgba(255,215,0,0.5);
+                border-radius: 15px; padding: 25px; max-width: 320px;
+                text-align: center; color: white;
+            ">
+                <div style="font-size: 20px; color: #ffd700; margin-bottom: 15px;">🔄 Подтверждение</div>
+                <div style="font-size: 16px; margin-bottom: 8px;">Сменить фракцию на</div>
+                <div style="font-size: 22px; color: #ffd700; margin-bottom: 8px;">${factionName}</div>
+                <div style="font-size: 14px; color: #aaa; margin-bottom: 20px;">Стоимость: ${priceText}</div>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button id="faction-confirm-yes" style="
+                        padding: 10px 25px; background: rgba(74,222,128,0.3);
+                        border: 1px solid rgba(74,222,128,0.6); border-radius: 8px;
+                        color: #4ade80; font-size: 16px; cursor: pointer;
+                    ">✅ Да</button>
+                    <button id="faction-confirm-no" style="
+                        padding: 10px 25px; background: rgba(255,100,100,0.3);
+                        border: 1px solid rgba(255,100,100,0.6); border-radius: 8px;
+                        color: #ff6b6b; font-size: 16px; cursor: pointer;
+                    ">❌ Нет</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        document.getElementById('faction-confirm-yes').onclick = () => {
+            overlay.remove();
+            resolve(true);
+        };
+        document.getElementById('faction-confirm-no').onclick = () => {
+            overlay.remove();
+            resolve(false);
+        };
+    });
+}
+
+/**
  * Подтверждение смены фракции
  */
 async function confirmFactionChange(newFaction) {
+    const factionNames = {
+        fire: '🔥 Огонь', water: '💧 Вода', earth: '🪨 Земля', wind: '💨 Ветер',
+        nature: '🌿 Природа', poison: '☠️ Яд', light: '✨ Свет', dark: '🌑 Тьма'
+    };
     const isFree = !window.userData?.faction_changed;
     // Используем цену для конкретной целевой фракции
     const dynamicPrice = window._factionChangePrices?.[newFaction]?.price || 280;
+
+    const priceText = isFree ? 'Бесплатно' : `${dynamicPrice} ⭐`;
+    const confirmed = await showFactionChangeConfirmation(factionNames[newFaction] || newFaction, priceText);
+    if (!confirmed) return;
 
     if (!isFree) {
         // Платная смена через Stars
@@ -1552,7 +1610,9 @@ function applyFactionChange(newFaction) {
         earth: 'Земля',
         wind: 'Ветер',
         nature: 'Природа',
-        poison: 'Яд'
+        poison: 'Яд',
+        light: 'Свет',
+        dark: 'Тьма'
     };
 
     console.log(`🔄 Смена фракции: ${factionNames[oldFaction]} → ${factionNames[newFaction]}`);
