@@ -78,6 +78,39 @@ serve(async (req) => {
       return new Response("OK", { headers: corsHeaders });
     }
 
+    // Обработка inline_query (inline-режим бота)
+    if (update.inline_query) {
+      const queryId = update.inline_query.id;
+      console.log("🔍 Processing inline_query:", queryId);
+
+      const inlineResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerInlineQuery`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          inline_query_id: queryId,
+          results: [{
+            type: "photo",
+            id: "archimage_promo",
+            photo_url: "https://archimage.vercel.app/images/promo.jpg",
+            thumbnail_url: "https://archimage.vercel.app/images/promo_thumb.jpg",
+            caption: "🔥 Битва Магов — выбери стихию и сражайся!",
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: "🎮 Играть", web_app: { url: "https://archimage.vercel.app" } }],
+                [{ text: "👥 Сообщество", url: "https://t.me/archimage_chat" }]
+              ]
+            }
+          }],
+          cache_time: 300
+        })
+      });
+
+      const inlineResult = await inlineResponse.json();
+      console.log("📤 Inline query response:", JSON.stringify(inlineResult));
+
+      return new Response("OK", { headers: corsHeaders });
+    }
+
     // Временно: логируем file_id входящих анимаций/видео
     if (update.message?.animation) {
       console.log("🎬 ANIMATION file_id:", update.message.animation.file_id);
