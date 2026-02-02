@@ -33,6 +33,7 @@ import './modals/shop-modal.js';
 import './modals/knowledge-book-modal.js';
 import './modals/hint-slider-modal.js';
 import './modals/faction-selection-system.js';
+import './modals/promo-event-modal.js';
 
 // ============================================
 // 3. КОНФИГУРАЦИЯ ЗАКЛИНАНИЙ (Spells Data)
