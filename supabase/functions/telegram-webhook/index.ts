@@ -97,7 +97,7 @@ serve(async (req) => {
             caption: "🔥 Битва Магов — выбери стихию и сражайся!",
             reply_markup: {
               inline_keyboard: [
-                [{ text: "🎮 Играть", web_app: { url: "https://archimage.vercel.app" } }],
+                [{ text: "🎮 Играть", url: "https://t.me/archimage_bot/app" }],
                 [{ text: "👥 Сообщество", url: "https://t.me/archimage_chat" }]
               ]
             }
