@@ -33,11 +33,12 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-    // Получаем всех игроков с telegram_id
+    // Получаем всех реальных игроков с telegram_id (исключаем тестовых с отрицательным id)
     const { data: players, error } = await supabase
       .from("players")
       .select("telegram_id")
-      .not("telegram_id", "is", null);
+      .not("telegram_id", "is", null)
+      .gt("telegram_id", 0);
 
     if (error) {
       console.error("DB error:", error);
