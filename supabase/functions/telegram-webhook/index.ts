@@ -89,10 +89,11 @@ serve(async (req) => {
         body: JSON.stringify({
           inline_query_id: queryId,
           results: [{
-            type: "photo",
+            type: "mpeg4_gif",
             id: "archimage_promo",
-            photo_url: "https://archimage.vercel.app/images/promo.jpg",
-            thumbnail_url: "https://archimage.vercel.app/images/promo_thumb.jpg",
+            mpeg4_url: "https://archimage.vercel.app/images/promo/welcome.mp4",
+            thumbnail_url: "https://archimage.vercel.app/images/promo/welcome.mp4",
+            thumbnail_mime_type: "video/mp4",
             caption: "🔥 Битва Магов — выбери стихию и сражайся!",
             reply_markup: {
               inline_keyboard: [
