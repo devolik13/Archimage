@@ -24,7 +24,7 @@ const ENEMY_TYPES = {
     goblin: {
         name: "Гоблин",
         baseHp: 30,
-        baseDamage: 5,
+        baseDamage: 7,
         hpGrowth: 5,      // HP растет на 5 каждый уровень
         damageGrowth: 1,   // урон растет на 1 каждый уровень
         armor: 100,        // базовая броня
@@ -34,9 +34,9 @@ const ENEMY_TYPES = {
     orc: {
         name: "Орк",
         baseHp: 80,
-        baseDamage: 15,
+        baseDamage: 20,
         hpGrowth: 8,
-        damageGrowth: 2,
+        damageGrowth: 3,
         armor: 110,
         attackType: "physical",
         spriteSheet: "orc"
@@ -44,9 +44,9 @@ const ENEMY_TYPES = {
     troll: {
         name: "Тролль",
         baseHp: 150,
-        baseDamage: 25,
+        baseDamage: 33,
         hpGrowth: 12,
-        damageGrowth: 3,
+        damageGrowth: 4,
         armor: 120,
         attackType: "physical",
         spriteSheet: "troll"
@@ -54,9 +54,9 @@ const ENEMY_TYPES = {
     cave_beast: {
         name: "Пещерный Зверь",
         baseHp: 250,
-        baseDamage: 35,
+        baseDamage: 46,
         hpGrowth: 15,
-        damageGrowth: 4,
+        damageGrowth: 5,
         armor: 130,
         attackType: "physical",
         spriteSheet: "cave_beast"
@@ -64,9 +64,9 @@ const ENEMY_TYPES = {
     demon: {
         name: "Демон",
         baseHp: 400,
-        baseDamage: 50,
+        baseDamage: 65,
         hpGrowth: 20,
-        damageGrowth: 5,
+        damageGrowth: 7,
         armor: 140,
         attackType: "physical",
         spriteSheet: "demon"
@@ -78,10 +78,12 @@ const ELEMENTALS = {
     fire: {
         name: "Огненный Элементаль",
         hp: 200,
-        armor: 100,
+        armor: 120,
         faction: "fire",
-        spells: ['firebolt', 'spark'],
+        damageMultiplier: 1.2,
+        spells: ['fireball', 'firebolt', 'spark'],
         spell_levels: {
+            'fireball': 1,
             'firebolt': 5,
             'spark': 5
         },
@@ -99,8 +101,9 @@ const ELEMENTALS = {
     water: {
         name: "Водный Элементаль",
         hp: 300,
-        armor: 120,
+        armor: 130,
         faction: "water",
+        damageMultiplier: 1.2,
         spells: ["icicle", "frost_arrow", "blizzard"],
         spell_levels: {
             'icicle': 5,
@@ -121,8 +124,9 @@ const ELEMENTALS = {
     wind: {
         name: "Воздушный Элементаль",
         hp: 400,
-        armor: 130,
+        armor: 140,
         faction: "wind",
+        damageMultiplier: 1.2,
         spells: ["gust", "wind_blade", "storm_cloud"],
         spell_levels: {
             'gust': 5,
@@ -143,8 +147,9 @@ const ELEMENTALS = {
     earth: {
         name: "Земной Элементаль",
         hp: 500,
-        armor: 140,
+        armor: 150,
         faction: "earth",
+        damageMultiplier: 1.2,
         spells: ["pebble", "stone_spike", "meteor_shower"],
         spell_levels: {
             'pebble': 5,
@@ -168,8 +173,9 @@ const ELEMENTALS = {
 const FINAL_BOSS = {
     name: "Повелитель Хаоса",
     hp: 700,
-    armor: 150,
+    armor: 160,
     faction: "fire", // визуально будет огненным
+    damageMultiplier: 1.2,
     spriteSheet: "lord_demon", // Используем спрайты лорда демонов (5x5 сетка)
     spells: ["fireball", "blizzard", "ball_lightning", "meteor_shower", "epidemic"], // все стихии
     spell_levels: {

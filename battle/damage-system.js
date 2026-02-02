@@ -399,6 +399,14 @@ function applyDamageWithEffects(caster, target, baseDamage, spellId = 'basic', a
         damageSteps.push(`Благословение: ${oldDamage} → ${finalDamage} (+${bonusPercent}%)`);
     }
 
+    // 2.4 Применение множителя урона босса (damageMultiplier у элементалей/боссов)
+    if (caster && caster.isBoss && caster.damageMultiplier > 1 && !caster.buffs?.dawn) {
+        const oldDamage = finalDamage;
+        finalDamage = Math.floor(finalDamage * caster.damageMultiplier);
+        const bonusPercent = Math.round((caster.damageMultiplier - 1) * 100);
+        damageSteps.push(`💀 Сила босса: ${oldDamage} → ${finalDamage} (+${bonusPercent}%)`);
+    }
+
     // 2.5 Применение множителя урона от Рассвета (Dawn)
     if (caster && caster.buffs?.dawn && caster.damageMultiplier > 1) {
         const oldDamage = finalDamage;
