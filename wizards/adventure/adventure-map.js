@@ -12,7 +12,7 @@ const ADVENTURE_MAP_POINTS = {
             { level: 4, x: 470, y: 279 },
             { level: 5, x: 275, y: 280 },
             { level: 6, x: 70, y: 365 },
-            { level: 7, x: 435, y: 455 },
+            { level: 7, x: 435, y: 380 },
             { level: 8, x: 573, y: 356 },
             { level: 9, x: 670, y: 260 },
             { level: 10, x: 565, y: 100 }
