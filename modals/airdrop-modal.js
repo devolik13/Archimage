@@ -468,53 +468,6 @@ function setupAirdropUI() {
             </div>
         </div>
 
-        <!-- Как заработать -->
-        <div style="
-            background: rgba(0,0,0,0.4);
-            border: 1px solid #555;
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 12px;
-        ">
-            <div style="font-size: ${baseFontSize}px; color: #ffd700; font-weight: bold; margin-bottom: 10px;">
-                📈 Как заработать BPM coin
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">⚔️ Победа в PvP</span>
-                    <span style="color: #4ade80;">+10</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">📅 Ежедневный вход</span>
-                    <span style="color: #4ade80;">+20</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">📚 Изучение заклинания</span>
-                    <span style="color: #4ade80;">+100</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">👥 Приглашение друга</span>
-                    <span style="color: #4ade80;">+200</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">🏰 Постройка/улучшение здания</span>
-                    <span style="color: #4ade80;">+100</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">🎯 Прохождение главы PvE</span>
-                    <span style="color: #4ade80;">+500</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">🔥 Streak 7/30/100 дней</span>
-                    <span style="color: #4ade80;">+100/500/1000</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">⭐ 100 Telegram Stars</span>
-                    <span style="color: #4ade80;">+10</span>
-                </div>
-            </div>
-        </div>
-
         <!-- Задания -->
         <div style="
             background: rgba(0,0,0,0.4);
@@ -563,6 +516,53 @@ function setupAirdropUI() {
                         cursor: pointer;
                     ">Проверить</button>
                 `}
+            </div>
+        </div>
+
+        <!-- Как заработать -->
+        <div style="
+            background: rgba(0,0,0,0.4);
+            border: 1px solid #555;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+        ">
+            <div style="font-size: ${baseFontSize}px; color: #ffd700; font-weight: bold; margin-bottom: 10px;">
+                📈 Как заработать BPM coin
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
+                    <span style="color: #ccc;">⚔️ Победа в PvP</span>
+                    <span style="color: #4ade80;">+10</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
+                    <span style="color: #ccc;">📅 Ежедневный вход</span>
+                    <span style="color: #4ade80;">+20</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
+                    <span style="color: #ccc;">📚 Изучение заклинания</span>
+                    <span style="color: #4ade80;">+100</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
+                    <span style="color: #ccc;">👥 Приглашение друга</span>
+                    <span style="color: #4ade80;">+200</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
+                    <span style="color: #ccc;">🏰 Постройка/улучшение здания</span>
+                    <span style="color: #4ade80;">+100</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
+                    <span style="color: #ccc;">🎯 Прохождение главы PvE</span>
+                    <span style="color: #4ade80;">+500</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
+                    <span style="color: #ccc;">🔥 Streak 7/30/100 дней</span>
+                    <span style="color: #4ade80;">+100/500/1000</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
+                    <span style="color: #ccc;">⭐ 100 Telegram Stars</span>
+                    <span style="color: #4ade80;">+10</span>
+                </div>
             </div>
         </div>
 
