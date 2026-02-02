@@ -480,6 +480,10 @@ function initializeWizardHealth() {
             wizard.magicResistance = window.getWizardResistances(wizard);
         }
 
+        // Логирование параметров врага
+        const enemyType = wizard.isFinalBoss ? '👹 ФИНАЛЬНЫЙ БОСС' : wizard.isBoss ? '💀 БОСС' : '⚔️ Враг';
+        console.log(`${enemyType}: ${wizard.name} | HP: ${wizard.hp} | Броня: ${wizard.armor} | DMG: ${wizard.damage || 'магия'}${wizard.damageMultiplier ? ` | x${wizard.damageMultiplier} урон` : ''}`);
+
         // Теперь используем wizard.spellLevels (уже заполнен при создании врага)
         if (wizard.spells && wizard.spells.includes('leaf_canopy')) {
             const level = wizard.spellLevels?.['leaf_canopy'] || 1;
