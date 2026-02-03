@@ -89,9 +89,9 @@ function getSpellDamage(spellId, spellLevel = 1) {
         'absolute_zero': [40, 50, 60, 70, 80],
         // Ветер
         'gust': [8, 12, 16, 20, 25],
-        'wind_blade': [12, 14, 16, 18, 20],
-        'storm_cloud': [15, 18, 22, 26, 30],
-        'ball_lightning': [25, 30, 35, 40, 50],
+        'wind_blade': [5, 6, 7, 8, 10],
+        'storm_cloud': [15, 20, 25, 30, 30],
+        'ball_lightning': [30, 35, 40, 50, 50],
         // Земля
         'pebble': [10, 12, 14, 16, 18],
         'meteor_shower': [20, 25, 30, 35, 45],
