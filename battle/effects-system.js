@@ -101,7 +101,7 @@ function applyChillEffect(targetWizard, isHybrid = false, casterInfo = null) {
             if (!targetWizard.effects) targetWizard.effects = {};
             targetWizard.effects.chilled_caster = {
                 spellsLeft: 2,
-                damageReduction: 0.20
+                damageReduction: 0.15
             };
             effectCounters.chilled++;
         }
@@ -147,7 +147,7 @@ function applyChillEffect(targetWizard, isHybrid = false, casterInfo = null) {
 
 // --- Эффект инея ---
 function applyHoarFrostEffect(targetWizard, isHybrid = false, casterInfo = null) {
-    const chance = 0.30;
+    const chance = 0.15;
     if (Math.random() < chance) {
         if (!targetWizard.effects) targetWizard.effects = {};
 
@@ -195,19 +195,19 @@ function applyHoarFrostEffect(targetWizard, isHybrid = false, casterInfo = null)
 
 // --- Эффект заморозки ---
 function applyFreezeEffect(targetWizard, isHybrid = false, casterInfo = null) {
-    const chance = 0.20;
+    const chance = 0.15;
     if (Math.random() < chance) {
         if (!targetWizard.effects) targetWizard.effects = {};
 
         if (targetWizard.effects.chilled_caster) {
-            if (targetWizard.effects.chilled_caster.damageReduction <= 0.30) {
+            if (targetWizard.effects.chilled_caster.damageReduction <= 0.20) {
                 targetWizard.effects.chilled_caster.spellsLeft = 2;
-                targetWizard.effects.chilled_caster.damageReduction = 0.30;
+                targetWizard.effects.chilled_caster.damageReduction = 0.20;
             }
         } else {
             targetWizard.effects.chilled_caster = {
                 spellsLeft: 2,
-                damageReduction: 0.30
+                damageReduction: 0.20
             };
             effectCounters.chilled++;
         }
