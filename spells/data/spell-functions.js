@@ -74,8 +74,8 @@ function getSpellDamage(spellId, spellLevel = 1) {
     const specialDamageByLevel = {
         // Яд
         'poisoned_blade': [7, 8, 9, 10, 10],
-        'poisoned_glade': [5, 6, 7, 8, 10],
-        'foul_cloud': [8, 10, 12, 14, 18],
+        'poisoned_glade': [10, 12, 12, 15, 15],
+        'foul_cloud': [30, 30, 40, 40, 50],
         'epidemic': [10, 15, 20, 25, 25],
         // Огонь
         'spark': [10, 12, 15, 20, 30],
@@ -86,18 +86,20 @@ function getSpellDamage(spellId, spellLevel = 1) {
         'icicle': [10, 15, 20, 25, 30],
         'frost_arrow': [15, 20, 25, 30, 35],
         'ice_rain': [6, 7, 8, 9, 10],
-        'absolute_zero': [40, 50, 60, 70, 80],
+        'absolute_zero': [15, 25, 35, 45, 60],
         // Ветер
         'gust': [8, 12, 16, 20, 25],
         'wind_blade': [5, 6, 7, 8, 10],
         'storm_cloud': [15, 20, 25, 30, 30],
         'ball_lightning': [30, 35, 40, 50, 50],
         // Земля
-        'pebble': [10, 12, 14, 16, 18],
-        'meteor_shower': [20, 25, 30, 35, 45],
+        'pebble': [10, 12, 15, 20, 30],
+        'meteor_shower': [30, 40, 50, 60, 70],
         // Свет
         'flash': [10, 12, 15, 20, 30],
-        'light_beam': [10, 12, 15, 18, 20]
+        'light_beam': [10, 12, 14, 16, 16],
+        // Тьма
+        'dark_clot': [15, 20, 25, 30, 40]
     };
 
     // Если есть особая прогрессия - используем её
