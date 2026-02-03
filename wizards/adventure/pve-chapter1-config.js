@@ -77,10 +77,10 @@ const ENEMY_TYPES = {
 const ELEMENTALS = {
     fire: {
         name: "Огненный Элементаль",
-        hp: 200,
+        hp: 300,
         armor: 120,
         faction: "fire",
-        damageMultiplier: 1.2,
+        damageMultiplier: 1.3,
         spells: ['fireball', 'firebolt', 'spark'],
         spell_levels: {
             'fireball': 1,
@@ -100,10 +100,10 @@ const ELEMENTALS = {
     },
     water: {
         name: "Водный Элементаль",
-        hp: 300,
+        hp: 400,
         armor: 130,
         faction: "water",
-        damageMultiplier: 1.2,
+        damageMultiplier: 1.3,
         spells: ["icicle", "frost_arrow", "blizzard"],
         spell_levels: {
             'icicle': 5,
@@ -123,10 +123,10 @@ const ELEMENTALS = {
     },
     wind: {
         name: "Воздушный Элементаль",
-        hp: 400,
+        hp: 500,
         armor: 140,
         faction: "wind",
-        damageMultiplier: 1.2,
+        damageMultiplier: 1.3,
         spells: ["gust", "wind_blade", "storm_cloud"],
         spell_levels: {
             'gust': 5,
@@ -146,10 +146,10 @@ const ELEMENTALS = {
     },
     earth: {
         name: "Земной Элементаль",
-        hp: 500,
+        hp: 600,
         armor: 150,
         faction: "earth",
-        damageMultiplier: 1.2,
+        damageMultiplier: 1.3,
         spells: ["pebble", "stone_spike", "meteor_shower"],
         spell_levels: {
             'pebble': 5,
@@ -172,10 +172,10 @@ const ELEMENTALS = {
 // Финальный босс уровня 50
 const FINAL_BOSS = {
     name: "Повелитель Хаоса",
-    hp: 700,
+    hp: 800,
     armor: 160,
     faction: "fire", // визуально будет огненным
-    damageMultiplier: 1.2,
+    damageMultiplier: 1.3,
     spriteSheet: "lord_demon", // Используем спрайты лорда демонов (5x5 сетка)
     spells: ["fireball", "blizzard", "ball_lightning", "meteor_shower", "epidemic"], // все стихии
     spell_levels: {
