@@ -93,7 +93,7 @@ function applyBurningEffect(targetWizard, isHybrid = false, casterInfo = null) {
 
 // --- Эффект охлаждения ---
 function applyChillEffect(targetWizard, isHybrid = false, casterInfo = null) {
-    const chance = isHybrid ? 0.10 : 0.20;
+    const chance = isHybrid ? 0.075 : 0.15;
     if (Math.random() < chance) {
         if (targetWizard.effects && targetWizard.effects.chilled_caster) {
             targetWizard.effects.chilled_caster.spellsLeft = Math.max(targetWizard.effects.chilled_caster.spellsLeft, 2);
@@ -195,7 +195,7 @@ function applyHoarFrostEffect(targetWizard, isHybrid = false, casterInfo = null)
 
 // --- Эффект заморозки ---
 function applyFreezeEffect(targetWizard, isHybrid = false, casterInfo = null) {
-    const chance = 0.50;
+    const chance = 0.20;
     if (Math.random() < chance) {
         if (!targetWizard.effects) targetWizard.effects = {};
 
