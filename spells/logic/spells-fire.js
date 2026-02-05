@@ -176,10 +176,23 @@ function castFirebolt(wizard, spellData, position, casterType) {
         } else {
             // Для 'random' - ВСЕГДА случайный ряд (0-4)
             targetRow = Math.floor(Math.random() * 5);
-            
-            // Проверяем есть ли там маг (для логов)
-            if (typeof window.findWizardAt === 'function') {
-                targetWizard = window.findWizardAt(targetCol, targetRow);
+
+            // Находим мага в этой клетке
+            if (casterType === 'player') {
+                // Атакуем врага - ищем в enemyFormation
+                const enemy = window.enemyFormation?.[targetRow];
+                if (enemy && enemy.hp > 0) {
+                    targetWizard = enemy;
+                }
+            } else {
+                // Враг атакует - ищем в playerFormation/playerWizards
+                const wizardId = window.playerFormation?.[targetRow];
+                if (wizardId) {
+                    const playerWiz = window.playerWizards?.find(w => w.id === wizardId);
+                    if (playerWiz && playerWiz.hp > 0) {
+                        targetWizard = playerWiz;
+                    }
+                }
             }
         }
         
