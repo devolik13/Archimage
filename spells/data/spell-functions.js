@@ -79,6 +79,7 @@ function getSpellDamage(spellId, spellLevel = 1) {
         'epidemic': [10, 15, 20, 25, 25],
         // Огонь
         'spark': [10, 12, 15, 20, 30],
+        'firebolt': [14, 18, 24, 30, 40],
         'fire_wall': [10, 11, 12, 14, 15],
         'fireball': [20, 30, 40, 50, 50],
         'fire_tsunami': [30, 40, 50, 60, 70],
