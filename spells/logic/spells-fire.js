@@ -212,7 +212,7 @@ function castFirebolt(wizard, spellData, position, casterType) {
             // Логируем результат (только если был урон)
             if (result.finalDamage > 0) {
                 if (typeof window.logProtectionResult === 'function') {
-                    window.logProtectionResult(wizard, virtualTarget, result, `Огненная стрела ${i+1}`);
+                    window.logProtectionResult(wizard, virtualTarget, result, `Огненная стрела ${i+1} [ряд ${targetRow+1}]`);
                 }
                 
                 // Применяем эффект горения
@@ -239,7 +239,7 @@ function castFirebolt(wizard, spellData, position, casterType) {
                 });
                 
                 if (typeof window.logSpellHit === 'function') {
-                    window.logSpellHit(wizard, targetWizard, finalDamage, `Огненная стрела ${i+1}`);
+                    window.logSpellHit(wizard, targetWizard, finalDamage, `Огненная стрела ${i+1} [ряд ${targetRow+1}]`);
                 }
                 
                 if (wizard.faction === 'fire') {
