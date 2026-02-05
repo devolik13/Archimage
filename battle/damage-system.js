@@ -137,8 +137,8 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     	    finalDamage = Math.floor(finalDamage * levelBonus);
     	}
 
-    	// ГИЛЬДИЯ: Бонус урона от гильдии (только для игрока)
-    	if (isPlayerCaster && window.guildManager?.currentGuild) {
+    	// ГИЛЬДИЯ: Бонус урона от гильдии (только для игрока, отключено в дуэлях)
+    	if (isPlayerCaster && window.guildManager?.currentGuild && !window.isDuelBattle) {
     	    const guildBonuses = window.guildManager.getGuildBonuses();
     	    if (guildBonuses && guildBonuses.damageBonus > 0) {
     	        const guildDamageMultiplier = 1 + (guildBonuses.damageBonus / 100);
@@ -146,8 +146,8 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     	    }
     	}
 
-    	// ГИЛЬДИЯ: Сопротивление от гильдии (уменьшение входящего урона)
-    	if (target.guildResistances) {
+    	// ГИЛЬДИЯ: Сопротивление от гильдии (уменьшение входящего урона, отключено в дуэлях)
+    	if (target.guildResistances && !window.isDuelBattle) {
     	    const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
     	    if (spellSchool && target.guildResistances[spellSchool] > 0) {
     	        const resistMultiplier = 1 - (target.guildResistances[spellSchool] / 100);
@@ -222,8 +222,8 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
         }
     }
 
-    // ГИЛЬДИЯ: Бонус урона от гильдии (только для игрока)
-    if (isPlayerCasterST && window.guildManager?.currentGuild) {
+    // ГИЛЬДИЯ: Бонус урона от гильдии (только для игрока, отключено в дуэлях)
+    if (isPlayerCasterST && window.guildManager?.currentGuild && !window.isDuelBattle) {
         const guildBonuses = window.guildManager.getGuildBonuses();
         if (guildBonuses && guildBonuses.damageBonus > 0) {
             const guildDamageMultiplier = 1 + (guildBonuses.damageBonus / 100);
@@ -232,8 +232,8 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
         }
     }
 
-    // ГИЛЬДИЯ: Сопротивление от гильдии (уменьшение входящего урона)
-    if (target?.guildResistances) {
+    // ГИЛЬДИЯ: Сопротивление от гильдии (уменьшение входящего урона, отключено в дуэлях)
+    if (target?.guildResistances && !window.isDuelBattle) {
         const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
         if (spellSchool && target.guildResistances[spellSchool] > 0) {
             const resistPercent = target.guildResistances[spellSchool];

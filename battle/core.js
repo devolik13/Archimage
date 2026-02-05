@@ -342,7 +342,8 @@ function initializeWizardHealth() {
         }
 
         // ГИЛЬДИЯ: Применяем бонус HP от гильдии
-        if (window.guildManager?.currentGuild) {
+        // В дуэлях бонусы гильдий отключены (isDuelBattle)
+        if (window.guildManager?.currentGuild && !window.isDuelBattle) {
             const guildBonuses = window.guildManager.getGuildBonuses();
             if (guildBonuses && guildBonuses.hpBonus > 0) {
                 const guildHpMultiplier = 1 + (guildBonuses.hpBonus / 100);
