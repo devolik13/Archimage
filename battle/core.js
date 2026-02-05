@@ -1670,8 +1670,9 @@ async function checkBattleEnd() {
             battleResult = 'win';
         }
 
-        // Рассчитываем изменение рейтинга ТОЛЬКО ДЛЯ PvP
-        if (!isPvEBattle && typeof window.calculateRatingChange === 'function') {
+        // Рассчитываем изменение рейтинга ТОЛЬКО ДЛЯ PvP (не для дуэлей)
+        const isDuelBattle = window.isDuelBattle || false;
+        if (!isPvEBattle && !isDuelBattle && typeof window.calculateRatingChange === 'function') {
             const playerRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 0;
             // Используем реальный рейтинг противника из selectedOpponent
             const opponentRating = typeof window.selectedOpponent?.rating === 'number' ? window.selectedOpponent.rating : 0;
@@ -1722,8 +1723,9 @@ async function checkBattleEnd() {
             const delay = window.battleEarlyExit ? 0 : 1000;
             setTimeout(() => {
                 window.showBattleResult(battleResult, battleData);
-                // Сбрасываем флаг после показа
+                // Сбрасываем флаги после показа
                 window.battleEarlyExit = false;
+                window.isDuelBattle = false;
             }, delay);
         }
 

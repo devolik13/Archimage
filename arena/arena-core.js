@@ -230,6 +230,17 @@ function showArenaMainMenu() {
             },
             enabled: true,
             green: true
+        },
+        {
+            text: '🎯 Дуэль',
+            onClick: () => {
+                closePvPArenaModalBg();
+                if (typeof window.showDuelUI === 'function') {
+                    window.showDuelUI();
+                }
+            },
+            enabled: hasArena,
+            cyan: true // Голубой цвет для дуэли
         }
     ];
     
@@ -281,6 +292,7 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
              button.orange ? '#ffa500' :
              button.green ? '#4CAF50' :
              button.purple ? '#9c27b0' :
+             button.cyan ? '#00bcd4' :
              'rgba(255, 255, 255, 0.3)') :
             'rgba(128, 128, 128, 0.3)';
 
@@ -289,6 +301,7 @@ function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
              button.orange ? '#ffa500' :
              button.green ? '#4CAF50' :
              button.purple ? '#ce93d8' :
+             button.cyan ? '#4dd0e1' :
              'white') :
             '#666';
 
