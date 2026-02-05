@@ -389,7 +389,8 @@ function renderGuildView(container) {
     const guild = window.guildManager.currentGuild;
     const isLeader = window.guildManager.isLeader();
     const bonuses = window.guildManager.getGuildBonuses();
-    const expToNext = window.getExpToNextLevel(guild.level);
+    const researchCycles = window.getResearchCycles(guild);
+    const expToNext = window.getExpToNextLevel(guild.level, researchCycles);
     const expPercent = Math.min((guild.experience / expToNext) * 100, 100);
 
     container.innerHTML = `

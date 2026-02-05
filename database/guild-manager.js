@@ -12,11 +12,25 @@ const GUILD_CONFIG = {
     RESISTANCE_PER_POINT: 0.5,       // 0.5% сопротивления за 1 очко
     MAX_RESISTANCE_POINTS: 30,       // Макс очков на школу
     INACTIVE_DAYS_FOR_TRANSFER: 7,   // Дней неактивности для передачи лидерства
-    SCHOOLS: ['fire', 'water', 'earth', 'wind', 'poison', 'light', 'dark'] // Школы для исследований (без nature - нет атакующих)
+    SCHOOLS: ['fire', 'water', 'earth', 'wind', 'poison', 'light', 'dark'], // Школы для исследований (без nature - нет атакующих)
+    RESEARCH_CYCLE_MULTIPLIER: 0.20  // +20% за каждое очко исследований после 30 уровня
 };
 
-// Прогрессия опыта гильдии (квадратичная с учетом вместимости)
-function getExpToNextLevel(level) {
+// Расчет количества циклов исследований после 30 уровня
+function getResearchCycles(guild) {
+    if (!guild || guild.level < GUILD_CONFIG.MAX_LEVEL) return 0;
+
+    // Общее количество потраченных очков
+    const totalSpentPoints = Object.values(guild.research || {}).reduce((sum, v) => sum + v, 0);
+    // Общее количество заработанных очков = потраченные + доступные
+    const totalEarnedPoints = totalSpentPoints + (guild.bonus_points || 0);
+
+    // Очки от уровней 1-30 = 30, остальное - циклы после 30
+    return Math.max(0, totalEarnedPoints - GUILD_CONFIG.MAX_LEVEL);
+}
+
+// Прогрессия опыта гильдии (квадратичная с учетом вместимости и циклов после 30)
+function getExpToNextLevel(level, researchCycles = 0) {
     // После макс уровня - используем формулу как для уровня 31
     const calcLevel = level > GUILD_CONFIG.MAX_LEVEL ? (GUILD_CONFIG.MAX_LEVEL + 1) : level;
 
@@ -28,7 +42,13 @@ function getExpToNextLevel(level) {
     const extraPlayers = capacity - GUILD_CONFIG.BASE_CAPACITY;
     const capacityMultiplier = 1 + (extraPlayers * GUILD_CONFIG.CAPACITY_EXP_MULTIPLIER);
 
-    return Math.floor(baseExp * capacityMultiplier);
+    // Множитель для очков исследований после 30 уровня: +20% за каждый предыдущий цикл
+    let researchMultiplier = 1;
+    if (level >= GUILD_CONFIG.MAX_LEVEL && researchCycles > 0) {
+        researchMultiplier = Math.pow(1 + GUILD_CONFIG.RESEARCH_CYCLE_MULTIPLIER, researchCycles);
+    }
+
+    return Math.floor(baseExp * capacityMultiplier * researchMultiplier);
 }
 
 // Получить вместимость гильдии по уровню
@@ -702,6 +722,7 @@ window.GUILD_CONFIG = GUILD_CONFIG;
 window.getGuildBonuses = getGuildBonuses;
 window.getGuildCapacity = getGuildCapacity;
 window.getExpToNextLevel = getExpToNextLevel;
+window.getResearchCycles = getResearchCycles;
 window.formatPlayerName = formatPlayerName;
 window.getCurrentPlayerDisplayName = getCurrentPlayerDisplayName;
 
