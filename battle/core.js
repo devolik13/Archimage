@@ -1459,12 +1459,16 @@ async function checkBattleEnd() {
 
         // Начисляем опыт через новую систему (подсчёт в конце боя)
         // grantBattleExp возвращает массив с детальной статистикой
-        if (typeof window.grantBattleExp === 'function') {
+        // В дуэлях опыт НЕ начисляется
+        const isDuel = window.isDuelBattle || false;
+        if (typeof window.grantBattleExp === 'function' && !isDuel) {
             window.lastBattleExpResults = window.grantBattleExp(allPlayerWizards, isVictory);
+        } else if (isDuel) {
+            window.lastBattleExpResults = []; // Пустой массив для дуэлей
         }
 
-        // Начисляем airdrop очки за PvP победу (если это не PvE)
-        if (isVictory && !isPvEBattle && typeof window.addAirdropPoints === 'function') {
+        // Начисляем airdrop очки за PvP победу (если это не PvE и не дуэль)
+        if (isVictory && !isPvEBattle && !isDuel && typeof window.addAirdropPoints === 'function') {
             window.addAirdropPoints(10, 'Победа в PvP');
         }
 
@@ -1681,7 +1685,8 @@ async function checkBattleEnd() {
         }
 
         // Триггер события завершения боя ТОЛЬКО ДЛЯ PvP (вызовет немедленное сохранение)
-        if (!isPvEBattle && typeof window.onBattleCompleted === 'function') {
+        // Для дуэлей НЕ сохраняем результаты (нет изменений статистики)
+        if (!isPvEBattle && !isDuelBattle && typeof window.onBattleCompleted === 'function') {
             window.onBattleCompleted(battleResult, rewards, opponentLevel, ratingChange);
         }
 
