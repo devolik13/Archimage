@@ -701,6 +701,15 @@ function renderGuildMembers(container) {
                             <div style="color: #666; font-size: 10px;">вклад</div>
                         </div>
                         ${isLeader && m.id !== guild.leader_id ? `
+                            <button onclick="confirmTransferLeadership(${m.id}, '${m.username}')" style="
+                                padding: 6px 10px;
+                                background: rgba(255, 215, 0, 0.2);
+                                border: 1px solid #ffd700;
+                                border-radius: 6px;
+                                color: #ffd700;
+                                cursor: pointer;
+                                font-size: 11px;
+                            " title="Передать лидерство">👑</button>
                             <button onclick="confirmKickMember(${m.id}, '${m.username}')" style="
                                 padding: 6px 10px;
                                 background: rgba(239, 68, 68, 0.3);
@@ -709,7 +718,7 @@ function renderGuildMembers(container) {
                                 color: #ef4444;
                                 cursor: pointer;
                                 font-size: 11px;
-                            ">👢</button>
+                            " title="Исключить">👢</button>
                         ` : ''}
                     </div>
                 </div>
@@ -735,6 +744,28 @@ async function kickMember(playerId) {
         renderGuildMembers(document.getElementById('guild-tab-content'));
     } else {
         showNotification(result.error);
+    }
+}
+
+// === ПЕРЕДАЧА ЛИДЕРСТВА ===
+function confirmTransferLeadership(playerId, username) {
+    if (confirm(`Передать лидерство ${username}? Это действие нельзя отменить.`)) {
+        transferLeadershipTo(playerId);
+    }
+}
+
+async function transferLeadershipTo(playerId) {
+    if (!window.guildManager) return;
+
+    const result = await window.guildManager.transferLeadership(playerId);
+
+    if (result.success) {
+        showNotification('Лидерство передано');
+        // Перезагружаем данные гильдии
+        await window.guildManager.loadPlayerGuild();
+        renderGuildView(document.getElementById('guild-modal-content'));
+    } else {
+        showNotification(result.error || 'Ошибка передачи лидерства');
     }
 }
 
@@ -982,4 +1013,6 @@ window.confirmLeaveGuild = confirmLeaveGuild;
 window.leaveGuild = leaveGuild;
 window.confirmKickMember = confirmKickMember;
 window.kickMember = kickMember;
+window.confirmTransferLeadership = confirmTransferLeadership;
+window.transferLeadershipTo = transferLeadershipTo;
 
