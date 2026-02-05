@@ -457,16 +457,6 @@ function initializeWizardHealth() {
         wizard.armor = trueBaseArmor;
         wizard.max_armor = trueBaseArmor;
 
-        // Враги тоже получают бонус от Башни магов (для баланса)
-        // НО НЕ PvE враги (элементали, боссы, adventure enemies, манекен) - у них фиксированные характеристики
-        let healthMultiplier = 1.0;
-        const isPveEnemy = wizard.isAdventureEnemy || wizard.isElemental || wizard.isBoss || wizard.isFinalBoss || wizard.isTrainingDummy;
-        if (!isPveEnemy && typeof window.applyWizardTowerHealthBonus === 'function') {
-            healthMultiplier = window.applyWizardTowerHealthBonus();
-            wizard.max_hp = Math.floor(wizard.max_hp * healthMultiplier);
-            wizard.hp = Math.floor(wizard.hp * healthMultiplier);
-        }
-
         wizard.effects = {};
         wizard.buffs = {};  // Очищаем баффы (rainbow_shield, dawn и др.)
         wizard.armorBonus = 0;
@@ -474,6 +464,25 @@ function initializeWizardHealth() {
         wizard.spellDamageMultiplier = undefined;
         wizard.stunTurns = 0;
         wizard.stoneGrottoBonus = undefined;
+
+        // Определяем тип врага (PvE или PvP)
+        const isPveEnemy = wizard.isAdventureEnemy || wizard.isElemental || wizard.isBoss || wizard.isFinalBoss || wizard.isTrainingDummy;
+
+        // КРИТИЧЕСКИ ВАЖНО: Применяем бонусы уровня к HP для PvP врагов
+        // Для PvE врагов (isPveEnemy) НЕ применяем - у них фиксированные характеристики
+        if (!isPveEnemy && typeof window.applyLevelBonuses === 'function') {
+            window.applyLevelBonuses(wizard);
+            wizard.hp = wizard.max_hp;
+        }
+
+        // ПОТОМ применяем бонус от Башни магов (после бонуса уровня!)
+        // НО НЕ PvE враги - у них фиксированные характеристики
+        let healthMultiplier = 1.0;
+        if (!isPveEnemy && typeof window.applyWizardTowerHealthBonus === 'function') {
+            healthMultiplier = window.applyWizardTowerHealthBonus();
+            wizard.max_hp = Math.floor(wizard.max_hp * healthMultiplier);
+            wizard.hp = Math.floor(wizard.hp * healthMultiplier);
+        }
 
         // Инициализация сопротивления магии
         if (typeof window.getWizardResistances === 'function') {
