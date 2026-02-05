@@ -291,7 +291,7 @@ function showPlayerProfile() {
                             faction === 'poison' ? 'Яд' : faction;
 
         // Получаем количество рефералов (асинхронно)
-        let referralCountText = '<span id="referral-count-placeholder">⏳</span>';
+        let referralCountText = '<span id="referral-count-placeholder">...</span>';
 
         container.innerHTML = `
             <!-- Заголовок: имя и уровень -->
