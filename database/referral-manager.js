@@ -1,7 +1,35 @@
 // database/referral-manager.js - Реферальная система
 
-const REFERRAL_REWARD = 1440; // 1 день = 1440 минут time_currency
+// Базовые награды (для приглашённого - всегда полные)
+const REFERRAL_REWARD_BASE = 1440; // 1 день = 1440 минут time_currency
+const REFERRAL_POINTS_BASE = 200;  // BPM coin
+
+// Убывающая награда для приглашающего
+const REFERRAL_DECAY_RATE = 0.9;   // Каждый следующий -10%
+const REFERRAL_REWARD_MIN = 180;   // Минимум 3 часа
+const REFERRAL_POINTS_MIN = 25;    // Минимум BPM
+
 const REFERRAL_PURCHASE_BONUS_PERCENT = 10; // 10% от BPM coin покупателя идёт рефереру
+
+/**
+ * Рассчитать награду для приглашающего на основе количества уже приглашённых
+ * Формула: base * (0.9 ^ count), минимум 180/25
+ */
+function calculateReferrerReward(referralCount) {
+    const multiplier = Math.pow(REFERRAL_DECAY_RATE, referralCount);
+
+    const timeReward = Math.max(
+        REFERRAL_REWARD_MIN,
+        Math.floor(REFERRAL_REWARD_BASE * multiplier)
+    );
+
+    const pointsReward = Math.max(
+        REFERRAL_POINTS_MIN,
+        Math.floor(REFERRAL_POINTS_BASE * multiplier)
+    );
+
+    return { timeReward, pointsReward, multiplier };
+}
 
 class ReferralManager {
     constructor() {
@@ -99,13 +127,22 @@ class ReferralManager {
                 return null;
             }
 
+            // Получаем количество уже приглашённых у реферера для расчёта убывающей награды
+            const referralCount = await this.getReferralCount(parseInt(referrerTelegramId));
+            const referrerReward = calculateReferrerReward(referralCount);
+
+            console.log(`🔗 У реферера ${referralCount} приглашённых, множитель ${(referrerReward.multiplier * 100).toFixed(0)}%`);
+            console.log(`🔗 Награда реферера: ${referrerReward.timeReward} мин + ${referrerReward.pointsReward} BPM`);
+
             // Используем RPC функцию для обработки реферала (обходит RLS)
             console.log('🔗 Вызываем RPC process_referral...');
             const { data: result, error: rpcError } = await supabase.rpc('process_referral', {
                 p_referrer_telegram_id: parseInt(referrerTelegramId),
                 p_referred_telegram_id: typeof newPlayerTelegramId === 'number' ? newPlayerTelegramId : parseInt(newPlayerTelegramId),
-                p_reward_time: REFERRAL_REWARD,
-                p_reward_points: 200
+                p_reward_time: REFERRAL_REWARD_BASE,           // Полная награда для приглашённого
+                p_reward_points: REFERRAL_POINTS_BASE,         // Полная награда для приглашённого
+                p_referrer_reward_time: referrerReward.timeReward,     // Убывающая награда для реферера
+                p_referrer_reward_points: referrerReward.pointsReward  // Убывающая награда для реферера
             });
 
             if (rpcError) {
@@ -120,26 +157,28 @@ class ReferralManager {
                 return null;
             }
 
-            console.log(`✅ Реферал обработан! ${result.referrer_username} пригласил нового игрока. Оба получили ${result.reward_time} минут и ${result.reward_points} BPM`);
+            console.log(`✅ Реферал обработан! ${result.referrer_username} пригласил нового игрока.`);
+            console.log(`   Приглашённый получил: ${result.reward_time} мин + ${result.reward_points} BPM`);
+            console.log(`   Реферер получил: ${result.referrer_reward_time} мин + ${result.referrer_reward_points} BPM`);
 
-            // Обновляем локальные данные нового игрока
+            // Обновляем локальные данные нового игрока (он получает ПОЛНУЮ награду)
             if (window.userData) {
-                window.userData.time_currency = (window.userData.time_currency || 0) + REFERRAL_REWARD;
+                window.userData.time_currency = (window.userData.time_currency || 0) + REFERRAL_REWARD_BASE;
 
                 // Используем addAirdropPoints для отслеживания в breakdown
                 if (typeof window.addAirdropPoints === 'function') {
                     // addAirdropPoints сам обновит airdrop_points и breakdown
-                    window.addAirdropPoints(200, 'Приглашение друга');
+                    window.addAirdropPoints(REFERRAL_POINTS_BASE, 'Приглашение друга');
                 } else {
                     // Fallback если функция недоступна
-                    window.userData.airdrop_points = (window.userData.airdrop_points || 0) + 200;
+                    window.userData.airdrop_points = (window.userData.airdrop_points || 0) + REFERRAL_POINTS_BASE;
                 }
             }
             if (window.dbManager && window.dbManager.currentPlayer) {
                 window.dbManager.currentPlayer.time_currency =
-                    (window.dbManager.currentPlayer.time_currency || 0) + REFERRAL_REWARD;
+                    (window.dbManager.currentPlayer.time_currency || 0) + REFERRAL_REWARD_BASE;
                 window.dbManager.currentPlayer.airdrop_points =
-                    (window.dbManager.currentPlayer.airdrop_points || 0) + 200;
+                    (window.dbManager.currentPlayer.airdrop_points || 0) + REFERRAL_POINTS_BASE;
             }
 
             // Очищаем сохраненный параметр чтобы не засчитать дважды
@@ -152,7 +191,7 @@ class ReferralManager {
 
             return {
                 referrerUsername: result.referrer_username,
-                reward: REFERRAL_REWARD
+                reward: REFERRAL_REWARD_BASE
             };
 
         } catch (error) {
@@ -329,13 +368,33 @@ class ReferralManager {
             `;
         }
 
+        // Рассчитываем награду за следующего приглашённого
+        const nextReward = calculateReferrerReward(stats.count);
+        const nextRewardHours = Math.floor(nextReward.timeReward / 60);
+        const nextRewardPercent = Math.floor(nextReward.multiplier * 100);
+
         const modalHTML = `
             <div style="padding: 20px; text-align: center; max-width: 350px;">
                 <h3 style="color: #4ade80; margin-top: 0;">🎁 Пригласи друга!</h3>
                 <p style="font-size: 13px; color: #ccc; margin: 15px 0;">
                     Поделись ссылкой с друзьями.<br>
-                    Вы оба получите <span style="color: #4ade80; font-weight: bold;">1 день</span> времени + <span style="color: #ffd700; font-weight: bold;">200 BPM coin</span>!
+                    Друг получит <span style="color: #4ade80; font-weight: bold;">1 день</span> времени + <span style="color: #ffd700; font-weight: bold;">200 BPM</span>
                 </p>
+                <div style="
+                    background: rgba(114, 137, 218, 0.15);
+                    border: 1px solid rgba(114, 137, 218, 0.4);
+                    border-radius: 8px;
+                    padding: 10px;
+                    margin: 10px 0;
+                ">
+                    <div style="font-size: 12px; color: #7289da; margin-bottom: 4px;">🎯 Твоя награда за следующего друга:</div>
+                    <div style="font-size: 15px; color: white; font-weight: bold;">
+                        ⏰ ${nextRewardHours} ч + 💎 ${nextReward.pointsReward} BPM
+                    </div>
+                    <div style="font-size: 10px; color: #888; margin-top: 4px;">
+                        (${nextRewardPercent}% от базовой награды)
+                    </div>
+                </div>
                 <p style="font-size: 11px; color: #888; margin: 10px 0;">
                     💎 Бонус: <span style="color: #ffd700;">+10%</span> BPM coin от покупок друга навсегда!
                 </p>
