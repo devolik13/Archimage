@@ -903,7 +903,8 @@ function showArenaResult(result, battleData = {}) {
         isPvE = false,
         pveLevel = null,
         pveReward = 0,
-        isFirstCompletion = false
+        isFirstCompletion = false,
+        isDuel = false
     } = battleData;
 
     const isWin = result === 'win';
@@ -1235,21 +1236,21 @@ function showArenaResult(result, battleData = {}) {
                         </button>
                     ` : ''}
                 ` : `
-                    <button id="arena-result-new-fight" style="
+                    <button id="arena-result-new-fight" data-is-duel="${isDuel}" style="
                         flex: 1;
                         min-width: 80px;
                         max-width: 120px;
                         padding: 10px 12px;
                         border: none;
                         border-radius: 6px;
-                        background: #7289da;
+                        background: ${isDuel ? '#00bcd4' : '#7289da'};
                         color: white;
                         cursor: pointer;
                         font-size: 13px;
                         font-weight: bold;
                         transition: all 0.2s;
                     ">
-                        ⚔️ Бой
+                        ${isDuel ? '🎯 Дуэль' : '⚔️ Бой'}
                     </button>
                 `}
 
@@ -1296,18 +1297,31 @@ function showArenaResult(result, battleData = {}) {
         }
 
         if (newFightBtn) {
+            const isDuelButton = newFightBtn.dataset.isDuel === 'true';
+            const hoverColor = isDuelButton ? '#0097a7' : '#5a6ebd';
+            const normalColor = isDuelButton ? '#00bcd4' : '#7289da';
+
             newFightBtn.onmouseover = () => {
-                newFightBtn.style.background = '#5a6ebd';
+                newFightBtn.style.background = hoverColor;
                 newFightBtn.style.transform = 'scale(1.05)';
             };
             newFightBtn.onmouseout = () => {
-                newFightBtn.style.background = '#7289da';
+                newFightBtn.style.background = normalColor;
                 newFightBtn.style.transform = 'scale(1)';
             };
             newFightBtn.onclick = () => {
-                console.log('🎮 Нажата кнопка "Новый бой" в окне арены');
-                // Показываем выбор противника в том же окне арены
-                showArenaOpponentSelection();
+                if (isDuelButton) {
+                    console.log('🎯 Нажата кнопка "Дуэль" в окне арены');
+                    // Закрываем окно результата и открываем UI дуэли
+                    closePvPArenaModalBg();
+                    if (typeof window.showDuelUI === 'function') {
+                        window.showDuelUI();
+                    }
+                } else {
+                    console.log('🎮 Нажата кнопка "Новый бой" в окне арены');
+                    // Показываем выбор противника в том же окне арены
+                    showArenaOpponentSelection();
+                }
             };
         }
 

@@ -1721,7 +1721,8 @@ async function checkBattleEnd() {
                 rewards: rewards,
                 battleDuration: 0, // TODO: добавить таймер боя если нужно
                 earlyExit: window.battleEarlyExit || false, // Флаг досрочного выхода
-                wizardExpGained: wizardExpGained // Прирост опыта магов
+                wizardExpGained: wizardExpGained, // Прирост опыта магов
+                isDuel: window.isDuelBattle || false // Флаг дуэли (для показа кнопки "Дуэль" вместо "В бой")
             };
 
             // Показываем с небольшой задержкой для визуального эффекта (или без задержки при earlyExit)
