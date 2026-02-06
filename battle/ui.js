@@ -678,6 +678,7 @@ async function closeBattleFieldModal() {
 
 // Вспомогательная функция очистки ресурсов боя
 function cleanupBattleResources() {
+    console.log('🧹 Очистка ресурсов боя...');
 
     // Очищаем PixiJS
     if (window.destroyPixiBattle) {
@@ -693,28 +694,40 @@ function cleanupBattleResources() {
         window.animationManager.clearAll();
     }
 
-    // Очищаем эффекты тьмы
-    if (window.spellAnimations?.weakened?.clearAll) {
-        window.spellAnimations.weakened.clearAll();
-    }
-    if (window.spellAnimations?.miasma_buff?.clearAll) {
-        window.spellAnimations.miasma_buff.clearAll();
+    // Очищаем ВСЕ spell animations (не только некоторые)
+    if (window.spellAnimations) {
+        Object.keys(window.spellAnimations).forEach(key => {
+            const anim = window.spellAnimations[key];
+            try {
+                if (anim?.clearAll) {
+                    anim.clearAll();
+                } else if (anim?.clear) {
+                    anim.clear();
+                }
+            } catch (error) {
+                console.warn(`⚠️ Ошибка при очистке анимации ${key}:`, error);
+            }
+        });
     }
 
-    // Очищаем эффекты света
-    if (window.spellAnimations?.blinded?.clearAll) {
-        window.spellAnimations.blinded.clearAll();
-    }
-    if (window.spellAnimations?.dawn?.clearAll) {
-        window.spellAnimations.dawn.clearAll();
+    // Очищаем глобальные массивы активных эффектов
+    window.activeWalls = [];
+    window.activeEffectZones = [];
+    window.activeSummons = [];
+    window.activeMeteorokinesis = [];
+    window.activeTsunamis = [];
+    window.activeBlizzards = [];
+    window.activeProjectiles = [];
+
+    // Очищаем менеджер призывов
+    if (window.summonsManager?.clearAll) {
+        window.summonsManager.clearAll();
     }
 
-    // Очищаем эффекты земли (stone_grotto, earth_wall)
-    if (window.spellAnimations?.stone_grotto?.clearAll) {
-        window.spellAnimations.stone_grotto.clearAll();
-    }
-    if (window.spellAnimations?.earth_wall?.clearAll) {
-        window.spellAnimations.earth_wall.clearAll();
+    // Очищаем PvE overlay если остался
+    const pveOverlay = document.getElementById('pve-result-overlay');
+    if (pveOverlay) {
+        pveOverlay.remove();
     }
 
     // Удаляем элементы UI боя
@@ -733,9 +746,17 @@ function cleanupBattleResources() {
         pixiContainer.remove();
     }
 
+    // Закрываем арену если осталась открытой
+    const arenaScreen = document.getElementById('pvp-arena-screen');
+    if (arenaScreen) {
+        arenaScreen.remove();
+    }
+
     if (window.currentModal) {
         window.currentModal = null;
     }
+
+    console.log('✅ Очистка ресурсов завершена');
 }
 
 // Вспомогательная функция возврата в город
