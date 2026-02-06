@@ -22,7 +22,7 @@ const STARTER_PACKS = {
     small: {
         id: 'starter_pack_small',
         name: '🎁 Малый пакет',
-        description: '7 дней времени, Башня магов 3 ур, 2-й маг, 5000 XP',
+        description: '+1 маг (макс 2), Башня до 3 ур, 7 дней, 5000 XP',
         icon: '🎁',
         price: 2320,
         priceUSD: 52, // 2320 Stars × $0.0224
@@ -40,7 +40,7 @@ const STARTER_PACKS = {
     medium: {
         id: 'starter_pack_medium',
         name: '📦 Средний пакет',
-        description: '30 дней времени, Башня магов 5 ур, 3-й маг, 30000 XP',
+        description: '+1 маг (макс 3), Башня до 5 ур, 30 дней, 30000 XP',
         icon: '📦',
         price: 8320,
         priceUSD: 186, // 8320 Stars × $0.0224
@@ -58,7 +58,7 @@ const STARTER_PACKS = {
     large: {
         id: 'starter_pack_large',
         name: '💎 Крупный пакет',
-        description: '90 дней времени, Башня магов 7 ур, 4-й маг, 200000 XP',
+        description: '+1 маг (макс 4), Башня до 7 ур, 90 дней, 200000 XP',
         icon: '💎',
         price: 32000,
         priceUSD: 717, // 32000 Stars × $0.0224
@@ -72,6 +72,20 @@ const STARTER_PACKS = {
             wizardCount: 4,
             experience: 200000
         }
+    }
+};
+
+// Компенсации за уже имеющиеся награды (в минутах времени)
+const PACK_COMPENSATIONS = {
+    wizard: {
+        2: 4320,  // +3 дня за уже имеющегося 2-го мага
+        3: 10080, // +7 дней за 3-го
+        4: 20160  // +14 дней за 4-го
+    },
+    tower: {
+        3: 2880,  // +2 дня за башню 3+ ур
+        5: 7200,  // +5 дней за башню 5+ ур
+        7: 14400  // +10 дней за башню 7+ ур
     }
 };
 
@@ -643,36 +657,55 @@ async function buyStarterPack(packKey) {
 }
 
 /**
- * Применение наград стартового пакета
+ * Применение наград стартового пакета с компенсацией за имеющееся
  */
 function applyStarterPackRewards(pack) {
     const rewards = pack.rewards;
+    let totalTime = rewards.time;
+    let compensationDetails = [];
 
-    // 1. Добавляем время
-    window.userData.time_currency = (window.userData.time_currency || 0) + rewards.time;
-    console.log(`⏰ +${rewards.time} минут времени`);
-
-    // 2. Улучшаем башню магов до нужного уровня
+    // Инициализация
     if (!window.userData.buildings) {
         window.userData.buildings = {};
     }
     if (!window.userData.buildings.wizard_tower) {
         window.userData.buildings.wizard_tower = { level: 1 };
     }
+    if (!window.userData.wizards) {
+        window.userData.wizards = [];
+    }
+
     const currentTowerLevel = window.userData.buildings.wizard_tower.level || 1;
-    if (rewards.towerLevel > currentTowerLevel) {
+    const currentWizardCount = window.userData.wizards.length;
+
+    // 1. Проверяем башню - компенсация если уже построена до нужного уровня
+    if (currentTowerLevel >= rewards.towerLevel) {
+        // Башня уже нужного уровня или выше - компенсируем временем
+        const compensation = PACK_COMPENSATIONS.tower[rewards.towerLevel] || 0;
+        totalTime += compensation;
+        compensationDetails.push(`Башня уже ${currentTowerLevel} ур: +${Math.floor(compensation/1440)} дн`);
+        console.log(`🏯 Башня уже ${currentTowerLevel} ур, компенсация: +${compensation} мин`);
+    } else {
+        // Если башня строится - мгновенно достраиваем до нужного уровня
+        // Отменяем текущую стройку если есть
+        if (window.userData.buildings.wizard_tower.building) {
+            delete window.userData.buildings.wizard_tower.building;
+            console.log(`🏯 Строительство башни отменено - мгновенное улучшение`);
+        }
         window.userData.buildings.wizard_tower.level = rewards.towerLevel;
         console.log(`🏯 Башня магов: ${currentTowerLevel} → ${rewards.towerLevel}`);
     }
 
-    // 3. Добавляем магов до нужного количества
-    if (!window.userData.wizards) {
-        window.userData.wizards = [];
-    }
-    const currentWizardCount = window.userData.wizards.length;
-    const wizardsToAdd = rewards.wizardCount - currentWizardCount;
-
-    if (wizardsToAdd > 0) {
+    // 2. Проверяем магов - компенсация если уже есть нужное количество
+    if (currentWizardCount >= rewards.wizardCount) {
+        // Маги уже есть - компенсируем временем
+        const compensation = PACK_COMPENSATIONS.wizard[rewards.wizardCount] || 0;
+        totalTime += compensation;
+        compensationDetails.push(`Уже ${currentWizardCount} магов: +${Math.floor(compensation/1440)} дн`);
+        console.log(`🧙 Уже ${currentWizardCount} магов, компенсация: +${compensation} мин`);
+    } else {
+        // Добавляем магов до нужного количества
+        const wizardsToAdd = rewards.wizardCount - currentWizardCount;
         for (let i = 0; i < wizardsToAdd; i++) {
             const newWizard = createNewWizard(currentWizardCount + i + 1);
             window.userData.wizards.push(newWizard);
@@ -680,18 +713,24 @@ function applyStarterPackRewards(pack) {
         }
     }
 
-    // 4. Добавляем опыт первому магу (или распределяем)
+    // 3. Добавляем время (базовое + компенсации)
+    window.userData.time_currency = (window.userData.time_currency || 0) + totalTime;
+    console.log(`⏰ +${totalTime} минут времени (база: ${rewards.time}, компенсации: ${totalTime - rewards.time})`);
+
+    // 4. Добавляем опыт (распределяем поровну)
     if (window.userData.wizards.length > 0 && rewards.experience > 0) {
-        // Распределяем опыт поровну между всеми магами
         const expPerWizard = Math.floor(rewards.experience / window.userData.wizards.length);
         window.userData.wizards.forEach(wizard => {
-            // Инициализируем поля опыта если их нет
             if (!wizard.original_max_hp) wizard.original_max_hp = 100;
             wizard.experience = (wizard.experience || 0) + expPerWizard;
-            // Пересчитываем уровень
             updateWizardLevel(wizard);
         });
         console.log(`✨ +${rewards.experience} XP (${expPerWizard} на мага)`);
+    }
+
+    // Показываем детали компенсации если были
+    if (compensationDetails.length > 0) {
+        showShopNotification(`💰 Компенсация: ${compensationDetails.join(', ')}`, 'info');
     }
 
     // Обновляем весь UI
