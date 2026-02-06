@@ -1987,10 +1987,79 @@ async function buyTimePackWithTon(item, tonPrice) {
 }
 
 /**
- * Покупка стартового пакета через Stars
+ * Покупка стартового пакета через Stars (прямая покупка без диалога выбора)
  */
 async function buyStarterPackWithStars(packKey) {
-    return buyStarterPack(packKey);
+    const pack = STARTER_PACKS[packKey];
+    if (!pack) {
+        console.error('❌ Пакет не найден:', packKey);
+        return;
+    }
+
+    // Проверяем доступность Telegram WebApp
+    if (!window.Telegram?.WebApp) {
+        showShopNotification('⚠️ Доступно только в Telegram', 'warning');
+        return;
+    }
+
+    console.log(`🎁 Покупка пакета через Stars: ${pack.name} (${pack.price} Stars)`);
+
+    try {
+        // Создаём invoice через Edge Function
+        const invoiceUrl = await createStarsInvoice({ id: pack.id }, pack.price);
+
+        // Открываем окно оплаты Telegram
+        window.Telegram.WebApp.openInvoice(invoiceUrl, async (status) => {
+            console.log('💳 Payment status:', status);
+
+            if (status === 'paid') {
+                // Успешная оплата - награды применятся через webhook
+                // Но для моментального отображения применяем локально тоже
+                applyStarterPackRewards(pack);
+
+                // Отмечаем как купленный локально
+                if (!window.userData.purchased_packs) {
+                    window.userData.purchased_packs = {};
+                }
+                window.userData.purchased_packs[pack.id] = {
+                    purchased_at: new Date().toISOString(),
+                    rewards: pack.rewards,
+                    payment_method: 'stars'
+                };
+
+                // Начисляем airdrop очки
+                if (typeof window.addAirdropPoints === 'function' && pack.price) {
+                    const airdropPoints = Math.floor(pack.price / 10);
+                    if (airdropPoints > 0) {
+                        window.addAirdropPoints(airdropPoints, 'Покупка Telegram Stars');
+
+                        // Бонус рефереру (10% от BPM coin покупателя)
+                        const buyerTelegramId = window.dbManager?.currentPlayer?.telegram_id;
+                        if (buyerTelegramId && window.referralManager?.rewardReferrerForPurchase) {
+                            window.referralManager.rewardReferrerForPurchase(buyerTelegramId, airdropPoints);
+                        }
+                    }
+                }
+
+                // Сохраняем
+                if (window.eventSaveManager?.saveImmediate) {
+                    await window.eventSaveManager.saveImmediate('starter_pack_purchase');
+                }
+
+                showShopNotification(`🎁 ${pack.name} получен!`, 'success');
+                switchShopTab('packs');
+
+            } else if (status === 'cancelled') {
+                showShopNotification('Покупка отменена', 'info');
+            } else if (status === 'failed') {
+                showShopNotification('❌ Ошибка оплаты', 'error');
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Ошибка покупки пакета:', error);
+        showShopNotification('⚠️ Платёжная система временно недоступна', 'warning');
+    }
 }
 
 /**
