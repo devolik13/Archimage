@@ -86,11 +86,12 @@ function castDarkClot(wizard, spellData, position, casterType) {
 }
 
 // --- Слабость (Weakness) - Тир 2, Single Target Debuff ---
+// Сопротивление к Тьме уменьшает силу эффекта
 function castWeakness(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
-    const damageReduction = [10, 20, 30, 40, 50][level - 1] || 10;
+    const baseDamageReduction = [10, 20, 30, 40, 50][level - 1] || 10;
 
-    console.log(`🌑 Casting Weakness - Level ${level}, Reduction ${damageReduction}%`);
+    console.log(`🌑 Casting Weakness - Level ${level}, Base Reduction ${baseDamageReduction}%`);
 
     // Находим цель (передаём wizard для проверки ослепления)
     const target = window.findTarget?.(position, casterType, wizard);
@@ -103,6 +104,26 @@ function castWeakness(wizard, spellData, position, casterType) {
     }
 
     const targetWizard = target.wizard;
+
+    // Рассчитываем сопротивление цели к магии Тьмы
+    let darkResistance = 0;
+    if (typeof window.calculateMagicResistance === 'function') {
+        darkResistance = window.calculateMagicResistance(targetWizard, 'dark');
+    }
+
+    // Ограничиваем сопротивление 75% (как для урона)
+    const effectiveResistance = Math.min(darkResistance, 75) / 100;
+
+    // Уменьшаем силу эффекта на величину сопротивления
+    const damageReduction = Math.floor(baseDamageReduction * (1 - effectiveResistance));
+
+    // Если сопротивление полностью поглотило эффект
+    if (damageReduction <= 0) {
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`🌑 ${targetWizard.name} сопротивляется Слабости! (${Math.floor(darkResistance)}% сопр. к Тьме)`);
+        }
+        return;
+    }
 
     // Применяем дебафф
     if (!targetWizard.effects) targetWizard.effects = {};
@@ -121,8 +142,14 @@ function castWeakness(wizard, spellData, position, casterType) {
         window.spellAnimations.weakened.show(targetWizard, target.position, targetType);
     }
 
+    // Формируем сообщение с учётом сопротивления
+    let logMessage = `🌑 ${wizard.name} накладывает Слабость на ${targetWizard.name} (-${damageReduction}% урона на 1 ход)`;
+    if (darkResistance > 0) {
+        logMessage += ` [сопр. ${Math.floor(darkResistance)}%: ${baseDamageReduction}% → ${damageReduction}%]`;
+    }
+
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`🌑 ${wizard.name} накладывает Слабость на ${targetWizard.name} (-${damageReduction}% урона на 1 ход)`);
+        window.addToBattleLog(logMessage);
     }
 
     // Анимация
