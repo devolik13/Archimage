@@ -104,6 +104,18 @@
             animationSpeed: 0.12,
             scale: 0.350
         },
+        // Премиум образы
+        lady_fire: {
+            idle: 'images/wizards/fire/lady_fire_idle.webp',
+            cast: 'images/wizards/fire/lady_fire_cast.webp',
+            death: 'images/wizards/fire/lady_fire_death.webp',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 25, // 5×5 сетка
+            gridColumns: 5,
+            animationSpeed: 0.12,
+            scale: 0.350
+        },
         goblin: {
             idle: 'images/enemies/goblin/idle.webp',
             cast: 'images/enemies/goblin/attack.webp',

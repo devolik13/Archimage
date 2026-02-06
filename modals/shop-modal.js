@@ -145,6 +145,9 @@ const SHOP_CONFIG = {
         }
     ],
 
+    // Образы (скины) - премиум контент
+    skins: [], // Заполняется динамически из SKINS_CONFIG
+
     // Premium товары (за Telegram Stars или TON) - цены -20%
     // Курс: 1 Star = 1.79₽ = $0.0224 USD, TON курс динамический из CoinGecko API
     premium: [
@@ -393,6 +396,11 @@ function renderShopContent(container, rect) {
                         style="font-size: ${baseFontSize}px;">
                     💎 Premium
                 </button>
+                <button class="shop-tab ${currentShopTab === 'skins' ? 'active' : ''}"
+                        onclick="switchShopTab('skins')"
+                        style="font-size: ${baseFontSize}px;">
+                    👑 Образы
+                </button>
             </div>
 
             <!-- Товары -->
@@ -421,6 +429,11 @@ function renderShopItems(tab, scale) {
     // Специальный рендер для стартовых пакетов
     if (tab === 'packs') {
         return renderStarterPacks(scale);
+    }
+
+    // Специальный рендер для образов
+    if (tab === 'skins') {
+        return renderSkinsShop(scale);
     }
 
     const items = SHOP_CONFIG[tab] || [];
@@ -556,6 +569,440 @@ function renderStarterPacks(scale) {
 
     return html;
 }
+
+/**
+ * Рендер магазина образов
+ */
+function renderSkinsShop(scale) {
+    const baseFontSize = Math.max(12, 14 * scale);
+    const smallFontSize = Math.max(10, 12 * scale);
+
+    // Получаем премиум скины из SKINS_CONFIG
+    const premiumSkins = typeof window.getPremiumSkinsOrdered === 'function'
+        ? window.getPremiumSkinsOrdered()
+        : [];
+
+    if (premiumSkins.length === 0) {
+        return `
+            <div style="
+                text-align: center;
+                padding: 40px 20px;
+                color: #aaa;
+            ">
+                <div style="font-size: 50px; margin-bottom: 15px;">👑</div>
+                <div style="font-size: ${baseFontSize}px; color: #ffd700;">Скоро здесь появятся эксклюзивные образы!</div>
+                <div style="font-size: ${smallFontSize}px; margin-top: 10px;">Следите за обновлениями</div>
+            </div>
+        `;
+    }
+
+    let html = '';
+
+    for (const skinId of premiumSkins) {
+        const skin = window.SKINS_CONFIG?.[skinId];
+        if (!skin || !skin.isPremium) continue;
+
+        const isOwned = typeof window.isSkinUnlocked === 'function'
+            ? window.isSkinUnlocked(skinId)
+            : false;
+
+        const canBuy = !isOwned;
+
+        let statusText = '';
+        let statusColor = '#4ade80';
+        let btnText = `💎 ${skin.price} ⭐`;
+
+        if (isOwned) {
+            statusText = '✅ Куплено';
+            statusColor = '#888';
+            btnText = 'Получено';
+        }
+
+        // Определяем путь к превью
+        const previewPath = `images/wizards/${skin.faction}/${skin.spriteConfig}_idle.webp`;
+
+        html += `
+            <div class="shop-item-card ${!canBuy ? 'disabled' : ''}"
+                 onclick="${canBuy ? `buyShopSkin('${skinId}')` : ''}"
+                 style="text-align: center; ${isOwned ? 'opacity: 0.6;' : ''}">
+
+                <div style="
+                    position: relative;
+                    width: 120px;
+                    height: 120px;
+                    margin: 0 auto 10px;
+                    background: rgba(0,0,0,0.3);
+                    border-radius: 12px;
+                    overflow: hidden;
+                ">
+                    <canvas id="shop-skin-preview-${skinId}" width="120" height="120" style="width: 120px; height: 120px;"></canvas>
+                    ${skin.isPremium ? `
+                        <div style="
+                            position: absolute;
+                            top: 5px;
+                            left: 5px;
+                            background: linear-gradient(135deg, #ffd700, #ff8c00);
+                            color: #000;
+                            padding: 2px 6px;
+                            border-radius: 8px;
+                            font-size: 9px;
+                            font-weight: bold;
+                        ">PREMIUM</div>
+                    ` : ''}
+                </div>
+
+                <div style="color: #ffd700; font-size: ${baseFontSize * 1.1}px; font-weight: bold; margin-bottom: 3px;">
+                    ${skin.name}
+                </div>
+
+                <div style="font-size: ${smallFontSize * 0.9}px; color: #ccc; margin-bottom: 8px; min-height: 30px;">
+                    ${skin.description}
+                </div>
+
+                ${statusText ? `<div style="color: ${statusColor}; font-size: ${smallFontSize}px; margin-bottom: 5px;">${statusText}</div>` : ''}
+
+                <button class="shop-buy-btn premium" ${!canBuy ? 'disabled' : ''} style="font-size: ${smallFontSize}px; width: 100%;">
+                    ${btnText}
+                </button>
+            </div>
+        `;
+    }
+
+    // Загружаем превью после рендера
+    setTimeout(() => loadShopSkinPreviews(premiumSkins), 50);
+
+    return html;
+}
+
+/**
+ * Загружает превью скинов в магазине
+ */
+function loadShopSkinPreviews(skinIds) {
+    skinIds.forEach(skinId => {
+        const skin = window.SKINS_CONFIG?.[skinId];
+        if (!skin) return;
+
+        const canvas = document.getElementById(`shop-skin-preview-${skinId}`);
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const spritePath = `images/wizards/${skin.faction}/${skin.spriteConfig}_idle.webp`;
+
+        const img = new Image();
+        img.onload = () => {
+            const frameSize = 256;
+            ctx.clearRect(0, 0, 120, 120);
+            ctx.drawImage(img, 0, 0, frameSize, frameSize, 0, 0, 120, 120);
+        };
+        img.src = spritePath;
+    });
+}
+
+/**
+ * Покупка скина из магазина
+ */
+async function buyShopSkin(skinId) {
+    const skin = window.SKINS_CONFIG?.[skinId];
+    if (!skin || !skin.isPremium) {
+        console.error('❌ Скин не найден или не премиум:', skinId);
+        return;
+    }
+
+    // Проверяем что не куплен
+    if (typeof window.isSkinUnlocked === 'function' && window.isSkinUnlocked(skinId)) {
+        if (window.showNotification) {
+            window.showNotification('⚠️ Этот образ уже куплен!');
+        }
+        return;
+    }
+
+    // Показываем диалог выбора оплаты (Stars или TON)
+    showSkinPaymentDialog(skinId);
+}
+
+/**
+ * Показывает диалог выбора способа оплаты для скина
+ */
+function showSkinPaymentDialog(skinId) {
+    const skin = window.SKINS_CONFIG?.[skinId];
+    if (!skin) return;
+
+    // Закрываем магазин
+    if (typeof closeShopScreen === 'function') {
+        closeShopScreen();
+    }
+
+    const overlay = document.createElement('div');
+    overlay.id = 'skin-payment-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 10050;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease-out;
+    `;
+
+    overlay.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 16px;
+            padding: 25px;
+            max-width: 380px;
+            text-align: center;
+        ">
+            <h3 style="color: #ffd700; margin: 0 0 15px 0; font-size: 20px;">
+                👑 Покупка образа
+            </h3>
+
+            <div style="
+                background: rgba(0,0,0,0.3);
+                border-radius: 12px;
+                padding: 15px;
+                margin-bottom: 15px;
+            ">
+                <canvas id="payment-skin-preview" width="100" height="100" style="width: 100px; height: 100px; margin-bottom: 10px;"></canvas>
+                <div style="color: #fff; font-size: 18px; font-weight: bold;">${skin.name}</div>
+                <div style="color: #aaa; font-size: 13px; margin-top: 5px;">${skin.description}</div>
+            </div>
+
+            <p style="color: #ccc; font-size: 14px; margin-bottom: 20px;">
+                Выберите способ оплаты:
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button onclick="purchaseSkinWithStars('${skinId}')" style="
+                    padding: 14px 20px;
+                    background: linear-gradient(135deg, #ffd700, #ff8c00);
+                    border: none;
+                    border-radius: 10px;
+                    color: #000;
+                    font-size: 16px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                ">
+                    ⭐ ${skin.price} Telegram Stars
+                </button>
+
+                <button onclick="purchaseSkinWithTON('${skinId}')" style="
+                    padding: 14px 20px;
+                    background: linear-gradient(135deg, #0098EA, #0077B6);
+                    border: none;
+                    border-radius: 10px;
+                    color: #fff;
+                    font-size: 16px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                ">
+                    💎 ~$${skin.priceUSD?.toFixed(2) || '3.70'} TON
+                </button>
+
+                <button onclick="closeSkinPaymentDialog()" style="
+                    padding: 12px 20px;
+                    background: rgba(100, 100, 100, 0.3);
+                    border: 2px solid rgba(150, 150, 150, 0.5);
+                    border-radius: 10px;
+                    color: #aaa;
+                    font-size: 14px;
+                    cursor: pointer;
+                ">
+                    Отмена
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Загружаем превью
+    setTimeout(() => {
+        const canvas = document.getElementById('payment-skin-preview');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.onload = () => {
+                ctx.clearRect(0, 0, 100, 100);
+                ctx.drawImage(img, 0, 0, 256, 256, 0, 0, 100, 100);
+            };
+            img.src = `images/wizards/${skin.faction}/${skin.spriteConfig}_idle.webp`;
+        }
+    }, 50);
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            closeSkinPaymentDialog();
+        }
+    });
+}
+
+/**
+ * Закрывает диалог оплаты скина
+ */
+function closeSkinPaymentDialog() {
+    const overlay = document.getElementById('skin-payment-overlay');
+    if (overlay) overlay.remove();
+}
+
+/**
+ * Покупка скина за Telegram Stars
+ */
+async function purchaseSkinWithStars(skinId) {
+    const skin = window.SKINS_CONFIG?.[skinId];
+    if (!skin) return;
+
+    closeSkinPaymentDialog();
+
+    // Проверяем Telegram WebApp
+    if (!window.Telegram?.WebApp?.openInvoice) {
+        if (window.showNotification) {
+            window.showNotification('⚠️ Покупка доступна только в Telegram', 'warning');
+        }
+        return;
+    }
+
+    try {
+        // Создаём инвойс через бэкенд
+        const response = await fetch('/api/create-skin-invoice', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                skinId: skinId,
+                price: skin.price,
+                telegramId: window.userData?.telegram_id,
+                currency: 'stars'
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Ошибка создания счёта');
+        }
+
+        const { invoiceLink } = await response.json();
+
+        // Открываем оплату
+        window.Telegram.WebApp.openInvoice(invoiceLink, async (status) => {
+            if (status === 'paid') {
+                await completeSkinPurchase(skinId);
+            } else if (status === 'cancelled') {
+                if (window.showNotification) {
+                    window.showNotification('Покупка отменена', 'info');
+                }
+            } else {
+                if (window.showNotification) {
+                    window.showNotification('⚠️ Ошибка оплаты', 'error');
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Ошибка покупки скина:', error);
+        if (window.showNotification) {
+            window.showNotification('⚠️ Ошибка покупки', 'error');
+        }
+    }
+}
+
+/**
+ * Покупка скина за TON
+ */
+async function purchaseSkinWithTON(skinId) {
+    const skin = window.SKINS_CONFIG?.[skinId];
+    if (!skin) return;
+
+    closeSkinPaymentDialog();
+
+    // Проверяем TON Connect
+    if (!window.tonConnectUI) {
+        if (window.showNotification) {
+            window.showNotification('⚠️ Подключите TON кошелёк', 'warning');
+        }
+        return;
+    }
+
+    try {
+        // Получаем актуальный курс TON
+        const tonPrice = await getTONPrice();
+        const tonAmount = skin.priceUSD / tonPrice;
+
+        // Создаём транзакцию
+        const transaction = {
+            validUntil: Math.floor(Date.now() / 1000) + 600, // 10 минут
+            messages: [{
+                address: TON_RECEIVER_ADDRESS,
+                amount: Math.floor(tonAmount * 1e9).toString(), // в наноTON
+            }]
+        };
+
+        const result = await window.tonConnectUI.sendTransaction(transaction);
+
+        if (result) {
+            // Верифицируем транзакцию на сервере
+            const verifyResponse = await fetch('/api/verify-ton-skin-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    skinId: skinId,
+                    telegramId: window.userData?.telegram_id,
+                    txHash: result.boc
+                })
+            });
+
+            if (verifyResponse.ok) {
+                await completeSkinPurchase(skinId);
+            } else {
+                throw new Error('Ошибка верификации транзакции');
+            }
+        }
+    } catch (error) {
+        console.error('Ошибка покупки за TON:', error);
+        if (window.showNotification) {
+            window.showNotification('⚠️ Ошибка оплаты TON', 'error');
+        }
+    }
+}
+
+/**
+ * Завершает покупку скина (разблокировка)
+ */
+async function completeSkinPurchase(skinId) {
+    const skin = window.SKINS_CONFIG?.[skinId];
+    if (!skin) return;
+
+    // Разблокируем скин
+    if (typeof window.unlockSkin === 'function') {
+        await window.unlockSkin(skinId);
+    }
+
+    if (window.showNotification) {
+        window.showNotification(`✨ Образ "${skin.name}" куплен!`, 'success');
+    }
+
+    // Обновляем UI магазина если открыт
+    if (typeof refreshShopScreen === 'function') {
+        refreshShopScreen();
+    }
+}
+
+// Экспорт функций для магазина скинов
+window.buyShopSkin = buyShopSkin;
+window.showSkinPaymentDialog = showSkinPaymentDialog;
+window.closeSkinPaymentDialog = closeSkinPaymentDialog;
+window.purchaseSkinWithStars = purchaseSkinWithStars;
+window.purchaseSkinWithTON = purchaseSkinWithTON;
+window.completeSkinPurchase = completeSkinPurchase;
 
 /**
  * Покупка стартового пакета (показывает диалог выбора или покупает напрямую)

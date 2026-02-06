@@ -3,9 +3,10 @@
 
 let currentWizardForSkin = null;
 let selectedSkinPreview = null;
+let currentSkinCategory = 'standard'; // 'standard' или 'premium'
 
 /**
- * Показывает модальное окно выбора скина
+ * Показывает модальное окно выбора категории скинов (Стандарт/Премиум)
  */
 function showSkinModal(wizard) {
     if (!wizard) {
@@ -14,9 +15,9 @@ function showSkinModal(wizard) {
     }
 
     currentWizardForSkin = wizard;
-    const currentSkin = getWizardSkin(wizard.id, wizard.faction);
+    currentSkinCategory = 'standard';
 
-    // Создаём overlay с фоновым изображением (как в adventure-hub)
+    // Создаём overlay
     const overlay = document.createElement('div');
     overlay.id = 'skin-modal-overlay';
     overlay.style.cssText = `
@@ -33,29 +34,7 @@ function showSkinModal(wizard) {
         animation: fadeIn 0.3s ease-out;
     `;
 
-    // Получаем все скины
-    const allSkinsOrdered = getAllSkinsOrdered();
-    const unlockedCount = allSkinsOrdered.filter(id => isSkinUnlocked(id, wizard.faction)).length;
-
-    // Создаём сетку скинов
-    let skinsHTML = '';
-    for (let i = 0; i < allSkinsOrdered.length; i++) {
-        const skinId = allSkinsOrdered[i];
-        const skin = SKINS_CONFIG[skinId];
-        if (!skin) continue;
-
-        const isUnlocked = isSkinUnlocked(skinId, wizard.faction);
-        const isCurrent = currentSkin === skinId;
-
-        skinsHTML += createSkinCard(skinId, skin, isUnlocked, isCurrent);
-
-        // Перенос строки каждые 3 карточки
-        if ((i + 1) % 3 === 0 && i < allSkinsOrdered.length - 1) {
-            skinsHTML += '<div style="width: 100%; height: 10px;"></div>';
-        }
-    }
-
-    // Создаём структуру с фоновым изображением (паттерн adventure-hub)
+    // Создаём экран выбора категории
     overlay.innerHTML = `
         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
             <!-- Фоновое изображение -->
@@ -74,28 +53,22 @@ function showSkinModal(wizard) {
                 justify-content: center;
                 padding: 20px;
             ">
-                <!-- Полностью прозрачная панель с контентом -->
+                <!-- Панель выбора категории -->
                 <div style="
-                    padding: 20px;
-                    max-height: 80vh;
-                    overflow-y: auto;
+                    padding: 30px;
                     animation: scaleIn 0.3s ease-out;
+                    text-align: center;
                 ">
                     <!-- Заголовок -->
                     <div style="
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
-                        margin-bottom: 15px;
+                        margin-bottom: 25px;
                     ">
-                        <div>
-                            <h2 style="margin: 0; color: #ffd700; font-size: 20px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
-                                🎨 Выбор облика мага
-                            </h2>
-                            <p style="margin: 5px 0 0 0; color: #c9a961; font-size: 13px;">
-                                Получено скинов: ${unlockedCount} / ${allSkinsOrdered.length}
-                            </p>
-                        </div>
+                        <h2 style="margin: 0; color: #ffd700; font-size: 22px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
+                            🎨 Выбор облика
+                        </h2>
                         <button onclick="closeSkinModal()" style="
                             background: rgba(0, 0, 0, 0.5);
                             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -111,14 +84,41 @@ function showSkinModal(wizard) {
                         ">×</button>
                     </div>
 
-                    <!-- Сетка скинов -->
-                    <div style="
-                        display: flex;
-                        flex-wrap: wrap;
-                        gap: 12px;
-                        justify-content: center;
-                    ">
-                        ${skinsHTML}
+                    <!-- Кнопки категорий -->
+                    <div style="display: flex; gap: 20px; justify-content: center;">
+                        <!-- Стандартные образы -->
+                        <button onclick="showSkinCategoryModal('standard')" style="
+                            width: 160px;
+                            padding: 20px;
+                            background: linear-gradient(135deg, rgba(74, 144, 226, 0.3), rgba(74, 144, 226, 0.1));
+                            border: 2px solid rgba(74, 144, 226, 0.6);
+                            border-radius: 16px;
+                            cursor: pointer;
+                            transition: all 0.3s;
+                            text-align: center;
+                        " onmouseover="this.style.transform='scale(1.05)'; this.style.borderColor='rgba(74, 144, 226, 1)'"
+                           onmouseout="this.style.transform='scale(1)'; this.style.borderColor='rgba(74, 144, 226, 0.6)'">
+                            <div style="font-size: 40px; margin-bottom: 10px;">⚔️</div>
+                            <div style="color: #fff; font-size: 16px; font-weight: bold; margin-bottom: 5px;">Стандартные</div>
+                            <div style="color: #aaa; font-size: 12px;">Открываются за достижения</div>
+                        </button>
+
+                        <!-- Премиум образы -->
+                        <button onclick="showSkinCategoryModal('premium')" style="
+                            width: 160px;
+                            padding: 20px;
+                            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.1));
+                            border: 2px solid rgba(255, 215, 0, 0.6);
+                            border-radius: 16px;
+                            cursor: pointer;
+                            transition: all 0.3s;
+                            text-align: center;
+                        " onmouseover="this.style.transform='scale(1.05)'; this.style.borderColor='rgba(255, 215, 0, 1)'"
+                           onmouseout="this.style.transform='scale(1)'; this.style.borderColor='rgba(255, 215, 0, 0.6)'">
+                            <div style="font-size: 40px; margin-bottom: 10px;">👑</div>
+                            <div style="color: #ffd700; font-size: 16px; font-weight: bold; margin-bottom: 5px;">Премиум</div>
+                            <div style="color: #c9a961; font-size: 12px;">Эксклюзивные образы</div>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -142,15 +142,115 @@ function showSkinModal(wizard) {
     bgImg.onload = setupContentSize;
     if (bgImg.complete) setupContentSize();
 
-    // Загружаем превью спрайтов
-    loadSkinPreviews(allSkinsOrdered);
-
     // Закрытие по клику вне окна
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) {
             closeSkinModal();
         }
     });
+}
+
+/**
+ * Показывает модальное окно с выбранной категорией скинов
+ */
+function showSkinCategoryModal(category) {
+    currentSkinCategory = category;
+    const wizard = currentWizardForSkin;
+    if (!wizard) return;
+
+    const currentSkin = getWizardSkin(wizard.id, wizard.faction);
+
+    // Получаем скины в зависимости от категории
+    const skinsToShow = category === 'premium' ? getPremiumSkinsOrdered() : getAllSkinsOrdered();
+    const unlockedCount = skinsToShow.filter(id => isSkinUnlocked(id, wizard.faction)).length;
+
+    // Создаём сетку скинов
+    let skinsHTML = '';
+    for (let i = 0; i < skinsToShow.length; i++) {
+        const skinId = skinsToShow[i];
+        const skin = SKINS_CONFIG[skinId];
+        if (!skin) continue;
+
+        const isUnlocked = isSkinUnlocked(skinId, wizard.faction);
+        const isCurrent = currentSkin === skinId;
+
+        skinsHTML += createSkinCard(skinId, skin, isUnlocked, isCurrent, category === 'premium');
+
+        // Перенос строки каждые 3 карточки
+        if ((i + 1) % 3 === 0 && i < skinsToShow.length - 1) {
+            skinsHTML += '<div style="width: 100%; height: 10px;"></div>';
+        }
+    }
+
+    const categoryTitle = category === 'premium' ? '👑 Премиум образы' : '⚔️ Стандартные образы';
+    const categoryColor = category === 'premium' ? '#ffd700' : '#4a90e2';
+
+    // Обновляем контент
+    const contentContainer = document.getElementById('skin-modal-content');
+    if (!contentContainer) return;
+
+    contentContainer.innerHTML = `
+        <div style="
+            padding: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: scaleIn 0.3s ease-out;
+        ">
+            <!-- Заголовок -->
+            <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 15px;
+            ">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button onclick="showSkinModal(currentWizardForSkin)" style="
+                            background: rgba(0, 0, 0, 0.5);
+                            border: 2px solid rgba(255, 255, 255, 0.3);
+                            border-radius: 8px;
+                            color: white;
+                            font-size: 14px;
+                            padding: 5px 10px;
+                            cursor: pointer;
+                        ">← Назад</button>
+                        <h2 style="margin: 0; color: ${categoryColor}; font-size: 20px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
+                            ${categoryTitle}
+                        </h2>
+                    </div>
+                    <p style="margin: 5px 0 0 0; color: #c9a961; font-size: 13px;">
+                        ${category === 'premium' ? 'Куплено' : 'Получено'}: ${unlockedCount} / ${skinsToShow.length}
+                    </p>
+                </div>
+                <button onclick="closeSkinModal()" style="
+                    background: rgba(0, 0, 0, 0.5);
+                    border: 2px solid rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    color: white;
+                    font-size: 22px;
+                    width: 36px;
+                    height: 36px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">×</button>
+            </div>
+
+            <!-- Сетка скинов -->
+            <div style="
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                justify-content: center;
+            ">
+                ${skinsHTML}
+            </div>
+        </div>
+    `;
+
+    // Загружаем превью спрайтов
+    loadSkinPreviews(skinsToShow);
 }
 
 /**
@@ -170,7 +270,11 @@ function loadSkinPreviews(skinIds) {
 
         // Определяем путь к спрайту
         let spritePath;
-        if (skin.isDefault) {
+        if (skin.isPremium) {
+            // Премиум скины - путь через spriteConfig
+            // Например: lady_fire -> images/wizards/fire/lady_fire_idle.webp
+            spritePath = `images/wizards/${skin.faction}/${spriteConfig}_idle.webp`;
+        } else if (skin.isDefault) {
             // Стандартные скины магов
             spritePath = `images/wizards/${skin.faction}/idle.webp`;
         } else {
@@ -192,13 +296,189 @@ function loadSkinPreviews(skinIds) {
 }
 
 /**
+ * Покупка скина из модального окна
+ */
+async function buySkinFromModal(skinId) {
+    const skin = SKINS_CONFIG[skinId];
+    if (!skin || !skin.isPremium) {
+        showNotification('⚠️ Скин недоступен для покупки', 'warning');
+        return;
+    }
+
+    // Закрываем модальное окно скинов
+    closeSkinModal();
+
+    // Открываем диалог покупки через магазин
+    if (typeof window.showSkinPurchaseDialog === 'function') {
+        window.showSkinPurchaseDialog(skinId);
+    } else {
+        // Fallback - прямая покупка через Telegram Stars
+        showSkinPurchaseConfirm(skinId);
+    }
+}
+
+/**
+ * Показывает диалог подтверждения покупки скина
+ */
+function showSkinPurchaseConfirm(skinId) {
+    const skin = SKINS_CONFIG[skinId];
+    if (!skin) return;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'skin-purchase-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 10030;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease-out;
+    `;
+
+    overlay.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 16px;
+            padding: 25px;
+            max-width: 350px;
+            text-align: center;
+            animation: scaleIn 0.3s ease-out;
+        ">
+            <h3 style="color: #ffd700; margin: 0 0 15px 0; font-size: 20px;">
+                👑 Покупка образа
+            </h3>
+
+            <div style="
+                background: rgba(0,0,0,0.3);
+                border-radius: 12px;
+                padding: 15px;
+                margin-bottom: 15px;
+            ">
+                <div style="font-size: 50px; margin-bottom: 10px;">${skin.icon}</div>
+                <div style="color: #fff; font-size: 18px; font-weight: bold;">${skin.name}</div>
+                <div style="color: #aaa; font-size: 13px; margin-top: 5px;">${skin.description}</div>
+            </div>
+
+            <div style="color: #ffd700; font-size: 24px; font-weight: bold; margin-bottom: 20px;">
+                ${skin.price} ⭐
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button onclick="closeSkinPurchaseDialog()" style="
+                    padding: 10px 25px;
+                    background: rgba(100, 100, 100, 0.5);
+                    border: 2px solid rgba(150, 150, 150, 0.5);
+                    border-radius: 8px;
+                    color: #aaa;
+                    font-size: 14px;
+                    cursor: pointer;
+                ">Отмена</button>
+
+                <button onclick="confirmSkinPurchase('${skinId}')" style="
+                    padding: 10px 25px;
+                    background: linear-gradient(135deg, #ffd700, #ff8c00);
+                    border: none;
+                    border-radius: 8px;
+                    color: #000;
+                    font-size: 14px;
+                    font-weight: bold;
+                    cursor: pointer;
+                ">⭐ Купить</button>
+            </div>
+        </div>
+    `;
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            closeSkinPurchaseDialog();
+        }
+    });
+
+    document.body.appendChild(overlay);
+}
+
+/**
+ * Закрывает диалог покупки
+ */
+function closeSkinPurchaseDialog() {
+    const overlay = document.getElementById('skin-purchase-overlay');
+    if (overlay) overlay.remove();
+}
+
+/**
+ * Подтверждает покупку скина через Telegram Stars
+ */
+async function confirmSkinPurchase(skinId) {
+    const skin = SKINS_CONFIG[skinId];
+    if (!skin) return;
+
+    closeSkinPurchaseDialog();
+
+    // Проверяем доступность Telegram WebApp
+    if (!window.Telegram?.WebApp?.openInvoice) {
+        showNotification('⚠️ Покупка доступна только в Telegram', 'warning');
+        return;
+    }
+
+    try {
+        // Создаём инвойс через бэкенд
+        const response = await fetch('/api/create-skin-invoice', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                skinId: skinId,
+                price: skin.price,
+                telegramId: window.userData?.telegram_id
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Ошибка создания счёта');
+        }
+
+        const { invoiceLink } = await response.json();
+
+        // Открываем оплату через Telegram
+        window.Telegram.WebApp.openInvoice(invoiceLink, async (status) => {
+            if (status === 'paid') {
+                // Разблокируем скин
+                await unlockSkin(skinId);
+                showNotification(`✨ Образ "${skin.name}" куплен!`, 'success');
+
+                // Переоткрываем модалку с премиум скинами
+                if (currentWizardForSkin) {
+                    showSkinModal(currentWizardForSkin);
+                    setTimeout(() => showSkinCategoryModal('premium'), 100);
+                }
+            } else if (status === 'cancelled') {
+                showNotification('Покупка отменена', 'info');
+            } else {
+                showNotification('⚠️ Ошибка оплаты', 'error');
+            }
+        });
+    } catch (error) {
+        console.error('Ошибка покупки скина:', error);
+        showNotification('⚠️ Ошибка покупки', 'error');
+    }
+}
+
+/**
  * Создаёт карточку скина
  */
-function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
+function createSkinCard(skinId, skin, isUnlocked, isCurrent, isPremiumCategory = false) {
     const borderColor = isCurrent ? '#4ade80' : (isUnlocked ? 'rgba(255, 215, 0, 0.5)' : 'rgba(150, 150, 150, 0.3)');
     const borderWidth = isCurrent ? '3px' : '2px';
     const bgColor = isUnlocked ? 'rgba(255, 215, 0, 0.1)' : 'rgba(100, 100, 100, 0.1)';
     const canvasId = `skin-preview-${skinId}`;
+
+    // Для премиум скинов которые не куплены - показываем кнопку покупки
+    const showBuyButton = isPremiumCategory && !isUnlocked && skin.isPremium;
 
     return `
         <div style="
@@ -208,7 +488,7 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
             border-radius: 12px;
             padding: 12px;
             text-align: center;
-            cursor: ${isUnlocked ? 'pointer' : 'default'};
+            cursor: ${isUnlocked || showBuyButton ? 'pointer' : 'default'};
             transition: all 0.3s;
             position: relative;
             backdrop-filter: blur(5px);
@@ -216,11 +496,26 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
            onmouseover="this.style.transform='scale(1.05)'"
            onmouseout="this.style.transform='scale(1)'">
 
+            ${skin.isPremium ? `
+                <div style="
+                    position: absolute;
+                    top: -8px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: linear-gradient(135deg, #ffd700, #ff8c00);
+                    color: #000;
+                    padding: 2px 8px;
+                    border-radius: 10px;
+                    font-size: 10px;
+                    font-weight: bold;
+                ">PREMIUM</div>
+            ` : ''}
+
             <!-- Иконка/Превью -->
             <div style="
                 width: 120px;
                 height: 120px;
-                margin: 0 auto 10px;
+                margin: ${skin.isPremium ? '5px' : '0'} auto 10px;
                 background: rgba(0,0,0,0.3);
                 border-radius: 8px;
                 display: flex;
@@ -230,7 +525,7 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
                 overflow: hidden;
             ">
                 <canvas id="${canvasId}" width="120" height="120" style="width: 120px; height: 120px;"></canvas>
-                ${!isUnlocked ? `
+                ${!isUnlocked && !showBuyButton ? `
                     <div style="
                         position: absolute;
                         top: 0;
@@ -296,6 +591,22 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent) {
                         font-weight: bold;
                     ">✓ Используется</div>
                 `}
+            ` : showBuyButton ? `
+                <button onclick="event.stopPropagation(); buySkinFromModal('${skinId}')" style="
+                    width: 100%;
+                    padding: 6px 12px;
+                    background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 165, 0, 0.9));
+                    border: none;
+                    border-radius: 6px;
+                    color: #000;
+                    font-size: 12px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                " onmouseover="this.style.transform='scale(1.05)'"
+                   onmouseout="this.style.transform='scale(1)'">
+                    💎 ${skin.price} ⭐
+                </button>
             ` : `
                 <div style="
                     font-size: 11px;
@@ -314,7 +625,9 @@ const SKIN_ANIMATION_CONFIG = {
     wind: { frameCount: 25, gridColumns: 5 },    // 5×5 сетка
     earth: { frameCount: 25, gridColumns: 5 },   // 5×5 сетка
     nature: { frameCount: 25, gridColumns: 5 },  // 5×5 сетка
-    poison: { frameCount: 25, gridColumns: 5 }   // 5×5 сетка
+    poison: { frameCount: 25, gridColumns: 5 },  // 5×5 сетка
+    // Премиум скины
+    lady_fire: { frameCount: 25, gridColumns: 5 } // 5×5 сетка
 };
 
 // Хранилище для текущей анимации превью
@@ -462,7 +775,12 @@ function startSkinPreviewAnimation(skin, canvasId) {
     let idlePath, castPath;
     let animConfig;
 
-    if (skin.isDefault) {
+    if (skin.isPremium) {
+        // Премиум скины - путь через spriteConfig
+        idlePath = `images/wizards/${skin.faction}/${skin.spriteConfig}_idle.webp`;
+        castPath = `images/wizards/${skin.faction}/${skin.spriteConfig}_cast.webp`;
+        animConfig = SKIN_ANIMATION_CONFIG[skin.spriteConfig] || { frameCount: 25, gridColumns: 5 };
+    } else if (skin.isDefault) {
         idlePath = `images/wizards/${skin.faction}/idle.webp`;
         castPath = `images/wizards/${skin.faction}/cast.webp`;
         animConfig = SKIN_ANIMATION_CONFIG[skin.faction] || { frameCount: 25, gridColumns: 5 };
@@ -670,3 +988,7 @@ window.closeSkinModal = closeSkinModal;
 window.selectSkin = selectSkin;
 window.applySkin = applySkin;
 window.closeSkinPreview = closeSkinPreview;
+window.showSkinCategoryModal = showSkinCategoryModal;
+window.buySkinFromModal = buySkinFromModal;
+window.closeSkinPurchaseDialog = closeSkinPurchaseDialog;
+window.confirmSkinPurchase = confirmSkinPurchase;

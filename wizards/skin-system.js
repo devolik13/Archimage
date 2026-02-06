@@ -88,6 +88,23 @@ const SKINS_CONFIG = {
         isDefault: true,
         unlockType: 'faction_only', // Пока только для своей фракции
         unlockText: 'Доступен только магам Яда'
+    },
+
+    // ===== ПРЕМИУМ ОБРАЗЫ (покупаемые) =====
+    lady_fire: {
+        id: 'lady_fire',
+        name: 'Огненная Леди',
+        description: 'Элегантная воительница в доспехах пламени',
+        icon: '👸',
+        faction: 'fire', // Для какой фракции подходит (любой может купить, но показывается в категории fire)
+        spriteConfig: 'lady_fire',
+        isDefault: false,
+        isPremium: true,
+        unlockType: 'purchase',
+        price: 165, // Stars
+        priceUSD: 3.70, // 165 × $0.0224
+        currency: 'dual', // Stars или TON
+        unlockText: '165 ⭐ или TON'
     }
 };
 
@@ -108,7 +125,13 @@ function isSkinUnlocked(skinId, wizardFaction = null) {
         return wizardFaction && skin.faction === wizardFaction;
     }
 
-    // 3. Проверяем разблокированные скины в userData (убитые боссы)
+    // 3. Для покупаемых скинов - проверяем в unlocked_skins
+    if (skin.unlockType === 'purchase') {
+        const unlockedSkins = window.userData?.unlocked_skins || [];
+        return unlockedSkins.includes(skinId);
+    }
+
+    // 4. Проверяем разблокированные скины в userData (убитые боссы)
     const unlockedSkins = window.userData?.unlocked_skins || [];
     return unlockedSkins.includes(skinId);
 }
@@ -190,7 +213,7 @@ function getSkinSpriteConfig(skinId) {
 }
 
 /**
- * Получает все доступные скины (порядок для UI)
+ * Получает все стандартные скины (порядок для UI)
  */
 function getAllSkinsOrdered() {
     return [
@@ -206,6 +229,32 @@ function getAllSkinsOrdered() {
     ];
 }
 
+/**
+ * Получает все премиум скины (покупаемые)
+ */
+function getPremiumSkinsOrdered() {
+    return Object.keys(SKINS_CONFIG).filter(id => SKINS_CONFIG[id].isPremium);
+}
+
+/**
+ * Получает информацию о скине для покупки
+ */
+function getSkinPurchaseInfo(skinId) {
+    const skin = SKINS_CONFIG[skinId];
+    if (!skin || !skin.isPremium) return null;
+
+    return {
+        id: skin.id,
+        name: skin.name,
+        description: skin.description,
+        icon: skin.icon,
+        price: skin.price,
+        priceUSD: skin.priceUSD,
+        currency: skin.currency,
+        faction: skin.faction
+    };
+}
+
 // Экспорт функций
 window.SKINS_CONFIG = SKINS_CONFIG;
 window.isSkinUnlocked = isSkinUnlocked;
@@ -214,3 +263,5 @@ window.getWizardSkin = getWizardSkin;
 window.setWizardSkin = setWizardSkin;
 window.getSkinSpriteConfig = getSkinSpriteConfig;
 window.getAllSkinsOrdered = getAllSkinsOrdered;
+window.getPremiumSkinsOrdered = getPremiumSkinsOrdered;
+window.getSkinPurchaseInfo = getSkinPurchaseInfo;
