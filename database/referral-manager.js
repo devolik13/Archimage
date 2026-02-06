@@ -335,7 +335,7 @@ class ReferralManager {
         const stats = await this.getReferralStats(telegramId);
         const totalDays = Math.floor(stats.totalTime / 1440);
 
-        // Формируем блок статистики
+        // Формируем блок статистики (компактный)
         let statsHtml = '';
         if (stats.count > 0) {
             statsHtml = `
@@ -343,24 +343,24 @@ class ReferralManager {
                     background: rgba(74, 222, 128, 0.1);
                     border: 1px solid rgba(74, 222, 128, 0.3);
                     border-radius: 8px;
-                    padding: 12px;
-                    margin: 15px 0;
+                    padding: 8px;
+                    margin: 8px 0;
                     text-align: left;
                 ">
-                    <div style="font-size: 14px; color: #4ade80; margin-bottom: 8px; text-align: center;">
+                    <div style="font-size: 12px; color: #4ade80; margin-bottom: 6px; text-align: center;">
                         📊 Твоя статистика
                     </div>
-                    <div style="font-size: 13px; color: #ccc; display: flex; justify-content: space-between; margin-bottom: 4px;">
-                        <span>👥 Приглашено друзей:</span>
+                    <div style="font-size: 11px; color: #ccc; display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>👥 Приглашено:</span>
                         <span style="color: #4ade80; font-weight: bold;">${stats.count}</span>
                     </div>
-                    <div style="font-size: 13px; color: #ccc; display: flex; justify-content: space-between; margin-bottom: 4px;">
-                        <span>⏰ Получено времени:</span>
+                    <div style="font-size: 11px; color: #ccc; display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>⏰ Получено:</span>
                         <span style="color: #4ade80; font-weight: bold;">${totalDays} дн.</span>
                     </div>
                     ${stats.totalBonus > 0 ? `
-                    <div style="font-size: 13px; color: #ccc; display: flex; justify-content: space-between;">
-                        <span>💎 Бонус от покупок:</span>
+                    <div style="font-size: 11px; color: #ccc; display: flex; justify-content: space-between;">
+                        <span>💎 Бонус:</span>
                         <span style="color: #ffd700; font-weight: bold;">+${stats.totalBonus} BPM</span>
                     </div>
                     ` : ''}
@@ -374,29 +374,29 @@ class ReferralManager {
         const nextRewardPercent = Math.floor(nextReward.multiplier * 100);
 
         const modalHTML = `
-            <div style="padding: 20px; text-align: center; max-width: 350px;">
-                <h3 style="color: #4ade80; margin-top: 0;">🎁 Пригласи друга!</h3>
-                <p style="font-size: 13px; color: #ccc; margin: 15px 0;">
+            <div style="padding: 15px; text-align: center; max-width: 320px; width: 90vw;">
+                <h3 style="color: #4ade80; margin-top: 0; margin-bottom: 10px; font-size: 16px;">🎁 Пригласи друга!</h3>
+                <p style="font-size: 12px; color: #ccc; margin: 10px 0;">
                     Поделись ссылкой с друзьями.<br>
-                    Друг получит <span style="color: #4ade80; font-weight: bold;">1 день</span> времени + <span style="color: #ffd700; font-weight: bold;">200 BPM</span>
+                    Друг получит <span style="color: #4ade80; font-weight: bold;">1 день</span> + <span style="color: #ffd700; font-weight: bold;">200 BPM</span>
                 </p>
                 <div style="
                     background: rgba(114, 137, 218, 0.15);
                     border: 1px solid rgba(114, 137, 218, 0.4);
                     border-radius: 8px;
-                    padding: 10px;
-                    margin: 10px 0;
+                    padding: 8px;
+                    margin: 8px 0;
                 ">
-                    <div style="font-size: 12px; color: #7289da; margin-bottom: 4px;">🎯 Твоя награда за следующего друга:</div>
-                    <div style="font-size: 15px; color: white; font-weight: bold;">
+                    <div style="font-size: 11px; color: #7289da; margin-bottom: 3px;">🎯 Твоя награда:</div>
+                    <div style="font-size: 14px; color: white; font-weight: bold;">
                         ⏰ ${nextRewardHours} ч + 💎 ${nextReward.pointsReward} BPM
                     </div>
-                    <div style="font-size: 10px; color: #888; margin-top: 4px;">
-                        (${nextRewardPercent}% от базовой награды)
+                    <div style="font-size: 9px; color: #888; margin-top: 2px;">
+                        (${nextRewardPercent}% от базовой)
                     </div>
                 </div>
-                <p style="font-size: 11px; color: #888; margin: 10px 0;">
-                    💎 Бонус: <span style="color: #ffd700;">+10%</span> BPM coin от покупок друга навсегда!
+                <p style="font-size: 10px; color: #888; margin: 8px 0;">
+                    💎 Бонус: <span style="color: #ffd700;">+10%</span> BPM от покупок друга!
                 </p>
 
                 ${statsHtml}
@@ -405,47 +405,47 @@ class ReferralManager {
                     background: #3d3d5c;
                     border: 1px solid #555;
                     border-radius: 8px;
-                    padding: 12px;
-                    margin: 15px 0;
+                    padding: 8px;
+                    margin: 10px 0;
                     word-break: break-all;
-                    font-size: 11px;
+                    font-size: 10px;
                     color: #aaa;
                 " id="referral-link-text">${referralLink}</div>
 
                 <button onclick="window.referralManager.copyReferralLink()" style="
                     width: 100%;
-                    padding: 12px;
+                    padding: 10px;
                     background: linear-gradient(135deg, #4ade80, #22c55e);
                     border: none;
                     border-radius: 8px;
                     color: white;
-                    font-size: 14px;
+                    font-size: 13px;
                     font-weight: bold;
                     cursor: pointer;
-                    margin-bottom: 10px;
+                    margin-bottom: 8px;
                 ">📋 Скопировать ссылку</button>
 
                 <button onclick="window.referralManager.shareWithImage()" style="
                     width: 100%;
-                    padding: 12px;
+                    padding: 10px;
                     background: linear-gradient(135deg, #0088cc, #0077b5);
                     border: none;
                     border-radius: 8px;
                     color: white;
-                    font-size: 14px;
+                    font-size: 13px;
                     font-weight: bold;
                     cursor: pointer;
-                    margin-bottom: 10px;
+                    margin-bottom: 8px;
                 ">📤 Поделиться в Телеграме</button>
 
                 <button onclick="window.referralManager.closeReferralUI()" style="
                     width: 100%;
-                    padding: 12px;
+                    padding: 10px;
                     background: rgba(114, 137, 218, 0.9);
                     border: none;
                     border-radius: 8px;
                     color: white;
-                    font-size: 14px;
+                    font-size: 13px;
                     font-weight: bold;
                     cursor: pointer;
                 ">← Назад</button>
@@ -464,13 +464,26 @@ class ReferralManager {
             justify-content: center;
             align-items: center;
             z-index: 99999;
+            overflow-y: auto;
+            padding: 20px 10px;
+            box-sizing: border-box;
         `;
+
+        // Закрытие при клике на overlay (вне модального окна)
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                this.closeReferralUI();
+            }
+        });
 
         const modal = document.createElement('div');
         modal.style.cssText = `
             background: #2c2c3d;
             border-radius: 12px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            max-height: 90vh;
+            overflow-y: auto;
+            margin: auto;
         `;
         modal.innerHTML = modalHTML;
 
