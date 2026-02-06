@@ -875,15 +875,16 @@ async function purchaseSkinWithStars(skinId) {
     }
 
     try {
-        // Создаём инвойс через бэкенд
-        const response = await fetch('/api/create-skin-invoice', {
+        // Получаем URL Supabase
+        const supabaseUrl = window.SUPABASE_URL || 'https://gkftxkjsmcjpahxjppsh.supabase.co';
+
+        // Создаём инвойс через существующий endpoint (product_id = skin_lady_fire)
+        const response = await fetch(`${supabaseUrl}/functions/v1/create-invoice`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                skinId: skinId,
-                price: skin.price,
-                telegramId: window.userData?.telegram_id,
-                currency: 'stars'
+                product_id: `skin_${skinId}`, // skin_lady_fire
+                telegram_id: window.userData?.telegram_id
             })
         });
 
@@ -891,10 +892,15 @@ async function purchaseSkinWithStars(skinId) {
             throw new Error('Ошибка создания счёта');
         }
 
-        const { invoiceLink } = await response.json();
+        const data = await response.json();
+        const invoiceUrl = data.invoice_url;
+
+        if (!invoiceUrl) {
+            throw new Error('Не получена ссылка на оплату');
+        }
 
         // Открываем оплату
-        window.Telegram.WebApp.openInvoice(invoiceLink, async (status) => {
+        window.Telegram.WebApp.openInvoice(invoiceUrl, async (status) => {
             if (status === 'paid') {
                 await completeSkinPurchase(skinId);
             } else if (status === 'cancelled') {

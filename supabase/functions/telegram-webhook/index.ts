@@ -280,6 +280,18 @@ async function applyPurchaseRewards(
     console.log(`🔄 Faction changed to ${payload.target_faction}`);
   }
 
+  // Покупка премиум образов (скинов)
+  if (productId.startsWith("skin_")) {
+    const skinId = productId.replace("skin_", ""); // skin_lady_fire -> lady_fire
+    const unlockedSkins = player.unlocked_skins || [];
+
+    if (!unlockedSkins.includes(skinId)) {
+      unlockedSkins.push(skinId);
+      updates.unlocked_skins = unlockedSkins;
+      console.log(`👑 Skin unlocked: ${skinId} for ${telegramId}`);
+    }
+  }
+
   // Сохраняем изменения
   if (Object.keys(updates).length > 0) {
     const { error: updateError } = await supabase
