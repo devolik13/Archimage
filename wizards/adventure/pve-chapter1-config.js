@@ -103,7 +103,7 @@ const ELEMENTALS = {
         hp: 400,
         armor: 130,
         faction: "water",
-        damageMultiplier: 1.3,
+        damageMultiplier: 1.5,
         spells: ["icicle", "frost_arrow", "blizzard"],
         spell_levels: {
             'icicle': 5,
@@ -126,7 +126,7 @@ const ELEMENTALS = {
         hp: 500,
         armor: 140,
         faction: "wind",
-        damageMultiplier: 1.3,
+        damageMultiplier: 1.7,
         spells: ["gust", "wind_blade", "storm_cloud"],
         spell_levels: {
             'gust': 5,
@@ -149,7 +149,7 @@ const ELEMENTALS = {
         hp: 600,
         armor: 150,
         faction: "earth",
-        damageMultiplier: 1.3,
+        damageMultiplier: 1.9,
         spells: ["pebble", "stone_spike", "meteor_shower"],
         spell_levels: {
             'pebble': 5,
@@ -175,7 +175,7 @@ const FINAL_BOSS = {
     hp: 800,
     armor: 160,
     faction: "fire", // визуально будет огненным
-    damageMultiplier: 1.3,
+    damageMultiplier: 2.5,
     spriteSheet: "lord_demon", // Используем спрайты лорда демонов (5x5 сетка)
     spells: ["fireball", "blizzard", "ball_lightning", "meteor_shower", "epidemic"], // все стихии
     spell_levels: {
