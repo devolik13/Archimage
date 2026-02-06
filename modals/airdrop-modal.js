@@ -533,7 +533,7 @@ function setupAirdropUI() {
                         📋 Creaky Tasks | Выполнить 3 любых задания
                     </div>
                     <div style="font-size: ${smallFontSize}px; color: #60a5fa; margin-top: 4px;">
-                        +300 BPM + ⏰ 1 день
+                        +100 BPM + ⏰ 2 часа
                     </div>
                 </div>
                 ${window.userData?.completed_tasks?.creaky_tasks ? `
@@ -1012,8 +1012,8 @@ async function claimCreakyTasksReward(completed = true) {
     window.userData.completed_tasks.creaky_tasks = true;
 
     // Начисляем награду
-    const bpmReward = 300;
-    const timeReward = 1440; // 1 день в минутах
+    const bpmReward = 100;
+    const timeReward = 120; // 2 часа в минутах
 
     window.userData.airdrop_points = (window.userData.airdrop_points || 0) + bpmReward;
     window.userData.time_currency = (window.userData.time_currency || 0) + timeReward;
@@ -1028,7 +1028,7 @@ async function claimCreakyTasksReward(completed = true) {
         await window.dbManager.savePlayer(window.userData);
     }
 
-    window.showNotification?.(`🎉 Награда получена! +${bpmReward} BPM + ⏰ 1 день`);
+    window.showNotification?.(`🎉 Награда получена! +${bpmReward} BPM + ⏰ 2 часа`);
 
     // Обновляем UI
     updateCreakyTasksButton();

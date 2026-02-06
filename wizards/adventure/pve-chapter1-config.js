@@ -24,19 +24,19 @@ const ENEMY_TYPES = {
     goblin: {
         name: "Гоблин",
         baseHp: 30,
-        baseDamage: 7,
-        hpGrowth: 5,      // HP растет на 5 каждый уровень
-        damageGrowth: 1,   // урон растет на 1 каждый уровень
-        armor: 100,        // базовая броня
+        baseDamage: 8,      // +20%
+        hpGrowth: 5,        // HP растет на 5 каждый уровень
+        damageGrowth: 1,    // урон растет на 1 каждый уровень
+        armor: 100,         // базовая броня
         attackType: "physical", // физическая атака
         spriteSheet: "goblin"
     },
     orc: {
         name: "Орк",
         baseHp: 80,
-        baseDamage: 20,
+        baseDamage: 24,     // +20%
         hpGrowth: 8,
-        damageGrowth: 3,
+        damageGrowth: 4,    // +20%
         armor: 110,
         attackType: "physical",
         spriteSheet: "orc"
@@ -44,9 +44,9 @@ const ENEMY_TYPES = {
     troll: {
         name: "Тролль",
         baseHp: 150,
-        baseDamage: 33,
+        baseDamage: 40,     // +20%
         hpGrowth: 12,
-        damageGrowth: 4,
+        damageGrowth: 5,    // +20%
         armor: 120,
         attackType: "physical",
         spriteSheet: "troll"
@@ -54,9 +54,9 @@ const ENEMY_TYPES = {
     cave_beast: {
         name: "Пещерный Зверь",
         baseHp: 250,
-        baseDamage: 46,
+        baseDamage: 55,     // +20%
         hpGrowth: 15,
-        damageGrowth: 5,
+        damageGrowth: 6,    // +20%
         armor: 130,
         attackType: "physical",
         spriteSheet: "cave_beast"
@@ -64,9 +64,9 @@ const ENEMY_TYPES = {
     demon: {
         name: "Демон",
         baseHp: 400,
-        baseDamage: 65,
+        baseDamage: 78,     // +20%
         hpGrowth: 20,
-        damageGrowth: 7,
+        damageGrowth: 8,    // +20%
         armor: 140,
         attackType: "physical",
         spriteSheet: "demon"
