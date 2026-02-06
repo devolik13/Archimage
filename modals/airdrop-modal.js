@@ -487,6 +487,7 @@ function setupAirdropUI() {
                 border: 1px solid rgba(74, 222, 128, 0.3);
                 border-radius: 8px;
                 padding: 10px;
+                margin-bottom: 8px;
             ">
                 <div style="flex: 1;">
                     <div style="font-size: ${baseFontSize}px; color: #fff;">
@@ -515,6 +516,45 @@ function setupAirdropUI() {
                         font-weight: bold;
                         cursor: pointer;
                     ">Проверить</button>
+                `}
+            </div>
+            <!-- Creaky Tasks -->
+            <div id="creaky-tasks-reward" style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(96, 165, 250, 0.1);
+                border: 1px solid rgba(96, 165, 250, 0.3);
+                border-radius: 8px;
+                padding: 10px;
+            ">
+                <div style="flex: 1;">
+                    <div style="font-size: ${baseFontSize}px; color: #fff;">
+                        📋 Creaky Tasks | Выполнить 3 любых задания
+                    </div>
+                    <div style="font-size: ${smallFontSize}px; color: #60a5fa; margin-top: 4px;">
+                        +300 BPM + ⏰ 1 день
+                    </div>
+                </div>
+                ${window.userData?.completed_tasks?.creaky_tasks ? `
+                    <div style="
+                        padding: 8px 16px;
+                        background: #333;
+                        border-radius: 8px;
+                        color: #888;
+                        font-size: ${smallFontSize}px;
+                    ">✓ Получено</div>
+                ` : `
+                    <button onclick="window.openCreakyTasks()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: ${smallFontSize}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Выполнить</button>
                 `}
             </div>
         </div>
@@ -896,14 +936,17 @@ async function checkGroupSubscription() {
 
                 window.showNotification?.(`🎉 Награда получена! +${result.reward.bpm_points} BPM + ⏰ 2 дня`);
 
-                // Обновляем UI
-                refreshAirdropModalUI();
+                // Обновляем UI кнопки без перезагрузки всей модалки
+                updateGroupTaskButton();
+                updateAirdropPointsDisplay();
 
                 // Обновляем таймер если функция есть
                 if (typeof window.updateTimerDisplay === 'function') {
                     window.updateTimerDisplay();
                 }
             } else if (result.error === 'already_claimed') {
+                window.userData.group_reward_claimed = true;
+                updateGroupTaskButton();
                 window.showNotification?.('✓ Награда уже получена ранее');
             } else if (result.error === 'not_subscribed') {
                 window.showNotification?.('❌ Вы не подписаны на группу. Вступите и попробуйте снова.');
@@ -917,7 +960,109 @@ async function checkGroupSubscription() {
     }, 2000);
 }
 
+/**
+ * Обновить UI кнопки задания "Вступить в группу"
+ */
+function updateGroupTaskButton() {
+    const taskDiv = document.getElementById('group-reward-task');
+    if (!taskDiv) return;
+
+    // Находим кнопку/текст справа
+    const buttonOrStatus = taskDiv.querySelector('button, div:last-child');
+    if (buttonOrStatus && window.userData?.group_reward_claimed) {
+        // Заменяем кнопку на "Получено"
+        buttonOrStatus.outerHTML = `
+            <div style="
+                padding: 8px 16px;
+                background: #333;
+                border-radius: 8px;
+                color: #888;
+                font-size: 12px;
+            ">✓ Получено</div>
+        `;
+    }
+}
+
+/**
+ * Открыть Creaky Tasks
+ */
+function openCreakyTasks() {
+    window.open('https://t.me/CreakyTasksBot?start=ltZMmENT', '_blank');
+    window.showNotification?.('📋 Выполните 3 задания и вернитесь для получения награды');
+}
+
+/**
+ * Проверить выполнение Creaky Tasks и выдать награду
+ * @param {boolean} completed - выполнено ли задание
+ */
+async function claimCreakyTasksReward(completed = true) {
+    if (!completed) return;
+
+    if (window.userData?.completed_tasks?.creaky_tasks) {
+        window.showNotification?.('✓ Награда уже получена');
+        return;
+    }
+
+    // Инициализируем completed_tasks если нет
+    if (!window.userData.completed_tasks) {
+        window.userData.completed_tasks = {};
+    }
+
+    // Отмечаем задание выполненным
+    window.userData.completed_tasks.creaky_tasks = true;
+
+    // Начисляем награду
+    const bpmReward = 300;
+    const timeReward = 1440; // 1 день в минутах
+
+    window.userData.airdrop_points = (window.userData.airdrop_points || 0) + bpmReward;
+    window.userData.time_currency = (window.userData.time_currency || 0) + timeReward;
+
+    if (!window.userData.airdrop_breakdown) {
+        window.userData.airdrop_breakdown = {};
+    }
+    window.userData.airdrop_breakdown['Creaky Tasks'] = (window.userData.airdrop_breakdown['Creaky Tasks'] || 0) + bpmReward;
+
+    // Сохраняем в БД
+    if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+        await window.dbManager.savePlayer(window.userData);
+    }
+
+    window.showNotification?.(`🎉 Награда получена! +${bpmReward} BPM + ⏰ 1 день`);
+
+    // Обновляем UI
+    updateCreakyTasksButton();
+    updateAirdropPointsDisplay();
+
+    if (typeof window.updateTimerDisplay === 'function') {
+        window.updateTimerDisplay();
+    }
+}
+
+/**
+ * Обновить UI кнопки Creaky Tasks
+ */
+function updateCreakyTasksButton() {
+    const taskDiv = document.getElementById('creaky-tasks-reward');
+    if (!taskDiv) return;
+
+    const buttonOrStatus = taskDiv.querySelector('button, div:last-child');
+    if (buttonOrStatus && window.userData?.completed_tasks?.creaky_tasks) {
+        buttonOrStatus.outerHTML = `
+            <div style="
+                padding: 8px 16px;
+                background: #333;
+                border-radius: 8px;
+                color: #888;
+                font-size: 12px;
+            ">✓ Получено</div>
+        `;
+    }
+}
+
 window.checkGroupSubscription = checkGroupSubscription;
+window.openCreakyTasks = openCreakyTasks;
+window.claimCreakyTasksReward = claimCreakyTasksReward;
 
 /**
  * Добавить очки airdrop игроку
