@@ -289,9 +289,12 @@ function destroyPixiBattle() {
     }
 
     // Уничтожаем контейнеры
+    // ВАЖНО: НЕ уничтожаем baseTexture - они кэшируются в PIXI.Assets
+    // и переиспользуются между боями. Уничтожение baseTexture вызывает
+    // повторную загрузку и парсинг текстур при каждом бое.
     if (battleContainer) {
         try {
-            battleContainer.destroy({ children: true, texture: true, baseTexture: true });
+            battleContainer.destroy({ children: true, texture: false, baseTexture: false });
             battleContainer = null;
         } catch (error) {
             console.warn('⚠️ Ошибка при уничтожении battleContainer:', error);
@@ -299,10 +302,10 @@ function destroyPixiBattle() {
         }
     }
 
-    // Уничтожаем приложение
+    // Уничтожаем приложение (сам canvas), но сохраняем текстуры в кэше
     if (pixiApp) {
         try {
-            pixiApp.destroy(true, { children: true, texture: true, baseTexture: true });
+            pixiApp.destroy(true, { children: true, texture: false, baseTexture: false });
             pixiApp = null;
         } catch (error) {
             console.warn('⚠️ Ошибка при уничтожении pixiApp:', error);

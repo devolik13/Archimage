@@ -256,6 +256,12 @@ async function preloadAllAssets(showScreen = true) {
 
     preloaderState.isLoading = false;
 
+    // Загружаем PIXI текстуры в фоне (не блокируя UI)
+    // Это кэширует текстуры магов и фонов для быстрого старта боёв
+    if (typeof PIXI !== 'undefined' && PIXI.Assets) {
+        preloadPixiTextures().catch(e => console.warn('⚠️ PIXI preload error:', e));
+    }
+
     // Небольшая задержка перед скрытием для UX
     await new Promise(resolve => setTimeout(resolve, 300));
 
@@ -277,9 +283,69 @@ async function preloadCriticalAssets() {
     console.log('⚡ Критичные ассеты загружены');
 }
 
+// Предзагрузка PIXI текстур (для боёв)
+// Вызывать после инициализации PIXI
+async function preloadPixiTextures() {
+    if (typeof PIXI === 'undefined' || !PIXI.Assets) {
+        console.warn('⚠️ PIXI не загружен, пропускаем предзагрузку текстур');
+        return;
+    }
+
+    console.log('🎮 Предзагрузка PIXI текстур...');
+    const startTime = Date.now();
+
+    // Критичные текстуры для боёв
+    const pixiAssets = [
+        // Фоны боёв (выбираем несколько для начала)
+        'images/battle/field-background-1.webp',
+        'images/battle/field-background-2.webp',
+        'images/battle/field-background-3.webp',
+        // Спрайты магов (все фракции)
+        'images/wizards/fire/idle.webp',
+        'images/wizards/fire/cast.webp',
+        'images/wizards/fire/death.webp',
+        'images/wizards/water/idle.webp',
+        'images/wizards/water/cast.webp',
+        'images/wizards/water/death.webp',
+        'images/wizards/wind/idle.webp',
+        'images/wizards/wind/cast.webp',
+        'images/wizards/wind/death.webp',
+        'images/wizards/earth/idle.webp',
+        'images/wizards/earth/cast.webp',
+        'images/wizards/earth/death.webp',
+        'images/wizards/nature/idle.webp',
+        'images/wizards/nature/cast.webp',
+        'images/wizards/nature/death.webp',
+        'images/wizards/poison/idle.webp',
+        'images/wizards/poison/cast.webp',
+        'images/wizards/poison/death.webp',
+        'images/wizards/light/idle.webp',
+        'images/wizards/light/cast.webp',
+        'images/wizards/light/death.webp',
+        'images/wizards/dark/idle.webp',
+        'images/wizards/dark/cast.webp',
+        'images/wizards/dark/death.webp'
+    ];
+
+    // Загружаем параллельно через PIXI.Assets
+    try {
+        await Promise.all(pixiAssets.map(async (src) => {
+            try {
+                await PIXI.Assets.load(src);
+            } catch (e) {
+                // Игнорируем ошибки отдельных файлов
+            }
+        }));
+        console.log(`✅ PIXI текстуры загружены за ${Date.now() - startTime}ms`);
+    } catch (error) {
+        console.warn('⚠️ Ошибка предзагрузки PIXI текстур:', error);
+    }
+}
+
 // Экспортируем функции
 window.preloadAllAssets = preloadAllAssets;
 window.preloadCriticalAssets = preloadCriticalAssets;
+window.preloadPixiTextures = preloadPixiTextures;
 window.hideLoadingScreen = hideLoadingScreen;
 window.PRELOAD_ASSETS = PRELOAD_ASSETS;
 
