@@ -17,17 +17,17 @@ let tonPriceCache = {
 // Адрес получателя TON платежей
 const TON_RECEIVER_ADDRESS = 'UQAnElrwdRQf8-U0ERo5DAGwitB_ipMOF0plhyDox_HA3bFU';
 
-// Конфигурация стартовых пакетов (одноразовые покупки)
+// Конфигурация стартовых пакетов (одноразовые покупки) - цены -20%
 const STARTER_PACKS = {
     small: {
         id: 'starter_pack_small',
         name: '🎁 Малый пакет',
         description: '7 дней времени, Башня магов 3 ур, 2-й маг, 5000 XP',
         icon: '🎁',
-        price: 2900,
-        priceUSD: 65, // 2900 Stars × $0.0224
+        price: 2320,
+        priceUSD: 52, // 2320 Stars × $0.0224
         currency: 'dual', // Поддерживает Stars и TON
-        fullPrice: 2900,
+        fullPrice: 2320,
         discount: 30,
         requires: null, // Доступен всем
         rewards: {
@@ -42,10 +42,10 @@ const STARTER_PACKS = {
         name: '📦 Средний пакет',
         description: '30 дней времени, Башня магов 5 ур, 3-й маг, 30000 XP',
         icon: '📦',
-        price: 10400,
-        priceUSD: 233, // 10400 Stars × $0.0224
+        price: 8320,
+        priceUSD: 186, // 8320 Stars × $0.0224
         currency: 'dual',
-        fullPrice: 10400,
+        fullPrice: 8320,
         discount: 30,
         requires: 'starter_pack_small', // После малого пакета
         rewards: {
@@ -60,10 +60,10 @@ const STARTER_PACKS = {
         name: '💎 Крупный пакет',
         description: '90 дней времени, Башня магов 7 ур, 4-й маг, 200000 XP',
         icon: '💎',
-        price: 40000,
-        priceUSD: 896, // 40000 Stars × $0.0224
+        price: 32000,
+        priceUSD: 717, // 32000 Stars × $0.0224
         currency: 'dual',
-        fullPrice: 40000,
+        fullPrice: 32000,
         discount: 30,
         requires: 'starter_pack_medium', // После среднего пакета
         rewards: {
@@ -131,7 +131,7 @@ const SHOP_CONFIG = {
         }
     ],
 
-    // Premium товары (за Telegram Stars или TON)
+    // Premium товары (за Telegram Stars или TON) - цены -20%
     // Курс: 1 Star = 1.79₽ = $0.0224 USD, TON курс динамический из CoinGecko API
     premium: [
         {
@@ -139,8 +139,8 @@ const SHOP_CONFIG = {
             name: '⏰ 1 час',
             description: '+1 час игрового времени',
             icon: '⏰',
-            price: 10,
-            priceUSD: 0.22, // 10 Stars × $0.0224
+            price: 8,
+            priceUSD: 0.18, // 8 Stars × $0.0224
             currency: 'dual',
             action: 'buyTimePack',
             amount: 60
@@ -150,8 +150,8 @@ const SHOP_CONFIG = {
             name: 'Пакет времени (1 день)',
             description: '+1 день игрового времени',
             icon: '⏰',
-            price: 168,
-            priceUSD: 3.77, // 168 Stars × $0.0224
+            price: 134,
+            priceUSD: 3.00, // 134 Stars × $0.0224
             currency: 'dual',
             action: 'buyTimePack',
             amount: 1440
@@ -161,8 +161,8 @@ const SHOP_CONFIG = {
             name: 'Пакет времени (7 дней)',
             description: '+7 дней времени (-5%)',
             icon: '⏰⏰',
-            price: 1120,
-            priceUSD: 25.1, // 1120 Stars × $0.0224
+            price: 896,
+            priceUSD: 20.1, // 896 Stars × $0.0224
             currency: 'dual',
             action: 'buyTimePack',
             amount: 10080
@@ -172,8 +172,8 @@ const SHOP_CONFIG = {
             name: 'Пакет времени (30 дней)',
             description: '+30 дней времени (-15%)',
             icon: '⏰⏰⏰',
-            price: 4280,
-            priceUSD: 95.9, // 4280 Stars × $0.0224
+            price: 3424,
+            priceUSD: 76.7, // 3424 Stars × $0.0224
             currency: 'dual',
             action: 'buyTimePack',
             amount: 43200
