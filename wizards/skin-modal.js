@@ -487,6 +487,9 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent, isPremiumCategory =
     // Для премиум скинов которые не куплены - показываем кнопку покупки
     const showBuyButton = isPremiumCategory && !isUnlocked && skin.isPremium;
 
+    // Для предпросмотра - клик открывает увеличенный вид для любого скина (разблокированного или премиум)
+    const canPreview = isUnlocked || isPremiumCategory;
+
     return `
         <div style="
             width: 150px;
@@ -495,11 +498,11 @@ function createSkinCard(skinId, skin, isUnlocked, isCurrent, isPremiumCategory =
             border-radius: 12px;
             padding: 12px;
             text-align: center;
-            cursor: ${isUnlocked || showBuyButton ? 'pointer' : 'default'};
+            cursor: ${canPreview ? 'pointer' : 'default'};
             transition: all 0.3s;
             position: relative;
             backdrop-filter: blur(5px);
-        " onclick="${isUnlocked ? `selectSkin('${skinId}')` : ''}"
+        " onclick="${canPreview ? `selectSkin('${skinId}')` : ''}"
            onmouseover="this.style.transform='scale(1.05)'"
            onmouseout="this.style.transform='scale(1)'">
 
@@ -649,6 +652,10 @@ function selectSkin(skinId) {
 
     selectedSkinPreview = skinId;
 
+    // Проверяем, разблокирован ли скин (для премиум - куплен ли)
+    const isUnlocked = isSkinUnlocked(skinId, currentWizardForSkin?.faction);
+    const isPremiumNotOwned = skin.isPremium && !isUnlocked;
+
     // Создаём overlay для превью с тем же фоном adventure_hub
     const previewOverlay = document.createElement('div');
     previewOverlay.id = 'skin-preview-overlay';
@@ -667,6 +674,50 @@ function selectSkin(skinId) {
     `;
 
     const previewCanvasId = 'skin-large-preview-canvas';
+
+    // Кнопки в зависимости от статуса скина
+    const buttonsHTML = isPremiumNotOwned ? `
+        <!-- Кнопки для премиум скина -->
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button onclick="closeSkinPreview()" style="
+                padding: 8px 20px;
+                background: rgba(100, 100, 100, 0.5);
+                border: 2px solid rgba(150, 150, 150, 0.5);
+                border-radius: 8px;
+                color: #aaa;
+                font-size: min(14px, 3.5vw);
+                cursor: pointer;
+            ">Закрыть</button>
+            <button onclick="closeSkinPreview(); buySkinFromModal('${skinId}')" style="
+                padding: 8px 20px;
+                background: linear-gradient(135deg, #ffd700, #ff8c00);
+                border: none;
+                border-radius: 8px;
+                color: #000;
+                font-size: min(14px, 3.5vw);
+                font-weight: bold;
+                cursor: pointer;
+            ">💎 Купить ${skin.price} ⭐</button>
+        </div>
+    ` : `
+        <!-- Кнопка закрытия -->
+        <button onclick="closeSkinPreview()" style="
+            margin-top: 15px;
+            padding: 8px 25px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 8px;
+            color: #ffd700;
+            font-size: min(14px, 3.5vw);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        " onmouseover="this.style.background='rgba(255, 215, 0, 0.3)'"
+           onmouseout="this.style.background='rgba(0, 0, 0, 0.5)'">
+            Закрыть
+        </button>
+    `;
+
     previewOverlay.innerHTML = `
         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
             <!-- Фоновое изображение -->
@@ -693,13 +744,13 @@ function selectSkin(skinId) {
                     margin: 0 0 15px 0;
                     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 15px rgba(255, 215, 0, 0.6);
                     text-align: center;
-                ">${skin.name}</h3>
+                ">${skin.name}${isPremiumNotOwned ? ' 👑' : ''}</h3>
 
                 <!-- Превью спрайта с рамкой (адаптивный размер) -->
                 <div style="
                     width: min(280px, 70vw);
                     height: min(280px, 70vw);
-                    border: 3px solid #ffd700;
+                    border: 3px solid ${isPremiumNotOwned ? '#ff8c00' : '#ffd700'};
                     border-radius: 12px;
                     box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), inset 0 0 30px rgba(0, 0, 0, 0.5);
                     display: flex;
@@ -721,22 +772,7 @@ function selectSkin(skinId) {
                     ">${skin.description}</p>
                 ` : ''}
 
-                <!-- Кнопка закрытия -->
-                <button onclick="closeSkinPreview()" style="
-                    margin-top: 15px;
-                    padding: 8px 25px;
-                    background: rgba(0, 0, 0, 0.5);
-                    border: 2px solid rgba(255, 215, 0, 0.5);
-                    border-radius: 8px;
-                    color: #ffd700;
-                    font-size: min(14px, 3.5vw);
-                    font-weight: bold;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                " onmouseover="this.style.background='rgba(255, 215, 0, 0.3)'"
-                   onmouseout="this.style.background='rgba(0, 0, 0, 0.5)'">
-                    Закрыть
-                </button>
+                ${buttonsHTML}
             </div>
         </div>
     `;
@@ -989,7 +1025,7 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Экспорт функций
+// Экспорт функций и переменных
 window.showSkinModal = showSkinModal;
 window.closeSkinModal = closeSkinModal;
 window.selectSkin = selectSkin;
@@ -999,3 +1035,9 @@ window.showSkinCategoryModal = showSkinCategoryModal;
 window.buySkinFromModal = buySkinFromModal;
 window.closeSkinPurchaseDialog = closeSkinPurchaseDialog;
 window.confirmSkinPurchase = confirmSkinPurchase;
+
+// Геттер для currentWizardForSkin (для кнопки "Назад")
+Object.defineProperty(window, 'currentWizardForSkin', {
+    get: function() { return currentWizardForSkin; },
+    set: function(val) { currentWizardForSkin = val; }
+});
