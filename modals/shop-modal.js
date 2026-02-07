@@ -872,25 +872,14 @@ async function purchaseSkinWithStars(skinId) {
     }
 
     try {
-        // Получаем URL Supabase
-        const supabaseUrl = window.SUPABASE_URL || 'https://gkftxkjsmcjpahxjppsh.supabase.co';
+        // Используем общую функцию createStarsInvoice (как для паков времени)
+        const skinItem = {
+            id: `skin_${skinId}`, // skin_lady_fire
+            name: skin.name,
+            price: skin.price
+        };
 
-        // Создаём инвойс через существующий endpoint (product_id = skin_lady_fire)
-        const response = await fetch(`${supabaseUrl}/functions/v1/create-invoice`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                product_id: `skin_${skinId}`, // skin_lady_fire
-                telegram_id: window.userData?.telegram_id
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error('Ошибка создания счёта');
-        }
-
-        const data = await response.json();
-        const invoiceUrl = data.invoice_url;
+        const invoiceUrl = await createStarsInvoice(skinItem, skin.price);
 
         if (!invoiceUrl) {
             throw new Error('Не получена ссылка на оплату');
@@ -2663,6 +2652,7 @@ window.switchShopTab = switchShopTab;
 window.buyShopItem = buyShopItem;
 window.showChangeFactionDialog = showChangeFactionDialog;
 window.buyStarterPack = buyStarterPack;
+window.createStarsInvoice = createStarsInvoice;
 window.applyExpScroll = applyExpScroll;
 window.closeWizardSelectDialog = closeWizardSelectDialog;
 window.confirmFactionChange = confirmFactionChange;

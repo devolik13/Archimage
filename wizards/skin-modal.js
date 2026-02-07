@@ -427,25 +427,18 @@ async function confirmSkinPurchase(skinId) {
     }
 
     try {
-        // Получаем URL Supabase
-        const supabaseUrl = window.SUPABASE_URL || 'https://gkftxkjsmcjpahxjppsh.supabase.co';
-
-        // Создаём инвойс через существующий endpoint
-        const response = await fetch(`${supabaseUrl}/functions/v1/create-invoice`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                product_id: `skin_${skinId}`,
-                telegram_id: window.userData?.telegram_id
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error('Ошибка создания счёта');
+        // Используем общую функцию createStarsInvoice из shop-modal.js
+        if (typeof window.createStarsInvoice !== 'function') {
+            throw new Error('Функция createStarsInvoice не найдена');
         }
 
-        const data = await response.json();
-        const invoiceUrl = data.invoice_url;
+        const skinItem = {
+            id: `skin_${skinId}`, // skin_lady_fire
+            name: skin.name,
+            price: skin.price
+        };
+
+        const invoiceUrl = await window.createStarsInvoice(skinItem, skin.price);
 
         if (!invoiceUrl) {
             throw new Error('Не получена ссылка на оплату');
