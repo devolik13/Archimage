@@ -422,8 +422,10 @@
                 if (enemy.faction) {
                     // Получаем скины противника (wizard_skins хранятся в selectedOpponent)
                     const opponentSkins = window.selectedOpponent?.wizard_skins;
-                    if (opponentSkins && opponentSkins[enemy.id]) {
-                        const skinId = opponentSkins[enemy.id];
+                    // Используем original_id для поиска скина (enemy.id содержит префикс "enemy_")
+                    const wizardIdForSkin = enemy.original_id || enemy.id;
+                    if (opponentSkins && opponentSkins[wizardIdForSkin]) {
+                        const skinId = opponentSkins[wizardIdForSkin];
                         // Получаем spriteConfig из скина
                         if (typeof window.getSkinSpriteConfig === 'function') {
                             const spriteConfig = window.getSkinSpriteConfig(skinId);
