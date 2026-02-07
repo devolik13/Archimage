@@ -308,9 +308,9 @@ async function buySkinFromModal(skinId) {
     // Закрываем модальное окно скинов
     closeSkinModal();
 
-    // Открываем диалог покупки через магазин
-    if (typeof window.showSkinPurchaseDialog === 'function') {
-        window.showSkinPurchaseDialog(skinId);
+    // Открываем диалог покупки через магазин (с выбором Stars или TON)
+    if (typeof window.showSkinPaymentDialog === 'function') {
+        window.showSkinPaymentDialog(skinId);
     } else {
         // Fallback - прямая покупка через Telegram Stars
         showSkinPurchaseConfirm(skinId);
