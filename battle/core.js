@@ -1470,11 +1470,20 @@ async function checkBattleEnd() {
         // Начисляем опыт через новую систему (подсчёт в конце боя)
         // grantBattleExp возвращает массив с детальной статистикой
         // В дуэлях опыт НЕ начисляется
+        // В PvE опыт начисляется ТОЛЬКО при первом прохождении уровня
         const isDuel = window.isDuelBattle || false;
-        if (typeof window.grantBattleExp === 'function' && !isDuel) {
+        const isPvE = !!window.currentPvELevel;
+        let isPvEFirstCompletion = true;
+        if (isPvE) {
+            const pveProgress = window.loadPvEProgress();
+            isPvEFirstCompletion = !pveProgress.chapter1.completed?.[window.currentPvELevel];
+        }
+
+        const shouldGrantExp = !isDuel && (!isPvE || isPvEFirstCompletion);
+        if (typeof window.grantBattleExp === 'function' && shouldGrantExp) {
             window.lastBattleExpResults = window.grantBattleExp(allPlayerWizards, isVictory);
-        } else if (isDuel) {
-            window.lastBattleExpResults = []; // Пустой массив для дуэлей
+        } else if (isDuel || (isPvE && !isPvEFirstCompletion)) {
+            window.lastBattleExpResults = []; // Пустой массив — опыт не начисляется
         }
 
         // Начисляем airdrop очки за PvP победу (если это не PvE и не дуэль)
