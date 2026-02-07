@@ -418,8 +418,20 @@
                     return 'goblin'; // fallback
                 }
 
-                // Иначе используем фракцию врага (PvP)
+                // PvP - проверяем скин противника
                 if (enemy.faction) {
+                    // Получаем скины противника (wizard_skins хранятся в selectedOpponent)
+                    const opponentSkins = window.selectedOpponent?.wizard_skins;
+                    if (opponentSkins && opponentSkins[enemy.id]) {
+                        const skinId = opponentSkins[enemy.id];
+                        // Получаем spriteConfig из скина
+                        if (typeof window.getSkinSpriteConfig === 'function') {
+                            const spriteConfig = window.getSkinSpriteConfig(skinId);
+                            if (spriteConfig && FACTION_SPRITES_CONFIG[spriteConfig]) {
+                                return spriteConfig;
+                            }
+                        }
+                    }
                     return enemy.faction;
                 }
             }

@@ -240,7 +240,7 @@ async function selectOpponent(index) {
     try {
         const { data, error } = await window.dbManager.supabase
             .from('players')
-            .select('wizards, spells, formation, buildings')
+            .select('wizards, spells, formation, buildings, wizard_skins')
             .eq('telegram_id', opponentBasic.telegram_id)
             .single();
 
@@ -484,7 +484,7 @@ async function startDuel() {
     try {
         const { data, error } = await window.dbManager.supabase
             .from('players')
-            .select('wizards, spells, formation, buildings')
+            .select('wizards, spells, formation, buildings, wizard_skins')
             .eq('telegram_id', opponentBasic.telegram_id)
             .single();
 

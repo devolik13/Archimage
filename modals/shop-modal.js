@@ -3,6 +3,9 @@
 // Текущая вкладка магазина
 let currentShopTab = 'free';
 
+// Текущая категория скинов в магазине ('all', 'standard', 'premium')
+let currentShopSkinCategory = 'all';
+
 // Кэш для оптимизации - не пересоздаём модалку каждый раз
 let shopScreenCache = null;
 let shopCachedFaction = null;
@@ -571,107 +574,488 @@ function renderStarterPacks(scale) {
 }
 
 /**
- * Рендер магазина образов
+ * Рендер магазина образов с категориями
  */
 function renderSkinsShop(scale) {
     const baseFontSize = Math.max(12, 14 * scale);
     const smallFontSize = Math.max(10, 12 * scale);
 
-    // Получаем премиум скины из SKINS_CONFIG
-    const premiumSkins = typeof window.getPremiumSkinsOrdered === 'function'
-        ? window.getPremiumSkinsOrdered()
-        : [];
+    // Получаем скины в зависимости от категории
+    const allSkins = typeof window.getAllSkinsOrdered === 'function' ? window.getAllSkinsOrdered() : [];
+    const premiumSkins = typeof window.getPremiumSkinsOrdered === 'function' ? window.getPremiumSkinsOrdered() : [];
+    const standardSkins = allSkins.filter(id => !premiumSkins.includes(id));
 
-    if (premiumSkins.length === 0) {
-        return `
+    // Считаем статистику
+    const premiumOwned = premiumSkins.filter(id =>
+        typeof window.isSkinUnlocked === 'function' && window.isSkinUnlocked(id)
+    ).length;
+    const standardOwned = standardSkins.filter(id =>
+        typeof window.isSkinUnlocked === 'function' && window.isSkinUnlocked(id)
+    ).length;
+
+    // Выбираем какие скины показывать
+    let skinsToShow = [];
+    if (currentShopSkinCategory === 'premium') {
+        skinsToShow = premiumSkins;
+    } else if (currentShopSkinCategory === 'standard') {
+        skinsToShow = standardSkins;
+    } else {
+        skinsToShow = allSkins;
+    }
+
+    // Кнопки категорий
+    const categoryButtons = `
+        <div style="
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        ">
+            <button onclick="switchShopSkinCategory('all')" style="
+                padding: 8px 16px;
+                background: ${currentShopSkinCategory === 'all' ? 'linear-gradient(135deg, #4a90e2, #357abd)' : 'rgba(100,100,100,0.3)'};
+                border: 2px solid ${currentShopSkinCategory === 'all' ? '#4a90e2' : 'rgba(150,150,150,0.3)'};
+                border-radius: 20px;
+                color: ${currentShopSkinCategory === 'all' ? '#fff' : '#aaa'};
+                font-size: ${smallFontSize}px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.2s;
+            ">
+                Все (${allSkins.length})
+            </button>
+            <button onclick="switchShopSkinCategory('standard')" style="
+                padding: 8px 16px;
+                background: ${currentShopSkinCategory === 'standard' ? 'linear-gradient(135deg, #4a90e2, #357abd)' : 'rgba(100,100,100,0.3)'};
+                border: 2px solid ${currentShopSkinCategory === 'standard' ? '#4a90e2' : 'rgba(150,150,150,0.3)'};
+                border-radius: 20px;
+                color: ${currentShopSkinCategory === 'standard' ? '#fff' : '#aaa'};
+                font-size: ${smallFontSize}px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.2s;
+            ">
+                ⚔️ Стандартные (${standardOwned}/${standardSkins.length})
+            </button>
+            <button onclick="switchShopSkinCategory('premium')" style="
+                padding: 8px 16px;
+                background: ${currentShopSkinCategory === 'premium' ? 'linear-gradient(135deg, #ffd700, #ff8c00)' : 'rgba(100,100,100,0.3)'};
+                border: 2px solid ${currentShopSkinCategory === 'premium' ? '#ffd700' : 'rgba(150,150,150,0.3)'};
+                border-radius: 20px;
+                color: ${currentShopSkinCategory === 'premium' ? '#000' : '#c9a961'};
+                font-size: ${smallFontSize}px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.2s;
+            ">
+                👑 Премиум (${premiumOwned}/${premiumSkins.length})
+            </button>
+        </div>
+    `;
+
+    if (skinsToShow.length === 0) {
+        return categoryButtons + `
             <div style="
                 text-align: center;
                 padding: 40px 20px;
                 color: #aaa;
             ">
                 <div style="font-size: 50px; margin-bottom: 15px;">👑</div>
-                <div style="font-size: ${baseFontSize}px; color: #ffd700;">Скоро здесь появятся эксклюзивные образы!</div>
-                <div style="font-size: ${smallFontSize}px; margin-top: 10px;">Следите за обновлениями</div>
+                <div style="font-size: ${baseFontSize}px; color: #ffd700;">Скоро здесь появятся образы!</div>
             </div>
         `;
     }
 
-    let html = '';
+    let skinsHTML = '';
+    const skinIdsForPreview = [];
 
-    for (const skinId of premiumSkins) {
+    for (const skinId of skinsToShow) {
         const skin = window.SKINS_CONFIG?.[skinId];
-        if (!skin || !skin.isPremium) continue;
+        if (!skin) continue;
 
         const isOwned = typeof window.isSkinUnlocked === 'function'
             ? window.isSkinUnlocked(skinId)
             : false;
+        const isPremium = skin.isPremium;
+        const canBuy = isPremium && !isOwned;
 
-        const canBuy = !isOwned;
+        skinIdsForPreview.push(skinId);
 
-        let statusText = '';
-        let statusColor = '#4ade80';
-        let btnText = `💎 ${skin.price} ⭐`;
+        // Определяем стили карточки
+        const borderColor = isOwned ? 'rgba(74, 222, 128, 0.6)' : (isPremium ? 'rgba(255, 215, 0, 0.5)' : 'rgba(100,100,100,0.3)');
+        const bgColor = isOwned ? 'rgba(74, 222, 128, 0.1)' : (isPremium ? 'rgba(255, 215, 0, 0.1)' : 'rgba(60,60,60,0.2)');
 
+        // Кнопка/статус
+        let buttonHTML = '';
         if (isOwned) {
-            statusText = '✅ Куплено';
-            statusColor = '#888';
-            btnText = 'Получено';
+            buttonHTML = `
+                <div style="
+                    padding: 6px 12px;
+                    background: rgba(74, 222, 128, 0.2);
+                    border-radius: 6px;
+                    color: #4ade80;
+                    font-size: ${smallFontSize}px;
+                    font-weight: bold;
+                ">✓ Получено</div>
+            `;
+        } else if (isPremium) {
+            buttonHTML = `
+                <button onclick="event.stopPropagation(); buyShopSkin('${skinId}')" style="
+                    width: 100%;
+                    padding: 6px 12px;
+                    background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 165, 0, 0.9));
+                    border: none;
+                    border-radius: 6px;
+                    color: #000;
+                    font-size: ${smallFontSize}px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                ">
+                    💎 ${skin.price} ⭐
+                </button>
+            `;
+        } else {
+            // Стандартный скин - показываем как получить
+            buttonHTML = `
+                <div style="
+                    font-size: ${smallFontSize * 0.9}px;
+                    color: #f59e0b;
+                    line-height: 1.2;
+                ">${skin.unlockText || '🔒 Заблокировано'}</div>
+            `;
         }
 
-        // Определяем путь к превью
-        const previewPath = `images/wizards/${skin.faction}/${skin.spriteConfig}_idle.webp`;
+        skinsHTML += `
+            <div onclick="previewShopSkin('${skinId}')" style="
+                width: 140px;
+                background: ${bgColor};
+                border: 2px solid ${borderColor};
+                border-radius: 12px;
+                padding: 10px;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.2s;
+                position: relative;
+            " onmouseover="this.style.transform='scale(1.03)'"
+               onmouseout="this.style.transform='scale(1)'">
 
-        html += `
-            <div class="shop-item-card ${!canBuy ? 'disabled' : ''}"
-                 onclick="${canBuy ? `buyShopSkin('${skinId}')` : ''}"
-                 style="text-align: center; ${isOwned ? 'opacity: 0.6;' : ''}">
+                ${isPremium ? `
+                    <div style="
+                        position: absolute;
+                        top: -8px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: linear-gradient(135deg, #ffd700, #ff8c00);
+                        color: #000;
+                        padding: 2px 8px;
+                        border-radius: 10px;
+                        font-size: 9px;
+                        font-weight: bold;
+                    ">PREMIUM</div>
+                ` : ''}
 
                 <div style="
-                    position: relative;
-                    width: 120px;
-                    height: 120px;
-                    margin: 0 auto 10px;
+                    width: 100px;
+                    height: 100px;
+                    margin: ${isPremium ? '5px' : '0'} auto 8px;
                     background: rgba(0,0,0,0.3);
-                    border-radius: 12px;
+                    border-radius: 8px;
                     overflow: hidden;
+                    position: relative;
                 ">
-                    <canvas id="shop-skin-preview-${skinId}" width="120" height="120" style="width: 120px; height: 120px;"></canvas>
-                    ${skin.isPremium ? `
+                    <canvas id="shop-skin-preview-${skinId}" width="100" height="100" style="width: 100px; height: 100px;"></canvas>
+                    ${!isOwned && !isPremium ? `
                         <div style="
                             position: absolute;
-                            top: 5px;
-                            left: 5px;
-                            background: linear-gradient(135deg, #ffd700, #ff8c00);
-                            color: #000;
-                            padding: 2px 6px;
-                            border-radius: 8px;
-                            font-size: 9px;
-                            font-weight: bold;
-                        ">PREMIUM</div>
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: rgba(0,0,0,0.6);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 28px;
+                        ">🔒</div>
                     ` : ''}
                 </div>
 
-                <div style="color: #ffd700; font-size: ${baseFontSize * 1.1}px; font-weight: bold; margin-bottom: 3px;">
-                    ${skin.name}
-                </div>
+                <div style="
+                    color: ${isOwned ? '#4ade80' : (isPremium ? '#ffd700' : '#ccc')};
+                    font-size: ${baseFontSize}px;
+                    font-weight: bold;
+                    margin-bottom: 5px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                ">${skin.name}</div>
 
-                <div style="font-size: ${smallFontSize * 0.9}px; color: #ccc; margin-bottom: 8px; min-height: 30px;">
-                    ${skin.description}
-                </div>
-
-                ${statusText ? `<div style="color: ${statusColor}; font-size: ${smallFontSize}px; margin-bottom: 5px;">${statusText}</div>` : ''}
-
-                <button class="shop-buy-btn premium" ${!canBuy ? 'disabled' : ''} style="font-size: ${smallFontSize}px; width: 100%;">
-                    ${btnText}
-                </button>
+                ${buttonHTML}
             </div>
         `;
     }
 
+    // Оборачиваем в flex контейнер
+    const html = categoryButtons + `
+        <div style="
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            padding: 5px;
+        ">
+            ${skinsHTML}
+        </div>
+    `;
+
     // Загружаем превью после рендера
-    setTimeout(() => loadShopSkinPreviews(premiumSkins), 50);
+    setTimeout(() => loadShopSkinPreviews(skinIdsForPreview), 50);
 
     return html;
+}
+
+/**
+ * Переключение категории скинов в магазине
+ */
+function switchShopSkinCategory(category) {
+    currentShopSkinCategory = category;
+    // Перерисовываем только контент магазина
+    refreshShopContent();
+}
+
+/**
+ * Обновляет только содержимое магазина (без перезагрузки всего экрана)
+ */
+function refreshShopContent() {
+    const overlay = document.getElementById('shop-ui-overlay');
+    const img = document.getElementById('shop-bg-image');
+
+    if (overlay && img) {
+        const rect = img.getBoundingClientRect();
+        renderShopContent(overlay, rect);
+    }
+}
+
+/**
+ * Предпросмотр скина в магазине (с анимацией)
+ */
+function previewShopSkin(skinId) {
+    const skin = window.SKINS_CONFIG?.[skinId];
+    if (!skin) return;
+
+    const isOwned = typeof window.isSkinUnlocked === 'function' && window.isSkinUnlocked(skinId);
+    const isPremium = skin.isPremium;
+
+    // Создаём overlay для превью
+    const overlay = document.createElement('div');
+    overlay.id = 'shop-skin-preview-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 10060;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease-out;
+    `;
+
+    // Кнопки в зависимости от статуса
+    let buttonsHTML = '';
+    if (isOwned) {
+        buttonsHTML = `
+            <button onclick="closeShopSkinPreview()" style="
+                padding: 10px 30px;
+                background: rgba(74, 222, 128, 0.3);
+                border: 2px solid #4ade80;
+                border-radius: 8px;
+                color: #4ade80;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+            ">✓ Получено</button>
+        `;
+    } else if (isPremium) {
+        buttonsHTML = `
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                <button onclick="closeShopSkinPreview()" style="
+                    padding: 10px 20px;
+                    background: rgba(100, 100, 100, 0.5);
+                    border: 2px solid rgba(150, 150, 150, 0.5);
+                    border-radius: 8px;
+                    color: #aaa;
+                    font-size: 14px;
+                    cursor: pointer;
+                ">Закрыть</button>
+                <button onclick="closeShopSkinPreview(); buyShopSkin('${skinId}')" style="
+                    padding: 10px 20px;
+                    background: linear-gradient(135deg, #ffd700, #ff8c00);
+                    border: none;
+                    border-radius: 8px;
+                    color: #000;
+                    font-size: 14px;
+                    font-weight: bold;
+                    cursor: pointer;
+                ">💎 Купить ${skin.price} ⭐</button>
+            </div>
+        `;
+    } else {
+        buttonsHTML = `
+            <div style="
+                padding: 10px 20px;
+                background: rgba(245, 158, 11, 0.2);
+                border: 2px solid rgba(245, 158, 11, 0.5);
+                border-radius: 8px;
+                color: #f59e0b;
+                font-size: 13px;
+                text-align: center;
+                max-width: 280px;
+            ">${skin.unlockText || 'Заблокировано'}</div>
+            <button onclick="closeShopSkinPreview()" style="
+                margin-top: 10px;
+                padding: 10px 30px;
+                background: rgba(100, 100, 100, 0.5);
+                border: 2px solid rgba(150, 150, 150, 0.5);
+                border-radius: 8px;
+                color: #aaa;
+                font-size: 14px;
+                cursor: pointer;
+            ">Закрыть</button>
+        `;
+    }
+
+    overlay.innerHTML = `
+        <div style="
+            text-align: center;
+            padding: 20px;
+            animation: scaleIn 0.2s ease-out;
+        ">
+            <h3 style="
+                color: ${isPremium ? '#ffd700' : '#4a90e2'};
+                font-size: 22px;
+                margin: 0 0 15px 0;
+                text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            ">${skin.name} ${isPremium ? '👑' : ''}</h3>
+
+            <div style="
+                width: 200px;
+                height: 200px;
+                margin: 0 auto 15px;
+                border: 3px solid ${isPremium ? '#ffd700' : '#4a90e2'};
+                border-radius: 12px;
+                background: rgba(0,0,0,0.4);
+                overflow: hidden;
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            ">
+                <canvas id="shop-skin-large-preview" width="200" height="200" style="width: 200px; height: 200px;"></canvas>
+            </div>
+
+            <p style="
+                color: #ccc;
+                font-size: 14px;
+                margin: 0 0 15px 0;
+                max-width: 280px;
+            ">${skin.description}</p>
+
+            ${buttonsHTML}
+        </div>
+    `;
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            closeShopSkinPreview();
+        }
+    });
+
+    document.body.appendChild(overlay);
+
+    // Запускаем анимированное превью
+    startShopSkinAnimation(skin);
+}
+
+// Хранилище для анимации превью в магазине
+let shopSkinAnimationId = null;
+
+/**
+ * Запускает анимацию превью скина в магазине
+ */
+function startShopSkinAnimation(skin) {
+    const canvas = document.getElementById('shop-skin-large-preview');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+
+    // Определяем пути к спрайтам
+    let idlePath, castPath;
+    if (skin.isPremium || skin.isDefault) {
+        idlePath = `images/wizards/${skin.faction}/${skin.spriteConfig}_idle.webp`;
+        castPath = `images/wizards/${skin.faction}/${skin.spriteConfig}_cast.webp`;
+        if (skin.isDefault) {
+            idlePath = `images/wizards/${skin.faction}/idle.webp`;
+            castPath = `images/wizards/${skin.faction}/cast.webp`;
+        }
+    } else {
+        idlePath = `images/enemies/${skin.spriteConfig}/idle.webp`;
+        castPath = `images/enemies/${skin.spriteConfig}/cast.webp`;
+    }
+
+    const frameSize = 256;
+    const frameCount = 25;
+    const gridColumns = 5;
+    let currentFrame = 0;
+    let currentAnimation = 'idle';
+
+    const idleImg = new Image();
+    const castImg = new Image();
+    let idleLoaded = false;
+    let castLoaded = false;
+
+    const startAnimation = () => {
+        if (!idleLoaded) return;
+
+        const drawFrame = () => {
+            ctx.clearRect(0, 0, 200, 200);
+
+            const img = (currentAnimation === 'cast' && castLoaded) ? castImg : idleImg;
+            const col = currentFrame % gridColumns;
+            const row = Math.floor(currentFrame / gridColumns);
+            const srcX = col * frameSize;
+            const srcY = row * frameSize;
+
+            ctx.drawImage(img, srcX, srcY, frameSize, frameSize, 0, 0, 200, 200);
+
+            currentFrame++;
+            if (currentFrame >= frameCount) {
+                currentFrame = 0;
+                currentAnimation = currentAnimation === 'idle' ? 'cast' : 'idle';
+            }
+        };
+
+        drawFrame();
+        shopSkinAnimationId = setInterval(drawFrame, 80);
+    };
+
+    idleImg.onload = () => { idleLoaded = true; startAnimation(); };
+    castImg.onload = () => { castLoaded = true; };
+    idleImg.src = idlePath;
+    castImg.src = castPath;
+}
+
+/**
+ * Закрывает превью скина в магазине
+ */
+function closeShopSkinPreview() {
+    if (shopSkinAnimationId) {
+        clearInterval(shopSkinAnimationId);
+        shopSkinAnimationId = null;
+    }
+    const overlay = document.getElementById('shop-skin-preview-overlay');
+    if (overlay) overlay.remove();
 }
 
 /**
@@ -686,13 +1070,23 @@ function loadShopSkinPreviews(skinIds) {
         if (!canvas) return;
 
         const ctx = canvas.getContext('2d');
-        const spritePath = `images/wizards/${skin.faction}/${skin.spriteConfig}_idle.webp`;
+
+        // Определяем путь к спрайту
+        let spritePath;
+        if (skin.isPremium) {
+            spritePath = `images/wizards/${skin.faction}/${skin.spriteConfig}_idle.webp`;
+        } else if (skin.isDefault) {
+            spritePath = `images/wizards/${skin.faction}/idle.webp`;
+        } else {
+            spritePath = `images/enemies/${skin.spriteConfig}/idle.webp`;
+        }
 
         const img = new Image();
         img.onload = () => {
             const frameSize = 256;
-            ctx.clearRect(0, 0, 120, 120);
-            ctx.drawImage(img, 0, 0, frameSize, frameSize, 0, 0, 120, 120);
+            const canvasSize = canvas.width;
+            ctx.clearRect(0, 0, canvasSize, canvasSize);
+            ctx.drawImage(img, 0, 0, frameSize, frameSize, 0, 0, canvasSize, canvasSize);
         };
         img.src = spritePath;
     });
@@ -1009,6 +1403,10 @@ window.closeSkinPaymentDialog = closeSkinPaymentDialog;
 window.purchaseSkinWithStars = purchaseSkinWithStars;
 window.purchaseSkinWithTON = purchaseSkinWithTON;
 window.completeSkinPurchase = completeSkinPurchase;
+window.switchShopSkinCategory = switchShopSkinCategory;
+window.previewShopSkin = previewShopSkin;
+window.closeShopSkinPreview = closeShopSkinPreview;
+window.refreshShopContent = refreshShopContent;
 
 /**
  * Покупка стартового пакета (показывает диалог выбора или покупает напрямую)
