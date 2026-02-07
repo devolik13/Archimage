@@ -43,16 +43,9 @@ function formatTimeCurrency(minutes) {
     const days = Math.floor(hours / 24);
     const remainingHours = hours % 24;
     
-    if (days < 7) {
-        let result = `${days} дн`;
-        if (remainingHours > 0) result += ` ${remainingHours}ч`;
-        return result;
-    }
-    
-    const weeks = Math.floor(days / 7);
-    const remainingDays = days % 7;
-    
-    return `${weeks} нед ${remainingDays > 0 ? remainingDays + ' дн' : ''}`.trim();
+    let result = `${days} дн`;
+    if (remainingHours > 0) result += ` ${remainingHours}ч`;
+    return result;
 }
 
 // ============ ФУНКЦИИ ЗДАНИЙ ============
