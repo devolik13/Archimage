@@ -429,6 +429,11 @@ class SummonsManager {
         const hpContainer = new PIXI.Container();
         hpContainer.y = -30;
 
+        // Компенсируем зеркалирование спрайта, чтобы текст и бар не были отражены
+        if (parentSprite.scale.x < 0) {
+            hpContainer.scale.x = -1;
+        }
+
         // Фон HP бара
         const hpBarBg = new PIXI.Graphics();
         hpBarBg.beginFill(0x000000, 0.5);
