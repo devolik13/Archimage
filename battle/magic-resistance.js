@@ -98,6 +98,7 @@ function getSpellSchool(spellId) {
         if (hybridContainsSchool(spellId, 'poison')) schools.push('poison');
         if (hybridContainsSchool(spellId, 'light')) schools.push('light');
         if (hybridContainsSchool(spellId, 'dark')) schools.push('dark');
+        if (hybridContainsSchool(spellId, 'necromant')) schools.push('necromant');
         return schools;
     }
     // Эффекты зон

@@ -251,6 +251,13 @@ function executeSpellEffect(wizard, spellId, spellData, position, casterType) {
                 castBasicAttack(wizard, position, casterType);
             }
             break;
+        case 'necromant':
+            if (typeof window.castNecromantSpell === 'function') {
+                window.castNecromantSpell(wizard, spellId, spellData, position, casterType);
+            } else {
+                castBasicAttack(wizard, position, casterType);
+            }
+            break;
         default:
             castBasicAttack(wizard, position, casterType);
     }

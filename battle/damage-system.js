@@ -155,6 +155,14 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     	    }
     	}
 
+    	// НЕКРОМАНТ: -10% входящего урона (кроме магии света)
+    	if (target.faction === 'necromant') {
+    	    const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
+    	    if (spellSchool !== 'light') {
+    	        finalDamage = Math.floor(finalDamage * 0.9);
+    	    }
+    	}
+
         // Опыт теперь начисляется централизованно в executeSingleMageAttack (core.js)
         // на основе фактического изменения HP врагов
 
@@ -297,6 +305,14 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
             } else {
                 return 0; // урон полностью поглощён
             }
+        }
+    }
+
+    // НЕКРОМАНТ: -10% входящего урона (кроме магии света)
+    if (target.faction === 'necromant') {
+        const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
+        if (spellSchool !== 'light') {
+            finalDamage = Math.floor(finalDamage * 0.9);
         }
     }
 

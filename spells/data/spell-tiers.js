@@ -64,6 +64,10 @@ const SPELL_TIERS = {
         "miasma",          // Tier 3 - Миазма
         "shadow_realm",    // Tier 4 - Мир теней
         "fading"           // Tier 5 - Угасание
+    ],
+
+    "necromant": [
+        "summon_skeleton"  // Tier 1 - Призыв скелета
     ]
 };
 

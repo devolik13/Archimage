@@ -49,7 +49,10 @@ const SPELL_ANIMATIONS_REGISTRY = {
     light_beam: 'light/light-beam',
     rainbow_shield: 'light/rainbow-shield',
     sun_radiance: 'light/sun-radiance',
-    dawn: 'light/dawn'
+    dawn: 'light/dawn',
+
+    // Некромантия
+    summon_skeleton: 'necromant/summon-skeleton'
 };
 
 // Хранилище загруженных модулей анимаций

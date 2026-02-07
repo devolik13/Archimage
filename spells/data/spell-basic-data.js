@@ -56,7 +56,10 @@ const SPELL_NAMES = {
     "weakness": "Слабость",
     "miasma": "Миазма",
     "shadow_realm": "Мир теней",
-    "fading": "Угасание"
+    "fading": "Угасание",
+
+    // Некромантия
+    "summon_skeleton": "Призыв скелета"
 };
 
 // Базовый урон заклинаний
@@ -70,6 +73,7 @@ const SPELL_BASE_DAMAGE = {
     "poisoned_blade": 9,
     "flash": 10,
     "dark_clot": 15,
+    "summon_skeleton": 15,
 
     // Tier 2 - базовый урон 20-30
     "firebolt": 25,
@@ -162,7 +166,8 @@ const SPELL_TYPE_CONFIG = {
 
     // Призыв
     "call_wolf": "summon",
-    "ent": "summon"
+    "ent": "summon",
+    "summon_skeleton": "summon"
 };
 
 // Вспомогательные функции для определения типа

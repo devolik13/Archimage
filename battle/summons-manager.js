@@ -27,6 +27,16 @@ class SummonsManager {
                 yOffset: 0.7,
                 attackAnimation: 'bite'
             },
+            'necromant_skeleton': {
+                name: 'Скелет',
+                sprite: null, // пока без спрайта
+                color: 0xCCCCCC,
+                width: 15,
+                height: 25,
+                yOffset: 0.7,
+                scale: 0.60,
+                attackAnimation: 'slash'
+            },
             'nature_ent': {
                 name: 'Энт Природы',
                 sprite: null, // пока без спрайта
@@ -731,6 +741,7 @@ class SummonsManager {
         const factionMap = {
             'nature_wolf': 'nature',
             'nature_ent': 'nature',
+            'necromant_skeleton': 'necromant',
             'fire_elemental': 'fire',
             'water_golem': 'water',
             'air_spirit': 'air',
@@ -840,6 +851,41 @@ window.createWolfSummon = function(wizard, casterType, position, level) {
     } else {
         // Создаем нового
         return window.summonsManager.createSummon('nature_wolf', {
+            casterId: wizard.id,
+            casterType: casterType,
+            position: position,
+            level: level,
+            hp: stats.hp,
+            maxHP: stats.hp,
+            damage: stats.damage
+        });
+    }
+};
+
+// Адаптер для создания Скелета (Некромант)
+window.createSkeletonSummon = function(wizard, casterType, position, level) {
+    const skeletonStats = [
+        { hp: 5,  damage: 15 },   // Ур.1
+        { hp: 6,  damage: 18 },   // Ур.2
+        { hp: 7,  damage: 21 },   // Ур.3
+        { hp: 8,  damage: 24 },   // Ур.4
+        { hp: 10, damage: 24 }    // Ур.5 — 50% шанс пробить 50% брони
+    ];
+
+    const stats = skeletonStats[Math.min(level, 5) - 1] || skeletonStats[0];
+
+    // Проверяем, есть ли уже скелет
+    const existingSkeleton = window.summonsManager.hasSummonOfType(
+        wizard.id,
+        'necromant_skeleton',
+        position
+    );
+
+    if (existingSkeleton) {
+        window.summonsManager.restoreSummon(existingSkeleton.id);
+        return existingSkeleton;
+    } else {
+        return window.summonsManager.createSummon('necromant_skeleton', {
             casterId: wizard.id,
             casterType: casterType,
             position: position,
