@@ -3,7 +3,7 @@
 // Конфигурация гильдий
 const GUILD_CONFIG = {
     MAX_LEVEL: 30,
-    HP_BONUS_PER_LEVEL: 10,         // +10% HP за уровень
+    HP_BONUS_PER_LEVEL: 5,          // +5% HP за уровень
     DAMAGE_BONUS_PER_LEVEL: 1,      // +1% урона за уровень
     BASE_CAPACITY: 10,               // Стартовая вместимость
     CAPACITY_BONUS_LEVELS: [5, 10, 15, 20, 25, 30], // Уровни когда +5 вместимость
