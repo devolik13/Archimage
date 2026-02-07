@@ -210,11 +210,6 @@ async function initGameWithDatabase() {
             window.checkDailyLoginReward();
         }
 
-        // Проверка промо-акции
-        if (typeof window.checkPromoEvent === 'function') {
-            window.checkPromoEvent();
-        }
-
         // Проверка награды за испытание прошлой недели
         if (typeof window.checkAndClaimTrialReward === 'function') {
             window.checkAndClaimTrialReward().then(result => {
