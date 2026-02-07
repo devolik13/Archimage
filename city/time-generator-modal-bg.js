@@ -311,10 +311,11 @@ function showGeneratorUpgradeConfirm(currentLevel, upgradeTime) {
     const titleFontSize = Math.max(14, 20 * Math.min(scaleX, scaleY));
     const smallFontSize = Math.max(11, 14 * Math.min(scaleX, scaleY));
     
-    // Рассчитываем новые значения
+    // Рассчитываем новые значения используя реальные формулы из TIME_CURRENCY_CONFIG
     const nextLevel = currentLevel + 1;
-    const newProduction = 60 + currentLevel * 30;
-    const newStorage = 1440 + currentLevel * 720;
+    const config = window.TIME_CURRENCY_CONFIG || { GENERATOR_BASE_RATE: 36, GENERATOR_PER_LEVEL: 7.6, STORAGE_BASE: 1037, STORAGE_PER_LEVEL: 219 };
+    const newProduction = config.GENERATOR_BASE_RATE + currentLevel * config.GENERATOR_PER_LEVEL;
+    const newStorage = config.STORAGE_BASE + currentLevel * config.STORAGE_PER_LEVEL;
     
     // Контентная область (поднята выше)
     const contentArea = {
@@ -360,7 +361,7 @@ function showGeneratorUpgradeConfirm(currentLevel, upgradeTime) {
                     ⚡ Новое производство:
                 </div>
                 <div style="font-size: ${baseFontSize}px; color: #4ade80; font-weight: bold;">
-                    +${newProduction} мин/час
+                    +${Math.round(newProduction)} мин/час
                 </div>
             </div>
             
