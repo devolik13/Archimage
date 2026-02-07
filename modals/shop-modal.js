@@ -917,9 +917,9 @@ async function purchaseSkinWithTON(skinId) {
     closeSkinPaymentDialog();
 
     // Проверяем TON Connect
-    if (!window.tonConnectUI) {
+    if (!window.tonConnectUI || !window.tonConnectUI.wallet) {
         if (window.showNotification) {
-            window.showNotification('⚠️ Подключите TON кошелёк', 'warning');
+            window.showNotification('⚠️ Сначала подключите TON кошелёк в разделе Airdrop', 'warning');
         }
         return;
     }
@@ -929,40 +929,67 @@ async function purchaseSkinWithTON(skinId) {
         const tonPrice = await getTONPrice();
         const tonAmount = skin.priceUSD / tonPrice;
 
-        // Создаём транзакцию
+        console.log('💎 Покупка скина через TON:', skin.name, tonAmount.toFixed(4), 'TON');
+
+        // Создаём транзакцию (без payload - как в других TON покупках)
         const transaction = {
             validUntil: Math.floor(Date.now() / 1000) + 600, // 10 минут
             messages: [{
                 address: TON_RECEIVER_ADDRESS,
-                amount: Math.floor(tonAmount * 1e9).toString(), // в наноTON
+                amount: String(Math.floor(tonAmount * 1e9)) // в наноTON
             }]
         };
 
         const result = await window.tonConnectUI.sendTransaction(transaction);
 
-        if (result) {
-            // Верифицируем транзакцию на сервере
-            const verifyResponse = await fetch('/api/verify-ton-skin-payment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    skinId: skinId,
-                    telegramId: window.userData?.telegram_id,
-                    txHash: result.boc
-                })
-            });
+        console.log('✅ TON транзакция скина отправлена:', result);
 
-            if (verifyResponse.ok) {
-                await completeSkinPurchase(skinId);
-            } else {
-                throw new Error('Ошибка верификации транзакции');
+        if (result) {
+            // Оптимистично применяем покупку (как для паков времени)
+            await completeSkinPurchase(skinId);
+
+            // Начисляем airdrop очки (USD эквивалент)
+            if (typeof window.addAirdropPoints === 'function' && skin.priceUSD) {
+                const airdropPoints = Math.floor((skin.priceUSD / 0.013) / 10);
+                if (airdropPoints > 0) {
+                    window.addAirdropPoints(airdropPoints, 'Покупка скина TON');
+                }
             }
+
+            // Сохраняем покупку через TON в лог
+            await saveTONSkinPurchase(skinId, tonAmount, result.boc);
         }
     } catch (error) {
         console.error('Ошибка покупки за TON:', error);
         if (window.showNotification) {
             window.showNotification('⚠️ Ошибка оплаты TON', 'error');
         }
+    }
+}
+
+/**
+ * Сохраняет покупку скина через TON в БД
+ */
+async function saveTONSkinPurchase(skinId, tonAmount, txBoc) {
+    try {
+        if (!window.dbManager?.supabase) return;
+
+        await window.dbManager.supabase
+            .from('payments')
+            .insert({
+                telegram_id: window.userData?.telegram_id,
+                product_id: `skin_${skinId}`,
+                amount_stars: 0,
+                amount_ton: tonAmount,
+                status: 'completed',
+                payment_method: 'ton',
+                tx_hash: txBoc,
+                completed_at: new Date().toISOString()
+            });
+
+        console.log('💾 TON покупка скина сохранена в БД');
+    } catch (error) {
+        console.error('❌ Ошибка сохранения TON покупки:', error);
     }
 }
 
