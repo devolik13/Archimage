@@ -883,7 +883,7 @@ async function disconnectWallet() {
 }
 
 /**
- * Загрузка лидерборда airdrop
+ * Загрузка лидерборда airdrop (v2 - real DB query)
  */
 async function loadAirdropLeaderboard() {
     const leaderboardDiv = document.getElementById('airdrop-leaderboard');
