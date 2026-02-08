@@ -772,37 +772,42 @@ function showSkinPaymentDialog(skinId) {
             background: linear-gradient(135deg, #1a1a2e, #16213e);
             border: 2px solid rgba(255, 215, 0, 0.5);
             border-radius: 16px;
-            padding: 25px;
-            max-width: 380px;
+            padding: 16px 20px;
+            max-width: 340px;
+            width: 90%;
             text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
         ">
-            <h3 style="color: #ffd700; margin: 0 0 15px 0; font-size: 20px;">
-                👑 Покупка образа
-            </h3>
-
             <div style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
                 background: rgba(0,0,0,0.3);
                 border-radius: 12px;
-                padding: 15px;
-                margin-bottom: 15px;
+                padding: 10px 12px;
+                margin-bottom: 12px;
+                text-align: left;
             ">
-                <canvas id="payment-skin-preview" width="100" height="100" style="width: 100px; height: 100px; margin-bottom: 10px;"></canvas>
-                <div style="color: #fff; font-size: 18px; font-weight: bold;">${skin.name}</div>
-                <div style="color: #aaa; font-size: 13px; margin-top: 5px;">${skin.description}</div>
+                <canvas id="payment-skin-preview" width="80" height="80" style="width: 80px; height: 80px; flex-shrink: 0; border-radius: 8px;"></canvas>
+                <div>
+                    <div style="color: #ffd700; font-size: 15px; font-weight: bold;">${skin.name}</div>
+                    <div style="color: #aaa; font-size: 12px; margin-top: 3px;">${skin.description}</div>
+                </div>
             </div>
 
-            <p style="color: #ccc; font-size: 14px; margin-bottom: 20px;">
+            <p style="color: #ccc; font-size: 13px; margin: 0 0 10px 0;">
                 Выберите способ оплаты:
             </p>
 
-            <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
                 <button onclick="purchaseSkinWithStars('${skinId}')" style="
-                    padding: 14px 20px;
+                    padding: 12px 16px;
                     background: linear-gradient(135deg, #ffd700, #ff8c00);
                     border: none;
                     border-radius: 10px;
                     color: #000;
-                    font-size: 16px;
+                    font-size: 15px;
                     font-weight: bold;
                     cursor: pointer;
                     display: flex;
@@ -814,12 +819,12 @@ function showSkinPaymentDialog(skinId) {
                 </button>
 
                 <button onclick="purchaseSkinWithTON('${skinId}')" style="
-                    padding: 14px 20px;
+                    padding: 12px 16px;
                     background: linear-gradient(135deg, #0098EA, #0077B6);
                     border: none;
                     border-radius: 10px;
                     color: #fff;
-                    font-size: 16px;
+                    font-size: 15px;
                     font-weight: bold;
                     cursor: pointer;
                     display: flex;
@@ -831,12 +836,12 @@ function showSkinPaymentDialog(skinId) {
                 </button>
 
                 <button onclick="closeSkinPaymentDialog()" style="
-                    padding: 12px 20px;
+                    padding: 8px 16px;
                     background: rgba(100, 100, 100, 0.3);
                     border: 2px solid rgba(150, 150, 150, 0.5);
                     border-radius: 10px;
                     color: #aaa;
-                    font-size: 14px;
+                    font-size: 13px;
                     cursor: pointer;
                 ">
                     Отмена
@@ -854,8 +859,8 @@ function showSkinPaymentDialog(skinId) {
             const ctx = canvas.getContext('2d');
             const img = new Image();
             img.onload = () => {
-                ctx.clearRect(0, 0, 100, 100);
-                ctx.drawImage(img, 0, 0, 256, 256, 0, 0, 100, 100);
+                ctx.clearRect(0, 0, 80, 80);
+                ctx.drawImage(img, 0, 0, 256, 256, 0, 0, 80, 80);
             };
             img.src = skin.customSpritePath
                 ? `${skin.customSpritePath}/idle.webp`

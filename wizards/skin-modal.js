@@ -633,7 +633,8 @@ const SKIN_ANIMATION_CONFIG = {
     nature: { frameCount: 25, gridColumns: 5 },  // 5×5 сетка
     poison: { frameCount: 25, gridColumns: 5 },  // 5×5 сетка
     // Премиум скины
-    lady_fire: { frameCount: 25, gridColumns: 5 } // 5×5 сетка
+    lady_fire: { frameCount: 25, gridColumns: 5 }, // 5×5 сетка
+    lord_demon: { frameCount: 25, gridColumns: 5 } // 5×5 сетка
 };
 
 // Хранилище для текущей анимации превью
@@ -814,7 +815,12 @@ function startSkinPreviewAnimation(skin, canvasId) {
     let idlePath, castPath;
     let animConfig;
 
-    if (skin.isPremium) {
+    if (skin.customSpritePath) {
+        // Кастомный путь (например enemies/lord_demon)
+        idlePath = `${skin.customSpritePath}/idle.webp`;
+        castPath = `${skin.customSpritePath}/cast.webp`;
+        animConfig = SKIN_ANIMATION_CONFIG[skin.spriteConfig] || { frameCount: 25, gridColumns: 5 };
+    } else if (skin.isPremium) {
         // Премиум скины - путь через spriteConfig
         idlePath = `images/wizards/${skin.faction}/${skin.spriteConfig}_idle.webp`;
         castPath = `images/wizards/${skin.faction}/${skin.spriteConfig}_cast.webp`;
