@@ -71,10 +71,11 @@ async function initGameWithDatabase() {
         window.userData.constructions = [];
     }
 
-    // Инициализация энергии боев (если нет в БД)
+    // Инициализация энергии боев
     if (player.battle_energy) {
         window.userData.battle_energy = player.battle_energy;
-    } else if (typeof window.initBattleEnergy === 'function') {
+    }
+    if (typeof window.initBattleEnergy === 'function') {
         window.initBattleEnergy(window.userData);
     }
 
