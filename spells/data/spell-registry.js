@@ -52,7 +52,8 @@ const SPELL_ANIMATIONS_REGISTRY = {
     dawn: 'light/dawn',
 
     // Некромантия
-    summon_skeleton: 'necromant/summon-skeleton'
+    summon_skeleton: 'necromant/summon-skeleton',
+    bone_spear: 'necromant/bone-spear'
 };
 
 // Хранилище загруженных модулей анимаций

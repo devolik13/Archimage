@@ -468,6 +468,17 @@ const SPELL_FULL_DATA = {
         type: "summon",
         base_damage: 15,
         unlock_condition: null
+    },
+    "bone_spear": {
+        id: "bone_spear",
+        name: "Костяное копьё",
+        description: "Метает костяное копьё, пронзающее всех врагов в ряду насквозь (стены, призванных существ, магов). Урон по уровням: 10/13/16/20/24. На 5 уровне: игнорирует 50% брони.",
+        icon: "🦴",
+        school: "necromant",
+        tier: 2,
+        type: "multi_target",
+        base_damage: 24,
+        unlock_condition: "summon_skeleton_level_5"
     }
 };
 

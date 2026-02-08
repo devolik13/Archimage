@@ -67,7 +67,8 @@ const SPELL_TIERS = {
     ],
 
     "necromant": [
-        "summon_skeleton"  // Tier 1 - Призыв скелета
+        "summon_skeleton",  // Tier 1 - Призыв скелета
+        "bone_spear"        // Tier 2 - Костяное копьё
     ]
 };
 

@@ -5,6 +5,9 @@ function castNecromantSpell(wizard, spellId, spellData, position, casterType) {
         case 'summon_skeleton':
             castSummonSkeleton(wizard, spellData, position, casterType);
             break;
+        case 'bone_spear':
+            castBoneSpear(wizard, spellData, position, casterType);
+            break;
         default:
             if (typeof window.castBasicAttack === 'function') {
                 window.castBasicAttack(wizard, position, casterType);
@@ -89,6 +92,134 @@ function performSkeletonAttack(skeleton, caster) {
                 window.trackBattleKill(caster);
             }
         }
+    }
+}
+
+// --- Костяное копьё (Bone Spear) - Tier 2, пронзает ряд ---
+function castBoneSpear(wizard, spellData, position, casterType) {
+    const level = spellData.level || 1;
+    const baseDamage = [10, 13, 16, 20, 24][level - 1] || 10;
+    const armorIgnore = level >= 5 ? 0.5 : 0; // Lv5: 50% игнор брони
+
+    // Определяем колонки для пронзания (от ближней к дальней)
+    // Игрок атакует: стена(2) → призванные(1) → маги(0)
+    // Враг атакует: стена(3) → призванные(4) → маги(5)
+    const targetColumns = casterType === 'player' ? [2, 1, 0] : [3, 4, 5];
+
+    // Находим все цели в ряду (по позиции кастера)
+    const targets = [];
+    for (const col of targetColumns) {
+        // Стены (колонки 2 и 3)
+        if (col === 2 || col === 3) {
+            if (typeof window.findEarthWallAt === 'function') {
+                const wall = window.findEarthWallAt(col, position);
+                if (wall && wall.hp > 0) {
+                    targets.push({ wizard: { ...wall, type: 'earth_wall_hp' }, position: position, column: col, isWall: true });
+                }
+            }
+        }
+        // Призванные существа (колонки 1 и 4)
+        else if (col === 1 || col === 4) {
+            if (typeof window.findSummonedCreatureAt === 'function') {
+                const summoned = window.findSummonedCreatureAt(col, position);
+                if (summoned && summoned.hp > 0) {
+                    targets.push({ wizard: summoned, position: position, column: col, isSummoned: true });
+                }
+            }
+        }
+        // Маги (колонки 0 и 5)
+        else if (col === 0) {
+            const enemy = window.enemyFormation?.[position];
+            if (enemy && enemy.hp > 0) {
+                targets.push({ wizard: enemy, position: position, column: col });
+            }
+        }
+        else if (col === 5) {
+            const wizardId = window.playerFormation?.[position];
+            if (wizardId) {
+                const target = window.playerWizards?.find(w => w.id === wizardId);
+                if (target && target.hp > 0) {
+                    targets.push({ wizard: target, position: position, column: col });
+                }
+            }
+        }
+    }
+
+    if (targets.length === 0) {
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`🦴 ${wizard.name} метает Костяное копьё, но цель не найдена`);
+        }
+        return;
+    }
+
+    // Лог начала
+    if (typeof window.addToBattleLog === 'function') {
+        window.addToBattleLog(`🦴 ${wizard.name} метает Костяное копьё [Ур.${level}]! Пронзает ${targets.length} ${targets.length === 1 ? 'цель' : 'целей'}`);
+    }
+
+    if (level >= 5 && armorIgnore > 0) {
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`   💀 Копьё пронзает броню! (-50% брони)`);
+        }
+    }
+
+    // Наносим урон каждой цели в ряду
+    let totalDamage = 0;
+    for (const target of targets) {
+        let actualDamage = baseDamage;
+
+        // Фракционный бонус некроманта (двойной урон)
+        const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
+        if (wizard.faction === 'necromant' && typeof window.checkFactionDoubleDamage === 'function') {
+            const isDouble = window.checkFactionDoubleDamage(wizard.faction, 'necromant', casterInfo);
+            if (isDouble) {
+                actualDamage = baseDamage * 2;
+                if (typeof window.addToBattleLog === 'function') {
+                    window.addToBattleLog(`   💀 Двойной урон некромантии!`);
+                }
+            }
+        }
+
+        // Применяем урон через систему урона (isAOE = true для пронзания)
+        const finalDamage = typeof window.applyFinalDamage === 'function' ?
+            window.applyFinalDamage(wizard, target.wizard, actualDamage, 'bone_spear', armorIgnore, true) : actualDamage;
+
+        target.wizard.hp -= finalDamage;
+        if (target.wizard.hp < 0) target.wizard.hp = 0;
+        totalDamage += finalDamage;
+
+        // Обновляем визуальный HP бар
+        if (typeof window.updateWizardVisualHP === 'function') {
+            window.updateWizardVisualHP(target.wizard, target.column, target.position);
+        }
+
+        // Лог попадания
+        if (typeof window.addToBattleLog === 'function') {
+            const targetName = target.isWall ? 'Стена' : (target.isSummoned ? target.wizard.name || 'Существо' : target.wizard.name);
+            window.addToBattleLog(`   🦴 → ${targetName}: ${finalDamage} урона`);
+        }
+
+        // Учёт урона для XP
+        if (typeof window.trackBattleDamage === 'function' && casterType === 'player') {
+            window.trackBattleDamage(wizard, finalDamage);
+        }
+
+        // Проверка смерти
+        if (target.wizard.hp <= 0) {
+            if (typeof window.trackBattleKill === 'function' && casterType === 'player' && !target.isWall) {
+                window.trackBattleKill(wizard);
+            }
+        }
+    }
+
+    // Запускаем анимацию
+    if (window.spellAnimations?.bone_spear?.play) {
+        window.spellAnimations.bone_spear.play({
+            casterType: casterType,
+            position: position,
+            targets: targets,
+            level: level
+        });
     }
 }
 

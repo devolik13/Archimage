@@ -208,7 +208,8 @@ function getSpellSchoolFallback(spellId) {
 
         // Некромантия
         'summon_skeleton': 'necromant',
-        'skeleton_attack': 'necromant'
+        'skeleton_attack': 'necromant',
+        'bone_spear': 'necromant'
     };
 
     // Если найдено напрямую - возвращаем

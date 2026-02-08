@@ -59,7 +59,8 @@ const SPELL_NAMES = {
     "fading": "Угасание",
 
     // Некромантия
-    "summon_skeleton": "Призыв скелета"
+    "summon_skeleton": "Призыв скелета",
+    "bone_spear": "Костяное копьё"
 };
 
 // Базовый урон заклинаний
@@ -74,6 +75,7 @@ const SPELL_BASE_DAMAGE = {
     "flash": 10,
     "dark_clot": 15,
     "summon_skeleton": 15,
+    "bone_spear": 24,
 
     // Tier 2 - базовый урон 20-30
     "firebolt": 25,
@@ -167,7 +169,8 @@ const SPELL_TYPE_CONFIG = {
     // Призыв
     "call_wolf": "summon",
     "ent": "summon",
-    "summon_skeleton": "summon"
+    "summon_skeleton": "summon",
+    "bone_spear": "multi_target"
 };
 
 // Вспомогательные функции для определения типа

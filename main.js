@@ -142,6 +142,7 @@ import './spells/logic/spells-nature.js';
 import './spells/logic/spells-poison.js';
 import './spells/logic/spells-light.js';
 import './spells/logic/spells-dark.js';
+import './spells/logic/spells-necromant.js';
 
 // ============================================
 // 11. PIXI.JS РЕНДЕРИНГ (Renderer)
@@ -241,7 +242,12 @@ import './animations/dark/shadow-realm.js';
 import './animations/dark/fading.js';
 
 // ============================================
-// 21. ТЕСТОВЫЕ КОМАНДЫ DLC
+// 21. АНИМАЦИИ ЗАКЛИНАНИЙ - НЕКРОМАНТИЯ (Necromant)
+// ============================================
+import './animations/necromant/bone-spear.js';
+
+// ============================================
+// 22. ТЕСТОВЫЕ КОМАНДЫ DLC
 // ============================================
 import './test/dlc-test-commands.js';
 
