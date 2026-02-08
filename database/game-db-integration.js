@@ -153,6 +153,9 @@ async function initGameWithDatabase() {
     // Прогресс тренировочного полигона
     window.userData.training_dummy_progress = player.training_dummy_progress || null;
 
+    // Выполненные задания (airdrop)
+    window.userData.completed_tasks = player.completed_tasks || {};
+
     // КРИТИЧНО: Проверяем есть ли фракция
     if (!player.faction || player.faction === null) {
         // Новый игрок - показываем выбор фракции

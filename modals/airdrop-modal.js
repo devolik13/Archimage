@@ -518,6 +518,46 @@ function setupAirdropUI() {
                     ">Проверить</button>
                 `}
             </div>
+            <!-- TON Raids -->
+            <div id="ton-raids-reward" style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(251, 191, 36, 0.1);
+                border: 1px solid rgba(251, 191, 36, 0.3);
+                border-radius: 8px;
+                padding: 10px;
+                margin-bottom: 8px;
+            ">
+                <div style="flex: 1;">
+                    <div style="font-size: ${baseFontSize}px; color: #fff;">
+                        💎 TON Raids
+                    </div>
+                    <div style="font-size: ${smallFontSize}px; color: #fbbf24; margin-top: 4px;">
+                        ⏰ +2 часа
+                    </div>
+                </div>
+                ${window.userData?.completed_tasks?.ton_raids ? `
+                    <div style="
+                        padding: 8px 16px;
+                        background: #333;
+                        border-radius: 8px;
+                        color: #888;
+                        font-size: ${smallFontSize}px;
+                    ">✓ Получено</div>
+                ` : `
+                    <button onclick="window.openTonRaids()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: ${smallFontSize}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Выполнить</button>
+                `}
+            </div>
             <!-- Creaky Tasks -->
             <div id="creaky-tasks-reward" style="
                 display: flex;
@@ -1073,9 +1113,66 @@ function updateCreakyTasksButton() {
     }
 }
 
+/**
+ * Открыть TON Raids и начислить награду за клик
+ */
+async function openTonRaids() {
+    if (window.userData?.completed_tasks?.ton_raids) {
+        window.showNotification?.('✓ Награда уже получена');
+        return;
+    }
+
+    // Открываем ссылку
+    window.open('https://t.me/tonraidsbot?startapp=ref_LnvowSP3', '_blank');
+
+    // Начисляем награду сразу
+    if (!window.userData.completed_tasks) {
+        window.userData.completed_tasks = {};
+    }
+
+    window.userData.completed_tasks.ton_raids = true;
+
+    const timeReward = 120; // 2 часа в минутах
+    window.userData.time_currency = (window.userData.time_currency || 0) + timeReward;
+
+    if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+        await window.dbManager.savePlayer(window.userData);
+    }
+
+    window.showNotification?.('🎉 Награда получена! ⏰ +2 часа');
+
+    updateTonRaidsButton();
+
+    if (typeof window.updateTimerDisplay === 'function') {
+        window.updateTimerDisplay();
+    }
+}
+
+/**
+ * Обновить UI кнопки TON Raids
+ */
+function updateTonRaidsButton() {
+    const taskDiv = document.getElementById('ton-raids-reward');
+    if (!taskDiv) return;
+
+    const buttonOrStatus = taskDiv.querySelector('button, div:last-child');
+    if (buttonOrStatus && window.userData?.completed_tasks?.ton_raids) {
+        buttonOrStatus.outerHTML = `
+            <div style="
+                padding: 8px 16px;
+                background: #333;
+                border-radius: 8px;
+                color: #888;
+                font-size: 12px;
+            ">✓ Получено</div>
+        `;
+    }
+}
+
 window.checkGroupSubscription = checkGroupSubscription;
 window.openCreakyTasks = openCreakyTasks;
 window.claimCreakyTasksReward = claimCreakyTasksReward;
+window.openTonRaids = openTonRaids;
 
 /**
  * Добавить очки airdrop игроку

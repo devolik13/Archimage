@@ -158,7 +158,8 @@ class DatabaseManager {
                 season_league_rewards_claimed: playerData.season_league_rewards_claimed || [], // Полученные награды за лиги
                 unlocked_skins: playerData.unlocked_skins || [], // Разблокированные скины
                 wizard_skins: playerData.wizard_skins || {}, // Выбранные скины для магов
-                training_dummy_progress: playerData.training_dummy_progress || null // Прогресс тренировочного полигона
+                training_dummy_progress: playerData.training_dummy_progress || null, // Прогресс тренировочного полигона
+                completed_tasks: playerData.completed_tasks || {} // Выполненные задания (creaky_tasks, ton_raids и др.)
                 // GUILD FIELDS: НЕ отправляем здесь - управляются через guild-manager.js RPC
                 // guild_id, guild_contribution, guild_last_active исключены из обычного сохранения
                 // чтобы избежать случайного сброса при передаче null
@@ -349,7 +350,8 @@ class DatabaseManager {
                     // Airdrop данные - КРИТИЧНО для сохранения очков и детализации
                     airdrop_points: window.userData.airdrop_points || 0,
                     airdrop_breakdown: window.userData.airdrop_breakdown || {},
-                    purchased_packs: window.userData.purchased_packs || {}
+                    purchased_packs: window.userData.purchased_packs || {},
+                    completed_tasks: window.userData.completed_tasks || {}
                 };
                 await this.savePlayer(playerData);
             }
@@ -401,7 +403,8 @@ class DatabaseManager {
                     // Airdrop данные - КРИТИЧНО для сохранения очков и детализации
                     airdrop_points: window.userData.airdrop_points || 0,
                     airdrop_breakdown: window.userData.airdrop_breakdown || {},
-                    purchased_packs: window.userData.purchased_packs || {}
+                    purchased_packs: window.userData.purchased_packs || {},
+                    completed_tasks: window.userData.completed_tasks || {}
                 };
                 await this.savePlayer(playerData);
             }
