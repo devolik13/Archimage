@@ -738,8 +738,10 @@ async function endBattleAsDraw() {
     }
 
     // Начисляем опыт за ничью (считается как поражение - DEFEAT_BONUS)
+    // В PvE ничья = проигрыш, опыт не начисляется
+    const isPvE = !!window.currentPvELevel;
     let wizardExpGained = [];
-    if (typeof window.grantBattleExp === 'function') {
+    if (typeof window.grantBattleExp === 'function' && !isPvE) {
         wizardExpGained = window.grantBattleExp([], false);
     }
 
@@ -1470,7 +1472,7 @@ async function checkBattleEnd() {
         // Начисляем опыт через новую систему (подсчёт в конце боя)
         // grantBattleExp возвращает массив с детальной статистикой
         // В дуэлях опыт НЕ начисляется
-        // В PvE опыт начисляется ТОЛЬКО при первом прохождении уровня
+        // В PvE опыт начисляется ТОЛЬКО при первом прохождении уровня И только за победу
         const isDuel = window.isDuelBattle || false;
         const isPvE = !!window.currentPvELevel;
         let isPvEFirstCompletion = true;
@@ -1479,10 +1481,10 @@ async function checkBattleEnd() {
             isPvEFirstCompletion = !pveProgress.chapter1.completed?.[window.currentPvELevel];
         }
 
-        const shouldGrantExp = !isDuel && (!isPvE || isPvEFirstCompletion);
+        const shouldGrantExp = !isDuel && (!isPvE || (isPvEFirstCompletion && isVictory));
         if (typeof window.grantBattleExp === 'function' && shouldGrantExp) {
             window.lastBattleExpResults = window.grantBattleExp(allPlayerWizards, isVictory);
-        } else if (isDuel || (isPvE && !isPvEFirstCompletion)) {
+        } else if (isDuel || (isPvE && (!isPvEFirstCompletion || !isVictory))) {
             window.lastBattleExpResults = []; // Пустой массив — опыт не начисляется
         }
 
