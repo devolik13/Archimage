@@ -657,7 +657,8 @@ async function closeBattleFieldModal() {
                         ratingChange: ratingChange,
                         rewards: { exp: 0 },
                         battleDuration: 0,
-                        earlyExit: true
+                        earlyExit: true,
+                        wizardExpGained: window.lastBattleExpResults || []
                     };
                     window.showBattleResult(battleResult, battleData);
                 }
