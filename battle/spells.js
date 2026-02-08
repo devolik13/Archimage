@@ -266,6 +266,20 @@ function executeSpellEffect(wizard, spellId, spellData, position, casterType) {
 // --- Функция каста заклинания (возвращает Promise) ---
 function castSpell(wizard, spellId, position, casterType) {
     return new Promise((resolve) => {
+        // Таймаут на случай если анимация не завершится (спрайт уничтожен, PIXI остановлен)
+        const timeout = setTimeout(() => {
+            resolved = true;
+            resolve();
+        }, window.fastSimulation ? 50 : 3000);
+        let resolved = false;
+
+        const safeResolve = () => {
+            if (resolved) return;
+            resolved = true;
+            clearTimeout(timeout);
+            resolve();
+        };
+
         const col = casterType === 'player' ? 5 : 0;
 
         // Подготавливаем данные заклинания заранее
@@ -309,14 +323,14 @@ function castSpell(wizard, spellId, position, casterType) {
                 }
                 // Разрешаем следующий каст сразу после завершения анимации каста
                 // (не ждём окончания анимации заклинания)
-                resolve();
+                safeResolve();
             });
         } else {
             // Fallback: если нет анимации, сразу применяем эффект
             if (spellId) {
                 executeSpellEffect(wizard, spellId, spellData, position, casterType);
             }
-            resolve();
+            safeResolve();
         }
     });
 }
