@@ -850,24 +850,37 @@ async function loadAirdropLeaderboard() {
     if (!leaderboardDiv) return;
 
     try {
-        // Пока используем заглушку
-        // TODO: Реальный запрос к БД
-        const mockLeaderboard = [
-            { username: 'TopMage', points: 15420 },
-            { username: 'FireLord', points: 12100 },
-            { username: 'IceQueen', points: 11890 },
-            { username: 'StormBringer', points: 9500 },
-            { username: 'EarthShaker', points: 8200 }
-        ];
+        const supabase = window.dbManager?.supabase || window.supabaseClient;
+        if (!supabase) {
+            leaderboardDiv.innerHTML = '<div style="color: #888;">Не удалось загрузить</div>';
+            return;
+        }
 
-        leaderboardDiv.innerHTML = mockLeaderboard.map((player, index) => `
-            <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                <span style="color: ${index < 3 ? '#ffd700' : '#ccc'};">
-                    ${index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`} ${player.username}
+        const { data, error } = await supabase
+            .from('players')
+            .select('username, airdrop_points')
+            .gt('airdrop_points', 0)
+            .order('airdrop_points', { ascending: false })
+            .limit(10);
+
+        if (error || !data || data.length === 0) {
+            leaderboardDiv.innerHTML = '<div style="color: #888;">Нет данных</div>';
+            return;
+        }
+
+        // Текущий игрок для подсветки
+        const myUsername = window.userData?.username || window.dbManager?.currentPlayer?.username;
+
+        leaderboardDiv.innerHTML = data.map((player, index) => {
+            const isMe = player.username === myUsername;
+            return `
+            <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.1); ${isMe ? 'background: rgba(74, 222, 128, 0.15); border-radius: 4px; padding: 4px 6px;' : ''}">
+                <span style="color: ${index < 3 ? '#ffd700' : '#ccc'}; ${isMe ? 'font-weight: bold;' : ''}">
+                    ${index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`} ${player.username}${isMe ? ' (ты)' : ''}
                 </span>
-                <span style="color: #4ade80;">${player.points.toLocaleString()}</span>
-            </div>
-        `).join('');
+                <span style="color: #4ade80;">${player.airdrop_points.toLocaleString()}</span>
+            </div>`;
+        }).join('');
 
     } catch (error) {
         console.error('Ошибка загрузки лидерборда:', error);

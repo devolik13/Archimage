@@ -176,10 +176,9 @@ BEGIN
         );
 
         -- Пересчитываем сумму breakdown
-        v_breakdown_sum := 0;
-        FOR r2 IN SELECT value::text::integer as val FROM jsonb_each(v_current_breakdown) LOOP
-            v_breakdown_sum := v_breakdown_sum + r2.val;
-        END LOOP;
+        SELECT COALESCE(SUM(value::text::integer), 0)
+        INTO v_breakdown_sum
+        FROM jsonb_each(v_current_breakdown);
 
         -- Если airdrop_points меньше суммы breakdown, увеличиваем
         -- (не уменьшаем airdrop_points никогда!)
