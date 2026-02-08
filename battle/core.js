@@ -1673,10 +1673,11 @@ async function checkBattleEnd() {
 
                 // КРИТИЧЕСКИ ВАЖНО: Сохраняем обновленные данные магов в базу данных
                 if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
-                    window.dbManager.savePlayer(window.userData).then(() => {
-                    }).catch(err => {
+                    try {
+                        await window.dbManager.savePlayer(window.userData);
+                    } catch (err) {
                         console.error('❌ Ошибка сохранения опыта магов:', err);
-                    });
+                    }
                 }
             }
         }
@@ -1787,10 +1788,11 @@ async function checkBattleEnd() {
 
                 // Сохраняем в БД
                 if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
-                    window.dbManager.savePlayer(window.userData).then(() => {
-                    }).catch(err => {
+                    try {
+                        await window.dbManager.savePlayer(window.userData);
+                    } catch (err) {
                         console.error('❌ Ошибка сохранения PvE прогресса:', err);
-                    });
+                    }
                 }
             }
 

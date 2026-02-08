@@ -211,12 +211,23 @@ window.onBattleCompleted = async function(result, rewards, opponentLevel, rating
     const oldRating = (window.userData?.rating || 0) - ratingChange;
 
     // Сначала сохраняем результат боя и обновляем статистику
+    let battleSaved = false;
     if (window.dbManager) {
-        await window.dbManager.saveBattleResult(result, rewards, opponentLevel, ratingChange);
+        battleSaved = await window.dbManager.saveBattleResult(result, rewards, opponentLevel, ratingChange);
+        if (!battleSaved) {
+            console.error('❌ saveBattleResult вернул false — повторная попытка через saveImmediate');
+        }
     }
 
     // Затем сохраняем текущее состояние игрока (опыт, маги и т.д.)
-    await window.eventSaveManager.saveImmediate(`battle_${result}`);
+    const fullSaved = await window.eventSaveManager.saveImmediate(`battle_${result}`);
+    if (!fullSaved) {
+        console.error('❌ saveImmediate после боя не удался — данные могут быть потеряны');
+        // Повторная попытка через 2 секунды
+        setTimeout(() => {
+            window.eventSaveManager.saveImmediate(`battle_${result}_retry`);
+        }, 2000);
+    }
 
     // Проверяем доступные награды за новые лиги
     if (typeof window.checkForNewAvailableRewards === 'function') {

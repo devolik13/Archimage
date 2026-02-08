@@ -293,10 +293,13 @@ class DatabaseManager {
                     console.log(`Обновление рейтинга противника: ${currentOpponentRating} → ${newOpponentRating} (${opponentRatingChange > 0 ? '+' : ''}${opponentRatingChange})`);
 
                     // Обновляем рейтинг противника через RPC
-                    await this.supabase.rpc('update_player_safe', {
+                    const { error: oppError } = await this.supabase.rpc('update_player_safe', {
                         p_telegram_id: opponentTelegramId,
                         p_data: { rating: newOpponentRating }
                     });
+                    if (oppError) {
+                        console.error('❌ Ошибка обновления рейтинга противника:', oppError);
+                    }
                 }
             }
 
