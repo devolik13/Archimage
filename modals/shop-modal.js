@@ -142,6 +142,26 @@ const SHOP_CONFIG = {
             currency: 'time',
             action: 'buyExpScroll',
             amount: 1000
+        },
+        {
+            id: 'guild_exp_small',
+            name: 'Взнос в гильдию (малый)',
+            description: '+250 опыта гильдии',
+            icon: '🏰',
+            price: 360, // 6 часов
+            currency: 'time',
+            action: 'buyGuildExp',
+            amount: 250
+        },
+        {
+            id: 'guild_exp_large',
+            name: 'Взнос в гильдию (большой)',
+            description: '+1000 опыта гильдии',
+            icon: '🏰🏰🏰',
+            price: 1440, // 1 день
+            currency: 'time',
+            action: 'buyGuildExp',
+            amount: 1000
         }
     ],
 
@@ -1353,6 +1373,9 @@ function buyShopItem(itemId) {
         case 'buyExpScroll':
             buyExpScroll(item);
             break;
+        case 'buyGuildExp':
+            buyGuildExp(item);
+            break;
         case 'buyTimePack':
             buyTimePack(item);
             break;
@@ -1546,6 +1569,52 @@ function applyExpScroll(wizardIndex, price, expAmount) {
     refreshShopUI();
 
     // Обновляем UI
+    if (typeof window.updateTimeCurrencyDisplay === 'function') {
+        window.updateTimeCurrencyDisplay();
+    }
+}
+
+/**
+ * Покупка опыта для гильдии (взнос)
+ */
+async function buyGuildExp(item) {
+    const timeCurrency = window.userData?.time_currency || 0;
+
+    if (timeCurrency < item.price) {
+        showShopNotification('❌ Недостаточно времени!', 'error');
+        return;
+    }
+
+    if (!window.userData?.guild_id || !window.guildManager?.currentGuild) {
+        showShopNotification('❌ Вы не состоите в гильдии!', 'error');
+        return;
+    }
+
+    // Списываем валюту
+    window.userData.time_currency -= item.price;
+
+    // Добавляем опыт гильдии через RPC (считается как взнос / guild_contribution)
+    const result = await window.guildManager.addGuildExperience(item.amount);
+
+    if (result.success) {
+        let msg = `🏰 +${item.amount} опыта для гильдии!`;
+        if (result.leveledUp) {
+            msg += ` Новый уровень: ${result.newLevel}!`;
+        }
+        showShopNotification(msg, 'success');
+    } else {
+        // Возвращаем валюту при ошибке
+        window.userData.time_currency += item.price;
+        showShopNotification('❌ Ошибка: ' + (result.error || 'не удалось'), 'error');
+    }
+
+    // Сохраняем
+    if (window.eventSaveManager) {
+        window.eventSaveManager.saveImmediate('shop_buy_guild_exp');
+    }
+
+    refreshShopUI();
+
     if (typeof window.updateTimeCurrencyDisplay === 'function') {
         window.updateTimeCurrencyDisplay();
     }
