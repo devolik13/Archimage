@@ -654,7 +654,7 @@ function setupAirdropUI() {
             padding: 12px;
         ">
             <div style="font-size: ${baseFontSize}px; color: #ffd700; font-weight: bold; margin-bottom: 10px;">
-                🏆 Топ игроков
+                🏆 Топ игроков ТЕСТ123
             </div>
             <div id="airdrop-leaderboard" style="display: flex; flex-direction: column; gap: 4px; font-size: ${smallFontSize}px; color: #888;">
                 Загрузка...
