@@ -1,4 +1,4 @@
-// battle/battle-energy-system.js - Система энергии боев (лимит 12 боев в сутки)
+// battle/battle-energy-system.js - Система энергии боев (лимит 24 боя в сутки)
 
 // Инициализация энергии боев для нового игрока
 function initBattleEnergy(userData) {

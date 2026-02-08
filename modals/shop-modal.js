@@ -116,12 +116,12 @@ const SHOP_CONFIG = {
         {
             id: 'energy_full',
             name: 'Полная энергия',
-            description: 'Восстановить все 12 попыток',
+            description: `Восстановить все ${window.BATTLE_ENERGY?.MAX || 24} попыток`,
             icon: '🔋',
             price: 1000, // ~16 часов (большая скидка)
             currency: 'time',
             action: 'buyEnergy',
-            amount: 12
+            amount: window.BATTLE_ENERGY?.MAX || 24
         },
         {
             id: 'exp_scroll_small',

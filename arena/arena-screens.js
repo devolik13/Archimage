@@ -539,7 +539,7 @@ async function showArenaOpponentSelection() {
                         <div style="text-align: right;">
                             <div style="font-size: 12px; color: #aaa;">Энергия</div>
                             <div style="font-size: 20px; color: #4ade80; font-weight: bold;">
-                                ⚡ ${window.userData?.battle_energy?.current || 0}/${window.userData?.battle_energy?.max || 12}
+                                ⚡ ${window.userData?.battle_energy?.current || 0}/${window.userData?.battle_energy?.max || 24}
                             </div>
                         </div>
                     </div>

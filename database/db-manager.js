@@ -139,7 +139,7 @@ class DatabaseManager {
                 settings: playerData.settings || { sound: true, language: 'ru', battle_speed: 'normal' },
                 welcome_shown: playerData.welcome_shown || false,
                 daily_login: playerData.daily_login || { day: 1, last_login_date: null, last_reward_date: null, total_logins: 0 },
-                battle_energy: playerData.battle_energy || { current: 12, max: 12, last_regen: Date.now() },
+                battle_energy: playerData.battle_energy || { current: window.BATTLE_ENERGY?.MAX || 24, max: window.BATTLE_ENERGY?.MAX || 24, last_regen: Date.now() },
                 active_blessing: playerData.active_blessing || null,
                 blessing_last_used: playerData.blessing_last_used || null,
                 last_login: playerData.last_login || new Date().toISOString(),

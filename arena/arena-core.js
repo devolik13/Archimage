@@ -127,7 +127,7 @@ function showArenaMainMenu() {
             regenText = hours > 0 ? `След. через ${hours}ч ${minutes}м` : `След. через ${minutes}м`;
         }
     } else {
-        energyText = '⚡ Попытки: 12/12';
+        energyText = `⚡ Попытки: ${window.BATTLE_ENERGY?.MAX || 24}/${window.BATTLE_ENERGY?.MAX || 24}`;
     }
     
     // Создаем блок информации о попытках
