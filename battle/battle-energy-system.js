@@ -9,6 +9,15 @@ function initBattleEnergy(userData) {
             last_regen: Date.now()
         };
     }
+    // Синхронизируем max с константой (для существующих игроков после изменения лимита)
+    if (userData.battle_energy.max !== window.BATTLE_ENERGY.MAX) {
+        const oldMax = userData.battle_energy.max;
+        userData.battle_energy.max = window.BATTLE_ENERGY.MAX;
+        // Если попытки были полные — обновляем current тоже
+        if (userData.battle_energy.current === oldMax) {
+            userData.battle_energy.current = window.BATTLE_ENERGY.MAX;
+        }
+    }
     return userData.battle_energy;
 }
 

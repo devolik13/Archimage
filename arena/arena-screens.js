@@ -1362,6 +1362,10 @@ function showArenaResult(result, battleData = {}) {
             };
             nextLevelBtn.onclick = () => {
                 console.log('➡️ Нажата кнопка "Дальше" - переход к уровню', pveLevel + 1);
+                // Полная очистка ресурсов боя (PIXI, анимации, интервалы)
+                if (typeof window.cleanupBattleResources === 'function') {
+                    window.cleanupBattleResources();
+                }
                 closePvPArenaModalBg();
                 // Очищаем флаги PvE
                 window.lastPvEWasFirstCompletion = undefined;
@@ -1387,6 +1391,10 @@ function showArenaResult(result, battleData = {}) {
             };
             retryBtn.onclick = () => {
                 console.log('🔄 Нажата кнопка "Ещё раз" - повтор уровня', pveLevel);
+                // Полная очистка ресурсов боя (PIXI, анимации, интервалы)
+                if (typeof window.cleanupBattleResources === 'function') {
+                    window.cleanupBattleResources();
+                }
                 closePvPArenaModalBg();
                 // Очищаем флаги PvE
                 window.lastPvEWasFirstCompletion = undefined;
