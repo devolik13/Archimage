@@ -270,7 +270,10 @@ function loadSkinPreviews(skinIds) {
 
         // Определяем путь к спрайту
         let spritePath;
-        if (skin.isPremium) {
+        if (skin.customSpritePath) {
+            // Кастомный путь (например enemies/lord_demon)
+            spritePath = `${skin.customSpritePath}/idle.webp`;
+        } else if (skin.isPremium) {
             // Премиум скины - путь через spriteConfig
             // Например: lady_fire -> images/wizards/fire/lady_fire_idle.webp
             spritePath = `images/wizards/${skin.faction}/${spriteConfig}_idle.webp`;

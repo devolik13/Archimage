@@ -96,7 +96,7 @@ const SKINS_CONFIG = {
         name: 'Огненная Леди',
         description: 'Элегантная воительница в доспехах пламени',
         icon: '👸',
-        faction: 'fire', // Для какой фракции подходит (любой может купить, но показывается в категории fire)
+        faction: 'fire',
         spriteConfig: 'lady_fire',
         isDefault: false,
         isPremium: true,
@@ -105,6 +105,22 @@ const SKINS_CONFIG = {
         priceUSD: 3.70, // 165 × $0.0224
         currency: 'dual', // Stars или TON
         unlockText: '165 ⭐ или TON'
+    },
+    lord_demon: {
+        id: 'lord_demon',
+        name: 'Повелитель Хаоса',
+        description: 'Облик финального босса приключений',
+        icon: '👑',
+        faction: 'fire',
+        spriteConfig: 'lord_demon',
+        customSpritePath: 'images/enemies/lord_demon', // Спрайты в enemies, не в wizards
+        isDefault: false,
+        isPremium: true,
+        unlockType: 'purchase',
+        price: 250, // Stars
+        priceUSD: 5.60, // 250 × $0.0224
+        currency: 'dual', // Stars или TON
+        unlockText: '250 ⭐ или TON'
     }
 };
 
