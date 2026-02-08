@@ -122,16 +122,22 @@ async function checkDailyLoginReward() {
         if (dailyData.day % 7 === 0) {
             const weekNumber = Math.min(Math.floor(dailyData.day / 7), 13);
             const streakBonus = 25 * weekNumber; // Макс 325 BPM
-            window.addAirdropPoints(streakBonus, 'Бонус за серию входов');
+            await window.addAirdropPoints(streakBonus, 'Бонус за серию входов');
         } else {
             // Обычные дни - 20 BPM
-            window.addAirdropPoints(20, 'Ежедневный вход');
+            await window.addAirdropPoints(20, 'Ежедневный вход');
         }
     }
 
-    // Сохраняем НЕМЕДЛЕННО (критическая операция - награда не должна выдаваться дважды)
-    if (typeof window.eventSaveManager?.saveImmediate === 'function') {
-        window.eventSaveManager.saveImmediate('daily_login_reward');
+    // Сохраняем ВСЕ данные НЕМЕДЛЕННО (награда + daily_login метаданные)
+    // Критично: сохраняем и время, и BPM, и daily_login в одном вызове
+    try {
+        if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+            await window.dbManager.savePlayer(window.userData);
+            console.log('✅ Ежедневная награда сохранена в БД');
+        }
+    } catch (err) {
+        console.error('❌ Ошибка сохранения ежедневной награды:', err);
     }
 
     // Показываем модальное окно с наградой
