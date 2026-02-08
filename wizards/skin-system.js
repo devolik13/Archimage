@@ -102,7 +102,7 @@ const SKINS_CONFIG = {
         isPremium: true,
         unlockType: 'purchase',
         price: 165, // Stars
-        priceUSD: 3.70, // 165 × $0.0224
+        priceUSD: 2.15, // 165 × $0.013
         currency: 'dual', // Stars или TON
         unlockText: '165 ⭐ или TON'
     },

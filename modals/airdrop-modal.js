@@ -149,11 +149,6 @@ function handleWalletConnected(wallet) {
         }, 1000);
     }
 
-    // Показываем уведомление
-    if (window.showNotification) {
-        window.showNotification('👛 Кошелёк успешно подключён!');
-    }
-
     // Обновляем UI модалки если она открыта
     refreshAirdropModalUI();
 }
@@ -170,11 +165,6 @@ function handleWalletDisconnected() {
         if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
             window.dbManager.savePlayer(window.userData);
         }
-    }
-
-    // Показываем уведомление
-    if (window.showNotification) {
-        window.showNotification('👛 Кошелёк отключён');
     }
 
     // Обновляем UI

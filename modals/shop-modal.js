@@ -7,9 +7,12 @@ let currentShopTab = 'free';
 let shopScreenCache = null;
 let shopCachedFaction = null;
 
+// Курс Stars → USD (на основе соотношения Lord Demon: 8000 Stars = $104)
+const STAR_RATE_USD = 0.013;
+
 // Кэш курса TON (обновляется каждые 5 минут)
 let tonPriceCache = {
-    priceUSD: 5.0, // Дефолтный курс TON/USD
+    priceUSD: 1.40, // Дефолтный курс TON/USD (обновлён фев 2026)
     lastUpdate: 0,
     cacheTime: 5 * 60 * 1000 // 5 минут
 };
@@ -25,7 +28,7 @@ const STARTER_PACKS = {
         description: '+1 маг (макс 2), Башня до 3 ур, 7 дней, 5000 XP',
         icon: '🎁',
         price: 2320,
-        priceUSD: 52, // 2320 Stars × $0.0224
+        priceUSD: 30.16, // 2320 Stars × $0.013
         currency: 'dual', // Поддерживает Stars и TON
         fullPrice: 2320,
         discount: 30,
@@ -43,7 +46,7 @@ const STARTER_PACKS = {
         description: '+1 маг (макс 3), Башня до 5 ур, 30 дней, 30000 XP',
         icon: '📦',
         price: 8320,
-        priceUSD: 186, // 8320 Stars × $0.0224
+        priceUSD: 108.16, // 8320 Stars × $0.013
         currency: 'dual',
         fullPrice: 8320,
         discount: 30,
@@ -61,7 +64,7 @@ const STARTER_PACKS = {
         description: '+1 маг (макс 4), Башня до 7 ур, 90 дней, 200000 XP',
         icon: '💎',
         price: 32000,
-        priceUSD: 717, // 32000 Stars × $0.0224
+        priceUSD: 416.00, // 32000 Stars × $0.013
         currency: 'dual',
         fullPrice: 32000,
         discount: 30,
@@ -169,7 +172,7 @@ const SHOP_CONFIG = {
     skins: [], // Заполняется динамически из SKINS_CONFIG
 
     // Premium товары (за Telegram Stars или TON) - цены -20%
-    // Курс: 1 Star = 1.79₽ = $0.0224 USD, TON курс динамический из CoinGecko API
+    // Курс: 1 Star = $0.013 USD (соотношение Lord Demon), TON курс динамический из CoinGecko API
     premium: [
         {
             id: 'time_pack_1hour',
@@ -177,7 +180,7 @@ const SHOP_CONFIG = {
             description: '+1 час игрового времени',
             icon: '⏰',
             price: 8,
-            priceUSD: 0.18, // 8 Stars × $0.0224
+            priceUSD: 0.10, // 8 Stars × $0.013
             currency: 'dual',
             action: 'buyTimePack',
             amount: 60
@@ -188,7 +191,7 @@ const SHOP_CONFIG = {
             description: '+1 день игрового времени',
             icon: '⏰',
             price: 134,
-            priceUSD: 3.00, // 134 Stars × $0.0224
+            priceUSD: 1.74, // 134 Stars × $0.013
             currency: 'dual',
             action: 'buyTimePack',
             amount: 1440
@@ -199,7 +202,7 @@ const SHOP_CONFIG = {
             description: '+7 дней времени (-5%)',
             icon: '⏰⏰',
             price: 896,
-            priceUSD: 20.1, // 896 Stars × $0.0224
+            priceUSD: 11.65, // 896 Stars × $0.013
             currency: 'dual',
             action: 'buyTimePack',
             amount: 10080
@@ -210,7 +213,7 @@ const SHOP_CONFIG = {
             description: '+30 дней времени (-15%)',
             icon: '⏰⏰⏰',
             price: 3424,
-            priceUSD: 76.7, // 3424 Stars × $0.0224
+            priceUSD: 44.51, // 3424 Stars × $0.013
             currency: 'dual',
             action: 'buyTimePack',
             amount: 43200
@@ -832,7 +835,7 @@ function showSkinPaymentDialog(skinId) {
                     justify-content: center;
                     gap: 8px;
                 ">
-                    💎 ~$${skin.priceUSD?.toFixed(2) || '3.70'} TON
+                    💎 ~$${skin.priceUSD?.toFixed(2) || '2.15'} TON
                 </button>
 
                 <button onclick="closeSkinPaymentDialog()" style="
