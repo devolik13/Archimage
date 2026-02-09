@@ -8,7 +8,6 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
     
     let remainingDamage = baseDamage;
     const protectionLayers = [];
-    const damageBoosts = []; // Лог бонусов урона
 
     // ========================================
     // БОНУСЫ УРОНА (применяются первыми, до защит)
@@ -19,10 +18,7 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
     if (typeof window.getDamageBonusFromLevel === 'function') {
         const levelBonus = window.getDamageBonusFromLevel(caster);
         if (levelBonus > 1.0) {
-            const before = remainingDamage;
             remainingDamage = Math.floor(remainingDamage * levelBonus);
-            const pct = Math.round((levelBonus - 1) * 100);
-            damageBoosts.push(`⭐ Ур.${caster.level || '?'}: ${before} → ${remainingDamage} (+${pct}%)`);
         }
     }
 
@@ -30,10 +26,7 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
     if (isPlayerCaster && typeof window.getWizardTowerDamageBonus === 'function') {
         const towerBonus = window.getWizardTowerDamageBonus();
         if (towerBonus > 1.0) {
-            const before = remainingDamage;
             remainingDamage = Math.floor(remainingDamage * towerBonus);
-            const pct = Math.round((towerBonus - 1) * 100);
-            damageBoosts.push(`🏯 Башня: ${before} → ${remainingDamage} (+${pct}%)`);
         }
     }
 
@@ -42,11 +35,12 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
         const guildBonuses = window.guildManager.getGuildBonuses();
         if (guildBonuses && guildBonuses.damageBonus > 0) {
             const guildDamageMultiplier = 1 + (guildBonuses.damageBonus / 100);
-            const before = remainingDamage;
             remainingDamage = Math.floor(remainingDamage * guildDamageMultiplier);
-            damageBoosts.push(`🏰 Гильдия: ${before} → ${remainingDamage} (+${guildBonuses.damageBonus}%)`);
         }
     }
+
+    // Общий % усиления для лога
+    const boostPercent = baseDamage > 0 ? Math.round((remainingDamage / baseDamage - 1) * 100) : 0;
 
     // ========================================
     // ОТСЛЕЖИВАНИЕ ТОЧКИ СТОЛКНОВЕНИЯ
@@ -299,7 +293,7 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             finalDamage: finalDamage,
             blocked: baseDamage - remainingDamage,
             protectionLayers: protectionLayers,
-            damageBoosts: damageBoosts,
+            boostPercent: boostPercent,
             targetSurvived: target.wizard.hp > 0,
             impactCol: impactCol,
             impactRow: impactRow
@@ -312,7 +306,7 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             finalDamage: 0,
             blocked: baseDamage,
             protectionLayers: protectionLayers,
-            damageBoosts: damageBoosts,
+            boostPercent: boostPercent,
             targetSurvived: true,
             impactCol: impactCol,
             impactRow: impactRow
@@ -357,11 +351,9 @@ function logProtectionResult(caster, target, result, spellName) {
     }
     
     // Детальный расчёт с отступами
-    // Показываем бонусы урона (уровень, башня, гильдия)
-    if (result.damageBoosts && result.damageBoosts.length > 0) {
-        result.damageBoosts.forEach(boost => {
-            window.addToBattleLog(`    ├─ ${boost}`);
-        });
+    // Показываем общее усиление урона одной строкой
+    if (result.boostPercent > 0) {
+        window.addToBattleLog(`    ├─ ⚔️ Усиление урона: ${result.totalDamage} → ${Math.floor(result.totalDamage * (1 + result.boostPercent / 100))} (+${result.boostPercent}%)`);
     }
 
     // Показываем защитные слои
