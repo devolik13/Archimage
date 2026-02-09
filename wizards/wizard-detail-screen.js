@@ -119,8 +119,13 @@ function renderWizardDetailScreen(wizardIndex) {
     const healthBonusPercent = Math.round((healthMultiplier - 1) * 100);
 
     const level = wizardData.level || 1;
-    const levelBonus = level === 20 ? 2.0 : (1 + (Math.max(0, level - 1) * 0.05));
+    const levelBonus = level === 40 ? 3.0 : (1 + (Math.max(0, level - 1) * 0.05));
     const levelBonusPercent = Math.round((levelBonus - 1) * 100);
+
+    // Бонус урона от уровня (+1% за уровень, +40% на 40)
+    const levelDamageBonus = typeof window.getDamageBonusFromLevel === 'function'
+        ? window.getDamageBonusFromLevel(wizardData) : 1.0;
+    const levelDamageBonusPercent = Math.round((levelDamageBonus - 1) * 100);
 
     // Бонусы гильдии
     const guildBonuses = window.guildManager?.currentGuild ? window.guildManager.getGuildBonuses() : null;
@@ -132,15 +137,15 @@ function renderWizardDetailScreen(wizardIndex) {
     const guildHpMultiplier = 1 + (guildHpBonusPercent / 100);
     const actualMaxHP = Math.floor(baseHP * levelBonus * healthMultiplier * (1 + blessingHealthBonus) * guildHpMultiplier);
     const blessingHealthPercent = Math.round(blessingHealthBonus * 100);
-    
-    // Расчет брони с учетом благословения  
+
+    // Расчет брони с учетом благословения
     const baseArmor = wizardData.original_max_armor || wizardData.max_armor || 100;
     const actualMaxArmor = baseArmor + blessingArmorBonus;
-    
-    // Расчет бонуса к урону от башни, благословения и гильдии
+
+    // Расчет бонуса к урону от уровня, башни, благословения и гильдии
     const towerDamageMultiplier = window.getWizardTowerDamageBonus ? window.getWizardTowerDamageBonus() : 1.0;
     const guildDamageMultiplier = 1 + (guildDamageBonusPercent / 100);
-    const totalDamageMultiplier = towerDamageMultiplier * (1 + blessingDamageBonus) * guildDamageMultiplier;
+    const totalDamageMultiplier = levelDamageBonus * towerDamageMultiplier * (1 + blessingDamageBonus) * guildDamageMultiplier;
     const towerDamageBonusPercent = Math.round((towerDamageMultiplier - 1) * 100);
     const blessingDamageBonusPercent = Math.round(blessingDamageBonus * 100);
     const totalDamageBonusPercent = Math.round((totalDamageMultiplier - 1) * 100);
@@ -162,6 +167,7 @@ function renderWizardDetailScreen(wizardIndex) {
         },
         damage: {
             final: totalDamageBonusPercent,
+            levelBonus: levelDamageBonusPercent,
             towerBonus: towerDamageBonusPercent,
             guildBonus: guildDamageBonusPercent,
             blessingBonus: blessingDamageBonusPercent
@@ -726,8 +732,13 @@ function calculateWizardStats(wizardData) {
     const healthBonusPercent = Math.round((healthMultiplier - 1) * 100);
 
     const level = wizardData.level || 1;
-    const levelBonus = level === 20 ? 2.0 : (1 + (Math.max(0, level - 1) * 0.05));
+    const levelBonus = level === 40 ? 3.0 : (1 + (Math.max(0, level - 1) * 0.05));
     const levelBonusPercent = Math.round((levelBonus - 1) * 100);
+
+    // Бонус урона от уровня (+1% за уровень, +40% на 40)
+    const levelDamageBonus = typeof window.getDamageBonusFromLevel === 'function'
+        ? window.getDamageBonusFromLevel(wizardData) : 1.0;
+    const levelDamageBonusPercent = Math.round((levelDamageBonus - 1) * 100);
 
     // HP с учетом гильдии
     const guildHpMultiplier = 1 + (guildHpBonusPercent / 100);
@@ -737,10 +748,10 @@ function calculateWizardStats(wizardData) {
     const baseArmor = wizardData.original_max_armor || wizardData.max_armor || 100;
     const actualMaxArmor = baseArmor + blessingArmorBonus;
 
-    // Урон с учетом гильдии
+    // Урон с учетом уровня, башни, благословения и гильдии
     const towerDamageMultiplier = window.getWizardTowerDamageBonus ? window.getWizardTowerDamageBonus() : 1.0;
     const guildDamageMultiplier = 1 + (guildDamageBonusPercent / 100);
-    const totalDamageMultiplier = towerDamageMultiplier * (1 + blessingDamageBonus) * guildDamageMultiplier;
+    const totalDamageMultiplier = levelDamageBonus * towerDamageMultiplier * (1 + blessingDamageBonus) * guildDamageMultiplier;
     const towerDamageBonusPercent = Math.round((towerDamageMultiplier - 1) * 100);
     const blessingDamageBonusPercent = Math.round(blessingDamageBonus * 100);
     const totalDamageBonusPercent = Math.round((totalDamageMultiplier - 1) * 100);
@@ -762,6 +773,7 @@ function calculateWizardStats(wizardData) {
         },
         damage: {
             final: totalDamageBonusPercent,
+            levelBonus: levelDamageBonusPercent,
             towerBonus: towerDamageBonusPercent,
             guildBonus: guildDamageBonusPercent,
             blessingBonus: blessingDamageBonusPercent
@@ -783,6 +795,7 @@ function calculateWizardStats(wizardData) {
         ].filter(b => b).join(' '),
         armorBonusHTML: blessingArmorBonus > 0 ? `+${blessingArmorBonus} ✨` : '',
         damageBonusHTML: [
+            levelDamageBonusPercent > 0 ? `+${levelDamageBonusPercent}% ур.` : '',
             towerDamageBonusPercent > 0 ? `🏯 +${towerDamageBonusPercent}%` : '',
             guildDamageBonusPercent > 0 ? `🏰 +${guildDamageBonusPercent}%` : '',
             blessingDamageBonusPercent > 0 ? `✨ +${blessingDamageBonusPercent}%` : ''
