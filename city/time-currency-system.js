@@ -363,6 +363,29 @@ function showOfflineEarningsNotification(earnedMinutes) {
 // Флаг для предотвращения множественных вызовов
 let timeCurrencyInitialized = false;
 
+// Совместимость: перехват записей в window.userData.time_currency
+// Любой код, который пишет в старое поле, автоматически обновит time_currency_base
+function setupTimeCurrencyProxy() {
+    if (!window.userData || window.userData._timeCurrencyProxied) return;
+
+    Object.defineProperty(window.userData, 'time_currency', {
+        get: function() {
+            // Возвращаем вычисленный баланс (base + накопленное)
+            return typeof getTimeCurrency === 'function' ? getTimeCurrency() : (this.time_currency_base || 0);
+        },
+        set: function(newValue) {
+            // Синхронизируем с новыми полями lazy accrual
+            this.time_currency_base = Math.max(0, Math.floor(newValue));
+            this.time_currency_updated_at = new Date().toISOString();
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    window.userData._timeCurrencyProxied = true;
+    console.log('🔗 time_currency proxy установлен');
+}
+
 // Инициализация системы (LAZY ACCRUAL v2)
 function initTimeCurrency() {
     if (timeCurrencyInitialized) {
@@ -375,13 +398,19 @@ function initTimeCurrency() {
 
     // Миграция со старой системы: если нет time_currency_base, берём time_currency
     if (window.userData.time_currency_base == null) {
-        window.userData.time_currency_base = window.userData.time_currency || 0;
+        // Читаем ПЕРЕД установкой proxy (чтобы получить raw value)
+        const rawTimeCurrency = window.userData.time_currency || 0;
+        window.userData.time_currency_base = rawTimeCurrency;
         window.userData.time_currency_updated_at = window.userData.last_login || new Date().toISOString();
         console.log('🔄 Миграция со старой системы: base =', window.userData.time_currency_base);
     }
     if (!window.userData.constructions) {
         window.userData.constructions = [];
     }
+
+    // Устанавливаем proxy ПОСЛЕ миграции, чтобы все дальнейшие записи
+    // в window.userData.time_currency автоматически обновляли time_currency_base
+    setupTimeCurrencyProxy();
 
     // Вычисляем накопленное для показа уведомления
     const base = window.userData.time_currency_base || 0;
