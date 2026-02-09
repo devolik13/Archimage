@@ -23,6 +23,32 @@ function sortTargetsByHpPercent(targets) {
 // Экспорт хелпера
 window.sortTargetsByHpPercent = sortTargetsByHpPercent;
 
+/**
+ * Вычисляет текст усиления урона для AOE-заклинаний (уровень, башня, гильдия)
+ * Возвращает строку вида "усиление +XX%, " или "" если усиления нет
+ */
+window.getAoeBoostText = function(caster) {
+    let multiplier = 1.0;
+    const isPlayerCaster = window.playerWizards?.some(w => w.id === caster?.id) || false;
+
+    if (typeof window.getDamageBonusFromLevel === 'function') {
+        const levelBonus = window.getDamageBonusFromLevel(caster);
+        if (levelBonus > 1.0) multiplier *= levelBonus;
+    }
+    if (isPlayerCaster && typeof window.getWizardTowerDamageBonus === 'function') {
+        const towerBonus = window.getWizardTowerDamageBonus();
+        if (towerBonus > 1.0) multiplier *= towerBonus;
+    }
+    if (isPlayerCaster && window.guildManager?.currentGuild && !window.isDuelBattle) {
+        const guildBonuses = window.guildManager.getGuildBonuses();
+        if (guildBonuses && guildBonuses.damageBonus > 0) {
+            multiplier *= (1 + guildBonuses.damageBonus / 100);
+        }
+    }
+    const percent = Math.round((multiplier - 1) * 100);
+    return percent > 0 ? `усиление +${percent}%, ` : '';
+};
+
 // Временная функция определения школы заклинания (если основная не загружена)
 if (!window.getSpellSchoolFallback) {
     window.getSpellSchoolFallback = function(spellId) {
@@ -108,7 +134,36 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     	const isPlayerCaster = window.playerWizards?.some(w => w.id === caster?.id) || false;
     	const casterType = isPlayerCaster ? 'player' : 'enemy';
 
-    	// СНАЧАЛА применяем Метеокинез к базовому урону
+    	// ========================================
+    	// БОНУСЫ УРОНА (применяются первыми, до защит)
+    	// ========================================
+
+    	// Бонус урона от уровня мага (+1% за уровень, +40% на 40)
+    	if (typeof window.getDamageBonusFromLevel === 'function') {
+    	    const levelBonus = window.getDamageBonusFromLevel(caster);
+    	    if (levelBonus > 1.0) {
+    	        finalDamage = Math.floor(finalDamage * levelBonus);
+    	    }
+    	}
+
+    	// Бонус от Башни магов (только для игрока)
+    	if (isPlayerCaster && typeof window.getWizardTowerDamageBonus === 'function') {
+    	    const towerBonus = window.getWizardTowerDamageBonus();
+    	    if (towerBonus > 1.0) {
+    	        finalDamage = Math.floor(finalDamage * towerBonus);
+    	    }
+    	}
+
+    	// Бонус урона от гильдии (только для игрока, не в дуэлях)
+    	if (isPlayerCaster && window.guildManager?.currentGuild && !window.isDuelBattle) {
+    	    const guildBonuses = window.guildManager.getGuildBonuses();
+    	    if (guildBonuses && guildBonuses.damageBonus > 0) {
+    	        const guildDamageMultiplier = 1 + (guildBonuses.damageBonus / 100);
+    	        finalDamage = Math.floor(finalDamage * guildDamageMultiplier);
+    	    }
+    	}
+
+    	// Метеокинез
     	if (window.activeMeteorokinesis && window.activeMeteorokinesis.length > 0 && spellId) {
     	    const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
 
@@ -128,25 +183,10 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     	    }
     	}
 
-    	// ПОТОМ применяем погоду, сопротивление и броню
+    	// Применяем погоду, сопротивление и броню
     	finalDamage = applyDamageWithWeather(caster, target, finalDamage, spellId, armorIgnorePercent);
 
-    	// Применяем бонус урона от уровня мага
-    	if (typeof window.getDamageBonusFromLevel === 'function') {
-    	    const levelBonus = window.getDamageBonusFromLevel(caster);
-    	    finalDamage = Math.floor(finalDamage * levelBonus);
-    	}
-
-    	// ГИЛЬДИЯ: Бонус урона от гильдии (только для игрока, отключено в дуэлях)
-    	if (isPlayerCaster && window.guildManager?.currentGuild && !window.isDuelBattle) {
-    	    const guildBonuses = window.guildManager.getGuildBonuses();
-    	    if (guildBonuses && guildBonuses.damageBonus > 0) {
-    	        const guildDamageMultiplier = 1 + (guildBonuses.damageBonus / 100);
-    	        finalDamage = Math.floor(finalDamage * guildDamageMultiplier);
-    	    }
-    	}
-
-    	// ГИЛЬДИЯ: Сопротивление от гильдии (уменьшение входящего урона, отключено в дуэлях)
+    	// Сопротивление от гильдии (уменьшение входящего урона, не в дуэлях)
     	if (target.guildResistances && !window.isDuelBattle) {
     	    const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
     	    if (spellSchool && target.guildResistances[spellSchool] > 0) {
@@ -155,16 +195,13 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     	    }
     	}
 
-    	// НЕКРОМАНТ: -10% входящего урона (кроме магии света)
+    	// Некромант: -10% входящего урона (кроме магии света)
     	if (target.faction === 'necromant') {
     	    const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
     	    if (spellSchool !== 'light') {
     	        finalDamage = Math.floor(finalDamage * 0.9);
     	    }
     	}
-
-        // Опыт теперь начисляется централизованно в executeSingleMageAttack (core.js)
-        // на основе фактического изменения HP врагов
 
         return finalDamage;
     }

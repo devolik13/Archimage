@@ -394,7 +394,8 @@ function castIceRain(wizard, spellData, position, casterType) {
     // Общий лог (в начале, а не в конце - для правильного порядка)
     const areaDescription = getIceRainAreaDescription(level);
     if (typeof window.addToBattleLog === 'function' && targetsHit.length > 0) {
-        window.addToBattleLog(`❄️ ${wizard.name} вызывает Ледяной дождь Ур.${level} (${areaDescription}, поражено ${targetsHit.length} целей)`);
+        const boostText = window.getAoeBoostText ? window.getAoeBoostText(wizard) : '';
+        window.addToBattleLog(`❄️ ${wizard.name} вызывает Ледяной дождь Ур.${level} (${boostText}${areaDescription}, поражено ${targetsHit.length} целей)`);
     }
 }
 

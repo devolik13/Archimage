@@ -154,7 +154,8 @@ function castBoneSpear(wizard, spellData, position, casterType) {
 
     // Лог начала
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`🦴 ${wizard.name} метает Костяное копьё [Ур.${level}]! Пронзает ${targets.length} ${targets.length === 1 ? 'цель' : 'целей'}`);
+        const boostText = window.getAoeBoostText ? window.getAoeBoostText(wizard) : '';
+        window.addToBattleLog(`🦴 ${wizard.name} метает Костяное копьё [Ур.${level}]! ${boostText}Пронзает ${targets.length} ${targets.length === 1 ? 'цель' : 'целей'}`);
     }
 
     if (level >= 5 && armorIgnore > 0) {

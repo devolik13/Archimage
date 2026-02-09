@@ -8,7 +8,40 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
     
     let remainingDamage = baseDamage;
     const protectionLayers = [];
-    
+
+    // ========================================
+    // БОНУСЫ УРОНА (применяются первыми, до защит)
+    // ========================================
+    const isPlayerCaster = casterType === 'player';
+
+    // Бонус урона от уровня мага (+1% за уровень, +40% на 40)
+    if (typeof window.getDamageBonusFromLevel === 'function') {
+        const levelBonus = window.getDamageBonusFromLevel(caster);
+        if (levelBonus > 1.0) {
+            remainingDamage = Math.floor(remainingDamage * levelBonus);
+        }
+    }
+
+    // Бонус от Башни магов (только для игрока)
+    if (isPlayerCaster && typeof window.getWizardTowerDamageBonus === 'function') {
+        const towerBonus = window.getWizardTowerDamageBonus();
+        if (towerBonus > 1.0) {
+            remainingDamage = Math.floor(remainingDamage * towerBonus);
+        }
+    }
+
+    // Бонус урона от гильдии (только для игрока, не в дуэлях)
+    if (isPlayerCaster && window.guildManager?.currentGuild && !window.isDuelBattle) {
+        const guildBonuses = window.guildManager.getGuildBonuses();
+        if (guildBonuses && guildBonuses.damageBonus > 0) {
+            const guildDamageMultiplier = 1 + (guildBonuses.damageBonus / 100);
+            remainingDamage = Math.floor(remainingDamage * guildDamageMultiplier);
+        }
+    }
+
+    // Общий % усиления для лога
+    const boostPercent = baseDamage > 0 ? Math.round((remainingDamage / baseDamage - 1) * 100) : 0;
+
     // ========================================
     // ОТСЛЕЖИВАНИЕ ТОЧКИ СТОЛКНОВЕНИЯ
     // ========================================
@@ -215,8 +248,25 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
         }
 
         // ПОТОМ применяем погоду, сопротивления и броню
-        const finalDamage = typeof window.applyDamageWithWeather === 'function' ?
+        let finalDamage = typeof window.applyDamageWithWeather === 'function' ?
             window.applyDamageWithWeather(caster, target.wizard, remainingDamage, spellId, armorIgnorePercent) : remainingDamage;
+
+        // Сопротивление от гильдии (уменьшение входящего урона, не в дуэлях)
+        if (target.wizard.guildResistances && !window.isDuelBattle) {
+            const spellSchoolForResist = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
+            if (spellSchoolForResist && target.wizard.guildResistances[spellSchoolForResist] > 0) {
+                const resistMultiplier = 1 - (target.wizard.guildResistances[spellSchoolForResist] / 100);
+                finalDamage = Math.floor(finalDamage * resistMultiplier);
+            }
+        }
+
+        // Некромант: -10% входящего урона (кроме магии света)
+        if (target.wizard.faction === 'necromant') {
+            const spellSchoolForNecro = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
+            if (spellSchoolForNecro !== 'light') {
+                finalDamage = Math.floor(finalDamage * 0.9);
+            }
+        }
 
         // Применяем урон к магу
         target.wizard.hp -= finalDamage;
@@ -243,21 +293,23 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             finalDamage: finalDamage,
             blocked: baseDamage - remainingDamage,
             protectionLayers: protectionLayers,
+            boostPercent: boostPercent,
             targetSurvived: target.wizard.hp > 0,
-            impactCol: impactCol,      // ✅ ДОБАВЛЕНО
-            impactRow: impactRow       // ✅ ДОБАВЛЕНО
+            impactCol: impactCol,
+            impactRow: impactRow
         };
     } else {
         protectionLayers.push(`${target.wizard.name} не получает урона - защита поглотила все!`);
-        
+
         return {
             totalDamage: baseDamage,
             finalDamage: 0,
             blocked: baseDamage,
             protectionLayers: protectionLayers,
+            boostPercent: boostPercent,
             targetSurvived: true,
-            impactCol: impactCol,      // ✅ ДОБАВЛЕНО
-            impactRow: impactRow       // ✅ ДОБАВЛЕНО
+            impactCol: impactCol,
+            impactRow: impactRow
         };
     }
 }
@@ -299,6 +351,11 @@ function logProtectionResult(caster, target, result, spellName) {
     }
     
     // Детальный расчёт с отступами
+    // Показываем общее усиление урона одной строкой
+    if (result.boostPercent > 0) {
+        window.addToBattleLog(`    ├─ ⚔️ Усиление урона: ${result.totalDamage} → ${Math.floor(result.totalDamage * (1 + result.boostPercent / 100))} (+${result.boostPercent}%)`);
+    }
+
     // Показываем защитные слои
     if (result.protectionLayers && result.protectionLayers.length > 0) {
         result.protectionLayers.forEach(layer => {

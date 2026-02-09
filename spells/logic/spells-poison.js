@@ -281,7 +281,8 @@ function castFoulCloud(wizard, spellData, position, casterType) {
     });
     
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`☠️ ${wizard.name} призывает Мерзкое облако (уровень ${level})`);
+        const boostText = window.getAoeBoostText ? window.getAoeBoostText(wizard) : '';
+        window.addToBattleLog(`☠️ ${wizard.name} призывает Мерзкое облако (${boostText}уровень ${level})`);
     }
     
     // Атакуем всех врагов в указанных колонках
@@ -605,7 +606,8 @@ function castEpidemic(wizard, spellData, position, casterType) {
     }
     
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`☠️ ${wizard.name} вызывает Эпидемию! Все вражеские маги получают ${baseDamage} урона`);
+        const boostText = window.getAoeBoostText ? window.getAoeBoostText(wizard) : '';
+        window.addToBattleLog(`☠️ ${wizard.name} вызывает Эпидемию! ${boostText}Все вражеские маги получают ${baseDamage} урона`);
     }
     
     // Определяем колонку целей

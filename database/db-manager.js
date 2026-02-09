@@ -118,11 +118,13 @@ class DatabaseManager {
                 _active_constructions: playerData.constructions || []
             };
 
-            // Формируем данные для RPC (лимиты проверяются на стороне БД)
-            // ВАЖНО: Используем Math.floor т.к. time_currency может быть дробным из-за накопления
-            const rawTimeCurrency = playerData.timeCurrency ?? playerData.time_currency ?? 0;
+            // Формируем данные для RPC
+            // LAZY ACCRUAL v2: сохраняем base и updated_at
+            const rawTimeCurrency = playerData.time_currency_base ?? playerData.timeCurrency ?? playerData.time_currency ?? 0;
             const rpcData = {
                 time_currency: Math.floor(rawTimeCurrency),
+                time_currency_base: Math.floor(rawTimeCurrency),
+                time_currency_updated_at: playerData.time_currency_updated_at || new Date().toISOString(),
                 level: playerData.level || 1,
                 experience: playerData.experience || 0,
                 faction: playerData.faction || null,
@@ -323,7 +325,10 @@ class DatabaseManager {
         this.autoSaveInterval = setInterval(async () => {
             if (this.hasUnsavedChanges && window.userData) {
                 const playerData = {
-                    timeCurrency: Math.floor(window.userData.time_currency || 0),
+                    // LAZY ACCRUAL v2: сохраняем base, не вычисленное значение
+                    time_currency_base: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
+                    time_currency_updated_at: window.userData.time_currency_updated_at || new Date().toISOString(),
+                    timeCurrency: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
                     level: window.userData.level,
                     experience: window.userData.experience,
                     faction: window.userData.faction,
@@ -376,7 +381,10 @@ class DatabaseManager {
         window.addEventListener('beforeunload', async () => {
             if (this.hasUnsavedChanges && window.userData) {
                 const playerData = {
-                    timeCurrency: Math.floor(window.userData.time_currency || 0),
+                    // LAZY ACCRUAL v2: сохраняем base, не вычисленное значение
+                    time_currency_base: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
+                    time_currency_updated_at: window.userData.time_currency_updated_at || new Date().toISOString(),
+                    timeCurrency: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
                     level: window.userData.level,
                     experience: window.userData.experience,
                     faction: window.userData.faction,

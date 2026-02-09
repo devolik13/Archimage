@@ -1,4 +1,6 @@
-// time-currency-system.js - Система временной валюты
+// time-currency-system.js - Система временной валюты (LAZY ACCRUAL v2)
+// Баланс вычисляется: base + elapsed_time * production_rate
+// БД пишется только при трате/добавлении/изменении rate
 
 // Конфигурация временной валюты
 const TIME_CURRENCY_CONFIG = {
@@ -16,31 +18,61 @@ const TIME_CURRENCY_CONFIG = {
     STORAGE_PER_LEVEL: 219      // добыча за сутки + 20% на каждый уровень
 };
 
-// Получить текущий баланс времени в минутах
-function getTimeCurrency() {
-    if (!window.userData) return 0;
-    return window.userData.time_currency || 0;
-}
+// Серверное время загрузки (для корректного отображения между загрузками)
+let _serverLoadTime = null;   // Серверное время на момент загрузки
+let _clientLoadTime = null;   // Клиентское время на момент загрузки
 
-// formatTimeCurrency используется из utilities.js - она уже доступна глобально через window
+// Получить серверное "сейчас" (компенсация разницы клиент-сервер)
+function getServerNow() {
+    if (_serverLoadTime && _clientLoadTime) {
+        const clientElapsed = Date.now() - _clientLoadTime;
+        return new Date(_serverLoadTime.getTime() + clientElapsed);
+    }
+    return new Date(); // fallback на клиентское время
+}
 
 // Расчет производства в минутах в час
 function calculateProduction() {
     const generatorLevel = window.userData?.buildings?.time_generator?.level || 0;
     if (generatorLevel === 0) return 0;
-    
-    return TIME_CURRENCY_CONFIG.GENERATOR_BASE_RATE + 
+
+    return TIME_CURRENCY_CONFIG.GENERATOR_BASE_RATE +
            (generatorLevel - 1) * TIME_CURRENCY_CONFIG.GENERATOR_PER_LEVEL;
 }
 
-// Расчет максимальной вместимости
+// Расчет максимальной вместимости (лимит накопления)
 function calculateMaxStorage() {
     const generatorLevel = window.userData?.buildings?.time_generator?.level || 0;
     if (generatorLevel === 0) return 0;
-    
-    return TIME_CURRENCY_CONFIG.STORAGE_BASE + 
+
+    return TIME_CURRENCY_CONFIG.STORAGE_BASE +
            (generatorLevel - 1) * TIME_CURRENCY_CONFIG.STORAGE_PER_LEVEL;
 }
+
+// ГЛАВНАЯ ФУНКЦИЯ: Получить текущий баланс (вычисляется, не хранится)
+function getTimeCurrency() {
+    if (!window.userData) return 0;
+
+    const base = window.userData.time_currency_base || 0;
+    const updatedAt = window.userData.time_currency_updated_at;
+    const production = calculateProduction();
+
+    // Нет генератора или нет timestamp — возвращаем base
+    if (production === 0 || !updatedAt) return base;
+
+    const now = getServerNow();
+    const updated = new Date(updatedAt);
+    const elapsedHours = (now - updated) / (1000 * 60 * 60);
+
+    if (elapsedHours < 0) return base; // защита от отрицательного времени
+
+    const maxStorage = calculateMaxStorage();
+    const earned = Math.min(Math.floor(elapsedHours * production), maxStorage);
+
+    return base + earned;
+}
+
+// formatTimeCurrency используется из utilities.js - она уже доступна глобально через window
 
 // Создание UI элемента валюты
 function createTimeCurrencyUI() {
@@ -56,7 +88,6 @@ function createTimeCurrencyUI() {
 
     // Проверяем, не активен ли portrait blocker
     if (document.getElementById('portrait-blocker-overlay')) {
-        console.log('⏳ Portrait blocker активен, откладываем создание UI времени');
         return;
     }
 
@@ -64,18 +95,14 @@ function createTimeCurrencyUI() {
     const cityView = document.getElementById('city-view');
     const backgroundImg = cityView?.querySelector('.city-background-img');
 
-    let rightPosition = '10px'; // Дефолт
+    let rightPosition = '10px';
 
     if (backgroundImg) {
         const imgRect = backgroundImg.getBoundingClientRect();
-        // Проверяем что изображение видимо
         if (imgRect.width > 0) {
             const screenWidth = window.innerWidth;
             const cityRight = imgRect.right;
             rightPosition = `${screenWidth - cityRight + 10}px`;
-            console.log(`📍 Время привязано к городу: right = ${rightPosition}`);
-        } else {
-            console.log('⚠️ Фон города скрыт, используем дефолтную позицию для времени');
         }
     }
 
@@ -97,7 +124,7 @@ function createTimeCurrencyUI() {
         onclick="if(typeof window.showTimeGeneratorModalBg === 'function') { window.showTimeGeneratorModalBg(); } else if(typeof window.showTimeGeneratorModal === 'function') { window.showTimeGeneratorModal(); }"
         onmouseover="this.style.background='rgba(0, 0, 0, 0.6)'; this.style.borderColor='rgba(255, 165, 0, 0.8)';"
         onmouseout="this.style.background='rgba(0, 0, 0, 0.4)'; this.style.borderColor='rgba(255, 165, 0, 0.5)';"
-        title="Лимит офлайн: ${window.formatTimeCurrency(maxStorage)}">
+        title="Лимит накопления: ${window.formatTimeCurrency(maxStorage)}">
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 16px;">⏰</span>
                 <div style="font-weight: bold; color: #ffa500; font-size: 14px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
@@ -112,57 +139,74 @@ function createTimeCurrencyUI() {
         </div>
     `;
 
-    // Удаляем старый если есть
     const oldCurrency = document.getElementById('time-currency-container');
     if (oldCurrency) oldCurrency.remove();
 
-    // Добавляем новый
     document.body.insertAdjacentHTML('beforeend', currencyHTML);
 }
 
-// Обновление валюты (вызывается каждую минуту) - БЕЗЛИМИТНОЕ онлайн накопление
-function updateTimeCurrency() {
-    const production = calculateProduction();
-    if (production === 0) return;
-
-    const currentTime = getTimeCurrency();
-    const perMinute = production / 60;
-
-    // Убрали maxStorage проверку - онлайн накопление безлимитное!
-    // ВАЖНО: НЕ используем Math.floor здесь, чтобы не терять дробное накопление!
-    // Например, при production=30 мин/час, perMinute=0.5
-    // Если floor каждую минуту - никогда не накопится (floor(X + 0.5) = X)
-    const newAmount = currentTime + perMinute;
-
-    if (window.userData) {
-        window.userData.time_currency = newAmount;
-    }
-
-    // Обновляем отображение
-    createTimeCurrencyUI();
-}
-
-// Использование времени для ускорения
-function useTimeCurrency(minutes, callback) {
+// Использование времени (через серверную RPC)
+async function useTimeCurrency(minutes, callback) {
     const current = getTimeCurrency();
-    
-    // Проверяем доступность formatTimeCurrency
+
     if (typeof window.formatTimeCurrency !== 'function') {
         console.error('❌ formatTimeCurrency не найдена');
-        alert(`Недостаточно времени! Нужно: ${minutes} мин, есть: ${current} мин`);
         return false;
     }
-    
+
     if (current < minutes) {
         alert(`Недостаточно времени! Нужно: ${window.formatTimeCurrency(minutes)}, есть: ${window.formatTimeCurrency(current)}`);
         return false;
     }
-    
+
+    // Вызываем серверную RPC для атомарной траты
+    if (window.dbManager && window.dbManager.supabase) {
+        try {
+            const { data, error } = await window.dbManager.supabase.rpc('spend_time_currency', {
+                p_telegram_id: window.dbManager.getTelegramId(),
+                p_amount: Math.floor(minutes)
+            });
+
+            if (error) {
+                console.error('❌ Ошибка RPC spend_time_currency:', error);
+                return useTimeCurrencyLocal(minutes, callback);
+            }
+
+            if (data && data.success) {
+                window.userData.time_currency_base = data.new_balance;
+                window.userData.time_currency_updated_at = new Date().toISOString();
+                _serverLoadTime = new Date();
+                _clientLoadTime = Date.now();
+
+                createTimeCurrencyUI();
+                if (callback) callback();
+                return true;
+            } else {
+                alert(`Недостаточно времени! Нужно: ${window.formatTimeCurrency(minutes)}, есть: ${window.formatTimeCurrency(data?.current || 0)}`);
+                return false;
+            }
+        } catch (err) {
+            console.error('❌ Ошибка при трате времени:', err);
+            return useTimeCurrencyLocal(minutes, callback);
+        }
+    }
+
+    return useTimeCurrencyLocal(minutes, callback);
+}
+
+// Локальный fallback для траты (если RPC недоступна)
+function useTimeCurrencyLocal(minutes, callback) {
+    const current = getTimeCurrency();
+    if (current < minutes) return false;
+
     if (window.userData) {
-        window.userData.time_currency -= minutes;
+        window.userData.time_currency_base = current - minutes;
+        window.userData.time_currency_updated_at = new Date().toISOString();
+        _serverLoadTime = new Date();
+        _clientLoadTime = Date.now();
+
         createTimeCurrencyUI();
 
-        // Сохранение происходит через event-save-manager
         if (window.eventSaveManager) {
             window.eventSaveManager.saveDebounced('time_currency_used', 2000);
         }
@@ -170,60 +214,89 @@ function useTimeCurrency(minutes, callback) {
         if (callback) callback();
         return true;
     }
-    
+
     return false;
 }
 
-// Добавление времени (награды) - БЕЗЛИМИТНОЕ
-function addTimeCurrency(minutes) {
+// Добавление времени (награды, ежедневный вход)
+async function addTimeCurrency(minutes) {
+    if (window.dbManager && window.dbManager.supabase) {
+        try {
+            const { data, error } = await window.dbManager.supabase.rpc('add_time_currency', {
+                p_telegram_id: window.dbManager.getTelegramId(),
+                p_amount: Math.floor(minutes)
+            });
+
+            if (error) {
+                console.error('❌ Ошибка RPC add_time_currency:', error);
+                addTimeCurrencyLocal(minutes);
+                return;
+            }
+
+            if (data && data.success) {
+                window.userData.time_currency_base = data.new_balance;
+                window.userData.time_currency_updated_at = new Date().toISOString();
+                _serverLoadTime = new Date();
+                _clientLoadTime = Date.now();
+                createTimeCurrencyUI();
+                return;
+            }
+        } catch (err) {
+            console.error('❌ Ошибка при добавлении времени:', err);
+        }
+    }
+
+    addTimeCurrencyLocal(minutes);
+}
+
+// Локальный fallback для добавления
+function addTimeCurrencyLocal(minutes) {
     const current = getTimeCurrency();
 
     if (window.userData) {
-        // Убрали maxStorage проверку - можно добавлять сколько угодно!
-        window.userData.time_currency = current + minutes;
+        window.userData.time_currency_base = Math.min(current + minutes, 999999);
+        window.userData.time_currency_updated_at = new Date().toISOString();
+        _serverLoadTime = new Date();
+        _clientLoadTime = Date.now();
+
         createTimeCurrencyUI();
 
-        // Сохранение происходит через event-save-manager
         if (window.eventSaveManager) {
             window.eventSaveManager.saveDebounced('time_currency_added', 2000);
         }
     }
 }
 
-// Расчет офлайн накопления (с лимитом хранилища)
-function calculateOfflineEarnings() {
-    if (!window.userData || !window.userData.last_login) {
-        console.log('⏰ Первый вход - офлайн накопление не рассчитывается');
-        return 0;
+// Снапшот баланса (вызывается при изменении уровня генератора)
+async function snapshotTimeCurrency() {
+    if (window.dbManager && window.dbManager.supabase) {
+        try {
+            const { data, error } = await window.dbManager.supabase.rpc('snapshot_time_currency', {
+                p_telegram_id: window.dbManager.getTelegramId()
+            });
+
+            if (!error && data !== null) {
+                window.userData.time_currency_base = data;
+                window.userData.time_currency_updated_at = new Date().toISOString();
+                _serverLoadTime = new Date();
+                _clientLoadTime = Date.now();
+                console.log('📸 Снапшот time_currency:', data);
+                return data;
+            }
+        } catch (err) {
+            console.error('❌ Ошибка снапшота:', err);
+        }
     }
 
-    const now = new Date();
-    const lastLogin = new Date(window.userData.last_login);
-    const hoursOffline = (now - lastLogin) / (1000 * 60 * 60); // Часы
-
-    if (hoursOffline < 0.016) { // Меньше 1 минуты
-        return 0;
+    const current = getTimeCurrency();
+    if (window.userData) {
+        window.userData.time_currency_base = current;
+        window.userData.time_currency_updated_at = new Date().toISOString();
     }
-
-    const production = calculateProduction(); // мин/час
-    if (production === 0) {
-        console.log('⏰ Генератор времени не построен');
-        return 0;
-    }
-
-    const maxStorage = calculateMaxStorage(); // мин
-    const potentialEarnings = Math.floor(hoursOffline * production); // мин
-
-    // ЛИМИТ: можно накопить максимум вместимость хранилища
-    const actualEarnings = Math.min(potentialEarnings, maxStorage);
-
-    console.log(`⏰ Офлайн накопление: ${hoursOffline.toFixed(1)}ч × ${production}мин/ч = ${potentialEarnings}мин`);
-    console.log(`⏰ С учетом лимита хранилища (${maxStorage}мин): ${actualEarnings}мин`);
-
-    return actualEarnings;
+    return current;
 }
 
-// Показать уведомление о накоплении за офлайн (с красивым фоном)
+// Показать уведомление о накоплении
 function showOfflineEarningsNotification(earnedMinutes) {
     if (earnedMinutes === 0) return;
 
@@ -232,28 +305,18 @@ function showOfflineEarningsNotification(earnedMinutes) {
         return;
     }
 
-    // Удаляем старое если есть
     const oldScreen = document.getElementById('offline-earnings-screen');
     if (oldScreen) oldScreen.remove();
 
-    // Фон по фракции игрока
     const faction = window.userData?.faction || 'fire';
     const backgroundPath = `assets/ui/window/tower_${faction}.webp`;
 
-    // Создаём экран
     const screen = document.createElement('div');
     screen.id = 'offline-earnings-screen';
     screen.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.9);
-        z-index: 10000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0, 0, 0, 0.9); z-index: 10000;
+        display: flex; align-items: center; justify-content: center;
         animation: fadeIn 0.3s ease;
     `;
 
@@ -264,99 +327,33 @@ function showOfflineEarningsNotification(earnedMinutes) {
         </style>
         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
             <div id="offline-earnings-wrapper" style="position: relative; display: inline-block;">
-                <img id="offline-earnings-bg" src="${backgroundPath}" alt="Фон" style="
-                    max-width: 100vw;
-                    max-height: 100vh;
-                    object-fit: contain;
-                    display: block;
-                ">
-                <div id="offline-earnings-overlay" style="
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    text-align: center;
-                    padding: 20px;
-                    box-sizing: border-box;
-                "></div>
+                <img id="offline-earnings-bg" src="${backgroundPath}" alt="Фон" style="max-width: 100vw; max-height: 100vh; object-fit: contain; display: block;">
+                <div id="offline-earnings-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; box-sizing: border-box;"></div>
             </div>
         </div>
     `;
 
     document.body.appendChild(screen);
 
-    // Ждём загрузку изображения для масштабирования
     const img = document.getElementById('offline-earnings-bg');
     const setupUI = () => {
         const overlay = document.getElementById('offline-earnings-overlay');
         if (!overlay || !img) return;
-
         const rect = img.getBoundingClientRect();
-        const scaleX = rect.width / 768;
-        const scaleY = rect.height / 512;
-        const scale = Math.min(scaleX, scaleY);
-
-        const titleSize = Math.max(18, 28 * scale);
-        const textSize = Math.max(14, 18 * scale);
-        const valueSize = Math.max(24, 40 * scale);
-        const btnSize = Math.max(14, 18 * scale);
-        const iconSize = Math.max(40, 64 * scale);
-
-        // Центральная область (115,70 : 655,410 в оригинале 768x512)
-        const contentWidth = (655 - 115) * scaleX;
-        const contentHeight = (410 - 70) * scaleY;
-
-        // Overlay уже позиционирован поверх изображения через CSS
-        // Просто добавляем анимацию
+        const scale = Math.min(rect.width / 768, rect.height / 512);
         overlay.style.animation = 'slideUp 0.5s ease';
-
         overlay.innerHTML = `
-            <div style="font-size: ${iconSize}px; margin-bottom: ${15 * scale}px;">⏰</div>
-            <div style="font-size: ${titleSize}px; font-weight: bold; color: #ffd700; margin-bottom: ${10 * scale}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
-                Добро пожаловать!
-            </div>
-            <div style="font-size: ${textSize}px; color: #ccc; margin-bottom: ${20 * scale}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
-                За время вашего отсутствия накоплено:
-            </div>
-            <div style="
-                font-size: ${valueSize}px;
-                font-weight: bold;
-                color: #ffa500;
-                margin-bottom: ${25 * scale}px;
-                text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
-                background: rgba(0,0,0,0.3);
-                padding: ${10 * scale}px ${20 * scale}px;
-                border-radius: ${10 * scale}px;
-                border: 2px solid rgba(255,165,0,0.5);
-            ">
-                ${window.formatTimeCurrency(earnedMinutes)}
-            </div>
-            <button onclick="document.getElementById('offline-earnings-screen').remove()" style="
-                background: linear-gradient(145deg, #ffa500, #ff8c00);
-                border: none;
-                padding: ${12 * scale}px ${35 * scale}px;
-                border-radius: ${10 * scale}px;
-                color: white;
-                font-size: ${btnSize}px;
-                font-weight: bold;
-                cursor: pointer;
-                transition: transform 0.2s;
-                box-shadow: 0 4px 15px rgba(255,165,0,0.4);
-            " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                Отлично! ✨
-            </button>
+            <div style="font-size: ${Math.max(40, 64 * scale)}px; margin-bottom: ${15 * scale}px;">⏰</div>
+            <div style="font-size: ${Math.max(18, 28 * scale)}px; font-weight: bold; color: #ffd700; margin-bottom: ${10 * scale}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">Добро пожаловать!</div>
+            <div style="font-size: ${Math.max(14, 18 * scale)}px; color: #ccc; margin-bottom: ${20 * scale}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">За время вашего отсутствия накоплено:</div>
+            <div style="font-size: ${Math.max(24, 40 * scale)}px; font-weight: bold; color: #ffa500; margin-bottom: ${25 * scale}px; text-shadow: 2px 2px 6px rgba(0,0,0,0.8); background: rgba(0,0,0,0.3); padding: ${10 * scale}px ${20 * scale}px; border-radius: ${10 * scale}px; border: 2px solid rgba(255,165,0,0.5);">${window.formatTimeCurrency(earnedMinutes)}</div>
+            <button onclick="document.getElementById('offline-earnings-screen').remove()" style="background: linear-gradient(145deg, #ffa500, #ff8c00); border: none; padding: ${12 * scale}px ${35 * scale}px; border-radius: ${10 * scale}px; color: white; font-size: ${Math.max(14, 18 * scale)}px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(255,165,0,0.4);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Отлично! ✨</button>
         `;
     };
 
     img.onload = setupUI;
     if (img.complete) setupUI();
 
-    // Автоудаление через 15 секунд
     setTimeout(() => {
         const s = document.getElementById('offline-earnings-screen');
         if (s) s.remove();
@@ -365,74 +362,114 @@ function showOfflineEarningsNotification(earnedMinutes) {
 
 // Флаг для предотвращения множественных вызовов
 let timeCurrencyInitialized = false;
-let offlineNotificationShown = false;
 
-// Инициализация системы
+// Совместимость: перехват записей в window.userData.time_currency
+// Любой код, который пишет в старое поле, автоматически обновит time_currency_base
+function setupTimeCurrencyProxy() {
+    if (!window.userData || window.userData._timeCurrencyProxied) return;
+
+    Object.defineProperty(window.userData, 'time_currency', {
+        get: function() {
+            // Возвращаем вычисленный баланс (base + накопленное)
+            return typeof getTimeCurrency === 'function' ? getTimeCurrency() : (this.time_currency_base || 0);
+        },
+        set: function(newValue) {
+            // Синхронизируем с новыми полями lazy accrual
+            this.time_currency_base = Math.max(0, Math.floor(newValue));
+            this.time_currency_updated_at = new Date().toISOString();
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    window.userData._timeCurrencyProxied = true;
+    console.log('🔗 time_currency proxy установлен');
+}
+
+// Инициализация системы (LAZY ACCRUAL v2)
 function initTimeCurrency() {
-    // КРИТИЧНО: Предотвращаем повторную инициализацию
     if (timeCurrencyInitialized) {
         console.log('⏭️ initTimeCurrency уже вызван, пропуск');
         return;
     }
 
-    console.log('💰 Инициализация системы временной валюты...');
+    console.log('💰 Инициализация системы временной валюты (lazy accrual v2)...');
     timeCurrencyInitialized = true;
 
-    // Инициализация валюты если её нет
-    if (!window.userData.time_currency) {
-        window.userData.time_currency = 0;
+    // Миграция со старой системы: если нет time_currency_base, берём time_currency
+    if (window.userData.time_currency_base == null) {
+        // Читаем ПЕРЕД установкой proxy (чтобы получить raw value)
+        const rawTimeCurrency = window.userData.time_currency || 0;
+        window.userData.time_currency_base = rawTimeCurrency;
+        window.userData.time_currency_updated_at = window.userData.last_login || new Date().toISOString();
+        console.log('🔄 Миграция со старой системы: base =', window.userData.time_currency_base);
     }
     if (!window.userData.constructions) {
         window.userData.constructions = [];
     }
 
-    // Рассчитываем и добавляем офлайн накопление
-    const offlineEarnings = calculateOfflineEarnings();
-    if (offlineEarnings > 0 && !offlineNotificationShown) {
-        window.userData.time_currency += offlineEarnings;
-        offlineNotificationShown = true; // Устанавливаем флаг ДО показа уведомления
-        showOfflineEarningsNotification(offlineEarnings);
+    // Устанавливаем proxy ПОСЛЕ миграции, чтобы все дальнейшие записи
+    // в window.userData.time_currency автоматически обновляли time_currency_base
+    setupTimeCurrencyProxy();
+
+    // Вычисляем накопленное для показа уведомления
+    const base = window.userData.time_currency_base || 0;
+    const currentBalance = getTimeCurrency();
+    const earned = currentBalance - base;
+
+    if (earned > 60) { // Показываем если накоплено больше 1 часа
+        showOfflineEarningsNotification(earned);
     }
 
-    // КРИТИЧНО: Обновляем last_login ПОСЛЕ расчёта офлайн бонуса
-    // Это предотвращает повторное начисление при перезагрузке
+    // Обновляем last_login
     window.userData.last_login = new Date().toISOString();
 
-    // Сохраняем обновленное значение (включая новый last_login)
+    // Сохраняем last_login
     if (window.eventSaveManager) {
         window.eventSaveManager.saveImmediate('time_currency_init');
     }
 
     createTimeCurrencyUI();
 
-    // Обновляем каждую минуту (только если интервал еще не запущен)
+    // UI обновляется каждые 5 секунд (только отображение, никаких записей в БД!)
     if (!window.timeCurrencyInterval) {
-        window.timeCurrencyInterval = setInterval(updateTimeCurrency, 60000);
-        console.log('⏰ Запущен интервал обновления временной валюты');
+        window.timeCurrencyInterval = setInterval(() => {
+            createTimeCurrencyUI();
+        }, 5000);
+        console.log('⏰ Запущено обновление UI времени каждые 5 сек');
     }
 }
 
-// Обновление отображения времени (вызывается после покупок)
+// Обновление отображения
 function updateTimeCurrencyDisplay() {
     createTimeCurrencyUI();
 }
 
-// Очистка интервала (для предотвращения утечек памяти)
+// Очистка интервала
 function cleanupTimeCurrency() {
     if (window.timeCurrencyInterval) {
         clearInterval(window.timeCurrencyInterval);
         window.timeCurrencyInterval = null;
-        console.log('⏰ Остановлен интервал временной валюты');
     }
 }
 
-// Автоматическая очистка при выгрузке страницы
+// СОВМЕСТИМОСТЬ: updateTimeCurrency для кода который вызывает её
+function updateTimeCurrency() {
+    createTimeCurrencyUI();
+}
+
+// Совместимость: calculateOfflineEarnings (теперь не нужна, баланс вычисляется автоматически)
+function calculateOfflineEarnings() {
+    // В v2 офлайн накопление встроено в getTimeCurrency()
+    // Возвращаем 0 т.к. начисление происходит автоматически
+    return 0;
+}
+
 window.addEventListener('beforeunload', cleanupTimeCurrency);
 
 // Экспорт функций
 window.TIME_CURRENCY_CONFIG = TIME_CURRENCY_CONFIG;
 window.getTimeCurrency = getTimeCurrency;
-// formatTimeCurrency НЕ экспортируем - используем из utilities.js
 window.calculateProduction = calculateProduction;
 window.calculateMaxStorage = calculateMaxStorage;
 window.createTimeCurrencyUI = createTimeCurrencyUI;
@@ -444,4 +481,8 @@ window.calculateOfflineEarnings = calculateOfflineEarnings;
 window.showOfflineEarningsNotification = showOfflineEarningsNotification;
 window.initTimeCurrency = initTimeCurrency;
 window.cleanupTimeCurrency = cleanupTimeCurrency;
-
+window.snapshotTimeCurrency = snapshotTimeCurrency;
+window.setServerTime = function(serverTime) {
+    _serverLoadTime = new Date(serverTime);
+    _clientLoadTime = Date.now();
+};

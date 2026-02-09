@@ -214,7 +214,8 @@ function castStormCloud(wizard, spellData, position, casterType) {
         });
     }
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`⛈️ ${wizard.name} вызывает Грозовую тучу! ${strikeCount} удар${strikeCount === 1 ? '' : strikeCount < 5 ? 'а' : 'ов'} по случайным клеткам`);
+        const boostText = window.getAoeBoostText ? window.getAoeBoostText(wizard) : '';
+        window.addToBattleLog(`⛈️ ${wizard.name} вызывает Грозовую тучу! ${boostText}${strikeCount} удар${strikeCount === 1 ? '' : strikeCount < 5 ? 'а' : 'ов'} по случайным клеткам`);
     }
     
     // Определяем колонки территории противника
@@ -409,7 +410,8 @@ function castBallLightning(wizard, spellData, position, casterType) {
     const shuffledTargets = [...targets].sort(() => 0.5 - Math.random());
 
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`⚡ ${wizard.name} вызывает Шаровую молнию! Поражает ${shuffledTargets.length} целей, урон снижается на ${Math.round(decayPercent * 100)}%`);
+        const blBoostText = window.getAoeBoostText ? window.getAoeBoostText(wizard) : '';
+        window.addToBattleLog(`⚡ ${wizard.name} вызывает Шаровую молнию! ${blBoostText}Поражает ${shuffledTargets.length} целей, урон снижается на ${Math.round(decayPercent * 100)}%`);
     }
 
     // ЗАПУСКАЕМ АНИМАЦИЮ (только визуальный эффект)

@@ -453,7 +453,8 @@ function castMeteorShower(wizard, spellData, position, casterType) {
     }
     
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`☄️ ${wizard.name} вызывает Метеоритный дождь! ${strikeCount} метеорит${strikeCount > 1 ? 'а' : ''}, ${baseDamage} урона каждый${level === 5 ? `, игнорирует ${armorIgnorePercent}% брони` : ''}`);
+        const boostText = window.getAoeBoostText ? window.getAoeBoostText(wizard) : '';
+        window.addToBattleLog(`☄️ ${wizard.name} вызывает Метеоритный дождь! ${boostText}${strikeCount} метеорит${strikeCount > 1 ? 'а' : ''}, ${baseDamage} урона каждый${level === 5 ? `, игнорирует ${armorIgnorePercent}% брони` : ''}`);
     }
     
     // Наносим удары с задержкой между метеоритами

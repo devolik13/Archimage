@@ -1525,8 +1525,9 @@ async function checkBattleEnd() {
                 if (level.reward && isFirstCompletion) {
                     const timeRewardMinutes = level.reward; // в минутах
                     // addTimeCurrency принимает минуты, НЕ умножаем на 60!
+                    // ВАЖНО: await чтобы base обновился ДО savePlayer ниже
                     if (typeof window.addTimeCurrency === 'function') {
-                        window.addTimeCurrency(timeRewardMinutes);
+                        await window.addTimeCurrency(timeRewardMinutes);
                         if (typeof window.addToBattleLog === 'function') {
                             // Определяем формат отображения
                             let rewardText;

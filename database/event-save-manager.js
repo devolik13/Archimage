@@ -75,8 +75,11 @@ class EventSaveManager {
 
         try {
             const playerData = {
-                // floor() т.к. в памяти храним дробное для накопления, но БД ожидает integer
-                timeCurrency: Math.floor(window.userData.time_currency || 0),
+                // LAZY ACCRUAL v2: сохраняем base и updated_at вместо вычисленного значения
+                time_currency_base: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
+                time_currency_updated_at: window.userData.time_currency_updated_at || new Date().toISOString(),
+                // Совместимость: старое поле для обратной совместимости
+                timeCurrency: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
                 level: window.userData.level,
                 experience: window.userData.experience,
                 faction: window.userData.faction,

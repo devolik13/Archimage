@@ -103,7 +103,14 @@ async function claimLeagueReward(leagueId) {
     const rewards = league.rewards;
 
     if (rewards.time_currency) {
-        window.userData.time_currency = (window.userData.time_currency || 0) + rewards.time_currency;
+        if (typeof window.addTimeCurrency === 'function') {
+            await window.addTimeCurrency(rewards.time_currency);
+        } else {
+            // Fallback: обновляем time_currency_base (не старое поле time_currency!)
+            const current = typeof window.getTimeCurrency === 'function' ? window.getTimeCurrency() : (window.userData.time_currency_base || 0);
+            window.userData.time_currency_base = current + rewards.time_currency;
+            window.userData.time_currency_updated_at = new Date().toISOString();
+        }
         console.log(`⏰ Получено времени: +${rewards.time_currency}`);
     }
 
