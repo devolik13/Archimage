@@ -547,6 +547,32 @@ function setupAirdropUI() {
                     ">Выполнить</button>
                 `}
             </div>
+            <!-- Sprut Black & Red -->
+            <div style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(239, 68, 68, 0.1);
+                border: 1px solid rgba(239, 68, 68, 0.3);
+                border-radius: 8px;
+                padding: 10px;
+            ">
+                <div style="flex: 1;">
+                    <div style="font-size: ${baseFontSize}px; color: #fff;">
+                        🎮 Sprut Black & Red
+                    </div>
+                </div>
+                <button onclick="window.openSprutBlackRed()" style="
+                    padding: 8px 16px;
+                    background: linear-gradient(135deg, #ef4444, #991b1b);
+                    border: none;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: ${smallFontSize}px;
+                    font-weight: bold;
+                    cursor: pointer;
+                ">Перейти</button>
+            </div>
         </div>
 
         <!-- Как заработать -->
@@ -994,6 +1020,10 @@ function openCreakyTasks() {
     window.showNotification?.('📋 Выполните 3 задания и вернитесь для получения награды');
 }
 
+function openSprutBlackRed() {
+    window.open('https://t.me/sprutgamesbot?start=afeb067', '_blank');
+}
+
 /**
  * Проверить выполнение Creaky Tasks и выдать награду
  * @param {boolean} completed - выполнено ли задание
@@ -1065,6 +1095,7 @@ function updateCreakyTasksButton() {
 
 window.checkGroupSubscription = checkGroupSubscription;
 window.openCreakyTasks = openCreakyTasks;
+window.openSprutBlackRed = openSprutBlackRed;
 window.claimCreakyTasksReward = claimCreakyTasksReward;
 
 /**
