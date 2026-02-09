@@ -35,6 +35,9 @@ async function initGameWithDatabase() {
 
     // Защита от читов: валидация значений при загрузке
     window.userData.time_currency = Math.max(0, Math.min(999999, player.time_currency || 0));
+    // LAZY ACCRUAL v2: новые поля для ленивого начисления
+    window.userData.time_currency_base = Math.max(0, Math.min(999999, player.time_currency_base ?? player.time_currency ?? 0));
+    window.userData.time_currency_updated_at = player.time_currency_updated_at || player.last_login || new Date().toISOString();
     window.userData.level = Math.max(1, Math.min(100, player.level || 1));
     window.userData.experience = Math.max(0, player.experience || 0);
     window.userData.last_login = player.last_login;
@@ -235,17 +238,8 @@ async function initGameWithDatabase() {
             await window.checkOfflineEvents(player.last_login);
         }
 
-        // Обновляем last_login после расчета офлайн накопления
-        window.userData.last_login = new Date().toISOString();
-
-        // ВАЖНО: Сразу сохраняем last_login в БД чтобы избежать повторного начисления при обновлении
-        if (window.dbManager && window.dbManager.supabase) {
-            await window.dbManager.supabase.rpc('update_player_safe', {
-                p_telegram_id: window.dbManager.getTelegramId(),
-                p_data: { last_login: window.userData.last_login }
-            });
-            console.log('✅ last_login сохранён в БД:', window.userData.last_login);
-        }
+        // LAZY ACCRUAL v2: last_login обновляется в initTimeCurrency()
+        // Убран дублирующий update — теперь одна точка обновления
 
         if (typeof window.initConstructionSystem === 'function') {
             window.initConstructionSystem();

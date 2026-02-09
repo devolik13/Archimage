@@ -628,7 +628,7 @@ function showConstructionModalFallback(constructionIndex) {
 }
 
 // Добавьте новую функцию для ускорения
-function speedupConstruction(constructionIndex) {
+async function speedupConstruction(constructionIndex) {
     const construction = window.userData.constructions[constructionIndex];
     if (!construction) return;
     
@@ -646,12 +646,12 @@ function speedupConstruction(constructionIndex) {
         window.closeCurrentModal();
     }
     
-    if (window.useTimeCurrency(cost, () => {
+    // useTimeCurrency теперь async — используем await
+    const success = await window.useTimeCurrency(cost, () => {
         completeConstruction(constructionIndex);
         updateConstructionUI();
         updateAllConstructionTimers();
         if (typeof window.showNotification === 'function') {
-            // Сообщение зависит от типа процесса
             let processName = 'Строительство';
             if (construction.type === 'spell') {
                 processName = 'Изучение заклинания';
@@ -667,9 +667,8 @@ function speedupConstruction(constructionIndex) {
         setTimeout(() => {
             blockConstructionModalReopen = false;
         }, 500);
-    })) {
-        // Успешно ускорено
-    } else {
+    });
+    if (!success) {
         // Если не хватило ресурсов - разблокируем сразу
         blockConstructionModalReopen = false;
     }
@@ -991,10 +990,17 @@ async function completeConstruction(constructionIndex) {
             // Просто показываем уведомление
             if (typeof Notification !== 'undefined' && Notification.show) { Notification.show('✅ Улучшение завершено!', 'success'); }
 
-            // ИСПРАВЛЕНИЕ: Обновляем UI времени если улучшили генератор времени
-            if (construction.building_id === 'time_generator' && typeof window.createTimeCurrencyUI === 'function') {
-                window.createTimeCurrencyUI();
-                console.log('⏰ UI времени обновлен после улучшения генератора');
+            // LAZY ACCRUAL v2: При улучшении генератора — снапшот + обновление UI
+            // Снапшот фиксирует накопленное по СТАРОЙ ставке перед сменой уровня
+            if (construction.building_id === 'time_generator') {
+                if (typeof window.snapshotTimeCurrency === 'function') {
+                    window.snapshotTimeCurrency();
+                    console.log('📸 Снапшот времени перед сменой уровня генератора');
+                }
+                if (typeof window.createTimeCurrencyUI === 'function') {
+                    window.createTimeCurrencyUI();
+                    console.log('⏰ UI времени обновлен после улучшения генератора');
+                }
             }
 
 	    if (window.userData?.faction) {
