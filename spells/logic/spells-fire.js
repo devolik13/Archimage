@@ -427,7 +427,8 @@ function castFireball(wizard, spellData, position, casterType) {
     // Лог общего эффекта
     if (typeof window.addToBattleLog === 'function') {
         const areaDesc = level === 5 ? 'вся территория врага' : 'зона 3×3';
-        window.addToBattleLog(`🔥 ${wizard.name} выпускает Огненный шар (${areaDesc}, ${baseDamage} урона)`);
+        const boostText = window.getAoeBoostText ? window.getAoeBoostText(wizard) : '';
+        window.addToBattleLog(`🔥 ${wizard.name} выпускает Огненный шар (${boostText}${areaDesc}, ${baseDamage} урона)`);
     }
 }
 

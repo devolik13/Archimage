@@ -23,6 +23,32 @@ function sortTargetsByHpPercent(targets) {
 // Экспорт хелпера
 window.sortTargetsByHpPercent = sortTargetsByHpPercent;
 
+/**
+ * Вычисляет текст усиления урона для AOE-заклинаний (уровень, башня, гильдия)
+ * Возвращает строку вида "усиление +XX%, " или "" если усиления нет
+ */
+window.getAoeBoostText = function(caster) {
+    let multiplier = 1.0;
+    const isPlayerCaster = window.playerWizards?.some(w => w.id === caster?.id) || false;
+
+    if (typeof window.getDamageBonusFromLevel === 'function') {
+        const levelBonus = window.getDamageBonusFromLevel(caster);
+        if (levelBonus > 1.0) multiplier *= levelBonus;
+    }
+    if (isPlayerCaster && typeof window.getWizardTowerDamageBonus === 'function') {
+        const towerBonus = window.getWizardTowerDamageBonus();
+        if (towerBonus > 1.0) multiplier *= towerBonus;
+    }
+    if (isPlayerCaster && window.guildManager?.currentGuild && !window.isDuelBattle) {
+        const guildBonuses = window.guildManager.getGuildBonuses();
+        if (guildBonuses && guildBonuses.damageBonus > 0) {
+            multiplier *= (1 + guildBonuses.damageBonus / 100);
+        }
+    }
+    const percent = Math.round((multiplier - 1) * 100);
+    return percent > 0 ? `усиление +${percent}%, ` : '';
+};
+
 // Временная функция определения школы заклинания (если основная не загружена)
 if (!window.getSpellSchoolFallback) {
     window.getSpellSchoolFallback = function(spellId) {

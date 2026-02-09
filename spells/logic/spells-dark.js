@@ -270,7 +270,9 @@ function castShadowRealm(wizard, spellData, position, casterType) {
     const targets = enemies.slice(0, targetCount);
 
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`🌑 ${wizard.name} открывает Мир теней для ${targets.length} врагов!`);
+        const boostText = window.getAoeBoostText ? window.getAoeBoostText(wizard) : '';
+        const boostSuffix = boostText ? ` (${boostText.slice(0, -2)})` : '';
+        window.addToBattleLog(`🌑 ${wizard.name} открывает Мир теней для ${targets.length} врагов!${boostSuffix}`);
     }
 
     // Анимация
