@@ -421,8 +421,9 @@ function initTimeCurrency() {
         showOfflineEarningsNotification(earned);
     }
 
-    // Снэпшотим баланс чтобы при следующем входе earned считался заново
-    snapshotTimeCurrency();
+    // Обновляем base синхронно, чтобы saveImmediate сохранил новое значение
+    window.userData.time_currency_base = currentBalance;
+    window.userData.time_currency_updated_at = new Date().toISOString();
 
     // Обновляем last_login
     window.userData.last_login = new Date().toISOString();
