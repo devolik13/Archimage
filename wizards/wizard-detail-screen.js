@@ -1215,6 +1215,11 @@ function showStatBreakdown(statType) {
                 <span>Базовый урон</span>
                 <span style="color: white;">100%</span>
             </div>
+            ${s.levelBonus > 0 ? `
+            <div class="stat-breakdown-row">
+                <span>⭐ Уровень мага</span>
+                <span style="color: #4ade80;">+${s.levelBonus}%</span>
+            </div>` : ''}
             ${s.towerBonus > 0 ? `
             <div class="stat-breakdown-row">
                 <span>🏯 Башня магов</span>
