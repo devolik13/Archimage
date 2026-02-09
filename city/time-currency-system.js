@@ -421,10 +421,13 @@ function initTimeCurrency() {
         showOfflineEarningsNotification(earned);
     }
 
+    // Снэпшотим баланс чтобы при следующем входе earned считался заново
+    snapshotTimeCurrency();
+
     // Обновляем last_login
     window.userData.last_login = new Date().toISOString();
 
-    // Сохраняем last_login
+    // Сохраняем last_login + обновлённый base
     if (window.eventSaveManager) {
         window.eventSaveManager.saveImmediate('time_currency_init');
     }
