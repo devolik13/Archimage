@@ -547,6 +547,86 @@ function setupAirdropUI() {
                     ">Выполнить</button>
                 `}
             </div>
+            <!-- Money Mining -->
+            <div id="money-mining-reward" style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(250, 204, 21, 0.1);
+                border: 1px solid rgba(250, 204, 21, 0.3);
+                border-radius: 8px;
+                padding: 10px;
+                margin-top: 8px;
+            ">
+                <div style="flex: 1;">
+                    <div style="font-size: ${baseFontSize}px; color: #fff;">
+                        ⛏️ Присоединяйся к игре Money Mining
+                    </div>
+                    <div style="font-size: ${smallFontSize}px; color: #facc15; margin-top: 4px;">
+                        +100 BPM + ⏰ 2 часа
+                    </div>
+                </div>
+                ${window.userData?.completed_tasks?.money_mining ? `
+                    <div style="
+                        padding: 8px 16px;
+                        background: #333;
+                        border-radius: 8px;
+                        color: #888;
+                        font-size: ${smallFontSize}px;
+                    ">✓ Получено</div>
+                ` : `
+                    <button onclick="window.openMoneyMining()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #facc15, #eab308);
+                        border: none;
+                        border-radius: 8px;
+                        color: #000;
+                        font-size: ${smallFontSize}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Играть</button>
+                `}
+            </div>
+            <!-- PandaFiT -->
+            <div id="pandafit-reward" style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(74, 222, 128, 0.1);
+                border: 1px solid rgba(74, 222, 128, 0.3);
+                border-radius: 8px;
+                padding: 10px;
+                margin-top: 8px;
+            ">
+                <div style="flex: 1;">
+                    <div style="font-size: ${baseFontSize}px; color: #fff;">
+                        🐼 PandaFiT: прокачай панду до 5 lvl и забирай награду
+                    </div>
+                    <div style="font-size: ${smallFontSize}px; color: #4ade80; margin-top: 4px;">
+                        +100 BPM + ⏰ 2 часа
+                    </div>
+                </div>
+                ${window.userData?.completed_tasks?.pandafit ? `
+                    <div style="
+                        padding: 8px 16px;
+                        background: #333;
+                        border-radius: 8px;
+                        color: #888;
+                        font-size: ${smallFontSize}px;
+                    ">✓ Получено</div>
+                ` : `
+                    <button onclick="window.openPandaFit()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #4ade80, #22c55e);
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: ${smallFontSize}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Играть</button>
+                `}
+            </div>
             <!-- Sprut Black & Red -->
             <div style="
                 display: flex;
@@ -1093,9 +1173,91 @@ function updateCreakyTasksButton() {
     }
 }
 
+/**
+ * Открыть Money Mining
+ */
+function openMoneyMining() {
+    window.open('https://t.me/Money_Mining_Bot/MoneyMiningGame?startapp=695099195', '_blank');
+    setTimeout(() => claimTaskReward('money_mining', 'Money Mining'), 2000);
+}
+
+/**
+ * Открыть PandaFiT
+ */
+function openPandaFit() {
+    window.open('https://t.me/PandaFiT_bot/PandaFiT?startapp=rId963796674', '_blank');
+    setTimeout(() => claimTaskReward('pandafit', 'PandaFiT'), 2000);
+}
+
+/**
+ * Универсальная функция выдачи награды за задание
+ */
+async function claimTaskReward(taskKey, taskName) {
+    if (window.userData?.completed_tasks?.[taskKey]) {
+        return;
+    }
+
+    if (!window.userData.completed_tasks) {
+        window.userData.completed_tasks = {};
+    }
+
+    window.userData.completed_tasks[taskKey] = true;
+
+    const bpmReward = 100;
+    const timeReward = 120; // 2 часа
+
+    window.userData.airdrop_points = (window.userData.airdrop_points || 0) + bpmReward;
+    window.userData.time_currency = (window.userData.time_currency || 0) + timeReward;
+
+    if (!window.userData.airdrop_breakdown) {
+        window.userData.airdrop_breakdown = {};
+    }
+    window.userData.airdrop_breakdown[taskName] = (window.userData.airdrop_breakdown[taskName] || 0) + bpmReward;
+
+    if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+        await window.dbManager.savePlayer(window.userData);
+    }
+
+    window.showNotification?.(`🎉 Награда получена! +${bpmReward} BPM + ⏰ 2 часа`);
+
+    updateTaskButton(taskKey);
+    updateAirdropPointsDisplay();
+
+    if (typeof window.updateTimerDisplay === 'function') {
+        window.updateTimerDisplay();
+    }
+}
+
+/**
+ * Обновить кнопку задания на "Получено"
+ */
+function updateTaskButton(taskKey) {
+    const idMap = {
+        'money_mining': 'money-mining-reward',
+        'pandafit': 'pandafit-reward'
+    };
+    const taskDiv = document.getElementById(idMap[taskKey]);
+    if (!taskDiv) return;
+
+    const buttonOrStatus = taskDiv.querySelector('button, div:last-child');
+    if (buttonOrStatus && window.userData?.completed_tasks?.[taskKey]) {
+        buttonOrStatus.outerHTML = `
+            <div style="
+                padding: 8px 16px;
+                background: #333;
+                border-radius: 8px;
+                color: #888;
+                font-size: 12px;
+            ">✓ Получено</div>
+        `;
+    }
+}
+
 window.checkGroupSubscription = checkGroupSubscription;
 window.openCreakyTasks = openCreakyTasks;
 window.openSprutBlackRed = openSprutBlackRed;
+window.openMoneyMining = openMoneyMining;
+window.openPandaFit = openPandaFit;
 window.claimCreakyTasksReward = claimCreakyTasksReward;
 
 /**
