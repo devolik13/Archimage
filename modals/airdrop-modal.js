@@ -639,7 +639,7 @@ function setupAirdropUI() {
             ">
                 <div style="flex: 1;">
                     <div style="font-size: ${baseFontSize}px; color: #fff;">
-                        🎮 Sprut Black & Red
+                        🎮 Sprut Black&Red
                     </div>
                 </div>
                 <button onclick="window.openSprutBlackRed()" style="
