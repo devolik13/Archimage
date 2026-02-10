@@ -70,7 +70,7 @@ function castPebble(wizard, spellData, position, casterType) {
                 });
             } else {
                 console.warn('⚠️ Анимация pebble не найдена');
-                setTimeout(onHit, 300);
+                (window.battleTimeout || setTimeout)(onHit, 300);
             }
         },
         
@@ -84,7 +84,7 @@ function castPebble(wizard, spellData, position, casterType) {
             if (level === 5 && Math.random() < 0.5) {
                 console.log('🪨 УРОВЕНЬ 5: Запуск дополнительного камешка!');
                 
-                setTimeout(() => {
+                (window.battleTimeout || setTimeout)(() => {
                     const additionalTarget = window.findRandomTarget?.(casterType);
                     
                     if (additionalTarget && additionalTarget.wizard !== target.wizard) {
@@ -124,7 +124,7 @@ function castPebbleSecondary(wizard, spellData, position, casterType, target) {
                     onHit: onHit
                 });
             } else {
-                setTimeout(onHit, 300);
+                (window.battleTimeout || setTimeout)(onHit, 300);
             }
         },
         
@@ -459,7 +459,7 @@ function castMeteorShower(wizard, spellData, position, casterType) {
     
     // Наносим удары с задержкой между метеоритами
     for (let i = 0; i < strikeCount; i++) {
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             // Ищем случайную цель
             const target = typeof window.findRandomCombatTarget === 'function' ? 
                 window.findRandomCombatTarget(casterType) : 

@@ -596,7 +596,7 @@ class SummonsManager {
         
         // Зеленые круги
         for (let i = 0; i < 3; i++) {
-            setTimeout(() => {
+            (window.battleTimeout || setTimeout)(() => {
                 // ПРОВЕРКА: visual может быть уничтожен к этому моменту
                 if (!visual || visual.destroyed || !container.parent) {
                     console.warn('⚠️ Visual уничтожен, отменяем heal эффект');
@@ -648,7 +648,7 @@ class SummonsManager {
         const originalTint = visual.tint || 0xFFFFFF;
         visual.tint = 0xFF0000;
         
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             // ПРОВЕРКА перед изменением tint
             if (!visual || visual.destroyed) return;
             visual.tint = originalTint;

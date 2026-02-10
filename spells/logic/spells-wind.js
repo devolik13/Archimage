@@ -100,7 +100,7 @@ function castGust(wizard, spellData, position, casterType) {
                 });
             } else {
                 console.warn('⚠️ Анимация gust не найдена');
-                setTimeout(onHit, 300);
+                (window.battleTimeout || setTimeout)(onHit, 300);
             }
         },
         

@@ -257,7 +257,7 @@ function startBattle() {
         window.initializeWeatherForBattle();
     }
     if (typeof window.setWeatherDisplay === 'function') {
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             window.setWeatherDisplay();
         }, 100);
     }
@@ -750,7 +750,7 @@ async function endBattleAsDraw() {
 
     if (isPvEBattle) {
         // Для PvE - показываем как поражение
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             window.isPvEBattle = false;
             window.currentPvELevel = null;
             if (typeof window.showArenaResult === 'function') {
@@ -767,7 +767,7 @@ async function endBattleAsDraw() {
         }, 1000);
     } else {
         // Для PvP - нет изменения рейтинга
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             if (typeof window.showArenaResult === 'function') {
                 window.showArenaResult('draw', {
                     opponentName: window.selectedOpponent?.username || 'Противник',
@@ -1136,7 +1136,7 @@ async function executeBossBattlePhase() {
         if (window.globalTurnCounter > 0) {
             // 40% от текущей скорости боя (800ms при обычной, 320ms при быстрой)
             const delay = (window.battleSpeed || 2000) * 0.4;
-            await new Promise(resolve => setTimeout(resolve, delay));
+            await new Promise(resolve => (window.battleTimeout || setTimeout)(resolve, delay));
         }
 
         if (typeof window.addToBattleLog === 'function') {
@@ -1241,7 +1241,7 @@ async function executeBossBattlePhase() {
             // Пауза между магами для завершения всех анимаций
             // 25% от текущей скорости боя (500ms при обычной, 200ms при быстрой)
             const delay = (window.battleSpeed || 2000) * 0.25;
-            await new Promise(resolve => setTimeout(resolve, delay));
+            await new Promise(resolve => (window.battleTimeout || setTimeout)(resolve, delay));
         }
 
         // Проверка на Метеокинез
@@ -1257,7 +1257,7 @@ async function executeBossBattlePhase() {
         // Пауза перед ходом босса для завершения анимаций игрока
         // 40% от текущей скорости боя (800ms при обычной, 320ms при быстрой)
         const delay = (window.battleSpeed || 2000) * 0.4;
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise(resolve => (window.battleTimeout || setTimeout)(resolve, delay));
 
         if (typeof window.addToBattleLog === 'function') {
             window.addToBattleLog(`━━━ Ход босса ━━━`);
@@ -1750,7 +1750,7 @@ async function checkBattleEnd() {
 
             // Показываем с небольшой задержкой для визуального эффекта (или без задержки при earlyExit)
             const delay = window.battleEarlyExit ? 0 : 1000;
-            setTimeout(() => {
+            (window.battleTimeout || setTimeout)(() => {
                 window.showBattleResult(battleResult, battleData);
                 // Сбрасываем флаги после показа
                 window.battleEarlyExit = false;
@@ -1813,7 +1813,7 @@ async function checkBattleEnd() {
             };
 
             // Показываем результат с небольшой задержкой (1 сек)
-            setTimeout(() => {
+            (window.battleTimeout || setTimeout)(() => {
                 // Очищаем флаги PvE
                 window.isPvEBattle = false;
                 window.currentPvELevel = null;
@@ -1920,7 +1920,7 @@ function applyLeafCanopyEffect(wizard, level) {
     });
 
     // АНИМАЦИЯ - с исправленным определением casterType
-    setTimeout(() => {
+    (window.battleTimeout || setTimeout)(() => {
         if (window.spellAnimations?.leaf_canopy?.play) {
             const targetWizardsData = targets.map(target => {
                 const isPlayerWizard = window.playerWizards.some(w => w.id === wizard.id);
@@ -1971,7 +1971,7 @@ function applyMeteorokinesisEffect(wizard, level) {
         window.currentWeather = 'clear';
     }
 
-    setTimeout(() => {
+    (window.battleTimeout || setTimeout)(() => {
         if (window.spellAnimations?.meteorokinesis?.show) {
             window.spellAnimations.meteorokinesis.show(casterType, level, wizard);
         }
@@ -2028,7 +2028,7 @@ function applyAbsoluteZeroEffect(wizard, level, casterType) {
     }
 
     // 🔥 ВИЗУАЛЬНАЯ АНИМАЦИЯ - с задержкой для инициализации
-    setTimeout(() => {
+    (window.battleTimeout || setTimeout)(() => {
         if (window.spellAnimations?.absolute_zero?.create) {
             window.spellAnimations.absolute_zero.create({
                 casterId: wizard.id,

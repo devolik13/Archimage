@@ -303,7 +303,7 @@ function applyBarkArmorAtStart(wizard, level, position, type) {
     
     // Показываем анимацию один раз
     if (window.spellAnimations?.bark_armor?.play) {
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             window.spellAnimations.bark_armor.play({
                 casterType: type,
                 casterPosition: position,
@@ -440,7 +440,7 @@ function healWeakestAlly(casterType) {
             const container = window.pixiCore?.getEffectsContainer();
             if (container) {
                 for (let i = 0; i < 3; i++) {
-                    setTimeout(() => {
+                    (window.battleTimeout || setTimeout)(() => {
                         const heal = new PIXI.Graphics();
                         heal.lineStyle(2, 0x00FF00, 0.6);
                         heal.drawCircle(0, 0, 10);
