@@ -8,6 +8,9 @@ function castNecromantSpell(wizard, spellId, spellData, position, casterType) {
         case 'bone_spear':
             castBoneSpear(wizard, spellData, position, casterType);
             break;
+        case 'bone_cage':
+            castBoneCage(wizard, spellData, position, casterType);
+            break;
         default:
             if (typeof window.castBasicAttack === 'function') {
                 window.castBasicAttack(wizard, position, casterType);
@@ -243,6 +246,125 @@ function applyDeathShroudAtStart(wizard, level, position, casterType) {
     }
 }
 
+// --- Костяная клетка (Bone Cage) - Тир 4, Утилити ---
+function castBoneCage(wizard, spellData, position, casterType) {
+    const level = spellData.level || 1;
+    const cageHP = [30, 35, 40, 45, 50][level - 1] || 30;
+
+    // Поиск цели — стандартный single target, но только маги (не стены/существа)
+    const target = typeof window.findTarget === 'function' ?
+        window.findTarget(position, casterType, wizard, 'bone_cage') : null;
+
+    if (!target || !target.wizard || target.wizard.hp <= 0) {
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`🪤 ${wizard.name} пытается наложить Костяную клетку, но цель не найдена`);
+        }
+        return;
+    }
+
+    const targetWizard = target.wizard;
+
+    // Инициализируем effects если нет
+    if (!targetWizard.effects) targetWizard.effects = {};
+
+    // Накладываем клетку
+    targetWizard.effects.bone_cage = {
+        hp: cageHP,
+        maxHP: cageHP,
+        level: level,
+        casterId: wizard.id,
+        casterType: casterType
+    };
+
+    if (typeof window.addToBattleLog === 'function') {
+        const boostText = window.getAoeBoostText ? window.getAoeBoostText(wizard) : '';
+        window.addToBattleLog(`🪤 ${wizard.name} заключает ${targetWizard.name} в Костяную клетку [Ур.${level}]! ${boostText}HP клетки: ${cageHP}`);
+        if (level >= 5) {
+            window.addToBattleLog(`   💀 Каждый каст наносит ${cageHP} урона захваченному магу!`);
+        }
+    }
+}
+
+// Проверка и обработка клетки перед кастом мага
+// Возвращает true если single target заклинание было поглощено клеткой
+function processBoneCageOnCast(cagedWizard, spellId, baseDamage) {
+    const cage = cagedWizard.effects?.bone_cage;
+    if (!cage || cage.hp <= 0) return false;
+
+    // Lv5: самоурон при каждом касте (до поглощения)
+    if (cage.level >= 5) {
+        const selfDamage = cage.maxHP;
+        cagedWizard.hp -= selfDamage;
+        if (cagedWizard.hp < 0) cagedWizard.hp = 0;
+
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`🪤💀 ${cagedWizard.name} получает ${selfDamage} урона от Костяной клетки!`);
+        }
+
+        // Обновляем HP бар
+        if (typeof window.updateWizardVisualHP === 'function') {
+            const casterType = cage.casterType === 'player' ? 'enemy' : 'player';
+            const col = casterType === 'player' ? 5 : 0;
+            const pos = casterType === 'player' ?
+                window.playerFormation?.findIndex(id => id === cagedWizard.id) :
+                window.enemyFormation?.findIndex(w => w && w.id === cagedWizard.id);
+            if (pos !== undefined && pos !== -1) {
+                window.updateWizardVisualHP(cagedWizard, col, pos);
+            }
+        }
+    }
+
+    // Определяем тип заклинания
+    const spellType = window.SPELL_TYPE_CONFIG?.[spellId];
+    const isSingleTarget = (spellType === 'single_target');
+
+    // Single target: урон идёт в клетку
+    if (isSingleTarget && baseDamage > 0) {
+        const cageDamage = Math.min(baseDamage, cage.hp);
+        cage.hp -= cageDamage;
+        const remaining = baseDamage - cageDamage;
+
+        if (typeof window.addToBattleLog === 'function') {
+            if (cage.hp <= 0) {
+                window.addToBattleLog(`🪤 Костяная клетка разрушена! Остаток урона: ${remaining}`);
+            } else {
+                window.addToBattleLog(`🪤 Костяная клетка поглотила ${cageDamage} урона (осталось HP: ${cage.hp})`);
+            }
+        }
+
+        if (cage.hp <= 0) {
+            // Клетка разрушена — остаток пролетит в цель (через обычную логику)
+            // Возвращаем remaining как новый базовый урон
+            return { absorbed: false, remainingDamage: remaining };
+        }
+
+        // Клетка выжила — урон полностью поглощён
+        return { absorbed: true, remainingDamage: 0 };
+    }
+
+    // AOE: проходит мимо клетки (но самоурон lv5 уже применён выше)
+    return { absorbed: false, remainingDamage: baseDamage };
+}
+
+// Восстановление клетки в ход некроманта
+function restoreBoneCages(casterId) {
+    // Ищем всех магов с клеткой от этого кастера
+    const allWizards = [
+        ...(window.playerWizards || []),
+        ...(window.enemyFormation?.filter(w => w) || [])
+    ];
+
+    for (const wizard of allWizards) {
+        const cage = wizard.effects?.bone_cage;
+        if (cage && cage.casterId === casterId && wizard.hp > 0) {
+            cage.hp = cage.maxHP;
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`🪤 Костяная клетка на ${wizard.name} восстановлена (HP: ${cage.maxHP})`);
+            }
+        }
+    }
+}
+
 // Бонус фракции Некроманта (заглушка — основной бонус в damage-system.js)
 function applyNecromantFactionBonus(wizard, casterType) {
     // Основной бонус некроманта (-10% входящего урона кроме света)
@@ -254,4 +376,7 @@ if (typeof window !== 'undefined') {
     window.castNecromantSpell = castNecromantSpell;
     window.performSkeletonAttack = performSkeletonAttack;
     window.applyDeathShroudAtStart = applyDeathShroudAtStart;
+    window.castBoneCage = castBoneCage;
+    window.processBoneCageOnCast = processBoneCageOnCast;
+    window.restoreBoneCages = restoreBoneCages;
 }

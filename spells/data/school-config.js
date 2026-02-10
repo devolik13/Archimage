@@ -210,7 +210,8 @@ function getSpellSchoolFallback(spellId) {
         'summon_skeleton': 'necromant',
         'skeleton_attack': 'necromant',
         'bone_spear': 'necromant',
-        'death_shroud': 'necromant'
+        'death_shroud': 'necromant',
+        'bone_cage': 'necromant'
     };
 
     // Если найдено напрямую - возвращаем

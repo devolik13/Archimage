@@ -70,6 +70,17 @@ async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 
             }
         }
 
+        // 🪤 Костяная клетка — самоурон и поглощение single target
+        if (!interrupted && wizard.effects?.bone_cage && wizard.effects.bone_cage.hp > 0) {
+            if (typeof window.processBoneCageOnCast === 'function') {
+                const baseDmg = window.SPELL_BASE_DAMAGE?.[spellId] || 0;
+                const result = window.processBoneCageOnCast(wizard, spellId, baseDmg);
+                if (result && result.absorbed) {
+                    interrupted = true;
+                }
+            }
+        }
+
         if (!interrupted) {
             // Ждём завершения анимации каста перед следующим заклинанием
             await castSpell(wizard, spellId, position, casterType);
@@ -167,6 +178,19 @@ async function useWizardSpells(wizard, position, casterType) {
                 } else {
                     // Попадает нормально - сбрасываем флаг
                     delete wizard._blindedTargetPosition;
+                }
+            }
+        }
+
+        // 🪤 Костяная клетка — самоурон и поглощение single target
+        if (!interrupted && wizard.effects?.bone_cage && wizard.effects.bone_cage.hp > 0) {
+            if (typeof window.processBoneCageOnCast === 'function') {
+                const spellType = window.SPELL_TYPE_CONFIG?.[spellId];
+                const baseDmg = window.SPELL_BASE_DAMAGE?.[spellId] || 0;
+                const result = window.processBoneCageOnCast(wizard, spellId, baseDmg);
+                if (result && result.absorbed) {
+                    // Single target полностью поглощён клеткой — пропускаем каст
+                    interrupted = true;
                 }
             }
         }

@@ -54,7 +54,8 @@ const SPELL_ANIMATIONS_REGISTRY = {
     // Некромантия
     summon_skeleton: 'necromant/summon-skeleton',
     bone_spear: 'necromant/bone-spear',
-    death_shroud: 'necromant/death-shroud'
+    death_shroud: 'necromant/death-shroud',
+    bone_cage: 'necromant/bone-cage'
 };
 
 // Хранилище загруженных модулей анимаций
