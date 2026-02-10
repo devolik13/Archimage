@@ -653,6 +653,46 @@ function setupAirdropUI() {
                     cursor: pointer;
                 ">Перейти</button>
             </div>
+            <!-- QuadRoyal -->
+            <div id="quadroyal-reward" style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(168, 85, 247, 0.1);
+                border: 1px solid rgba(168, 85, 247, 0.3);
+                border-radius: 8px;
+                padding: 10px;
+                margin-top: 8px;
+            ">
+                <div style="flex: 1;">
+                    <div style="font-size: ${baseFontSize}px; color: #fff;">
+                        🧩 Play QuadRoyal: Competitive Puzzle
+                    </div>
+                    <div style="font-size: ${smallFontSize}px; color: #a855f7; margin-top: 4px;">
+                        +100 BPM + ⏰ 2 часа
+                    </div>
+                </div>
+                ${window.userData?.completed_tasks?.quadroyal ? `
+                    <div style="
+                        padding: 8px 16px;
+                        background: #333;
+                        border-radius: 8px;
+                        color: #888;
+                        font-size: ${smallFontSize}px;
+                    ">✓ Получено</div>
+                ` : `
+                    <button onclick="window.openQuadRoyal()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #a855f7, #7c3aed);
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: ${smallFontSize}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Играть</button>
+                `}
+            </div>
         </div>
 
         <!-- Как заработать -->
@@ -1104,6 +1144,11 @@ function openSprutBlackRed() {
     window.open('https://t.me/sprutgamesbot?start=afeb067', '_blank');
 }
 
+function openQuadRoyal() {
+    window.open('https://t.me/QuadRoyalBot/QuadRoyal?startapp=campaign_archimage', '_blank');
+    setTimeout(() => claimTaskReward('quadroyal', 'QuadRoyal'), 2000);
+}
+
 /**
  * Проверить выполнение Creaky Tasks и выдать награду
  * @param {boolean} completed - выполнено ли задание
@@ -1234,7 +1279,8 @@ async function claimTaskReward(taskKey, taskName) {
 function updateTaskButton(taskKey) {
     const idMap = {
         'money_mining': 'money-mining-reward',
-        'pandafit': 'pandafit-reward'
+        'pandafit': 'pandafit-reward',
+        'quadroyal': 'quadroyal-reward'
     };
     const taskDiv = document.getElementById(idMap[taskKey]);
     if (!taskDiv) return;
@@ -1256,6 +1302,7 @@ function updateTaskButton(taskKey) {
 window.checkGroupSubscription = checkGroupSubscription;
 window.openCreakyTasks = openCreakyTasks;
 window.openSprutBlackRed = openSprutBlackRed;
+window.openQuadRoyal = openQuadRoyal;
 window.openMoneyMining = openMoneyMining;
 window.openPandaFit = openPandaFit;
 window.claimCreakyTasksReward = claimCreakyTasksReward;
