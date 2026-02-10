@@ -633,7 +633,7 @@ function renderSkinsShop(scale) {
 
         let statusText = '';
         let statusColor = '#4ade80';
-        let btnText = skin.currency === 'ton' ? `💎 ~$${skin.priceUSD}` : `💎 ${skin.price} ⭐`;
+        let btnText = `💎 ${skin.price} ⭐`;
 
         if (isOwned) {
             statusText = '✅ Куплено';
@@ -804,7 +804,6 @@ function showSkinPaymentDialog(skinId) {
             </p>
 
             <div style="display: flex; flex-direction: column; gap: 8px;">
-                ${skin.currency !== 'ton' ? `
                 <button onclick="purchaseSkinWithStars('${skinId}')" style="
                     padding: 12px 16px;
                     background: linear-gradient(135deg, #ffd700, #ff8c00);
@@ -821,7 +820,6 @@ function showSkinPaymentDialog(skinId) {
                 ">
                     ⭐ ${skin.price} Telegram Stars
                 </button>
-                ` : ''}
 
                 <button onclick="purchaseSkinWithTON('${skinId}')" style="
                     padding: 12px 16px;
