@@ -211,7 +211,8 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
                     }
 
                     if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(deathMessage);
+                        window.addToBattleLog(deathMessage);
+                    }
                 }
             }
             
