@@ -70,7 +70,8 @@ const SPELL_TIERS = {
         "summon_skeleton",  // Tier 1 - Призыв скелета
         "bone_spear",       // Tier 2 - Костяное копьё
         "death_shroud",     // Tier 3 - Покров смерти
-        "bone_cage"         // Tier 4 - Костяная клетка
+        "bone_cage",        // Tier 4 - Костяная клетка
+        "bone_dragon"       // Tier 5 - Костяной Дракон
     ]
 };
 

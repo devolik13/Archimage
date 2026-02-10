@@ -45,6 +45,16 @@ class SummonsManager {
                 height: 35,
                 yOffset: 0.6,
                 isDefensive: true
+            },
+            'bone_dragon': {
+                name: 'Костяной Дракон',
+                sprite: null, // пока без спрайта
+                color: 0x8B7355,
+                width: 30,
+                height: 35,
+                yOffset: 0.6,
+                scale: 0.70,
+                attackAnimation: 'bite'
             }
             // Здесь можно добавить других существ:
             // 'fire_elemental', 'water_golem', 'air_spirit' и т.д.
@@ -177,7 +187,10 @@ class SummonsManager {
     updateHP(summonId, newHP) {
         const summon = this.summons.get(summonId);
         if (!summon) return false;
-        
+
+        // Костяной Дракон не восстанавливает жизни
+        if (summon.noHeal && newHP > summon.hp) return false;
+
         const oldHP = summon.hp;
         summon.hp = Math.min(Math.max(0, newHP), summon.maxHP);
         
@@ -203,7 +216,10 @@ class SummonsManager {
     restoreSummon(summonId) {
         const summon = this.summons.get(summonId);
         if (!summon) return false;
-        
+
+        // Костяной Дракон не восстанавливает жизни
+        if (summon.noHeal) return false;
+
         summon.hp = summon.maxHP;
         summon.isAlive = true;
         
@@ -224,6 +240,11 @@ class SummonsManager {
 
         summon.isAlive = false;
         summon.hp = 0;
+
+        // Если погиб Костяной Дракон — снимаем ауру брони
+        if (summon.type === 'bone_dragon' && typeof window.checkBoneDragonAura === 'function') {
+            window.checkBoneDragonAura();
+        }
 
         // Анимация смерти
         this.playDeathAnimation(summonId, () => {
@@ -742,6 +763,7 @@ class SummonsManager {
             'nature_wolf': 'nature',
             'nature_ent': 'nature',
             'necromant_skeleton': 'necromant',
+            'bone_dragon': 'necromant',
             'fire_elemental': 'fire',
             'water_golem': 'water',
             'air_spirit': 'air',

@@ -62,7 +62,8 @@ const SPELL_NAMES = {
     "summon_skeleton": "Призыв скелета",
     "bone_spear": "Костяное копьё",
     "death_shroud": "Покров смерти",
-    "bone_cage": "Костяная клетка"
+    "bone_cage": "Костяная клетка",
+    "bone_dragon": "Костяной Дракон"
 };
 
 // Базовый урон заклинаний
@@ -80,6 +81,7 @@ const SPELL_BASE_DAMAGE = {
     "bone_spear": 24,
     "death_shroud": 0,  // бафф
     "bone_cage": 0,     // утилити
+    "bone_dragon": 0,   // призыв (урон через саммон)
 
     // Tier 2 - базовый урон 20-30
     "firebolt": 25,
@@ -176,7 +178,8 @@ const SPELL_TYPE_CONFIG = {
     "summon_skeleton": "summon",
     "bone_spear": "multi_target",
     "death_shroud": "buff",
-    "bone_cage": "utility"
+    "bone_cage": "utility",
+    "bone_dragon": "summon"
 };
 
 // Вспомогательные функции для определения типа

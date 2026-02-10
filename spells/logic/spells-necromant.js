@@ -365,6 +365,157 @@ function restoreBoneCages(casterId) {
     }
 }
 
+// ========================================
+// 🐉 КОСТЯНОЙ ДРАКОН (Tier 5)
+// ========================================
+
+// Призыв Костяного Дракона в начале боя
+function summonBoneDragonAtStart(wizard, level, position, casterType) {
+    if (!window.summonsManager) return;
+
+    const hpPercent = [50, 60, 70, 80, 100][level - 1] || 50;
+    const dragonHP = Math.floor((wizard.max_hp || wizard.hp) * hpPercent / 100);
+    const dragonDamage = [50, 60, 70, 80, 100][level - 1] || 50;
+
+    const dragon = window.summonsManager.createSummon('bone_dragon', {
+        casterId: wizard.id,
+        casterType: casterType,
+        position: position,
+        level: level,
+        hp: dragonHP,
+        maxHP: dragonHP,
+        damage: dragonDamage
+    });
+
+    if (dragon) {
+        // Помечаем дракона как не подлежащего лечению
+        dragon.noHeal = true;
+
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`🐉 ${wizard.name} призывает Костяного Дракона (HP: ${dragonHP}, Урон: ${dragonDamage})`);
+        }
+
+        // На 5 уровне — аура снижения брони
+        if (level >= 5) {
+            applyBoneDragonAura(wizard.id, casterType);
+        }
+    }
+}
+
+// Атака Костяного Дракона (каждый ход мага-хозяина)
+function performBoneDragonAttack(dragon, caster) {
+    if (!dragon || dragon.hp <= 0 || !dragon.isAlive) return;
+
+    const target = typeof window.findTarget === 'function' ?
+        window.findTarget(dragon.position, dragon.casterType, null, 'bone_dragon_attack') : null;
+
+    if (target && target.wizard && target.wizard.hp > 0) {
+        // Анимация атаки
+        const visual = window.summonsManager?.visuals.get(dragon.id);
+        if (visual) {
+            const targetSprite = window.wizardSprites?.[`${target.column || 0}_${target.position}`];
+            if (targetSprite) {
+                window.summonsManager.playAttackAnimation(
+                    dragon.id,
+                    targetSprite.x,
+                    targetSprite.y
+                );
+            }
+        }
+
+        // Применяем урон
+        const finalDamage = typeof window.applyFinalDamage === 'function' ?
+            window.applyFinalDamage(caster, target.wizard, dragon.damage, 'bone_dragon_attack', 0, false) : dragon.damage;
+
+        target.wizard.hp -= finalDamage;
+        if (target.wizard.hp < 0) target.wizard.hp = 0;
+
+        // Учитываем урон дракона для XP хозяина
+        if (typeof window.trackBattleDamage === 'function' && dragon.casterType === 'player') {
+            window.trackBattleDamage(caster, finalDamage);
+        }
+
+        // Обновляем визуальный HP бар цели
+        if (typeof window.updateWizardVisualHP === 'function') {
+            const targetColumn = target.column || (dragon.casterType === 'player' ? 5 : 0);
+            window.updateWizardVisualHP(target.wizard, targetColumn, target.position);
+        }
+
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`🐉 Костяной Дракон атакует ${target.wizard.name}: ${finalDamage} урона`);
+        }
+
+        // Проверка на смерть цели
+        if (target.wizard.hp <= 0) {
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`💀 ${target.wizard.name} погиб от атаки Костяного Дракона!`);
+            }
+        }
+    }
+}
+
+// Аура снижения брони (lv5) — применяется при призыве
+function applyBoneDragonAura(casterId, casterType) {
+    const enemies = casterType === 'player' ? window.enemyWizards : window.playerWizards;
+    if (!enemies) return;
+
+    for (const enemy of enemies) {
+        if (enemy && enemy.hp > 0) {
+            if (!enemy.armorBonuses) enemy.armorBonuses = {};
+            enemy.armorBonuses.bone_dragon = -20;
+            // Пересчитываем общий бонус брони
+            enemy.armorBonus = Object.values(enemy.armorBonuses).reduce((sum, v) => sum + v, 0);
+
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`🐉 Аура Костяного Дракона: ${enemy.name} теряет 20 брони`);
+            }
+        }
+    }
+}
+
+// Снятие ауры при гибели дракона
+function removeBoneDragonAura(casterId, casterType) {
+    const enemies = casterType === 'player' ? window.enemyWizards : window.playerWizards;
+    if (!enemies) return;
+
+    for (const enemy of enemies) {
+        if (enemy && enemy.armorBonuses?.bone_dragon) {
+            delete enemy.armorBonuses.bone_dragon;
+            enemy.armorBonus = Object.values(enemy.armorBonuses).reduce((sum, v) => sum + v, 0);
+        }
+    }
+}
+
+// Проверка и снятие ауры если дракон погиб
+function checkBoneDragonAura() {
+    if (!window.summonsManager) return;
+
+    // Ищем всех драконов
+    const dragons = [];
+    for (const [id, summon] of window.summonsManager.summons) {
+        if (summon.type === 'bone_dragon') {
+            dragons.push(summon);
+        }
+    }
+
+    // Проверяем для каждой стороны
+    for (const casterType of ['player', 'enemy']) {
+        const activeDragon = dragons.find(d => d.casterType === casterType && d.isAlive && d.hp > 0 && d.level >= 5);
+        if (!activeDragon) {
+            // Нет живого дракона lv5 — снимаем ауру
+            const enemies = casterType === 'player' ? window.enemyWizards : window.playerWizards;
+            if (enemies) {
+                for (const enemy of enemies) {
+                    if (enemy && enemy.armorBonuses?.bone_dragon) {
+                        delete enemy.armorBonuses.bone_dragon;
+                        enemy.armorBonus = Object.values(enemy.armorBonuses).reduce((sum, v) => sum + v, 0);
+                    }
+                }
+            }
+        }
+    }
+}
+
 // Бонус фракции Некроманта (заглушка — основной бонус в damage-system.js)
 function applyNecromantFactionBonus(wizard, casterType) {
     // Основной бонус некроманта (-10% входящего урона кроме света)
@@ -379,4 +530,7 @@ if (typeof window !== 'undefined') {
     window.castBoneCage = castBoneCage;
     window.processBoneCageOnCast = processBoneCageOnCast;
     window.restoreBoneCages = restoreBoneCages;
+    window.summonBoneDragonAtStart = summonBoneDragonAtStart;
+    window.performBoneDragonAttack = performBoneDragonAttack;
+    window.checkBoneDragonAura = checkBoneDragonAura;
 }

@@ -104,6 +104,14 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
         }
     
         if (summonedCreature && summonedCreature.hp > 0) {
+            // 🐉 Фракционный бонус некроманта для Костяного Дракона (-10% кроме Света)
+            if (summonedCreature.type === 'bone_dragon') {
+                const school = typeof window.getSpellSchool === 'function' ? window.getSpellSchool(spellId) : null;
+                if (school !== 'light') {
+                    remainingDamage = Math.floor(remainingDamage * 0.9);
+                }
+            }
+
             const creatureDamage = Math.min(remainingDamage, summonedCreature.hp);
             const creatureRemainder = Math.max(0, remainingDamage - summonedCreature.hp);
             

@@ -501,6 +501,17 @@ const SPELL_FULL_DATA = {
         type: "utility",
         base_damage: 0,
         unlock_condition: "death_shroud_level_5"
+    },
+    "bone_dragon": {
+        id: "bone_dragon",
+        name: "Костяной Дракон",
+        description: "Призывает Костяного Дракона в начале боя. HP дракона: 50/60/70/80/100% от HP мага. Урон: 50/60/70/80/100. Дракон не восстанавливает жизни. На 5 ур: снижает броню всех врагов на 20 пока жив.",
+        icon: "🐉",
+        school: "necromant",
+        tier: 5,
+        type: "summon",
+        base_damage: 0,
+        unlock_condition: "bone_cage_level_5"
     }
 };
 
