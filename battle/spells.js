@@ -285,6 +285,18 @@ function executeSpellEffect(wizard, spellId, spellData, position, casterType) {
         default:
             castBasicAttack(wizard, position, casterType);
     }
+
+    // 💥 AOE заклинания наносят урон призванным существам
+    if (typeof window.isAOESpell === 'function' && window.isAOESpell(spellId)) {
+        if (typeof window.applyAoeDamageToSummons === 'function') {
+            const aoeDamage = typeof window.getSpellDamage === 'function' ?
+                window.getSpellDamage(spellId, spellData?.level || 1) :
+                (window.SPELL_BASE_DAMAGE?.[spellId] || 0);
+            if (aoeDamage > 0) {
+                window.applyAoeDamageToSummons(wizard, aoeDamage, spellId, casterType);
+            }
+        }
+    }
 }
 
 // --- Функция каста заклинания (возвращает Promise) ---

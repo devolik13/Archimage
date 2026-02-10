@@ -104,87 +104,113 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
         }
     
         if (summonedCreature && summonedCreature.hp > 0) {
-            // 🐉 Фракционный бонус некроманта для Костяного Дракона (-10% кроме Света)
-            if (summonedCreature.type === 'bone_dragon') {
-                const school = typeof window.getSpellSchool === 'function' ? window.getSpellSchool(spellId) : null;
-                if (school !== 'light') {
-                    remainingDamage = Math.floor(remainingDamage * 0.9);
+            // Определяем AOE ли заклинание
+            const isAOESpell = typeof window.isAOESpell === 'function' && window.isAOESpell(spellId);
+
+            // AOE + не-Энт: саммон получает урон, но НЕ поглощает за мага
+            if (isAOESpell && !summonedCreature.isDefensive) {
+                let aoeDamage = remainingDamage;
+                // Фракционный бонус некроманта для Костяного Дракона
+                if (summonedCreature.type === 'bone_dragon') {
+                    const school = typeof window.getSpellSchool === 'function' ? window.getSpellSchool(spellId) : null;
+                    if (school !== 'light') {
+                        aoeDamage = Math.floor(aoeDamage * 0.9);
+                    }
                 }
-            }
+                const actualDamage = Math.min(aoeDamage, summonedCreature.hp);
+                summonedCreature.hp -= actualDamage;
+                if (summonedCreature.hp < 0) summonedCreature.hp = 0;
 
-            const creatureDamage = Math.min(remainingDamage, summonedCreature.hp);
-            const creatureRemainder = Math.max(0, remainingDamage - summonedCreature.hp);
-            
-            // ✅ ЕСЛИ ПРИЗВАННЫЙ ПОЛНОСТЬЮ БЛОКИРУЕТ - ТОЧКА СТОЛКНОВЕНИЯ НАЙДЕНА
-            if (impactCol === null && summonedCreature.hp >= remainingDamage) {
-                impactCol = summonColumn;
-            }
-            
-            // Наносим урон призванному существу
-            summonedCreature.hp -= creatureDamage;
-            if (summonedCreature.hp < 0) summonedCreature.hp = 0;
+                if (window.summonsManager && typeof window.summonsManager.updateVisualHP === 'function') {
+                    window.summonsManager.updateVisualHP(summonedCreature.id, summonedCreature.hp, summonedCreature.maxHP);
+                }
 
-            // ИСПРАВЛЕНИЕ: Обновляем визуальный HP бар через менеджер
-            if (window.summonsManager && typeof window.summonsManager.updateHP === 'function') {
-                window.summonsManager.updateHP(summonedCreature.id, summonedCreature.hp);
-            }
-            
-            // УЛУЧШЕННОЕ ЛОГИРОВАНИЕ с указанием типа существа и защищаемой цели
-            let protectionMessage = '';
+                protectionLayers.push(`💥 ${summonedCreature.name || 'Существо'} получает ${actualDamage} AOE урона`);
 
-            // Определяем имя защищаемого (не показываем "Пустота")
-            const defendedName = (target.wizard.name && target.wizard.name !== 'Пустота') ?
-                target.wizard.name : 'союзника';
+                if (summonedCreature.hp <= 0) {
+                    if (window.summonsManager) {
+                        window.summonsManager.killSummon(summonedCreature.id, true);
+                    }
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`💀 ${summonedCreature.name || 'Существо'} уничтожено AOE!`);
+                    }
+                }
 
-            if (summonedCreature.type === 'nature_wolf') {
-                protectionMessage = `🐺 Волк защищает ${defendedName} и получает ${creatureDamage} урона`;
-            } else if (summonedCreature.type === 'nature_ent') {
-                protectionMessage = `🌳 Энт защищает ${defendedName} и поглощает ${creatureDamage} урона`;
+                // Помечаем что саммон уже получил AOE урон (для централизованной функции)
+                summonedCreature._aoeDamaged = true;
+                // remainingDamage НЕ уменьшается — маг получает полный урон
             } else {
-                protectionMessage = `${summonedCreature.name || 'Призванное существо'} защищает ${defendedName} и получает ${creatureDamage} урона`;
-            }
+                // Single target ИЛИ Энт (AOE/single) — стандартное поглощение
+                // 🐉 Фракционный бонус некроманта для Костяного Дракона (-10% кроме Света)
+                if (summonedCreature.type === 'bone_dragon') {
+                    const school = typeof window.getSpellSchool === 'function' ? window.getSpellSchool(spellId) : null;
+                    if (school !== 'light') {
+                        remainingDamage = Math.floor(remainingDamage * 0.9);
+                    }
+                }
 
-            // Добавляем информацию об оставшемся HP существа (БЕЗ "погибает", чтобы не дублировать)
-            if (summonedCreature.hp > 0) {
-                protectionMessage += ` (осталось ${summonedCreature.hp}/${summonedCreature.maxHP || summonedCreature.hp} HP)`;
-            }
-            // ИСПРАВЛЕНИЕ: Убрана фраза "и погибает!" - это логируется ниже отдельным сообщением
-            
-            protectionLayers.push(protectionMessage);
-            remainingDamage = creatureRemainder;
+                const creatureDamage = Math.min(remainingDamage, summonedCreature.hp);
+                const creatureRemainder = Math.max(0, remainingDamage - summonedCreature.hp);
 
-            // Проверяем уничтожение существа
-            if (summonedCreature.hp <= 0) {
-                // Специальное сообщение для разных типов существ
-                let deathMessage = '';
+                // ✅ ЕСЛИ ПРИЗВАННЫЙ ПОЛНОСТЬЮ БЛОКИРУЕТ - ТОЧКА СТОЛКНОВЕНИЯ НАЙДЕНА
+                if (impactCol === null && summonedCreature.hp >= remainingDamage) {
+                    impactCol = summonColumn;
+                }
 
-                // Определяем имя защищаемого (не показываем "Пустота")
-                const defendedNameDeath = (target.wizard.name && target.wizard.name !== 'Пустота') ?
+                // Наносим урон призванному существу
+                summonedCreature.hp -= creatureDamage;
+                if (summonedCreature.hp < 0) summonedCreature.hp = 0;
+
+                // Обновляем визуальный HP бар через менеджер
+                if (window.summonsManager && typeof window.summonsManager.updateHP === 'function') {
+                    window.summonsManager.updateHP(summonedCreature.id, summonedCreature.hp);
+                }
+
+                // Логирование
+                let protectionMessage = '';
+                const defendedName = (target.wizard.name && target.wizard.name !== 'Пустота') ?
                     target.wizard.name : 'союзника';
 
                 if (summonedCreature.type === 'nature_wolf') {
-                    deathMessage = `💀 Волк погиб, защищая ${defendedNameDeath}!`;
+                    protectionMessage = `🐺 Волк защищает ${defendedName} и получает ${creatureDamage} урона`;
                 } else if (summonedCreature.type === 'nature_ent') {
-                    deathMessage = `💀 Энт разрушен, защищая ${defendedNameDeath}!`;
-                    // Если это Энт 5 уровня - лечим союзника
-                    if (summonedCreature.level === 5 && typeof window.healWeakestAlly === 'function') {
-                        window.healWeakestAlly(summonedCreature.casterType);
-                        deathMessage += ' Энт исцеляет союзника перед смертью!';
-                    }
+                    protectionMessage = `🌳 Энт защищает ${defendedName} и поглощает ${creatureDamage} урона`;
                 } else {
-                    deathMessage = `💀 ${summonedCreature.name || 'Призванное существо'} уничтожено!`;
-                }
-                
-                // Удаляем существо через менеджер если доступен
-                // skipLog = true, т.к. мы сами логируем детальное сообщение ниже
-                if (window.summonsManager) {
-                    window.summonsManager.killSummon(summonedCreature.id, true);
-                } else if (window.activeSummons && summonedCreature.id) {
-                    // Fallback на старую систему
-                    window.activeSummons = window.activeSummons.filter(s => s.id !== summonedCreature.id);
+                    protectionMessage = `${summonedCreature.name || 'Призванное существо'} защищает ${defendedName} и получает ${creatureDamage} урона`;
                 }
 
-                if (typeof window.addToBattleLog === 'function') {
+                if (summonedCreature.hp > 0) {
+                    protectionMessage += ` (осталось ${summonedCreature.hp}/${summonedCreature.maxHP || summonedCreature.hp} HP)`;
+                }
+
+                protectionLayers.push(protectionMessage);
+                remainingDamage = creatureRemainder;
+
+                // Проверяем уничтожение существа
+                if (summonedCreature.hp <= 0) {
+                    let deathMessage = '';
+                    const defendedNameDeath = (target.wizard.name && target.wizard.name !== 'Пустота') ?
+                        target.wizard.name : 'союзника';
+
+                    if (summonedCreature.type === 'nature_wolf') {
+                        deathMessage = `💀 Волк погиб, защищая ${defendedNameDeath}!`;
+                    } else if (summonedCreature.type === 'nature_ent') {
+                        deathMessage = `💀 Энт разрушен, защищая ${defendedNameDeath}!`;
+                        if (summonedCreature.level === 5 && typeof window.healWeakestAlly === 'function') {
+                            window.healWeakestAlly(summonedCreature.casterType);
+                            deathMessage += ' Энт исцеляет союзника перед смертью!';
+                        }
+                    } else {
+                        deathMessage = `💀 ${summonedCreature.name || 'Призванное существо'} уничтожено!`;
+                    }
+
+                    if (window.summonsManager) {
+                        window.summonsManager.killSummon(summonedCreature.id, true);
+                    } else if (window.activeSummons && summonedCreature.id) {
+                        window.activeSummons = window.activeSummons.filter(s => s.id !== summonedCreature.id);
+                    }
+
+                    if (typeof window.addToBattleLog === 'function') {
                     window.addToBattleLog(deathMessage);
                 }
             }

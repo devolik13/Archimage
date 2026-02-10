@@ -803,6 +803,55 @@ function applyFinalHealing(target, healAmount, source = 'effect') {
     return actualHeal;
 }
 
+// --- AOE урон по призванным существам ---
+// Вызывается после каждого AOE заклинания для нанесения урона саммонам
+function applyAoeDamageToSummons(caster, baseDamage, spellId, casterType) {
+    if (!window.summonsManager || baseDamage <= 0) return;
+
+    const targetSide = casterType === 'player' ? 'enemy' : 'player';
+
+    // Собираем уже получивших урон (из applyDamageWithMultiLayerProtection)
+    const alreadyDamaged = new Set();
+    for (const [id, summon] of window.summonsManager.summons) {
+        if (summon._aoeDamaged) {
+            alreadyDamaged.add(id);
+            delete summon._aoeDamaged;
+        }
+    }
+
+    for (const [id, summon] of window.summonsManager.summons) {
+        if (summon.casterType !== targetSide || !summon.isAlive || summon.hp <= 0) continue;
+        if (alreadyDamaged.has(id)) continue;
+        // Энт обрабатывается в multi-layer-protection (поглощает за мага)
+        if (summon.isDefensive) continue;
+
+        let damage = baseDamage;
+
+        // Фракционный бонус некроманта для Костяного Дракона (-10% кроме Света)
+        if (summon.type === 'bone_dragon') {
+            const school = typeof window.getSpellSchool === 'function' ? window.getSpellSchool(spellId) : null;
+            if (school !== 'light') {
+                damage = Math.floor(damage * 0.9);
+            }
+        }
+
+        const actualDamage = Math.min(damage, summon.hp);
+        summon.hp -= actualDamage;
+        if (summon.hp < 0) summon.hp = 0;
+
+        if (typeof window.addToBattleLog === 'function') {
+            const spellName = window.SPELL_NAMES?.[spellId] || spellId;
+            window.addToBattleLog(`💥 ${summon.name || 'Существо'} получает ${actualDamage} AOE урона от ${spellName}`);
+        }
+
+        if (summon.hp <= 0) {
+            window.summonsManager.killSummon(summon.id);
+        } else if (typeof window.summonsManager.updateVisualHP === 'function') {
+            window.summonsManager.updateVisualHP(summon.id, summon.hp, summon.maxHP);
+        }
+    }
+}
+
 // Экспорт функций
 window.applyFinalDamage = applyFinalDamage;
 window.applyDamageWithWeather = applyDamageWithWeather;
@@ -812,3 +861,4 @@ window.checkCriticalHit = checkCriticalHit;
 window.checkFactionDoubleDamage = checkFactionDoubleDamage;
 window.checkArmorIgnore = checkArmorIgnore;
 window.applyFinalHealing = applyFinalHealing;
+window.applyAoeDamageToSummons = applyAoeDamageToSummons;
