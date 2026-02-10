@@ -115,6 +115,7 @@ class EventSaveManager {
                 unlocked_skins: window.userData.unlocked_skins || [], // Разблокированные скины
                 wizard_skins: window.userData.wizard_skins || {}, // Выбранные скины для магов
                 training_dummy_progress: window.userData.training_dummy_progress || null, // Прогресс тренировочного полигона
+                completed_tasks: window.userData.completed_tasks || {}, // Выполненные одноразовые задания
                 // GUILD FIELDS
                 guild_id: window.userData.guild_id ?? null, // ID гильдии
                 guild_contribution: window.userData.guild_contribution || 0, // Вклад в гильдию
