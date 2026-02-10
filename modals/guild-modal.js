@@ -566,10 +566,11 @@ async function renderGuildTop(container) {
     `;
 
     try {
-        // Загружаем топ-5 гильдий по опыту
+        // Загружаем топ-5 гильдий по уровню, при равном уровне — по опыту
         const { data: topGuilds, error } = await window.supabaseClient
             .from('guilds')
             .select('id, name, tag, level, experience, leader_id')
+            .order('level', { ascending: false })
             .order('experience', { ascending: false })
             .limit(5);
 
@@ -583,7 +584,8 @@ async function renderGuildTop(container) {
         if (currentGuild && !topGuilds.find(g => g.id === currentGuild.id)) {
             const { data: allGuilds, error: rankError } = await window.supabaseClient
                 .from('guilds')
-                .select('id, experience')
+                .select('id, level, experience')
+                .order('level', { ascending: false })
                 .order('experience', { ascending: false });
 
             if (!rankError && allGuilds) {
