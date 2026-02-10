@@ -163,7 +163,11 @@ class ReferralManager {
 
             // Обновляем локальные данные нового игрока (он получает ПОЛНУЮ награду)
             if (window.userData) {
-                window.userData.time_currency = (window.userData.time_currency || 0) + REFERRAL_REWARD_BASE;
+                if (typeof window.addTimeCurrency === 'function') {
+                    window.addTimeCurrency(REFERRAL_REWARD_BASE);
+                } else {
+                    window.userData.time_currency = (window.userData.time_currency || 0) + REFERRAL_REWARD_BASE;
+                }
 
                 // Используем addAirdropPoints для отслеживания в breakdown
                 if (typeof window.addAirdropPoints === 'function') {
@@ -175,8 +179,6 @@ class ReferralManager {
                 }
             }
             if (window.dbManager && window.dbManager.currentPlayer) {
-                window.dbManager.currentPlayer.time_currency =
-                    (window.dbManager.currentPlayer.time_currency || 0) + REFERRAL_REWARD_BASE;
                 window.dbManager.currentPlayer.airdrop_points =
                     (window.dbManager.currentPlayer.airdrop_points || 0) + REFERRAL_POINTS_BASE;
             }
