@@ -479,6 +479,17 @@ const SPELL_FULL_DATA = {
         type: "multi_target",
         base_damage: 24,
         unlock_condition: "summon_skeleton_level_5"
+    },
+    "death_shroud": {
+        id: "death_shroud",
+        name: "Покров смерти",
+        description: "Окутывает мага покровом нежити. Снижает урон от Тьмы и Яда на 15/20/25/30/40%. Но увеличивает урон от Света на 5/10/15/20/25%. Применяется в начале боя.",
+        icon: "🦇",
+        school: "necromant",
+        tier: 3,
+        type: "buff",
+        base_damage: 0,
+        unlock_condition: "bone_spear_level_5"
     }
 };
 

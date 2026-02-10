@@ -203,6 +203,17 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     	    }
     	}
 
+    	// Покров смерти: сопротивление Тьме/Яду, уязвимость к Свету
+    	if (target.buffs && target.buffs.death_shroud) {
+    	    const shroud = target.buffs.death_shroud;
+    	    const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
+    	    if (spellSchool === 'dark' || spellSchool === 'poison') {
+    	        finalDamage = Math.floor(finalDamage * (1 - shroud.darkPoisonResist / 100));
+    	    } else if (spellSchool === 'light') {
+    	        finalDamage = Math.floor(finalDamage * (1 + shroud.lightVulnerability / 100));
+    	    }
+    	}
+
         return finalDamage;
     }
     
@@ -350,6 +361,17 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
         const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
         if (spellSchool !== 'light') {
             finalDamage = Math.floor(finalDamage * 0.9);
+        }
+    }
+
+    // Покров смерти: сопротивление Тьме/Яду, уязвимость к Свету
+    if (target.buffs && target.buffs.death_shroud) {
+        const shroud = target.buffs.death_shroud;
+        const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
+        if (spellSchool === 'dark' || spellSchool === 'poison') {
+            finalDamage = Math.floor(finalDamage * (1 - shroud.darkPoisonResist / 100));
+        } else if (spellSchool === 'light') {
+            finalDamage = Math.floor(finalDamage * (1 + shroud.lightVulnerability / 100));
         }
     }
 
@@ -522,6 +544,26 @@ function applyDamageWithEffects(caster, target, baseDamage, spellId = 'basic', a
 
             if (damageBeforeShield !== finalDamage) {
                 damageSteps.push(`🌈 Радужный щит: ${damageBeforeShield} → ${finalDamage} (-${shield.resistancePercent}%)`);
+            }
+        }
+    }
+
+    // 3.6 Покров смерти - сопротивление Тьме/Яду, уязвимость к Свету
+    if (target && target.buffs && target.buffs.death_shroud) {
+        const shroud = target.buffs.death_shroud;
+        const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
+
+        if (spellSchool === 'dark' || spellSchool === 'poison') {
+            const damageBeforeShroud = finalDamage;
+            finalDamage = Math.floor(finalDamage * (1 - shroud.darkPoisonResist / 100));
+            if (damageBeforeShroud !== finalDamage) {
+                damageSteps.push(`🦇 Покров смерти: ${damageBeforeShroud} → ${finalDamage} (-${shroud.darkPoisonResist}% от Тьмы/Яда)`);
+            }
+        } else if (spellSchool === 'light') {
+            const damageBeforeShroud = finalDamage;
+            finalDamage = Math.floor(finalDamage * (1 + shroud.lightVulnerability / 100));
+            if (damageBeforeShroud !== finalDamage) {
+                damageSteps.push(`🦇 Покров смерти: ${damageBeforeShroud} → ${finalDamage} (+${shroud.lightVulnerability}% от Света)`);
             }
         }
     }

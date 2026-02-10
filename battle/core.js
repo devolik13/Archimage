@@ -439,6 +439,17 @@ function initializeWizardHealth() {
             }
         }
 
+        // Применение "Покрова смерти" (Некромантия, Tier 3)
+        if (wizard.spells && wizard.spells.includes('death_shroud')) {
+            const level = wizard.spellLevels?.['death_shroud'] || 1;
+            if (level > 0) {
+                const position = window.playerFormation.findIndex(id => id === wizard.id);
+                if (position !== -1 && typeof window.applyDeathShroudAtStart === 'function') {
+                    window.applyDeathShroudAtStart(wizard, level, position, 'player');
+                }
+            }
+        }
+
         // Миазма применяется ПОСЛЕ инициализации всех врагов (см. ниже)
     });
 
@@ -520,6 +531,15 @@ function initializeWizardHealth() {
             const position = window.enemyFormation.findIndex(w => w && w.id === wizard.id);
             if (position !== -1 && typeof window.applyDawnAtStart === 'function') {
                 window.applyDawnAtStart(wizard, level, position, 'enemy');
+            }
+        }
+
+        // Применение "Покрова смерти" для врагов (Некромантия, Tier 3)
+        if (wizard.spells && wizard.spells.includes('death_shroud')) {
+            const level = wizard.spellLevels?.['death_shroud'] || 1;
+            const position = window.enemyFormation.findIndex(w => w && w.id === wizard.id);
+            if (position !== -1 && typeof window.applyDeathShroudAtStart === 'function') {
+                window.applyDeathShroudAtStart(wizard, level, position, 'enemy');
             }
         }
 

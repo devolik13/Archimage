@@ -60,7 +60,8 @@ const SPELL_NAMES = {
 
     // Некромантия
     "summon_skeleton": "Призыв скелета",
-    "bone_spear": "Костяное копьё"
+    "bone_spear": "Костяное копьё",
+    "death_shroud": "Покров смерти"
 };
 
 // Базовый урон заклинаний
@@ -76,6 +77,7 @@ const SPELL_BASE_DAMAGE = {
     "dark_clot": 15,
     "summon_skeleton": 15,
     "bone_spear": 24,
+    "death_shroud": 0,  // бафф
 
     // Tier 2 - базовый урон 20-30
     "firebolt": 25,
@@ -170,7 +172,8 @@ const SPELL_TYPE_CONFIG = {
     "call_wolf": "summon",
     "ent": "summon",
     "summon_skeleton": "summon",
-    "bone_spear": "multi_target"
+    "bone_spear": "multi_target",
+    "death_shroud": "buff"
 };
 
 // Вспомогательные функции для определения типа

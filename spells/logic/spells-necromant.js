@@ -224,6 +224,25 @@ function castBoneSpear(wizard, spellData, position, casterType) {
     }
 }
 
+// --- Покров смерти (Death Shroud) - Тир 3, Пассивный бафф ---
+// Применяется в начале боя
+function applyDeathShroudAtStart(wizard, level, position, casterType) {
+    const darkPoisonResist = [15, 20, 25, 30, 40][level - 1] || 15;
+    const lightVulnerability = [5, 10, 15, 20, 25][level - 1] || 5;
+
+    if (!wizard.buffs) wizard.buffs = {};
+
+    wizard.buffs.death_shroud = {
+        darkPoisonResist: darkPoisonResist,
+        lightVulnerability: lightVulnerability,
+        level: level
+    };
+
+    if (typeof window.addToBattleLog === 'function') {
+        window.addToBattleLog(`🦇 ${wizard.name} окутан Покровом смерти [Ур.${level}]: -${darkPoisonResist}% урона от Тьмы/Яда, +${lightVulnerability}% урона от Света`);
+    }
+}
+
 // Бонус фракции Некроманта (заглушка — основной бонус в damage-system.js)
 function applyNecromantFactionBonus(wizard, casterType) {
     // Основной бонус некроманта (-10% входящего урона кроме света)
@@ -234,4 +253,5 @@ function applyNecromantFactionBonus(wizard, casterType) {
 if (typeof window !== 'undefined') {
     window.castNecromantSpell = castNecromantSpell;
     window.performSkeletonAttack = performSkeletonAttack;
+    window.applyDeathShroudAtStart = applyDeathShroudAtStart;
 }
