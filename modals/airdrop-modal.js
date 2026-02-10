@@ -693,6 +693,46 @@ function setupAirdropUI() {
                     ">Играть</button>
                 `}
             </div>
+            <!-- Betmode Luck -->
+            <div id="betmode-luck-reward" style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(251, 191, 36, 0.1);
+                border: 1px solid rgba(251, 191, 36, 0.3);
+                border-radius: 8px;
+                padding: 10px;
+                margin-top: 8px;
+            ">
+                <div style="flex: 1;">
+                    <div style="font-size: ${baseFontSize}px; color: #fff;">
+                        🍀 Launch the Betmode Luck game!
+                    </div>
+                    <div style="font-size: ${smallFontSize}px; color: #fbbf24; margin-top: 4px;">
+                        +100 BPM + ⏰ 2 часа
+                    </div>
+                </div>
+                ${window.userData?.completed_tasks?.betmode_luck ? `
+                    <div style="
+                        padding: 8px 16px;
+                        background: #333;
+                        border-radius: 8px;
+                        color: #888;
+                        font-size: ${smallFontSize}px;
+                    ">✓ Получено</div>
+                ` : `
+                    <button onclick="window.openBetmodeLuck()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #fbbf24, #d97706);
+                        border: none;
+                        border-radius: 8px;
+                        color: #000;
+                        font-size: ${smallFontSize}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Играть</button>
+                `}
+            </div>
         </div>
 
         <!-- Как заработать -->
@@ -1149,6 +1189,11 @@ function openQuadRoyal() {
     setTimeout(() => claimTaskReward('quadroyal', 'QuadRoyal'), 2000);
 }
 
+function openBetmodeLuck() {
+    window.open('https://t.me/bm_luck_bot?startapp=0-utm_source-archimage-utm_medium-cpc-utm_campaign-launch_01', '_blank');
+    setTimeout(() => claimTaskReward('betmode_luck', 'Betmode Luck'), 2000);
+}
+
 /**
  * Проверить выполнение Creaky Tasks и выдать награду
  * @param {boolean} completed - выполнено ли задание
@@ -1280,7 +1325,8 @@ function updateTaskButton(taskKey) {
     const idMap = {
         'money_mining': 'money-mining-reward',
         'pandafit': 'pandafit-reward',
-        'quadroyal': 'quadroyal-reward'
+        'quadroyal': 'quadroyal-reward',
+        'betmode_luck': 'betmode-luck-reward'
     };
     const taskDiv = document.getElementById(idMap[taskKey]);
     if (!taskDiv) return;
@@ -1303,6 +1349,7 @@ window.checkGroupSubscription = checkGroupSubscription;
 window.openCreakyTasks = openCreakyTasks;
 window.openSprutBlackRed = openSprutBlackRed;
 window.openQuadRoyal = openQuadRoyal;
+window.openBetmodeLuck = openBetmodeLuck;
 window.openMoneyMining = openMoneyMining;
 window.openPandaFit = openPandaFit;
 window.claimCreakyTasksReward = claimCreakyTasksReward;
