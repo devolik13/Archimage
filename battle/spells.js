@@ -85,7 +85,7 @@ async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 
 
 // Вспомогательная функция задержки
 function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => (window.battleTimeout || setTimeout)(resolve, ms));
 }
 
 // --- Главная функция использования заклинаний магом (async) ---
@@ -267,7 +267,7 @@ function executeSpellEffect(wizard, spellId, spellData, position, casterType) {
 function castSpell(wizard, spellId, position, casterType) {
     return new Promise((resolve) => {
         // Таймаут на случай если анимация не завершится (спрайт уничтожен, PIXI остановлен)
-        const timeout = setTimeout(() => {
+        const timeout = (window.battleTimeout || setTimeout)(() => {
             resolved = true;
             resolve();
         }, window.fastSimulation ? 50 : 3000);

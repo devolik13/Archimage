@@ -307,7 +307,7 @@ function castLightBeam(wizard, spellData, position, casterType) {
     // === ДОПОЛНИТЕЛЬНЫЙ ЛУЧ (5 уровень) ===
     // Работает так же как основной - фиксируется на цели до её смерти
     if (hasSecondBeam) {
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             const secondBeamKey = 'beam_second';
             const secondBeam = wizard.lightBeams[secondBeamKey];
 
@@ -574,7 +574,7 @@ function applyRainbowShieldAtStart(wizard, level, position, casterType) {
 
     // Анимация
     if (window.spellAnimations?.rainbow_shield?.play) {
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             window.spellAnimations.rainbow_shield.play({
                 casterType: casterType,
                 casterPosition: position,
@@ -811,7 +811,7 @@ function applyDawnAtStart(wizard, level, position, casterType) {
 
     // Анимация заклинания
     if (window.spellAnimations?.dawn?.play) {
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             window.spellAnimations.dawn.play({
                 casterType: casterType,
                 level: level
@@ -831,7 +831,7 @@ function applyDawnAtStart(wizard, level, position, casterType) {
             }
 
             if (allyPos !== -1) {
-                setTimeout(() => {
+                (window.battleTimeout || setTimeout)(() => {
                     window.spellAnimations.dawn_buff.show(ally, allyPos, casterType);
                 }, 500 + index * 100);
             }

@@ -64,7 +64,7 @@ function castPoisonedBlade(wizard, spellData, position, casterType) {
                 });
             } else {
                 console.warn('⚠️ Анимация poisoned_blade не найдена');
-                setTimeout(onHit, 300);
+                (window.battleTimeout || setTimeout)(onHit, 300);
             }
         },
         
@@ -116,7 +116,7 @@ function castPoisonedGlade(wizard, spellData, position, casterType) {
     
     // ИСПРАВЛЕНИЕ: Атакуем выбранные позиции с задержкой, ВСЕГДА показываем анимацию
     targetPositions.forEach((row, index) => {
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             let targetWizard = null;
             let targetObj = null;
             
@@ -267,7 +267,7 @@ function castFoulCloud(wizard, spellData, position, casterType) {
     // ИСПРАВЛЕНО: Убираем randomRow полностью
     columnsToAttack.forEach((col, index) => {
         // Задержка для последовательного появления облаков
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             window.spellRegistry.play('foul_cloud', {
                 casterType: casterType,
                 casterCol: casterType === 'player' ? 5 : 0,
@@ -463,7 +463,7 @@ function castPlague(wizard, spellData, position, casterType) {
     
     // Накладываем дебафф с анимацией на каждую цель с задержкой
     selectedTargets.forEach((target, index) => {
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             // ИСПРАВЛЕНИЕ: Находим позицию цели правильно
             let targetRow = -1;
             if (casterType === 'player') {

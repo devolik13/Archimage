@@ -4,6 +4,23 @@
 // Глобальные переменные для управления скоростью
 window.battleSpeedMode = 'normal'; // 'normal' или 'fast'
 
+// Трекинг боевых таймаутов для очистки при рестарте
+window._battleGeneration = 0;
+window._battleTimeouts = [];
+window.battleTimeout = function(fn, delay) {
+    const gen = window._battleGeneration;
+    const id = setTimeout(() => {
+        if (window._battleGeneration === gen) fn();
+    }, delay);
+    window._battleTimeouts.push(id);
+    return id;
+};
+window.clearAllBattleTimeouts = function() {
+    window._battleGeneration++;
+    window._battleTimeouts.forEach(id => clearTimeout(id));
+    window._battleTimeouts = [];
+};
+
 // --- Отображение поля боя (ПОЛНОЭКРАННОЕ) ---
 function renderBattleField() {
 
@@ -214,13 +231,13 @@ function renderBattleField() {
     createBattleInfoTop();
     
     // Устанавливаем отображение погоды
-    setTimeout(() => {
+    (window.battleTimeout || setTimeout)(() => {
         setWeatherDisplay();
     }, 100);
 
     // Инициализируем PixiJS
     if (window.initPixiBattle) {
-        setTimeout(() => window.initPixiBattle(), 100);
+        (window.battleTimeout || setTimeout)(() => window.initPixiBattle(), 100);
     }
 
     const logElement = document.getElementById('battle-log');
@@ -341,12 +358,12 @@ function toggleBattleLog() {
     if (panel) {
         if (panel.style.display === 'none' || !panel.style.display) {
             panel.style.display = 'block';
-            setTimeout(() => {
+            (window.battleTimeout || setTimeout)(() => {
                 panel.style.right = '0';
             }, 10);
         } else {
             panel.style.right = '-100%';
-            setTimeout(() => {
+            (window.battleTimeout || setTimeout)(() => {
                 panel.style.display = 'none';
             }, 300);
         }
@@ -433,11 +450,11 @@ async function closeBattleFieldModal() {
                     }
 
                     // Минимальная задержка чтобы асинхронный урон от заклинаний успел примениться
-                    await new Promise(resolve => setTimeout(resolve, 10));
+                    await new Promise(resolve => (window.battleTimeout || setTimeout)(resolve, 10));
                 }
 
                 // Дополнительная задержка для завершения всех асинхронных операций урона
-                await new Promise(resolve => setTimeout(resolve, 100));
+                await new Promise(resolve => (window.battleTimeout || setTimeout)(resolve, 100));
 
                 // Подсчитываем финальный урон
                 const dummy = window.enemyFormation?.find(e => e && e.isTrainingDummy);
@@ -461,7 +478,7 @@ async function closeBattleFieldModal() {
                 }
 
                 // Показываем результат с небольшой задержкой
-                setTimeout(() => {
+                (window.battleTimeout || setTimeout)(() => {
                     if (progress && typeof window.showDummyResult === 'function') {
                         window.showDummyResult(dummyState.totalDamage, progress);
                     } else if (typeof window.showTrialMenuInArena === 'function') {
@@ -480,7 +497,7 @@ async function closeBattleFieldModal() {
                 if (typeof window.showPvPArenaModalBg === 'function') {
                     window.showPvPArenaModalBg();
                 }
-                setTimeout(() => {
+                (window.battleTimeout || setTimeout)(() => {
                     if (typeof window.showTrialMenuInArena === 'function') {
                         window.showTrialMenuInArena();
                     }
@@ -623,7 +640,7 @@ async function closeBattleFieldModal() {
         // После симуляции checkBattleEnd уже вызвал onBattleCompleted и showBattleResult
         // Но нужно добавить earlyExit флаг к уже показанному результату
         // Подождем немного и если результат не показался, покажем вручную
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             // Проверяем флаги и элементы - результат мог быть показан через showArenaResult
             const resultModal = document.getElementById('battle-result-modal') || document.getElementById('pvp-arena-screen');
             const resultAlreadyShown = window.arenaResultShown || window.battleResultShown;
@@ -680,6 +697,11 @@ async function closeBattleFieldModal() {
 // Вспомогательная функция очистки ресурсов боя
 function cleanupBattleResources() {
     console.log('🧹 Очистка ресурсов боя...');
+
+    // Очищаем все боевые таймауты (setTimeout из заклинаний и анимаций)
+    if (typeof window.clearAllBattleTimeouts === 'function') {
+        window.clearAllBattleTimeouts();
+    }
 
     // Очищаем PixiJS
     if (window.destroyPixiBattle) {
@@ -786,7 +808,7 @@ function returnToCity() {
 
     // Перерисовываем город если нужно
     if (window.userData && window.userData.faction) {
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             if (typeof window.switchToCityView === 'function') {
                 window.switchToCityView(window.userData.faction);
             } else if (typeof window.initCityViewSystem === 'function') {

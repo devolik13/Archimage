@@ -56,7 +56,7 @@ function castSpark(wizard, spellData, position, casterType) {
                 // Передаём toCol как точку столкновения (а не колонку мага!)
                 window.createSparkProjectile(fromCol, fromRow, toCol, toRow, onHit);
             } else {
-                setTimeout(onHit, 300);
+                (window.battleTimeout || setTimeout)(onHit, 300);
             }
         },
 
@@ -78,7 +78,7 @@ function castSpark(wizard, spellData, position, casterType) {
             // ЭФФЕКТ 5 УРОВНЯ: 50% шанс повторной атаки
             if (level === 5 && Math.random() < 0.5) {
                 
-                setTimeout(() => {
+                (window.battleTimeout || setTimeout)(() => {
                     const newTarget = window.findTarget?.(position, casterType, wizard);
                     if (newTarget) {
                         castSparkSecondary(wizard, spellData, position, casterType, newTarget);
@@ -108,7 +108,7 @@ function castSparkSecondary(wizard, spellData, position, casterType, target) {
             if (window.createSparkProjectile) {
                 window.createSparkProjectile(fromCol, fromRow, toCol, toRow, onHit);
             } else {
-                setTimeout(onHit, 300);
+                (window.battleTimeout || setTimeout)(onHit, 300);
             }
         },
         

@@ -69,7 +69,7 @@ function castIcicle(wizard, spellData, position, casterType) {
                 window.createIcicleProjectile(fromCol, fromRow, toCol, toRow, onHit);
             } else {
                 console.warn('⚠️ createIcicleProjectile не найдена');
-                setTimeout(onHit, 300);
+                (window.battleTimeout || setTimeout)(onHit, 300);
             }
         },
         
@@ -233,7 +233,7 @@ function castFrostArrow(wizard, spellData, position, casterType) {
                         
                         // Боковые взрывы
                         splashPositions.forEach((row, index) => {
-                            setTimeout(() => {
+                            (window.battleTimeout || setTimeout)(() => {
                                 window.spellAnimations.frost_arrow.createExplosionAt(
                                     explosionCol, 
                                     row, 

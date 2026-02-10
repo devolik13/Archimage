@@ -688,7 +688,7 @@ function checkSummonProtection(position, casterType) {
             
             if (summon.hp <= 0) {
                 if (typeof window.removeDeadSummons === 'function') {
-                    setTimeout(() => {
+                    (window.battleTimeout || setTimeout)(() => {
                         window.removeDeadSummons();
                     }, 100);
                 }

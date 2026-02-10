@@ -67,7 +67,7 @@ function castDarkClot(wizard, spellData, position, casterType) {
                 });
             } else {
                 console.warn('⚠️ Анимация dark_clot не найдена');
-                setTimeout(onHit, 300);
+                (window.battleTimeout || setTimeout)(onHit, 300);
             }
         },
 
@@ -204,7 +204,7 @@ function applyMiasmaAtStart(wizard, level, position, casterType) {
 
     // Анимация заклинания
     if (window.spellAnimations?.miasma?.play) {
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             window.spellAnimations.miasma.play({
                 casterType: casterType,
                 casterPosition: position,
@@ -225,7 +225,7 @@ function applyMiasmaAtStart(wizard, level, position, casterType) {
             }
 
             if (allyPos !== -1) {
-                setTimeout(() => {
+                (window.battleTimeout || setTimeout)(() => {
                     window.spellAnimations.miasma_buff.show(ally, allyPos, casterType);
                 }, 500 + index * 100);
             }
@@ -287,7 +287,7 @@ function castShadowRealm(wizard, spellData, position, casterType) {
 
     // Наносим урон каждой цели
     targets.forEach((target, index) => {
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             const lostHp = target.max_hp - target.hp;
             const damage = Math.floor(lostHp * percentDamage / 100);
 
@@ -319,7 +319,7 @@ function castShadowRealm(wizard, spellData, position, casterType) {
     });
 
     // Применяем бонус фракции
-    setTimeout(() => {
+    (window.battleTimeout || setTimeout)(() => {
         applyDarkFactionBonus(wizard, targets, casterType);
     }, targets.length * 200);
 }
@@ -389,7 +389,7 @@ function castFading(wizard, spellData, position, casterType, isRepeat = false) {
 
     // На 5 уровне 20% шанс повторного применения (только если это не повтор)
     if (level === 5 && !isRepeat && Math.random() * 100 < repeatChance) {
-        setTimeout(() => {
+        (window.battleTimeout || setTimeout)(() => {
             if (typeof window.addToBattleLog === 'function') {
                 window.addToBattleLog(`🌑 Угасание срабатывает повторно!`);
             }
