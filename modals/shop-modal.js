@@ -7,7 +7,7 @@ let currentShopTab = 'free';
 let shopScreenCache = null;
 let shopCachedFaction = null;
 
-// Курс Stars → USD (на основе соотношения Lord Demon: 8000 Stars = $104)
+// Курс Stars → USD (примерно $0.013 за 1 Star)
 const STAR_RATE_USD = 0.013;
 
 // Кэш курса TON (обновляется каждые 5 минут)
@@ -633,7 +633,7 @@ function renderSkinsShop(scale) {
 
         let statusText = '';
         let statusColor = '#4ade80';
-        let btnText = `💎 ${skin.price} ⭐`;
+        let btnText = skin.currency === 'ton' ? `💎 ~$${skin.priceUSD}` : `💎 ${skin.price} ⭐`;
 
         if (isOwned) {
             statusText = '✅ Куплено';
@@ -804,6 +804,7 @@ function showSkinPaymentDialog(skinId) {
             </p>
 
             <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${skin.currency !== 'ton' ? `
                 <button onclick="purchaseSkinWithStars('${skinId}')" style="
                     padding: 12px 16px;
                     background: linear-gradient(135deg, #ffd700, #ff8c00);
@@ -820,6 +821,7 @@ function showSkinPaymentDialog(skinId) {
                 ">
                     ⭐ ${skin.price} Telegram Stars
                 </button>
+                ` : ''}
 
                 <button onclick="purchaseSkinWithTON('${skinId}')" style="
                     padding: 12px 16px;
@@ -835,7 +837,7 @@ function showSkinPaymentDialog(skinId) {
                     justify-content: center;
                     gap: 8px;
                 ">
-                    💎 ~$${skin.priceUSD?.toFixed(2) || '2.15'} TON
+                    💎 ~$${skin.priceUSD?.toFixed(2) || '2.15'} в TON
                 </button>
 
                 <button onclick="closeSkinPaymentDialog()" style="
@@ -958,7 +960,7 @@ async function purchaseSkinWithTON(skinId) {
 
     try {
         // Получаем актуальный курс TON
-        const tonPrice = await getTONPrice();
+        const tonPrice = await getTonPrice();
         const tonAmount = skin.priceUSD / tonPrice;
 
         console.log('💎 Покупка скина через TON:', skin.name, tonAmount.toFixed(4), 'TON');
