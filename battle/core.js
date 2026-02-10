@@ -439,6 +439,28 @@ function initializeWizardHealth() {
             }
         }
 
+        // Применение "Покрова смерти" (Некромантия, Tier 3)
+        if (wizard.spells && wizard.spells.includes('death_shroud')) {
+            const level = wizard.spellLevels?.['death_shroud'] || 1;
+            if (level > 0) {
+                const position = window.playerFormation.findIndex(id => id === wizard.id);
+                if (position !== -1 && typeof window.applyDeathShroudAtStart === 'function') {
+                    window.applyDeathShroudAtStart(wizard, level, position, 'player');
+                }
+            }
+        }
+
+        // Призыв "Костяного Дракона" (Некромантия, Tier 5)
+        if (wizard.spells && wizard.spells.includes('bone_dragon')) {
+            const level = wizard.spellLevels?.['bone_dragon'] || 1;
+            if (level > 0) {
+                const position = window.playerFormation.findIndex(id => id === wizard.id);
+                if (position !== -1 && typeof window.summonBoneDragonAtStart === 'function') {
+                    window.summonBoneDragonAtStart(wizard, level, position, 'player');
+                }
+            }
+        }
+
         // Миазма применяется ПОСЛЕ инициализации всех врагов (см. ниже)
     });
 
@@ -520,6 +542,24 @@ function initializeWizardHealth() {
             const position = window.enemyFormation.findIndex(w => w && w.id === wizard.id);
             if (position !== -1 && typeof window.applyDawnAtStart === 'function') {
                 window.applyDawnAtStart(wizard, level, position, 'enemy');
+            }
+        }
+
+        // Применение "Покрова смерти" для врагов (Некромантия, Tier 3)
+        if (wizard.spells && wizard.spells.includes('death_shroud')) {
+            const level = wizard.spellLevels?.['death_shroud'] || 1;
+            const position = window.enemyFormation.findIndex(w => w && w.id === wizard.id);
+            if (position !== -1 && typeof window.applyDeathShroudAtStart === 'function') {
+                window.applyDeathShroudAtStart(wizard, level, position, 'enemy');
+            }
+        }
+
+        // Призыв "Костяного Дракона" для врагов (Некромантия, Tier 5)
+        if (wizard.spells && wizard.spells.includes('bone_dragon')) {
+            const level = wizard.spellLevels?.['bone_dragon'] || 1;
+            const position = window.enemyFormation.findIndex(w => w && w.id === wizard.id);
+            if (position !== -1 && typeof window.summonBoneDragonAtStart === 'function') {
+                window.summonBoneDragonAtStart(wizard, level, position, 'enemy');
             }
         }
 
@@ -908,9 +948,20 @@ async function executeSingleMageAttack(wizard, position, casterType) {
                 if (summon.type === 'nature_wolf') {
                     if (typeof window.performWolfAttack === 'function') {
                         window.performWolfAttack(summon, wizard);
-                        // Проверяем конец боя после атаки волка
                         if (await checkBattleEnd()) {
-                            return false; // Прерываем дальше
+                            return false;
+                        }
+                    }
+                }
+                if (summon.type === 'bone_dragon') {
+                    if (typeof window.performBoneDragonAttack === 'function') {
+                        window.performBoneDragonAttack(summon, wizard);
+                        // Проверяем ауру после атаки (дракон мог погибнуть)
+                        if (typeof window.checkBoneDragonAura === 'function') {
+                            window.checkBoneDragonAura();
+                        }
+                        if (await checkBattleEnd()) {
+                            return false;
                         }
                     }
                 }
@@ -931,6 +982,11 @@ async function executeSingleMageAttack(wizard, position, casterType) {
     }
 
     // Прерывание от Абсолютного Ноля проверяется в spells.js для каждого заклинания отдельно
+
+    // 🪤 Восстановление Костяных клеток в ход мага-некроманта
+    if (typeof window.restoreBoneCages === 'function') {
+        window.restoreBoneCages(wizard.id);
+    }
 
     // ИСПОЛЬЗОВАНИЕ ЗАКЛИНАНИЙ - ждём завершения всех кастов
     // 👁️ Ослепление проверяется в findTarget для каждого боевого заклинания отдельно

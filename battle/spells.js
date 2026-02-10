@@ -70,6 +70,17 @@ async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 
             }
         }
 
+        // 🪤 Костяная клетка — самоурон и поглощение single target
+        if (!interrupted && wizard.effects?.bone_cage && wizard.effects.bone_cage.hp > 0) {
+            if (typeof window.processBoneCageOnCast === 'function') {
+                const baseDmg = window.SPELL_BASE_DAMAGE?.[spellId] || 0;
+                const result = window.processBoneCageOnCast(wizard, spellId, baseDmg);
+                if (result && result.absorbed) {
+                    interrupted = true;
+                }
+            }
+        }
+
         if (!interrupted) {
             // Ждём завершения анимации каста перед следующим заклинанием
             await castSpell(wizard, spellId, position, casterType);
@@ -171,6 +182,19 @@ async function useWizardSpells(wizard, position, casterType) {
             }
         }
 
+        // 🪤 Костяная клетка — самоурон и поглощение single target
+        if (!interrupted && wizard.effects?.bone_cage && wizard.effects.bone_cage.hp > 0) {
+            if (typeof window.processBoneCageOnCast === 'function') {
+                const spellType = window.SPELL_TYPE_CONFIG?.[spellId];
+                const baseDmg = window.SPELL_BASE_DAMAGE?.[spellId] || 0;
+                const result = window.processBoneCageOnCast(wizard, spellId, baseDmg);
+                if (result && result.absorbed) {
+                    // Single target полностью поглощён клеткой — пропускаем каст
+                    interrupted = true;
+                }
+            }
+        }
+
         // Кастуем заклинание и ждём завершения анимации каста
         if (!interrupted) {
             await castSpell(wizard, spellId, position, casterType);
@@ -260,6 +284,18 @@ function executeSpellEffect(wizard, spellId, spellData, position, casterType) {
             break;
         default:
             castBasicAttack(wizard, position, casterType);
+    }
+
+    // 💥 AOE заклинания наносят урон призванным существам
+    if (typeof window.isAOESpell === 'function' && window.isAOESpell(spellId)) {
+        if (typeof window.applyAoeDamageToSummons === 'function') {
+            const aoeDamage = typeof window.getSpellDamage === 'function' ?
+                window.getSpellDamage(spellId, spellData?.level || 1) :
+                (window.SPELL_BASE_DAMAGE?.[spellId] || 0);
+            if (aoeDamage > 0) {
+                window.applyAoeDamageToSummons(wizard, aoeDamage, spellId, casterType);
+            }
+        }
     }
 }
 

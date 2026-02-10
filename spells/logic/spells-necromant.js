@@ -8,6 +8,9 @@ function castNecromantSpell(wizard, spellId, spellData, position, casterType) {
         case 'bone_spear':
             castBoneSpear(wizard, spellData, position, casterType);
             break;
+        case 'bone_cage':
+            castBoneCage(wizard, spellData, position, casterType);
+            break;
         default:
             if (typeof window.castBasicAttack === 'function') {
                 window.castBasicAttack(wizard, position, casterType);
@@ -224,6 +227,295 @@ function castBoneSpear(wizard, spellData, position, casterType) {
     }
 }
 
+// --- Покров смерти (Death Shroud) - Тир 3, Пассивный бафф ---
+// Применяется в начале боя
+function applyDeathShroudAtStart(wizard, level, position, casterType) {
+    const darkPoisonResist = [15, 20, 25, 30, 40][level - 1] || 15;
+    const lightVulnerability = [5, 10, 15, 20, 25][level - 1] || 5;
+
+    if (!wizard.buffs) wizard.buffs = {};
+
+    wizard.buffs.death_shroud = {
+        darkPoisonResist: darkPoisonResist,
+        lightVulnerability: lightVulnerability,
+        level: level
+    };
+
+    if (typeof window.addToBattleLog === 'function') {
+        window.addToBattleLog(`🦇 ${wizard.name} окутан Покровом смерти [Ур.${level}]: -${darkPoisonResist}% урона от Тьмы/Яда, +${lightVulnerability}% урона от Света`);
+    }
+}
+
+// --- Костяная клетка (Bone Cage) - Тир 4, Утилити ---
+function castBoneCage(wizard, spellData, position, casterType) {
+    const level = spellData.level || 1;
+    const cageHP = [30, 35, 40, 45, 50][level - 1] || 30;
+
+    // Поиск цели — стандартный single target, но только маги (не стены/существа)
+    const target = typeof window.findTarget === 'function' ?
+        window.findTarget(position, casterType, wizard, 'bone_cage') : null;
+
+    if (!target || !target.wizard || target.wizard.hp <= 0) {
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`🪤 ${wizard.name} пытается наложить Костяную клетку, но цель не найдена`);
+        }
+        return;
+    }
+
+    const targetWizard = target.wizard;
+
+    // Инициализируем effects если нет
+    if (!targetWizard.effects) targetWizard.effects = {};
+
+    // Накладываем клетку
+    targetWizard.effects.bone_cage = {
+        hp: cageHP,
+        maxHP: cageHP,
+        level: level,
+        casterId: wizard.id,
+        casterType: casterType
+    };
+
+    if (typeof window.addToBattleLog === 'function') {
+        const boostText = window.getAoeBoostText ? window.getAoeBoostText(wizard) : '';
+        window.addToBattleLog(`🪤 ${wizard.name} заключает ${targetWizard.name} в Костяную клетку [Ур.${level}]! ${boostText}HP клетки: ${cageHP}`);
+        if (level >= 5) {
+            window.addToBattleLog(`   💀 Каждый каст наносит ${cageHP} урона захваченному магу!`);
+        }
+    }
+}
+
+// Проверка и обработка клетки перед кастом мага
+// Возвращает true если single target заклинание было поглощено клеткой
+function processBoneCageOnCast(cagedWizard, spellId, baseDamage) {
+    const cage = cagedWizard.effects?.bone_cage;
+    if (!cage || cage.hp <= 0) return false;
+
+    // Lv5: самоурон при каждом касте (до поглощения)
+    if (cage.level >= 5) {
+        const selfDamage = cage.maxHP;
+        cagedWizard.hp -= selfDamage;
+        if (cagedWizard.hp < 0) cagedWizard.hp = 0;
+
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`🪤💀 ${cagedWizard.name} получает ${selfDamage} урона от Костяной клетки!`);
+        }
+
+        // Обновляем HP бар
+        if (typeof window.updateWizardVisualHP === 'function') {
+            const casterType = cage.casterType === 'player' ? 'enemy' : 'player';
+            const col = casterType === 'player' ? 5 : 0;
+            const pos = casterType === 'player' ?
+                window.playerFormation?.findIndex(id => id === cagedWizard.id) :
+                window.enemyFormation?.findIndex(w => w && w.id === cagedWizard.id);
+            if (pos !== undefined && pos !== -1) {
+                window.updateWizardVisualHP(cagedWizard, col, pos);
+            }
+        }
+    }
+
+    // Определяем тип заклинания
+    const spellType = window.SPELL_TYPE_CONFIG?.[spellId];
+    const isSingleTarget = (spellType === 'single_target');
+
+    // Single target: урон идёт в клетку
+    if (isSingleTarget && baseDamage > 0) {
+        const cageDamage = Math.min(baseDamage, cage.hp);
+        cage.hp -= cageDamage;
+        const remaining = baseDamage - cageDamage;
+
+        if (typeof window.addToBattleLog === 'function') {
+            if (cage.hp <= 0) {
+                window.addToBattleLog(`🪤 Костяная клетка разрушена! Остаток урона: ${remaining}`);
+            } else {
+                window.addToBattleLog(`🪤 Костяная клетка поглотила ${cageDamage} урона (осталось HP: ${cage.hp})`);
+            }
+        }
+
+        if (cage.hp <= 0) {
+            // Клетка разрушена — остаток пролетит в цель (через обычную логику)
+            // Возвращаем remaining как новый базовый урон
+            return { absorbed: false, remainingDamage: remaining };
+        }
+
+        // Клетка выжила — урон полностью поглощён
+        return { absorbed: true, remainingDamage: 0 };
+    }
+
+    // AOE: проходит мимо клетки (но самоурон lv5 уже применён выше)
+    return { absorbed: false, remainingDamage: baseDamage };
+}
+
+// Восстановление клетки в ход некроманта
+function restoreBoneCages(casterId) {
+    // Ищем всех магов с клеткой от этого кастера
+    const allWizards = [
+        ...(window.playerWizards || []),
+        ...(window.enemyFormation?.filter(w => w) || [])
+    ];
+
+    for (const wizard of allWizards) {
+        const cage = wizard.effects?.bone_cage;
+        if (cage && cage.casterId === casterId && wizard.hp > 0) {
+            cage.hp = cage.maxHP;
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`🪤 Костяная клетка на ${wizard.name} восстановлена (HP: ${cage.maxHP})`);
+            }
+        }
+    }
+}
+
+// ========================================
+// 🐉 КОСТЯНОЙ ДРАКОН (Tier 5)
+// ========================================
+
+// Призыв Костяного Дракона в начале боя
+function summonBoneDragonAtStart(wizard, level, position, casterType) {
+    if (!window.summonsManager) return;
+
+    const hpPercent = [50, 60, 70, 80, 100][level - 1] || 50;
+    const dragonHP = Math.floor((wizard.max_hp || wizard.hp) * hpPercent / 100);
+    const dragonDamage = [50, 60, 70, 80, 100][level - 1] || 50;
+
+    const dragon = window.summonsManager.createSummon('bone_dragon', {
+        casterId: wizard.id,
+        casterType: casterType,
+        position: position,
+        level: level,
+        hp: dragonHP,
+        maxHP: dragonHP,
+        damage: dragonDamage
+    });
+
+    if (dragon) {
+        // Помечаем дракона как не подлежащего лечению
+        dragon.noHeal = true;
+
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`🐉 ${wizard.name} призывает Костяного Дракона (HP: ${dragonHP}, Урон: ${dragonDamage})`);
+        }
+
+        // На 5 уровне — аура снижения брони
+        if (level >= 5) {
+            applyBoneDragonAura(wizard.id, casterType);
+        }
+    }
+}
+
+// Атака Костяного Дракона (каждый ход мага-хозяина)
+function performBoneDragonAttack(dragon, caster) {
+    if (!dragon || dragon.hp <= 0 || !dragon.isAlive) return;
+
+    const target = typeof window.findTarget === 'function' ?
+        window.findTarget(dragon.position, dragon.casterType, null, 'bone_dragon_attack') : null;
+
+    if (target && target.wizard && target.wizard.hp > 0) {
+        // Анимация атаки
+        const visual = window.summonsManager?.visuals.get(dragon.id);
+        if (visual) {
+            const targetSprite = window.wizardSprites?.[`${target.column || 0}_${target.position}`];
+            if (targetSprite) {
+                window.summonsManager.playAttackAnimation(
+                    dragon.id,
+                    targetSprite.x,
+                    targetSprite.y
+                );
+            }
+        }
+
+        // Применяем урон
+        const finalDamage = typeof window.applyFinalDamage === 'function' ?
+            window.applyFinalDamage(caster, target.wizard, dragon.damage, 'bone_dragon_attack', 0, false) : dragon.damage;
+
+        target.wizard.hp -= finalDamage;
+        if (target.wizard.hp < 0) target.wizard.hp = 0;
+
+        // Учитываем урон дракона для XP хозяина
+        if (typeof window.trackBattleDamage === 'function' && dragon.casterType === 'player') {
+            window.trackBattleDamage(caster, finalDamage);
+        }
+
+        // Обновляем визуальный HP бар цели
+        if (typeof window.updateWizardVisualHP === 'function') {
+            const targetColumn = target.column || (dragon.casterType === 'player' ? 5 : 0);
+            window.updateWizardVisualHP(target.wizard, targetColumn, target.position);
+        }
+
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`🐉 Костяной Дракон атакует ${target.wizard.name}: ${finalDamage} урона`);
+        }
+
+        // Проверка на смерть цели
+        if (target.wizard.hp <= 0) {
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`💀 ${target.wizard.name} погиб от атаки Костяного Дракона!`);
+            }
+        }
+    }
+}
+
+// Аура снижения брони (lv5) — применяется при призыве
+function applyBoneDragonAura(casterId, casterType) {
+    const enemies = casterType === 'player' ? window.enemyWizards : window.playerWizards;
+    if (!enemies) return;
+
+    for (const enemy of enemies) {
+        if (enemy && enemy.hp > 0) {
+            if (!enemy.armorBonuses) enemy.armorBonuses = {};
+            enemy.armorBonuses.bone_dragon = -20;
+            // Пересчитываем общий бонус брони
+            enemy.armorBonus = Object.values(enemy.armorBonuses).reduce((sum, v) => sum + v, 0);
+
+            if (typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`🐉 Аура Костяного Дракона: ${enemy.name} теряет 20 брони`);
+            }
+        }
+    }
+}
+
+// Снятие ауры при гибели дракона
+function removeBoneDragonAura(casterId, casterType) {
+    const enemies = casterType === 'player' ? window.enemyWizards : window.playerWizards;
+    if (!enemies) return;
+
+    for (const enemy of enemies) {
+        if (enemy && enemy.armorBonuses?.bone_dragon) {
+            delete enemy.armorBonuses.bone_dragon;
+            enemy.armorBonus = Object.values(enemy.armorBonuses).reduce((sum, v) => sum + v, 0);
+        }
+    }
+}
+
+// Проверка и снятие ауры если дракон погиб
+function checkBoneDragonAura() {
+    if (!window.summonsManager) return;
+
+    // Ищем всех драконов
+    const dragons = [];
+    for (const [id, summon] of window.summonsManager.summons) {
+        if (summon.type === 'bone_dragon') {
+            dragons.push(summon);
+        }
+    }
+
+    // Проверяем для каждой стороны
+    for (const casterType of ['player', 'enemy']) {
+        const activeDragon = dragons.find(d => d.casterType === casterType && d.isAlive && d.hp > 0 && d.level >= 5);
+        if (!activeDragon) {
+            // Нет живого дракона lv5 — снимаем ауру
+            const enemies = casterType === 'player' ? window.enemyWizards : window.playerWizards;
+            if (enemies) {
+                for (const enemy of enemies) {
+                    if (enemy && enemy.armorBonuses?.bone_dragon) {
+                        delete enemy.armorBonuses.bone_dragon;
+                        enemy.armorBonus = Object.values(enemy.armorBonuses).reduce((sum, v) => sum + v, 0);
+                    }
+                }
+            }
+        }
+    }
+}
+
 // Бонус фракции Некроманта (заглушка — основной бонус в damage-system.js)
 function applyNecromantFactionBonus(wizard, casterType) {
     // Основной бонус некроманта (-10% входящего урона кроме света)
@@ -234,4 +526,11 @@ function applyNecromantFactionBonus(wizard, casterType) {
 if (typeof window !== 'undefined') {
     window.castNecromantSpell = castNecromantSpell;
     window.performSkeletonAttack = performSkeletonAttack;
+    window.applyDeathShroudAtStart = applyDeathShroudAtStart;
+    window.castBoneCage = castBoneCage;
+    window.processBoneCageOnCast = processBoneCageOnCast;
+    window.restoreBoneCages = restoreBoneCages;
+    window.summonBoneDragonAtStart = summonBoneDragonAtStart;
+    window.performBoneDragonAttack = performBoneDragonAttack;
+    window.checkBoneDragonAura = checkBoneDragonAura;
 }
