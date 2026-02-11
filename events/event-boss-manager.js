@@ -28,29 +28,35 @@ class EventBossManager {
             const saved = localStorage.getItem('event_boss_debug');
             if (saved) {
                 const data = JSON.parse(saved);
-                this._debugPlayerStats = data.playerStats;
-                this._debugLeaderboard = data.leaderboard;
+                this._debugPlayerStats = data.playerStats || this._debugPlayerStats;
+                this._debugLeaderboard = data.leaderboard || [];
                 // Обновляем telegram_id на случай смены
                 const me = this._debugLeaderboard.find(e => e.username === 'Вы');
-                if (me) me.telegram_id = myId;
+                if (me) {
+                    me.telegram_id = myId;
+                } else {
+                    // Если записи 'Вы' нет — создаём
+                    this._debugLeaderboard.push({
+                        rank: 0, username: 'Вы', telegram_id: myId,
+                        total_damage: this._debugPlayerStats?.total_damage || 0,
+                        attacks_count: this._debugPlayerStats?.attacks_count || 0,
+                        best_single_attack: this._debugPlayerStats?.best_single_attack || 0
+                    });
+                }
                 return;
             }
         } catch (e) { /* fallback ниже */ }
 
-        // Начальные данные
+        // Начальные данные (без фейковых игроков)
         this._debugPlayerStats = {
-            participated: true,
+            participated: false,
             total_damage: 0,
             attacks_count: 0,
             best_single_attack: 0,
-            rank: 1
+            rank: 0
         };
         this._debugLeaderboard = [
-            { rank: 1, username: 'Вы', telegram_id: myId, total_damage: 0, attacks_count: 0, best_single_attack: 0 },
-            { rank: 2, username: 'ТёмныйМаг', telegram_id: 2, total_damage: 820000, attacks_count: 7, best_single_attack: 185000 },
-            { rank: 3, username: 'Огненный', telegram_id: 3, total_damage: 640000, attacks_count: 5, best_single_attack: 210000 },
-            { rank: 4, username: 'Ледяная', telegram_id: 4, total_damage: 510000, attacks_count: 6, best_single_attack: 120000 },
-            { rank: 5, username: 'Свет_333', telegram_id: 5, total_damage: 390000, attacks_count: 4, best_single_attack: 150000 },
+            { rank: 1, username: 'Вы', telegram_id: myId, total_damage: 0, attacks_count: 0, best_single_attack: 0 }
         ];
     }
 
@@ -94,8 +100,8 @@ class EventBossManager {
             ends_at: endsAt,
             status: 'active',
             defeated_at: null,
-            total_participants: 42,
-            total_damage_dealt: 2360000
+            total_participants: savedBossHp?.total_participants ?? 0,
+            total_damage_dealt: savedBossHp?.total_damage_dealt ?? 0
         };
         this.lastFetch = Date.now();
         return this.currentBoss;
@@ -111,7 +117,19 @@ class EventBossManager {
     async fetchActiveBoss(forceRefresh = false) {
         // === DEBUG ===
         if (this.DEBUG_LOCAL_MODE) {
-            if (!this.currentBoss) this._initDebugBoss();
+            if (!this.currentBoss) {
+                this._initDebugBoss();
+            } else if (forceRefresh) {
+                // При forceRefresh перечитываем HP из localStorage
+                try {
+                    const saved = localStorage.getItem('event_boss_debug_boss');
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        if (data.current_hp != null) this.currentBoss.current_hp = data.current_hp;
+                        if (data.total_damage_dealt != null) this.currentBoss.total_damage_dealt = data.total_damage_dealt;
+                    }
+                } catch (e) { /* ignore */ }
+            }
             console.log(`🐉 [DEBUG] Ивент босс: ${this.currentBoss.name} | HP: ${this.currentBoss.current_hp}/${this.currentBoss.max_hp}`);
             return this.currentBoss;
         }
@@ -175,22 +193,30 @@ class EventBossManager {
             }
 
             // Обновляем мок статистику игрока
+            this._debugPlayerStats.participated = true;
             this._debugPlayerStats.total_damage += damage;
             this._debugPlayerStats.attacks_count++;
             this._debugPlayerStats.best_single_attack = Math.max(this._debugPlayerStats.best_single_attack, damage);
 
-            // Обновляем лидерборд — находим свою запись по telegram_id
+            // Обновляем лидерборд — находим свою запись по username 'Вы' (надёжнее чем telegram_id)
             const myId = parseInt(window.userId) || 1;
-            const myEntry = this._debugLeaderboard.find(e => e.telegram_id === myId);
-            if (myEntry) {
-                myEntry.total_damage = this._debugPlayerStats.total_damage;
-                myEntry.attacks_count = this._debugPlayerStats.attacks_count;
-                myEntry.best_single_attack = this._debugPlayerStats.best_single_attack;
+            let myEntry = this._debugLeaderboard.find(e => e.username === 'Вы');
+            if (!myEntry) {
+                // Если записи нет, создаём
+                myEntry = { rank: 0, username: 'Вы', telegram_id: myId, total_damage: 0, attacks_count: 0, best_single_attack: 0 };
+                this._debugLeaderboard.push(myEntry);
             }
+            myEntry.telegram_id = myId; // Всегда обновляем telegram_id
+            myEntry.total_damage = this._debugPlayerStats.total_damage;
+            myEntry.attacks_count = this._debugPlayerStats.attacks_count;
+            myEntry.best_single_attack = this._debugPlayerStats.best_single_attack;
             // Пересортировка
             this._debugLeaderboard.sort((a, b) => b.total_damage - a.total_damage);
             this._debugLeaderboard.forEach((e, i) => e.rank = i + 1);
-            this._debugPlayerStats.rank = this._debugLeaderboard.findIndex(e => e.telegram_id === myId) + 1;
+            this._debugPlayerStats.rank = this._debugLeaderboard.findIndex(e => e.username === 'Вы') + 1;
+
+            // Обновляем кол-во участников (считаем уникальных в лидерборде с уроном > 0)
+            this.currentBoss.total_participants = this._debugLeaderboard.filter(e => e.total_damage > 0).length;
 
             this.useAttempt();
             this._saveDebugState();
@@ -198,7 +224,8 @@ class EventBossManager {
             try {
                 localStorage.setItem('event_boss_debug_boss', JSON.stringify({
                     current_hp: this.currentBoss.current_hp,
-                    total_damage_dealt: this.currentBoss.total_damage_dealt
+                    total_damage_dealt: this.currentBoss.total_damage_dealt,
+                    total_participants: this.currentBoss.total_participants
                 }));
             } catch (e) { /* ignore */ }
 
