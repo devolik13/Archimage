@@ -398,8 +398,8 @@ function startPvELevel(levelId) {
     const originalWizards = window.userData?.wizards || [];
     const originalFormation = window.userData?.formation || [null, null, null, null, null];
 
-    // Делаем глубокую копию магов
-    window.playerWizards = originalWizards.map(wizard => ({...wizard}));
+    // Делаем глубокую копию магов (сбрасываем эффекты и состояние заклинаний)
+    window.playerWizards = JSON.parse(JSON.stringify(originalWizards));
     window.playerFormation = [...originalFormation];
 
     console.log('  - playerFormation:', window.playerFormation);

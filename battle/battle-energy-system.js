@@ -9,6 +9,29 @@ function initBattleEnergy(userData) {
             last_regen: Date.now()
         };
     }
+
+    // localStorage-бэкап: защита от потери данных при сбое сохранения в БД
+    try {
+        const saved = localStorage.getItem('battle_energy_backup');
+        if (saved) {
+            const backup = JSON.parse(saved);
+            // Используем бэкап если у него МЕНЬШЕ энергии (предотвращаем эксплойт)
+            if (typeof backup.current === 'number' && backup.current < userData.battle_energy.current) {
+                // Проверяем регенерацию с момента бэкапа
+                const now = Date.now();
+                const timePassed = now - (backup.last_regen || now);
+                const regenAmount = Math.floor(timePassed / window.BATTLE_ENERGY.REGEN_TIME_MS);
+                const restoredCurrent = Math.min(backup.current + regenAmount, window.BATTLE_ENERGY.MAX);
+
+                if (restoredCurrent < userData.battle_energy.current) {
+                    console.log(`⚡ Восстановление из бэкапа: БД=${userData.battle_energy.current}, бэкап+реген=${restoredCurrent}`);
+                    userData.battle_energy.current = restoredCurrent;
+                    userData.battle_energy.last_regen = backup.last_regen || now;
+                }
+            }
+        }
+    } catch (e) { /* localStorage может быть недоступен */ }
+
     // Синхронизируем max с константой (для существующих игроков после изменения лимита)
     if (userData.battle_energy.max !== window.BATTLE_ENERGY.MAX) {
         const oldMax = userData.battle_energy.max;
@@ -86,6 +109,9 @@ function consumeBattleEnergy() {
 
     window.userData.battle_energy.current--;
     console.log(`⚡ Энергия потрачена: осталось ${window.userData.battle_energy.current}/${window.userData.battle_energy.max}`);
+
+    // localStorage-бэкап (мгновенно, не зависит от сети)
+    _saveBattleEnergyBackup();
 
     // Сохраняем изменения НЕМЕДЛЕННО (критично для предотвращения эксплойтов)
     if (window.eventSaveManager) {
@@ -219,6 +245,20 @@ function restoreBattleEnergy() {
 
     updateBattleEnergyUI();
     return true;
+}
+
+// localStorage-бэкап энергии (защита от сбоя сохранения в БД)
+function _saveBattleEnergyBackup() {
+    try {
+        const energy = window.userData?.battle_energy;
+        if (energy) {
+            localStorage.setItem('battle_energy_backup', JSON.stringify({
+                current: energy.current,
+                max: energy.max,
+                last_regen: energy.last_regen
+            }));
+        }
+    } catch (e) { /* ignore */ }
 }
 
 // Экспорт

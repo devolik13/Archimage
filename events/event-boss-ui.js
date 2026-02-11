@@ -176,20 +176,19 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
         ">
             <!-- Шапка -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <div>${attackButtonHTML}</div>
+                <div style="font-size: 12px; color: #ff9800;">Осталось: ${timeRemaining}</div>
                 <div style="text-align: right;">
-                    <div style="font-size: 12px; color: #ff9800;">Осталось: ${timeRemaining}</div>
-                    <div style="font-size: 11px; color: #aaa;">Попытки: <strong style="color: ${attemptsLeft > 0 ? '#4ade80' : '#ff6b6b'}">${attemptsLeft}/${maxAttempts}</strong></div>
+                    <span style="font-size: 11px; color: #aaa;">Попытки: <strong style="color: ${attemptsLeft > 0 ? '#4ade80' : '#ff6b6b'}">${attemptsLeft}/${maxAttempts}</strong></span>
                     <button onclick="buyEventBossAttempt()" style="
-                        margin-top: 4px; padding: 3px 10px;
+                        margin-left: 6px; padding: 3px 8px;
                         background: linear-gradient(180deg, #7B68EE, #5B4ACA);
                         color: white; border: 1px solid #9B8AFF; border-radius: 6px;
-                        font-size: 11px; cursor: pointer; white-space: nowrap;
-                    ">+ Купить попытку</button>
+                        font-size: 10px; cursor: pointer; white-space: nowrap;
+                    ">+</button>
                 </div>
             </div>
 
-            <!-- Имя босса -->
+            <!-- Босс -->
             <div style="text-align: center; margin-bottom: 12px;">
                 <div id="event-boss-preview-sprite" style="
                     width: 120px; height: 120px; margin: 0 auto 4px;
@@ -202,6 +201,15 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                 ">${boss.name}</h2>
                 <div style="font-size: 12px; color: #888; margin-top: 4px;">
                     Ивент Босс — сервер бьёт вместе
+                </div>
+                <!-- Кнопки под боссом -->
+                <div style="display: flex; gap: 8px; justify-content: center; margin-top: 10px;">
+                    <button onclick="closeEventBossScreen()" style="
+                        padding: 8px 18px; background: rgba(255,255,255,0.08);
+                        border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+                        color: #888; cursor: pointer; font-size: 13px;
+                    ">← Назад</button>
+                    <div>${attackButtonHTML}</div>
                 </div>
             </div>
 
@@ -233,15 +241,6 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                 <div style="text-align: center; font-size: 11px; color: #666; margin-top: 2px;">
                     Участников: ${boss.total_participants || 0}
                 </div>
-            </div>
-
-            <!-- Кнопка назад -->
-            <div style="text-align: center; margin-bottom: 8px;">
-                <button onclick="closeEventBossScreen()" style="
-                    padding: 6px 20px; background: rgba(255,255,255,0.08);
-                    border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
-                    color: #888; cursor: pointer; font-size: 12px;
-                ">← Назад</button>
             </div>
 
             <!-- Статистика игрока -->
@@ -600,15 +599,19 @@ function startEventBossBattle() {
     const screen = document.getElementById('event-boss-screen');
     if (screen) screen.remove();
 
-    // Генерируем врага
-    const bossConfig = manager.currentBoss.config || window.EVENT_BOSS_CONFIG;
+    // Генерируем врага (добавляем name из currentBoss, т.к. config не содержит его)
+    const bossConfig = {
+        ...window.EVENT_BOSS_CONFIG,
+        ...(manager.currentBoss.config || {}),
+        name: manager.currentBoss.name || window.EVENT_BOSS_CONFIG?.name || 'Отродье Тьмы'
+    };
     const bossEnemy = window.generateEventBossEnemy(bossConfig);
 
-    // Копии данных игрока
+    // Глубокие копии данных игрока (сбрасываем эффекты, накопленный урон и т.д.)
     const originalWizards = window.userData?.wizards || [];
     const originalFormation = window.userData?.formation || [null, null, null, null, null];
 
-    window.playerWizards = originalWizards.map(wizard => ({...wizard}));
+    window.playerWizards = JSON.parse(JSON.stringify(originalWizards));
     window.playerFormation = [...originalFormation];
 
     // Формация врага — босс в центре
