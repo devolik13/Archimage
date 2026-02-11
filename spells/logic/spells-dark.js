@@ -289,7 +289,10 @@ function castShadowRealm(wizard, spellData, position, casterType) {
     targets.forEach((target, index) => {
         (window.battleTimeout || setTimeout)(() => {
             const lostHp = target.max_hp - target.hp;
-            const damage = Math.floor(lostHp * percentDamage / 100);
+            let damage = Math.floor(lostHp * percentDamage / 100);
+
+            // Кап урона: не более 200
+            damage = Math.min(damage, 200);
 
             if (damage > 0) {
                 // Применяем урон
@@ -300,7 +303,7 @@ function castShadowRealm(wizard, spellData, position, casterType) {
                 if (target.hp < 0) target.hp = 0;
 
                 if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`🌑 Мир теней поглощает ${finalDamage} HP у ${target.name} (${percentDamage}% от ${lostHp} потерянных)`);
+                    window.addToBattleLog(`🌑 Мир теней поглощает ${finalDamage} HP у ${target.name} (${percentDamage}% от ${lostHp} потерянных, макс 200)`);
                 }
 
                 // Проверяем смерть

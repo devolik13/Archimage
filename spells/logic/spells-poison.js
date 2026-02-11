@@ -736,6 +736,14 @@ function castEpidemic(wizard, spellData, position, casterType) {
 function applyPoisonEffect(targetWizard, stacks = 1) {
     if (!targetWizard.effects) targetWizard.effects = {};
 
+    // Иммунитет к яду (ивент боссы и другие существа с флагом)
+    if (targetWizard.poisonImmune || targetWizard.isEventBoss) {
+        if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`☠️ ${targetWizard.name} имеет иммунитет к яду!`);
+        }
+        return;
+    }
+
     const oldStacks = targetWizard.effects.poison?.stacks || 0;
 
     if (targetWizard.effects.poison) {

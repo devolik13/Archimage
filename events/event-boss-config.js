@@ -37,6 +37,9 @@ const EVENT_BOSS_CONFIG = {
     // Множитель урона босса
     damageMultiplier: 2.0,
 
+    // Иммунитет к стакам яда (яд не накладывается на босса)
+    poisonImmune: true,
+
     // Заклинания: Яд + Тьма (максимальная боль)
     spells: ["epidemic", "plague", "foul_cloud", "shadow_realm", "fading"],
     spell_levels: {
@@ -110,6 +113,7 @@ function generateEventBossEnemy(bossConfig) {
         spells: config.spells,
         spell_levels: config.spell_levels,
         resistances: config.resistances,
+        poisonImmune: config.poisonImmune || false,
         isEventBoss: true,
         isBoss: true,
         isAdventureEnemy: false
