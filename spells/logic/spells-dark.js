@@ -162,7 +162,7 @@ function castWeakness(wizard, spellData, position, casterType) {
 // --- Миазма (Miasma) - Тир 3, Пассивный бафф/дебафф яда ---
 // Применяется в начале боя
 function applyMiasmaAtStart(wizard, level, position, casterType) {
-    const percentModifier = [20, 40, 60, 80, 100][level - 1] || 20;
+    const percentModifier = [10, 20, 30, 40, 50][level - 1] || 10;
 
     console.log(`🌑 Applying Miasma at start - Level ${level}, Modifier ${percentModifier}%`);
 
@@ -197,8 +197,8 @@ function applyMiasmaAtStart(wizard, level, position, casterType) {
     });
 
     if (typeof window.addToBattleLog === 'function') {
-        const resistText = percentModifier === 100 ? 'иммунитет к яду' : `-${percentModifier}% урона от яда`;
-        const ampText = percentModifier === 100 ? 'удвоенный урон от яда' : `+${percentModifier}% урона от яда`;
+        const resistText = `-${percentModifier}% урона от яда`;
+        const ampText = `+${percentModifier}% урона от яда`;
         window.addToBattleLog(`☣️ Миазма ${wizard.name} окутывает поле боя! Союзники: ${resistText}. Враги: ${ampText}`);
     }
 
