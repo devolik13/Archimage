@@ -104,44 +104,36 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
     const pRank = playerStats?.rank || '-';
     const pBest = playerStats?.best_single_attack || 0;
 
-    // Кнопка атаки
+    // Кнопка атаки (компактная для шапки)
     let attackButtonHTML;
     if (isDefeated) {
         attackButtonHTML = `
             <button disabled style="
-                width: 100%; padding: 14px; background: #555; color: #999;
-                border: 2px solid #666; border-radius: 10px; font-size: 16px; font-weight: bold;
-                cursor: not-allowed;
-            ">Босс побежден</button>
+                padding: 8px 16px; background: #555; color: #999;
+                border: 2px solid #666; border-radius: 8px; font-size: 14px; font-weight: bold;
+                cursor: not-allowed; white-space: nowrap;
+            ">Побежден</button>
         `;
     } else if (!canAttack) {
         attackButtonHTML = `
-            <div style="text-align: center;">
-                <button disabled style="
-                    width: 100%; padding: 14px; background: #3a3a4a; color: #888;
-                    border: 2px solid #4a4a5a; border-radius: 10px; font-size: 16px; font-weight: bold;
-                    cursor: not-allowed;
-                ">Попытки закончились</button>
-                <button onclick="buyEventBossAttempt()" style="
-                    margin-top: 8px; width: 100%; padding: 10px;
-                    background: linear-gradient(180deg, #7B68EE, #5B4ACA);
-                    color: white; border: 2px solid #9B8AFF; border-radius: 10px;
-                    font-size: 14px; cursor: pointer;
-                ">Купить попытку за ${window.EVENT_BOSS_CONFIG?.extraAttemptStarsCost || 25} Stars</button>
-            </div>
+            <button onclick="buyEventBossAttempt()" style="
+                padding: 8px 14px;
+                background: linear-gradient(180deg, #7B68EE, #5B4ACA);
+                color: white; border: 2px solid #9B8AFF; border-radius: 8px;
+                font-size: 13px; cursor: pointer; white-space: nowrap;
+            ">Купить попытку</button>
         `;
     } else {
         attackButtonHTML = `
             <button onclick="startEventBossBattle()" style="
-                width: 100%; padding: 14px;
+                padding: 10px 20px;
                 background: linear-gradient(180deg, #dc3545, #a71d2a);
-                color: white; border: 2px solid #ff6b6b; border-radius: 10px;
-                font-size: 18px; font-weight: bold; cursor: pointer;
+                color: white; border: 2px solid #ff6b6b; border-radius: 8px;
+                font-size: 15px; font-weight: bold; cursor: pointer;
                 text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-                box-shadow: 0 4px 12px rgba(220,53,69,0.4);
-            ">
-                Атаковать!
-            </button>
+                box-shadow: 0 3px 10px rgba(220,53,69,0.4);
+                white-space: nowrap;
+            ">Атаковать!</button>
         `;
     }
 
@@ -184,11 +176,7 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
         ">
             <!-- Шапка -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <button onclick="closeEventBossScreen()" style="
-                    padding: 8px 14px; background: rgba(255,255,255,0.1);
-                    border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
-                    color: white; cursor: pointer; font-size: 13px;
-                ">← Назад</button>
+                <div>${attackButtonHTML}</div>
                 <div style="text-align: right;">
                     <div style="font-size: 12px; color: #ff9800;">Осталось: ${timeRemaining}</div>
                     <div style="font-size: 11px; color: #aaa;">Попытки: <strong style="color: ${attemptsLeft > 0 ? '#4ade80' : '#ff6b6b'}">${attemptsLeft}/${maxAttempts}</strong></div>
@@ -241,8 +229,14 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                 </div>
             </div>
 
-            <!-- Кнопка атаки -->
-            <div style="margin-bottom: 16px;">${attackButtonHTML}</div>
+            <!-- Кнопка назад -->
+            <div style="text-align: center; margin-bottom: 8px;">
+                <button onclick="closeEventBossScreen()" style="
+                    padding: 6px 20px; background: rgba(255,255,255,0.08);
+                    border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
+                    color: #888; cursor: pointer; font-size: 12px;
+                ">← Назад</button>
+            </div>
 
             <!-- Статистика игрока -->
             <div style="
