@@ -28,26 +28,23 @@ class EventBossManager {
             const saved = localStorage.getItem('event_boss_debug');
             if (saved) {
                 const data = JSON.parse(saved);
-                this._debugPlayerStats = data.playerStats || this._debugPlayerStats;
+                this._debugPlayerStats = data.playerStats || { participated: false, total_damage: 0, attacks_count: 0, best_single_attack: 0, rank: 0 };
                 this._debugLeaderboard = data.leaderboard || [];
-                // Обновляем telegram_id на случай смены
-                const me = this._debugLeaderboard.find(e => e.username === 'Вы');
+                // Убираем записи с 0 уроном (вымышленные/пустые)
+                this._debugLeaderboard = this._debugLeaderboard.filter(e => e.total_damage > 0);
+                // Обновляем свою запись по telegram_id (если есть урон)
+                const me = this._debugLeaderboard.find(e => e.telegram_id === myId);
                 if (me) {
-                    me.telegram_id = myId;
-                } else {
-                    // Если записи 'Вы' нет — создаём
-                    this._debugLeaderboard.push({
-                        rank: 0, username: 'Вы', telegram_id: myId,
-                        total_damage: this._debugPlayerStats?.total_damage || 0,
-                        attacks_count: this._debugPlayerStats?.attacks_count || 0,
-                        best_single_attack: this._debugPlayerStats?.best_single_attack || 0
-                    });
+                    me.username = window.userData?.username || me.username;
                 }
+                // Пересчитываем ранги
+                this._debugLeaderboard.sort((a, b) => b.total_damage - a.total_damage);
+                this._debugLeaderboard.forEach((e, i) => e.rank = i + 1);
                 return;
             }
         } catch (e) { /* fallback ниже */ }
 
-        // Начальные данные (без фейковых игроков)
+        // Начальные данные — пустой лидерборд (без вымышленных игроков)
         this._debugPlayerStats = {
             participated: false,
             total_damage: 0,
@@ -55,9 +52,7 @@ class EventBossManager {
             best_single_attack: 0,
             rank: 0
         };
-        this._debugLeaderboard = [
-            { rank: 1, username: 'Вы', telegram_id: myId, total_damage: 0, attacks_count: 0, best_single_attack: 0 }
-        ];
+        this._debugLeaderboard = [];
     }
 
     _saveDebugState() {
@@ -198,22 +193,22 @@ class EventBossManager {
             this._debugPlayerStats.attacks_count++;
             this._debugPlayerStats.best_single_attack = Math.max(this._debugPlayerStats.best_single_attack, damage);
 
-            // Обновляем лидерборд — находим свою запись по username 'Вы' (надёжнее чем telegram_id)
+            // Обновляем лидерборд — находим свою запись по telegram_id
             const myId = parseInt(window.userId) || 1;
-            let myEntry = this._debugLeaderboard.find(e => e.username === 'Вы');
+            const myUsername = window.userData?.username || 'Маг';
+            let myEntry = this._debugLeaderboard.find(e => e.telegram_id === myId);
             if (!myEntry) {
-                // Если записи нет, создаём
-                myEntry = { rank: 0, username: 'Вы', telegram_id: myId, total_damage: 0, attacks_count: 0, best_single_attack: 0 };
+                myEntry = { rank: 0, username: myUsername, telegram_id: myId, total_damage: 0, attacks_count: 0, best_single_attack: 0 };
                 this._debugLeaderboard.push(myEntry);
             }
-            myEntry.telegram_id = myId; // Всегда обновляем telegram_id
+            myEntry.username = myUsername; // Всегда актуализируем username
             myEntry.total_damage = this._debugPlayerStats.total_damage;
             myEntry.attacks_count = this._debugPlayerStats.attacks_count;
             myEntry.best_single_attack = this._debugPlayerStats.best_single_attack;
             // Пересортировка
             this._debugLeaderboard.sort((a, b) => b.total_damage - a.total_damage);
             this._debugLeaderboard.forEach((e, i) => e.rank = i + 1);
-            this._debugPlayerStats.rank = this._debugLeaderboard.findIndex(e => e.username === 'Вы') + 1;
+            this._debugPlayerStats.rank = this._debugLeaderboard.findIndex(e => e.telegram_id === myId) + 1;
 
             // Обновляем кол-во участников (считаем уникальных в лидерборде с уроном > 0)
             this.currentBoss.total_participants = this._debugLeaderboard.filter(e => e.total_damage > 0).length;
