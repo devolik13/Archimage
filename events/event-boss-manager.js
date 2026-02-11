@@ -30,8 +30,8 @@ class EventBossManager {
                 const data = JSON.parse(saved);
                 this._debugPlayerStats = data.playerStats || { participated: false, total_damage: 0, attacks_count: 0, best_single_attack: 0, rank: 0 };
                 this._debugLeaderboard = data.leaderboard || [];
-                // Убираем записи с 0 уроном (вымышленные/пустые)
-                this._debugLeaderboard = this._debugLeaderboard.filter(e => e.total_damage > 0);
+                // Убираем вымышленных — в дебаг-режиме оставляем только текущего игрока
+                this._debugLeaderboard = this._debugLeaderboard.filter(e => e.telegram_id === myId && e.total_damage > 0);
                 // Обновляем свою запись по telegram_id (если есть урон)
                 const me = this._debugLeaderboard.find(e => e.telegram_id === myId);
                 if (me) {
