@@ -11,6 +11,7 @@ class EventBossManager {
 
         // === DEBUG: локальный режим без Supabase (убрать перед деплоем) ===
         this.DEBUG_LOCAL_MODE = true;
+        this._checkConfigVersion(); // Сброс при смене версии конфига
         this._loadDebugState();
         // === END DEBUG ===
 
@@ -21,6 +22,23 @@ class EventBossManager {
     // ==========================================
     // DEBUG: локальные моки (сохраняются в localStorage)
     // ==========================================
+
+    /**
+     * Проверка версии конфига — при смене сбрасываем всё (HP, попытки, лидерборд)
+     */
+    _checkConfigVersion() {
+        const currentVersion = window.EVENT_BOSS_CONFIG?.configVersion || 1;
+        try {
+            const savedVersion = parseInt(localStorage.getItem('event_boss_config_version')) || 0;
+            if (savedVersion !== currentVersion) {
+                console.log(`🐉 Версия конфига изменилась (${savedVersion} → ${currentVersion}), сброс всех данных`);
+                localStorage.removeItem('event_boss_debug');
+                localStorage.removeItem('event_boss_debug_boss');
+                localStorage.removeItem('event_boss_attempts');
+                localStorage.setItem('event_boss_config_version', String(currentVersion));
+            }
+        } catch (e) { /* ignore */ }
+    }
 
     _loadDebugState() {
         const myId = parseInt(window.userId) || 1;
