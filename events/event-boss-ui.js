@@ -180,6 +180,12 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                 <div style="text-align: right;">
                     <div style="font-size: 12px; color: #ff9800;">Осталось: ${timeRemaining}</div>
                     <div style="font-size: 11px; color: #aaa;">Попытки: <strong style="color: ${attemptsLeft > 0 ? '#4ade80' : '#ff6b6b'}">${attemptsLeft}/${maxAttempts}</strong></div>
+                    <button onclick="buyEventBossAttempt()" style="
+                        margin-top: 4px; padding: 3px 10px;
+                        background: linear-gradient(180deg, #7B68EE, #5B4ACA);
+                        color: white; border: 1px solid #9B8AFF; border-radius: 6px;
+                        font-size: 11px; cursor: pointer; white-space: nowrap;
+                    ">+ Купить попытку</button>
                 </div>
             </div>
 
@@ -391,23 +397,179 @@ async function buyEventBossAttempt() {
     const manager = window.eventBossManager;
     if (!manager) return;
 
-    const cost = window.EVENT_BOSS_CONFIG?.extraAttemptStarsCost || 25;
+    const starsCost = window.EVENT_BOSS_CONFIG?.extraAttemptStarsCost || 75;
+    const priceUSD = window.EVENT_BOSS_CONFIG?.extraAttemptPriceUSD || 0.98;
 
-    // TODO: Реальная интеграция с Telegram Stars
-    const confirmed = confirm(`Купить попытку за ${cost} Stars?`);
-    if (!confirmed) return;
-
-    await manager.purchaseAttempt();
-
-    // Перерисовываем экран
-    const boss = manager.currentBoss;
-    if (boss) {
-        const [playerStats, leaderboard] = await Promise.all([
-            manager.fetchPlayerStats(),
-            manager.fetchLeaderboard(20)
-        ]);
-        renderEventBossScreen(boss, playerStats, leaderboard);
+    // Рассчитываем цену в TON
+    let tonPrice = '...';
+    if (typeof window.calculateTonPrice === 'function') {
+        tonPrice = await window.calculateTonPrice(priceUSD);
     }
+
+    // Диалог выбора способа оплаты (по паттерну shop-modal.js)
+    const dialog = document.createElement('div');
+    dialog.id = 'boss-attempt-payment-dialog';
+    dialog.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0, 0, 0, 0.85); z-index: 10003;
+        display: flex; align-items: center; justify-content: center;
+        animation: fadeIn 0.2s;
+    `;
+
+    dialog.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 100%);
+            border: 2px solid #9B59B6;
+            border-radius: 16px; padding: 24px; max-width: 340px; width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        ">
+            <h3 style="color: #9B59B6; margin: 0 0 6px 0; text-align: center; font-size: 18px;">
+                Доп. попытка
+            </h3>
+            <p style="color: #888; text-align: center; margin: 0 0 20px 0; font-size: 13px;">
+                Ещё одна атака на босса
+            </p>
+
+            <button id="boss-pay-stars-btn" style="
+                width: 100%; padding: 14px; margin-bottom: 10px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: 2px solid #ffd700; border-radius: 12px;
+                color: white; font-size: 16px; font-weight: bold;
+                cursor: pointer; display: flex; align-items: center;
+                justify-content: center; gap: 8px;
+            ">
+                <span style="font-size: 20px;">⭐</span>
+                <span>${starsCost} Stars</span>
+            </button>
+
+            <button id="boss-pay-ton-btn" style="
+                width: 100%; padding: 14px; margin-bottom: 16px;
+                background: linear-gradient(135deg, #0088cc 0%, #0066cc 100%);
+                border: 2px solid #0088cc; border-radius: 12px;
+                color: white; font-size: 16px; font-weight: bold;
+                cursor: pointer; display: flex; align-items: center;
+                justify-content: center; gap: 8px;
+            ">
+                <span style="font-size: 20px;">💎</span>
+                <span>${tonPrice} TON</span>
+                <span style="font-size: 11px; opacity: 0.7;">(~$${priceUSD})</span>
+            </button>
+
+            <button id="boss-pay-cancel-btn" style="
+                width: 100%; padding: 10px;
+                background: rgba(255,255,255,0.08); border: 1px solid #555;
+                border-radius: 10px; color: #888; font-size: 13px; cursor: pointer;
+            ">Отмена</button>
+        </div>
+    `;
+
+    document.body.appendChild(dialog);
+
+    // Обработчики
+    document.getElementById('boss-pay-cancel-btn').onclick = () => dialog.remove();
+
+    document.getElementById('boss-pay-stars-btn').onclick = async () => {
+        dialog.remove();
+        await buyBossAttemptWithStars(starsCost);
+    };
+
+    document.getElementById('boss-pay-ton-btn').onclick = async () => {
+        dialog.remove();
+        await buyBossAttemptWithTon(priceUSD, tonPrice);
+    };
+}
+
+/** Покупка попытки за Telegram Stars */
+async function buyBossAttemptWithStars(starsCost) {
+    const manager = window.eventBossManager;
+    if (!manager) return;
+
+    // Telegram Stars API
+    if (window.Telegram?.WebApp?.openInvoice) {
+        try {
+            const item = { id: 'event_boss_attempt', name: 'Попытка атаки босса', price: starsCost };
+            const invoiceUrl = await window.createStarsInvoice(item, starsCost);
+            window.Telegram.WebApp.openInvoice(invoiceUrl, async (status) => {
+                if (status === 'paid') {
+                    await manager.purchaseAttempt();
+                    await _refreshBossScreen(manager);
+
+                    if (typeof window.addAirdropPoints === 'function') {
+                        const pts = Math.floor(starsCost / 10);
+                        if (pts > 0) window.addAirdropPoints(pts, 'Покупка попытки босса');
+                    }
+                }
+            });
+            return;
+        } catch (e) {
+            console.error('❌ Stars invoice error:', e);
+        }
+    }
+
+    // Fallback (debug / нет Telegram)
+    await manager.purchaseAttempt();
+    await _refreshBossScreen(manager);
+}
+
+/** Покупка попытки за TON */
+async function buyBossAttemptWithTon(priceUSD, tonPrice) {
+    const manager = window.eventBossManager;
+    if (!manager) return;
+
+    if (!window.tonConnectUI || !window.tonConnectUI.wallet) {
+        if (typeof window.showShopNotification === 'function') {
+            window.showShopNotification('Сначала подключите TON кошелёк в разделе Airdrop', 'warning');
+        } else {
+            alert('Сначала подключите TON кошелёк в разделе Airdrop');
+        }
+        return;
+    }
+
+    try {
+        const TON_ADDRESS = window.TON_RECEIVER_ADDRESS || 'UQAnElrwdRQf8-U0ERo5DAGwitB_ipMOF0plhyDox_HA3bFU';
+        const transaction = {
+            validUntil: Math.floor(Date.now() / 1000) + 600,
+            messages: [{
+                address: TON_ADDRESS,
+                amount: String(Math.floor(tonPrice * 1000000000))
+            }]
+        };
+
+        const result = await window.tonConnectUI.sendTransaction(transaction);
+        console.log('✅ TON транзакция попытки босса:', result);
+
+        await manager.purchaseAttempt();
+        await _refreshBossScreen(manager);
+
+        // Сохраняем платёж
+        if (typeof window.saveTonPayment === 'function') {
+            await window.saveTonPayment(
+                { id: 'event_boss_attempt', name: 'Попытка атаки босса', priceUSD },
+                tonPrice, result
+            );
+        }
+
+        if (typeof window.addAirdropPoints === 'function') {
+            const pts = Math.floor((priceUSD / 0.013) / 10);
+            if (pts > 0) window.addAirdropPoints(pts, 'Покупка попытки босса (TON)');
+        }
+    } catch (e) {
+        console.error('❌ TON payment error:', e);
+        if (typeof window.showShopNotification === 'function') {
+            window.showShopNotification('Ошибка TON платежа', 'error');
+        }
+    }
+}
+
+/** Перерисовать экран босса */
+async function _refreshBossScreen(manager) {
+    const boss = manager.currentBoss;
+    if (!boss) return;
+    const [playerStats, leaderboard] = await Promise.all([
+        manager.fetchPlayerStats(),
+        manager.fetchLeaderboard(20)
+    ]);
+    renderEventBossScreen(boss, playerStats, leaderboard);
 }
 
 /**

@@ -11,6 +11,33 @@ class EventBossManager {
 
         // === DEBUG: локальный режим без Supabase (убрать перед деплоем) ===
         this.DEBUG_LOCAL_MODE = true;
+        this._loadDebugState();
+        // === END DEBUG ===
+
+        // Система попыток (10/день)
+        this.attempts = this.loadAttempts();
+    }
+
+    // ==========================================
+    // DEBUG: локальные моки (сохраняются в localStorage)
+    // ==========================================
+
+    _loadDebugState() {
+        const myId = parseInt(window.userId) || 1;
+        try {
+            const saved = localStorage.getItem('event_boss_debug');
+            if (saved) {
+                const data = JSON.parse(saved);
+                this._debugPlayerStats = data.playerStats;
+                this._debugLeaderboard = data.leaderboard;
+                // Обновляем telegram_id на случай смены
+                const me = this._debugLeaderboard.find(e => e.username === 'Вы');
+                if (me) me.telegram_id = myId;
+                return;
+            }
+        } catch (e) { /* fallback ниже */ }
+
+        // Начальные данные
         this._debugPlayerStats = {
             participated: true,
             total_damage: 0,
@@ -19,30 +46,39 @@ class EventBossManager {
             rank: 1
         };
         this._debugLeaderboard = [
-            { rank: 1, username: 'Вы', telegram_id: parseInt(window.userId) || 1, total_damage: 0, attacks_count: 0, best_single_attack: 0 },
+            { rank: 1, username: 'Вы', telegram_id: myId, total_damage: 0, attacks_count: 0, best_single_attack: 0 },
             { rank: 2, username: 'ТёмныйМаг', telegram_id: 2, total_damage: 820000, attacks_count: 7, best_single_attack: 185000 },
             { rank: 3, username: 'Огненный', telegram_id: 3, total_damage: 640000, attacks_count: 5, best_single_attack: 210000 },
             { rank: 4, username: 'Ледяная', telegram_id: 4, total_damage: 510000, attacks_count: 6, best_single_attack: 120000 },
             { rank: 5, username: 'Свет_333', telegram_id: 5, total_damage: 390000, attacks_count: 4, best_single_attack: 150000 },
         ];
-        // === END DEBUG ===
-
-        // Система попыток (10/день)
-        this.attempts = this.loadAttempts();
     }
 
-    // ==========================================
-    // DEBUG: локальные моки
-    // ==========================================
+    _saveDebugState() {
+        try {
+            localStorage.setItem('event_boss_debug', JSON.stringify({
+                playerStats: this._debugPlayerStats,
+                leaderboard: this._debugLeaderboard
+            }));
+        } catch (e) { /* localStorage может быть недоступен */ }
+    }
 
     _initDebugBoss() {
+        // Восстанавливаем HP босса из localStorage
+        let savedBossHp = null;
+        try {
+            const saved = localStorage.getItem('event_boss_debug_boss');
+            if (saved) savedBossHp = JSON.parse(saved);
+        } catch (e) { /* ignore */ }
+
+        const maxHp = window.EVENT_BOSS_CONFIG?.totalHp || 5000000;
         const endsAt = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
         this.currentBoss = {
             active: true,
             id: 1,
             name: window.EVENT_BOSS_CONFIG?.name || 'Отродье Тьмы',
-            max_hp: window.EVENT_BOSS_CONFIG?.totalHp || 5000000,
-            current_hp: 3250000,
+            max_hp: maxHp,
+            current_hp: savedBossHp?.current_hp ?? 3250000,
             config: {
                 faction: window.EVENT_BOSS_CONFIG?.faction || 'dark',
                 spells: window.EVENT_BOSS_CONFIG?.spells || [],
@@ -143,16 +179,28 @@ class EventBossManager {
             this._debugPlayerStats.attacks_count++;
             this._debugPlayerStats.best_single_attack = Math.max(this._debugPlayerStats.best_single_attack, damage);
 
-            // Обновляем лидерборд
-            this._debugLeaderboard[0].total_damage = this._debugPlayerStats.total_damage;
-            this._debugLeaderboard[0].attacks_count = this._debugPlayerStats.attacks_count;
-            this._debugLeaderboard[0].best_single_attack = this._debugPlayerStats.best_single_attack;
+            // Обновляем лидерборд — находим свою запись по telegram_id
+            const myId = parseInt(window.userId) || 1;
+            const myEntry = this._debugLeaderboard.find(e => e.telegram_id === myId);
+            if (myEntry) {
+                myEntry.total_damage = this._debugPlayerStats.total_damage;
+                myEntry.attacks_count = this._debugPlayerStats.attacks_count;
+                myEntry.best_single_attack = this._debugPlayerStats.best_single_attack;
+            }
             // Пересортировка
             this._debugLeaderboard.sort((a, b) => b.total_damage - a.total_damage);
             this._debugLeaderboard.forEach((e, i) => e.rank = i + 1);
-            this._debugPlayerStats.rank = this._debugLeaderboard.findIndex(e => e.telegram_id === (parseInt(window.userId) || 1)) + 1;
+            this._debugPlayerStats.rank = this._debugLeaderboard.findIndex(e => e.telegram_id === myId) + 1;
 
             this.useAttempt();
+            this._saveDebugState();
+            // Сохраняем HP босса
+            try {
+                localStorage.setItem('event_boss_debug_boss', JSON.stringify({
+                    current_hp: this.currentBoss.current_hp,
+                    total_damage_dealt: this.currentBoss.total_damage_dealt
+                }));
+            } catch (e) { /* ignore */ }
 
             console.log(`🐉 [DEBUG] Урон: ${damage} | Босс HP: ${newHp}/${this.currentBoss.max_hp} | Defeated: ${isDefeated}`);
             return {

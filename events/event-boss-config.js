@@ -71,6 +71,7 @@ const EVENT_BOSS_CONFIG = {
     // Система попыток
     maxDailyAttempts: 10,         // Бесплатных попыток в день
     extraAttemptStarsCost: 75,    // Цена доп. попытки в Stars (~100 руб)
+    extraAttemptPriceUSD: 0.98,   // Цена в USD (для конвертации в TON)
 
     // Модификатор добычи времени
     timeCurrencyModifier: {
