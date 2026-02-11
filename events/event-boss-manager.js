@@ -8,8 +8,14 @@ class EventBossManager {
         this.leaderboard = [];
         this.lastFetch = 0;
         this.fetchCooldown = 10000; // Минимум 10 секунд между запросами
-        this.lastAttackTime = 0; // Время последней атаки (из localStorage)
+
+        // Система попыток (10/день)
+        this.attempts = this.loadAttempts();
     }
+
+    // ==========================================
+    // ДАННЫЕ БОССА
+    // ==========================================
 
     /**
      * Загрузить текущего активного ивент босса
@@ -20,7 +26,6 @@ class EventBossManager {
             return null;
         }
 
-        // Кеширование - не запрашиваем слишком часто
         const now = Date.now();
         if (!forceRefresh && this.currentBoss && (now - this.lastFetch) < this.fetchCooldown) {
             return this.currentBoss;
@@ -38,6 +43,11 @@ class EventBossManager {
                 this.currentBoss = data;
                 this.lastFetch = now;
                 console.log(`🐉 Ивент босс загружен: ${data.name} | HP: ${data.current_hp}/${data.max_hp}`);
+            } else if (data && data.has_modifier) {
+                // Босс уже завершён, но есть пост-ивент модификатор
+                this.currentBoss = data;
+                this.lastFetch = now;
+                console.log(`🐉 Пост-ивент модификатор: босс ${data.name} (${data.status})`);
             } else {
                 this.currentBoss = null;
                 console.log('🐉 Нет активного ивент босса');
@@ -91,9 +101,8 @@ class EventBossManager {
                     this.currentBoss.current_hp = data.boss_new_hp;
                 }
 
-                // Сохраняем время последней атаки
-                this.lastAttackTime = Date.now();
-                this.saveLastAttackTime();
+                // Тратим попытку
+                this.useAttempt();
 
                 return data;
             } else {
@@ -159,50 +168,122 @@ class EventBossManager {
         }
     }
 
-    /**
-     * Проверить, может ли игрок атаковать (кулдаун)
-     */
-    canAttack() {
-        this.loadLastAttackTime();
-        const cooldownMs = (window.EVENT_BOSS_CONFIG?.attackCooldownMinutes || 60) * 60 * 1000;
-        const timeSinceLastAttack = Date.now() - this.lastAttackTime;
-        return timeSinceLastAttack >= cooldownMs;
-    }
+    // ==========================================
+    // СИСТЕМА ПОПЫТОК (10/день)
+    // ==========================================
 
     /**
-     * Время до следующей атаки (мс)
+     * Загрузить данные попыток из localStorage
      */
-    getTimeToNextAttack() {
-        this.loadLastAttackTime();
-        const cooldownMs = (window.EVENT_BOSS_CONFIG?.attackCooldownMinutes || 60) * 60 * 1000;
-        const timeSinceLastAttack = Date.now() - this.lastAttackTime;
-        return Math.max(0, cooldownMs - timeSinceLastAttack);
-    }
-
-    /**
-     * Сохранить время последней атаки в localStorage
-     */
-    saveLastAttackTime() {
+    loadAttempts() {
         try {
-            localStorage.setItem('event_boss_last_attack', this.lastAttackTime.toString());
-        } catch (e) {
-            // localStorage может быть недоступен
-        }
-    }
-
-    /**
-     * Загрузить время последней атаки из localStorage
-     */
-    loadLastAttackTime() {
-        try {
-            const saved = localStorage.getItem('event_boss_last_attack');
+            const saved = localStorage.getItem('event_boss_attempts');
             if (saved) {
-                this.lastAttackTime = parseInt(saved) || 0;
+                const data = JSON.parse(saved);
+                // Проверяем, не новый ли день
+                const today = new Date().toDateString();
+                if (data.date === today) {
+                    return data;
+                }
             }
         } catch (e) {
             // localStorage может быть недоступен
         }
+
+        // Новый день или нет данных — сброс попыток
+        const maxAttempts = window.EVENT_BOSS_CONFIG?.maxDailyAttempts || 10;
+        const freshAttempts = {
+            date: new Date().toDateString(),
+            remaining: maxAttempts,
+            used: 0,
+            purchased: 0
+        };
+        this.saveAttempts(freshAttempts);
+        return freshAttempts;
     }
+
+    /**
+     * Сохранить данные попыток
+     */
+    saveAttempts(data) {
+        try {
+            localStorage.setItem('event_boss_attempts', JSON.stringify(data || this.attempts));
+        } catch (e) {
+            // localStorage может быть недоступен
+        }
+    }
+
+    /**
+     * Проверить, есть ли попытки
+     */
+    canAttack() {
+        this.refreshAttempts();
+        return this.attempts.remaining > 0;
+    }
+
+    /**
+     * Получить оставшиеся попытки
+     */
+    getRemainingAttempts() {
+        this.refreshAttempts();
+        return this.attempts.remaining;
+    }
+
+    /**
+     * Использовать попытку
+     */
+    useAttempt() {
+        this.refreshAttempts();
+        if (this.attempts.remaining > 0) {
+            this.attempts.remaining--;
+            this.attempts.used++;
+            this.saveAttempts();
+            console.log(`🐉 Попытка использована: осталось ${this.attempts.remaining}`);
+        }
+    }
+
+    /**
+     * Купить дополнительную попытку за Stars
+     */
+    async purchaseAttempt() {
+        const cost = window.EVENT_BOSS_CONFIG?.extraAttemptStarsCost || 25;
+
+        // Telegram Stars покупка
+        if (window.Telegram?.WebApp?.openInvoice) {
+            // TODO: Интеграция с Telegram Stars API
+            // Пока простая проверка
+            console.log(`🐉 Покупка попытки за ${cost} Stars`);
+        }
+
+        // Добавляем попытку
+        this.attempts.remaining++;
+        this.attempts.purchased++;
+        this.saveAttempts();
+
+        return true;
+    }
+
+    /**
+     * Обновить попытки (проверка нового дня)
+     */
+    refreshAttempts() {
+        const today = new Date().toDateString();
+        if (this.attempts.date !== today) {
+            const maxAttempts = window.EVENT_BOSS_CONFIG?.maxDailyAttempts || 10;
+            this.attempts = {
+                date: today,
+                remaining: maxAttempts,
+                used: 0,
+                purchased: 0
+            };
+            this.saveAttempts();
+            console.log(`🐉 Новый день — попытки сброшены: ${maxAttempts}`);
+        }
+    }
+
+    // ==========================================
+    // УТИЛИТЫ
+    // ==========================================
 
     /**
      * Форматирование оставшегося времени
@@ -229,7 +310,7 @@ class EventBossManager {
     }
 
     /**
-     * Форматирование урона для отображения
+     * Форматирование урона
      */
     formatDamage(damage) {
         if (damage >= 1000000) {

@@ -1,5 +1,9 @@
 // events/event-boss-ui.js - UI для ивент босса
 
+// ============================================
+// ЭКРАН ИВЕНТ БОССА (информационная панель)
+// ============================================
+
 /**
  * Открыть экран ивент босса
  */
@@ -7,9 +11,7 @@ async function openEventBossScreen() {
     console.log('🐉 Открытие экрана ивент босса');
 
     // Закрываем другие модалки
-    if (window.Modal && window.Modal.closeAll) {
-        window.Modal.closeAll();
-    } else if (typeof window.closeCurrentModal === 'function') {
+    if (typeof window.closeCurrentModal === 'function') {
         window.closeCurrentModal();
     }
 
@@ -20,7 +22,7 @@ async function openEventBossScreen() {
     // Показываем экран загрузки
     showEventBossLoading();
 
-    // Загружаем данные босса
+    // Загружаем данные
     const manager = window.eventBossManager;
     if (!manager) {
         console.error('EventBossManager не инициализирован');
@@ -36,18 +38,18 @@ async function openEventBossScreen() {
         return;
     }
 
-    // Загружаем статистику игрока и лидерборд параллельно
+    // Загружаем статистику и лидерборд параллельно
     const [playerStats, leaderboard] = await Promise.all([
         manager.fetchPlayerStats(),
         manager.fetchLeaderboard(20)
     ]);
 
-    // Отрисовываем экран
+    // Рендер
     renderEventBossScreen(boss, playerStats, leaderboard);
 }
 
 /**
- * Показать экран загрузки
+ * Экран загрузки
  */
 function showEventBossLoading() {
     let screen = document.getElementById('event-boss-screen');
@@ -56,37 +58,24 @@ function showEventBossLoading() {
     screen = document.createElement('div');
     screen.id = 'event-boss-screen';
     screen.style.cssText = `
-        position: fixed;
-        top: 0; left: 0; width: 100vw; height: 100vh;
-        background: rgba(0, 0, 0, 0.95);
-        z-index: 9000;
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0, 0, 0, 0.95); z-index: 9000;
         display: flex; align-items: center; justify-content: center;
         color: white; font-size: 18px;
     `;
-    screen.innerHTML = '<div style="text-align: center;">Загрузка ивент босса...</div>';
+    screen.innerHTML = '<div style="text-align: center;">Загрузка...</div>';
     document.body.appendChild(screen);
 }
 
 /**
- * Показать сообщение "нет активного босса"
+ * Сообщение "нет босса"
  */
 function showNoBossMessage() {
-    if (!window.Modal) return;
-    window.Modal.show(`
-        <div style="padding: 20px; text-align: center; color: white; background: linear-gradient(135deg, #2a2a3a, #1a1a2a); border-radius: 12px;">
-            <div style="font-size: 48px; margin-bottom: 12px;">🐉</div>
-            <h3 style="color: #7289da; margin: 0 0 10px;">Ивент Босс</h3>
-            <p style="color: #aaa; margin: 0 0 16px;">Сейчас нет активного ивент босса.<br>Следите за обновлениями!</p>
-            <button onclick="window.Modal.close()" style="
-                padding: 10px 24px; background: #7289da; color: white;
-                border: none; border-radius: 8px; cursor: pointer; font-size: 14px;
-            ">Понятно</button>
-        </div>
-    `, { closeOnOverlay: true });
+    alert('Сейчас нет активного ивент босса.\nСледите за обновлениями!');
 }
 
 /**
- * Рендер основного экрана ивент босса
+ * Главный рендер экрана
  */
 function renderEventBossScreen(boss, playerStats, leaderboard) {
     const screen = document.getElementById('event-boss-screen');
@@ -96,16 +85,18 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
     const hpPercent = manager.getHpPercent();
     const timeRemaining = manager.formatTimeRemaining(boss.ends_at);
     const canAttack = manager.canAttack();
-    const timeToAttack = manager.getTimeToNextAttack();
+    const attemptsLeft = manager.getRemainingAttempts();
+    const maxAttempts = window.EVENT_BOSS_CONFIG?.maxDailyAttempts || 10;
 
-    // Определяем цвет HP бара
-    let hpColor = '#4CAF50'; // Зеленый
-    if (hpPercent < 50) hpColor = '#ff9800'; // Оранжевый
-    if (hpPercent < 25) hpColor = '#f44336'; // Красный
+    // Цвет HP
+    let hpColor = '#4CAF50';
+    if (hpPercent < 50) hpColor = '#ff9800';
+    if (hpPercent < 25) hpColor = '#f44336';
 
-    // Статус босса
     const isDefeated = boss.status === 'defeated' || boss.current_hp <= 0;
-    const statusText = isDefeated ? 'ПОБЕЖДЕН!' : `HP: ${manager.formatDamage(boss.current_hp)} / ${manager.formatDamage(boss.max_hp)}`;
+    const statusText = isDefeated
+        ? 'ПОБЕЖДЕН!'
+        : `${manager.formatDamage(boss.current_hp)} / ${manager.formatDamage(boss.max_hp)}`;
 
     // Статистика игрока
     const pDamage = playerStats?.total_damage || 0;
@@ -124,16 +115,20 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
             ">Босс побежден</button>
         `;
     } else if (!canAttack) {
-        const minutesLeft = Math.ceil(timeToAttack / 60000);
-        const hoursLeft = Math.floor(minutesLeft / 60);
-        const minsLeft = minutesLeft % 60;
-        const cooldownText = hoursLeft > 0 ? `${hoursLeft}ч ${minsLeft}м` : `${minsLeft}м`;
         attackButtonHTML = `
-            <button disabled style="
-                width: 100%; padding: 14px; background: #3a3a4a; color: #888;
-                border: 2px solid #4a4a5a; border-radius: 10px; font-size: 16px; font-weight: bold;
-                cursor: not-allowed;
-            ">Перезарядка: ${cooldownText}</button>
+            <div style="text-align: center;">
+                <button disabled style="
+                    width: 100%; padding: 14px; background: #3a3a4a; color: #888;
+                    border: 2px solid #4a4a5a; border-radius: 10px; font-size: 16px; font-weight: bold;
+                    cursor: not-allowed;
+                ">Попытки закончились</button>
+                <button onclick="buyEventBossAttempt()" style="
+                    margin-top: 8px; width: 100%; padding: 10px;
+                    background: linear-gradient(180deg, #7B68EE, #5B4ACA);
+                    color: white; border: 2px solid #9B8AFF; border-radius: 10px;
+                    font-size: 14px; cursor: pointer;
+                ">Купить попытку за ${window.EVENT_BOSS_CONFIG?.extraAttemptStarsCost || 25} Stars</button>
+            </div>
         `;
     } else {
         attackButtonHTML = `
@@ -144,26 +139,26 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                 font-size: 18px; font-weight: bold; cursor: pointer;
                 text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
                 box-shadow: 0 4px 12px rgba(220,53,69,0.4);
-                transition: all 0.3s;
-            " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                Атаковать босса!
+            ">
+                Атаковать!
             </button>
         `;
     }
 
-    // Лидерборд HTML
+    // Лидерборд
+    const telegramId = window.userId ? parseInt(window.userId) : null;
     let leaderboardHTML = '';
     if (leaderboard && leaderboard.length > 0) {
-        const telegramId = window.userId ? parseInt(window.userId) : null;
         leaderboardHTML = leaderboard.map(entry => {
             const isMe = entry.telegram_id === telegramId;
             const rankIcon = entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : `#${entry.rank}`;
-            const bgStyle = isMe ? 'background: rgba(114, 137, 218, 0.2); border: 1px solid rgba(114, 137, 218, 0.4);' : 'background: rgba(255,255,255,0.05);';
+            const bgStyle = isMe
+                ? 'background: rgba(114, 137, 218, 0.2); border: 1px solid rgba(114, 137, 218, 0.4);'
+                : 'background: rgba(255,255,255,0.05);';
             return `
                 <div style="
                     display: flex; align-items: center; justify-content: space-between;
-                    padding: 8px 10px; border-radius: 6px; margin-bottom: 4px;
-                    ${bgStyle}
+                    padding: 8px 10px; border-radius: 6px; margin-bottom: 4px; ${bgStyle}
                 ">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 14px; min-width: 30px;">${rankIcon}</span>
@@ -178,36 +173,37 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
             `;
         }).join('');
     } else {
-        leaderboardHTML = '<div style="text-align: center; color: #666; padding: 16px; font-size: 13px;">Пока никто не атаковал босса</div>';
+        leaderboardHTML = '<div style="text-align: center; color: #666; padding: 16px; font-size: 13px;">Пока никто не атаковал</div>';
     }
 
     screen.innerHTML = `
         <div style="
             width: 100%; height: 100%; overflow-y: auto;
-            background: linear-gradient(180deg, #0a0a1a 0%, #1a0a0a 30%, #0a0a1a 100%);
+            background: linear-gradient(180deg, #0a0a1a 0%, #1a0520 30%, #0a0a1a 100%);
             padding: 16px; box-sizing: border-box;
         ">
-            <!-- Заголовок + кнопка назад -->
+            <!-- Шапка -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <button onclick="closeEventBossScreen()" style="
                     padding: 8px 14px; background: rgba(255,255,255,0.1);
                     border: 1px solid rgba(255,255,255,0.2); border-radius: 8px;
                     color: white; cursor: pointer; font-size: 13px;
                 ">← Назад</button>
-                <div style="font-size: 12px; color: #ff9800;">
-                    Осталось: ${timeRemaining}
+                <div style="text-align: right;">
+                    <div style="font-size: 12px; color: #ff9800;">Осталось: ${timeRemaining}</div>
+                    <div style="font-size: 11px; color: #aaa;">Попытки: <strong style="color: ${attemptsLeft > 0 ? '#4ade80' : '#ff6b6b'}">${attemptsLeft}/${maxAttempts}</strong></div>
                 </div>
             </div>
 
             <!-- Имя босса -->
             <div style="text-align: center; margin-bottom: 12px;">
-                <div style="font-size: 36px; margin-bottom: 4px;">🐉</div>
+                <div style="font-size: 40px; margin-bottom: 4px;">🌑</div>
                 <h2 style="
-                    margin: 0; color: #ff4444; font-size: 22px;
-                    text-shadow: 0 0 20px rgba(255,68,68,0.5);
+                    margin: 0; color: #9B59B6; font-size: 22px;
+                    text-shadow: 0 0 20px rgba(155,89,182,0.5);
                 ">${boss.name}</h2>
                 <div style="font-size: 12px; color: #888; margin-top: 4px;">
-                    Глобальный ивент босс
+                    Ивент Босс — сервер бьёт вместе
                 </div>
             </div>
 
@@ -215,13 +211,11 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
             <div style="
                 margin-bottom: 16px; padding: 12px;
                 background: rgba(0,0,0,0.5); border-radius: 10px;
-                border: 1px solid rgba(255,68,68,0.3);
+                border: 1px solid rgba(155,89,182,0.3);
             ">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
                     <span style="color: #aaa; font-size: 12px;">Здоровье босса</span>
-                    <span style="color: ${hpColor}; font-size: 12px; font-weight: bold;">
-                        ${hpPercent.toFixed(1)}%
-                    </span>
+                    <span style="color: ${hpColor}; font-size: 12px; font-weight: bold;">${hpPercent.toFixed(1)}%</span>
                 </div>
                 <div style="
                     width: 100%; height: 24px; background: #1a1a2a;
@@ -244,9 +238,7 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
             </div>
 
             <!-- Кнопка атаки -->
-            <div style="margin-bottom: 16px;">
-                ${attackButtonHTML}
-            </div>
+            <div style="margin-bottom: 16px;">${attackButtonHTML}</div>
 
             <!-- Статистика игрока -->
             <div style="
@@ -260,9 +252,7 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                     <div style="text-align: center; padding: 6px; background: rgba(0,0,0,0.3); border-radius: 6px;">
                         <div style="font-size: 11px; color: #888;">Общий урон</div>
-                        <div style="font-size: 16px; color: #ff6b6b; font-weight: bold;">
-                            ${manager.formatDamage(pDamage)}
-                        </div>
+                        <div style="font-size: 16px; color: #ff6b6b; font-weight: bold;">${manager.formatDamage(pDamage)}</div>
                     </div>
                     <div style="text-align: center; padding: 6px; background: rgba(0,0,0,0.3); border-radius: 6px;">
                         <div style="font-size: 11px; color: #888;">Место</div>
@@ -274,9 +264,7 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                     </div>
                     <div style="text-align: center; padding: 6px; background: rgba(0,0,0,0.3); border-radius: 6px;">
                         <div style="font-size: 11px; color: #888;">Лучший удар</div>
-                        <div style="font-size: 16px; color: #ff9800; font-weight: bold;">
-                            ${manager.formatDamage(pBest)}
-                        </div>
+                        <div style="font-size: 16px; color: #ff9800; font-weight: bold;">${manager.formatDamage(pBest)}</div>
                     </div>
                 </div>
             </div>
@@ -287,22 +275,20 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                 background: rgba(255, 215, 0, 0.05);
                 border-radius: 10px; border: 1px solid rgba(255, 215, 0, 0.2);
             ">
-                <div style="font-size: 13px; color: #ffd700; margin-bottom: 8px; font-weight: bold;">
-                    Награды
-                </div>
+                <div style="font-size: 13px; color: #ffd700; margin-bottom: 8px; font-weight: bold;">Награды</div>
                 <div style="font-size: 12px; color: #aaa; line-height: 1.6;">
-                    <div>🏆 1 место: <span style="color: #ffd700;">⏰ +20 дней</span></div>
-                    <div>🥈 2 место: <span style="color: #c0c0c0;">⏰ +10 дней</span></div>
-                    <div>🥉 3 место: <span style="color: #cd7f32;">⏰ +5 дней</span></div>
-                    <div>✅ Участие: <span style="color: #4CAF50;">⏰ +1 день</span></div>
-                    <div>💀 Босс убит: <span style="color: #ff6b6b;">⏰ +3 дня каждому</span></div>
+                    <div>🏆 1 место: <span style="color: #ffd700;">+20 дней</span></div>
+                    <div>🥈 2 место: <span style="color: #c0c0c0;">+10 дней</span></div>
+                    <div>🥉 3 место: <span style="color: #cd7f32;">+5 дней</span></div>
+                    <div>✅ Участие: <span style="color: #4CAF50;">+1 день</span></div>
+                    <div>💀 Босс убит: <span style="color: #9B59B6;">+3 дня каждому + добыча +30% на неделю</span></div>
+                    <div>❌ Босс выжил: <span style="color: #ff6b6b;">добыча -50% на неделю</span></div>
                 </div>
             </div>
 
             <!-- Лидерборд -->
             <div style="
-                padding: 12px;
-                background: rgba(0,0,0,0.3);
+                padding: 12px; background: rgba(0,0,0,0.3);
                 border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
                 margin-bottom: 20px;
             ">
@@ -323,20 +309,6 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
             </div>
         </div>
     `;
-
-    // Обновляем кулдаун каждую минуту
-    if (window._eventBossCooldownTimer) clearInterval(window._eventBossCooldownTimer);
-    window._eventBossCooldownTimer = setInterval(() => {
-        updateEventBossAttackButton();
-    }, 30000);
-}
-
-/**
- * Обновить кнопку атаки (кулдаун таймер)
- */
-function updateEventBossAttackButton() {
-    // Переоткрываем экран для обновления (простой подход)
-    // В будущем можно обновлять только кнопку
 }
 
 /**
@@ -358,12 +330,13 @@ async function refreshEventBossLeaderboard() {
         container.innerHTML = leaderboard.map(entry => {
             const isMe = entry.telegram_id === telegramId;
             const rankIcon = entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : `#${entry.rank}`;
-            const bgStyle = isMe ? 'background: rgba(114, 137, 218, 0.2); border: 1px solid rgba(114, 137, 218, 0.4);' : 'background: rgba(255,255,255,0.05);';
+            const bgStyle = isMe
+                ? 'background: rgba(114, 137, 218, 0.2); border: 1px solid rgba(114, 137, 218, 0.4);'
+                : 'background: rgba(255,255,255,0.05);';
             return `
                 <div style="
                     display: flex; align-items: center; justify-content: space-between;
-                    padding: 8px 10px; border-radius: 6px; margin-bottom: 4px;
-                    ${bgStyle}
+                    padding: 8px 10px; border-radius: 6px; margin-bottom: 4px; ${bgStyle}
                 ">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 14px; min-width: 30px;">${rankIcon}</span>
@@ -378,7 +351,37 @@ async function refreshEventBossLeaderboard() {
             `;
         }).join('');
     } else {
-        container.innerHTML = '<div style="text-align: center; color: #666; padding: 16px; font-size: 13px;">Пока никто не атаковал босса</div>';
+        container.innerHTML = '<div style="text-align: center; color: #666; padding: 16px; font-size: 13px;">Пока никто не атаковал</div>';
+    }
+}
+
+// ============================================
+// ЗАПУСК БОЯ
+// ============================================
+
+/**
+ * Купить попытку за Stars
+ */
+async function buyEventBossAttempt() {
+    const manager = window.eventBossManager;
+    if (!manager) return;
+
+    const cost = window.EVENT_BOSS_CONFIG?.extraAttemptStarsCost || 25;
+
+    // TODO: Реальная интеграция с Telegram Stars
+    const confirmed = confirm(`Купить попытку за ${cost} Stars?`);
+    if (!confirmed) return;
+
+    await manager.purchaseAttempt();
+
+    // Перерисовываем экран
+    const boss = manager.currentBoss;
+    if (boss) {
+        const [playerStats, leaderboard] = await Promise.all([
+            manager.fetchPlayerStats(),
+            manager.fetchLeaderboard(20)
+        ]);
+        renderEventBossScreen(boss, playerStats, leaderboard);
     }
 }
 
@@ -392,14 +395,13 @@ function startEventBossBattle() {
         return;
     }
 
-    // Проверяем кулдаун
+    // Проверяем попытки
     if (!manager.canAttack()) {
-        const minutesLeft = Math.ceil(manager.getTimeToNextAttack() / 60000);
-        alert(`Перезарядка! Следующая атака через ${minutesLeft} минут.`);
+        alert('Попытки закончились! Купите дополнительные за Stars или подождите до завтра.');
         return;
     }
 
-    // Проверяем что у игрока есть маги в формации
+    // Проверяем формацию
     if (!window.userData?.formation || !window.userData.formation.some(id => id)) {
         alert('Нет магов в формации! Расставьте магов перед боем.');
         return;
@@ -407,21 +409,22 @@ function startEventBossBattle() {
 
     console.log('🐉 Запуск боя с ивент боссом');
 
-    // Закрываем экран ивент босса
-    closeEventBossScreen();
+    // Закрываем экран
+    const screen = document.getElementById('event-boss-screen');
+    if (screen) screen.remove();
 
-    // Генерируем врага-босса для боя
+    // Генерируем врага
     const bossConfig = manager.currentBoss.config || window.EVENT_BOSS_CONFIG;
     const bossEnemy = window.generateEventBossEnemy(bossConfig);
 
-    // Создаём КОПИИ данных игрока (как в PvE)
+    // Копии данных игрока
     const originalWizards = window.userData?.wizards || [];
     const originalFormation = window.userData?.formation || [null, null, null, null, null];
 
     window.playerWizards = originalWizards.map(wizard => ({...wizard}));
     window.playerFormation = [...originalFormation];
 
-    // Формируем формацию врага - босс в центре (позиция 2)
+    // Формация врага — босс в центре
     window.enemyFormation = [null, null, null, null, null];
     window.enemyWizards = [];
 
@@ -429,16 +432,14 @@ function startEventBossBattle() {
     window.enemyFormation[2] = bossEnemy;
     window.enemyWizards.push(bossEnemy);
 
-    // Устанавливаем флаги боя
+    // Флаги боя
     window.isEventBossBattle = true;
-    window.isPvEBattle = true; // Используем PvE механику (не тратит рейтинг)
-    window.currentPvELevel = null; // Не PvE уровень
+    window.isPvEBattle = true;
+    window.currentPvELevel = null;
     window.selectedOpponent = null;
-
-    // Сохраняем ID босса для отправки урона после боя
     window.currentEventBossId = manager.currentBoss.id;
 
-    console.log('🐉 Враг сформирован:', bossEnemy);
+    console.log('🐉 Враг сформирован:', bossEnemy.name, 'HP:', bossEnemy.hp);
 
     // Запускаем бой
     if (typeof window.showBattleField === 'function') {
@@ -448,9 +449,12 @@ function startEventBossBattle() {
     }
 }
 
+// ============================================
+// РЕЗУЛЬТАТ БОЯ
+// ============================================
+
 /**
  * Показать результат боя с ивент боссом
- * Вызывается из battle/core.js после завершения боя
  */
 async function showEventBossResult(battleResult, damageDealt) {
     const manager = window.eventBossManager;
@@ -461,12 +465,11 @@ async function showEventBossResult(battleResult, damageDealt) {
         serverResult = await manager.submitDamage(damageDealt);
     }
 
-    // Обновляем данные босса
+    // Обновляем данные
     if (manager) {
         await manager.fetchActiveBoss(true);
     }
 
-    const isWin = battleResult === 'win';
     const bossDefeated = serverResult?.boss_defeated || false;
     const bossNewHp = serverResult?.boss_new_hp;
     const bossMaxHp = serverResult?.boss_max_hp;
@@ -478,30 +481,25 @@ async function showEventBossResult(battleResult, damageDealt) {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0, 0, 0, 0.85); z-index: 10002;
         display: flex; align-items: center; justify-content: center;
-        animation: fadeIn 0.3s ease-out;
     `;
-
-    const bgColor = isWin
-        ? 'linear-gradient(135deg, #1a3a1a 0%, #2d4a1d 100%)'
-        : 'linear-gradient(135deg, #3a1a1a 0%, #4a1d1d 100%)';
 
     overlay.innerHTML = `
         <div style="
-            background: ${bgColor};
-            border: 3px solid ${isWin ? '#4CAF50' : '#f44336'};
+            background: linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 100%);
+            border: 3px solid #9B59B6;
             border-radius: 16px; padding: 24px 32px; text-align: center;
             color: white; min-width: 280px; max-width: 340px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 32px rgba(155,89,182,0.3);
         ">
-            <div style="font-size: 48px; margin-bottom: 8px;">🐉</div>
-            <div style="font-size: 20px; font-weight: bold; margin-bottom: 4px; color: #ff4444;">
-                ${manager?.currentBoss?.name || 'Ивент Босс'}
+            <div style="font-size: 48px; margin-bottom: 8px;">🌑</div>
+            <div style="font-size: 20px; font-weight: bold; margin-bottom: 4px; color: #9B59B6;">
+                ${manager?.currentBoss?.name || 'Отродье Тьмы'}
             </div>
             <div style="font-size: 14px; color: #aaa; margin-bottom: 16px;">
-                ${isWin ? 'Бой завершён!' : 'Вы пали в бою'}
+                Ваши маги пали в бою
             </div>
 
-            <!-- Нанесённый урон -->
+            <!-- Урон -->
             <div style="
                 background: rgba(255,255,255,0.1); border-radius: 10px;
                 padding: 12px; margin-bottom: 12px;
@@ -512,19 +510,15 @@ async function showEventBossResult(battleResult, damageDealt) {
                 </div>
             </div>
 
-            <!-- Состояние босса -->
             ${bossDefeated ? `
                 <div style="
                     background: rgba(76,175,80,0.2); border: 2px solid #4CAF50;
                     border-radius: 10px; padding: 12px; margin-bottom: 12px;
-                    animation: pulse 2s ease-in-out infinite;
                 ">
                     <div style="font-size: 20px; margin-bottom: 4px;">💀</div>
-                    <div style="color: #4CAF50; font-weight: bold; font-size: 16px;">
-                        БОСС ПОБЕЖДЕН!
-                    </div>
+                    <div style="color: #4CAF50; font-weight: bold; font-size: 16px;">БОСС ПОБЕЖДЕН!</div>
                     <div style="color: #81c784; font-size: 12px; margin-top: 4px;">
-                        Все участники получат награды!
+                        Добыча времени +30% на неделю!
                     </div>
                 </div>
             ` : (bossNewHp != null ? `
@@ -549,32 +543,16 @@ async function showEventBossResult(battleResult, damageDealt) {
                 </div>
             ` : '')}
 
-            <!-- Общий урон игрока -->
+            <!-- Общий урон -->
             <div style="
                 background: rgba(0,0,0,0.2); border-radius: 8px;
                 padding: 8px; margin-bottom: 16px;
                 font-size: 12px; color: #aaa;
             ">
-                Ваш общий урон по боссу: <strong style="color: #ff9800;">${manager ? manager.formatDamage(playerTotalDamage) : playerTotalDamage}</strong>
+                Ваш общий урон: <strong style="color: #ff9800;">${manager ? manager.formatDamage(playerTotalDamage) : playerTotalDamage}</strong>
+                <br>
+                <span style="color: #666;">Осталось попыток: ${manager ? manager.getRemainingAttempts() : '?'}</span>
             </div>
-
-            <!-- Опыт магов -->
-            ${window.lastPvEWizardExpGained && window.lastPvEWizardExpGained.length > 0 ? `
-                <div style="
-                    background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.3);
-                    border-radius: 8px; padding: 8px; margin-bottom: 16px;
-                ">
-                    <div style="font-size: 11px; color: #ffa500; margin-bottom: 6px;">Опыт магов</div>
-                    ${window.lastPvEWizardExpGained.map(w => `
-                        <div style="display: flex; justify-content: space-between; font-size: 11px; padding: 2px 0;">
-                            <span style="color: #ddd;">${w.name}</span>
-                            <span style="color: #ffa500; font-weight: bold;">
-                                +${w.expGained} XP${w.levelGained > 0 ? ` <span style="color: #4CAF50;">Ур.${w.newLevel}</span>` : ''}
-                            </span>
-                        </div>
-                    `).join('')}
-                </div>
-            ` : ''}
 
             <!-- Кнопки -->
             <div style="display: flex; gap: 10px; justify-content: center;">
@@ -594,49 +572,41 @@ async function showEventBossResult(battleResult, damageDealt) {
 }
 
 /**
- * Закрыть результат ивент босса
+ * Закрыть результат
  */
 function closeEventBossResult() {
     const overlay = document.getElementById('event-boss-result-overlay');
     if (overlay) overlay.remove();
 
-    // Очищаем флаги
     window.isEventBossBattle = false;
     window.currentEventBossId = null;
-    window.lastPvEWizardExpGained = undefined;
 
-    // Возвращаемся в город
     if (typeof window.returnToCity === 'function') {
         window.returnToCity();
     }
 }
 
 /**
- * Закрыть экран ивент босса
+ * Закрыть экран босса
  */
 function closeEventBossScreen() {
     const screen = document.getElementById('event-boss-screen');
     if (screen) screen.remove();
 
-    // Останавливаем таймер
-    if (window._eventBossCooldownTimer) {
-        clearInterval(window._eventBossCooldownTimer);
-        window._eventBossCooldownTimer = null;
-    }
-
-    // Показываем аватар
     const playerAvatar = document.getElementById('player-avatar-container');
     if (playerAvatar) playerAvatar.style.display = '';
 
-    // Возвращаемся в город
     if (typeof window.returnToCity === 'function') {
         window.returnToCity();
     }
 }
 
+// ============================================
+// ВАРП ПОРТАЛ В ГОРОДЕ
+// ============================================
+
 /**
- * Проверить наличие ивент босса при загрузке игры
- * Вызывается из game-db-integration.js при инициализации
+ * Проверить наличие ивент босса при загрузке
  */
 async function checkEventBossAvailability() {
     const manager = window.eventBossManager;
@@ -645,80 +615,115 @@ async function checkEventBossAvailability() {
     const boss = await manager.fetchActiveBoss();
     if (boss && boss.active) {
         console.log(`🐉 Активный ивент босс: ${boss.name} | HP: ${boss.current_hp}/${boss.max_hp}`);
-        // Показываем индикатор в городе
-        showEventBossIndicator(true);
+        showEventBossWarpPortal(true);
         return true;
     } else {
-        showEventBossIndicator(false);
+        showEventBossWarpPortal(false);
         return false;
     }
 }
 
 /**
- * Показать/скрыть индикатор ивент босса в городе
+ * Показать/скрыть варп портал в городе
  */
-function showEventBossIndicator(show) {
-    let indicator = document.getElementById('event-boss-city-indicator');
+function showEventBossWarpPortal(show) {
+    let portal = document.getElementById('event-boss-warp-portal');
 
     if (!show) {
-        if (indicator) indicator.style.display = 'none';
+        if (portal) portal.style.display = 'none';
         return;
     }
 
-    if (!indicator) {
-        indicator = document.createElement('div');
-        indicator.id = 'event-boss-city-indicator';
-        indicator.onclick = openEventBossScreen;
-        document.body.appendChild(indicator);
+    if (!portal) {
+        portal = document.createElement('div');
+        portal.id = 'event-boss-warp-portal';
+        portal.onclick = openEventBossScreen;
+        document.body.appendChild(portal);
     }
 
     const manager = window.eventBossManager;
     const hpPercent = manager ? manager.getHpPercent() : 100;
     const bossName = manager?.currentBoss?.name || 'Ивент Босс';
+    const attemptsLeft = manager ? manager.getRemainingAttempts() : 0;
 
-    indicator.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 6px;">
-            <span style="font-size: 18px; animation: pulse 2s ease-in-out infinite;">🐉</span>
-            <div>
-                <div style="font-size: 11px; font-weight: bold; color: #ff4444;">${bossName}</div>
+    portal.innerHTML = `
+        <!-- Пульсирующее кольцо портала -->
+        <div style="
+            position: relative; width: 64px; height: 64px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(155,89,182,0.4) 0%, rgba(155,89,182,0) 70%);
+            display: flex; align-items: center; justify-content: center;
+        ">
+            <!-- Внешнее кольцо -->
+            <div style="
+                position: absolute; width: 60px; height: 60px;
+                border-radius: 50%;
+                border: 2px solid rgba(155,89,182,0.6);
+                animation: eventBossPortalPulse 2s ease-in-out infinite;
+            "></div>
+            <!-- Внутреннее кольцо -->
+            <div style="
+                position: absolute; width: 48px; height: 48px;
+                border-radius: 50%;
+                border: 2px solid rgba(155,89,182,0.8);
+                animation: eventBossPortalPulse 2s ease-in-out infinite 0.5s;
+            "></div>
+            <!-- Иконка -->
+            <div style="font-size: 24px; z-index: 1; text-shadow: 0 0 10px rgba(155,89,182,0.8);">🌑</div>
+        </div>
+        <!-- Инфо под порталом -->
+        <div style="text-align: center; margin-top: 4px;">
+            <div style="font-size: 10px; font-weight: bold; color: #9B59B6; text-shadow: 0 0 4px rgba(0,0,0,1);">
+                ${bossName}
+            </div>
+            <div style="
+                width: 60px; height: 5px; background: #1a1a2a;
+                border-radius: 3px; overflow: hidden; margin: 2px auto 0;
+                border: 1px solid rgba(155,89,182,0.3);
+            ">
                 <div style="
-                    width: 80px; height: 6px; background: #1a1a2a;
-                    border-radius: 3px; overflow: hidden; margin-top: 2px;
-                ">
-                    <div style="
-                        width: ${hpPercent}%; height: 100%;
-                        background: ${hpPercent > 50 ? '#4CAF50' : hpPercent > 25 ? '#ff9800' : '#f44336'};
-                        border-radius: 3px;
-                    "></div>
-                </div>
+                    width: ${hpPercent}%; height: 100%;
+                    background: ${hpPercent > 50 ? '#4CAF50' : hpPercent > 25 ? '#ff9800' : '#f44336'};
+                    border-radius: 3px;
+                "></div>
+            </div>
+            <div style="font-size: 9px; color: #aaa; margin-top: 1px;">
+                ${attemptsLeft > 0 ? `⚔️ ${attemptsLeft}` : '❌ 0'}
             </div>
         </div>
     `;
 
-    indicator.style.cssText = `
+    portal.style.cssText = `
         position: fixed;
         top: 50px;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(10, 10, 20, 0.9);
-        border: 2px solid rgba(255, 68, 68, 0.5);
-        border-radius: 10px;
-        padding: 8px 14px;
         cursor: pointer;
         z-index: 1001;
-        box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
-        transition: all 0.3s;
-        display: block;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        filter: drop-shadow(0 4px 8px rgba(155,89,182,0.3));
+        transition: transform 0.3s;
     `;
 
-    indicator.onmouseover = () => {
-        indicator.style.borderColor = 'rgba(255, 68, 68, 0.8)';
-        indicator.style.transform = 'translateX(-50%) scale(1.05)';
-    };
-    indicator.onmouseout = () => {
-        indicator.style.borderColor = 'rgba(255, 68, 68, 0.5)';
-        indicator.style.transform = 'translateX(-50%) scale(1)';
-    };
+    portal.onmouseover = () => { portal.style.transform = 'translateX(-50%) scale(1.1)'; };
+    portal.onmouseout = () => { portal.style.transform = 'translateX(-50%) scale(1)'; };
+
+    // CSS анимация для портала
+    if (!document.getElementById('event-boss-portal-css')) {
+        const style = document.createElement('style');
+        style.id = 'event-boss-portal-css';
+        style.textContent = `
+            @keyframes eventBossPortalPulse {
+                0%, 100% { transform: scale(1); opacity: 0.6; }
+                50% { transform: scale(1.1); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    portal.style.display = 'flex';
 }
 
 // Экспорт
@@ -728,7 +733,8 @@ window.startEventBossBattle = startEventBossBattle;
 window.showEventBossResult = showEventBossResult;
 window.closeEventBossResult = closeEventBossResult;
 window.checkEventBossAvailability = checkEventBossAvailability;
-window.showEventBossIndicator = showEventBossIndicator;
+window.showEventBossWarpPortal = showEventBossWarpPortal;
 window.refreshEventBossLeaderboard = refreshEventBossLeaderboard;
+window.buyEventBossAttempt = buyEventBossAttempt;
 
 console.log('🐉 Event Boss UI загружен');

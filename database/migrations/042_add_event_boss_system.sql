@@ -57,15 +57,15 @@ CREATE INDEX IF NOT EXISTS idx_event_boss_damage_leaderboard ON event_boss_damag
 CREATE INDEX IF NOT EXISTS idx_event_boss_damage_player ON event_boss_damage(telegram_id, boss_id);
 
 -- ============================================
--- RPC: get_active_event_boss - Get the current active event boss
+-- RPC: get_active_event_boss - Get current or recently ended event boss
+-- Returns active boss OR recently defeated/expired boss (for time modifier)
 -- ============================================
 CREATE OR REPLACE FUNCTION get_active_event_boss()
 RETURNS JSONB AS $$
 DECLARE
     v_boss RECORD;
-    v_result JSONB;
 BEGIN
-    -- Find active boss that hasn't expired
+    -- 1. Find active boss
     SELECT * INTO v_boss
     FROM event_bosses
     WHERE status = 'active'
@@ -74,24 +74,50 @@ BEGIN
     ORDER BY created_at DESC
     LIMIT 1;
 
-    IF v_boss IS NULL THEN
-        RETURN jsonb_build_object('active', false);
+    IF v_boss IS NOT NULL THEN
+        RETURN jsonb_build_object(
+            'active', true,
+            'id', v_boss.id,
+            'name', v_boss.name,
+            'max_hp', v_boss.max_hp,
+            'current_hp', v_boss.current_hp,
+            'config', v_boss.config,
+            'rewards', v_boss.rewards,
+            'starts_at', v_boss.starts_at,
+            'ends_at', v_boss.ends_at,
+            'status', v_boss.status,
+            'defeated_at', v_boss.defeated_at,
+            'total_participants', v_boss.total_participants,
+            'total_damage_dealt', v_boss.total_damage_dealt
+        );
     END IF;
 
-    RETURN jsonb_build_object(
-        'active', true,
-        'id', v_boss.id,
-        'name', v_boss.name,
-        'max_hp', v_boss.max_hp,
-        'current_hp', v_boss.current_hp,
-        'config', v_boss.config,
-        'rewards', v_boss.rewards,
-        'starts_at', v_boss.starts_at,
-        'ends_at', v_boss.ends_at,
-        'status', v_boss.status,
-        'total_participants', v_boss.total_participants,
-        'total_damage_dealt', v_boss.total_damage_dealt
-    );
+    -- 2. Find recently ended boss (defeated/expired within last 7 days)
+    -- Needed for post-event time modifier (+30% or -50%)
+    SELECT * INTO v_boss
+    FROM event_bosses
+    WHERE status IN ('defeated', 'expired')
+      AND COALESCE(defeated_at, ends_at) > now() - INTERVAL '7 days'
+    ORDER BY COALESCE(defeated_at, ends_at) DESC
+    LIMIT 1;
+
+    IF v_boss IS NOT NULL THEN
+        RETURN jsonb_build_object(
+            'active', false,
+            'has_modifier', true,
+            'id', v_boss.id,
+            'name', v_boss.name,
+            'max_hp', v_boss.max_hp,
+            'current_hp', v_boss.current_hp,
+            'status', v_boss.status,
+            'defeated_at', v_boss.defeated_at,
+            'ends_at', v_boss.ends_at,
+            'total_participants', v_boss.total_participants,
+            'total_damage_dealt', v_boss.total_damage_dealt
+        );
+    END IF;
+
+    RETURN jsonb_build_object('active', false);
 END;
 $$ LANGUAGE plpgsql STABLE;
 
