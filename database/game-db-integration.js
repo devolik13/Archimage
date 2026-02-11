@@ -233,10 +233,10 @@ async function initGameWithDatabase() {
             window.initBattleEnergyUI();
         }
 
-        // Проверяем оффлайн события ПЕРЕД обновлением last_login
-        if (typeof window.checkOfflineEvents === 'function') {
-            await window.checkOfflineEvents(player.last_login);
-        }
+        // Оффлайн события отключены
+        // if (typeof window.checkOfflineEvents === 'function') {
+        //     await window.checkOfflineEvents(player.last_login);
+        // }
 
         // LAZY ACCRUAL v2: last_login обновляется в initTimeCurrency()
         // Убран дублирующий update — теперь одна точка обновления

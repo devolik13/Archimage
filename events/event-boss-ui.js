@@ -908,14 +908,12 @@ async function checkEventBossAvailability() {
 
 /**
  * Показать/скрыть варп портал в городе
+ * ОТКЛЮЧЕНО: портал скрыт, доступ через скрытую кнопку в магазине
  */
 function showEventBossWarpPortal(show) {
     let portal = document.getElementById('event-boss-warp-portal');
-
-    if (!show) {
-        if (portal) portal.style.display = 'none';
-        return;
-    }
+    if (portal) portal.style.display = 'none';
+    return;
 
     if (!portal) {
         portal = document.createElement('div');

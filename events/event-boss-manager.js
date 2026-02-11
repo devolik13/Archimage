@@ -78,7 +78,7 @@ class EventBossManager {
             id: 1,
             name: window.EVENT_BOSS_CONFIG?.name || 'Отродье Тьмы',
             max_hp: maxHp,
-            current_hp: savedBossHp?.current_hp ?? 3250000,
+            current_hp: savedBossHp?.current_hp ?? maxHp,
             config: {
                 faction: window.EVENT_BOSS_CONFIG?.faction || 'dark',
                 spells: window.EVENT_BOSS_CONFIG?.spells || [],

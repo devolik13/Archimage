@@ -439,13 +439,14 @@ function initTimeCurrency() {
     // в window.userData.time_currency автоматически обновляли time_currency_base
     setupTimeCurrencyProxy();
 
-    // Вычисляем накопленное для показа уведомления
+    // Вычисляем накопленное (уведомление отключено)
     const base = window.userData.time_currency_base || 0;
     const currentBalance = getTimeCurrency();
     const earned = currentBalance - base;
 
-    if (earned > 60) { // Показываем если накоплено больше 1 часа
-        showOfflineEarningsNotification(earned);
+    // showOfflineEarningsNotification отключён
+    if (earned > 60) {
+        console.log(`⏰ Накоплено за оффлайн: ${earned} мин (уведомление отключено)`);
     }
 
     // Обновляем base синхронно, чтобы saveImmediate сохранил новое значение
