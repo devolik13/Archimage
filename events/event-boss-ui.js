@@ -197,8 +197,8 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
 
             <!-- Имя босса -->
             <div style="text-align: center; margin-bottom: 12px;">
-                <div style="
-                    width: 240px; height: 240px; margin: 0 auto 4px;
+                <div id="event-boss-preview-sprite" style="
+                    width: 120px; height: 120px; margin: 0 auto 4px;
                     background: url('assets/sprites/event_boss/idle.webp') 0% 0% / 500% 500% no-repeat;
                     image-rendering: pixelated;
                 "></div>
@@ -313,6 +313,33 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
             </div>
         </div>
     `;
+
+    // Анимация спрайтлиста босса (5x5 сетка, 25 кадров)
+    startBossPreviewAnimation();
+}
+
+/** Запуск анимации спрайта босса на превью-экране */
+function startBossPreviewAnimation() {
+    // Останавливаем предыдущую анимацию
+    if (window._bossPreviewAnimId) {
+        clearInterval(window._bossPreviewAnimId);
+        window._bossPreviewAnimId = null;
+    }
+    const sprite = document.getElementById('event-boss-preview-sprite');
+    if (!sprite) return;
+    const cols = 5, rows = 5, totalFrames = 25;
+    let frame = 0;
+    window._bossPreviewAnimId = setInterval(() => {
+        if (!document.getElementById('event-boss-preview-sprite')) {
+            clearInterval(window._bossPreviewAnimId);
+            window._bossPreviewAnimId = null;
+            return;
+        }
+        const col = frame % cols;
+        const row = Math.floor(frame / cols);
+        sprite.style.backgroundPosition = `${(col / (cols - 1)) * 100}% ${(row / (rows - 1)) * 100}%`;
+        frame = (frame + 1) % totalFrames;
+    }, 100);
 }
 
 /**
@@ -667,6 +694,11 @@ function closeEventBossResult() {
     window.currentEventBossId = null;
     window.lastPvEWizardExpGained = undefined;
 
+    // Очистка ресурсов боя (поле боя ещё открыто под оверлеем)
+    if (typeof window.cleanupBattleResources === 'function') {
+        window.cleanupBattleResources();
+    }
+
     if (typeof window.returnToCity === 'function') {
         window.returnToCity();
     }
@@ -676,6 +708,12 @@ function closeEventBossResult() {
  * Закрыть экран босса
  */
 function closeEventBossScreen() {
+    // Останавливаем анимацию спрайта
+    if (window._bossPreviewAnimId) {
+        clearInterval(window._bossPreviewAnimId);
+        window._bossPreviewAnimId = null;
+    }
+
     const screen = document.getElementById('event-boss-screen');
     if (screen) screen.remove();
 

@@ -275,8 +275,10 @@ class EventBossManager {
                 return null;
             }
 
-            this.playerStats = data;
-            return data;
+            // Supabase RPC может вернуть массив — берём первый элемент
+            const stats = Array.isArray(data) ? data[0] : data;
+            this.playerStats = stats || null;
+            return this.playerStats;
         } catch (err) {
             console.error('Ошибка запроса статистики:', err);
             return null;

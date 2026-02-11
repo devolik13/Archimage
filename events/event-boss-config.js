@@ -28,7 +28,7 @@ const EVENT_BOSS_CONFIG = {
 
     // HP босса В БОЮ (огромное — игрок не убьёт)
     battleHp: 999999,
-    battleArmor: 200,
+    battleArmor: 150,
 
     // Фракция и внешний вид
     faction: "dark",
