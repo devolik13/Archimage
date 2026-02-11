@@ -174,42 +174,43 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
             background: linear-gradient(180deg, #0a0a1a 0%, #1a0520 30%, #0a0a1a 100%);
             padding: 16px; box-sizing: border-box;
         ">
-            <!-- Шапка -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <div style="font-size: 12px; color: #ff9800;">Осталось: ${timeRemaining}</div>
-                <div style="text-align: right;">
-                    <span style="font-size: 11px; color: #aaa;">Попытки: <strong style="color: ${attemptsLeft > 0 ? '#4ade80' : '#ff6b6b'}">${attemptsLeft}/${maxAttempts}</strong></span>
-                    <button onclick="buyEventBossAttempt()" style="
-                        margin-left: 6px; padding: 3px 8px;
-                        background: linear-gradient(180deg, #7B68EE, #5B4ACA);
-                        color: white; border: 1px solid #9B8AFF; border-radius: 6px;
-                        font-size: 10px; cursor: pointer; white-space: nowrap;
-                    ">+</button>
-                </div>
-            </div>
-
-            <!-- Босс -->
-            <div style="text-align: center; margin-bottom: 12px;">
+            <!-- Босс: спрайт слева, инфо + кнопки справа -->
+            <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
+                <!-- Спрайт босса (2x размер) -->
                 <div id="event-boss-preview-sprite" style="
-                    width: 120px; height: 120px; margin: 0 auto 4px;
+                    flex-shrink: 0; width: min(240px, 45vw); height: min(240px, 45vw);
                     background: url('assets/sprites/event_boss/idle.webp') 0% 0% / 500% 500% no-repeat;
                     image-rendering: pixelated;
                 "></div>
-                <h2 style="
-                    margin: 0; color: #9B59B6; font-size: 22px;
-                    text-shadow: 0 0 20px rgba(155,89,182,0.5);
-                ">${boss.name}</h2>
-                <div style="font-size: 12px; color: #888; margin-top: 4px;">
-                    Ивент Босс — сервер бьёт вместе
-                </div>
-                <!-- Кнопки под боссом -->
-                <div style="display: flex; gap: 8px; justify-content: center; margin-top: 10px;">
-                    <button onclick="closeEventBossScreen()" style="
-                        padding: 8px 18px; background: rgba(255,255,255,0.08);
-                        border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
-                        color: #888; cursor: pointer; font-size: 13px;
-                    ">← Назад</button>
-                    <div>${attackButtonHTML}</div>
+                <!-- Информация и кнопки -->
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                    <h2 style="
+                        margin: 0; color: #9B59B6; font-size: 20px;
+                        text-shadow: 0 0 20px rgba(155,89,182,0.5);
+                    ">${boss.name}</h2>
+                    <div style="font-size: 11px; color: #888;">
+                        Ивент Босс — сервер бьёт вместе
+                    </div>
+                    <div style="font-size: 12px; color: #ff9800;">
+                        Осталось: ${timeRemaining}
+                    </div>
+                    <div>
+                        <span style="font-size: 11px; color: #aaa;">Попытки: <strong style="color: ${attemptsLeft > 0 ? '#4ade80' : '#ff6b6b'}">${attemptsLeft}/${maxAttempts}</strong></span>
+                        <button onclick="buyEventBossAttempt()" style="
+                            margin-left: 6px; padding: 3px 8px;
+                            background: linear-gradient(180deg, #7B68EE, #5B4ACA);
+                            color: white; border: 1px solid #9B8AFF; border-radius: 6px;
+                            font-size: 10px; cursor: pointer; white-space: nowrap;
+                        ">+</button>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap;">
+                        <div>${attackButtonHTML}</div>
+                        <button onclick="closeEventBossScreen()" style="
+                            padding: 8px 16px; background: rgba(255,255,255,0.08);
+                            border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+                            color: #888; cursor: pointer; font-size: 13px;
+                        ">← Назад</button>
+                    </div>
                 </div>
             </div>
 
