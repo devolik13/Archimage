@@ -109,7 +109,7 @@ async function claimLeagueReward(leagueId) {
             // Fallback: обновляем time_currency_base (не старое поле time_currency!)
             const current = typeof window.getTimeCurrency === 'function' ? window.getTimeCurrency() : (window.userData.time_currency_base || 0);
             window.userData.time_currency_base = current + rewards.time_currency;
-            window.userData.time_currency_updated_at = new Date().toISOString();
+            window.userData.time_currency_updated_at = typeof getServerNow === 'function' ? getServerNow().toISOString() : new Date().toISOString();
         }
         console.log(`⏰ Получено времени: +${rewards.time_currency}`);
     }

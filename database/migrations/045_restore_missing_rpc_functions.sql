@@ -9,6 +9,23 @@
 -- Also fixes: trial reward functions now use time_currency_base (lazy accrual)
 
 -- ============================================
+-- PART 0: Drop old function overloads to prevent ambiguity
+-- (old migrations may have created these with different param types)
+-- ============================================
+DROP FUNCTION IF EXISTS guild_handle_request(integer, bigint, bigint, boolean);
+DROP FUNCTION IF EXISTS guild_handle_request(integer, bigint, integer, boolean);
+DROP FUNCTION IF EXISTS guild_kick_member(integer, bigint, bigint);
+DROP FUNCTION IF EXISTS guild_kick_member(integer, bigint, integer);
+DROP FUNCTION IF EXISTS guild_join_request(integer, bigint, text, text);
+DROP FUNCTION IF EXISTS guild_add_experience(integer, bigint, integer);
+DROP FUNCTION IF EXISTS guild_add_experience(integer, bigint, bigint);
+DROP FUNCTION IF EXISTS update_guild_by_leader(integer, bigint, jsonb);
+DROP FUNCTION IF EXISTS guild_delete(integer, bigint);
+DROP FUNCTION IF EXISTS leave_guild(bigint);
+DROP FUNCTION IF EXISTS get_guild_capacity(integer);
+DROP FUNCTION IF EXISTS get_exp_to_next_level(integer, integer);
+
+-- ============================================
 -- PART 1: get_server_time (migration 027)
 -- ============================================
 

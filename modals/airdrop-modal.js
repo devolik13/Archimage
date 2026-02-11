@@ -1194,7 +1194,7 @@ async function claimCreakyTasksReward(completed = true) {
     } else {
         const current = typeof window.getTimeCurrency === 'function' ? window.getTimeCurrency() : (window.userData.time_currency_base || 0);
         window.userData.time_currency_base = current + timeReward;
-        window.userData.time_currency_updated_at = new Date().toISOString();
+        window.userData.time_currency_updated_at = typeof getServerNow === 'function' ? getServerNow().toISOString() : new Date().toISOString();
     }
 
     // Начисляем BPM через addAirdropPoints (обновляет breakdown)
@@ -1284,7 +1284,7 @@ async function claimTaskReward(taskKey, taskName) {
     } else {
         const current = typeof window.getTimeCurrency === 'function' ? window.getTimeCurrency() : (window.userData.time_currency_base || 0);
         window.userData.time_currency_base = current + timeReward;
-        window.userData.time_currency_updated_at = new Date().toISOString();
+        window.userData.time_currency_updated_at = typeof getServerNow === 'function' ? getServerNow().toISOString() : new Date().toISOString();
     }
 
     // Начисляем BPM через addAirdropPoints (обновляет breakdown)
