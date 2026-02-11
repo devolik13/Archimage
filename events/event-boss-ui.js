@@ -197,7 +197,7 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
 
             <!-- Имя босса -->
             <div style="text-align: center; margin-bottom: 12px;">
-                <div style="font-size: 40px; margin-bottom: 4px;">🌑</div>
+                <img src="assets/sprites/event_boss/idle.webp" style="width: 120px; height: 120px; object-fit: contain; image-rendering: pixelated; margin-bottom: 4px;" alt="${boss.name}">
                 <h2 style="
                     margin: 0; color: #9B59B6; font-size: 22px;
                     text-shadow: 0 0 20px rgba(155,89,182,0.5);
@@ -491,7 +491,7 @@ async function showEventBossResult(battleResult, damageDealt) {
             color: white; min-width: 280px; max-width: 340px;
             box-shadow: 0 8px 32px rgba(155,89,182,0.3);
         ">
-            <div style="font-size: 48px; margin-bottom: 8px;">🌑</div>
+            <img src="assets/sprites/event_boss/idle.webp" style="width: 96px; height: 96px; object-fit: contain; image-rendering: pixelated; margin-bottom: 8px;" alt="Босс">
             <div style="font-size: 20px; font-weight: bold; margin-bottom: 4px; color: #9B59B6;">
                 ${manager?.currentBoss?.name || 'Отродье Тьмы'}
             </div>

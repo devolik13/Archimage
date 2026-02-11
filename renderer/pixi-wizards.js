@@ -246,6 +246,18 @@
             gridColumns: 5,
             animationSpeed: 0.12,
             scale: 0.45
+        },
+        // Ивент Босс — Отродье Тьмы
+        spawn_of_darkness: {
+            idle: 'assets/sprites/event_boss/idle.webp',
+            cast: 'assets/sprites/event_boss/cast.webp',
+            death: 'assets/sprites/event_boss/death.webp',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 25, // 5×5 сетка
+            gridColumns: 5,
+            animationSpeed: 0.10, // Медленная — босс массивный
+            scale: 0.50 // Крупнее всех — это босс
         }
     };
     
@@ -400,6 +412,15 @@
                 if (enemyWizard && enemyWizard.isElemental) {
                     const elementalType = `${enemyWizard.faction}_elemental`;
                     return elementalType;
+                }
+
+                // Если это ивент босс - используем спрайт босса
+                if (enemyWizard && enemyWizard.isEventBoss) {
+                    const bossSprite = enemyWizard.spriteSheet || 'spawn_of_darkness';
+                    if (FACTION_SPRITES_CONFIG[bossSprite]) {
+                        return bossSprite;
+                    }
+                    return 'spawn_of_darkness';
                 }
 
                 // Если это тренировочный манекен - используем спрайт пугала
