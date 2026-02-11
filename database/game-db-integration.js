@@ -257,6 +257,13 @@ async function initGameWithDatabase() {
         if (typeof window.initBlessingSystem === 'function') {
             window.initBlessingSystem();
         }
+
+        // Проверка активного ивент босса
+        if (typeof window.checkEventBossAvailability === 'function') {
+            window.checkEventBossAvailability().catch(err => {
+                console.warn('⚠️ Ошибка проверки ивент босса:', err);
+            });
+        }
     }
 
     // Обновляем UI если есть функции
