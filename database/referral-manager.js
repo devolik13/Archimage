@@ -166,7 +166,10 @@ class ReferralManager {
                 if (typeof window.addTimeCurrency === 'function') {
                     window.addTimeCurrency(REFERRAL_REWARD_BASE);
                 } else {
-                    window.userData.time_currency = (window.userData.time_currency || 0) + REFERRAL_REWARD_BASE;
+                    // Fallback: обновляем time_currency_base (не старое поле time_currency!)
+                    const current = typeof window.getTimeCurrency === 'function' ? window.getTimeCurrency() : (window.userData.time_currency_base || 0);
+                    window.userData.time_currency_base = current + REFERRAL_REWARD_BASE;
+                    window.userData.time_currency_updated_at = typeof getServerNow === 'function' ? getServerNow().toISOString() : new Date().toISOString();
                 }
 
                 // Используем addAirdropPoints для отслеживания в breakdown

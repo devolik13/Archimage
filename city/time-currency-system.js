@@ -201,9 +201,7 @@ async function useTimeCurrency(minutes, callback) {
 
             if (data && data.success) {
                 window.userData.time_currency_base = data.new_balance;
-                window.userData.time_currency_updated_at = new Date().toISOString();
-                _serverLoadTime = new Date();
-                _clientLoadTime = Date.now();
+                window.userData.time_currency_updated_at = getServerNow().toISOString();
 
                 createTimeCurrencyUI();
                 if (callback) callback();
@@ -228,9 +226,7 @@ function useTimeCurrencyLocal(minutes, callback) {
 
     if (window.userData) {
         window.userData.time_currency_base = current - minutes;
-        window.userData.time_currency_updated_at = new Date().toISOString();
-        _serverLoadTime = new Date();
-        _clientLoadTime = Date.now();
+        window.userData.time_currency_updated_at = getServerNow().toISOString();
 
         createTimeCurrencyUI();
 
@@ -262,9 +258,7 @@ async function addTimeCurrency(minutes) {
 
             if (data && data.success) {
                 window.userData.time_currency_base = data.new_balance;
-                window.userData.time_currency_updated_at = new Date().toISOString();
-                _serverLoadTime = new Date();
-                _clientLoadTime = Date.now();
+                window.userData.time_currency_updated_at = getServerNow().toISOString();
                 createTimeCurrencyUI();
                 return;
             }
@@ -282,9 +276,7 @@ function addTimeCurrencyLocal(minutes) {
 
     if (window.userData) {
         window.userData.time_currency_base = Math.min(current + minutes, 999999);
-        window.userData.time_currency_updated_at = new Date().toISOString();
-        _serverLoadTime = new Date();
-        _clientLoadTime = Date.now();
+        window.userData.time_currency_updated_at = getServerNow().toISOString();
 
         createTimeCurrencyUI();
 
@@ -304,9 +296,7 @@ async function snapshotTimeCurrency() {
 
             if (!error && data !== null) {
                 window.userData.time_currency_base = data;
-                window.userData.time_currency_updated_at = new Date().toISOString();
-                _serverLoadTime = new Date();
-                _clientLoadTime = Date.now();
+                window.userData.time_currency_updated_at = getServerNow().toISOString();
                 console.log('📸 Снапшот time_currency:', data);
                 return data;
             }
@@ -318,7 +308,7 @@ async function snapshotTimeCurrency() {
     const current = getTimeCurrency();
     if (window.userData) {
         window.userData.time_currency_base = current;
-        window.userData.time_currency_updated_at = new Date().toISOString();
+        window.userData.time_currency_updated_at = getServerNow().toISOString();
     }
     return current;
 }
@@ -403,7 +393,7 @@ function setupTimeCurrencyProxy() {
         set: function(newValue) {
             // Синхронизируем с новыми полями lazy accrual
             this.time_currency_base = Math.max(0, Math.floor(newValue));
-            this.time_currency_updated_at = new Date().toISOString();
+            this.time_currency_updated_at = getServerNow().toISOString();
         },
         enumerable: true,
         configurable: true
@@ -428,7 +418,7 @@ function initTimeCurrency() {
         // Читаем ПЕРЕД установкой proxy (чтобы получить raw value)
         const rawTimeCurrency = window.userData.time_currency || 0;
         window.userData.time_currency_base = rawTimeCurrency;
-        window.userData.time_currency_updated_at = window.userData.last_login || new Date().toISOString();
+        window.userData.time_currency_updated_at = window.userData.last_login || getServerNow().toISOString();
         console.log('🔄 Миграция со старой системы: base =', window.userData.time_currency_base);
     }
     if (!window.userData.constructions) {
@@ -451,10 +441,10 @@ function initTimeCurrency() {
 
     // Обновляем base синхронно, чтобы saveImmediate сохранил новое значение
     window.userData.time_currency_base = currentBalance;
-    window.userData.time_currency_updated_at = new Date().toISOString();
+    window.userData.time_currency_updated_at = getServerNow().toISOString();
 
     // Обновляем last_login
-    window.userData.last_login = new Date().toISOString();
+    window.userData.last_login = getServerNow().toISOString();
 
     // Сохраняем last_login + обновлённый base
     if (window.eventSaveManager) {
