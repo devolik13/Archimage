@@ -9,8 +9,60 @@ class EventBossManager {
         this.lastFetch = 0;
         this.fetchCooldown = 10000; // Минимум 10 секунд между запросами
 
+        // === DEBUG: локальный режим без Supabase (убрать перед деплоем) ===
+        this.DEBUG_LOCAL_MODE = true;
+        this._debugPlayerStats = {
+            participated: true,
+            total_damage: 0,
+            attacks_count: 0,
+            best_single_attack: 0,
+            rank: 1
+        };
+        this._debugLeaderboard = [
+            { rank: 1, username: 'Вы', telegram_id: parseInt(window.userId) || 1, total_damage: 0, attacks_count: 0, best_single_attack: 0 },
+            { rank: 2, username: 'ТёмныйМаг', telegram_id: 2, total_damage: 820000, attacks_count: 7, best_single_attack: 185000 },
+            { rank: 3, username: 'Огненный', telegram_id: 3, total_damage: 640000, attacks_count: 5, best_single_attack: 210000 },
+            { rank: 4, username: 'Ледяная', telegram_id: 4, total_damage: 510000, attacks_count: 6, best_single_attack: 120000 },
+            { rank: 5, username: 'Свет_333', telegram_id: 5, total_damage: 390000, attacks_count: 4, best_single_attack: 150000 },
+        ];
+        // === END DEBUG ===
+
         // Система попыток (10/день)
         this.attempts = this.loadAttempts();
+    }
+
+    // ==========================================
+    // DEBUG: локальные моки
+    // ==========================================
+
+    _initDebugBoss() {
+        const endsAt = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
+        this.currentBoss = {
+            active: true,
+            id: 1,
+            name: window.EVENT_BOSS_CONFIG?.name || 'Отродье Тьмы',
+            max_hp: window.EVENT_BOSS_CONFIG?.totalHp || 5000000,
+            current_hp: 3250000,
+            config: {
+                faction: window.EVENT_BOSS_CONFIG?.faction || 'dark',
+                spells: window.EVENT_BOSS_CONFIG?.spells || [],
+                spell_levels: window.EVENT_BOSS_CONFIG?.spell_levels || {},
+                resistances: window.EVENT_BOSS_CONFIG?.resistances || {},
+                battleHp: window.EVENT_BOSS_CONFIG?.battleHp || 999999,
+                battleArmor: window.EVENT_BOSS_CONFIG?.battleArmor || 200,
+                damageMultiplier: window.EVENT_BOSS_CONFIG?.damageMultiplier || 2.0,
+                poisonImmune: window.EVENT_BOSS_CONFIG?.poisonImmune || false
+            },
+            rewards: window.EVENT_BOSS_CONFIG?.rewards || {},
+            starts_at: new Date().toISOString(),
+            ends_at: endsAt,
+            status: 'active',
+            defeated_at: null,
+            total_participants: 42,
+            total_damage_dealt: 2360000
+        };
+        this.lastFetch = Date.now();
+        return this.currentBoss;
     }
 
     // ==========================================
@@ -21,6 +73,14 @@ class EventBossManager {
      * Загрузить текущего активного ивент босса
      */
     async fetchActiveBoss(forceRefresh = false) {
+        // === DEBUG ===
+        if (this.DEBUG_LOCAL_MODE) {
+            if (!this.currentBoss) this._initDebugBoss();
+            console.log(`🐉 [DEBUG] Ивент босс: ${this.currentBoss.name} | HP: ${this.currentBoss.current_hp}/${this.currentBoss.max_hp}`);
+            return this.currentBoss;
+        }
+        // === END DEBUG ===
+
         if (!this.supabase) {
             console.error('Supabase не инициализирован');
             return null;
@@ -64,6 +124,49 @@ class EventBossManager {
      * Отправить нанесённый урон после боя
      */
     async submitDamage(damage) {
+        // === DEBUG ===
+        if (this.DEBUG_LOCAL_MODE) {
+            if (!this.currentBoss || damage <= 0) return null;
+
+            const newHp = Math.max(0, this.currentBoss.current_hp - damage);
+            const isDefeated = newHp === 0;
+
+            this.currentBoss.current_hp = newHp;
+            this.currentBoss.total_damage_dealt += damage;
+            if (isDefeated) {
+                this.currentBoss.status = 'defeated';
+                this.currentBoss.defeated_at = new Date().toISOString();
+            }
+
+            // Обновляем мок статистику игрока
+            this._debugPlayerStats.total_damage += damage;
+            this._debugPlayerStats.attacks_count++;
+            this._debugPlayerStats.best_single_attack = Math.max(this._debugPlayerStats.best_single_attack, damage);
+
+            // Обновляем лидерборд
+            this._debugLeaderboard[0].total_damage = this._debugPlayerStats.total_damage;
+            this._debugLeaderboard[0].attacks_count = this._debugPlayerStats.attacks_count;
+            this._debugLeaderboard[0].best_single_attack = this._debugPlayerStats.best_single_attack;
+            // Пересортировка
+            this._debugLeaderboard.sort((a, b) => b.total_damage - a.total_damage);
+            this._debugLeaderboard.forEach((e, i) => e.rank = i + 1);
+            this._debugPlayerStats.rank = this._debugLeaderboard.findIndex(e => e.telegram_id === (parseInt(window.userId) || 1)) + 1;
+
+            this.useAttempt();
+
+            console.log(`🐉 [DEBUG] Урон: ${damage} | Босс HP: ${newHp}/${this.currentBoss.max_hp} | Defeated: ${isDefeated}`);
+            return {
+                success: true,
+                damage_dealt: damage,
+                boss_new_hp: newHp,
+                boss_max_hp: this.currentBoss.max_hp,
+                boss_defeated: isDefeated,
+                player_total_damage: this._debugPlayerStats.total_damage,
+                player_attacks: this._debugPlayerStats.attacks_count
+            };
+        }
+        // === END DEBUG ===
+
         if (!this.supabase || !this.currentBoss) {
             console.error('Supabase или босс не инициализированы');
             return null;
@@ -119,6 +222,12 @@ class EventBossManager {
      * Загрузить лидерборд ивент босса
      */
     async fetchLeaderboard(limit = 50) {
+        // === DEBUG ===
+        if (this.DEBUG_LOCAL_MODE) {
+            return this._debugLeaderboard.slice(0, limit);
+        }
+        // === END DEBUG ===
+
         if (!this.supabase || !this.currentBoss) return [];
 
         try {
@@ -144,6 +253,12 @@ class EventBossManager {
      * Загрузить статистику текущего игрока
      */
     async fetchPlayerStats() {
+        // === DEBUG ===
+        if (this.DEBUG_LOCAL_MODE) {
+            return this._debugPlayerStats;
+        }
+        // === END DEBUG ===
+
         if (!this.supabase || !this.currentBoss) return null;
 
         const telegramId = window.userId ? parseInt(window.userId) : null;

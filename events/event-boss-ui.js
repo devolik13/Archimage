@@ -610,32 +610,6 @@ function closeEventBossScreen() {
  */
 async function checkEventBossAvailability() {
     const manager = window.eventBossManager;
-
-    // === DEBUG: мок для локального тестирования (убрать перед деплоем) ===
-    const DEBUG_FORCE_PORTAL = true;
-    if (DEBUG_FORCE_PORTAL) {
-        const mockBoss = {
-            active: true,
-            id: 1,
-            name: 'Тёмный Архимаг',
-            max_hp: 5000000,
-            current_hp: 3250000,
-            config: { faction: 'darkness' },
-            rewards: { gold: 1000 },
-            status: 'active',
-            total_participants: 42,
-            total_damage_dealt: 1750000
-        };
-        if (manager) {
-            manager.currentBoss = mockBoss;
-            manager.lastFetch = Date.now();
-        }
-        console.log(`🐉 [DEBUG] Мок ивент босс: ${mockBoss.name} | HP: ${mockBoss.current_hp}/${mockBoss.max_hp}`);
-        showEventBossWarpPortal(true);
-        return true;
-    }
-    // === END DEBUG ===
-
     if (!manager) return false;
 
     const boss = await manager.fetchActiveBoss();
