@@ -1188,13 +1188,25 @@ async function claimCreakyTasksReward(completed = true) {
     const bpmReward = 100;
     const timeReward = 120; // 2 часа в минутах
 
-    window.userData.airdrop_points = (window.userData.airdrop_points || 0) + bpmReward;
-    window.userData.time_currency = (window.userData.time_currency || 0) + timeReward;
-
-    if (!window.userData.airdrop_breakdown) {
-        window.userData.airdrop_breakdown = {};
+    // Начисляем время через addTimeCurrency (обновляет time_currency_base)
+    if (typeof window.addTimeCurrency === 'function') {
+        await window.addTimeCurrency(timeReward);
+    } else {
+        const current = typeof window.getTimeCurrency === 'function' ? window.getTimeCurrency() : (window.userData.time_currency_base || 0);
+        window.userData.time_currency_base = current + timeReward;
+        window.userData.time_currency_updated_at = new Date().toISOString();
     }
-    window.userData.airdrop_breakdown['Creaky Tasks'] = (window.userData.airdrop_breakdown['Creaky Tasks'] || 0) + bpmReward;
+
+    // Начисляем BPM через addAirdropPoints (обновляет breakdown)
+    if (typeof window.addAirdropPoints === 'function') {
+        window.addAirdropPoints(bpmReward, 'Creaky Tasks');
+    } else {
+        window.userData.airdrop_points = (window.userData.airdrop_points || 0) + bpmReward;
+        if (!window.userData.airdrop_breakdown) {
+            window.userData.airdrop_breakdown = {};
+        }
+        window.userData.airdrop_breakdown['Creaky Tasks'] = (window.userData.airdrop_breakdown['Creaky Tasks'] || 0) + bpmReward;
+    }
 
     // Сохраняем в БД
     if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
@@ -1266,13 +1278,25 @@ async function claimTaskReward(taskKey, taskName) {
     const bpmReward = 100;
     const timeReward = 120; // 2 часа
 
-    window.userData.airdrop_points = (window.userData.airdrop_points || 0) + bpmReward;
-    window.userData.time_currency = (window.userData.time_currency || 0) + timeReward;
-
-    if (!window.userData.airdrop_breakdown) {
-        window.userData.airdrop_breakdown = {};
+    // Начисляем время через addTimeCurrency (обновляет time_currency_base)
+    if (typeof window.addTimeCurrency === 'function') {
+        await window.addTimeCurrency(timeReward);
+    } else {
+        const current = typeof window.getTimeCurrency === 'function' ? window.getTimeCurrency() : (window.userData.time_currency_base || 0);
+        window.userData.time_currency_base = current + timeReward;
+        window.userData.time_currency_updated_at = new Date().toISOString();
     }
-    window.userData.airdrop_breakdown[taskName] = (window.userData.airdrop_breakdown[taskName] || 0) + bpmReward;
+
+    // Начисляем BPM через addAirdropPoints (обновляет breakdown)
+    if (typeof window.addAirdropPoints === 'function') {
+        window.addAirdropPoints(bpmReward, taskName);
+    } else {
+        window.userData.airdrop_points = (window.userData.airdrop_points || 0) + bpmReward;
+        if (!window.userData.airdrop_breakdown) {
+            window.userData.airdrop_breakdown = {};
+        }
+        window.userData.airdrop_breakdown[taskName] = (window.userData.airdrop_breakdown[taskName] || 0) + bpmReward;
+    }
 
     if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
         await window.dbManager.savePlayer(window.userData);
