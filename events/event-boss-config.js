@@ -75,7 +75,7 @@ const EVENT_BOSS_CONFIG = {
 
     // Модификатор добычи времени
     timeCurrencyModifier: {
-        duringEvent: -0.20,       // -20% во время ивента
+        duringEvent: 0,            // -20% отключено на время теста
         onVictory: 0.30,          // +30% если игроки победили
         onDefeat: -0.50           // -50% если игроки проиграли
     },
