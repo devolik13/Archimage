@@ -669,3 +669,29 @@ BEGIN
     ORDER BY tr.created_at DESC;
 END;
 $$;
+
+-- Get trial leaderboard (from trial_system.sql, was never in numbered migrations)
+CREATE OR REPLACE FUNCTION get_trial_leaderboard(p_limit int DEFAULT 100)
+RETURNS TABLE (
+    rank bigint,
+    player_id bigint,
+    player_name text,
+    best_damage int,
+    total_damage int,
+    attempts_count int
+)
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT
+        ROW_NUMBER() OVER (ORDER BY best_damage DESC) as rank,
+        player_id,
+        player_name,
+        best_damage,
+        total_damage,
+        attempts_count
+    FROM trial_leaderboard
+    WHERE week_year = get_current_week_year()
+    ORDER BY best_damage DESC
+    LIMIT p_limit;
+$$;
