@@ -87,6 +87,11 @@ import './minigames/training-dummy-config.js';
 import './minigames/training-dummy-battle.js';
 import './minigames/training-dummy-ui.js';
 
+// Ивент Босс
+import './events/event-boss-config.js';
+import './events/event-boss-manager.js';
+import './events/event-boss-ui.js';
+
 // ============================================
 // 6. БИБЛИОТЕКА ЗАКЛИНАНИЙ (Spells UI)
 // ============================================

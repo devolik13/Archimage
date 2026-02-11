@@ -58,7 +58,10 @@ BEGIN
         rating = COALESCE((p_data->>'rating')::INTEGER, rating),
 
         -- Blessing (JSONB and BIGINT types)
-        active_blessing = COALESCE(p_data->'active_blessing', active_blessing),
+        active_blessing = CASE
+            WHEN p_data ? 'active_blessing' THEN p_data->'active_blessing'
+            ELSE active_blessing
+        END,
         blessing_last_used = COALESCE((p_data->>'blessing_last_used')::BIGINT, blessing_last_used),
 
         -- Airdrop и кошелек

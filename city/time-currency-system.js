@@ -36,8 +36,28 @@ function calculateProduction() {
     const generatorLevel = window.userData?.buildings?.time_generator?.level || 0;
     if (generatorLevel === 0) return 0;
 
-    return TIME_CURRENCY_CONFIG.GENERATOR_BASE_RATE +
+    let baseProduction = TIME_CURRENCY_CONFIG.GENERATOR_BASE_RATE +
            (generatorLevel - 1) * TIME_CURRENCY_CONFIG.GENERATOR_PER_LEVEL;
+
+    // Применяем модификатор ивент босса (-20% во время ивента, +30%/-50% после)
+    const eventModifier = typeof window.getEventBossTimeModifier === 'function'
+        ? window.getEventBossTimeModifier() : 0;
+    if (eventModifier !== 0) {
+        baseProduction = baseProduction * (1 + eventModifier);
+    }
+
+    return Math.max(0, baseProduction);
+}
+
+// Получить текущий модификатор производства от ивент босса (для отображения в UI)
+function getProductionModifierText() {
+    const eventModifier = typeof window.getEventBossTimeModifier === 'function'
+        ? window.getEventBossTimeModifier() : 0;
+    if (eventModifier === 0) return '';
+
+    const percent = Math.round(eventModifier * 100);
+    if (percent > 0) return `+${percent}%`;
+    return `${percent}%`;
 }
 
 // Расчет максимальной вместимости (лимит накопления)
@@ -132,9 +152,16 @@ function createTimeCurrencyUI() {
                 </div>
                 ${production > 0 ? `
                     <div style="font-size: 11px; color: #4ade80; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
-                        +${production}/ч
+                        +${Math.round(production)}/ч
                     </div>
                 ` : ''}
+                ${(() => {
+                    const modText = typeof getProductionModifierText === 'function' ? getProductionModifierText() : '';
+                    if (!modText) return '';
+                    const isNegative = modText.startsWith('-');
+                    const color = isNegative ? '#ff6b6b' : '#4ade80';
+                    return `<div style="font-size: 10px; color: ${color}; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">${modText}</div>`;
+                })()}
             </div>
         </div>
     `;
@@ -412,13 +439,14 @@ function initTimeCurrency() {
     // в window.userData.time_currency автоматически обновляли time_currency_base
     setupTimeCurrencyProxy();
 
-    // Вычисляем накопленное для показа уведомления
+    // Вычисляем накопленное (уведомление отключено)
     const base = window.userData.time_currency_base || 0;
     const currentBalance = getTimeCurrency();
     const earned = currentBalance - base;
 
-    if (earned > 60) { // Показываем если накоплено больше 1 часа
-        showOfflineEarningsNotification(earned);
+    // showOfflineEarningsNotification отключён
+    if (earned > 60) {
+        console.log(`⏰ Накоплено за оффлайн: ${earned} мин (уведомление отключено)`);
     }
 
     // Обновляем base синхронно, чтобы saveImmediate сохранил новое значение

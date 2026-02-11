@@ -247,6 +247,11 @@ function updateBlessingStatus() {
         removeBlessingEffects();
         window.userData.active_blessing = null;
 
+        // Сразу сохраняем в БД чтобы при перезагрузке не загрузилось старое
+        if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+            window.dbManager.savePlayer(window.userData);
+        }
+
         if (typeof window.showNotification === 'function') {
             window.showNotification(`Благословение "${activeBlessing.name}" истекло`);
         }
@@ -454,6 +459,13 @@ function initBlessingSystem() {
     if (activeBlessing && activeBlessing.expires_at > now) {
         console.log(`🙏 Восстановление активного благословения: ${activeBlessing.name}`);
         applyBlessingEffects(activeBlessing);
+    } else if (activeBlessing && activeBlessing.expires_at <= now) {
+        // Благословение истекло пока были оффлайн — очищаем и сохраняем
+        console.log(`🕯️ Благословение истекло оффлайн: ${activeBlessing.name}`);
+        window.userData.active_blessing = null;
+        if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+            window.dbManager.savePlayer(window.userData);
+        }
     }
 
     updateBlessingStatus();

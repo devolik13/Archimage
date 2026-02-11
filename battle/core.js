@@ -489,7 +489,7 @@ function initializeWizardHealth() {
         wizard.stoneGrottoBonus = undefined;
 
         // Определяем тип врага (PvE или PvP)
-        const isPveEnemy = wizard.isAdventureEnemy || wizard.isElemental || wizard.isBoss || wizard.isFinalBoss || wizard.isTrainingDummy;
+        const isPveEnemy = wizard.isAdventureEnemy || wizard.isElemental || wizard.isBoss || wizard.isFinalBoss || wizard.isTrainingDummy || wizard.isEventBoss;
 
         // КРИТИЧЕСКИ ВАЖНО: Применяем бонусы уровня к HP для PvP врагов
         // Для PvE врагов (isPveEnemy) НЕ применяем - у них фиксированные характеристики
@@ -1812,6 +1812,59 @@ async function checkBattleEnd() {
                 window.battleEarlyExit = false;
                 window.isDuelBattle = false;
             }, delay);
+        }
+
+        // === ИВЕНТ БОСС: Отдельная обработка ===
+        if (window.isEventBossBattle) {
+            // Считаем нанесённый урон боссу
+            const eventBossDamage = typeof window.calculateEventBossDamage === 'function'
+                ? window.calculateEventBossDamage() : 0;
+
+            console.log(`🐉 Ивент Босс: нанесено урона = ${eventBossDamage}`);
+
+            // Опыт магов
+            const wizardExpGained = window.lastBattleExpResults || [];
+            window.lastPvEWizardExpGained = wizardExpGained;
+
+            // Сохраняем опыт магов в оригинальные данные
+            if (window.userData && window.playerWizards) {
+                window.playerWizards.forEach(battleWizard => {
+                    const originalWizard = window.userData.wizards.find(w => w.id === battleWizard.id);
+                    if (originalWizard) {
+                        originalWizard.experience = battleWizard.experience || 0;
+                        originalWizard.level = battleWizard.level || 1;
+                        originalWizard.exp_to_next = battleWizard.exp_to_next || (typeof window.calculateExpToNext === 'function' ? window.calculateExpToNext(battleWizard.level) : 50);
+                    }
+                });
+
+                if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+                    try {
+                        await window.dbManager.savePlayer(window.userData);
+                    } catch (err) {
+                        console.error('❌ Ошибка сохранения опыта после ивент босса:', err);
+                    }
+                }
+            }
+
+            // Показываем результат ивент босса с задержкой
+            (window.battleTimeout || setTimeout)(async () => {
+                // Очищаем флаги PvE
+                window.isPvEBattle = false;
+                window.currentPvELevel = null;
+                window.battleEarlyExit = false;
+
+                // Показываем окно результата ивент босса
+                if (typeof window.showEventBossResult === 'function') {
+                    await window.showEventBossResult(battleResult, eventBossDamage);
+                } else {
+                    alert(`Урон по боссу: ${eventBossDamage}`);
+                    if (typeof window.returnToCity === 'function') {
+                        window.returnToCity();
+                    }
+                }
+            }, 1000);
+
+            return true;
         }
 
         // Для PvE показываем красивое окно результата (теперь как в PvP)

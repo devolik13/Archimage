@@ -162,7 +162,7 @@ function castWeakness(wizard, spellData, position, casterType) {
 // --- Миазма (Miasma) - Тир 3, Пассивный бафф/дебафф яда ---
 // Применяется в начале боя
 function applyMiasmaAtStart(wizard, level, position, casterType) {
-    const percentModifier = [20, 40, 60, 80, 100][level - 1] || 20;
+    const percentModifier = [10, 20, 30, 40, 50][level - 1] || 10;
 
     console.log(`🌑 Applying Miasma at start - Level ${level}, Modifier ${percentModifier}%`);
 
@@ -197,8 +197,8 @@ function applyMiasmaAtStart(wizard, level, position, casterType) {
     });
 
     if (typeof window.addToBattleLog === 'function') {
-        const resistText = percentModifier === 100 ? 'иммунитет к яду' : `-${percentModifier}% урона от яда`;
-        const ampText = percentModifier === 100 ? 'удвоенный урон от яда' : `+${percentModifier}% урона от яда`;
+        const resistText = `-${percentModifier}% урона от яда`;
+        const ampText = `+${percentModifier}% урона от яда`;
         window.addToBattleLog(`☣️ Миазма ${wizard.name} окутывает поле боя! Союзники: ${resistText}. Враги: ${ampText}`);
     }
 
@@ -289,7 +289,10 @@ function castShadowRealm(wizard, spellData, position, casterType) {
     targets.forEach((target, index) => {
         (window.battleTimeout || setTimeout)(() => {
             const lostHp = target.max_hp - target.hp;
-            const damage = Math.floor(lostHp * percentDamage / 100);
+            let damage = Math.floor(lostHp * percentDamage / 100);
+
+            // Кап урона: не более 200
+            damage = Math.min(damage, 200);
 
             if (damage > 0) {
                 // Применяем урон
@@ -300,7 +303,7 @@ function castShadowRealm(wizard, spellData, position, casterType) {
                 if (target.hp < 0) target.hp = 0;
 
                 if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`🌑 Мир теней поглощает ${finalDamage} HP у ${target.name} (${percentDamage}% от ${lostHp} потерянных)`);
+                    window.addToBattleLog(`🌑 Мир теней поглощает ${finalDamage} HP у ${target.name} (${percentDamage}% от ${lostHp} потерянных, макс 200)`);
                 }
 
                 // Проверяем смерть
