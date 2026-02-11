@@ -197,7 +197,11 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
 
             <!-- Имя босса -->
             <div style="text-align: center; margin-bottom: 12px;">
-                <img src="assets/sprites/event_boss/idle.webp" style="width: 120px; height: 120px; object-fit: contain; image-rendering: pixelated; margin-bottom: 4px;" alt="${boss.name}">
+                <div style="
+                    width: 240px; height: 240px; margin: 0 auto 4px;
+                    background: url('assets/sprites/event_boss/idle.webp') 0% 0% / 500% 500% no-repeat;
+                    image-rendering: pixelated;
+                "></div>
                 <h2 style="
                     margin: 0; color: #9B59B6; font-size: 22px;
                     text-shadow: 0 0 20px rgba(155,89,182,0.5);
@@ -474,6 +478,16 @@ async function showEventBossResult(battleResult, damageDealt) {
     const bossNewHp = serverResult?.boss_new_hp;
     const bossMaxHp = serverResult?.boss_max_hp;
     const playerTotalDamage = serverResult?.player_total_damage || damageDealt;
+    const hpPercent = bossMaxHp ? ((bossNewHp / bossMaxHp) * 100) : 0;
+    let hpColor = '#4CAF50';
+    if (hpPercent < 50) hpColor = '#ff9800';
+    if (hpPercent < 25) hpColor = '#f44336';
+
+    // Опыт магов
+    const wizardExp = window.lastPvEWizardExpGained || [];
+
+    // Сохраняем логи боя до очистки
+    const savedBattleLog = [...(window.battleLog || [])];
 
     const overlay = document.createElement('div');
     overlay.id = 'event-boss-result-overlay';
@@ -481,31 +495,38 @@ async function showEventBossResult(battleResult, damageDealt) {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0, 0, 0, 0.85); z-index: 10002;
         display: flex; align-items: center; justify-content: center;
+        animation: fadeIn 0.3s ease-out;
     `;
 
     overlay.innerHTML = `
         <div style="
             background: linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 100%);
             border: 3px solid #9B59B6;
-            border-radius: 16px; padding: 24px 32px; text-align: center;
-            color: white; min-width: 280px; max-width: 340px;
+            border-radius: 16px; padding: 20px 24px; text-align: center;
+            color: white; width: 320px; max-width: 90vw;
+            max-height: 85vh; overflow-y: auto;
             box-shadow: 0 8px 32px rgba(155,89,182,0.3);
+            animation: scaleIn 0.3s ease-out;
+            position: relative;
         ">
-            <img src="assets/sprites/event_boss/idle.webp" style="width: 96px; height: 96px; object-fit: contain; image-rendering: pixelated; margin-bottom: 8px;" alt="Босс">
+            <!-- Спрайт босса -->
+            <div style="
+                width: 160px; height: 160px; margin: 0 auto 8px;
+                background: url('assets/sprites/event_boss/idle.webp') 0% 0% / 500% 500% no-repeat;
+                image-rendering: pixelated;
+            "></div>
+
             <div style="font-size: 20px; font-weight: bold; margin-bottom: 4px; color: #9B59B6;">
                 ${manager?.currentBoss?.name || 'Отродье Тьмы'}
             </div>
-            <div style="font-size: 14px; color: #aaa; margin-bottom: 16px;">
-                Ваши маги пали в бою
-            </div>
 
-            <!-- Урон -->
+            <!-- Нанесённый урон -->
             <div style="
-                background: rgba(255,255,255,0.1); border-radius: 10px;
-                padding: 12px; margin-bottom: 12px;
+                background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3);
+                border-radius: 10px; padding: 12px; margin: 12px 0;
             ">
                 <div style="font-size: 12px; color: #888; margin-bottom: 4px;">Нанесённый урон</div>
-                <div style="font-size: 28px; color: #ff6b6b; font-weight: bold;">
+                <div style="font-size: 32px; color: #ff6b6b; font-weight: bold;">
                     ${manager ? manager.formatDamage(damageDealt) : damageDealt}
                 </div>
             </div>
@@ -515,7 +536,7 @@ async function showEventBossResult(battleResult, damageDealt) {
                     background: rgba(76,175,80,0.2); border: 2px solid #4CAF50;
                     border-radius: 10px; padding: 12px; margin-bottom: 12px;
                 ">
-                    <div style="font-size: 20px; margin-bottom: 4px;">💀</div>
+                    <div style="font-size: 24px; margin-bottom: 4px;">💀</div>
                     <div style="color: #4CAF50; font-weight: bold; font-size: 16px;">БОСС ПОБЕЖДЕН!</div>
                     <div style="color: #81c784; font-size: 12px; margin-top: 4px;">
                         Добыча времени +30% на неделю!
@@ -524,51 +545,115 @@ async function showEventBossResult(battleResult, damageDealt) {
             ` : (bossNewHp != null ? `
                 <div style="
                     background: rgba(0,0,0,0.3); border-radius: 8px;
-                    padding: 8px; margin-bottom: 12px;
+                    padding: 10px; margin-bottom: 12px;
                 ">
-                    <div style="font-size: 11px; color: #888; margin-bottom: 4px;">HP босса</div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span style="font-size: 11px; color: #888;">HP босса</span>
+                        <span style="font-size: 11px; color: ${hpColor}; font-weight: bold;">${hpPercent.toFixed(1)}%</span>
+                    </div>
                     <div style="
-                        width: 100%; height: 16px; background: #1a1a2a;
-                        border-radius: 8px; overflow: hidden;
+                        width: 100%; height: 18px; background: #1a1a2a;
+                        border-radius: 9px; overflow: hidden;
+                        border: 1px solid rgba(255,255,255,0.1);
                     ">
                         <div style="
-                            width: ${(bossNewHp / bossMaxHp) * 100}%; height: 100%;
-                            background: linear-gradient(90deg, #f44336, #ff9800);
-                            border-radius: 8px;
+                            width: ${hpPercent}%; height: 100%;
+                            background: linear-gradient(90deg, ${hpColor}, ${hpColor}cc);
+                            border-radius: 9px; transition: width 1s ease-out;
                         "></div>
                     </div>
-                    <div style="font-size: 11px; color: #aaa; margin-top: 4px;">
+                    <div style="font-size: 12px; color: #aaa; margin-top: 4px; font-weight: bold;">
                         ${manager ? manager.formatDamage(bossNewHp) : bossNewHp} / ${manager ? manager.formatDamage(bossMaxHp) : bossMaxHp}
                     </div>
                 </div>
             ` : '')}
 
-            <!-- Общий урон -->
+            <!-- Опыт магов -->
+            ${wizardExp.length > 0 ? `
+                <div style="
+                    background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.3);
+                    border-radius: 8px; padding: 10px; margin-bottom: 12px;
+                ">
+                    <div style="font-size: 12px; color: #ffa500; margin-bottom: 6px;">Опыт магов</div>
+                    ${wizardExp.map(w => `
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0;">
+                            <span style="color: #ddd;">${w.name}</span>
+                            <span style="color: #ffa500; font-weight: bold;">
+                                +${w.expGained} XP${w.levelGained > 0 ? ` <span style="color: #4CAF50;">Ур.${w.newLevel}</span>` : ''}
+                            </span>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : ''}
+
+            <!-- Статистика -->
             <div style="
                 background: rgba(0,0,0,0.2); border-radius: 8px;
-                padding: 8px; margin-bottom: 16px;
-                font-size: 12px; color: #aaa;
+                padding: 8px; margin-bottom: 12px;
             ">
-                Ваш общий урон: <strong style="color: #ff9800;">${manager ? manager.formatDamage(playerTotalDamage) : playerTotalDamage}</strong>
-                <br>
-                <span style="color: #666;">Осталось попыток: ${manager ? manager.getRemainingAttempts() : '?'}</span>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px;">
+                    <div style="text-align: center; padding: 4px; background: rgba(0,0,0,0.2); border-radius: 4px;">
+                        <div style="color: #888;">Общий урон</div>
+                        <div style="color: #ff9800; font-size: 14px; font-weight: bold;">${manager ? manager.formatDamage(playerTotalDamage) : playerTotalDamage}</div>
+                    </div>
+                    <div style="text-align: center; padding: 4px; background: rgba(0,0,0,0.2); border-radius: 4px;">
+                        <div style="color: #888;">Попытки</div>
+                        <div style="color: ${(manager?.getRemainingAttempts() || 0) > 0 ? '#4ade80' : '#ff6b6b'}; font-size: 14px; font-weight: bold;">
+                            ${manager ? manager.getRemainingAttempts() : '?'} / ${window.EVENT_BOSS_CONFIG?.maxDailyAttempts || 10}
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Кнопки -->
-            <div style="display: flex; gap: 10px; justify-content: center;">
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
                 <button onclick="closeEventBossResult(); openEventBossScreen();" style="
-                    padding: 10px 20px; background: #4a4a6a; border: none;
-                    border-radius: 8px; color: white; cursor: pointer; font-size: 14px;
-                ">К боссу</button>
+                    flex: 1; padding: 10px;
+                    background: linear-gradient(180deg, #dc3545, #a71d2a);
+                    border: 2px solid #ff6b6b; border-radius: 8px;
+                    color: white; cursor: pointer; font-size: 14px; font-weight: bold;
+                ">Ещё раз</button>
                 <button onclick="closeEventBossResult();" style="
-                    padding: 10px 20px; background: #7289da; border: none;
-                    border-radius: 8px; color: white; cursor: pointer; font-size: 14px; font-weight: bold;
+                    flex: 1; padding: 10px;
+                    background: #4a4a6a; border: 2px solid #6a6a8a;
+                    border-radius: 8px; color: white; cursor: pointer; font-size: 14px;
                 ">В город</button>
+            </div>
+            <button id="event-boss-log-toggle" style="
+                width: 100%; padding: 8px;
+                background: rgba(114,137,218,0.15); border: 1px solid rgba(114,137,218,0.4);
+                border-radius: 8px; color: #7289da; cursor: pointer; font-size: 13px;
+            ">📜 Лог боя</button>
+
+            <!-- Панель логов (скрыта) -->
+            <div id="event-boss-log-panel" style="
+                display: none; margin-top: 8px; text-align: left;
+                background: rgba(0,0,0,0.4); border-radius: 8px;
+                border: 1px solid rgba(114,137,218,0.3);
+                max-height: 300px; overflow-y: auto; padding: 10px;
+            ">
+                <div style="font-size: 12px; line-height: 1.6;">
+                    ${savedBattleLog.length > 0
+                        ? savedBattleLog.map(log => `<div style="margin-bottom: 4px; padding: 4px 6px; background: rgba(255,255,255,0.05); border-radius: 4px; font-family: monospace; font-size: 11px;">${log}</div>`).join('')
+                        : '<div style="color: #666; text-align: center;">Нет записей</div>'}
+                </div>
             </div>
         </div>
     `;
 
     document.body.appendChild(overlay);
+
+    // Обработчик кнопки логов
+    const logToggle = document.getElementById('event-boss-log-toggle');
+    const logPanel = document.getElementById('event-boss-log-panel');
+    if (logToggle && logPanel) {
+        logToggle.onclick = () => {
+            const isHidden = logPanel.style.display === 'none';
+            logPanel.style.display = isHidden ? 'block' : 'none';
+            logToggle.textContent = isHidden ? '📜 Скрыть лог' : '📜 Лог боя';
+            if (isHidden) logPanel.scrollTop = logPanel.scrollHeight;
+        };
+    }
 }
 
 /**
@@ -580,6 +665,7 @@ function closeEventBossResult() {
 
     window.isEventBossBattle = false;
     window.currentEventBossId = null;
+    window.lastPvEWizardExpGained = undefined;
 
     if (typeof window.returnToCity === 'function') {
         window.returnToCity();
