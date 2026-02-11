@@ -174,69 +174,73 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
             background: linear-gradient(180deg, #0a0a1a 0%, #1a0520 30%, #0a0a1a 100%);
             padding: 16px; box-sizing: border-box;
         ">
-            <!-- Босс: спрайт слева, инфо + кнопки справа -->
-            <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px;">
-                <!-- Спрайт босса (2x размер) -->
-                <div id="event-boss-preview-sprite" style="
-                    flex-shrink: 0; width: min(240px, 45vw); height: min(240px, 45vw);
-                    background: url('assets/sprites/event_boss/idle.webp') 0% 0% / 500% 500% no-repeat;
-                    image-rendering: pixelated;
-                "></div>
-                <!-- Информация и кнопки -->
-                <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+            <!-- Босс: спрайт | инфо+кнопки | статистика (три равных блока) -->
+            <div style="display: flex; gap: 10px; align-items: stretch; margin-bottom: 12px;">
+                <!-- 1. Спрайт босса -->
+                <div style="flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center;">
+                    <div id="event-boss-preview-sprite" style="
+                        width: 100%; aspect-ratio: 1; max-width: 200px;
+                        background: url('assets/sprites/event_boss/idle.webp') 0% 0% / 500% 500% no-repeat;
+                        image-rendering: pixelated;
+                    "></div>
+                </div>
+                <!-- 2. Инфо и кнопки -->
+                <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; justify-content: center;">
                     <h2 style="
-                        margin: 0; color: #9B59B6; font-size: 20px;
+                        margin: 0; color: #9B59B6; font-size: 17px;
                         text-shadow: 0 0 20px rgba(155,89,182,0.5);
+                        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
                     ">${boss.name}</h2>
-                    <div style="font-size: 11px; color: #888;">
+                    <div style="font-size: 10px; color: #888;">
                         Ивент Босс — сервер бьёт вместе
                     </div>
-                    <div style="font-size: 12px; color: #ff9800;">
+                    <div style="font-size: 11px; color: #ff9800;">
                         Осталось: ${timeRemaining}
                     </div>
                     <div>
-                        <span style="font-size: 11px; color: #aaa;">Попытки: <strong style="color: ${attemptsLeft > 0 ? '#4ade80' : '#ff6b6b'}">${attemptsLeft}/${maxAttempts}</strong></span>
+                        <span style="font-size: 10px; color: #aaa;">Попытки: <strong style="color: ${attemptsLeft > 0 ? '#4ade80' : '#ff6b6b'}">${attemptsLeft}/${maxAttempts}</strong></span>
                         <button onclick="buyEventBossAttempt()" style="
-                            margin-left: 6px; padding: 3px 8px;
+                            margin-left: 4px; padding: 2px 6px;
                             background: linear-gradient(180deg, #7B68EE, #5B4ACA);
-                            color: white; border: 1px solid #9B8AFF; border-radius: 6px;
-                            font-size: 10px; cursor: pointer; white-space: nowrap;
-                        ">+</button>
+                            color: white; border: 1px solid #9B8AFF; border-radius: 5px;
+                            font-size: 9px; cursor: pointer; white-space: nowrap;
+                        ">+ Купить</button>
                     </div>
-                    <div style="display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 6px; margin-top: 2px; flex-wrap: wrap;">
                         <div>${attackButtonHTML}</div>
                         <button onclick="closeEventBossScreen()" style="
-                            padding: 8px 16px; background: rgba(255,255,255,0.08);
-                            border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
-                            color: #888; cursor: pointer; font-size: 13px;
+                            padding: 6px 12px; background: rgba(255,255,255,0.08);
+                            border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
+                            color: #888; cursor: pointer; font-size: 11px;
                         ">← Назад</button>
                     </div>
-                    <!-- Статистика игрока (справа) -->
-                    <div style="
-                        margin-top: 8px; padding: 8px;
-                        background: rgba(114, 137, 218, 0.1);
-                        border-radius: 8px; border: 1px solid rgba(114, 137, 218, 0.3);
-                    ">
-                        <div style="font-size: 11px; color: #7289da; margin-bottom: 6px; font-weight: bold;">
-                            Ваша статистика
+                </div>
+                <!-- 3. Статистика игрока (2x2) -->
+                <div style="
+                    flex: 1; min-width: 0;
+                    padding: 8px; background: rgba(114, 137, 218, 0.1);
+                    border-radius: 8px; border: 1px solid rgba(114, 137, 218, 0.3);
+                    display: flex; flex-direction: column; justify-content: center;
+                ">
+                    <div style="font-size: 10px; color: #7289da; font-weight: bold; text-align: center; margin-bottom: 6px;">
+                        Ваша статистика
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                        <div style="text-align: center; padding: 4px; background: rgba(0,0,0,0.3); border-radius: 4px;">
+                            <div style="font-size: 8px; color: #888;">Урон</div>
+                            <div style="font-size: 12px; color: #ff6b6b; font-weight: bold;">${manager.formatDamage(pDamage)}</div>
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-                            <div style="text-align: center; padding: 4px; background: rgba(0,0,0,0.3); border-radius: 4px;">
-                                <div style="font-size: 9px; color: #888;">Урон</div>
-                                <div style="font-size: 13px; color: #ff6b6b; font-weight: bold;">${manager.formatDamage(pDamage)}</div>
-                            </div>
-                            <div style="text-align: center; padding: 4px; background: rgba(0,0,0,0.3); border-radius: 4px;">
-                                <div style="font-size: 9px; color: #888;">Место</div>
-                                <div style="font-size: 13px; color: #ffd700; font-weight: bold;">${pRank}</div>
-                            </div>
-                            <div style="text-align: center; padding: 4px; background: rgba(0,0,0,0.3); border-radius: 4px;">
-                                <div style="font-size: 9px; color: #888;">Атак</div>
-                                <div style="font-size: 13px; color: #ddd; font-weight: bold;">${pAttacks}</div>
-                            </div>
-                            <div style="text-align: center; padding: 4px; background: rgba(0,0,0,0.3); border-radius: 4px;">
-                                <div style="font-size: 9px; color: #888;">Лучший</div>
-                                <div style="font-size: 13px; color: #ff9800; font-weight: bold;">${manager.formatDamage(pBest)}</div>
-                            </div>
+                        <div style="text-align: center; padding: 4px; background: rgba(0,0,0,0.3); border-radius: 4px;">
+                            <div style="font-size: 8px; color: #888;">Место</div>
+                            <div style="font-size: 12px; color: #ffd700; font-weight: bold;">${pRank}</div>
+                        </div>
+                        <div style="text-align: center; padding: 4px; background: rgba(0,0,0,0.3); border-radius: 4px;">
+                            <div style="font-size: 8px; color: #888;">Атак</div>
+                            <div style="font-size: 12px; color: #ddd; font-weight: bold;">${pAttacks}</div>
+                        </div>
+                        <div style="text-align: center; padding: 4px; background: rgba(0,0,0,0.3); border-radius: 4px;">
+                            <div style="font-size: 8px; color: #888;">Лучший</div>
+                            <div style="font-size: 12px; color: #ff9800; font-weight: bold;">${manager.formatDamage(pBest)}</div>
                         </div>
                     </div>
                 </div>
