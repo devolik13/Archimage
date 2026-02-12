@@ -291,7 +291,7 @@ class EventBossManager {
             }
 
             if (data && data.success) {
-                console.log(`🐉 Урон записан: ${damage} | Босс HP: ${data.boss_new_hp}/${data.boss_max_hp}`);
+                console.log(`🐉 Урон записан: HP=${hpDamage}, рейтинг=${ratingDamage} | Босс HP: ${data.boss_new_hp}/${data.boss_max_hp}`);
                 console.log(`   Ваш общий урон: ${data.player_total_damage} | Атак: ${data.player_attacks}`);
 
                 // Обновляем локальный кеш
