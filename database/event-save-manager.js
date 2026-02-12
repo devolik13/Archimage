@@ -190,25 +190,13 @@ window.onBuildingUpgraded = function(buildingId, newLevel) {
 
 window.onBattleCompleted = async function(result, rewards, opponentLevel, ratingChange) {
 
-    // ЗАЩИТА ОТ ДУБЛИРОВАНИЯ: Проверяем, не был ли этот бой уже сохранен
-    const battleId = `${Date.now()}_${result}_${window.selectedOpponent?.id || 'unknown'}`;
-
-    if (window._lastSavedBattle === battleId) {
+    // ЗАЩИТА ОТ ДУБЛИРОВАНИЯ: простой флаг на текущий бой
+    // (сбрасывается при начале нового боя)
+    if (window._battleSaveCompleted) {
         console.warn('⚠️ ПРЕДОТВРАЩЕНО дублирование сохранения боя!');
-        console.warn('   Этот бой уже был сохранен, пропускаем');
         return;
     }
-
-    // Дополнительная защита: если прошло меньше 1 секунды с последнего сохранения - игнорируем
-    const now = Date.now();
-    if (window._lastBattleSaveTime && (now - window._lastBattleSaveTime) < 1000) {
-        console.warn('⚠️ ПРЕДОТВРАЩЕНО дублирование: прошло меньше 1 сек с последнего сохранения');
-        return;
-    }
-
-    // Запоминаем этот бой
-    window._lastSavedBattle = battleId;
-    window._lastBattleSaveTime = now;
+    window._battleSaveCompleted = true;
 
 
     // Запоминаем старый рейтинг для проверки новых наград

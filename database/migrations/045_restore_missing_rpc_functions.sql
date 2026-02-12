@@ -596,7 +596,7 @@ BEGIN
         SELECT
             tl.player_id,
             tl.best_damage,
-            ROW_NUMBER() OVER (ORDER BY tl.best_damage DESC) as rk,
+            ROW_NUMBER() OVER (ORDER BY tl.total_damage DESC) as rk,
             COUNT(*) OVER () as total
         FROM trial_leaderboard tl
         WHERE tl.week_year = p_week_year
@@ -646,7 +646,7 @@ BEGIN
     WITH ranked AS (
         SELECT
             tl.player_id,
-            ROW_NUMBER() OVER (ORDER BY best_damage DESC) as rk,
+            ROW_NUMBER() OVER (ORDER BY total_damage DESC) as rk,
             COUNT(*) OVER () as total
         FROM trial_leaderboard tl
         WHERE week_year = get_current_week_year()
@@ -701,7 +701,7 @@ LANGUAGE sql
 STABLE
 AS $$
     SELECT
-        ROW_NUMBER() OVER (ORDER BY best_damage DESC) as rank,
+        ROW_NUMBER() OVER (ORDER BY total_damage DESC) as rank,
         player_id,
         player_name,
         best_damage,
@@ -709,6 +709,6 @@ AS $$
         attempts_count
     FROM trial_leaderboard
     WHERE week_year = get_current_week_year()
-    ORDER BY best_damage DESC
+    ORDER BY total_damage DESC
     LIMIT p_limit;
 $$;

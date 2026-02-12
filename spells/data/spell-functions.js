@@ -120,7 +120,7 @@ function getSpellDamage(spellId, spellLevel = 1) {
     }
 
     // Защитные заклинания не наносят урон
-    const nonDamageSpells = ['wind_wall', 'earth_wall', 'bark_armor', 'leaf_canopy', 'stone_grotto', 'meteorokinesis', 'plague', 'ent', 'call_wolf', 'rainbow_shield', 'dawn', 'sun_radiance'];
+    const nonDamageSpells = ['wind_wall', 'earth_wall', 'bark_armor', 'leaf_canopy', 'stone_grotto', 'meteorokinesis', 'plague', 'ent', 'call_wolf', 'rainbow_shield', 'dawn', 'sun_radiance', 'weakness', 'miasma', 'fading', 'undead_shroud', 'soul_trap', 'bone_dragon'];
     if (nonDamageSpells.includes(spellId)) {
         return 0;
     }

@@ -697,7 +697,7 @@ async function closeBattleFieldModal() {
             const resultModal = document.getElementById('battle-result-modal') || document.getElementById('pvp-arena-screen');
             const resultAlreadyShown = window.arenaResultShown || window.battleResultShown;
 
-            if (!resultModal && !resultAlreadyShown) {
+            if (!resultModal && !resultAlreadyShown && !window._battleCompletedHandled) {
                 console.warn('⚠️ Результат боя не показан после симуляции - принудительно показываем');
                 // Определяем победителя
                 const playerAlive = window.playerFormation?.some((wizardId) => {

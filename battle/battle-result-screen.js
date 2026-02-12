@@ -16,11 +16,7 @@ function showBattleResult(result, battleData = {}) {
         return;
     }
     window.battleResultShown = true;
-
-    // Сбрасываем флаг через 2 секунды (на случай следующего боя)
-    setTimeout(() => {
-        window.battleResultShown = false;
-    }, 2000);
+    // Флаг сбрасывается в startBattle() при начале нового боя
 
     // Используем новое окно арены с фоном если доступно
     if (typeof window.showArenaResult === 'function') {

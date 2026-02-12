@@ -379,4 +379,4 @@ BEGIN
         END
     WHERE telegram_id = p_telegram_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
