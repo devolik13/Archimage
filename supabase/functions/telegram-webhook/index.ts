@@ -56,13 +56,13 @@ serve(async (req) => {
 
       const startText = `${firstName}, Архимагу снился сон...\n\nГород спал. Узкие улочки стягивало морозом, луна висела над шпилями ледяным обрубком — и всё было на своих местах. Мир ещё не знал, что болен.\n\nА потом в центре площади открылось оно.\n\nКруглая рана. Живая. Тёплая. Она пульсировала в такт чему-то древнему, что не должно было проснуться.\n\n🕳 Навись.\n\nГнойник проступил сквозь реальность, как синяк сквозь кожу. Края его сочились мглой...\n\n⚔️ Портал открывается. Мир на грани гибели.\nВступи в Гнойник и победи Отродье Тьмы!`;
 
-      // Пробуем отправить анимацию, если не получится — отправляем текст
-      let response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendAnimation`, {
+      // Пробуем отправить видео, если не получится — отправляем текст
+      let response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendVideo`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
-          animation: "CgACAgIAAxkBAAFCRK9pjak9Y2A95pvWk8R7387kSWIcHAAC8JkAAlmsaUh9qcZmdEM_hzoE",
+          video: "BAACAgIAAxkBAAIqFmmOSk1nEncUo5-frAFHz1CE13tgAAI2igACri15SGvBVzjittuDOgQ",
           caption: startText,
           reply_markup: {
             inline_keyboard: [
@@ -82,9 +82,9 @@ serve(async (req) => {
       let result = await response.json();
       console.log("📤 Telegram API response:", JSON.stringify(result));
 
-      // Если анимация не отправилась — fallback на текстовое сообщение
+      // Если видео не отправилось — fallback на текстовое сообщение
       if (!result.ok) {
-        console.warn("⚠️ sendAnimation failed, falling back to sendMessage:", result.description);
+        console.warn("⚠️ sendVideo failed, falling back to sendMessage:", result.description);
         response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
