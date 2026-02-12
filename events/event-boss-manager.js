@@ -521,7 +521,9 @@ class EventBossManager {
      */
     formatDamage(damage) {
         if (damage >= 1000000) {
-            return (damage / 1000000).toFixed(1) + 'M';
+            // Показываем в тысячах для точности: "5,000K", "4,995K"
+            const k = Math.floor(damage / 1000);
+            return k.toLocaleString('en-US') + 'K';
         }
         if (damage >= 1000) {
             return (damage / 1000).toFixed(1) + 'K';
