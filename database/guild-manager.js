@@ -693,28 +693,57 @@ class GuildManager {
 window.guildManager = new GuildManager();
 
 // === ФОРМАТИРОВАНИЕ ИМЕНИ С ТЕГОМ ГИЛЬДИИ ===
+// ============================================
+// ЗНАЧКИ (BADGES) — знаки отличия у ника
+// ============================================
+
+const PLAYER_BADGES = {
+    // Ивент Босс — топ 3 по урону
+    event_boss_top1: { icon: '⚔', color: '#ffd700', title: 'Убийца боссов — 1 место' },
+    event_boss_top2: { icon: '⚔', color: '#c0c0c0', title: 'Убийца боссов — 2 место' },
+    event_boss_top3: { icon: '⚔', color: '#cd7f32', title: 'Убийца боссов — 3 место' },
+    // Контрольный удар
+    event_boss_finisher: { icon: '🗡', color: '#ff4500', title: 'Нанёс контрольный удар' },
+};
+
 /**
- * Форматирует имя игрока с тегом гильдии
- * @param {string} username - Имя игрока
- * @param {string|null} guildTag - Тег гильдии (опционально)
- * @returns {string} - Отформатированное имя
+ * Рендер значков в виде HTML-спанов
  */
-function formatPlayerName(username, guildTag = null) {
-    const name = username || 'Игрок';
-    if (guildTag) {
-        return `[${guildTag}] ${name}`;
-    }
-    return name;
+function formatBadges(badges) {
+    if (!badges || badges.length === 0) return '';
+    const rendered = badges.map(id => {
+        const badge = PLAYER_BADGES[id];
+        if (!badge) return '';
+        return `<span style="color:${badge.color};text-shadow:0 0 4px ${badge.color}88;font-size:inherit;" title="${badge.title}">${badge.icon}</span>`;
+    }).filter(Boolean).join('');
+    return rendered ? rendered + ' ' : '';
 }
 
 /**
- * Получает отформатированное имя текущего игрока с тегом гильдии
+ * Форматирует имя игрока с тегом гильдии и значками
+ * @param {string} username - Имя игрока
+ * @param {string|null} guildTag - Тег гильдии (опционально)
+ * @param {string[]|null} badges - Массив ID значков (опционально)
+ * @returns {string} - Отформатированное имя
+ */
+function formatPlayerName(username, guildTag = null, badges = null) {
+    const name = username || 'Игрок';
+    const badgeStr = formatBadges(badges);
+    if (guildTag) {
+        return `${badgeStr}[${guildTag}] ${name}`;
+    }
+    return `${badgeStr}${name}`;
+}
+
+/**
+ * Получает отформатированное имя текущего игрока с тегом гильдии и значками
  * @returns {string} - Имя с тегом гильдии или просто имя
  */
 function getCurrentPlayerDisplayName() {
     const username = window.userData?.username || 'Игрок';
     const guildTag = window.guildManager?.currentGuild?.tag || null;
-    return formatPlayerName(username, guildTag);
+    const badges = window.userData?.badges || [];
+    return formatPlayerName(username, guildTag, badges);
 }
 
 // Экспортируем конфиг и функции
@@ -723,6 +752,8 @@ window.getGuildBonuses = getGuildBonuses;
 window.getGuildCapacity = getGuildCapacity;
 window.getExpToNextLevel = getExpToNextLevel;
 window.getResearchCycles = getResearchCycles;
+window.PLAYER_BADGES = PLAYER_BADGES;
+window.formatBadges = formatBadges;
 window.formatPlayerName = formatPlayerName;
 window.getCurrentPlayerDisplayName = getCurrentPlayerDisplayName;
 

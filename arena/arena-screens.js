@@ -487,7 +487,7 @@ async function showArenaOpponentSelection() {
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div style="flex: 1;">
                                 <div style="font-weight: bold; font-size: 16px; margin-bottom: 5px;">
-                                    ${opponent.username || 'Безымянный маг'}
+                                    ${typeof window.formatPlayerName === 'function' ? window.formatPlayerName(opponent.username || 'Безымянный маг', null, opponent.badges) : (opponent.username || 'Безымянный маг')}
                                 </div>
                                 <div style="font-size: 12px; color: #aaa; margin-bottom: 5px;">
                                     ${leagueInfo}
@@ -741,7 +741,7 @@ async function showArenaLeaderboard() {
                     ">
                         <div style="font-size: 20px; min-width: 30px; text-align: center;">${medal}</div>
                         <div style="flex: 1;">
-                            <div style="font-weight: bold; color: white;">${player.username || 'Игрок'}</div>
+                            <div style="font-weight: bold; color: white;">${typeof window.formatPlayerName === 'function' ? window.formatPlayerName(player.username || 'Игрок', null, player.badges) : (player.username || 'Игрок')}</div>
                             <div style="font-size: 12px; color: #aaa;">${leagueInfo}</div>
                         </div>
                         <div style="text-align: right;">

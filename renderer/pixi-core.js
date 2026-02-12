@@ -343,6 +343,12 @@ window.pixiCore = {
 let backgroundLoadPromise = null;
 
 function loadBattleFieldBackground() {
+    // === ИВЕНТ БОСС: Тёмный опасный варп ===
+    if (window.isEventBossBattle) {
+        loadEventBossBackground();
+        return;
+    }
+
     // Массив доступных фонов (768x512 webp)
     const backgrounds = [
         'images/battle/field-background-1.webp',
@@ -362,7 +368,7 @@ function loadBattleFieldBackground() {
         'images/battle/field-background-15.webp',
         'images/battle/field-background-16.webp'
     ];
-    
+
     // Выбираем случайный
     const bgPath = backgrounds[Math.floor(Math.random() * backgrounds.length)];
     console.log('🎲 Выбран фон:', bgPath);
@@ -456,6 +462,80 @@ function loadBattleFieldBackground() {
         
         battleContainer.addChildAt(fallbackBg, 0);
     });
+}
+
+/**
+ * Фон для ивент босса — тёмный опасный варп с минимальным освещением.
+ * Рисуется процедурно через PIXI.Graphics (без внешних картинок).
+ */
+function loadEventBossBackground() {
+    const screenWidth = pixiApp.screen.width;
+    const screenHeight = pixiApp.screen.height;
+
+    const bg = new PIXI.Graphics();
+
+    // 1. Основа — почти чёрный фон
+    bg.beginFill(0x050208);
+    bg.drawRect(0, 0, screenWidth, screenHeight);
+    bg.endFill();
+
+    // 2. Тёмно-фиолетовые туманные пятна (глубина варпа)
+    const warpColors = [0x1a0525, 0x120320, 0x0d0118, 0x150322, 0x0a0012];
+    for (let i = 0; i < 12; i++) {
+        const color = warpColors[Math.floor(Math.random() * warpColors.length)];
+        const alpha = 0.3 + Math.random() * 0.4;
+        bg.beginFill(color, alpha);
+        const cx = Math.random() * screenWidth;
+        const cy = Math.random() * screenHeight;
+        const rx = 80 + Math.random() * 200;
+        const ry = 60 + Math.random() * 150;
+        bg.drawEllipse(cx, cy, rx, ry);
+        bg.endFill();
+    }
+
+    // 3. Тусклые красные трещины / разломы (опасность)
+    bg.lineStyle(1, 0x4a0015, 0.4);
+    for (let i = 0; i < 8; i++) {
+        const startX = Math.random() * screenWidth;
+        const startY = Math.random() * screenHeight;
+        bg.moveTo(startX, startY);
+        let px = startX, py = startY;
+        const segments = 3 + Math.floor(Math.random() * 5);
+        for (let j = 0; j < segments; j++) {
+            px += (Math.random() - 0.5) * 120;
+            py += (Math.random() - 0.5) * 80;
+            bg.lineTo(px, py);
+        }
+    }
+    bg.lineStyle(0);
+
+    // 4. Мерцающие фиолетовые частицы (пыль варпа)
+    for (let i = 0; i < 40; i++) {
+        const px = Math.random() * screenWidth;
+        const py = Math.random() * screenHeight;
+        const size = 1 + Math.random() * 2;
+        const alpha = 0.15 + Math.random() * 0.35;
+        const color = Math.random() > 0.7 ? 0x9B59B6 : 0x5a2d82;
+        bg.beginFill(color, alpha);
+        bg.drawCircle(px, py, size);
+        bg.endFill();
+    }
+
+    // 5. Едва видимая виньетка (затемнение по краям)
+    bg.beginFill(0x000000, 0.5);
+    bg.drawRect(0, 0, screenWidth, 30);
+    bg.drawRect(0, screenHeight - 30, screenWidth, 30);
+    bg.drawRect(0, 0, 20, screenHeight);
+    bg.drawRect(screenWidth - 20, 0, 20, screenHeight);
+    bg.endFill();
+
+    // 6. Центральная тусклая подсветка (еле заметная, чтобы видеть бойцов)
+    bg.beginFill(0x1a0830, 0.25);
+    bg.drawEllipse(screenWidth / 2, screenHeight / 2, screenWidth * 0.4, screenHeight * 0.35);
+    bg.endFill();
+
+    battleContainer.addChildAt(bg, 0);
+    console.log('🌑 Ивент-босс варп: тёмный фон загружен');
 }
 
 // Добавить экспорт в конец файла где остальные экспорты

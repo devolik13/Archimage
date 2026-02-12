@@ -512,6 +512,58 @@ async function closeBattleFieldModal() {
         }
     }
 
+    // КРИТИЧНО: Проверяем закрытие незавершённого боя с ивент боссом
+    if (window.isEventBossBattle && (window.battleState === 'active' || window.battleState === 'running')) {
+        console.warn('⚠️ Игрок закрывает незавершённый бой с ивент боссом — считаем урон');
+
+        // Останавливаем бой
+        if (window.battleInterval) {
+            clearInterval(window.battleInterval);
+            window.battleInterval = null;
+        }
+        if (window.battleSpeedController) {
+            window.battleSpeedController.stopBattle();
+        }
+        if (window.animationManager) {
+            window.animationManager.clearAll();
+        }
+        if (window.destroyPixiBattle) {
+            window.destroyPixiBattle();
+        }
+
+        // Удаляем UI
+        const bfModal = document.getElementById("battle-field-modal");
+        if (bfModal) bfModal.remove();
+        const bfContainer = document.getElementById("battle-field-fullscreen-container");
+        if (bfContainer) bfContainer.remove();
+        const bfPixi = document.getElementById("pixi-battle-container");
+        if (bfPixi) bfPixi.remove();
+
+        // Считаем нанесённый урон до момента закрытия
+        const eventBossDamage = typeof window.calculateEventBossDamage === 'function'
+            ? window.calculateEventBossDamage() : 0;
+        console.log(`🐉 Ивент Босс (ранний выход): нанесено урона = ${eventBossDamage}`);
+
+        window.battleState = 'finished';
+
+        // Показываем результат
+        (window.battleTimeout || setTimeout)(async () => {
+            window.isPvEBattle = false;
+            window.currentPvELevel = null;
+            window.battleEarlyExit = false;
+
+            if (typeof window.showEventBossResult === 'function') {
+                await window.showEventBossResult('loss', eventBossDamage);
+            } else {
+                window.isEventBossBattle = false;
+                window.currentEventBossId = null;
+                if (typeof returnToCity === 'function') returnToCity();
+            }
+        }, 100);
+
+        return;
+    }
+
     // КРИТИЧНО: Проверяем закрытие незавершенного PvP боя
     const isPvP = !window.isPvEBattle && window.selectedOpponent;
     const isBattleActive = window.battleState === 'active' || window.battleState === 'running';

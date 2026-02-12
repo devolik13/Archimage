@@ -41,20 +41,15 @@ class EventBossManager {
     }
 
     _loadDebugState() {
-        const myId = parseInt(window.userId) || 1;
         try {
             const saved = localStorage.getItem('event_boss_debug');
             if (saved) {
                 const data = JSON.parse(saved);
                 this._debugPlayerStats = data.playerStats || { participated: false, total_damage: 0, attacks_count: 0, best_single_attack: 0, rank: 0 };
                 this._debugLeaderboard = data.leaderboard || [];
-                // Убираем вымышленных — в дебаг-режиме оставляем только текущего игрока
-                this._debugLeaderboard = this._debugLeaderboard.filter(e => e.telegram_id === myId && e.total_damage > 0);
-                // Обновляем свою запись по telegram_id (если есть урон)
-                const me = this._debugLeaderboard.find(e => e.telegram_id === myId);
-                if (me) {
-                    me.username = window.userData?.username || me.username;
-                }
+                // НЕ фильтруем по telegram_id — userId ещё не доступен при загрузке модуля.
+                // Оставляем только записи с реальным уроном.
+                this._debugLeaderboard = this._debugLeaderboard.filter(e => e.total_damage > 0);
                 // Пересчитываем ранги
                 this._debugLeaderboard.sort((a, b) => b.total_damage - a.total_damage);
                 this._debugLeaderboard.forEach((e, i) => e.rank = i + 1);
@@ -111,10 +106,11 @@ class EventBossManager {
             rewards: window.EVENT_BOSS_CONFIG?.rewards || {},
             starts_at: new Date().toISOString(),
             ends_at: endsAt,
-            status: 'active',
+            status: savedBossHp?.current_hp === 0 ? 'defeated' : 'active',
             defeated_at: null,
             total_participants: savedBossHp?.total_participants ?? 0,
-            total_damage_dealt: savedBossHp?.total_damage_dealt ?? 0
+            total_damage_dealt: savedBossHp?.total_damage_dealt ?? 0,
+            finishing_blow_by: savedBossHp?.finishing_blow_by || null
         };
         this.lastFetch = Date.now();
         return this.currentBoss;
@@ -133,13 +129,15 @@ class EventBossManager {
             if (!this.currentBoss) {
                 this._initDebugBoss();
             } else if (forceRefresh) {
-                // При forceRefresh перечитываем HP из localStorage
+                // При forceRefresh перечитываем HP и участников из localStorage
                 try {
                     const saved = localStorage.getItem('event_boss_debug_boss');
                     if (saved) {
                         const data = JSON.parse(saved);
                         if (data.current_hp != null) this.currentBoss.current_hp = data.current_hp;
                         if (data.total_damage_dealt != null) this.currentBoss.total_damage_dealt = data.total_damage_dealt;
+                        if (data.total_participants != null) this.currentBoss.total_participants = data.total_participants;
+                        if (data.finishing_blow_by) this.currentBoss.finishing_blow_by = data.finishing_blow_by;
                     }
                 } catch (e) { /* ignore */ }
             }
@@ -203,6 +201,7 @@ class EventBossManager {
             if (isDefeated) {
                 this.currentBoss.status = 'defeated';
                 this.currentBoss.defeated_at = new Date().toISOString();
+                this.currentBoss.finishing_blow_by = window.userData?.username || 'Неизвестный маг';
             }
 
             // Обновляем мок статистику игрока
@@ -238,7 +237,8 @@ class EventBossManager {
                 localStorage.setItem('event_boss_debug_boss', JSON.stringify({
                     current_hp: this.currentBoss.current_hp,
                     total_damage_dealt: this.currentBoss.total_damage_dealt,
-                    total_participants: this.currentBoss.total_participants
+                    total_participants: this.currentBoss.total_participants,
+                    finishing_blow_by: this.currentBoss.finishing_blow_by || null
                 }));
             } catch (e) { /* ignore */ }
 
@@ -249,6 +249,7 @@ class EventBossManager {
                 boss_new_hp: newHp,
                 boss_max_hp: this.currentBoss.max_hp,
                 boss_defeated: isDefeated,
+                finishing_blow: isDefeated, // В дебаге контрольный удар всегда у текущего игрока
                 player_total_damage: this._debugPlayerStats.total_damage,
                 player_attacks: this._debugPlayerStats.attacks_count
             };
@@ -343,6 +344,12 @@ class EventBossManager {
     async fetchPlayerStats() {
         // === DEBUG ===
         if (this.DEBUG_LOCAL_MODE) {
+            // Обновляем ранг из лидерборда (userId мог быть недоступен при загрузке)
+            const myId = parseInt(window.userId) || 1;
+            const myEntry = this._debugLeaderboard.find(e => e.telegram_id === myId);
+            if (myEntry) {
+                this._debugPlayerStats.rank = myEntry.rank;
+            }
             return this._debugPlayerStats;
         }
         // === END DEBUG ===
@@ -519,7 +526,9 @@ class EventBossManager {
      */
     formatDamage(damage) {
         if (damage >= 1000000) {
-            return (damage / 1000000).toFixed(1) + 'M';
+            // Показываем в тысячах для точности: "5,000K", "4,995K"
+            const k = Math.floor(damage / 1000);
+            return k.toLocaleString('en-US') + 'K';
         }
         if (damage >= 1000) {
             return (damage / 1000).toFixed(1) + 'K';

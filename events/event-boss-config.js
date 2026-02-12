@@ -93,6 +93,9 @@ const EVENT_BOSS_CONFIG = {
         top3: { timeCurrency: 7200 },  // 5 дней
         bossKilled: {
             timeCurrency: 4320    // 3 дня каждому если босс убит
+        },
+        finishingBlow: {
+            timeCurrency: 10080   // 7 дней (1 неделя) — контрольный удар
         }
     }
 };

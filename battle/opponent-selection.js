@@ -23,7 +23,7 @@ async function getOpponentsList(playerRating, count = 4) {
         // Первый запрос - только лёгкие данные для списка
         const { data, error } = await window.dbManager.supabase
             .from('players')
-            .select('id, telegram_id, username, rating, level, wins, losses, faction')
+            .select('id, telegram_id, username, rating, level, wins, losses, faction, badges')
             .neq('telegram_id', currentTelegramId)
             .gte('rating', ratingMin)
             .lte('rating', ratingMax)
@@ -39,7 +39,7 @@ async function getOpponentsList(playerRating, count = 4) {
             // Fallback: если в диапазоне нет игроков, берём любых
             const { data: fallbackData, error: fallbackError } = await window.dbManager.supabase
                 .from('players')
-                .select('id, telegram_id, username, rating, level, wins, losses, faction')
+                .select('id, telegram_id, username, rating, level, wins, losses, faction, badges')
                 .neq('telegram_id', currentTelegramId)
                 .order('rating', { ascending: true })
                 .limit(10);
