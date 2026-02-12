@@ -1089,7 +1089,10 @@ async function checkGroupSubscription() {
             if (result.success) {
                 // Обновляем локальные данные
                 window.userData.group_reward_claimed = true;
-                window.userData.time_currency = (window.userData.time_currency || 0) + result.reward.time_minutes;
+                // Время начислено серверно через RPC add_time_currency, синхронизируем локально
+                const currentBalance = typeof window.getTimeCurrency === 'function' ? window.getTimeCurrency() : (window.userData.time_currency_base || 0);
+                window.userData.time_currency_base = currentBalance + result.reward.time_minutes;
+                window.userData.time_currency_updated_at = typeof getServerNow === 'function' ? getServerNow().toISOString() : new Date().toISOString();
                 window.userData.airdrop_points = (window.userData.airdrop_points || 0) + result.reward.bpm_points;
 
                 if (!window.userData.airdrop_breakdown) {
@@ -1151,7 +1154,7 @@ function updateGroupTaskButton() {
  */
 function openCreakyTasks() {
     window.open('https://t.me/CreakyTasksBot?start=ltZMmENT', '_blank');
-    window.showNotification?.('📋 Выполните 3 задания и вернитесь для получения награды');
+    setTimeout(() => claimTaskReward('creaky_tasks', 'Creaky Tasks'), 2000);
 }
 
 function openQuadRoyal() {
@@ -1275,6 +1278,9 @@ async function claimTaskReward(taskKey, taskName) {
 
     window.userData.completed_tasks[taskKey] = true;
 
+    // Сразу обновляем кнопку на "Получено" чтобы предотвратить повторные клики
+    updateTaskButton(taskKey);
+
     const bpmReward = 100;
     const timeReward = 120; // 2 часа
 
@@ -1287,7 +1293,7 @@ async function claimTaskReward(taskKey, taskName) {
         window.userData.time_currency_updated_at = typeof getServerNow === 'function' ? getServerNow().toISOString() : new Date().toISOString();
     }
 
-    // Начисляем BPM через addAirdropPoints (обновляет breakdown)
+    // Начисляем BPM через addAirdropPoints (обновляет breakdown и сохраняет в БД)
     if (typeof window.addAirdropPoints === 'function') {
         window.addAirdropPoints(bpmReward, taskName);
     } else {
@@ -1296,10 +1302,9 @@ async function claimTaskReward(taskKey, taskName) {
             window.userData.airdrop_breakdown = {};
         }
         window.userData.airdrop_breakdown[taskName] = (window.userData.airdrop_breakdown[taskName] || 0) + bpmReward;
-    }
-
-    if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
-        await window.dbManager.savePlayer(window.userData);
+        if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+            await window.dbManager.savePlayer(window.userData);
+        }
     }
 
     window.showNotification?.(`🎉 Награда получена! +${bpmReward} BPM + ⏰ 2 часа`);
@@ -1317,6 +1322,7 @@ async function claimTaskReward(taskKey, taskName) {
  */
 function updateTaskButton(taskKey) {
     const idMap = {
+        'creaky_tasks': 'creaky-tasks-reward',
         'money_mining': 'money-mining-reward',
         'pandafit': 'pandafit-reward',
         'quadroyal': 'quadroyal-reward',

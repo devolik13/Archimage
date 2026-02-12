@@ -108,8 +108,16 @@ serve(async (req) => {
       );
     }
 
-    // 3. Начисляем награду
-    const newTime = (player.time_currency || 0) + GROUP_REWARD.TIME_MINUTES;
+    // 3. Начисляем награду через RPC add_time_currency (обновляет time_currency_base)
+    const { error: timeError } = await supabase.rpc('add_time_currency', {
+      p_telegram_id: telegram_id,
+      p_amount: GROUP_REWARD.TIME_MINUTES
+    });
+
+    if (timeError) {
+      console.error("Error adding time currency:", timeError);
+    }
+
     const newPoints = (player.airdrop_points || 0) + GROUP_REWARD.BPM_POINTS;
 
     const breakdown = player.airdrop_breakdown || {};
@@ -119,7 +127,6 @@ serve(async (req) => {
       .from("players")
       .update({
         group_reward_claimed: true,
-        time_currency: newTime,
         airdrop_points: newPoints,
         airdrop_breakdown: breakdown
       })
