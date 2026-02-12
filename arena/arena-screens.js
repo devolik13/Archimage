@@ -927,8 +927,11 @@ function showArenaResult(result, battleData = {}) {
     const ratingColor = ratingChange > 0 ? '#4CAF50' : ratingChange < 0 ? '#f44336' : '#aaa';
 
     // Новый рейтинг (0 - валидное значение для новичков)
+    // ВАЖНО: window.userData.rating уже обновлён в saveBattleResult(),
+    // поэтому currentRating = новый рейтинг, а старый = currentRating - ratingChange
     const currentRating = typeof window.userData?.rating === 'number' ? window.userData.rating : 0;
-    const newRating = currentRating + ratingChange;
+    const oldRating = currentRating - ratingChange;
+    const newRating = currentRating;
 
     // Лига
     let leagueInfo = `⭐ ${newRating}`;
@@ -1035,7 +1038,7 @@ function showArenaResult(result, battleData = {}) {
                     <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center;">
                         <div style="text-align: center;">
                             <div style="font-size: 10px; color: #aaa;">Было</div>
-                            <div style="font-size: 16px; color: #7289da; font-weight: bold;">${currentRating}</div>
+                            <div style="font-size: 16px; color: #7289da; font-weight: bold;">${oldRating}</div>
                         </div>
                         <div style="text-align: center;">
                             <div style="font-size: 22px; color: ${ratingColor}; font-weight: bold;">
