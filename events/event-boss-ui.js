@@ -274,6 +274,12 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                 <div style="text-align: center; font-size: 11px; color: #666; margin-top: 2px;">
                     Участников: ${boss.total_participants || 0}
                 </div>
+                ${isDefeated && boss.finishing_blow_by ? `
+                <div style="text-align: center; margin-top: 8px; padding: 6px; background: rgba(255,69,0,0.1); border: 1px solid rgba(255,69,0,0.3); border-radius: 6px;">
+                    <span style="font-size: 12px; color: #ff8c60;">⚔️ Контрольный удар нанёс</span>
+                    <div style="font-size: 14px; color: #ff4500; font-weight: bold; margin-top: 2px;">${boss.finishing_blow_by}</div>
+                </div>
+                ` : ''}
             </div>
 
             <!-- Награды -->

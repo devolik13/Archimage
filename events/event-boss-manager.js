@@ -106,10 +106,11 @@ class EventBossManager {
             rewards: window.EVENT_BOSS_CONFIG?.rewards || {},
             starts_at: new Date().toISOString(),
             ends_at: endsAt,
-            status: 'active',
+            status: savedBossHp?.current_hp === 0 ? 'defeated' : 'active',
             defeated_at: null,
             total_participants: savedBossHp?.total_participants ?? 0,
-            total_damage_dealt: savedBossHp?.total_damage_dealt ?? 0
+            total_damage_dealt: savedBossHp?.total_damage_dealt ?? 0,
+            finishing_blow_by: savedBossHp?.finishing_blow_by || null
         };
         this.lastFetch = Date.now();
         return this.currentBoss;
@@ -136,6 +137,7 @@ class EventBossManager {
                         if (data.current_hp != null) this.currentBoss.current_hp = data.current_hp;
                         if (data.total_damage_dealt != null) this.currentBoss.total_damage_dealt = data.total_damage_dealt;
                         if (data.total_participants != null) this.currentBoss.total_participants = data.total_participants;
+                        if (data.finishing_blow_by) this.currentBoss.finishing_blow_by = data.finishing_blow_by;
                     }
                 } catch (e) { /* ignore */ }
             }
@@ -199,6 +201,7 @@ class EventBossManager {
             if (isDefeated) {
                 this.currentBoss.status = 'defeated';
                 this.currentBoss.defeated_at = new Date().toISOString();
+                this.currentBoss.finishing_blow_by = window.userData?.username || 'Неизвестный маг';
             }
 
             // Обновляем мок статистику игрока
@@ -234,7 +237,8 @@ class EventBossManager {
                 localStorage.setItem('event_boss_debug_boss', JSON.stringify({
                     current_hp: this.currentBoss.current_hp,
                     total_damage_dealt: this.currentBoss.total_damage_dealt,
-                    total_participants: this.currentBoss.total_participants
+                    total_participants: this.currentBoss.total_participants,
+                    finishing_blow_by: this.currentBoss.finishing_blow_by || null
                 }));
             } catch (e) { /* ignore */ }
 
