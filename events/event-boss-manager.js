@@ -15,8 +15,12 @@ class EventBossManager {
         this._loadDebugState();
         // === END DEBUG ===
 
-        // Система попыток (10/день)
-        this.attempts = this.loadAttempts();
+        // Попытки: в продакшене — из БД, в дебаге — из localStorage
+        if (this.DEBUG_LOCAL_MODE) {
+            this.attempts = this._loadLocalAttempts();
+        } else {
+            this.attempts = { remaining: 10, used: 0, purchased: 0, max_daily: 10 };
+        }
     }
 
     // ==========================================
@@ -236,7 +240,7 @@ class EventBossManager {
             // Обновляем кол-во участников
             this.currentBoss.total_participants = this._debugLeaderboard.filter(e => e.total_damage > 0).length;
 
-            this.useAttempt();
+            this._useLocalAttempt();
             this._saveDebugState();
             try {
                 localStorage.setItem('event_boss_debug_boss', JSON.stringify({
@@ -299,8 +303,11 @@ class EventBossManager {
                     this.currentBoss.current_hp = data.boss_new_hp;
                 }
 
-                // Тратим попытку
-                this.useAttempt();
+                // Попытка уже потрачена на сервере — обновляем локальный кеш
+                if (data.attempts_remaining != null) {
+                    this.attempts.remaining = data.attempts_remaining;
+                    this.attempts.used++;
+                }
 
                 return data;
             } else {
@@ -387,115 +394,141 @@ class EventBossManager {
     }
 
     // ==========================================
-    // СИСТЕМА ПОПЫТОК (10/день)
+    // СИСТЕМА ПОПЫТОК (10/день) — из БД (продакшен) / localStorage (дебаг)
     // ==========================================
 
     /**
-     * Загрузить данные попыток из localStorage
+     * Загрузить попытки из БД
      */
-    loadAttempts() {
+    async fetchAttempts() {
+        if (this.DEBUG_LOCAL_MODE) {
+            this._refreshLocalAttempts();
+            return this.attempts;
+        }
+
+        if (!this.supabase || !this.currentBoss) return this.attempts;
+
+        const telegramId = window.userId ? parseInt(window.userId) : null;
+        if (!telegramId) return this.attempts;
+
         try {
-            const saved = localStorage.getItem('event_boss_attempts');
-            if (saved) {
-                const data = JSON.parse(saved);
-                // Проверяем, не новый ли день
-                const today = new Date().toDateString();
-                if (data.date === today) {
-                    return data;
-                }
+            const { data, error } = await this.supabase.rpc('get_event_boss_attempts', {
+                p_boss_id: this.currentBoss.id,
+                p_telegram_id: telegramId
+            });
+
+            if (error) {
+                console.error('Ошибка загрузки попыток:', error);
+                return this.attempts;
             }
-        } catch (e) {
-            // localStorage может быть недоступен
-        }
 
-        // Новый день или нет данных — сброс попыток
-        const maxAttempts = window.EVENT_BOSS_CONFIG?.maxDailyAttempts || 10;
-        const freshAttempts = {
-            date: new Date().toDateString(),
-            remaining: maxAttempts,
-            used: 0,
-            purchased: 0
-        };
-        this.saveAttempts(freshAttempts);
-        return freshAttempts;
-    }
-
-    /**
-     * Сохранить данные попыток
-     */
-    saveAttempts(data) {
-        try {
-            localStorage.setItem('event_boss_attempts', JSON.stringify(data || this.attempts));
-        } catch (e) {
-            // localStorage может быть недоступен
+            if (data) {
+                this.attempts = {
+                    remaining: data.remaining,
+                    used: data.used,
+                    purchased: data.purchased,
+                    max_daily: data.max_daily
+                };
+                console.log(`🐉 Попытки из БД: ${this.attempts.remaining}/${this.attempts.max_daily}`);
+            }
+            return this.attempts;
+        } catch (err) {
+            console.error('Ошибка запроса попыток:', err);
+            return this.attempts;
         }
     }
 
     /**
-     * Проверить, есть ли попытки
+     * Проверить, есть ли попытки (синхронно, из кеша)
      */
     canAttack() {
-        this.refreshAttempts();
+        if (this.DEBUG_LOCAL_MODE) this._refreshLocalAttempts();
         return this.attempts.remaining > 0;
     }
 
     /**
-     * Получить оставшиеся попытки
+     * Получить оставшиеся попытки (синхронно, из кеша)
      */
     getRemainingAttempts() {
-        this.refreshAttempts();
+        if (this.DEBUG_LOCAL_MODE) this._refreshLocalAttempts();
         return this.attempts.remaining;
     }
 
     /**
-     * Использовать попытку
-     */
-    useAttempt() {
-        this.refreshAttempts();
-        if (this.attempts.remaining > 0) {
-            this.attempts.remaining--;
-            this.attempts.used++;
-            this.saveAttempts();
-            console.log(`🐉 Попытка использована: осталось ${this.attempts.remaining}`);
-        }
-    }
-
-    /**
-     * Купить дополнительную попытку за Stars
+     * Купить дополнительную попытку (RPC в продакшене)
      */
     async purchaseAttempt() {
-        const cost = window.EVENT_BOSS_CONFIG?.extraAttemptStarsCost || 25;
-
-        // Telegram Stars покупка
-        if (window.Telegram?.WebApp?.openInvoice) {
-            // TODO: Интеграция с Telegram Stars API
-            // Пока простая проверка
-            console.log(`🐉 Покупка попытки за ${cost} Stars`);
+        if (this.DEBUG_LOCAL_MODE) {
+            this.attempts.remaining++;
+            this.attempts.purchased++;
+            this._saveLocalAttempts();
+            return true;
         }
 
-        // Добавляем попытку
-        this.attempts.remaining++;
-        this.attempts.purchased++;
-        this.saveAttempts();
+        if (!this.supabase || !this.currentBoss) return false;
 
-        return true;
+        const telegramId = window.userId ? parseInt(window.userId) : null;
+        if (!telegramId) return false;
+
+        try {
+            const { data, error } = await this.supabase.rpc('purchase_event_boss_attempt', {
+                p_boss_id: this.currentBoss.id,
+                p_telegram_id: telegramId
+            });
+
+            if (error || !data?.success) {
+                console.error('Ошибка покупки попытки:', error || data?.error);
+                return false;
+            }
+
+            this.attempts.remaining = data.remaining;
+            this.attempts.purchased = data.purchased;
+            this.attempts.used = data.used;
+            console.log(`🐉 Попытка куплена: осталось ${this.attempts.remaining}`);
+            return true;
+        } catch (err) {
+            console.error('Ошибка покупки попытки:', err);
+            return false;
+        }
     }
 
-    /**
-     * Обновить попытки (проверка нового дня)
-     */
-    refreshAttempts() {
+    // --- Debug-only: localStorage fallback ---
+
+    _loadLocalAttempts() {
+        try {
+            const saved = localStorage.getItem('event_boss_attempts');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.date === new Date().toDateString()) return data;
+            }
+        } catch (e) { /* ignore */ }
+
+        const maxAttempts = window.EVENT_BOSS_CONFIG?.maxDailyAttempts || 10;
+        const fresh = { date: new Date().toDateString(), remaining: maxAttempts, used: 0, purchased: 0, max_daily: maxAttempts };
+        this._saveLocalAttempts(fresh);
+        return fresh;
+    }
+
+    _saveLocalAttempts(data) {
+        try { localStorage.setItem('event_boss_attempts', JSON.stringify(data || this.attempts)); } catch (e) { /* ignore */ }
+    }
+
+    _refreshLocalAttempts() {
         const today = new Date().toDateString();
         if (this.attempts.date !== today) {
             const maxAttempts = window.EVENT_BOSS_CONFIG?.maxDailyAttempts || 10;
-            this.attempts = {
-                date: today,
-                remaining: maxAttempts,
-                used: 0,
-                purchased: 0
-            };
-            this.saveAttempts();
-            console.log(`🐉 Новый день — попытки сброшены: ${maxAttempts}`);
+            this.attempts = { date: today, remaining: maxAttempts, used: 0, purchased: 0, max_daily: maxAttempts };
+            this._saveLocalAttempts();
+        }
+    }
+
+    _useLocalAttempt() {
+        this._refreshLocalAttempts();
+        if (this.attempts.remaining > 0) {
+            this.attempts.remaining--;
+            this.attempts.used++;
+            this._saveLocalAttempts();
+            console.log(`🐉 [DEBUG] Попытка использована: осталось ${this.attempts.remaining}`);
         }
     }
 

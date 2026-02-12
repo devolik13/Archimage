@@ -38,10 +38,11 @@ async function openEventBossScreen() {
         return;
     }
 
-    // Загружаем статистику и лидерборд параллельно
+    // Загружаем статистику, лидерборд и попытки параллельно
     const [playerStats, leaderboard] = await Promise.all([
         manager.fetchPlayerStats(),
-        manager.fetchLeaderboard(20)
+        manager.fetchLeaderboard(20),
+        manager.fetchAttempts()
     ]);
 
     // Рендер
@@ -585,7 +586,8 @@ async function _refreshBossScreen(manager) {
     if (!boss) return;
     const [playerStats, leaderboard] = await Promise.all([
         manager.fetchPlayerStats(),
-        manager.fetchLeaderboard(20)
+        manager.fetchLeaderboard(20),
+        manager.fetchAttempts()
     ]);
     renderEventBossScreen(boss, playerStats, leaderboard);
 }
