@@ -9,8 +9,8 @@ class EventBossManager {
         this.lastFetch = 0;
         this.fetchCooldown = 10000; // Минимум 10 секунд между запросами
 
-        // === DEBUG: локальный режим без Supabase (убрать перед деплоем) ===
-        this.DEBUG_LOCAL_MODE = true;
+        // === DEBUG: локальный режим без Supabase ===
+        this.DEBUG_LOCAL_MODE = false;
         this._checkConfigVersion(); // Сброс при смене версии конфига
         this._loadDebugState();
         // === END DEBUG ===
