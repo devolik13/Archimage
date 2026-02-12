@@ -44,7 +44,7 @@ async function showLeaderboard() {
                     <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
                         <span style="font-size: 20px; min-width: 30px;">${medal}</span>
                         <div style="flex: 1;">
-                            <div style="font-weight: bold; color: white;">${player.username || 'Игрок'}</div>
+                            <div style="font-weight: bold; color: white;">${typeof window.formatPlayerName === 'function' ? window.formatPlayerName(player.username || 'Игрок', null, player.badges) : (player.username || 'Игрок')}</div>
                             <div style="font-size: 12px; color: #aaa;">${leagueInfo}</div>
                         </div>
                     </div>
@@ -154,7 +154,7 @@ async function getTopPlayers(limit = 5) {
 
         const { data, error } = await window.dbManager.supabase
             .from('players')
-            .select('username, rating, wins, losses, total_battles')
+            .select('username, rating, wins, losses, total_battles, badges')
             .order('rating', { ascending: false })
             .limit(limit);
 

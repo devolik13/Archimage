@@ -161,7 +161,8 @@ class DatabaseManager {
                 unlocked_skins: playerData.unlocked_skins || [], // Разблокированные скины
                 wizard_skins: playerData.wizard_skins || {}, // Выбранные скины для магов
                 training_dummy_progress: playerData.training_dummy_progress || null, // Прогресс тренировочного полигона
-                completed_tasks: playerData.completed_tasks || {} // Выполненные задания (creaky_tasks, ton_raids и др.)
+                completed_tasks: playerData.completed_tasks || {}, // Выполненные задания (creaky_tasks, ton_raids и др.)
+                badges: playerData.badges || [] // Значки (знаки отличия у ника)
                 // GUILD FIELDS: НЕ отправляем здесь - управляются через guild-manager.js RPC
                 // guild_id, guild_contribution, guild_last_active исключены из обычного сохранения
                 // чтобы избежать случайного сброса при передаче null

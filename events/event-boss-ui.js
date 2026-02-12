@@ -155,7 +155,7 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 14px; min-width: 30px;">${rankIcon}</span>
                         <span style="color: ${isMe ? '#7289da' : '#ddd'}; font-size: 13px; font-weight: ${isMe ? 'bold' : 'normal'};">
-                            ${entry.username || 'Маг'}
+                            ${typeof window.formatPlayerName === 'function' ? window.formatPlayerName(entry.username || 'Маг', null, entry.badges) : (entry.username || 'Маг')}
                         </span>
                     </div>
                     <span style="color: #ff6b6b; font-size: 13px; font-weight: bold;">
@@ -390,7 +390,7 @@ async function refreshEventBossLeaderboard() {
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 14px; min-width: 30px;">${rankIcon}</span>
                         <span style="color: ${isMe ? '#7289da' : '#ddd'}; font-size: 13px; font-weight: ${isMe ? 'bold' : 'normal'};">
-                            ${entry.username || 'Маг'}
+                            ${typeof window.formatPlayerName === 'function' ? window.formatPlayerName(entry.username || 'Маг', null, entry.badges) : (entry.username || 'Маг')}
                         </span>
                     </div>
                     <span style="color: #ff6b6b; font-size: 13px; font-weight: bold;">
@@ -698,6 +698,34 @@ async function showEventBossResult(battleResult, damageDealt) {
         if (finishingBlow && rewards.finishingBlow?.timeCurrency) {
             await window.addTimeCurrency(rewards.finishingBlow.timeCurrency);
             console.log(`⚔️ Награда за контрольный удар: +${rewards.finishingBlow.timeCurrency} мин`);
+        }
+    }
+
+    // === Выдача значков ===
+    if (bossDefeated && window.userData) {
+        if (!window.userData.badges) window.userData.badges = [];
+        const badges = window.userData.badges;
+
+        // Контрольный удар — значок финишера
+        if (finishingBlow && !badges.includes('event_boss_finisher')) {
+            badges.push('event_boss_finisher');
+        }
+
+        // Топ-3 значки по лидерборду
+        if (manager) {
+            const stats = await manager.fetchPlayerStats();
+            const rank = stats?.rank || 0;
+            // Убираем старые топ-значки этого ивента (игрок мог сменить позицию)
+            const topBadges = ['event_boss_top1', 'event_boss_top2', 'event_boss_top3'];
+            window.userData.badges = badges.filter(b => !topBadges.includes(b));
+            if (rank === 1) window.userData.badges.push('event_boss_top1');
+            else if (rank === 2) window.userData.badges.push('event_boss_top2');
+            else if (rank === 3) window.userData.badges.push('event_boss_top3');
+        }
+
+        // Сохраняем
+        if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+            try { await window.dbManager.savePlayer(window.userData); } catch (e) { /* ignore */ }
         }
     }
     let hpColor = '#4CAF50';
