@@ -73,6 +73,14 @@ const PRODUCTS: Record<string, { title: string; description: string; price: numb
     description: "Элегантная воительница в доспехах пламени",
     price: 165,
     type: "skin"
+  },
+
+  // ===== ИВЕНТ БОСС =====
+  event_boss_attempt: {
+    title: "⚔️ Доп. попытка атаки",
+    description: "Ещё одна атака на ивент босса",
+    price: 75,
+    type: "event_boss"
   }
 };
 
