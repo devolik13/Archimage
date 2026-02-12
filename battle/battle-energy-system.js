@@ -15,9 +15,14 @@ function initBattleEnergy(userData) {
         const saved = localStorage.getItem('battle_energy_backup');
         if (saved) {
             const backup = JSON.parse(saved);
-            // Используем бэкап если у него МЕНЬШЕ энергии (предотвращаем эксплойт)
-            if (typeof backup.current === 'number' && backup.current < userData.battle_energy.current) {
-                // Проверяем регенерацию с момента бэкапа
+            // Если сервер сбросил энергию (reset_gen изменился) — очищаем бэкап
+            const serverGen = userData.battle_energy.reset_gen || 0;
+            const backupGen = backup.reset_gen || 0;
+            if (serverGen > backupGen) {
+                localStorage.removeItem('battle_energy_backup');
+                console.log(`⚡ Серверный сброс энергии (gen ${backupGen} → ${serverGen}), бэкап очищен`);
+            } else if (typeof backup.current === 'number' && backup.current < userData.battle_energy.current) {
+                // Используем бэкап если у него МЕНЬШЕ энергии (предотвращаем эксплойт)
                 const now = Date.now();
                 const timePassed = now - (backup.last_regen || now);
                 const regenAmount = Math.floor(timePassed / window.BATTLE_ENERGY.REGEN_TIME_MS);
@@ -255,7 +260,8 @@ function _saveBattleEnergyBackup() {
             localStorage.setItem('battle_energy_backup', JSON.stringify({
                 current: energy.current,
                 max: energy.max,
-                last_regen: energy.last_regen
+                last_regen: energy.last_regen,
+                reset_gen: energy.reset_gen || 0
             }));
         }
     } catch (e) { /* ignore */ }

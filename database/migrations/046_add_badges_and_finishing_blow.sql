@@ -17,7 +17,8 @@ ALTER TABLE event_bosses ADD COLUMN IF NOT EXISTS finishing_blow_by TEXT;
 CREATE OR REPLACE FUNCTION event_boss_deal_damage(
     p_boss_id INTEGER,
     p_telegram_id BIGINT,
-    p_damage BIGINT
+    p_damage BIGINT,
+    p_rating_damage BIGINT DEFAULT NULL
 )
 RETURNS JSONB AS $$
 DECLARE
@@ -30,7 +31,12 @@ DECLARE
     v_existing RECORD;
     v_player_total_damage BIGINT;
     v_player_attacks INTEGER;
+    v_rd BIGINT; -- rating damage (для лидерборда)
 BEGIN
+    -- p_damage = чистый урон по HP (вычитается из HP босса)
+    -- p_rating_damage = урон для рейтинга (HP + бонус брони), если NULL — используем p_damage
+    v_rd := COALESCE(p_rating_damage, p_damage);
+
     -- Validate damage
     IF p_damage <= 0 THEN
         RETURN jsonb_build_object('success', false, 'error', 'Invalid damage amount');
@@ -69,12 +75,12 @@ BEGIN
         RETURN jsonb_build_object('success', false, 'error', 'Boss already defeated');
     END IF;
 
-    -- Calculate new HP (cannot go below 0)
+    -- Calculate new HP: вычитаем только чистый HP урон (без бонуса брони)
     v_new_hp := GREATEST(0, v_boss.current_hp - p_damage);
     v_is_defeated := (v_new_hp = 0);
-    v_is_finishing_blow := v_is_defeated; -- The player who reduces HP to 0 gets the finishing blow
+    v_is_finishing_blow := v_is_defeated;
 
-    -- Update boss HP and stats (+ finishing_blow_by if defeated)
+    -- Update boss HP and stats
     UPDATE event_bosses
     SET
         current_hp = v_new_hp,
@@ -93,14 +99,14 @@ BEGIN
         END
     WHERE id = p_boss_id;
 
-    -- Upsert player damage record
+    -- Upsert player damage record (лидерборд использует rating_damage)
     INSERT INTO event_boss_damage (boss_id, player_id, telegram_id, total_damage, attacks_count, best_single_attack)
-    VALUES (p_boss_id, v_player_id, p_telegram_id, p_damage, 1, p_damage)
+    VALUES (p_boss_id, v_player_id, p_telegram_id, v_rd, 1, v_rd)
     ON CONFLICT (boss_id, player_id)
     DO UPDATE SET
-        total_damage = event_boss_damage.total_damage + p_damage,
+        total_damage = event_boss_damage.total_damage + v_rd,
         attacks_count = event_boss_damage.attacks_count + 1,
-        best_single_attack = GREATEST(event_boss_damage.best_single_attack, p_damage),
+        best_single_attack = GREATEST(event_boss_damage.best_single_attack, v_rd),
         last_attack_at = now();
 
     -- Get updated player stats
@@ -111,7 +117,7 @@ BEGIN
     -- Return result with finishing_blow flag
     RETURN jsonb_build_object(
         'success', true,
-        'damage_dealt', p_damage,
+        'damage_dealt', v_rd,
         'boss_new_hp', v_new_hp,
         'boss_max_hp', v_boss.max_hp,
         'boss_defeated', v_is_defeated,
@@ -120,7 +126,7 @@ BEGIN
         'player_attacks', v_player_attacks
     );
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- ============================================
 -- STEP 4: Update get_active_event_boss to return finishing_blow_by

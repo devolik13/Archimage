@@ -301,6 +301,12 @@ class GuildManager {
                 if (!result.success && result.deleteGuild) {
                     // Удаляем гильдию если нет других членов
                     await this.deleteGuild(guildId);
+                    // guild_delete уже обнулил guild_id в БД — обновляем локальное состояние
+                    window.userData.guild_id = null;
+                    window.userData.guild_contribution = 0;
+                    this.currentGuild = null;
+                    this.guildMembers = [];
+                    return { success: true, message: 'Гильдия удалена' };
                 }
             }
 
