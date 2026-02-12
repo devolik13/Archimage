@@ -74,7 +74,7 @@ BEGIN
     ORDER BY created_at DESC
     LIMIT 1;
 
-    IF v_boss IS NOT NULL THEN
+    IF FOUND THEN
         RETURN jsonb_build_object(
             'active', true,
             'id', v_boss.id,
@@ -101,7 +101,7 @@ BEGIN
     ORDER BY COALESCE(defeated_at, ends_at) DESC
     LIMIT 1;
 
-    IF v_boss IS NOT NULL THEN
+    IF FOUND THEN
         RETURN jsonb_build_object(
             'active', false,
             'has_modifier', true,
@@ -119,7 +119,7 @@ BEGIN
 
     RETURN jsonb_build_object('active', false);
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 
 -- ============================================
 -- RPC: event_boss_deal_damage - Record damage from a player's battle
@@ -226,7 +226,7 @@ BEGIN
         'player_attacks', v_player_attacks
     );
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- ============================================
 -- RPC: get_event_boss_leaderboard - Get top damage dealers
@@ -261,7 +261,7 @@ BEGIN
 
     RETURN COALESCE(v_result, '[]'::jsonb);
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 
 -- ============================================
 -- RPC: get_player_event_boss_stats - Get player's own stats for a boss
@@ -280,7 +280,7 @@ BEGIN
     FROM event_boss_damage
     WHERE boss_id = p_boss_id AND telegram_id = p_telegram_id;
 
-    IF v_stats IS NULL THEN
+    IF NOT FOUND THEN
         RETURN jsonb_build_object(
             'participated', false,
             'total_damage', 0,
@@ -304,7 +304,7 @@ BEGIN
         'last_attack_at', v_stats.last_attack_at
     );
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 
 -- ============================================
 -- RPC: create_event_boss - Admin function to create a new event boss
@@ -346,7 +346,7 @@ BEGIN
         'ends_at', now() + (p_duration_hours || ' hours')::INTERVAL
     );
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 COMMENT ON TABLE event_bosses IS 'Global event bosses that all players fight together';
 COMMENT ON TABLE event_boss_damage IS 'Per-player damage tracking for event bosses';
