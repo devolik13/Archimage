@@ -1766,7 +1766,7 @@ async function checkBattleEnd() {
         // Триггер события завершения боя ТОЛЬКО ДЛЯ PvP (вызовет немедленное сохранение)
         // Для дуэлей НЕ сохраняем результаты (нет изменений статистики)
         if (!isPvEBattle && !isDuelBattle && typeof window.onBattleCompleted === 'function') {
-            window.onBattleCompleted(battleResult, rewards, opponentLevel, ratingChange);
+            await window.onBattleCompleted(battleResult, rewards, opponentLevel, ratingChange);
         }
 
         if (window.animationManager) {
@@ -1878,33 +1878,9 @@ async function checkBattleEnd() {
             // Сохраняем для отображения
             window.lastPvEWizardExpGained = wizardExpGained;
 
-            // Сохраняем PvE прогресс при победе
-            if (battleResult === 'win' && currentLevel) {
-                if (!window.userData.pve_progress) {
-                    window.userData.pve_progress = {};
-                }
-
-                // Сохраняем пройденный уровень
-                window.userData.pve_progress[`level_${currentLevel}`] = {
-                    completed: true,
-                    completedAt: new Date().toISOString()
-                };
-
-                // Обновляем максимальный пройденный уровень
-                const maxLevel = window.userData.pve_progress.maxLevel || 0;
-                if (currentLevel > maxLevel) {
-                    window.userData.pve_progress.maxLevel = currentLevel;
-                }
-
-                // Сохраняем в БД
-                if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
-                    try {
-                        await window.dbManager.savePlayer(window.userData);
-                    } catch (err) {
-                        console.error('❌ Ошибка сохранения PvE прогресса:', err);
-                    }
-                }
-            }
+            // PvE прогресс уже сохранён выше (строки 1552-1573) в правильном формате
+            // { chapter1: { maxLevel, completed: { levelId: true } } }
+            // Дублирующее сохранение удалено — оно перезаписывало прогресс в неправильном формате
 
             // Формируем данные для окна результата (как в PvP)
             const battleData = {
