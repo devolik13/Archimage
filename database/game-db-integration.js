@@ -98,11 +98,15 @@ async function initGameWithDatabase() {
     // Значки (badges) — знаки отличия у ника
     window.userData.badges = player.badges || [];
 
-    // === ТЕСТ: значок для telegram_id 12345678 ===
+    // === ТЕСТ: значки для telegram_id 12345678 ===
     if (player.telegram_id === 12345678 || player.telegram_id === '12345678') {
         if (!window.userData.badges.includes('event_boss_top1')) {
             window.userData.badges.push('event_boss_top1');
             console.log('🏆 [TEST] Назначен тестовый значок event_boss_top1 для telegram_id 12345678');
+        }
+        if (!window.userData.badges.includes('event_boss_finisher')) {
+            window.userData.badges.push('event_boss_finisher');
+            console.log('🗡 [TEST] Назначен тестовый значок event_boss_finisher для telegram_id 12345678');
         }
     }
     // === КОНЕЦ ТЕСТА ===

@@ -703,7 +703,7 @@ const PLAYER_BADGES = {
     event_boss_top2: { icon: '⚔', color: '#c0c0c0', title: 'Убийца боссов — 2 место' },
     event_boss_top3: { icon: '⚔', color: '#cd7f32', title: 'Убийца боссов — 3 место' },
     // Контрольный удар
-    event_boss_finisher: { icon: '💀', color: '#ff4500', title: 'Нанёс контрольный удар' },
+    event_boss_finisher: { icon: '🗡', color: '#ff4500', title: 'Нанёс контрольный удар' },
 };
 
 /**
