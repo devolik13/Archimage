@@ -118,7 +118,9 @@ BEGIN
         RETURN jsonb_build_object('success', false, 'error', 'Player not found');
     END IF;
 
-    SELECT * INTO v_guild FROM guilds WHERE id = p_guild_id;
+    -- FOR UPDATE: блокируем строку гильдии для предотвращения race condition
+    -- при параллельных вызовах (несколько игроков одновременно, магазин + бой)
+    SELECT * INTO v_guild FROM guilds WHERE id = p_guild_id FOR UPDATE;
     IF v_guild IS NULL THEN
         RETURN jsonb_build_object('success', false, 'error', 'Guild not found');
     END IF;

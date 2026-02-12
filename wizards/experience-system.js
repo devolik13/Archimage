@@ -45,10 +45,8 @@ function addExperienceToWizard(wizard, expAmount) {
         }
     }
 
-    // Добавляем опыт гильдии (если игрок в гильдии)
-    if (window.userData?.guild_id && window.guildManager?.currentGuild) {
-        window.guildManager.addGuildExperience(expAmount);
-    }
+    // Опыт гильдии начисляется одним вызовом в calculateAndGrantBattleExp()
+    // чтобы избежать race condition при параллельных RPC
 }
 
 // Применение бонусов за уровень (линейный рост + особый бонус на 40)
@@ -247,6 +245,12 @@ function calculateAndGrantBattleExp(isVictory) {
         }
         window.addToBattleLog(`   ✨ Общий опыт: +${totalExp} XP`);
         window.addToBattleLog(`═══════════════════════════════`);
+    }
+
+    // Добавляем суммарный опыт гильдии ОДНИМ вызовом (вместо 5 параллельных)
+    const totalGuildExp = expResults.reduce((sum, r) => sum + r.expGained, 0);
+    if (totalGuildExp > 0 && window.userData?.guild_id && window.guildManager?.currentGuild) {
+        window.guildManager.addGuildExperience(totalGuildExp);
     }
 
     // Очищаем статистику
