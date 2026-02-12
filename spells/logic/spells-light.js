@@ -72,11 +72,6 @@ function castFlash(wizard, spellData, position, casterType) {
         return;
     }
 
-    // Лог в боевой журнал
-    if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`✨ ${wizard.name} использует Вспышку на ${target.wizard.name}`);
-    }
-
     // Определяем колонки
     const casterCol = casterType === 'player' ? 5 : 0;
     const summonColumn = casterType === 'player' ? 1 : 4;
@@ -206,6 +201,25 @@ function castFlash(wizard, spellData, position, casterType) {
         targetSurvived: target.wizard.hp > 0
     };
 
+    // 📝 Логируем сразу после расчёта урона (до анимации) — как Искра
+    if (typeof window.addToBattleLog === 'function') {
+        window.addToBattleLog(`🎯 ${target.wizard.name} получает от ${wizard.name} ${totalDamageDealt} урона (Вспышка ${level}ур)`);
+
+        protectionLayers.forEach(layer => {
+            window.addToBattleLog(`    ├─ ${layer}`);
+        });
+
+        // Модификаторы урона (броня, погода, благословения)
+        if (target.wizard._lastDamageSteps && target.wizard._lastDamageSteps.length > 0) {
+            target.wizard._lastDamageSteps.forEach(step => {
+                window.addToBattleLog(`    ├─ ${step}`);
+            });
+            delete target.wizard._lastDamageSteps;
+        }
+
+        window.addToBattleLog(`    └─ Осталось HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
+    }
+
     // Запускаем анимацию снаряда
     if (window.spellAnimations?.flash?.play) {
         window.spellAnimations.flash.play({
@@ -214,13 +228,6 @@ function castFlash(wizard, spellData, position, casterType) {
             targetCol: impactCol,
             targetRow: impactRow,
             onHit: () => {
-                // Логируем результат
-                protectionLayers.forEach(layer => {
-                    if (typeof window.addToBattleLog === 'function') {
-                        window.addToBattleLog(`    ├─ ${layer}`);
-                    }
-                });
-
                 // Применяем бонус фракции
                 applyLightFactionBonus(wizard, casterType);
 
@@ -233,12 +240,6 @@ function castFlash(wizard, spellData, position, casterType) {
         });
     } else {
         console.warn('⚠️ Анимация flash не найдена');
-        // Fallback - логируем сразу
-        protectionLayers.forEach(layer => {
-            if (typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`    ├─ ${layer}`);
-            }
-        });
         applyLightFactionBonus(wizard, casterType);
         if (typeof window.clearCurrentSpellCaster === 'function') {
             window.clearCurrentSpellCaster();
