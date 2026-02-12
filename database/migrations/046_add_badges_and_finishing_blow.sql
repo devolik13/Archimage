@@ -145,7 +145,7 @@ BEGIN
     ORDER BY created_at DESC
     LIMIT 1;
 
-    IF v_boss IS NOT NULL THEN
+    IF FOUND THEN
         RETURN jsonb_build_object(
             'active', true,
             'id', v_boss.id,
@@ -172,7 +172,7 @@ BEGIN
     ORDER BY COALESCE(defeated_at, ends_at) DESC
     LIMIT 1;
 
-    IF v_boss IS NOT NULL THEN
+    IF FOUND THEN
         RETURN jsonb_build_object(
             'active', false,
             'has_modifier', true,
@@ -191,7 +191,7 @@ BEGIN
 
     RETURN jsonb_build_object('active', false);
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 
 -- ============================================
 -- STEP 5: Update get_event_boss_leaderboard to include player badges
@@ -227,7 +227,7 @@ BEGIN
 
     RETURN COALESCE(v_result, '[]'::jsonb);
 END;
-$$ LANGUAGE plpgsql STABLE;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 
 -- ============================================
 -- STEP 6: Update update_player_safe to handle badges
