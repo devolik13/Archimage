@@ -180,7 +180,7 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                 <div style="flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center;">
                     <div id="event-boss-preview-sprite" style="
                         width: 100%; aspect-ratio: 1; max-width: 200px;
-                        background: url('assets/sprites/event_boss/idle.webp') 0% 0% / 500% 500% no-repeat;
+                        background: url('assets/sprites/event_boss/${isDefeated ? 'death' : 'idle'}.webp') 0% 0% / 500% 500% no-repeat;
                         image-rendering: pixelated;
                     "></div>
                 </div>
@@ -289,6 +289,7 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                     <div>🥉 3 место: <span style="color: #cd7f32;">+5 дней</span></div>
                     <div>✅ Участие: <span style="color: #4CAF50;">+1 день</span></div>
                     <div>💀 Босс убит: <span style="color: #9B59B6;">+3 дня каждому + добыча +30% на неделю</span></div>
+                    <div>⚔️ Контрольный удар: <span style="color: #ff4500;">+7 дней тому, кто добьёт босса</span></div>
                     <div>❌ Босс выжил: <span style="color: #ff6b6b;">добыча -50% на неделю</span></div>
                 </div>
             </div>
@@ -318,7 +319,15 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
     `;
 
     // Анимация спрайтлиста босса (5x5 сетка, 25 кадров)
-    startBossPreviewAnimation();
+    if (!isDefeated) {
+        startBossPreviewAnimation();
+    } else {
+        // Мёртвый босс — показываем последний кадр death-спрайта
+        const sprite = document.getElementById('event-boss-preview-sprite');
+        if (sprite) {
+            sprite.style.backgroundPosition = '100% 100%';
+        }
+    }
 }
 
 /** Запуск анимации спрайта босса на превью-экране */
@@ -665,10 +674,26 @@ async function showEventBossResult(battleResult, damageDealt) {
     }
 
     const bossDefeated = serverResult?.boss_defeated || false;
+    const finishingBlow = serverResult?.finishing_blow || false;
     const bossNewHp = serverResult?.boss_new_hp;
     const bossMaxHp = serverResult?.boss_max_hp;
     const playerTotalDamage = serverResult?.player_total_damage || damageDealt;
     const hpPercent = bossMaxHp ? ((bossNewHp / bossMaxHp) * 100) : 0;
+
+    // === Выдача наград ===
+    const rewards = window.EVENT_BOSS_CONFIG?.rewards;
+    if (bossDefeated && rewards && typeof window.addTimeCurrency === 'function') {
+        // Награда за убийство босса — всем участникам
+        if (rewards.bossKilled?.timeCurrency) {
+            await window.addTimeCurrency(rewards.bossKilled.timeCurrency);
+            console.log(`🐉 Награда за убийство босса: +${rewards.bossKilled.timeCurrency} мин`);
+        }
+        // Контрольный удар — бонус тому кто добил
+        if (finishingBlow && rewards.finishingBlow?.timeCurrency) {
+            await window.addTimeCurrency(rewards.finishingBlow.timeCurrency);
+            console.log(`⚔️ Награда за контрольный удар: +${rewards.finishingBlow.timeCurrency} мин`);
+        }
+    }
     let hpColor = '#4CAF50';
     if (hpPercent < 50) hpColor = '#ff9800';
     if (hpPercent < 25) hpColor = '#f44336';
@@ -702,8 +727,9 @@ async function showEventBossResult(battleResult, damageDealt) {
             <!-- Спрайт босса -->
             <div style="
                 width: 160px; height: 160px; margin: 0 auto 8px;
-                background: url('assets/sprites/event_boss/idle.webp') 0% 0% / 500% 500% no-repeat;
+                background: url('assets/sprites/event_boss/${bossDefeated ? 'death' : 'idle'}.webp') 0% 0% / 500% 500% no-repeat;
                 image-rendering: pixelated;
+                ${bossDefeated ? "background-position: 100% 100%;" : ""}
             "></div>
 
             <div style="font-size: 20px; font-weight: bold; margin-bottom: 4px; color: #9B59B6;">
@@ -732,6 +758,19 @@ async function showEventBossResult(battleResult, damageDealt) {
                         Добыча времени +30% на неделю!
                     </div>
                 </div>
+                ${finishingBlow ? `
+                <div style="
+                    background: rgba(255,69,0,0.15); border: 2px solid #ff4500;
+                    border-radius: 10px; padding: 12px; margin-bottom: 12px;
+                    animation: scaleIn 0.5s ease-out;
+                ">
+                    <div style="font-size: 24px; margin-bottom: 4px;">⚔️</div>
+                    <div style="color: #ff4500; font-weight: bold; font-size: 16px;">КОНТРОЛЬНЫЙ УДАР!</div>
+                    <div style="color: #ff8c60; font-size: 12px; margin-top: 4px;">
+                        Вы нанесли добивающий удар! +7 дней времени!
+                    </div>
+                </div>
+                ` : ''}
             ` : (bossNewHp != null ? `
                 <div style="
                     background: rgba(0,0,0,0.3); border-radius: 8px;

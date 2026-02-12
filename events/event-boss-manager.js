@@ -245,6 +245,7 @@ class EventBossManager {
                 boss_new_hp: newHp,
                 boss_max_hp: this.currentBoss.max_hp,
                 boss_defeated: isDefeated,
+                finishing_blow: isDefeated, // В дебаге контрольный удар всегда у текущего игрока
                 player_total_damage: this._debugPlayerStats.total_damage,
                 player_attacks: this._debugPlayerStats.attacks_count
             };
