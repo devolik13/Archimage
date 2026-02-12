@@ -36,6 +36,10 @@ serve(async (req) => {
 
   try {
     const BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN");
+    if (!BOT_TOKEN) {
+      console.error("❌ TELEGRAM_BOT_TOKEN is not set!");
+      return new Response("OK", { headers: corsHeaders });
+    }
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
@@ -50,7 +54,8 @@ serve(async (req) => {
       const chatId = update.message.chat.id;
       const firstName = update.message.from.first_name || 'Маг';
 
-      const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendAnimation`, {
+      // Пробуем отправить анимацию, если не получится — отправляем текст
+      let response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendAnimation`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -72,8 +77,35 @@ serve(async (req) => {
         })
       });
 
-      const result = await response.json();
+      let result = await response.json();
       console.log("📤 Telegram API response:", JSON.stringify(result));
+
+      // Если анимация не отправилась — fallback на текстовое сообщение
+      if (!result.ok) {
+        console.warn("⚠️ sendAnimation failed, falling back to sendMessage:", result.description);
+        response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: `✨ Добро пожаловать, ${firstName}!\n\n🔥 Битва Магов — выбери свою стихию и открой таинства магии!\n\n⚔️ Сражайся с другими игроками\n🏰 Строй свой город\n📚 Изучай заклинания\n💰 Зарабатывай уникальную валюту\n🎁 Участвуй в розыгрышах призов`,
+            reply_markup: {
+              inline_keyboard: [
+                [{
+                  text: "🎮 Играть",
+                  web_app: { url: "https://archimage.vercel.app" }
+                }],
+                [{
+                  text: "👥 Сообщество",
+                  url: "https://t.me/archimage_chat"
+                }]
+              ]
+            }
+          })
+        });
+        result = await response.json();
+        console.log("📤 Fallback sendMessage response:", JSON.stringify(result));
+      }
 
       return new Response("OK", { headers: corsHeaders });
     }
@@ -190,8 +222,9 @@ serve(async (req) => {
     return new Response("OK", { headers: corsHeaders });
 
   } catch (error) {
-    console.error("Webhook error:", error);
-    return new Response("Error", { status: 500, headers: corsHeaders });
+    console.error("❌ Webhook error:", error?.message || error, error?.stack);
+    // Всегда возвращаем 200, чтобы Telegram не повторял запросы
+    return new Response("OK", { headers: corsHeaders });
   }
 });
 
