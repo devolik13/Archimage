@@ -102,7 +102,7 @@ function setupAdventureChapters() {
                 setTimeout(() => {
                     if (typeof window.showAdventureMap === 'function') {
                         // Определяем диапазон карты на основе прогресса игрока
-                        const maxLevel = window.userData?.pve_progress?.maxLevel || 1;
+                        const maxLevel = window.userData?.pve_progress?.chapter1?.maxLevel || 1;
                         let mapRange = '1-10';
 
                         if (maxLevel >= 41) {
