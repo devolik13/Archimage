@@ -688,6 +688,41 @@ async function showTrialLeaderboardInArena() {
 }
 
 /**
+ * Синхронизировать локальный прогресс испытания в Supabase
+ * Вызывается перед загрузкой рейтинга, чтобы подтянуть данные,
+ * которые не были сохранены из-за сети/инициализации
+ */
+async function syncTrialProgressToSupabase() {
+    try {
+        const supabase = window.dbManager?.supabase;
+        if (!supabase) return;
+
+        const progress = window.loadDummyProgress ? window.loadDummyProgress() : null;
+        if (!progress || !progress.totalDamage || progress.totalDamage <= 0) return;
+
+        const playerId = window.dbManager?.currentPlayer?.telegram_id || window.userData?.user_id;
+        const playerName = window.myUsername || window.userData?.username || 'Игрок';
+        if (!playerId) return;
+
+        const { error } = await supabase.rpc('sync_trial_total', {
+            p_player_id: playerId,
+            p_player_name: playerName,
+            p_total_damage: Math.round(progress.totalDamage),
+            p_best_damage: Math.round(progress.bestAttempt || 0),
+            p_attempts_count: progress.attemptsToday || 0
+        });
+
+        if (error) {
+            console.warn('Ошибка синхронизации прогресса испытания:', error);
+        } else {
+            console.log(`📊 Прогресс испытания синхронизирован: totalDamage=${progress.totalDamage}`);
+        }
+    } catch (e) {
+        console.warn('Ошибка синхронизации прогресса:', e);
+    }
+}
+
+/**
  * Загрузить рейтинг из Supabase
  */
 async function loadTrialLeaderboardSupabase() {
@@ -697,6 +732,9 @@ async function loadTrialLeaderboardSupabase() {
             console.warn('Supabase не инициализирован, используем localStorage');
             return loadTrialLeaderboardLocal();
         }
+
+        // Синхронизируем локальный прогресс перед загрузкой рейтинга
+        await syncTrialProgressToSupabase();
 
         const { data, error } = await supabase
             .rpc('get_trial_leaderboard', { p_limit: 100 });
@@ -1050,6 +1088,7 @@ window.showTrialLeaderboardInArena = showTrialLeaderboardInArena;
 window.saveTrialResultLocal = saveTrialResultLocal;
 window.saveTrialResultSupabase = saveTrialResultSupabase;
 window.loadTrialLeaderboardSupabase = loadTrialLeaderboardSupabase;
+window.syncTrialProgressToSupabase = syncTrialProgressToSupabase;
 window.getPlayerTrialRankSupabase = getPlayerTrialRankSupabase;
 window.checkAndClaimTrialReward = checkAndClaimTrialReward;
 window.showTrialRewardNotification = showTrialRewardNotification;
