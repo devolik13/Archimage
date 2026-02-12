@@ -187,28 +187,34 @@ class EventBossManager {
 
     /**
      * Отправить нанесённый урон после боя
+     * @param {number} hpDamage — чистый урон по HP босса
+     * @param {number} ratingDamage — урон для рейтинга (HP + бонус брони)
      */
-    async submitDamage(damage) {
+    async submitDamage(hpDamage, ratingDamage) {
+        // ratingDamage по умолчанию = hpDamage (обратная совместимость)
+        if (ratingDamage == null) ratingDamage = hpDamage;
+
         // === DEBUG ===
         if (this.DEBUG_LOCAL_MODE) {
-            if (!this.currentBoss || damage <= 0) return null;
+            if (!this.currentBoss || hpDamage <= 0) return null;
 
-            const newHp = Math.max(0, this.currentBoss.current_hp - damage);
+            // HP босса уменьшается только на чистый HP урон
+            const newHp = Math.max(0, this.currentBoss.current_hp - hpDamage);
             const isDefeated = newHp === 0;
 
             this.currentBoss.current_hp = newHp;
-            this.currentBoss.total_damage_dealt += damage;
+            this.currentBoss.total_damage_dealt += hpDamage;
             if (isDefeated) {
                 this.currentBoss.status = 'defeated';
                 this.currentBoss.defeated_at = new Date().toISOString();
                 this.currentBoss.finishing_blow_by = window.userData?.username || 'Неизвестный маг';
             }
 
-            // Обновляем мок статистику игрока
+            // Обновляем мок статистику игрока (лидерборд использует ratingDamage)
             this._debugPlayerStats.participated = true;
-            this._debugPlayerStats.total_damage += damage;
+            this._debugPlayerStats.total_damage += ratingDamage;
             this._debugPlayerStats.attacks_count++;
-            this._debugPlayerStats.best_single_attack = Math.max(this._debugPlayerStats.best_single_attack, damage);
+            this._debugPlayerStats.best_single_attack = Math.max(this._debugPlayerStats.best_single_attack, ratingDamage);
 
             // Обновляем лидерборд — находим свою запись по telegram_id
             const myId = parseInt(window.userId) || 1;
@@ -218,7 +224,7 @@ class EventBossManager {
                 myEntry = { rank: 0, username: myUsername, telegram_id: myId, total_damage: 0, attacks_count: 0, best_single_attack: 0 };
                 this._debugLeaderboard.push(myEntry);
             }
-            myEntry.username = myUsername; // Всегда актуализируем username
+            myEntry.username = myUsername;
             myEntry.total_damage = this._debugPlayerStats.total_damage;
             myEntry.attacks_count = this._debugPlayerStats.attacks_count;
             myEntry.best_single_attack = this._debugPlayerStats.best_single_attack;
@@ -227,12 +233,11 @@ class EventBossManager {
             this._debugLeaderboard.forEach((e, i) => e.rank = i + 1);
             this._debugPlayerStats.rank = this._debugLeaderboard.findIndex(e => e.telegram_id === myId) + 1;
 
-            // Обновляем кол-во участников (считаем уникальных в лидерборде с уроном > 0)
+            // Обновляем кол-во участников
             this.currentBoss.total_participants = this._debugLeaderboard.filter(e => e.total_damage > 0).length;
 
             this.useAttempt();
             this._saveDebugState();
-            // Сохраняем HP босса
             try {
                 localStorage.setItem('event_boss_debug_boss', JSON.stringify({
                     current_hp: this.currentBoss.current_hp,
@@ -242,14 +247,14 @@ class EventBossManager {
                 }));
             } catch (e) { /* ignore */ }
 
-            console.log(`🐉 [DEBUG] Урон: ${damage} | Босс HP: ${newHp}/${this.currentBoss.max_hp} | Defeated: ${isDefeated}`);
+            console.log(`🐉 [DEBUG] HP урон: ${hpDamage}, рейтинг: ${ratingDamage} | Босс HP: ${newHp}/${this.currentBoss.max_hp} | Defeated: ${isDefeated}`);
             return {
                 success: true,
-                damage_dealt: damage,
+                damage_dealt: ratingDamage,
                 boss_new_hp: newHp,
                 boss_max_hp: this.currentBoss.max_hp,
                 boss_defeated: isDefeated,
-                finishing_blow: isDefeated, // В дебаге контрольный удар всегда у текущего игрока
+                finishing_blow: isDefeated,
                 player_total_damage: this._debugPlayerStats.total_damage,
                 player_attacks: this._debugPlayerStats.attacks_count
             };
@@ -261,7 +266,7 @@ class EventBossManager {
             return null;
         }
 
-        if (damage <= 0) {
+        if (hpDamage <= 0) {
             console.warn('Урон <= 0, пропускаем отправку');
             return null;
         }
@@ -276,7 +281,8 @@ class EventBossManager {
             const { data, error } = await this.supabase.rpc('event_boss_deal_damage', {
                 p_boss_id: this.currentBoss.id,
                 p_telegram_id: telegramId,
-                p_damage: damage
+                p_damage: hpDamage,
+                p_rating_damage: ratingDamage
             });
 
             if (error) {

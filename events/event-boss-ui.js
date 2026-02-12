@@ -664,14 +664,19 @@ function startEventBossBattle() {
 
 /**
  * Показать результат боя с ивент боссом
+ * @param {object} battleResult — результат боя
+ * @param {number} hpDamage — чистый урон по HP босса
+ * @param {number} ratingDamage — урон для рейтинга (HP + бонус брони)
  */
-async function showEventBossResult(battleResult, damageDealt) {
+async function showEventBossResult(battleResult, hpDamage, ratingDamage) {
     const manager = window.eventBossManager;
+    // Для отображения используем ratingDamage
+    const damageDealt = ratingDamage || hpDamage || 0;
 
-    // Отправляем урон на сервер
+    // Отправляем урон на сервер (hpDamage для HP босса, ratingDamage для лидерборда)
     let serverResult = null;
-    if (damageDealt > 0 && manager && window.currentEventBossId) {
-        serverResult = await manager.submitDamage(damageDealt);
+    if (hpDamage > 0 && manager && window.currentEventBossId) {
+        serverResult = await manager.submitDamage(hpDamage, ratingDamage);
     }
 
     // Обновляем данные
