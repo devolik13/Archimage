@@ -152,8 +152,11 @@ function startBattle() {
     // ЭНЕРГИЯ УЖЕ СПИСАНА при выборе противника в opponent-selection.js
     // Это предотвращает эксплойт с отменой боя
 
-    // Сбрасываем флаг показа результата для нового боя
+    // Сбрасываем флаги результата боя для нового боя
     window.battleResultShown = false;
+    window._battleCompletedHandled = false;
+    window._battleSaveCompleted = false;
+    window.arenaResultShown = false;
 
     // Сбрасываем информацию о разблокированном скине (чтобы не показывать повторно)
     window.lastUnlockedSkin = null;
@@ -1765,6 +1768,8 @@ async function checkBattleEnd() {
 
         // Триггер события завершения боя ТОЛЬКО ДЛЯ PvP (вызовет немедленное сохранение)
         // Для дуэлей НЕ сохраняем результаты (нет изменений статистики)
+        // Флаг ставим ДО await чтобы closeBattleFieldModal не вызвал дубль
+        window._battleCompletedHandled = true;
         if (!isPvEBattle && !isDuelBattle && typeof window.onBattleCompleted === 'function') {
             await window.onBattleCompleted(battleResult, rewards, opponentLevel, ratingChange);
         }
