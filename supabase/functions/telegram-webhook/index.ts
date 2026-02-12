@@ -55,7 +55,7 @@ serve(async (req) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
-          animation: "CgACAgIAAxkBAAODaXoC15EHqbtDYrCVUPxW-UJMvqoAAmKSAAJR1dBLhXURdnYtaqQ4BA",
+          animation: "CgACAgIAAxkBAAFCRK9pjak9Y2A95pvWk8R7387kSWIcHAAC8JkAAlmsaUh9qcZmdEM_hzoE",
           caption: `✨ Добро пожаловать, ${firstName}!\n\n🔥 Битва Магов — выбери свою стихию и открой таинства магии!\n\n⚔️ Сражайся с другими игроками\n🏰 Строй свой город\n📚 Изучай заклинания\n💰 Зарабатывай уникальную валюту\n🎁 Участвуй в розыгрышах призов`,
           reply_markup: {
             inline_keyboard: [
@@ -90,11 +90,9 @@ serve(async (req) => {
           inline_query_id: queryId,
           results: [{
             type: "mpeg4_gif",
-            id: "archimage_promo",
-            mpeg4_url: "https://archimage.vercel.app/images/promo/welcome.mp4",
-            thumbnail_url: "https://archimage.vercel.app/images/promo/welcome.mp4",
-            thumbnail_mime_type: "video/mp4",
-            caption: "🔥 Битва Магов — АКЦИЯ!\n\n🏆 Пройди 10 уровень приключений, победи Огненного Элементаля и получи 5 TON!\n\n💡 Совет: не выбирай фракцию Огня — у Элементаля высокая сопротивляемость к огню!\n\n⏳ Только первые 10 игроков!\n\n📢 Подробности в сообществе",
+            id: "archimage_event_boss",
+            mpeg4_file_id: "CgACAgIAAxkBAAFCRK9pjak9Y2A95pvWk8R7387kSWIcHAAC8JkAAlmsaUh9qcZmdEM_hzoE",
+            caption: "⚔️ Битва Магов — ИВЕНТ!\n\n🐉 Отродье Тьмы пробудилось — 5,000,000 HP!\nВсе игроки бьют одного монстра!\n\n💡 Босс уязвим к магии Света!\n\n🏆 Награды за участие + бонусы ТОП-3!\n📢 Подробности в сообществе",
             reply_markup: {
               inline_keyboard: [
                 [{ text: "🎮 Играть", url: "https://t.me/archimage_bot/app" }],
