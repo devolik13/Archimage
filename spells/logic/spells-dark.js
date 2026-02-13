@@ -295,13 +295,13 @@ function castShadowRealm(wizard, spellData, position, casterType) {
                 const lostHp = target.max_hp - target.hp;
                 let damage = Math.floor(lostHp * percentDamage / 100);
 
-                // Кап урона: не более 200
-                damage = Math.min(damage, 200);
-
                 if (damage > 0) {
-                    // Применяем урон
-                    const finalDamage = typeof window.applyFinalDamage === 'function' ?
+                    // Применяем урон (бонусы уровня, башни, брони и т.д.)
+                    let finalDamage = typeof window.applyFinalDamage === 'function' ?
                         window.applyFinalDamage(wizard, target, damage, 'shadow_realm', 0, true) : damage;
+
+                    // Кап урона ПОСЛЕ всех модификаторов: не более 200
+                    finalDamage = Math.min(finalDamage, 200);
 
                     target.hp -= finalDamage;
                     if (target.hp < 0) target.hp = 0;
