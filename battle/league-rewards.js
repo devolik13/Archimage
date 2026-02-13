@@ -102,16 +102,16 @@ async function claimLeagueReward(leagueId) {
     // Выдаем награды
     const rewards = league.rewards;
 
-    if (rewards.time_currency) {
+    if (rewards.currency_base) {
         if (typeof window.addTimeCurrency === 'function') {
-            await window.addTimeCurrency(rewards.time_currency);
+            await window.addTimeCurrency(rewards.currency_base);
         } else {
-            // Fallback: обновляем time_currency_base (не старое поле time_currency!)
+            // Fallback: обновляем time_currency_base
             const current = typeof window.getTimeCurrency === 'function' ? window.getTimeCurrency() : (window.userData.time_currency_base || 0);
-            window.userData.time_currency_base = current + rewards.time_currency;
+            window.userData.time_currency_base = current + rewards.currency_base;
             window.userData.time_currency_updated_at = typeof getServerNow === 'function' ? getServerNow().toISOString() : new Date().toISOString();
         }
-        console.log(`⏰ Получено времени: +${rewards.time_currency}`);
+        console.log(`⏰ Получено времени: +${rewards.currency_base}`);
     }
 
     if (rewards.airdrop_points && typeof window.addAirdropPoints === 'function') {
@@ -220,7 +220,7 @@ function showLeagueRewardsModal() {
                     </div>
                     <div style="text-align: right;">
                         <div style="font-size: 11px; color: #888; margin-bottom: 5px;">Награды:</div>
-                        ${league.rewards.time_currency ? '<div style="color: #00bfff; font-size: 14px;">⏰ ' + league.rewards.time_currency + '</div>' : ''}
+                        ${league.rewards.currency_base ? '<div style="color: #00bfff; font-size: 14px;">⏰ ' + league.rewards.currency_base + '</div>' : ''}
                         ${league.rewards.airdrop_points ? '<div style="color: #4ade80; font-size: 14px;">🪙 ' + league.rewards.airdrop_points + ' BPM</div>' : ''}
                     </div>
                 </div>
