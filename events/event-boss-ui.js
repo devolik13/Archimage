@@ -1086,22 +1086,32 @@ function showEventBossWarpPortal(show) {
         document.body.appendChild(portal);
     }
 
-    // CSS анимации
+    // CSS анимации — зловещий портал
     if (!document.getElementById('event-boss-portal-css')) {
         const style = document.createElement('style');
         style.id = 'event-boss-portal-css';
         style.textContent = `
             @keyframes eventBossPortalPulse {
-                0%, 100% { transform: scale(1); opacity: 0.6; }
-                50% { transform: scale(1.15); opacity: 1; }
+                0%, 100% { transform: scale(1); opacity: 0.5; }
+                50% { transform: scale(1.2); opacity: 1; }
             }
             @keyframes eventBossPortalGlow {
-                0%, 100% { box-shadow: 0 0 15px rgba(155,89,182,0.4), inset 0 0 15px rgba(155,89,182,0.2); }
-                50% { box-shadow: 0 0 30px rgba(155,89,182,0.8), inset 0 0 25px rgba(155,89,182,0.4); }
+                0%, 100% { box-shadow: 0 0 20px rgba(120,20,20,0.5), inset 0 0 20px rgba(80,0,0,0.3); }
+                50% { box-shadow: 0 0 40px rgba(180,30,30,0.8), inset 0 0 30px rgba(120,0,0,0.5); }
             }
             @keyframes portalLocked {
-                0%, 100% { opacity: 0.5; }
-                50% { opacity: 0.8; }
+                0%, 100% { opacity: 0.4; }
+                50% { opacity: 0.7; }
+            }
+            @keyframes portalVortex {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            @keyframes portalFlicker {
+                0%, 100% { opacity: 0.6; }
+                25% { opacity: 0.8; }
+                50% { opacity: 1; }
+                75% { opacity: 0.7; }
             }
         `;
         document.head.appendChild(style);
@@ -1119,12 +1129,15 @@ function showEventBossWarpPortal(show) {
 
         let timerLabel = '';
         let timerValue = '';
-        let portalColor = 'rgba(155,89,182,'; // Purple
+        // Тёмно-красный/чёрный стиль — зловещий портал
+        let portalColor = 'rgba(140,20,20,'; // Dark red
+        let ringColor = 'rgba(180,30,30,';
 
         if (isLocked) {
             timerLabel = 'Портал откроется через';
             timerValue = formatCountdown(timerStatus.diff);
-            portalColor = 'rgba(100,100,120,'; // Gray-ish
+            portalColor = 'rgba(60,60,70,'; // Dark gray
+            ringColor = 'rgba(80,80,90,';
         } else if (isActive) {
             timerLabel = 'До закрытия портала';
             timerValue = formatCountdown(timerStatus.diff);
@@ -1140,52 +1153,74 @@ function showEventBossWarpPortal(show) {
             if (hpPercent < 50) hpColor = '#ff9800';
             if (hpPercent < 25) hpColor = '#f44336';
             hpBarHTML = `
-                <div style="width: 80px; height: 6px; background: #1a1a2a; border-radius: 3px; overflow: hidden; margin: 3px auto 0; border: 1px solid ${portalColor}0.3);">
+                <div style="width: 80px; height: 6px; background: #0a0a0a; border-radius: 3px; overflow: hidden; margin: 3px auto 0; border: 1px solid rgba(80,0,0,0.5);">
                     <div style="width: ${hpPercent}%; height: 100%; background: ${hpColor}; border-radius: 3px;"></div>
                 </div>
-                <div style="font-size: 9px; color: #aaa; margin-top: 2px;">
+                <div style="font-size: 9px; color: #999; margin-top: 2px;">
                     ${attemptsLeft > 0 ? `⚔️ ${attemptsLeft}` : '❌ 0'}
                 </div>
             `;
         }
 
         portal.innerHTML = `
-            <!-- Кольцо портала -->
+            <!-- Вращающееся внешнее кольцо -->
             <div style="
-                position: relative; width: 80px; height: 80px;
+                position: relative; width: 84px; height: 84px;
                 border-radius: 50%;
-                background: radial-gradient(circle, ${portalColor}0.5) 0%, ${portalColor}0) 70%);
                 display: flex; align-items: center; justify-content: center;
-                ${isLocked ? 'animation: portalLocked 3s ease-in-out infinite;' : `animation: eventBossPortalGlow 2s ease-in-out infinite;`}
             ">
+                <!-- Вихрь-вращение (тёмный ободок) -->
                 <div style="
-                    position: absolute; width: 74px; height: 74px;
+                    position: absolute; width: 84px; height: 84px;
                     border-radius: 50%;
-                    border: 2px solid ${portalColor}0.6);
-                    animation: eventBossPortalPulse 2s ease-in-out infinite;
+                    border: 2px dashed ${ringColor}0.3);
+                    ${isLocked ? '' : 'animation: portalVortex 12s linear infinite;'}
                 "></div>
+                <!-- Основное кольцо портала -->
                 <div style="
-                    position: absolute; width: 58px; height: 58px;
+                    position: relative; width: 76px; height: 76px;
                     border-radius: 50%;
-                    border: 2px solid ${portalColor}0.8);
-                    animation: eventBossPortalPulse 2s ease-in-out infinite 0.5s;
-                "></div>
-                <div style="font-size: 28px; z-index: 1; text-shadow: 0 0 12px ${portalColor}0.8);">
-                    ${isLocked ? '🔒' : isEnded ? '🌑' : '🕳'}
+                    background: radial-gradient(circle, rgba(0,0,0,0.9) 0%, ${portalColor}0.6) 40%, ${portalColor}0) 70%);
+                    display: flex; align-items: center; justify-content: center;
+                    ${isLocked ? 'animation: portalLocked 3s ease-in-out infinite;' : 'animation: eventBossPortalGlow 2s ease-in-out infinite;'}
+                ">
+                    <div style="
+                        position: absolute; width: 70px; height: 70px;
+                        border-radius: 50%;
+                        border: 2px solid ${ringColor}0.5);
+                        animation: eventBossPortalPulse 2.5s ease-in-out infinite;
+                    "></div>
+                    <div style="
+                        position: absolute; width: 54px; height: 54px;
+                        border-radius: 50%;
+                        border: 2px solid ${ringColor}0.7);
+                        animation: eventBossPortalPulse 2.5s ease-in-out infinite 0.7s;
+                    "></div>
+                    <!-- Внутренняя бездна -->
+                    <div style="
+                        position: absolute; width: 38px; height: 38px;
+                        border-radius: 50%;
+                        background: radial-gradient(circle, rgba(0,0,0,1) 30%, ${portalColor}0.4) 100%);
+                        animation: portalFlicker 3s ease-in-out infinite;
+                    "></div>
+                    <div style="font-size: 26px; z-index: 1; text-shadow: 0 0 15px rgba(0,0,0,1), 0 0 30px ${portalColor}0.6);">
+                        ${isLocked ? '🔒' : isEnded ? '💀' : '🕳'}
+                    </div>
                 </div>
             </div>
             <!-- Инфо -->
             <div style="text-align: center; margin-top: 4px;">
-                <div style="font-size: 9px; color: #aaa; text-shadow: 0 0 4px rgba(0,0,0,1);">
+                <div style="font-size: 9px; color: #777; text-shadow: 0 0 4px rgba(0,0,0,1); letter-spacing: 0.5px;">
                     ${timerLabel}
                 </div>
                 ${timerValue ? `
                 <div style="
                     font-size: 14px; font-weight: bold;
-                    color: ${isLocked ? '#8888aa' : '#ff9800'};
-                    text-shadow: 0 0 8px rgba(0,0,0,1);
+                    color: ${isLocked ? '#666' : '#1a1a1a'};
+                    text-shadow: ${isLocked ? '0 0 6px rgba(100,100,120,0.5)' : '0 0 8px rgba(140,20,20,0.6), 0 1px 0 rgba(60,0,0,0.8)'};
                     font-family: monospace;
                     margin-top: 2px;
+                    ${isLocked ? '' : 'background: linear-gradient(180deg, #2a0a0a, #0a0a0a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 4px rgba(140,20,20,0.4));'}
                 ">${timerValue}</div>` : ''}
                 ${hpBarHTML}
             </div>
@@ -1205,7 +1240,7 @@ function showEventBossWarpPortal(show) {
         display: flex;
         flex-direction: column;
         align-items: center;
-        filter: drop-shadow(0 4px 12px rgba(155,89,182,0.4));
+        filter: drop-shadow(0 4px 16px rgba(100,0,0,0.5)) drop-shadow(0 0 8px rgba(0,0,0,0.8));
         transition: transform 0.3s;
     `;
 
@@ -1232,5 +1267,23 @@ window.checkEventBossAvailability = checkEventBossAvailability;
 window.showEventBossWarpPortal = showEventBossWarpPortal;
 window.refreshEventBossLeaderboard = refreshEventBossLeaderboard;
 window.buyEventBossAttempt = buyEventBossAttempt;
+
+/**
+ * Консольная команда для принудительного показа портала (для тестирования).
+ * Использование: в консоли браузера ввести showPortal()
+ */
+window.showPortal = function() {
+    showEventBossWarpPortal(true);
+    console.log('🕳 Портал принудительно показан');
+};
+
+/**
+ * Консольная команда для скрытия портала.
+ * Использование: в консоли браузера ввести hidePortal()
+ */
+window.hidePortal = function() {
+    showEventBossWarpPortal(false);
+    console.log('🕳 Портал скрыт');
+};
 
 console.log('🐉 Event Boss UI загружен');
