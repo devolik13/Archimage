@@ -8,12 +8,14 @@
 ALTER TABLE event_bosses ADD COLUMN IF NOT EXISTS rewards_distributed BOOLEAN DEFAULT FALSE;
 ALTER TABLE event_bosses ADD COLUMN IF NOT EXISTS finishing_blow_telegram_id BIGINT;
 
--- Update event_boss_deal_damage to also store finishing_blow_telegram_id
+-- Drop old signatures with extra parameters
+DROP FUNCTION IF EXISTS event_boss_deal_damage(INTEGER, BIGINT, BIGINT, BIGINT);
+
+-- Simplified: only p_damage, used for both HP and leaderboard
 CREATE OR REPLACE FUNCTION event_boss_deal_damage(
     p_boss_id INTEGER,
     p_telegram_id BIGINT,
-    p_damage BIGINT,
-    p_rating_damage BIGINT DEFAULT NULL
+    p_damage BIGINT
 )
 RETURNS JSONB AS $$
 DECLARE
@@ -26,10 +28,7 @@ DECLARE
     v_existing RECORD;
     v_player_total_damage BIGINT;
     v_player_attacks INTEGER;
-    v_rd BIGINT;
 BEGIN
-    v_rd := COALESCE(p_rating_damage, p_damage);
-
     IF p_damage <= 0 THEN
         RETURN jsonb_build_object('success', false, 'error', 'Invalid damage amount');
     END IF;
@@ -88,12 +87,12 @@ BEGIN
 
     -- Upsert player damage record
     INSERT INTO event_boss_damage (boss_id, player_id, telegram_id, total_damage, attacks_count, best_single_attack)
-    VALUES (p_boss_id, v_player_id, p_telegram_id, v_rd, 1, v_rd)
+    VALUES (p_boss_id, v_player_id, p_telegram_id, p_damage, 1, p_damage)
     ON CONFLICT (boss_id, player_id)
     DO UPDATE SET
-        total_damage = event_boss_damage.total_damage + v_rd,
+        total_damage = event_boss_damage.total_damage + p_damage,
         attacks_count = event_boss_damage.attacks_count + 1,
-        best_single_attack = GREATEST(event_boss_damage.best_single_attack, v_rd),
+        best_single_attack = GREATEST(event_boss_damage.best_single_attack, p_damage),
         updated_at = now();
 
     SELECT total_damage, attacks_count
@@ -103,7 +102,7 @@ BEGIN
 
     RETURN jsonb_build_object(
         'success', true,
-        'damage_dealt', v_rd,
+        'damage_dealt', p_damage,
         'boss_new_hp', v_new_hp,
         'boss_max_hp', v_boss.max_hp,
         'boss_defeated', v_is_defeated,

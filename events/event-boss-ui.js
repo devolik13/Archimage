@@ -688,19 +688,17 @@ function startEventBossBattle() {
 /**
  * Показать результат боя с ивент боссом
  * @param {object} battleResult — результат боя
- * @param {number} hpDamage — чистый урон по HP босса
- * @param {number} ratingDamage — урон для рейтинга (HP + бонус брони)
+ * @param {number} hpDamage — нанесённый урон по HP босса
  */
-async function showEventBossResult(battleResult, hpDamage, ratingDamage) {
+async function showEventBossResult(battleResult, hpDamage) {
     const manager = window.eventBossManager;
-    // Для отображения используем ratingDamage
-    const damageDealt = ratingDamage || hpDamage || 0;
+    const damageDealt = hpDamage || 0;
 
-    // Отправляем урон на сервер (hpDamage для HP босса, ratingDamage для лидерборда)
+    // Отправляем урон на сервер
     let serverResult = null;
     let submitFailed = false;
     if (hpDamage > 0 && manager && window.currentEventBossId) {
-        serverResult = await manager.submitDamage(hpDamage, ratingDamage);
+        serverResult = await manager.submitDamage(hpDamage);
         if (!serverResult || !serverResult.success) {
             submitFailed = true;
             console.warn('⚠️ Урон не удалось записать на сервер:', serverResult?.error);

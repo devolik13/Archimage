@@ -132,33 +132,23 @@ function generateEventBossEnemy(bossConfig) {
 
 /**
  * Подсчитывает нанесённый урон боссу за бой.
- * Возвращает { hpDamage, ratingDamage }:
- *   hpDamage — чистый урон по HP (вычитается из HP босса)
- *   ratingDamage — урон для рейтинга (HP + 50% брони)
+ * Возвращает { hpDamage } — чистый урон по HP.
+ * Используется и для снятия HP босса, и для лидерборда.
  * Вызывается после завершения боя.
  */
 function calculateEventBossDamage() {
     const enemies = window.enemyFormation.filter(e => e && e.isEventBoss);
-    if (enemies.length === 0) return { hpDamage: 0, ratingDamage: 0 };
+    if (enemies.length === 0) return { hpDamage: 0 };
 
     let hpDamage = 0;
-    let armorBonus = 0;
 
     for (const enemy of enemies) {
         const maxHp = enemy.original_max_hp || enemy.max_hp || 0;
         const currentHp = Math.max(0, enemy.hp || 0);
         hpDamage += maxHp - currentHp;
-
-        const maxArmor = enemy.original_max_armor || enemy.max_armor || 0;
-        const currentArmor = Math.max(0, enemy.armor || 0);
-        armorBonus += Math.floor((maxArmor - currentArmor) * 0.5);
     }
 
-    hpDamage = Math.max(0, hpDamage);
-    return {
-        hpDamage: hpDamage,
-        ratingDamage: hpDamage + armorBonus
-    };
+    return { hpDamage: Math.max(0, hpDamage) };
 }
 
 /**

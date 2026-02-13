@@ -1820,13 +1820,12 @@ async function checkBattleEnd() {
 
         // === ИВЕНТ БОСС: Отдельная обработка ===
         if (window.isEventBossBattle) {
-            // Считаем нанесённый урон боссу (hpDamage для HP, ratingDamage для лидерборда)
+            // Считаем нанесённый урон боссу
             const bossDamageResult = typeof window.calculateEventBossDamage === 'function'
-                ? window.calculateEventBossDamage() : { hpDamage: 0, ratingDamage: 0 };
+                ? window.calculateEventBossDamage() : { hpDamage: 0 };
             const eventBossHpDamage = bossDamageResult.hpDamage || 0;
-            const eventBossRatingDamage = bossDamageResult.ratingDamage || 0;
 
-            console.log(`🐉 Ивент Босс: HP урон = ${eventBossHpDamage}, рейтинг = ${eventBossRatingDamage}`);
+            console.log(`🐉 Ивент Босс: урон = ${eventBossHpDamage}`);
 
             // Опыт магов
             const wizardExpGained = window.lastBattleExpResults || [];
@@ -1861,9 +1860,9 @@ async function checkBattleEnd() {
 
                 // Показываем окно результата ивент босса
                 if (typeof window.showEventBossResult === 'function') {
-                    await window.showEventBossResult(battleResult, eventBossHpDamage, eventBossRatingDamage);
+                    await window.showEventBossResult(battleResult, eventBossHpDamage);
                 } else {
-                    alert(`Урон по боссу: ${eventBossRatingDamage}`);
+                    alert(`Урон по боссу: ${eventBossHpDamage}`);
                     if (typeof window.returnToCity === 'function') {
                         window.returnToCity();
                     }
