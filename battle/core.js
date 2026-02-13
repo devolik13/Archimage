@@ -1645,17 +1645,16 @@ async function checkBattleEnd() {
 
                     const skinId = skinMap[window.currentPvELevel];
                     if (skinId) {
-                        // Разблокируем скин
-                        window.unlockSkin(skinId).then(unlocked => {
-                            if (unlocked) {
-                                const skinName = window.SKINS_CONFIG?.[skinId]?.name || 'Новый скин';
-                                if (typeof window.addToBattleLog === 'function') {
-                                    window.addToBattleLog(`✨ Разблокирован скин: ${skinName}!`);
-                                }
-                                // Сохраняем информацию о разблокированном скине для показа в результате
-                                window.lastUnlockedSkin = { id: skinId, name: skinName };
+                        // Разблокируем скин (await чтобы сохранение завершилось ДО savePlayer ниже)
+                        const unlocked = await window.unlockSkin(skinId);
+                        if (unlocked) {
+                            const skinName = window.SKINS_CONFIG?.[skinId]?.name || 'Новый скин';
+                            if (typeof window.addToBattleLog === 'function') {
+                                window.addToBattleLog(`✨ Разблокирован скин: ${skinName}!`);
                             }
-                        });
+                            // Сохраняем информацию о разблокированном скине для показа в результате
+                            window.lastUnlockedSkin = { id: skinId, name: skinName };
+                        }
                     }
                 }
 
