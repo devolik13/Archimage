@@ -33,8 +33,14 @@ async function openEventBossScreen() {
     const boss = await manager.fetchActiveBoss(true);
 
     if (!boss || !boss.active) {
+        // Если ивент активен по таймеру, но босс ещё не в БД — ждём
+        const timerStatus = getEventTimerStatus();
         closeEventBossScreen();
-        showNoBossMessage();
+        if (timerStatus.status === 'active') {
+            showNoBossMessage('Портал активируется... Босс скоро появится!');
+        } else {
+            showNoBossMessage();
+        }
         return;
     }
 
@@ -71,11 +77,12 @@ function showEventBossLoading() {
 /**
  * Сообщение "нет босса"
  */
-function showNoBossMessage() {
+function showNoBossMessage(customText) {
+    const msg = customText || 'Сейчас нет активного ивент босса. Следите за обновлениями!';
     if (typeof Notification !== 'undefined' && Notification.warning) {
-        Notification.warning('Сейчас нет активного ивент босса. Следите за обновлениями!');
+        Notification.warning(msg);
     } else {
-        alert('Сейчас нет активного ивент босса.\nСледите за обновлениями!');
+        alert(msg);
     }
 }
 
