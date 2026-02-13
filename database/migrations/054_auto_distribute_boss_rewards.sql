@@ -11,7 +11,7 @@ ALTER TABLE event_bosses ADD COLUMN IF NOT EXISTS finishing_blow_telegram_id BIG
 -- Drop old signatures with extra parameters
 DROP FUNCTION IF EXISTS event_boss_deal_damage(INTEGER, BIGINT, BIGINT, BIGINT);
 
--- Simplified: only p_damage, used for both HP and leaderboard
+-- Simplified: only p_damage (no rating_damage), includes attempt tracking from 050
 CREATE OR REPLACE FUNCTION event_boss_deal_damage(
     p_boss_id INTEGER,
     p_telegram_id BIGINT,
@@ -25,24 +25,26 @@ DECLARE
     v_new_hp BIGINT;
     v_is_defeated BOOLEAN := FALSE;
     v_is_finishing_blow BOOLEAN := FALSE;
-    v_existing RECORD;
     v_player_total_damage BIGINT;
     v_player_attacks INTEGER;
+    v_max_daily INTEGER := 10;
+    v_attempts RECORD;
+    v_remaining INTEGER;
 BEGIN
     IF p_damage <= 0 THEN
         RETURN jsonb_build_object('success', false, 'error', 'Invalid damage amount');
     END IF;
 
+    -- Get player
     SELECT id, username INTO v_player_id, v_player_username
     FROM players WHERE telegram_id = p_telegram_id;
     IF v_player_id IS NULL THEN
         RETURN jsonb_build_object('success', false, 'error', 'Player not found');
     END IF;
 
+    -- Get boss with lock
     SELECT * INTO v_boss
-    FROM event_bosses
-    WHERE id = p_boss_id
-    FOR UPDATE;
+    FROM event_bosses WHERE id = p_boss_id FOR UPDATE;
 
     IF v_boss IS NULL THEN
         RETURN jsonb_build_object('success', false, 'error', 'Boss not found');
@@ -61,6 +63,34 @@ BEGIN
         RETURN jsonb_build_object('success', false, 'error', 'Boss already defeated');
     END IF;
 
+    -- Ensure player damage row exists
+    INSERT INTO event_boss_damage (boss_id, player_id, telegram_id, total_damage, attacks_count, best_single_attack, daily_used, daily_date, purchased)
+    VALUES (p_boss_id, v_player_id, p_telegram_id, 0, 0, 0, 0, CURRENT_DATE, 0)
+    ON CONFLICT (boss_id, player_id) DO NOTHING;
+
+    -- Lock player row and check attempts
+    SELECT daily_used, daily_date, purchased
+    INTO v_attempts
+    FROM event_boss_damage
+    WHERE boss_id = p_boss_id AND player_id = v_player_id
+    FOR UPDATE;
+
+    -- Reset if new day
+    IF v_attempts.daily_date != CURRENT_DATE THEN
+        v_attempts.daily_used := 0;
+        v_attempts.purchased := 0;
+    END IF;
+
+    -- Check attempts
+    IF v_attempts.daily_used >= v_max_daily + v_attempts.purchased THEN
+        RETURN jsonb_build_object(
+            'success', false,
+            'error', 'No attempts remaining',
+            'attempts_remaining', 0
+        );
+    END IF;
+
+    -- Calculate new HP
     v_new_hp := GREATEST(0, v_boss.current_hp - p_damage);
     v_is_defeated := (v_new_hp = 0);
     v_is_finishing_blow := v_is_defeated;
@@ -78,27 +108,32 @@ BEGIN
             SELECT COUNT(DISTINCT player_id)
             FROM event_boss_damage
             WHERE boss_id = p_boss_id
+            AND total_damage > 0
         ) + CASE
-            WHEN NOT EXISTS (SELECT 1 FROM event_boss_damage WHERE boss_id = p_boss_id AND player_id = v_player_id)
+            WHEN NOT EXISTS (SELECT 1 FROM event_boss_damage WHERE boss_id = p_boss_id AND player_id = v_player_id AND total_damage > 0)
             THEN 1
             ELSE 0
         END
     WHERE id = p_boss_id;
 
-    -- Upsert player damage record
-    INSERT INTO event_boss_damage (boss_id, player_id, telegram_id, total_damage, attacks_count, best_single_attack)
-    VALUES (p_boss_id, v_player_id, p_telegram_id, p_damage, 1, p_damage)
-    ON CONFLICT (boss_id, player_id)
-    DO UPDATE SET
-        total_damage = event_boss_damage.total_damage + p_damage,
-        attacks_count = event_boss_damage.attacks_count + 1,
-        best_single_attack = GREATEST(event_boss_damage.best_single_attack, p_damage),
-        updated_at = now();
+    -- Update player damage + consume attempt
+    UPDATE event_boss_damage
+    SET
+        total_damage = total_damage + p_damage,
+        attacks_count = attacks_count + 1,
+        best_single_attack = GREATEST(best_single_attack, p_damage),
+        last_attack_at = now(),
+        daily_used = v_attempts.daily_used + 1,
+        daily_date = CURRENT_DATE,
+        purchased = v_attempts.purchased
+    WHERE boss_id = p_boss_id AND player_id = v_player_id;
 
-    SELECT total_damage, attacks_count
-    INTO v_player_total_damage, v_player_attacks
+    -- Get updated stats
+    SELECT total_damage, attacks_count INTO v_player_total_damage, v_player_attacks
     FROM event_boss_damage
     WHERE boss_id = p_boss_id AND player_id = v_player_id;
+
+    v_remaining := GREATEST(0, v_max_daily + v_attempts.purchased - (v_attempts.daily_used + 1));
 
     RETURN jsonb_build_object(
         'success', true,
@@ -108,7 +143,8 @@ BEGIN
         'boss_defeated', v_is_defeated,
         'finishing_blow', v_is_finishing_blow,
         'player_total_damage', v_player_total_damage,
-        'player_attacks', v_player_attacks
+        'player_attacks', v_player_attacks,
+        'attempts_remaining', v_remaining
     );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
