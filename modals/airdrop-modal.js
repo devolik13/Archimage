@@ -707,6 +707,46 @@ function setupAirdropUI() {
                     ">Играть</button>
                 `}
             </div>
+            <!-- Gift Kombat -->
+            <div id="gift-kombat-reward" style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(239, 68, 68, 0.1);
+                border: 1px solid rgba(239, 68, 68, 0.3);
+                border-radius: 8px;
+                padding: 10px;
+                margin-top: 8px;
+            ">
+                <div style="flex: 1;">
+                    <div style="font-size: ${baseFontSize}px; color: #fff;">
+                        🥊 Gift Kombat | Получи 2ур. и начни сражение за NFT подарки
+                    </div>
+                    <div style="font-size: ${smallFontSize}px; color: #ef4444; margin-top: 4px;">
+                        +100 BPM + ⏰ 2 часа
+                    </div>
+                </div>
+                ${window.userData?.completed_tasks?.gift_kombat ? `
+                    <div style="
+                        padding: 8px 16px;
+                        background: #333;
+                        border-radius: 8px;
+                        color: #888;
+                        font-size: ${smallFontSize}px;
+                    ">✓ Получено</div>
+                ` : `
+                    <button onclick="window.openGiftKombat()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #ef4444, #dc2626);
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: ${smallFontSize}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Начать</button>
+                `}
+            </div>
         </div>
 
         <!-- Как заработать -->
@@ -1265,6 +1305,75 @@ function openPandaFit() {
 }
 
 /**
+ * Открыть Gift Kombat — первый клик открывает бота, кнопка меняется на "Проверить"
+ */
+function openGiftKombat() {
+    window.open('https://t.me/gift_kombat_bot?startapp=963796674utm_archimage', '_blank');
+
+    // Меняем кнопку на "Проверить"
+    const taskDiv = document.getElementById('gift-kombat-reward');
+    if (taskDiv) {
+        const btn = taskDiv.querySelector('button');
+        if (btn) {
+            btn.textContent = 'Проверить';
+            btn.setAttribute('onclick', 'window.checkGiftKombat()');
+            btn.style.background = 'linear-gradient(135deg, #f97316, #ea580c)';
+        }
+    }
+
+    window.showNotification?.('🥊 Получи 2 уровень в Gift Kombat и нажми "Проверить"');
+}
+
+/**
+ * Проверить выполнение Gift Kombat через API
+ */
+async function checkGiftKombat() {
+    if (window.userData?.completed_tasks?.gift_kombat) {
+        window.showNotification?.('✓ Награда уже получена');
+        return;
+    }
+
+    const telegramId = window.dbManager?.getTelegramId?.() || window.userData?.user_id;
+    if (!telegramId) {
+        window.showNotification?.('❌ Ошибка: не удалось определить пользователя');
+        return;
+    }
+
+    // Блокируем кнопку на время проверки
+    const taskDiv = document.getElementById('gift-kombat-reward');
+    const btn = taskDiv?.querySelector('button');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Проверка...';
+    }
+
+    try {
+        const response = await fetch(
+            `https://gift-kombat.com/api/characters/check-lvl-2-exists?tg_user_id=${telegramId}`
+        );
+        const data = await response.json();
+
+        if (data && (data.exists === true || data.success === true || data === true)) {
+            await claimTaskReward('gift_kombat', 'Gift Kombat');
+            window.showNotification?.('🎉 Gift Kombat задание выполнено!');
+        } else {
+            window.showNotification?.('❌ Персонаж 2 уровня не найден. Продолжай играть!');
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Проверить';
+            }
+        }
+    } catch (err) {
+        console.error('Gift Kombat API error:', err);
+        window.showNotification?.('⚠️ Не удалось проверить. Попробуй позже');
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Проверить';
+        }
+    }
+}
+
+/**
  * Универсальная функция выдачи награды за задание
  */
 async function claimTaskReward(taskKey, taskName) {
@@ -1326,7 +1435,8 @@ function updateTaskButton(taskKey) {
         'money_mining': 'money-mining-reward',
         'pandafit': 'pandafit-reward',
         'quadroyal': 'quadroyal-reward',
-        'betmode_luck': 'betmode-luck-reward'
+        'betmode_luck': 'betmode-luck-reward',
+        'gift_kombat': 'gift-kombat-reward'
     };
     const taskDiv = document.getElementById(idMap[taskKey]);
     if (!taskDiv) return;
@@ -1351,6 +1461,8 @@ window.openQuadRoyal = openQuadRoyal;
 window.openBetmodeLuck = openBetmodeLuck;
 window.openMoneyMining = openMoneyMining;
 window.openPandaFit = openPandaFit;
+window.openGiftKombat = openGiftKombat;
+window.checkGiftKombat = checkGiftKombat;
 window.claimCreakyTasksReward = claimCreakyTasksReward;
 
 /**
