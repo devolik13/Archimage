@@ -308,6 +308,14 @@ function castShadowRealm(wizard, spellData, position, casterType) {
 
                     if (typeof window.addToBattleLog === 'function') {
                         window.addToBattleLog(`🌑 Мир теней поглощает ${finalDamage} HP у ${target.name} (${percentDamage}% от ${lostHp} потерянных, макс 200)`);
+                        const damageSteps = target._lastDamageSteps || [];
+                        if (damageSteps.length > 0) {
+                            damageSteps.forEach(step => {
+                                window.addToBattleLog(`    ├─ ${step}`);
+                            });
+                        }
+                        window.addToBattleLog(`    └─ HP: ${target.hp}/${target.max_hp}`);
+                        delete target._lastDamageSteps;
                     }
 
                     // Проверяем смерть
