@@ -1309,79 +1309,88 @@ function showEventBossAnnouncement() {
         ? `Портал откроется через <b>${formatCountdown(timerStatus.diff)}</b>`
         : 'Портал уже открыт — вступай в бой!';
 
+    function closeAnnouncement() {
+        localStorage.setItem(storageKey, '1');
+        const el = document.getElementById('event-boss-announcement-overlay');
+        if (el) el.remove();
+    }
+
     const overlay = document.createElement('div');
     overlay.id = 'event-boss-announcement-overlay';
     overlay.style.cssText = `
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(0, 0, 0, 0.88); z-index: 10003;
         display: flex; align-items: center; justify-content: center;
-        animation: fadeIn 0.4s ease-out;
+        overflow-y: auto; -webkit-overflow-scrolling: touch;
+        padding: 16px 0;
     `;
+    // Закрытие по клику на оверлей
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeAnnouncement();
+    });
 
     overlay.innerHTML = `
         <div style="
             background: linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 50%, #1a0a0a 100%);
             border: 2px solid #9B59B6;
-            border-radius: 16px; padding: 24px 20px; text-align: center;
-            color: white; width: 320px; max-width: 90vw;
+            border-radius: 16px; padding: 20px 16px; text-align: center;
+            color: white; width: 300px; max-width: 90vw;
+            max-height: calc(100vh - 32px); overflow-y: auto;
             box-shadow: 0 0 60px rgba(155,89,182,0.4), 0 0 120px rgba(140,20,20,0.2);
-            animation: scaleIn 0.4s ease-out;
+            margin: auto; flex-shrink: 0;
         ">
             <!-- Спрайт босса -->
             <div style="
-                width: 140px; height: 140px; margin: 0 auto 12px;
+                width: 100px; height: 100px; margin: 0 auto 8px;
                 background: url('assets/sprites/event_boss/idle.webp') 0% 0% / 500% 500% no-repeat;
                 image-rendering: pixelated;
-                filter: drop-shadow(0 0 20px rgba(140,20,20,0.6));
+                filter: drop-shadow(0 0 15px rgba(140,20,20,0.6));
             "></div>
 
-            <div style="font-size: 11px; color: #9B59B6; letter-spacing: 2px; margin-bottom: 4px;">ГЛОБАЛЬНЫЙ ИВЕНТ</div>
-            <div style="font-size: 22px; font-weight: bold; color: #ff4444; text-shadow: 0 0 20px rgba(255,50,50,0.5); margin-bottom: 12px;">
+            <div style="font-size: 10px; color: #9B59B6; letter-spacing: 2px; margin-bottom: 2px;">ГЛОБАЛЬНЫЙ ИВЕНТ</div>
+            <div style="font-size: 18px; font-weight: bold; color: #ff4444; text-shadow: 0 0 20px rgba(255,50,50,0.5); margin-bottom: 8px;">
                 ${config.name || 'Ивент Босс'}
             </div>
 
-            <div style="font-size: 13px; color: #ccc; line-height: 1.6; margin-bottom: 14px; text-align: left; padding: 0 8px;">
-                Тёмная сущность вторглась в мир. У неё <b style="color: #ff6b6b;">${(config.totalHp / 1000000).toFixed(0)}M HP</b> — общий на всех игроков.<br><br>
-                Бей босса, чтобы копить урон в общий пул. Босс уязвим к <b style="color: #ffe066;">Свету</b>!<br><br>
+            <div style="font-size: 12px; color: #ccc; line-height: 1.5; margin-bottom: 10px; text-align: left; padding: 0 4px;">
+                Тёмная сущность вторглась в мир. У неё <b style="color: #ff6b6b;">${(config.totalHp / 1000000).toFixed(0)}M HP</b> — общий на всех игроков.<br>
+                Бей босса, чтобы копить урон в общий пул. Босс уязвим к <b style="color: #ffe066;">Свету</b>!<br>
                 <span style="color: #aaa;">10 бесплатных попыток в день</span>
             </div>
 
             <div style="
-                background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px 12px;
-                margin-bottom: 14px; text-align: left; font-size: 12px; line-height: 1.7;
+                background: rgba(0,0,0,0.3); border-radius: 8px; padding: 8px 10px;
+                margin-bottom: 10px; text-align: left; font-size: 11px; line-height: 1.6;
             ">
-                <div style="color: #7289da; font-weight: bold; margin-bottom: 4px;">Награды:</div>
+                <div style="color: #7289da; font-weight: bold; margin-bottom: 3px;">Награды:</div>
                 <div>🏆 Топ-1: <b style="color: #ffd700;">+20 дней</b> + значок</div>
                 <div>🥈 Топ-2: <b style="color: #c0c0c0;">+10 дней</b></div>
                 <div>🥉 Топ-3: <b style="color: #cd7f32;">+5 дней</b></div>
                 <div>🗡 Контрольный удар: <b style="color: #ff4500;">+7 дней</b></div>
                 <div>⚔ Убийство босса: <b style="color: #4CAF50;">+3 дня</b> всем</div>
                 <div>👤 Участие: <b style="color: #4CAF50;">+1 день</b></div>
-                <div style="margin-top: 6px;">🎁 <span style="color: #e040fb;">Бонус NFT токены от админа получат игроки, выполнившие секретный квест с боссом. Результаты в группе.</span></div>
+                <div style="margin-top: 4px;">🎁 <span style="color: #e040fb;">Бонус NFT токены от админа получат игроки, выполнившие секретный квест с боссом. Результаты в группе.</span></div>
             </div>
 
             <div style="
                 background: rgba(255,50,50,0.1); border: 1px solid rgba(255,50,50,0.3);
-                border-radius: 8px; padding: 8px 12px; margin-bottom: 16px;
-                font-size: 12px; line-height: 1.5;
+                border-radius: 8px; padding: 6px 10px; margin-bottom: 10px;
+                font-size: 11px; line-height: 1.4;
             ">
                 <div style="color: #ff6b6b; font-weight: bold; margin-bottom: 2px;">Последствия:</div>
                 <div style="color: #4CAF50;">Победа → +30% добычи времени на неделю</div>
                 <div style="color: #f44336;">Поражение → -50% добычи времени на неделю</div>
-                <div style="color: #e040fb; margin-top: 4px;">🎁 Секретный квест → NFT токены от админа</div>
+                <div style="color: #e040fb; margin-top: 3px;">🎁 Секретный квест → NFT токены от админа</div>
             </div>
 
-            <div style="font-size: 12px; color: #aaa; margin-bottom: 14px;">
+            <div style="font-size: 11px; color: #aaa; margin-bottom: 10px;">
                 ${countdownText}
             </div>
 
-            <button onclick="
-                localStorage.setItem('${storageKey}', '1');
-                document.getElementById('event-boss-announcement-overlay').remove();
-            " style="
+            <button id="event-boss-announcement-close-btn" style="
                 background: linear-gradient(135deg, #8B0000, #cc0000);
-                border: none; color: white; padding: 12px 36px;
-                border-radius: 8px; font-size: 15px; font-weight: bold;
+                border: none; color: white; padding: 10px 32px;
+                border-radius: 8px; font-size: 14px; font-weight: bold;
                 cursor: pointer; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
                 box-shadow: 0 4px 15px rgba(140,0,0,0.4);
             ">
@@ -1391,6 +1400,7 @@ function showEventBossAnnouncement() {
     `;
 
     document.body.appendChild(overlay);
+    document.getElementById('event-boss-announcement-close-btn').addEventListener('click', closeAnnouncement);
     localStorage.setItem(storageKey, '1');
 }
 
@@ -1403,6 +1413,37 @@ window.showEventBossAnnouncement = showEventBossAnnouncement;
 window.hidePortal = function() {
     showEventBossWarpPortal(false);
     console.log('🕳 Портал скрыт');
+};
+
+/**
+ * Админ-команда: запланировать босса с нужным временем старта.
+ * Использование (консоль):
+ *   scheduleBoss()                         — создать сейчас на 7 дней
+ *   scheduleBoss('2026-02-14T09:00:00Z')   — запланировать на 14 фев 12:00 МСК
+ */
+window.scheduleBoss = async function(startsAtUTC) {
+    const config = window.EVENT_BOSS_CONFIG;
+    if (!config) { console.error('EVENT_BOSS_CONFIG не найден'); return; }
+    const sb = window.supabaseClient;
+    if (!sb) { console.error('Supabase не подключён'); return; }
+
+    const params = {
+        p_name: config.name,
+        p_max_hp: config.totalHp,
+        p_config: config,
+        p_rewards: config.rewards,
+        p_duration_hours: config.durationHours || 168
+    };
+    if (startsAtUTC) {
+        params.p_starts_at = startsAtUTC;
+    }
+
+    const { data, error } = await sb.rpc('create_event_boss', params);
+    if (error) {
+        console.error('❌ Ошибка создания босса:', error);
+    } else {
+        console.log('✅ Босс создан:', JSON.stringify(data, null, 2));
+    }
 };
 
 console.log('🐉 Event Boss UI загружен');
