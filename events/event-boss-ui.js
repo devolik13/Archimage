@@ -1278,6 +1278,111 @@ window.showPortal = function() {
 };
 
 /**
+ * Анонс ивент босса — показывается один раз при входе в игру.
+ * Запоминает configVersion, чтобы при новом боссе показать снова.
+ */
+function showEventBossAnnouncement() {
+    const config = window.EVENT_BOSS_CONFIG;
+    if (!config) return;
+
+    const timerStatus = getEventTimerStatus();
+    // Не показываем если ивент уже закончился
+    if (timerStatus.status === 'ended') return;
+
+    const storageKey = 'event_boss_announcement_seen_v' + (config.configVersion || 0);
+    if (localStorage.getItem(storageKey)) return;
+
+    const isBefore = timerStatus.status === 'before';
+    const countdownText = isBefore
+        ? `Портал откроется через <b>${formatCountdown(timerStatus.diff)}</b>`
+        : 'Портал уже открыт — вступай в бой!';
+
+    const overlay = document.createElement('div');
+    overlay.id = 'event-boss-announcement-overlay';
+    overlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.88); z-index: 10003;
+        display: flex; align-items: center; justify-content: center;
+        animation: fadeIn 0.4s ease-out;
+    `;
+
+    overlay.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 50%, #1a0a0a 100%);
+            border: 2px solid #9B59B6;
+            border-radius: 16px; padding: 24px 20px; text-align: center;
+            color: white; width: 320px; max-width: 90vw;
+            box-shadow: 0 0 60px rgba(155,89,182,0.4), 0 0 120px rgba(140,20,20,0.2);
+            animation: scaleIn 0.4s ease-out;
+        ">
+            <!-- Спрайт босса -->
+            <div style="
+                width: 140px; height: 140px; margin: 0 auto 12px;
+                background: url('assets/sprites/event_boss/idle.webp') 0% 0% / 500% 500% no-repeat;
+                image-rendering: pixelated;
+                filter: drop-shadow(0 0 20px rgba(140,20,20,0.6));
+            "></div>
+
+            <div style="font-size: 11px; color: #9B59B6; letter-spacing: 2px; margin-bottom: 4px;">ГЛОБАЛЬНЫЙ ИВЕНТ</div>
+            <div style="font-size: 22px; font-weight: bold; color: #ff4444; text-shadow: 0 0 20px rgba(255,50,50,0.5); margin-bottom: 12px;">
+                ${config.name || 'Ивент Босс'}
+            </div>
+
+            <div style="font-size: 13px; color: #ccc; line-height: 1.6; margin-bottom: 14px; text-align: left; padding: 0 8px;">
+                Тёмная сущность вторглась в мир. У неё <b style="color: #ff6b6b;">${(config.totalHp / 1000000).toFixed(0)}M HP</b> — общий на всех игроков.<br><br>
+                Бей босса, чтобы копить урон в общий пул. Босс уязвим к <b style="color: #ffe066;">Свету</b>!<br><br>
+                <span style="color: #aaa;">10 бесплатных попыток в день</span>
+            </div>
+
+            <div style="
+                background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px 12px;
+                margin-bottom: 14px; text-align: left; font-size: 12px; line-height: 1.7;
+            ">
+                <div style="color: #7289da; font-weight: bold; margin-bottom: 4px;">Награды:</div>
+                <div>🏆 Топ-1: <b style="color: #ffd700;">+20 дней</b> + значок</div>
+                <div>🥈 Топ-2: <b style="color: #c0c0c0;">+10 дней</b></div>
+                <div>🥉 Топ-3: <b style="color: #cd7f32;">+5 дней</b></div>
+                <div>🗡 Контрольный удар: <b style="color: #ff4500;">+7 дней</b></div>
+                <div>⚔ Убийство босса: <b style="color: #4CAF50;">+3 дня</b> всем</div>
+                <div>👤 Участие: <b style="color: #4CAF50;">+1 день</b></div>
+            </div>
+
+            <div style="
+                background: rgba(255,50,50,0.1); border: 1px solid rgba(255,50,50,0.3);
+                border-radius: 8px; padding: 8px 12px; margin-bottom: 16px;
+                font-size: 12px; line-height: 1.5;
+            ">
+                <div style="color: #ff6b6b; font-weight: bold; margin-bottom: 2px;">Последствия:</div>
+                <div style="color: #4CAF50;">Победа → +30% добычи времени на неделю</div>
+                <div style="color: #f44336;">Поражение → -50% добычи времени на неделю</div>
+            </div>
+
+            <div style="font-size: 12px; color: #aaa; margin-bottom: 14px;">
+                ${countdownText}
+            </div>
+
+            <button onclick="
+                localStorage.setItem('${storageKey}', '1');
+                document.getElementById('event-boss-announcement-overlay').remove();
+            " style="
+                background: linear-gradient(135deg, #8B0000, #cc0000);
+                border: none; color: white; padding: 12px 36px;
+                border-radius: 8px; font-size: 15px; font-weight: bold;
+                cursor: pointer; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+                box-shadow: 0 4px 15px rgba(140,0,0,0.4);
+            ">
+                Понятно!
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+    localStorage.setItem(storageKey, '1');
+}
+
+window.showEventBossAnnouncement = showEventBossAnnouncement;
+
+/**
  * Консольная команда для скрытия портала.
  * Использование: в консоли браузера ввести hidePortal()
  */

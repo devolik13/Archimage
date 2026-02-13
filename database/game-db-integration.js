@@ -268,6 +268,11 @@ async function initGameWithDatabase() {
                 console.warn('⚠️ Ошибка проверки ивент босса:', err);
             });
         }
+
+        // Анонс ивент босса (один раз при входе)
+        if (typeof window.showEventBossAnnouncement === 'function') {
+            setTimeout(() => window.showEventBossAnnouncement(), 1500);
+        }
     }
 
     // Обновляем UI если есть функции
