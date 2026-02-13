@@ -178,6 +178,22 @@ function getEventBossTimeModifier() {
         return EVENT_BOSS_CONFIG.timeCurrencyModifier.duringEvent;
     }
 
+    // Пост-ивент модификаторы: только если нет запланированного нового ивента.
+    // Иначе старый expired/defeated босс будет давать штраф/бонус когда не должен.
+    const startStr = EVENT_BOSS_CONFIG.eventStartUTC;
+    if (startStr) {
+        const eventStart = new Date(startStr);
+        const now = new Date();
+        // Новый ивент запланирован но ещё не начался — не применяем пост-ивент модификаторы
+        if (now < eventStart && boss.id !== undefined) {
+            // Проверяем: этот босс из старого ивента (ends_at < eventStart)?
+            const bossEnd = new Date(boss.ends_at);
+            if (bossEnd < eventStart) {
+                return 0;
+            }
+        }
+    }
+
     // Если босс побежден — бонус +30%
     if (boss.status === 'defeated') {
         // Проверяем, не истёк ли бонусный период (1 неделя после победы)
