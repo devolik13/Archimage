@@ -36,6 +36,10 @@ serve(async (req) => {
 
   try {
     const BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN");
+    if (!BOT_TOKEN) {
+      console.error("❌ TELEGRAM_BOT_TOKEN is not set!");
+      return new Response("OK", { headers: corsHeaders });
+    }
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
@@ -50,17 +54,20 @@ serve(async (req) => {
       const chatId = update.message.chat.id;
       const firstName = update.message.from.first_name || 'Маг';
 
-      const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendAnimation`, {
+      const startText = `${firstName}, портал разрывается!\n\n🕳 Тёмная трещина расширяется с каждой минутой. Из неё сочится древнее зло — Отродья Тьмы уже проникают в наш мир.\n\nНужно действовать немедленно!\n\n⚡ Войди в портал и уничтожь зло, пока оно не поглотило всё живое!\n\n⚔️ Ты — последняя надежда. Собери отряд магов и дай отпор Тьме!`;
+
+      // Пробуем отправить видео, если не получится — отправляем текст
+      let response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendVideo`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
-          animation: "CgACAgIAAxkBAAFCRK9pjak9Y2A95pvWk8R7387kSWIcHAAC8JkAAlmsaUh9qcZmdEM_hzoE",
-          caption: `✨ Добро пожаловать, ${firstName}!\n\n🔥 Битва Магов — выбери свою стихию и открой таинства магии!\n\n⚔️ Сражайся с другими игроками\n🏰 Строй свой город\n📚 Изучай заклинания\n💰 Зарабатывай уникальную валюту\n🎁 Участвуй в розыгрышах призов`,
+          video: "BAACAgIAAxkBAAIqFmmOSk1nEncUo5-frAFHz1CE13tgAAI2igACri15SGvBVzjittuDOgQ",
+          caption: startText,
           reply_markup: {
             inline_keyboard: [
               [{
-                text: "🎮 Играть",
+                text: "⚔️ Вступить в бой",
                 web_app: { url: "https://archimage.vercel.app" }
               }],
               [{
@@ -72,8 +79,35 @@ serve(async (req) => {
         })
       });
 
-      const result = await response.json();
+      let result = await response.json();
       console.log("📤 Telegram API response:", JSON.stringify(result));
+
+      // Если видео не отправилось — fallback на текстовое сообщение
+      if (!result.ok) {
+        console.warn("⚠️ sendVideo failed, falling back to sendMessage:", result.description);
+        response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: startText,
+            reply_markup: {
+              inline_keyboard: [
+                [{
+                  text: "⚔️ Вступить в бой",
+                  web_app: { url: "https://archimage.vercel.app" }
+                }],
+                [{
+                  text: "👥 Сообщество",
+                  url: "https://t.me/archimage_chat"
+                }]
+              ]
+            }
+          })
+        });
+        result = await response.json();
+        console.log("📤 Fallback sendMessage response:", JSON.stringify(result));
+      }
 
       return new Response("OK", { headers: corsHeaders });
     }
@@ -89,13 +123,14 @@ serve(async (req) => {
         body: JSON.stringify({
           inline_query_id: queryId,
           results: [{
-            type: "mpeg4_gif",
-            id: "archimage_event_boss",
-            mpeg4_file_id: "CgACAgIAAxkBAAFCRK9pjak9Y2A95pvWk8R7387kSWIcHAAC8JkAAlmsaUh9qcZmdEM_hzoE",
-            caption: "⚔️ Битва Магов — ИВЕНТ!\n\n🐉 Отродье Тьмы пробудилось — 5,000,000 HP!\nВсе игроки бьют одного монстра!\n\n💡 Босс уязвим к магии Света!\n\n🏆 Награды за участие + бонусы ТОП-3!\n📢 Подробности в сообществе",
+            type: "video",
+            id: "archimage_promo",
+            video_file_id: "BAACAgIAAxkBAAIqFmmOSk1nEncUo5-frAFHz1CE13tgAAI2igACri15SGvBVzjittuDOgQ",
+            title: "Archimage — Битва Магов",
+            caption: "🕳 Портал разрывается! Тёмная трещина расширяется с каждой минутой.\n\nИз неё сочится древнее зло — Отродья Тьмы уже проникают в наш мир.\n\n⚡ Войди в портал и уничтожь зло, пока оно не поглотило всё живое!\n\n⚔️ Собери отряд магов и дай отпор Тьме!",
             reply_markup: {
               inline_keyboard: [
-                [{ text: "🎮 Играть", url: "https://t.me/archimage_bot/app" }],
+                [{ text: "⚔️ Вступить в бой", url: "https://t.me/archimage_bot/app" }],
                 [{ text: "👥 Сообщество", url: "https://t.me/archimage_chat" }]
               ]
             }
@@ -190,8 +225,9 @@ serve(async (req) => {
     return new Response("OK", { headers: corsHeaders });
 
   } catch (error) {
-    console.error("Webhook error:", error);
-    return new Response("Error", { status: 500, headers: corsHeaders });
+    console.error("❌ Webhook error:", error?.message || error, error?.stack);
+    // Всегда возвращаем 200, чтобы Telegram не повторял запросы
+    return new Response("OK", { headers: corsHeaders });
   }
 });
 

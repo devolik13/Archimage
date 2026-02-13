@@ -33,13 +33,19 @@ async function openEventBossScreen() {
     const boss = await manager.fetchActiveBoss(true);
 
     if (!boss || !boss.active) {
+        // Если ивент активен по таймеру, но босс ещё не в БД — ждём
+        const timerStatus = getEventTimerStatus();
         closeEventBossScreen();
-        showNoBossMessage();
+        if (timerStatus.status === 'active') {
+            showNoBossMessage('Портал активируется... Босс скоро появится!');
+        } else {
+            showNoBossMessage();
+        }
         return;
     }
 
     // Загружаем статистику, лидерборд и попытки параллельно
-    const [playerStats, leaderboard] = await Promise.all([
+    const [playerStats, leaderboard, _attempts] = await Promise.all([
         manager.fetchPlayerStats(),
         manager.fetchLeaderboard(20),
         manager.fetchAttempts()
@@ -71,8 +77,13 @@ function showEventBossLoading() {
 /**
  * Сообщение "нет босса"
  */
-function showNoBossMessage() {
-    alert('Сейчас нет активного ивент босса.\nСледите за обновлениями!');
+function showNoBossMessage(customText) {
+    const msg = customText || 'Сейчас нет активного ивент босса. Следите за обновлениями!';
+    if (typeof Notification !== 'undefined' && Notification.warning) {
+        Notification.warning(msg);
+    } else {
+        alert(msg);
+    }
 }
 
 /**
@@ -298,6 +309,7 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                     <div>💀 Босс убит: <span style="color: #9B59B6;">+3 дня каждому + добыча +30% на неделю</span></div>
                     <div>⚔️ Контрольный удар: <span style="color: #ff4500;">+7 дней тому, кто добьёт босса</span></div>
                     <div>❌ Босс выжил: <span style="color: #ff6b6b;">добыча -50% на неделю</span></div>
+                    <div style="margin-top: 6px;">🎁 <span style="color: #e040fb;">Бонус NFT токены от админа получат игроки, выполнившие секретный квест с боссом. Результаты в группе.</span></div>
                 </div>
             </div>
 
@@ -510,7 +522,16 @@ async function buyBossAttemptWithStars(starsCost) {
             const invoiceUrl = await window.createStarsInvoice(item, starsCost);
             window.Telegram.WebApp.openInvoice(invoiceUrl, async (status) => {
                 if (status === 'paid') {
-                    await manager.purchaseAttempt();
+                    const success = await manager.purchaseAttempt();
+                    if (!success) {
+                        // Stars списались но попытка не начислилась — уведомляем
+                        console.error('❌ Stars оплачены, но попытка не начислена!');
+                        if (typeof window.showShopNotification === 'function') {
+                            window.showShopNotification('Оплата прошла, попытка будет начислена. Перезагрузите если не появилась.', 'warning');
+                        } else {
+                            alert('Оплата прошла, но произошла ошибка начисления. Попробуйте перезагрузить.');
+                        }
+                    }
                     await _refreshBossScreen(manager);
 
                     if (typeof window.addAirdropPoints === 'function') {
@@ -677,8 +698,13 @@ async function showEventBossResult(battleResult, hpDamage, ratingDamage) {
 
     // Отправляем урон на сервер (hpDamage для HP босса, ratingDamage для лидерборда)
     let serverResult = null;
+    let submitFailed = false;
     if (hpDamage > 0 && manager && window.currentEventBossId) {
         serverResult = await manager.submitDamage(hpDamage, ratingDamage);
+        if (!serverResult || !serverResult.success) {
+            submitFailed = true;
+            console.warn('⚠️ Урон не удалось записать на сервер:', serverResult?.error);
+        }
     }
 
     // Обновляем данные
@@ -693,9 +719,9 @@ async function showEventBossResult(battleResult, hpDamage, ratingDamage) {
     const playerTotalDamage = serverResult?.player_total_damage || damageDealt;
     const hpPercent = bossMaxHp ? ((bossNewHp / bossMaxHp) * 100) : 0;
 
-    // === Выдача наград ===
+    // === Выдача наград — ТОЛЬКО если сервер подтвердил ===
     const rewards = window.EVENT_BOSS_CONFIG?.rewards;
-    if (bossDefeated && rewards && typeof window.addTimeCurrency === 'function') {
+    if (bossDefeated && !submitFailed && rewards && typeof window.addTimeCurrency === 'function') {
         // Награда за убийство босса — всем участникам
         if (rewards.bossKilled?.timeCurrency) {
             await window.addTimeCurrency(rewards.bossKilled.timeCurrency);
@@ -776,6 +802,15 @@ async function showEventBossResult(battleResult, hpDamage, ratingDamage) {
             <div style="font-size: 20px; font-weight: bold; margin-bottom: 4px; color: #9B59B6;">
                 ${manager?.currentBoss?.name || 'Отродье Тьмы'}
             </div>
+
+            ${submitFailed ? `
+            <div style="
+                background: rgba(255,165,0,0.15); border: 2px solid #ff9800;
+                border-radius: 10px; padding: 10px; margin: 8px 0;
+            ">
+                <div style="color: #ff9800; font-size: 13px; font-weight: bold;">⚠️ Ошибка отправки урона</div>
+                <div style="color: #ffcc80; font-size: 11px; margin-top: 4px;">Не переживайте — урон будет учтён автоматически. Попробуйте перезагрузить.</div>
+            </div>` : ''}
 
             <!-- Нанесённый урон -->
             <div style="
@@ -973,123 +1008,266 @@ function closeEventBossScreen() {
 // ============================================
 
 /**
- * Проверить наличие ивент босса при загрузке
+ * Проверить наличие ивент босса при загрузке.
+ * Показывает портал если ивент ещё не закончился (до старта — с замком, после старта — активный).
  */
 async function checkEventBossAvailability() {
+    const timerStatus = getEventTimerStatus();
+
+    // До старта ивента — показываем заблокированный портал с таймером
+    if (timerStatus.status === 'before') {
+        console.log(`🕳 Ивент ещё не начался. Старт через: ${formatCountdown(timerStatus.diff)}`);
+        showEventBossWarpPortal(true);
+        return true;
+    }
+
+    // Ивент активен или завершён — проверяем босса и показываем портал
+    // После завершения портал остаётся для просмотра результатов (закроем вручную через конфиг)
     const manager = window.eventBossManager;
-    if (!manager) return false;
+    if (!manager) {
+        showEventBossWarpPortal(true);
+        return true;
+    }
 
     const boss = await manager.fetchActiveBoss();
     if (boss && boss.active) {
         console.log(`🐉 Активный ивент босс: ${boss.name} | HP: ${boss.current_hp}/${boss.max_hp}`);
-        showEventBossWarpPortal(true);
-        return true;
+    }
+    showEventBossWarpPortal(true);
+    return true;
+}
+
+/**
+ * Получить статус ивента по таймеру
+ * @returns {{ status: 'before'|'active'|'ended', startTime: Date, endTime: Date, diff: number }}
+ */
+function getEventTimerStatus() {
+    const config = window.EVENT_BOSS_CONFIG;
+    const startStr = config?.eventStartUTC;
+    if (!startStr) return { status: 'active', startTime: new Date(), endTime: new Date(), diff: 0 };
+
+    const startTime = new Date(startStr);
+    const endTime = new Date(startTime.getTime() + (config.durationHours || 168) * 60 * 60 * 1000);
+    const now = new Date();
+
+    if (now < startTime) {
+        return { status: 'before', startTime, endTime, diff: startTime - now };
+    } else if (now < endTime) {
+        return { status: 'active', startTime, endTime, diff: endTime - now };
     } else {
-        showEventBossWarpPortal(false);
-        return false;
+        return { status: 'ended', startTime, endTime, diff: 0 };
     }
 }
 
 /**
- * Показать/скрыть варп портал в городе
- * ОТКЛЮЧЕНО: портал скрыт, доступ через скрытую кнопку в магазине
+ * Форматировать countdown в дни/часы/минуты/секунды
+ */
+function formatCountdown(ms) {
+    if (ms <= 0) return '00:00:00';
+    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+
+    const pad = n => String(n).padStart(2, '0');
+    if (days > 0) {
+        const daysText = days === 1 ? 'день' : (days < 5 ? 'дня' : 'дней');
+        return `${days} ${daysText} ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    }
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+}
+
+/**
+ * Показать/скрыть варп портал в городе с таймером
  */
 function showEventBossWarpPortal(show) {
     let portal = document.getElementById('event-boss-warp-portal');
-    if (portal) portal.style.display = 'none';
-    return;
+
+    if (!show) {
+        if (portal) portal.style.display = 'none';
+        if (window._portalTimerInterval) {
+            clearInterval(window._portalTimerInterval);
+            window._portalTimerInterval = null;
+        }
+        return;
+    }
 
     if (!portal) {
         portal = document.createElement('div');
         portal.id = 'event-boss-warp-portal';
-        portal.onclick = openEventBossScreen;
         document.body.appendChild(portal);
     }
 
-    const manager = window.eventBossManager;
-    const hpPercent = manager ? manager.getHpPercent() : 100;
-    const bossName = manager?.currentBoss?.name || 'Ивент Босс';
-    const attemptsLeft = manager ? manager.getRemainingAttempts() : 0;
+    // CSS анимации — зловещий портал
+    if (!document.getElementById('event-boss-portal-css')) {
+        const style = document.createElement('style');
+        style.id = 'event-boss-portal-css';
+        style.textContent = `
+            @keyframes eventBossPortalPulse {
+                0%, 100% { transform: scale(1); opacity: 0.5; }
+                50% { transform: scale(1.2); opacity: 1; }
+            }
+            @keyframes eventBossPortalGlow {
+                0%, 100% { box-shadow: 0 0 20px rgba(120,20,20,0.5), inset 0 0 20px rgba(80,0,0,0.3); }
+                50% { box-shadow: 0 0 40px rgba(180,30,30,0.8), inset 0 0 30px rgba(120,0,0,0.5); }
+            }
+            @keyframes portalLocked {
+                0%, 100% { opacity: 0.4; }
+                50% { opacity: 0.7; }
+            }
+            @keyframes portalVortex {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            @keyframes portalFlicker {
+                0%, 100% { opacity: 0.6; }
+                25% { opacity: 0.8; }
+                50% { opacity: 1; }
+                75% { opacity: 0.7; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
 
-    portal.innerHTML = `
-        <!-- Пульсирующее кольцо портала -->
-        <div style="
-            position: relative; width: 64px; height: 64px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(155,89,182,0.4) 0%, rgba(155,89,182,0) 70%);
-            display: flex; align-items: center; justify-content: center;
-        ">
-            <!-- Внешнее кольцо -->
+    function updatePortal() {
+        const timerStatus = getEventTimerStatus();
+        const isLocked = timerStatus.status === 'before';
+        const isEnded = timerStatus.status === 'ended';
+        const isActive = timerStatus.status === 'active';
+
+        const manager = window.eventBossManager;
+        const hpPercent = manager ? manager.getHpPercent() : 100;
+        const attemptsLeft = manager ? manager.getRemainingAttempts() : 0;
+
+        let timerLabel = '';
+        let timerValue = '';
+        // Тёмно-красный/чёрный стиль — зловещий портал
+        let portalColor = 'rgba(140,20,20,'; // Dark red
+        let ringColor = 'rgba(180,30,30,';
+
+        if (isLocked) {
+            timerLabel = 'Портал откроется через';
+            timerValue = formatCountdown(timerStatus.diff);
+            portalColor = 'rgba(60,60,70,'; // Dark gray
+            ringColor = 'rgba(80,80,90,';
+        } else if (isActive) {
+            timerLabel = 'До закрытия портала';
+            timerValue = formatCountdown(timerStatus.diff);
+        } else {
+            timerLabel = 'Ивент завершён';
+            timerValue = '';
+        }
+
+        // HP bar только если ивент активен
+        let hpBarHTML = '';
+        if (isActive && manager?.currentBoss) {
+            let hpColor = '#4CAF50';
+            if (hpPercent < 50) hpColor = '#ff9800';
+            if (hpPercent < 25) hpColor = '#f44336';
+            hpBarHTML = `
+                <div style="width: 80px; height: 6px; background: #0a0a0a; border-radius: 3px; overflow: hidden; margin: 3px auto 0; border: 1px solid rgba(80,0,0,0.5);">
+                    <div style="width: ${hpPercent}%; height: 100%; background: ${hpColor}; border-radius: 3px;"></div>
+                </div>
+                <div style="font-size: 9px; color: #999; margin-top: 2px;">
+                    ${attemptsLeft > 0 ? `⚔️ ${attemptsLeft}` : '❌ 0'}
+                </div>
+            `;
+        }
+
+        portal.innerHTML = `
+            <!-- Вращающееся внешнее кольцо -->
             <div style="
-                position: absolute; width: 60px; height: 60px;
+                position: relative; width: 84px; height: 84px;
                 border-radius: 50%;
-                border: 2px solid rgba(155,89,182,0.6);
-                animation: eventBossPortalPulse 2s ease-in-out infinite;
-            "></div>
-            <!-- Внутреннее кольцо -->
-            <div style="
-                position: absolute; width: 48px; height: 48px;
-                border-radius: 50%;
-                border: 2px solid rgba(155,89,182,0.8);
-                animation: eventBossPortalPulse 2s ease-in-out infinite 0.5s;
-            "></div>
-            <!-- Иконка -->
-            <div style="font-size: 24px; z-index: 1; text-shadow: 0 0 10px rgba(155,89,182,0.8);">🌑</div>
-        </div>
-        <!-- Инфо под порталом -->
-        <div style="text-align: center; margin-top: 4px;">
-            <div style="font-size: 10px; font-weight: bold; color: #9B59B6; text-shadow: 0 0 4px rgba(0,0,0,1);">
-                ${bossName}
-            </div>
-            <div style="
-                width: 60px; height: 5px; background: #1a1a2a;
-                border-radius: 3px; overflow: hidden; margin: 2px auto 0;
-                border: 1px solid rgba(155,89,182,0.3);
+                display: flex; align-items: center; justify-content: center;
             ">
+                <!-- Вихрь-вращение (тёмный ободок) -->
                 <div style="
-                    width: ${hpPercent}%; height: 100%;
-                    background: ${hpPercent > 50 ? '#4CAF50' : hpPercent > 25 ? '#ff9800' : '#f44336'};
-                    border-radius: 3px;
+                    position: absolute; width: 84px; height: 84px;
+                    border-radius: 50%;
+                    border: 2px dashed ${ringColor}0.3);
+                    ${isLocked ? '' : 'animation: portalVortex 12s linear infinite;'}
                 "></div>
+                <!-- Основное кольцо портала -->
+                <div style="
+                    position: relative; width: 76px; height: 76px;
+                    border-radius: 50%;
+                    background: radial-gradient(circle, rgba(0,0,0,0.9) 0%, ${portalColor}0.6) 40%, ${portalColor}0) 70%);
+                    display: flex; align-items: center; justify-content: center;
+                    ${isLocked ? 'animation: portalLocked 3s ease-in-out infinite;' : 'animation: eventBossPortalGlow 2s ease-in-out infinite;'}
+                ">
+                    <div style="
+                        position: absolute; width: 70px; height: 70px;
+                        border-radius: 50%;
+                        border: 2px solid ${ringColor}0.5);
+                        animation: eventBossPortalPulse 2.5s ease-in-out infinite;
+                    "></div>
+                    <div style="
+                        position: absolute; width: 54px; height: 54px;
+                        border-radius: 50%;
+                        border: 2px solid ${ringColor}0.7);
+                        animation: eventBossPortalPulse 2.5s ease-in-out infinite 0.7s;
+                    "></div>
+                    <!-- Внутренняя бездна -->
+                    <div style="
+                        position: absolute; width: 38px; height: 38px;
+                        border-radius: 50%;
+                        background: radial-gradient(circle, rgba(0,0,0,1) 30%, ${portalColor}0.4) 100%);
+                        animation: portalFlicker 3s ease-in-out infinite;
+                    "></div>
+                    <div style="font-size: 26px; z-index: 1; text-shadow: 0 0 15px rgba(0,0,0,1), 0 0 30px ${portalColor}0.6);">
+                        ${isLocked ? '🔒' : isEnded ? '💀' : '🕳'}
+                    </div>
+                </div>
             </div>
-            <div style="font-size: 9px; color: #aaa; margin-top: 1px;">
-                ${attemptsLeft > 0 ? `⚔️ ${attemptsLeft}` : '❌ 0'}
+            <!-- Инфо -->
+            <div style="text-align: center; margin-top: 4px;">
+                <div style="font-size: 9px; color: #777; text-shadow: 0 0 4px rgba(0,0,0,1); letter-spacing: 0.5px;">
+                    ${timerLabel}
+                </div>
+                ${timerValue ? `
+                <div style="
+                    font-size: 14px; font-weight: bold;
+                    color: ${isLocked ? '#666' : '#1a1a1a'};
+                    text-shadow: ${isLocked ? '0 0 6px rgba(100,100,120,0.5)' : '0 0 8px rgba(140,20,20,0.6), 0 1px 0 rgba(60,0,0,0.8)'};
+                    font-family: monospace;
+                    margin-top: 2px;
+                    ${isLocked ? '' : 'background: linear-gradient(180deg, #2a0a0a, #0a0a0a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 4px rgba(140,20,20,0.4));'}
+                ">${timerValue}</div>` : ''}
+                ${hpBarHTML}
             </div>
-        </div>
-    `;
+        `;
+
+        // Заблокирован только до старта, после завершения — можно открыть для результатов
+        portal.onclick = isLocked ? null : openEventBossScreen;
+        portal.style.cursor = isLocked ? 'default' : 'pointer';
+    }
 
     portal.style.cssText = `
         position: fixed;
-        top: 50px;
+        top: 45px;
         left: 50%;
         transform: translateX(-50%);
-        cursor: pointer;
         z-index: 1001;
         display: flex;
         flex-direction: column;
         align-items: center;
-        filter: drop-shadow(0 4px 8px rgba(155,89,182,0.3));
+        filter: drop-shadow(0 4px 16px rgba(100,0,0,0.5)) drop-shadow(0 0 8px rgba(0,0,0,0.8));
         transition: transform 0.3s;
     `;
 
     portal.onmouseover = () => { portal.style.transform = 'translateX(-50%) scale(1.1)'; };
     portal.onmouseout = () => { portal.style.transform = 'translateX(-50%) scale(1)'; };
 
-    // CSS анимация для портала
-    if (!document.getElementById('event-boss-portal-css')) {
-        const style = document.createElement('style');
-        style.id = 'event-boss-portal-css';
-        style.textContent = `
-            @keyframes eventBossPortalPulse {
-                0%, 100% { transform: scale(1); opacity: 0.6; }
-                50% { transform: scale(1.1); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
-    }
+    // Обновляем каждую секунду
+    updatePortal();
+    if (window._portalTimerInterval) clearInterval(window._portalTimerInterval);
+    window._portalTimerInterval = setInterval(updatePortal, 1000);
 
     portal.style.display = 'flex';
 }
+
+window.getEventTimerStatus = getEventTimerStatus;
 
 // Экспорт
 window.openEventBossScreen = openEventBossScreen;
@@ -1101,5 +1279,171 @@ window.checkEventBossAvailability = checkEventBossAvailability;
 window.showEventBossWarpPortal = showEventBossWarpPortal;
 window.refreshEventBossLeaderboard = refreshEventBossLeaderboard;
 window.buyEventBossAttempt = buyEventBossAttempt;
+
+/**
+ * Консольная команда для принудительного показа портала (для тестирования).
+ * Использование: в консоли браузера ввести showPortal()
+ */
+window.showPortal = function() {
+    showEventBossWarpPortal(true);
+    console.log('🕳 Портал принудительно показан');
+};
+
+/**
+ * Анонс ивент босса — показывается один раз при входе в игру.
+ * Запоминает configVersion, чтобы при новом боссе показать снова.
+ */
+function showEventBossAnnouncement() {
+    const config = window.EVENT_BOSS_CONFIG;
+    if (!config) return;
+
+    const timerStatus = getEventTimerStatus();
+    // Не показываем если ивент уже закончился
+    if (timerStatus.status === 'ended') return;
+
+    const storageKey = 'event_boss_announcement_seen_v' + (config.configVersion || 0);
+    if (localStorage.getItem(storageKey)) return;
+
+    const isBefore = timerStatus.status === 'before';
+    const countdownText = isBefore
+        ? `Портал откроется через <b>${formatCountdown(timerStatus.diff)}</b>`
+        : 'Портал уже открыт — вступай в бой!';
+
+    function closeAnnouncement() {
+        localStorage.setItem(storageKey, '1');
+        const el = document.getElementById('event-boss-announcement-overlay');
+        if (el) el.remove();
+    }
+
+    const overlay = document.createElement('div');
+    overlay.id = 'event-boss-announcement-overlay';
+    overlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.88); z-index: 10003;
+        display: flex; align-items: center; justify-content: center;
+        overflow-y: auto; -webkit-overflow-scrolling: touch;
+        padding: 16px 0;
+    `;
+    // Закрытие по клику на оверлей
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeAnnouncement();
+    });
+
+    overlay.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 50%, #1a0a0a 100%);
+            border: 2px solid #9B59B6;
+            border-radius: 16px; padding: 20px 16px; text-align: center;
+            color: white; width: 300px; max-width: 90vw;
+            max-height: calc(100vh - 32px); overflow-y: auto;
+            box-shadow: 0 0 60px rgba(155,89,182,0.4), 0 0 120px rgba(140,20,20,0.2);
+            margin: auto; flex-shrink: 0;
+        ">
+            <!-- Спрайт босса -->
+            <div style="
+                width: 100px; height: 100px; margin: 0 auto 8px;
+                background: url('assets/sprites/event_boss/idle.webp') 0% 0% / 500% 500% no-repeat;
+                image-rendering: pixelated;
+                filter: drop-shadow(0 0 15px rgba(140,20,20,0.6));
+            "></div>
+
+            <div style="font-size: 10px; color: #9B59B6; letter-spacing: 2px; margin-bottom: 2px;">ГЛОБАЛЬНЫЙ ИВЕНТ</div>
+            <div style="font-size: 18px; font-weight: bold; color: #ff4444; text-shadow: 0 0 20px rgba(255,50,50,0.5); margin-bottom: 8px;">
+                ${config.name || 'Ивент Босс'}
+            </div>
+
+            <div style="font-size: 12px; color: #ccc; line-height: 1.5; margin-bottom: 10px; text-align: left; padding: 0 4px;">
+                Тёмная сущность вторглась в мир. У неё <b style="color: #ff6b6b;">${(config.totalHp / 1000000).toFixed(0)}M HP</b> — общий на всех игроков.<br>
+                Бей босса, чтобы копить урон в общий пул. Босс уязвим к <b style="color: #ffe066;">Свету</b>!<br>
+                <span style="color: #aaa;">10 бесплатных попыток в день</span>
+            </div>
+
+            <div style="
+                background: rgba(0,0,0,0.3); border-radius: 8px; padding: 8px 10px;
+                margin-bottom: 10px; text-align: left; font-size: 11px; line-height: 1.6;
+            ">
+                <div style="color: #7289da; font-weight: bold; margin-bottom: 3px;">Награды:</div>
+                <div>🏆 Топ-1: <b style="color: #ffd700;">+20 дней</b> + значок</div>
+                <div>🥈 Топ-2: <b style="color: #c0c0c0;">+10 дней</b></div>
+                <div>🥉 Топ-3: <b style="color: #cd7f32;">+5 дней</b></div>
+                <div>🗡 Контрольный удар: <b style="color: #ff4500;">+7 дней</b></div>
+                <div>⚔ Убийство босса: <b style="color: #4CAF50;">+3 дня</b> всем</div>
+                <div>👤 Участие: <b style="color: #4CAF50;">+1 день</b></div>
+                <div style="margin-top: 4px;">🎁 <span style="color: #e040fb;">Бонус NFT токены от админа получат игроки, выполнившие секретный квест с боссом. Результаты в группе.</span></div>
+            </div>
+
+            <div style="
+                background: rgba(255,50,50,0.1); border: 1px solid rgba(255,50,50,0.3);
+                border-radius: 8px; padding: 6px 10px; margin-bottom: 10px;
+                font-size: 11px; line-height: 1.4;
+            ">
+                <div style="color: #ff6b6b; font-weight: bold; margin-bottom: 2px;">Последствия:</div>
+                <div style="color: #4CAF50;">Победа → +30% добычи времени на неделю</div>
+                <div style="color: #f44336;">Поражение → -50% добычи времени на неделю</div>
+                <div style="color: #e040fb; margin-top: 3px;">🎁 Секретный квест → NFT токены от админа</div>
+            </div>
+
+            <div style="font-size: 11px; color: #aaa; margin-bottom: 10px;">
+                ${countdownText}
+            </div>
+
+            <button id="event-boss-announcement-close-btn" style="
+                background: linear-gradient(135deg, #8B0000, #cc0000);
+                border: none; color: white; padding: 10px 32px;
+                border-radius: 8px; font-size: 14px; font-weight: bold;
+                cursor: pointer; text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+                box-shadow: 0 4px 15px rgba(140,0,0,0.4);
+            ">
+                Понятно!
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+    document.getElementById('event-boss-announcement-close-btn').addEventListener('click', closeAnnouncement);
+    localStorage.setItem(storageKey, '1');
+}
+
+window.showEventBossAnnouncement = showEventBossAnnouncement;
+
+/**
+ * Консольная команда для скрытия портала.
+ * Использование: в консоли браузера ввести hidePortal()
+ */
+window.hidePortal = function() {
+    showEventBossWarpPortal(false);
+    console.log('🕳 Портал скрыт');
+};
+
+/**
+ * Админ-команда: запланировать босса с нужным временем старта.
+ * Использование (консоль):
+ *   scheduleBoss()                         — создать сейчас на 7 дней
+ *   scheduleBoss('2026-02-14T09:00:00Z')   — запланировать на 14 фев 12:00 МСК
+ */
+window.scheduleBoss = async function(startsAtUTC) {
+    const config = window.EVENT_BOSS_CONFIG;
+    if (!config) { console.error('EVENT_BOSS_CONFIG не найден'); return; }
+    const sb = window.supabaseClient;
+    if (!sb) { console.error('Supabase не подключён'); return; }
+
+    const params = {
+        p_name: config.name,
+        p_max_hp: config.totalHp,
+        p_config: config,
+        p_rewards: config.rewards,
+        p_duration_hours: config.durationHours || 168
+    };
+    if (startsAtUTC) {
+        params.p_starts_at = startsAtUTC;
+    }
+
+    const { data, error } = await sb.rpc('create_event_boss', params);
+    if (error) {
+        console.error('❌ Ошибка создания босса:', error);
+    } else {
+        console.log('✅ Босс создан:', JSON.stringify(data, null, 2));
+    }
+};
 
 console.log('🐉 Event Boss UI загружен');

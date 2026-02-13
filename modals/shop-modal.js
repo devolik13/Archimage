@@ -590,16 +590,6 @@ function renderStarterPacks(scale) {
         `;
     }
 
-    // Скрытая кнопка для доступа к ивент боссу (правый нижний угол)
-    html += `
-        <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
-            <div onclick="document.getElementById('shop-modal')?.remove(); if(typeof openEventBossScreen==='function') openEventBossScreen();"
-                 style="width: 32px; height: 32px; cursor: pointer; opacity: 0.03; border-radius: 4px;"
-                 title="">
-            </div>
-        </div>
-    `;
-
     return html;
 }
 
