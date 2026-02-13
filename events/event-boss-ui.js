@@ -973,123 +973,235 @@ function closeEventBossScreen() {
 // ============================================
 
 /**
- * Проверить наличие ивент босса при загрузке
+ * Проверить наличие ивент босса при загрузке.
+ * Показывает портал если ивент ещё не закончился (до старта — с замком, после старта — активный).
  */
 async function checkEventBossAvailability() {
+    const timerStatus = getEventTimerStatus();
+
+    // Если ивент завершён — не показываем портал
+    if (timerStatus.status === 'ended') {
+        showEventBossWarpPortal(false);
+        return false;
+    }
+
+    // До старта ивента — показываем заблокированный портал с таймером
+    if (timerStatus.status === 'before') {
+        console.log(`🕳 Ивент ещё не начался. Старт через: ${formatCountdown(timerStatus.diff)}`);
+        showEventBossWarpPortal(true);
+        return true;
+    }
+
+    // Ивент активен — проверяем босса
     const manager = window.eventBossManager;
-    if (!manager) return false;
+    if (!manager) {
+        showEventBossWarpPortal(true);
+        return true;
+    }
 
     const boss = await manager.fetchActiveBoss();
     if (boss && boss.active) {
         console.log(`🐉 Активный ивент босс: ${boss.name} | HP: ${boss.current_hp}/${boss.max_hp}`);
-        showEventBossWarpPortal(true);
-        return true;
+    }
+    showEventBossWarpPortal(true);
+    return true;
+}
+
+/**
+ * Получить статус ивента по таймеру
+ * @returns {{ status: 'before'|'active'|'ended', startTime: Date, endTime: Date, diff: number }}
+ */
+function getEventTimerStatus() {
+    const config = window.EVENT_BOSS_CONFIG;
+    const startStr = config?.eventStartUTC;
+    if (!startStr) return { status: 'active', startTime: new Date(), endTime: new Date(), diff: 0 };
+
+    const startTime = new Date(startStr);
+    const endTime = new Date(startTime.getTime() + (config.durationHours || 168) * 60 * 60 * 1000);
+    const now = new Date();
+
+    if (now < startTime) {
+        return { status: 'before', startTime, endTime, diff: startTime - now };
+    } else if (now < endTime) {
+        return { status: 'active', startTime, endTime, diff: endTime - now };
     } else {
-        showEventBossWarpPortal(false);
-        return false;
+        return { status: 'ended', startTime, endTime, diff: 0 };
     }
 }
 
 /**
- * Показать/скрыть варп портал в городе
- * ОТКЛЮЧЕНО: портал скрыт, доступ через скрытую кнопку в магазине
+ * Форматировать countdown в дни/часы/минуты/секунды
+ */
+function formatCountdown(ms) {
+    if (ms <= 0) return '00:00:00';
+    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+
+    const pad = n => String(n).padStart(2, '0');
+    if (days > 0) {
+        const daysText = days === 1 ? 'день' : (days < 5 ? 'дня' : 'дней');
+        return `${days} ${daysText} ${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    }
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+}
+
+/**
+ * Показать/скрыть варп портал в городе с таймером
  */
 function showEventBossWarpPortal(show) {
     let portal = document.getElementById('event-boss-warp-portal');
-    if (portal) portal.style.display = 'none';
-    return;
+
+    if (!show) {
+        if (portal) portal.style.display = 'none';
+        if (window._portalTimerInterval) {
+            clearInterval(window._portalTimerInterval);
+            window._portalTimerInterval = null;
+        }
+        return;
+    }
 
     if (!portal) {
         portal = document.createElement('div');
         portal.id = 'event-boss-warp-portal';
-        portal.onclick = openEventBossScreen;
         document.body.appendChild(portal);
     }
 
-    const manager = window.eventBossManager;
-    const hpPercent = manager ? manager.getHpPercent() : 100;
-    const bossName = manager?.currentBoss?.name || 'Ивент Босс';
-    const attemptsLeft = manager ? manager.getRemainingAttempts() : 0;
-
-    portal.innerHTML = `
-        <!-- Пульсирующее кольцо портала -->
-        <div style="
-            position: relative; width: 64px; height: 64px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(155,89,182,0.4) 0%, rgba(155,89,182,0) 70%);
-            display: flex; align-items: center; justify-content: center;
-        ">
-            <!-- Внешнее кольцо -->
-            <div style="
-                position: absolute; width: 60px; height: 60px;
-                border-radius: 50%;
-                border: 2px solid rgba(155,89,182,0.6);
-                animation: eventBossPortalPulse 2s ease-in-out infinite;
-            "></div>
-            <!-- Внутреннее кольцо -->
-            <div style="
-                position: absolute; width: 48px; height: 48px;
-                border-radius: 50%;
-                border: 2px solid rgba(155,89,182,0.8);
-                animation: eventBossPortalPulse 2s ease-in-out infinite 0.5s;
-            "></div>
-            <!-- Иконка -->
-            <div style="font-size: 24px; z-index: 1; text-shadow: 0 0 10px rgba(155,89,182,0.8);">🌑</div>
-        </div>
-        <!-- Инфо под порталом -->
-        <div style="text-align: center; margin-top: 4px;">
-            <div style="font-size: 10px; font-weight: bold; color: #9B59B6; text-shadow: 0 0 4px rgba(0,0,0,1);">
-                ${bossName}
-            </div>
-            <div style="
-                width: 60px; height: 5px; background: #1a1a2a;
-                border-radius: 3px; overflow: hidden; margin: 2px auto 0;
-                border: 1px solid rgba(155,89,182,0.3);
-            ">
-                <div style="
-                    width: ${hpPercent}%; height: 100%;
-                    background: ${hpPercent > 50 ? '#4CAF50' : hpPercent > 25 ? '#ff9800' : '#f44336'};
-                    border-radius: 3px;
-                "></div>
-            </div>
-            <div style="font-size: 9px; color: #aaa; margin-top: 1px;">
-                ${attemptsLeft > 0 ? `⚔️ ${attemptsLeft}` : '❌ 0'}
-            </div>
-        </div>
-    `;
-
-    portal.style.cssText = `
-        position: fixed;
-        top: 50px;
-        left: 50%;
-        transform: translateX(-50%);
-        cursor: pointer;
-        z-index: 1001;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        filter: drop-shadow(0 4px 8px rgba(155,89,182,0.3));
-        transition: transform 0.3s;
-    `;
-
-    portal.onmouseover = () => { portal.style.transform = 'translateX(-50%) scale(1.1)'; };
-    portal.onmouseout = () => { portal.style.transform = 'translateX(-50%) scale(1)'; };
-
-    // CSS анимация для портала
+    // CSS анимации
     if (!document.getElementById('event-boss-portal-css')) {
         const style = document.createElement('style');
         style.id = 'event-boss-portal-css';
         style.textContent = `
             @keyframes eventBossPortalPulse {
                 0%, 100% { transform: scale(1); opacity: 0.6; }
-                50% { transform: scale(1.1); opacity: 1; }
+                50% { transform: scale(1.15); opacity: 1; }
+            }
+            @keyframes eventBossPortalGlow {
+                0%, 100% { box-shadow: 0 0 15px rgba(155,89,182,0.4), inset 0 0 15px rgba(155,89,182,0.2); }
+                50% { box-shadow: 0 0 30px rgba(155,89,182,0.8), inset 0 0 25px rgba(155,89,182,0.4); }
+            }
+            @keyframes portalLocked {
+                0%, 100% { opacity: 0.5; }
+                50% { opacity: 0.8; }
             }
         `;
         document.head.appendChild(style);
     }
 
+    function updatePortal() {
+        const timerStatus = getEventTimerStatus();
+        const isLocked = timerStatus.status === 'before';
+        const isEnded = timerStatus.status === 'ended';
+        const isActive = timerStatus.status === 'active';
+
+        const manager = window.eventBossManager;
+        const hpPercent = manager ? manager.getHpPercent() : 100;
+        const attemptsLeft = manager ? manager.getRemainingAttempts() : 0;
+
+        let timerLabel = '';
+        let timerValue = '';
+        let portalColor = 'rgba(155,89,182,'; // Purple
+
+        if (isLocked) {
+            timerLabel = 'Портал откроется через';
+            timerValue = formatCountdown(timerStatus.diff);
+            portalColor = 'rgba(100,100,120,'; // Gray-ish
+        } else if (isActive) {
+            timerLabel = 'До закрытия портала';
+            timerValue = formatCountdown(timerStatus.diff);
+        } else {
+            timerLabel = 'Ивент завершён';
+            timerValue = '';
+        }
+
+        // HP bar только если ивент активен
+        let hpBarHTML = '';
+        if (isActive && manager?.currentBoss) {
+            let hpColor = '#4CAF50';
+            if (hpPercent < 50) hpColor = '#ff9800';
+            if (hpPercent < 25) hpColor = '#f44336';
+            hpBarHTML = `
+                <div style="width: 80px; height: 6px; background: #1a1a2a; border-radius: 3px; overflow: hidden; margin: 3px auto 0; border: 1px solid ${portalColor}0.3);">
+                    <div style="width: ${hpPercent}%; height: 100%; background: ${hpColor}; border-radius: 3px;"></div>
+                </div>
+                <div style="font-size: 9px; color: #aaa; margin-top: 2px;">
+                    ${attemptsLeft > 0 ? `⚔️ ${attemptsLeft}` : '❌ 0'}
+                </div>
+            `;
+        }
+
+        portal.innerHTML = `
+            <!-- Кольцо портала -->
+            <div style="
+                position: relative; width: 80px; height: 80px;
+                border-radius: 50%;
+                background: radial-gradient(circle, ${portalColor}0.5) 0%, ${portalColor}0) 70%);
+                display: flex; align-items: center; justify-content: center;
+                ${isLocked ? 'animation: portalLocked 3s ease-in-out infinite;' : `animation: eventBossPortalGlow 2s ease-in-out infinite;`}
+            ">
+                <div style="
+                    position: absolute; width: 74px; height: 74px;
+                    border-radius: 50%;
+                    border: 2px solid ${portalColor}0.6);
+                    animation: eventBossPortalPulse 2s ease-in-out infinite;
+                "></div>
+                <div style="
+                    position: absolute; width: 58px; height: 58px;
+                    border-radius: 50%;
+                    border: 2px solid ${portalColor}0.8);
+                    animation: eventBossPortalPulse 2s ease-in-out infinite 0.5s;
+                "></div>
+                <div style="font-size: 28px; z-index: 1; text-shadow: 0 0 12px ${portalColor}0.8);">
+                    ${isLocked ? '🔒' : isEnded ? '🌑' : '🕳'}
+                </div>
+            </div>
+            <!-- Инфо -->
+            <div style="text-align: center; margin-top: 4px;">
+                <div style="font-size: 9px; color: #aaa; text-shadow: 0 0 4px rgba(0,0,0,1);">
+                    ${timerLabel}
+                </div>
+                ${timerValue ? `
+                <div style="
+                    font-size: 14px; font-weight: bold;
+                    color: ${isLocked ? '#8888aa' : '#ff9800'};
+                    text-shadow: 0 0 8px rgba(0,0,0,1);
+                    font-family: monospace;
+                    margin-top: 2px;
+                ">${timerValue}</div>` : ''}
+                ${hpBarHTML}
+            </div>
+        `;
+
+        portal.onclick = isLocked || isEnded ? null : openEventBossScreen;
+        portal.style.cursor = isLocked || isEnded ? 'default' : 'pointer';
+    }
+
+    portal.style.cssText = `
+        position: fixed;
+        top: 45px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1001;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        filter: drop-shadow(0 4px 12px rgba(155,89,182,0.4));
+        transition: transform 0.3s;
+    `;
+
+    portal.onmouseover = () => { portal.style.transform = 'translateX(-50%) scale(1.1)'; };
+    portal.onmouseout = () => { portal.style.transform = 'translateX(-50%) scale(1)'; };
+
+    // Обновляем каждую секунду
+    updatePortal();
+    if (window._portalTimerInterval) clearInterval(window._portalTimerInterval);
+    window._portalTimerInterval = setInterval(updatePortal, 1000);
+
     portal.style.display = 'flex';
 }
+
+window.getEventTimerStatus = getEventTimerStatus;
 
 // Экспорт
 window.openEventBossScreen = openEventBossScreen;
