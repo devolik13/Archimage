@@ -114,135 +114,152 @@ function castPoisonedGlade(wizard, spellData, position, casterType) {
     // Определяем колонку цели
     const targetCol = casterType === 'player' ? 0 : 5;
     
-    // ИСПРАВЛЕНИЕ: Атакуем выбранные позиции с задержкой, ВСЕГДА показываем анимацию
-    targetPositions.forEach((row, index) => {
-        (window.battleTimeout || setTimeout)(() => {
-            let targetWizard = null;
-            let targetObj = null;
-            
-            // Проверяем, есть ли маг в этой позиции
-            if (casterType === 'player') {
-                targetWizard = window.enemyFormation[row];
-                if (targetWizard && targetWizard.hp > 0) {
-                    targetObj = { wizard: targetWizard, position: row };
-                }
-            } else {
-                const wizardId = window.playerFormation[row];
-                if (wizardId) {
-                    targetWizard = window.playerWizards.find(w => w.id === wizardId);
+    // Атакуем выбранные позиции с задержкой (через промис для корректного подсчёта XP)
+    const damagePromise = new Promise(resolve => {
+        let completed = 0;
+        const total = targetPositions.length;
+
+        const onPositionDone = () => {
+            completed++;
+            if (completed >= total) resolve();
+        };
+
+        targetPositions.forEach((row, index) => {
+            (window.battleTimeout || setTimeout)(() => {
+                let targetWizard = null;
+                let targetObj = null;
+
+                // Проверяем, есть ли маг в этой позиции
+                if (casterType === 'player') {
+                    targetWizard = window.enemyFormation[row];
                     if (targetWizard && targetWizard.hp > 0) {
                         targetObj = { wizard: targetWizard, position: row };
                     }
-                }
-            }
-            
-            // КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Всегда запускаем анимацию, независимо от наличия цели
-            if (window.spellAnimations?.poisoned_glade?.play) {
-                window.spellAnimations.poisoned_glade.play({
-                    targetCol: targetCol,
-                    targetRow: row,
-                    onComplete: () => {
-                        // Наносим урон ТОЛЬКО если есть цель
-                        if (targetObj) {
-                            const finalDamage = typeof window.applyFinalDamage === 'function' ?
-                                window.applyFinalDamage(wizard, targetObj.wizard, baseDamage, 'poisoned_glade', 0, true) : baseDamage;
-
-                            targetObj.wizard.hp -= finalDamage;
-                            if (targetObj.wizard.hp < 0) targetObj.wizard.hp = 0;
-
-                            if (typeof window.addToBattleLog === 'function') {
-                                window.addToBattleLog(`☠️ Ядовитая поляна → ${targetObj.wizard.name} (${finalDamage} урона + яд)`);
-                                const damageSteps = targetObj.wizard._lastDamageSteps || [];
-                                if (damageSteps.length > 0) {
-                                    damageSteps.forEach(step => {
-                                        window.addToBattleLog(`    ├─ ${step}`);
-                                    });
-                                }
-                                window.addToBattleLog(`    └─ HP: ${targetObj.wizard.hp}/${targetObj.wizard.max_hp}`);
-                                delete targetObj.wizard._lastDamageSteps;
-                            }
-
-                            // Проверка смерти от урона поляны
-                            if (targetObj.wizard.hp <= 0) {
-                                const targetType = casterType === 'player' ? 'enemy' : 'player';
-                                if (window.battleLogger) {
-                                    window.battleLogger.logDeath(targetObj.wizard, targetType, 'poisoned_glade');
-                                }
-                                // Анимация смерти
-                                if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
-                                    const key = `${targetCol}_${row}`;
-                                    const container = window.wizardSprites?.[key];
-                                    if (container && !container.deathAnimationStarted) {
-                                        container.deathAnimationStarted = true;
-                                        window.pixiWizards.playDeath(targetCol, row);
-                                    }
-                                }
-                            } else {
-                                // Накладываем яд только если жив
-                                applyPoisonEffect(targetObj.wizard, 1);
-                                // Применяем бонус фракции
-                                applyPoisonFactionBonus(targetObj.wizard, wizard, casterType);
-                            }
-
-                            hitCount++;
-                        } else {
-                            // Промах - атака в пустую позицию
-                            missCount++;
-                            if (typeof window.addToBattleLog === 'function') {
-                                window.addToBattleLog(`☠️ Ядовитая поляна на позиции ${row + 1} (пусто)`);
-                            }
-                        }
-                    }
-                });
-            } else {
-                // Fallback без анимации - только если есть цель
-                if (targetObj) {
-                    const finalDamage = typeof window.applyFinalDamage === 'function' ?
-                        window.applyFinalDamage(wizard, targetObj.wizard, baseDamage, 'poisoned_glade', 0, true) : baseDamage;
-
-                    targetObj.wizard.hp -= finalDamage;
-                    if (targetObj.wizard.hp < 0) targetObj.wizard.hp = 0;
-
-                    if (typeof window.addToBattleLog === 'function') {
-                        window.addToBattleLog(`☠️ Ядовитая поляна → ${targetObj.wizard.name} (${finalDamage} урона + яд)`);
-                        const damageSteps = targetObj.wizard._lastDamageSteps || [];
-                        if (damageSteps.length > 0) {
-                            damageSteps.forEach(step => {
-                                window.addToBattleLog(`    ├─ ${step}`);
-                            });
-                        }
-                        window.addToBattleLog(`    └─ HP: ${targetObj.wizard.hp}/${targetObj.wizard.max_hp}`);
-                        delete targetObj.wizard._lastDamageSteps;
-                    }
-
-                    // Проверка смерти
-                    if (targetObj.wizard.hp <= 0) {
-                        const targetType = casterType === 'player' ? 'enemy' : 'player';
-                        if (window.battleLogger) {
-                            window.battleLogger.logDeath(targetObj.wizard, targetType, 'poisoned_glade');
-                        }
-                        if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
-                            const key = `${targetCol}_${row}`;
-                            const container = window.wizardSprites?.[key];
-                            if (container && !container.deathAnimationStarted) {
-                                container.deathAnimationStarted = true;
-                                window.pixiWizards.playDeath(targetCol, row);
-                            }
-                        }
-                    } else {
-                        applyPoisonEffect(targetObj.wizard, 1);
-                        applyPoisonFactionBonus(targetObj.wizard, wizard, casterType);
-                    }
-                    hitCount++;
                 } else {
-                    missCount++;
-                    if (typeof window.addToBattleLog === 'function') {
-                        window.addToBattleLog(`☠️ Ядовитая поляна промахивается (позиция ${row + 1} пуста)`);
+                    const wizardId = window.playerFormation[row];
+                    if (wizardId) {
+                        targetWizard = window.playerWizards.find(w => w.id === wizardId);
+                        if (targetWizard && targetWizard.hp > 0) {
+                            targetObj = { wizard: targetWizard, position: row };
+                        }
                     }
                 }
-            }
-        }, index * 400); // Задержка 400ms между атаками
+
+                // Всегда запускаем анимацию, независимо от наличия цели
+                if (window.spellAnimations?.poisoned_glade?.play) {
+                    window.spellAnimations.poisoned_glade.play({
+                        targetCol: targetCol,
+                        targetRow: row,
+                        onComplete: () => {
+                            // Наносим урон ТОЛЬКО если есть цель
+                            if (targetObj) {
+                                const finalDamage = typeof window.applyFinalDamage === 'function' ?
+                                    window.applyFinalDamage(wizard, targetObj.wizard, baseDamage, 'poisoned_glade', 0, true) : baseDamage;
+
+                                targetObj.wizard.hp -= finalDamage;
+                                if (targetObj.wizard.hp < 0) targetObj.wizard.hp = 0;
+
+                                if (typeof window.addToBattleLog === 'function') {
+                                    window.addToBattleLog(`☠️ Ядовитая поляна → ${targetObj.wizard.name} (${finalDamage} урона + яд)`);
+                                    const damageSteps = targetObj.wizard._lastDamageSteps || [];
+                                    if (damageSteps.length > 0) {
+                                        damageSteps.forEach(step => {
+                                            window.addToBattleLog(`    ├─ ${step}`);
+                                        });
+                                    }
+                                    window.addToBattleLog(`    └─ HP: ${targetObj.wizard.hp}/${targetObj.wizard.max_hp}`);
+                                    delete targetObj.wizard._lastDamageSteps;
+                                }
+
+                                // Проверка смерти от урона поляны
+                                if (targetObj.wizard.hp <= 0) {
+                                    const targetType = casterType === 'player' ? 'enemy' : 'player';
+                                    if (window.battleLogger) {
+                                        window.battleLogger.logDeath(targetObj.wizard, targetType, 'poisoned_glade');
+                                    }
+                                    // Анимация смерти
+                                    if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
+                                        const key = `${targetCol}_${row}`;
+                                        const container = window.wizardSprites?.[key];
+                                        if (container && !container.deathAnimationStarted) {
+                                            container.deathAnimationStarted = true;
+                                            window.pixiWizards.playDeath(targetCol, row);
+                                        }
+                                    }
+                                } else {
+                                    // Накладываем яд только если жив
+                                    applyPoisonEffect(targetObj.wizard, 1);
+                                    // Применяем бонус фракции
+                                    applyPoisonFactionBonus(targetObj.wizard, wizard, casterType);
+                                }
+
+                                hitCount++;
+                            } else {
+                                // Промах - атака в пустую позицию
+                                missCount++;
+                                if (typeof window.addToBattleLog === 'function') {
+                                    window.addToBattleLog(`☠️ Ядовитая поляна на позиции ${row + 1} (пусто)`);
+                                }
+                            }
+                            onPositionDone();
+                        }
+                    });
+                } else {
+                    // Fallback без анимации - только если есть цель
+                    if (targetObj) {
+                        const finalDamage = typeof window.applyFinalDamage === 'function' ?
+                            window.applyFinalDamage(wizard, targetObj.wizard, baseDamage, 'poisoned_glade', 0, true) : baseDamage;
+
+                        targetObj.wizard.hp -= finalDamage;
+                        if (targetObj.wizard.hp < 0) targetObj.wizard.hp = 0;
+
+                        if (typeof window.addToBattleLog === 'function') {
+                            window.addToBattleLog(`☠️ Ядовитая поляна → ${targetObj.wizard.name} (${finalDamage} урона + яд)`);
+                            const damageSteps = targetObj.wizard._lastDamageSteps || [];
+                            if (damageSteps.length > 0) {
+                                damageSteps.forEach(step => {
+                                    window.addToBattleLog(`    ├─ ${step}`);
+                                });
+                            }
+                            window.addToBattleLog(`    └─ HP: ${targetObj.wizard.hp}/${targetObj.wizard.max_hp}`);
+                            delete targetObj.wizard._lastDamageSteps;
+                        }
+
+                        // Проверка смерти
+                        if (targetObj.wizard.hp <= 0) {
+                            const targetType = casterType === 'player' ? 'enemy' : 'player';
+                            if (window.battleLogger) {
+                                window.battleLogger.logDeath(targetObj.wizard, targetType, 'poisoned_glade');
+                            }
+                            if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
+                                const key = `${targetCol}_${row}`;
+                                const container = window.wizardSprites?.[key];
+                                if (container && !container.deathAnimationStarted) {
+                                    container.deathAnimationStarted = true;
+                                    window.pixiWizards.playDeath(targetCol, row);
+                                }
+                            }
+                        } else {
+                            applyPoisonEffect(targetObj.wizard, 1);
+                            applyPoisonFactionBonus(targetObj.wizard, wizard, casterType);
+                        }
+                        hitCount++;
+                    } else {
+                        missCount++;
+                        if (typeof window.addToBattleLog === 'function') {
+                            window.addToBattleLog(`☠️ Ядовитая поляна промахивается (позиция ${row + 1} пуста)`);
+                        }
+                    }
+                    onPositionDone();
+                }
+            }, index * 400); // Задержка 400ms между атаками
+        });
     });
+
+    // Регистрируем промис для ожидания в core.js перед подсчётом XP
+    if (window.pendingSpellDamage) {
+        window.pendingSpellDamage.push(damagePromise);
+    }
 }
 
 // --- Мерзкое облако (Foul Cloud) - Тир 3, Mass AOE ---
@@ -299,10 +316,7 @@ function castFoulCloud(wizard, spellData, position, casterType) {
         const finalDamage = typeof window.applyFinalDamage === 'function' ?
             window.applyFinalDamage(wizard, targetInfo.wizard, baseDamage, 'foul_cloud', 0, true) : baseDamage;
 
-        // Трекинг урона для опыта
-        if (typeof window.trackDamageExp === 'function') {
-            window.trackDamageExp(wizard, finalDamage);
-        }
+        // Урон для опыта подсчитывается через дельту HP в core.js (не дублируем)
 
         targetInfo.wizard.hp -= finalDamage;
         if (targetInfo.wizard.hp < 0) targetInfo.wizard.hp = 0;
@@ -676,11 +690,8 @@ function castEpidemic(wizard, spellData, position, casterType) {
             const finalDamage = typeof window.applyFinalDamage === 'function' ?
                 window.applyFinalDamage(wizard, target, baseDamage, 'epidemic', 0, true) : baseDamage;
 
-            // Трекинг урона для опыта
-            if (typeof window.trackDamageExp === 'function') {
-                window.trackDamageExp(wizard, finalDamage);
-            }
-                
+            // Урон для опыта подсчитывается через дельту HP в core.js
+
             target.hp -= finalDamage;
             if (target.hp < 0) target.hp = 0;
             
@@ -718,10 +729,7 @@ function castEpidemic(wizard, spellData, position, casterType) {
                     randomTarget.hp -= bonusDamage;
                     if (randomTarget.hp < 0) randomTarget.hp = 0;
 
-                    // Трекинг бонусного урона для опыта
-                    if (typeof window.trackDamageExp === 'function') {
-                        window.trackDamageExp(wizard, bonusDamage);
-                    }
+                    // Урон для опыта подсчитывается через дельту HP в core.js
 
                     if (typeof window.addToBattleLog === 'function') {
                         window.addToBattleLog(`💀 ${randomTarget.name} получает ${bonusDamage} бонусного урона от Эпидемии (стаков яда: ${stacks})`);

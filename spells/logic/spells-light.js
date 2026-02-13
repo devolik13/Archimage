@@ -185,10 +185,7 @@ function castFlash(wizard, spellData, position, casterType) {
 
         protectionLayers.push(`${target.wizard.name} получает ${finalDamage} урона (осталось ${target.wizard.hp}/${target.wizard.max_hp} HP)`);
 
-        // Трекинг урона для опыта (только для игрока)
-        if (casterType === 'player' && finalDamage > 0 && typeof window.trackBattleDamage === 'function') {
-            window.trackBattleDamage(wizard, finalDamage);
-        }
+        // Урон для опыта подсчитывается через дельту HP в core.js
     }
 
     // Итоговый результат
@@ -308,35 +305,41 @@ function castLightBeam(wizard, spellData, position, casterType) {
     // === ДОПОЛНИТЕЛЬНЫЙ ЛУЧ (5 уровень) ===
     // Работает так же как основной - фиксируется на цели до её смерти
     if (hasSecondBeam) {
-        (window.battleTimeout || setTimeout)(() => {
-            const secondBeamKey = 'beam_second';
-            const secondBeam = wizard.lightBeams[secondBeamKey];
+        const secondBeamPromise = new Promise(resolve => {
+            (window.battleTimeout || setTimeout)(() => {
+                const secondBeamKey = 'beam_second';
+                const secondBeam = wizard.lightBeams[secondBeamKey];
 
-            let secondTarget = null;
+                let secondTarget = null;
 
-            // Если уже есть цель - пытаемся её найти
-            if (secondBeam && secondBeam.targetId) {
-                secondTarget = window.findTargetById?.(secondBeam.targetId, casterType);
+                // Если уже есть цель - пытаемся её найти
+                if (secondBeam && secondBeam.targetId) {
+                    secondTarget = window.findTargetById?.(secondBeam.targetId, casterType);
 
-                // Если цель мертва - сбрасываем и выберем новую
-                if (!secondTarget || secondTarget.wizard.hp <= 0) {
-                    delete wizard.lightBeams[secondBeamKey];
-                    if (typeof window.addToBattleLog === 'function') {
-                        window.addToBattleLog(`✨ Дополнительный луч: цель уничтожена, разогрев сброшен`);
+                    // Если цель мертва - сбрасываем и выберем новую
+                    if (!secondTarget || secondTarget.wizard.hp <= 0) {
+                        delete wizard.lightBeams[secondBeamKey];
+                        if (typeof window.addToBattleLog === 'function') {
+                            window.addToBattleLog(`✨ Дополнительный луч: цель уничтожена, разогрев сброшен`);
+                        }
+                        secondTarget = null;
                     }
-                    secondTarget = null;
                 }
-            }
 
-            // Если цели нет - выбираем случайную
-            if (!secondTarget) {
-                secondTarget = window.findRandomTarget?.(casterType);
-            }
+                // Если цели нет - выбираем случайную
+                if (!secondTarget) {
+                    secondTarget = window.findRandomTarget?.(casterType);
+                }
 
-            if (secondTarget) {
-                castBeamAtTarget(wizard, secondTarget, position, casterType, baseDamage, increment, secondBeamKey, 'дополнительный');
-            }
-        }, 300);
+                if (secondTarget) {
+                    castBeamAtTarget(wizard, secondTarget, position, casterType, baseDamage, increment, secondBeamKey, 'дополнительный');
+                }
+                resolve();
+            }, 300);
+        });
+        if (window.pendingSpellDamage) {
+            window.pendingSpellDamage.push(secondBeamPromise);
+        }
     }
 
     // Применяем бонус фракции

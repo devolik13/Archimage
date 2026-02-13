@@ -192,12 +192,9 @@ class EventBossManager {
 
     /**
      * Отправить нанесённый урон после боя
-     * @param {number} hpDamage — чистый урон по HP босса
-     * @param {number} ratingDamage — урон для рейтинга (HP + бонус брони)
+     * @param {number} hpDamage — нанесённый урон по HP босса
      */
-    async submitDamage(hpDamage, ratingDamage) {
-        // ratingDamage по умолчанию = hpDamage (обратная совместимость)
-        if (ratingDamage == null) ratingDamage = hpDamage;
+    async submitDamage(hpDamage) {
 
         // === DEBUG ===
         if (this.DEBUG_LOCAL_MODE) {
@@ -215,11 +212,11 @@ class EventBossManager {
                 this.currentBoss.finishing_blow_by = window.userData?.username || 'Неизвестный маг';
             }
 
-            // Обновляем мок статистику игрока (лидерборд использует ratingDamage)
+            // Обновляем мок статистику игрока
             this._debugPlayerStats.participated = true;
-            this._debugPlayerStats.total_damage += ratingDamage;
+            this._debugPlayerStats.total_damage += hpDamage;
             this._debugPlayerStats.attacks_count++;
-            this._debugPlayerStats.best_single_attack = Math.max(this._debugPlayerStats.best_single_attack, ratingDamage);
+            this._debugPlayerStats.best_single_attack = Math.max(this._debugPlayerStats.best_single_attack, hpDamage);
 
             // Обновляем лидерборд — находим свою запись по telegram_id
             const myId = parseInt(window.userId) || 1;
@@ -252,10 +249,10 @@ class EventBossManager {
                 }));
             } catch (e) { /* ignore */ }
 
-            console.log(`🐉 [DEBUG] HP урон: ${hpDamage}, рейтинг: ${ratingDamage} | Босс HP: ${newHp}/${this.currentBoss.max_hp} | Defeated: ${isDefeated}`);
+            console.log(`🐉 [DEBUG] Урон: ${hpDamage} | Босс HP: ${newHp}/${this.currentBoss.max_hp} | Defeated: ${isDefeated}`);
             return {
                 success: true,
-                damage_dealt: ratingDamage,
+                damage_dealt: hpDamage,
                 boss_new_hp: newHp,
                 boss_max_hp: this.currentBoss.max_hp,
                 boss_defeated: isDefeated,
@@ -289,8 +286,7 @@ class EventBossManager {
                 const { data, error } = await this.supabase.rpc('event_boss_deal_damage', {
                     p_boss_id: this.currentBoss.id,
                     p_telegram_id: telegramId,
-                    p_damage: hpDamage,
-                    p_rating_damage: ratingDamage
+                    p_damage: hpDamage
                 });
 
                 if (error) {
@@ -304,7 +300,7 @@ class EventBossManager {
                 }
 
                 if (data && data.success) {
-                    console.log(`🐉 Урон записан: HP=${hpDamage}, рейтинг=${ratingDamage} | Босс HP: ${data.boss_new_hp}/${data.boss_max_hp}`);
+                    console.log(`🐉 Урон записан: ${hpDamage} | Босс HP: ${data.boss_new_hp}/${data.boss_max_hp}`);
                     console.log(`   Ваш общий урон: ${data.player_total_damage} | Атак: ${data.player_attacks}`);
 
                     // Обновляем локальный кеш

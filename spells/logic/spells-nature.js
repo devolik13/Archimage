@@ -72,10 +72,7 @@ function performWolfAttack(wolf, caster) {
         target.wizard.hp -= finalDamage;
         if (target.wizard.hp < 0) target.wizard.hp = 0;
 
-        // 📊 Учитываем урон волка для XP хозяина
-        if (typeof window.trackBattleDamage === 'function' && wolf.casterType === 'player') {
-            window.trackBattleDamage(caster, finalDamage);
-        }
+        // Урон волка для XP хозяина подсчитывается через дельту HP в core.js
         
         // ✅ ОБНОВЛЯЕМ ВИЗУАЛЬНЫЙ HP БАР
         if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
@@ -131,10 +128,7 @@ function performWolfAttack(wolf, caster) {
                 leftTarget.wizard.hp -= leftFinalDamage;
                 if (leftTarget.wizard.hp < 0) leftTarget.wizard.hp = 0;
 
-                // 📊 Учитываем AoE урон волка для XP хозяина
-                if (typeof window.trackBattleDamage === 'function' && wolf.casterType === 'player') {
-                    window.trackBattleDamage(caster, leftFinalDamage);
-                }
+                // Урон волка для XP хозяина подсчитывается через дельту HP в core.js
 
                 // ✅ ОБНОВЛЯЕМ HP БАР ЛЕВОЙ ЦЕЛИ
                 if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
@@ -178,10 +172,7 @@ function performWolfAttack(wolf, caster) {
                 rightTarget.wizard.hp -= rightFinalDamage;
                 if (rightTarget.wizard.hp < 0) rightTarget.wizard.hp = 0;
 
-                // 📊 Учитываем AoE урон волка для XP хозяина
-                if (typeof window.trackBattleDamage === 'function' && wolf.casterType === 'player') {
-                    window.trackBattleDamage(caster, rightFinalDamage);
-                }
+                // Урон волка для XP хозяина подсчитывается через дельту HP в core.js
 
                 // ✅ ОБНОВЛЯЕМ HP БАР ПРАВОЙ ЦЕЛИ
                 if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {

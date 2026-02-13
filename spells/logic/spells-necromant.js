@@ -74,10 +74,7 @@ function performSkeletonAttack(skeleton, caster) {
         target.wizard.hp -= finalDamage;
         if (target.wizard.hp < 0) target.wizard.hp = 0;
 
-        // Учитываем урон скелета для XP хозяина
-        if (typeof window.trackBattleDamage === 'function' && skeleton.casterType === 'player') {
-            window.trackBattleDamage(caster, finalDamage);
-        }
+        // Урон скелета для XP хозяина подсчитывается через дельту HP в core.js
 
         // Обновляем визуальный HP бар цели
         if (typeof window.updateWizardVisualHP === 'function') {
@@ -203,10 +200,7 @@ function castBoneSpear(wizard, spellData, position, casterType) {
             window.addToBattleLog(`   🦴 → ${targetName}: ${finalDamage} урона`);
         }
 
-        // Учёт урона для XP
-        if (typeof window.trackBattleDamage === 'function' && casterType === 'player') {
-            window.trackBattleDamage(wizard, finalDamage);
-        }
+        // Урон для XP подсчитывается через дельту HP в core.js
 
         // Проверка смерти
         if (target.wizard.hp <= 0) {
@@ -430,10 +424,7 @@ function performBoneDragonAttack(dragon, caster) {
         target.wizard.hp -= finalDamage;
         if (target.wizard.hp < 0) target.wizard.hp = 0;
 
-        // Учитываем урон дракона для XP хозяина
-        if (typeof window.trackBattleDamage === 'function' && dragon.casterType === 'player') {
-            window.trackBattleDamage(caster, finalDamage);
-        }
+        // Урон дракона для XP хозяина подсчитывается через дельту HP в core.js
 
         // Обновляем визуальный HP бар цели
         if (typeof window.updateWizardVisualHP === 'function') {

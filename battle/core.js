@@ -829,6 +829,9 @@ async function executeSingleMageAttack(wizard, position, casterType) {
         window.battleLogger.logTurnStart(casterType, wizard, position);
     }
 
+    // 📊 Сбрасываем очередь отложенного урона перед ходом
+    window.pendingSpellDamage = [];
+
     // 📊 Сохраняем HP врагов ДО хода для подсчёта нанесённого урона
     const enemyHpBefore = {};
     const enemies = casterType === 'player' ? window.enemyWizards : window.playerWizards;
@@ -1042,6 +1045,12 @@ async function executeSingleMageAttack(wizard, position, casterType) {
         window.processTsunamisForCaster(wizard, casterType);
     }
 
+    // 📊 Ожидаем завершения всего отложенного урона (AOE-заклинания с setTimeout)
+    if (window.pendingSpellDamage && window.pendingSpellDamage.length > 0) {
+        await Promise.all(window.pendingSpellDamage);
+        window.pendingSpellDamage = [];
+    }
+
     // 📊 Подсчёт нанесённого урона и начисление опыта (только для игрока)
     if (casterType === 'player' && typeof window.trackDamageExp === 'function') {
         let totalDamageDealt = 0;
@@ -1238,6 +1247,9 @@ async function executeBossBattlePhase() {
                 continue;
             }
 
+            // 📊 Сбрасываем очередь отложенного урона перед ходом
+            window.pendingSpellDamage = [];
+
             // 📊 Сохраняем HP врагов и союзников ДО хода для подсчёта опыта
             const enemyHpBefore = {};
             const allyHpBefore = {};
@@ -1255,6 +1267,12 @@ async function executeBossBattlePhase() {
             // Маг использует 2 заклинания
             if (typeof window.useWizardSpellsForBoss === 'function') {
                 await window.useWizardSpellsForBoss(mageData.wizard, mageData.position, 'player', 2);
+            }
+
+            // 📊 Ожидаем завершения всего отложенного урона (AOE-заклинания с setTimeout)
+            if (window.pendingSpellDamage && window.pendingSpellDamage.length > 0) {
+                await Promise.all(window.pendingSpellDamage);
+                window.pendingSpellDamage = [];
             }
 
             // 📊 Подсчёт нанесённого урона для опыта
@@ -1645,17 +1663,16 @@ async function checkBattleEnd() {
 
                     const skinId = skinMap[window.currentPvELevel];
                     if (skinId) {
-                        // Разблокируем скин
-                        window.unlockSkin(skinId).then(unlocked => {
-                            if (unlocked) {
-                                const skinName = window.SKINS_CONFIG?.[skinId]?.name || 'Новый скин';
-                                if (typeof window.addToBattleLog === 'function') {
-                                    window.addToBattleLog(`✨ Разблокирован скин: ${skinName}!`);
-                                }
-                                // Сохраняем информацию о разблокированном скине для показа в результате
-                                window.lastUnlockedSkin = { id: skinId, name: skinName };
+                        // Разблокируем скин (await чтобы сохранение завершилось ДО savePlayer ниже)
+                        const unlocked = await window.unlockSkin(skinId);
+                        if (unlocked) {
+                            const skinName = window.SKINS_CONFIG?.[skinId]?.name || 'Новый скин';
+                            if (typeof window.addToBattleLog === 'function') {
+                                window.addToBattleLog(`✨ Разблокирован скин: ${skinName}!`);
                             }
-                        });
+                            // Сохраняем информацию о разблокированном скине для показа в результате
+                            window.lastUnlockedSkin = { id: skinId, name: skinName };
+                        }
                     }
                 }
 
@@ -1821,13 +1838,12 @@ async function checkBattleEnd() {
 
         // === ИВЕНТ БОСС: Отдельная обработка ===
         if (window.isEventBossBattle) {
-            // Считаем нанесённый урон боссу (hpDamage для HP, ratingDamage для лидерборда)
+            // Считаем нанесённый урон боссу
             const bossDamageResult = typeof window.calculateEventBossDamage === 'function'
-                ? window.calculateEventBossDamage() : { hpDamage: 0, ratingDamage: 0 };
+                ? window.calculateEventBossDamage() : { hpDamage: 0 };
             const eventBossHpDamage = bossDamageResult.hpDamage || 0;
-            const eventBossRatingDamage = bossDamageResult.ratingDamage || 0;
 
-            console.log(`🐉 Ивент Босс: HP урон = ${eventBossHpDamage}, рейтинг = ${eventBossRatingDamage}`);
+            console.log(`🐉 Ивент Босс: урон = ${eventBossHpDamage}`);
 
             // Опыт магов
             const wizardExpGained = window.lastBattleExpResults || [];
@@ -1862,9 +1878,9 @@ async function checkBattleEnd() {
 
                 // Показываем окно результата ивент босса
                 if (typeof window.showEventBossResult === 'function') {
-                    await window.showEventBossResult(battleResult, eventBossHpDamage, eventBossRatingDamage);
+                    await window.showEventBossResult(battleResult, eventBossHpDamage);
                 } else {
-                    alert(`Урон по боссу: ${eventBossRatingDamage}`);
+                    alert(`Урон по боссу: ${eventBossHpDamage}`);
                     if (typeof window.returnToCity === 'function') {
                         window.returnToCity();
                     }

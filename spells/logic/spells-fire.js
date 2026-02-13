@@ -77,13 +77,19 @@ function castSpark(wizard, spellData, position, casterType) {
 
             // ЭФФЕКТ 5 УРОВНЯ: 50% шанс повторной атаки
             if (level === 5 && Math.random() < 0.5) {
-                
-                (window.battleTimeout || setTimeout)(() => {
-                    const newTarget = window.findTarget?.(position, casterType, wizard);
-                    if (newTarget) {
-                        castSparkSecondary(wizard, spellData, position, casterType, newTarget);
-                    }
-                }, 400);
+
+                const secondaryPromise = new Promise(resolve => {
+                    (window.battleTimeout || setTimeout)(() => {
+                        const newTarget = window.findTarget?.(position, casterType, wizard);
+                        if (newTarget) {
+                            castSparkSecondary(wizard, spellData, position, casterType, newTarget);
+                        }
+                        resolve();
+                    }, 400);
+                });
+                if (window.pendingSpellDamage) {
+                    window.pendingSpellDamage.push(secondaryPromise);
+                }
             }
         }
     });
