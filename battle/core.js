@@ -829,6 +829,9 @@ async function executeSingleMageAttack(wizard, position, casterType) {
         window.battleLogger.logTurnStart(casterType, wizard, position);
     }
 
+    // 📊 Сбрасываем очередь отложенного урона перед ходом
+    window.pendingSpellDamage = [];
+
     // 📊 Сохраняем HP врагов ДО хода для подсчёта нанесённого урона
     const enemyHpBefore = {};
     const enemies = casterType === 'player' ? window.enemyWizards : window.playerWizards;
@@ -1042,6 +1045,12 @@ async function executeSingleMageAttack(wizard, position, casterType) {
         window.processTsunamisForCaster(wizard, casterType);
     }
 
+    // 📊 Ожидаем завершения всего отложенного урона (AOE-заклинания с setTimeout)
+    if (window.pendingSpellDamage && window.pendingSpellDamage.length > 0) {
+        await Promise.all(window.pendingSpellDamage);
+        window.pendingSpellDamage = [];
+    }
+
     // 📊 Подсчёт нанесённого урона и начисление опыта (только для игрока)
     if (casterType === 'player' && typeof window.trackDamageExp === 'function') {
         let totalDamageDealt = 0;
@@ -1238,6 +1247,9 @@ async function executeBossBattlePhase() {
                 continue;
             }
 
+            // 📊 Сбрасываем очередь отложенного урона перед ходом
+            window.pendingSpellDamage = [];
+
             // 📊 Сохраняем HP врагов и союзников ДО хода для подсчёта опыта
             const enemyHpBefore = {};
             const allyHpBefore = {};
@@ -1255,6 +1267,12 @@ async function executeBossBattlePhase() {
             // Маг использует 2 заклинания
             if (typeof window.useWizardSpellsForBoss === 'function') {
                 await window.useWizardSpellsForBoss(mageData.wizard, mageData.position, 'player', 2);
+            }
+
+            // 📊 Ожидаем завершения всего отложенного урона (AOE-заклинания с setTimeout)
+            if (window.pendingSpellDamage && window.pendingSpellDamage.length > 0) {
+                await Promise.all(window.pendingSpellDamage);
+                window.pendingSpellDamage = [];
             }
 
             // 📊 Подсчёт нанесённого урона для опыта

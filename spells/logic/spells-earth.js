@@ -79,18 +79,24 @@ function castPebble(wizard, spellData, position, casterType) {
         
         // Callback после завершения
         onComplete: (finalResult) => {
-            
+
             // ЭФФЕКТ 5 УРОВНЯ: 50% шанс бросить ещё один камешек
             if (level === 5 && Math.random() < 0.5) {
                 console.log('🪨 УРОВЕНЬ 5: Запуск дополнительного камешка!');
-                
-                (window.battleTimeout || setTimeout)(() => {
-                    const additionalTarget = window.findRandomTarget?.(casterType);
-                    
-                    if (additionalTarget && additionalTarget.wizard !== target.wizard) {
-                        castPebbleSecondary(wizard, spellData, position, casterType, additionalTarget);
-                    }
-                }, 400);
+
+                const secondaryPromise = new Promise(resolve => {
+                    (window.battleTimeout || setTimeout)(() => {
+                        const additionalTarget = window.findRandomTarget?.(casterType);
+
+                        if (additionalTarget && additionalTarget.wizard !== target.wizard) {
+                            castPebbleSecondary(wizard, spellData, position, casterType, additionalTarget);
+                        }
+                        resolve();
+                    }, 400);
+                });
+                if (window.pendingSpellDamage) {
+                    window.pendingSpellDamage.push(secondaryPromise);
+                }
             }
         }
     });
@@ -234,10 +240,7 @@ function castStoneSpike(wizard, spellData, position, casterType) {
                 targetInfo.target.wizard.hp -= finalDamage;
                 if (targetInfo.target.wizard.hp < 0) targetInfo.target.wizard.hp = 0;
 
-                // Учитываем урон для опыта
-                if (casterType === 'player' && typeof window.trackBattleDamage === 'function') {
-                    window.trackBattleDamage(wizard, finalDamage);
-                }
+                // Урон для опыта подсчитывается через дельту HP в core.js
 
                 if (typeof window.addToBattleLog === 'function') {
                     window.addToBattleLog(`🗿 Каменный шип (${window.getDirectionNameSimple(targetInfo.direction, level)}) → ${targetInfo.target.wizard.name} (${finalDamage} урона)`);
@@ -457,93 +460,102 @@ function castMeteorShower(wizard, spellData, position, casterType) {
         window.addToBattleLog(`☄️ ${wizard.name} вызывает Метеоритный дождь! ${boostText}${strikeCount} метеорит${strikeCount > 1 ? 'а' : ''}, ${baseDamage} урона каждый${level === 5 ? `, игнорирует ${armorIgnorePercent}% брони` : ''}`);
     }
     
-    // Наносим удары с задержкой между метеоритами
-    for (let i = 0; i < strikeCount; i++) {
-        (window.battleTimeout || setTimeout)(() => {
-            // Ищем случайную цель
-            const target = typeof window.findRandomCombatTarget === 'function' ? 
-                window.findRandomCombatTarget(casterType) : 
-                (typeof window.findRandomTarget === 'function' ? window.findRandomTarget(casterType) : null);
-            
-            if (!target) {
-                if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`☄️ Метеорит ${i + 1}: цель не найдена`);
+    // Наносим удары с задержкой между метеоритами (через промис для корректного подсчёта XP)
+    const damagePromise = new Promise(resolve => {
+        let completed = 0;
+
+        for (let i = 0; i < strikeCount; i++) {
+            (window.battleTimeout || setTimeout)(() => {
+                // Ищем случайную цель
+                const target = typeof window.findRandomCombatTarget === 'function' ?
+                    window.findRandomCombatTarget(casterType) :
+                    (typeof window.findRandomTarget === 'function' ? window.findRandomTarget(casterType) : null);
+
+                if (!target) {
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`☄️ Метеорит ${i + 1}: цель не найдена`);
+                    }
+                    completed++;
+                    if (completed >= strikeCount) resolve();
+                    return;
                 }
-                return;
-            }
-            
-            // Определяем колонку по типу цели
-            const targetCol = target.type === 'wizard' ? 
-                (casterType === 'player' ? 0 : 5) :  // маг
-                (casterType === 'player' ? 1 : 4);   // призванный
-            
-            const targetRow = target.position;
-            
-            // Функция применения урона с защитой Энта
-            function applyMeteorDamage() {
-                // ИСПРАВЛЕНИЕ: Используем многоуровневую защиту (включая Энта)
-                // Формируем объект цели в формате { wizard, position }
-                const targetInfo = { wizard: target.wizard, position: target.position };
 
-                if (typeof window.applyDamageWithMultiLayerProtection === 'function') {
-                    const result = window.applyDamageWithMultiLayerProtection(wizard, targetInfo, baseDamage, 'meteor_shower', casterType);
+                // Определяем колонку по типу цели
+                const targetCol = target.type === 'wizard' ?
+                    (casterType === 'player' ? 0 : 5) :  // маг
+                    (casterType === 'player' ? 1 : 4);   // призванный
 
-                    if (result) {
+                const targetRow = target.position;
+
+                // Функция применения урона с защитой Энта
+                function applyMeteorDamage() {
+                    // ИСПРАВЛЕНИЕ: Используем многоуровневую защиту (включая Энта)
+                    // Формируем объект цели в формате { wizard, position }
+                    const targetInfo = { wizard: target.wizard, position: target.position };
+
+                    if (typeof window.applyDamageWithMultiLayerProtection === 'function') {
+                        const result = window.applyDamageWithMultiLayerProtection(wizard, targetInfo, baseDamage, 'meteor_shower', casterType);
+
+                        if (result) {
+                            if (typeof window.addToBattleLog === 'function') {
+                                window.addToBattleLog(`☄️ Метеорит ${i + 1} → ${target.wizard.name} (${result.finalDamage} урона)`);
+                                // Показываем защитные слои
+                                if (result.protectionLayers && result.protectionLayers.length > 0) {
+                                    result.protectionLayers.forEach(layer => {
+                                        const isProtectionLayer = layer.includes('🐺') || layer.includes('🌳') || layer.includes('🧱') || layer.includes('💨') || layer.includes('защищает') || layer.includes('поглощает') || layer.includes('ослабляет');
+                                        const isFinalWizardMessage = layer.includes(target.wizard.name) && (layer.includes('получает') || layer.includes('не получает')) && !isProtectionLayer;
+                                        if (!isFinalWizardMessage) {
+                                            window.addToBattleLog(`    ├─ ${layer}`);
+                                        }
+                                    });
+                                }
+                                window.addToBattleLog(`    └─ HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
+                            }
+                        }
+                    } else {
+                        // Fallback на старую систему (без защиты Энтом)
+                        const finalDamage = typeof window.applyFinalDamage === 'function' ?
+                            window.applyFinalDamage(wizard, target.wizard, baseDamage, 'meteor_shower', armorIgnorePercent, true) : baseDamage;
+
+                        target.wizard.hp -= finalDamage;
+                        if (target.wizard.hp < 0) target.wizard.hp = 0;
+
                         if (typeof window.addToBattleLog === 'function') {
-                            window.addToBattleLog(`☄️ Метеорит ${i + 1} → ${target.wizard.name} (${result.finalDamage} урона)`);
-                            // Показываем защитные слои
-                            if (result.protectionLayers && result.protectionLayers.length > 0) {
-                                result.protectionLayers.forEach(layer => {
-                                    const isProtectionLayer = layer.includes('🐺') || layer.includes('🌳') || layer.includes('🧱') || layer.includes('💨') || layer.includes('защищает') || layer.includes('поглощает') || layer.includes('ослабляет');
-                                    const isFinalWizardMessage = layer.includes(target.wizard.name) && (layer.includes('получает') || layer.includes('не получает')) && !isProtectionLayer;
-                                    if (!isFinalWizardMessage) {
-                                        window.addToBattleLog(`    ├─ ${layer}`);
-                                    }
+                            window.addToBattleLog(`☄️ Метеорит ${i + 1} → ${target.wizard.name} (${finalDamage} урона)`);
+                            const damageSteps = target.wizard._lastDamageSteps || [];
+                            if (damageSteps.length > 0) {
+                                damageSteps.forEach(step => {
+                                    window.addToBattleLog(`    ├─ ${step}`);
                                 });
                             }
                             window.addToBattleLog(`    └─ HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
+                            delete target.wizard._lastDamageSteps;
                         }
                     }
-                } else {
-                    // Fallback на старую систему (без защиты Энтом)
-                    const finalDamage = typeof window.applyFinalDamage === 'function' ?
-                        window.applyFinalDamage(wizard, target.wizard, baseDamage, 'meteor_shower', armorIgnorePercent, true) : baseDamage;
 
-                    target.wizard.hp -= finalDamage;
-                    if (target.wizard.hp < 0) target.wizard.hp = 0;
-
-                    // Учитываем урон для опыта
-                    if (casterType === 'player' && typeof window.trackBattleDamage === 'function') {
-                        window.trackBattleDamage(wizard, finalDamage);
-                    }
-
-                    if (typeof window.addToBattleLog === 'function') {
-                        window.addToBattleLog(`☄️ Метеорит ${i + 1} → ${target.wizard.name} (${finalDamage} урона)`);
-                        const damageSteps = target.wizard._lastDamageSteps || [];
-                        if (damageSteps.length > 0) {
-                            damageSteps.forEach(step => {
-                                window.addToBattleLog(`    ├─ ${step}`);
-                            });
-                        }
-                        window.addToBattleLog(`    └─ HP: ${target.wizard.hp}/${target.wizard.max_hp}`);
-                        delete target.wizard._lastDamageSteps;
-                    }
+                    completed++;
+                    if (completed >= strikeCount) resolve();
                 }
-            }
 
-            // Запускаем анимацию метеорита
-            if (window.spellAnimations?.meteor?.play) {
-                window.spellAnimations.meteor.play({
-                    targetCol: targetCol,
-                    targetRow: targetRow,
-                    onHit: applyMeteorDamage
-                });
-            } else {
-                // Fallback без анимации - наносим урон сразу
-                applyMeteorDamage();
-            }
-            
-        }, i * 800); // Задержка между метеоритами 800ms
+                // Запускаем анимацию метеорита
+                if (window.spellAnimations?.meteor?.play) {
+                    window.spellAnimations.meteor.play({
+                        targetCol: targetCol,
+                        targetRow: targetRow,
+                        onHit: applyMeteorDamage
+                    });
+                } else {
+                    // Fallback без анимации - наносим урон сразу
+                    applyMeteorDamage();
+                }
+
+            }, i * 800); // Задержка между метеоритами 800ms
+        }
+    });
+
+    // Регистрируем промис для ожидания в core.js перед подсчётом XP
+    if (window.pendingSpellDamage) {
+        window.pendingSpellDamage.push(damagePromise);
     }
 }
 

@@ -285,46 +285,59 @@ function castShadowRealm(wizard, spellData, position, casterType) {
         });
     }
 
-    // Наносим урон каждой цели
-    targets.forEach((target, index) => {
-        (window.battleTimeout || setTimeout)(() => {
-            const lostHp = target.max_hp - target.hp;
-            let damage = Math.floor(lostHp * percentDamage / 100);
+    // Наносим урон каждой цели (через промис для корректного подсчёта XP)
+    const damagePromise = new Promise(resolve => {
+        let completed = 0;
+        const total = targets.length;
 
-            // Кап урона: не более 200
-            damage = Math.min(damage, 200);
+        targets.forEach((target, index) => {
+            (window.battleTimeout || setTimeout)(() => {
+                const lostHp = target.max_hp - target.hp;
+                let damage = Math.floor(lostHp * percentDamage / 100);
 
-            if (damage > 0) {
-                // Применяем урон
-                const finalDamage = typeof window.applyFinalDamage === 'function' ?
-                    window.applyFinalDamage(wizard, target, damage, 'shadow_realm', 0, true) : damage;
+                // Кап урона: не более 200
+                damage = Math.min(damage, 200);
 
-                target.hp -= finalDamage;
-                if (target.hp < 0) target.hp = 0;
+                if (damage > 0) {
+                    // Применяем урон
+                    const finalDamage = typeof window.applyFinalDamage === 'function' ?
+                        window.applyFinalDamage(wizard, target, damage, 'shadow_realm', 0, true) : damage;
 
-                if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`🌑 Мир теней поглощает ${finalDamage} HP у ${target.name} (${percentDamage}% от ${lostHp} потерянных, макс 200)`);
-                }
+                    target.hp -= finalDamage;
+                    if (target.hp < 0) target.hp = 0;
 
-                // Проверяем смерть
-                if (target.hp <= 0) {
-                    const targetType = casterType === 'player' ? 'enemy' : 'player';
-                    if (window.battleLogger) {
-                        window.battleLogger.logDeath(target, targetType, 'shadow_realm');
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`🌑 Мир теней поглощает ${finalDamage} HP у ${target.name} (${percentDamage}% от ${lostHp} потерянных, макс 200)`);
+                    }
+
+                    // Проверяем смерть
+                    if (target.hp <= 0) {
+                        const targetType = casterType === 'player' ? 'enemy' : 'player';
+                        if (window.battleLogger) {
+                            window.battleLogger.logDeath(target, targetType, 'shadow_realm');
+                        }
+                    }
+                } else {
+                    if (typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`🌑 ${target.name} не потерял HP — Мир теней не наносит урона`);
                     }
                 }
-            } else {
-                if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`🌑 ${target.name} не потерял HP — Мир теней не наносит урона`);
-                }
-            }
-        }, index * 200);
+
+                completed++;
+                if (completed >= total) resolve();
+            }, index * 200);
+        });
     });
 
-    // Применяем бонус фракции
-    (window.battleTimeout || setTimeout)(() => {
+    // Регистрируем промис для ожидания в core.js перед подсчётом XP
+    if (window.pendingSpellDamage) {
+        window.pendingSpellDamage.push(damagePromise);
+    }
+
+    // Применяем бонус фракции после завершения всего урона
+    damagePromise.then(() => {
         applyDarkFactionBonus(wizard, targets, casterType);
-    }, targets.length * 200);
+    });
 }
 
 // --- Угасание (Fading) - Тир 5, Постоянное снижение урона/брони ---
