@@ -72,7 +72,11 @@ function showEventBossLoading() {
  * Сообщение "нет босса"
  */
 function showNoBossMessage() {
-    alert('Сейчас нет активного ивент босса.\nСледите за обновлениями!');
+    if (typeof Notification !== 'undefined' && Notification.warning) {
+        Notification.warning('Сейчас нет активного ивент босса. Следите за обновлениями!');
+    } else {
+        alert('Сейчас нет активного ивент босса.\nСледите за обновлениями!');
+    }
 }
 
 /**
