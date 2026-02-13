@@ -16,10 +16,11 @@ class EventBossManager {
         // === END DEBUG ===
 
         // Попытки: в продакшене — из БД, в дебаге — из localStorage
+        // ВАЖНО: в продакшене помечаем как "не загружены" — UI должен дождаться fetchAttempts()
         if (this.DEBUG_LOCAL_MODE) {
             this.attempts = this._loadLocalAttempts();
         } else {
-            this.attempts = { remaining: 10, used: 0, purchased: 0, max_daily: 10 };
+            this.attempts = { remaining: 0, used: 0, purchased: 0, max_daily: 10, _loaded: false };
         }
     }
 
@@ -281,43 +282,60 @@ class EventBossManager {
             return null;
         }
 
-        try {
-            const { data, error } = await this.supabase.rpc('event_boss_deal_damage', {
-                p_boss_id: this.currentBoss.id,
-                p_telegram_id: telegramId,
-                p_damage: hpDamage,
-                p_rating_damage: ratingDamage
-            });
+        // Retry до 3 раз при сетевых ошибках
+        let lastError = null;
+        for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+                const { data, error } = await this.supabase.rpc('event_boss_deal_damage', {
+                    p_boss_id: this.currentBoss.id,
+                    p_telegram_id: telegramId,
+                    p_damage: hpDamage,
+                    p_rating_damage: ratingDamage
+                });
 
-            if (error) {
-                console.error('Ошибка отправки урона:', error);
-                return null;
-            }
-
-            if (data && data.success) {
-                console.log(`🐉 Урон записан: HP=${hpDamage}, рейтинг=${ratingDamage} | Босс HP: ${data.boss_new_hp}/${data.boss_max_hp}`);
-                console.log(`   Ваш общий урон: ${data.player_total_damage} | Атак: ${data.player_attacks}`);
-
-                // Обновляем локальный кеш
-                if (this.currentBoss) {
-                    this.currentBoss.current_hp = data.boss_new_hp;
+                if (error) {
+                    console.error(`Ошибка отправки урона (попытка ${attempt + 1}/3):`, error);
+                    lastError = error;
+                    if (attempt < 2) {
+                        await new Promise(r => setTimeout(r, (attempt + 1) * 2000));
+                        continue;
+                    }
+                    return { success: false, error: error.message || 'Ошибка сервера' };
                 }
 
-                // Попытка уже потрачена на сервере — обновляем локальный кеш
-                if (data.attempts_remaining != null) {
-                    this.attempts.remaining = data.attempts_remaining;
-                    this.attempts.used++;
-                }
+                if (data && data.success) {
+                    console.log(`🐉 Урон записан: HP=${hpDamage}, рейтинг=${ratingDamage} | Босс HP: ${data.boss_new_hp}/${data.boss_max_hp}`);
+                    console.log(`   Ваш общий урон: ${data.player_total_damage} | Атак: ${data.player_attacks}`);
 
-                return data;
-            } else {
-                console.warn('Ошибка от сервера:', data?.error);
-                return data;
+                    // Обновляем локальный кеш
+                    if (this.currentBoss) {
+                        this.currentBoss.current_hp = data.boss_new_hp;
+                    }
+
+                    // Обновляем попытки из ответа сервера
+                    if (data.attempts_remaining != null) {
+                        this.attempts.remaining = data.attempts_remaining;
+                        this.attempts._loaded = true;
+                    }
+                    if (data.attempts_used != null) {
+                        this.attempts.used = data.attempts_used;
+                    }
+
+                    return data;
+                } else {
+                    console.warn('Ошибка от сервера:', data?.error);
+                    return data || { success: false, error: 'Неизвестная ошибка' };
+                }
+            } catch (err) {
+                console.error(`Ошибка отправки урона (попытка ${attempt + 1}/3):`, err);
+                lastError = err;
+                if (attempt < 2) {
+                    await new Promise(r => setTimeout(r, (attempt + 1) * 2000));
+                }
             }
-        } catch (err) {
-            console.error('Ошибка отправки урона:', err);
-            return null;
         }
+        console.error('Все попытки отправки урона исчерпаны:', lastError);
+        return { success: false, error: 'Ошибка сети. Урон будет учтён позже.' };
     }
 
     /**
@@ -427,7 +445,8 @@ class EventBossManager {
                     remaining: data.remaining,
                     used: data.used,
                     purchased: data.purchased,
-                    max_daily: data.max_daily
+                    max_daily: data.max_daily,
+                    _loaded: true
                 };
                 console.log(`🐉 Попытки из БД: ${this.attempts.remaining}/${this.attempts.max_daily}`);
             }
@@ -440,9 +459,11 @@ class EventBossManager {
 
     /**
      * Проверить, есть ли попытки (синхронно, из кеша)
+     * Если попытки ещё не загружены с сервера — возвращает false (блокируем атаку)
      */
     canAttack() {
         if (this.DEBUG_LOCAL_MODE) this._refreshLocalAttempts();
+        if (!this.attempts._loaded && !this.DEBUG_LOCAL_MODE) return false;
         return this.attempts.remaining > 0;
     }
 
@@ -452,6 +473,13 @@ class EventBossManager {
     getRemainingAttempts() {
         if (this.DEBUG_LOCAL_MODE) this._refreshLocalAttempts();
         return this.attempts.remaining;
+    }
+
+    /**
+     * Проверить, загружены ли попытки с сервера
+     */
+    isAttemptsLoaded() {
+        return this.DEBUG_LOCAL_MODE || this.attempts._loaded === true;
     }
 
     /**

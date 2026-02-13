@@ -39,7 +39,7 @@ async function openEventBossScreen() {
     }
 
     // Загружаем статистику, лидерборд и попытки параллельно
-    const [playerStats, leaderboard] = await Promise.all([
+    const [playerStats, leaderboard, _attempts] = await Promise.all([
         manager.fetchPlayerStats(),
         manager.fetchLeaderboard(20),
         manager.fetchAttempts()
@@ -510,7 +510,16 @@ async function buyBossAttemptWithStars(starsCost) {
             const invoiceUrl = await window.createStarsInvoice(item, starsCost);
             window.Telegram.WebApp.openInvoice(invoiceUrl, async (status) => {
                 if (status === 'paid') {
-                    await manager.purchaseAttempt();
+                    const success = await manager.purchaseAttempt();
+                    if (!success) {
+                        // Stars списались но попытка не начислилась — уведомляем
+                        console.error('❌ Stars оплачены, но попытка не начислена!');
+                        if (typeof window.showShopNotification === 'function') {
+                            window.showShopNotification('Оплата прошла, попытка будет начислена. Перезагрузите если не появилась.', 'warning');
+                        } else {
+                            alert('Оплата прошла, но произошла ошибка начисления. Попробуйте перезагрузить.');
+                        }
+                    }
                     await _refreshBossScreen(manager);
 
                     if (typeof window.addAirdropPoints === 'function') {
@@ -677,8 +686,13 @@ async function showEventBossResult(battleResult, hpDamage, ratingDamage) {
 
     // Отправляем урон на сервер (hpDamage для HP босса, ratingDamage для лидерборда)
     let serverResult = null;
+    let submitFailed = false;
     if (hpDamage > 0 && manager && window.currentEventBossId) {
         serverResult = await manager.submitDamage(hpDamage, ratingDamage);
+        if (!serverResult || !serverResult.success) {
+            submitFailed = true;
+            console.warn('⚠️ Урон не удалось записать на сервер:', serverResult?.error);
+        }
     }
 
     // Обновляем данные
@@ -693,9 +707,9 @@ async function showEventBossResult(battleResult, hpDamage, ratingDamage) {
     const playerTotalDamage = serverResult?.player_total_damage || damageDealt;
     const hpPercent = bossMaxHp ? ((bossNewHp / bossMaxHp) * 100) : 0;
 
-    // === Выдача наград ===
+    // === Выдача наград — ТОЛЬКО если сервер подтвердил ===
     const rewards = window.EVENT_BOSS_CONFIG?.rewards;
-    if (bossDefeated && rewards && typeof window.addTimeCurrency === 'function') {
+    if (bossDefeated && !submitFailed && rewards && typeof window.addTimeCurrency === 'function') {
         // Награда за убийство босса — всем участникам
         if (rewards.bossKilled?.timeCurrency) {
             await window.addTimeCurrency(rewards.bossKilled.timeCurrency);
@@ -776,6 +790,15 @@ async function showEventBossResult(battleResult, hpDamage, ratingDamage) {
             <div style="font-size: 20px; font-weight: bold; margin-bottom: 4px; color: #9B59B6;">
                 ${manager?.currentBoss?.name || 'Отродье Тьмы'}
             </div>
+
+            ${submitFailed ? `
+            <div style="
+                background: rgba(255,165,0,0.15); border: 2px solid #ff9800;
+                border-radius: 10px; padding: 10px; margin: 8px 0;
+            ">
+                <div style="color: #ff9800; font-size: 13px; font-weight: bold;">⚠️ Ошибка отправки урона</div>
+                <div style="color: #ffcc80; font-size: 11px; margin-top: 4px;">Не переживайте — урон будет учтён автоматически. Попробуйте перезагрузить.</div>
+            </div>` : ''}
 
             <!-- Нанесённый урон -->
             <div style="
@@ -979,12 +1002,6 @@ function closeEventBossScreen() {
 async function checkEventBossAvailability() {
     const timerStatus = getEventTimerStatus();
 
-    // Если ивент завершён — не показываем портал
-    if (timerStatus.status === 'ended') {
-        showEventBossWarpPortal(false);
-        return false;
-    }
-
     // До старта ивента — показываем заблокированный портал с таймером
     if (timerStatus.status === 'before') {
         console.log(`🕳 Ивент ещё не начался. Старт через: ${formatCountdown(timerStatus.diff)}`);
@@ -992,7 +1009,8 @@ async function checkEventBossAvailability() {
         return true;
     }
 
-    // Ивент активен — проверяем босса
+    // Ивент активен или завершён — проверяем босса и показываем портал
+    // После завершения портал остаётся для просмотра результатов (закроем вручную через конфиг)
     const manager = window.eventBossManager;
     if (!manager) {
         showEventBossWarpPortal(true);
@@ -1173,8 +1191,9 @@ function showEventBossWarpPortal(show) {
             </div>
         `;
 
-        portal.onclick = isLocked || isEnded ? null : openEventBossScreen;
-        portal.style.cursor = isLocked || isEnded ? 'default' : 'pointer';
+        // Заблокирован только до старта, после завершения — можно открыть для результатов
+        portal.onclick = isLocked ? null : openEventBossScreen;
+        portal.style.cursor = isLocked ? 'default' : 'pointer';
     }
 
     portal.style.cssText = `
