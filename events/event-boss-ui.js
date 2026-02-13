@@ -298,6 +298,7 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                     <div>💀 Босс убит: <span style="color: #9B59B6;">+3 дня каждому + добыча +30% на неделю</span></div>
                     <div>⚔️ Контрольный удар: <span style="color: #ff4500;">+7 дней тому, кто добьёт босса</span></div>
                     <div>❌ Босс выжил: <span style="color: #ff6b6b;">добыча -50% на неделю</span></div>
+                    <div style="margin-top: 6px;">🎁 <span style="color: #e040fb;">Бонус NFT токены от админа получат игроки, выполнившие секретный квест с боссом. Результаты в группе.</span></div>
                 </div>
             </div>
 
@@ -1345,6 +1346,7 @@ function showEventBossAnnouncement() {
                 <div>🗡 Контрольный удар: <b style="color: #ff4500;">+7 дней</b></div>
                 <div>⚔ Убийство босса: <b style="color: #4CAF50;">+3 дня</b> всем</div>
                 <div>👤 Участие: <b style="color: #4CAF50;">+1 день</b></div>
+                <div style="margin-top: 6px;">🎁 <span style="color: #e040fb;">Бонус NFT токены от админа получат игроки, выполнившие секретный квест с боссом. Результаты в группе.</span></div>
             </div>
 
             <div style="
@@ -1355,6 +1357,7 @@ function showEventBossAnnouncement() {
                 <div style="color: #ff6b6b; font-weight: bold; margin-bottom: 2px;">Последствия:</div>
                 <div style="color: #4CAF50;">Победа → +30% добычи времени на неделю</div>
                 <div style="color: #f44336;">Поражение → -50% добычи времени на неделю</div>
+                <div style="color: #e040fb; margin-top: 4px;">🎁 Секретный квест → NFT токены от админа</div>
             </div>
 
             <div style="font-size: 12px; color: #aaa; margin-bottom: 14px;">
