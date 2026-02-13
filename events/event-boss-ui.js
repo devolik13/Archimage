@@ -719,19 +719,11 @@ async function showEventBossResult(battleResult, hpDamage, ratingDamage) {
     const playerTotalDamage = serverResult?.player_total_damage || damageDealt;
     const hpPercent = bossMaxHp ? ((bossNewHp / bossMaxHp) * 100) : 0;
 
-    // === Выдача наград — ТОЛЬКО если сервер подтвердил ===
-    const rewards = window.EVENT_BOSS_CONFIG?.rewards;
-    if (bossDefeated && !submitFailed && rewards && typeof window.addTimeCurrency === 'function') {
-        // Награда за убийство босса — всем участникам
-        if (rewards.bossKilled?.timeCurrency) {
-            await window.addTimeCurrency(rewards.bossKilled.timeCurrency);
-            console.log(`🐉 Награда за убийство босса: +${rewards.bossKilled.timeCurrency} мин`);
-        }
-        // Контрольный удар — бонус тому кто добил
-        if (finishingBlow && rewards.finishingBlow?.timeCurrency) {
-            await window.addTimeCurrency(rewards.finishingBlow.timeCurrency);
-            console.log(`⚔️ Награда за контрольный удар: +${rewards.finishingBlow.timeCurrency} мин`);
-        }
+    // === Награды раздаются автоматически через серверный триггер (migration 054) ===
+    // Триггер distribute_event_boss_rewards срабатывает при status='defeated'
+    // и начисляет participation + bossKilled всем участникам, top1/2/3 и finishingBlow
+    if (bossDefeated) {
+        console.log('🐉 Босс повержен! Награды раздаются серверным триггером всем участникам');
     }
 
     // === Выдача значков ===
