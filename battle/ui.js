@@ -541,10 +541,9 @@ async function closeBattleFieldModal() {
 
         // Считаем нанесённый урон до момента закрытия
         const bossDamageResult = typeof window.calculateEventBossDamage === 'function'
-            ? window.calculateEventBossDamage() : { hpDamage: 0, ratingDamage: 0 };
+            ? window.calculateEventBossDamage() : { hpDamage: 0 };
         const eventBossHpDamage = bossDamageResult.hpDamage || 0;
-        const eventBossRatingDamage = bossDamageResult.ratingDamage || 0;
-        console.log(`🐉 Ивент Босс (ранний выход): HP урон = ${eventBossHpDamage}, рейтинг урон = ${eventBossRatingDamage}`);
+        console.log(`🐉 Ивент Босс (ранний выход): урон = ${eventBossHpDamage}`);
 
         window.battleState = 'finished';
 
@@ -555,7 +554,7 @@ async function closeBattleFieldModal() {
             window.battleEarlyExit = false;
 
             if (typeof window.showEventBossResult === 'function') {
-                await window.showEventBossResult('loss', eventBossHpDamage, eventBossRatingDamage);
+                await window.showEventBossResult('loss', eventBossHpDamage);
             } else {
                 window.isEventBossBattle = false;
                 window.currentEventBossId = null;

@@ -70,8 +70,7 @@ const EVENT_BOSS_CONFIG = {
 
     // Время ивента (UTC)
     // Старт: 14 февраля 2026, 12:00 МСК = 09:00 UTC
-    // ТЕСТ: временно поставлен на 10 мин от 13 фев 09:10 UTC, вернуть "2026-02-14T09:00:00Z"
-    eventStartUTC: "2026-02-13T09:20:00Z",
+    eventStartUTC: "2026-02-14T09:00:00Z",
     // Длительность события (часы) — 1 неделя
     durationHours: 168,
 
@@ -133,33 +132,23 @@ function generateEventBossEnemy(bossConfig) {
 
 /**
  * Подсчитывает нанесённый урон боссу за бой.
- * Возвращает { hpDamage, ratingDamage }:
- *   hpDamage — чистый урон по HP (вычитается из HP босса)
- *   ratingDamage — урон для рейтинга (HP + 50% брони)
+ * Возвращает { hpDamage } — чистый урон по HP.
+ * Используется и для снятия HP босса, и для лидерборда.
  * Вызывается после завершения боя.
  */
 function calculateEventBossDamage() {
     const enemies = window.enemyFormation.filter(e => e && e.isEventBoss);
-    if (enemies.length === 0) return { hpDamage: 0, ratingDamage: 0 };
+    if (enemies.length === 0) return { hpDamage: 0 };
 
     let hpDamage = 0;
-    let armorBonus = 0;
 
     for (const enemy of enemies) {
         const maxHp = enemy.original_max_hp || enemy.max_hp || 0;
         const currentHp = Math.max(0, enemy.hp || 0);
         hpDamage += maxHp - currentHp;
-
-        const maxArmor = enemy.original_max_armor || enemy.max_armor || 0;
-        const currentArmor = Math.max(0, enemy.armor || 0);
-        armorBonus += Math.floor((maxArmor - currentArmor) * 0.5);
     }
 
-    hpDamage = Math.max(0, hpDamage);
-    return {
-        hpDamage: hpDamage,
-        ratingDamage: hpDamage + armorBonus
-    };
+    return { hpDamage: Math.max(0, hpDamage) };
 }
 
 /**

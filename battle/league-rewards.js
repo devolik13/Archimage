@@ -220,7 +220,7 @@ function showLeagueRewardsModal() {
                     </div>
                     <div style="text-align: right;">
                         <div style="font-size: 11px; color: #888; margin-bottom: 5px;">Награды:</div>
-                        ${league.rewards.currency_base ? '<div style="color: #00bfff; font-size: 14px;">⏰ ' + league.rewards.currency_base + '</div>' : ''}
+                        ${league.rewards.currency_base ? '<div style="color: #00bfff; font-size: 14px;">⏰ ' + (typeof window.formatTimeCurrency === 'function' ? window.formatTimeCurrency(league.rewards.currency_base) : league.rewards.currency_base + ' мин') + '</div>' : ''}
                         ${league.rewards.airdrop_points ? '<div style="color: #4ade80; font-size: 14px;">🪙 ' + league.rewards.airdrop_points + ' BPM</div>' : ''}
                     </div>
                 </div>
