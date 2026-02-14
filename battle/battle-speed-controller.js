@@ -5,8 +5,8 @@ class BattleSpeedController {
     constructor() {
         // Режимы скорости
         this.SPEEDS = {
-            normal: { interval: 1700, multiplier: 1.0, icon: '▶', title: 'Ускорить', bg: 'rgba(85, 85, 85, 0.9)' },
-            fast: { interval: 700, multiplier: 2.5, icon: '⚡', title: 'Замедлить', bg: '#FFD700' }
+            normal: { interval: 1700, multiplier: 1.0, icon: '▶', titleKey: 'btl_speed_up', bg: 'rgba(85, 85, 85, 0.9)' },
+            fast: { interval: 700, multiplier: 2.5, icon: '⚡', titleKey: 'btl_speed_down', bg: '#FFD700' }
         };
 
         // Текущее состояние
@@ -212,7 +212,7 @@ class BattleSpeedController {
 
         const config = this.SPEEDS[this.mode];
         btn.innerHTML = config.icon;
-        btn.title = config.title;
+        btn.title = typeof t === 'function' ? t(config.titleKey) : config.titleKey;
         btn.style.background = config.bg;
     }
 
@@ -222,11 +222,11 @@ class BattleSpeedController {
 
         if (this.isPaused) {
             btn.innerHTML = '▶️';
-            btn.title = 'Продолжить';
+            btn.title = typeof t === 'function' ? t('btl_resume') : 'Resume';
             btn.style.background = '#4CAF50';
         } else {
             btn.innerHTML = '⏸';
-            btn.title = 'Пауза';
+            btn.title = typeof t === 'function' ? t('btl_pause') : 'Pause';
             btn.style.background = 'rgba(85, 85, 85, 0.9)';
         }
     }

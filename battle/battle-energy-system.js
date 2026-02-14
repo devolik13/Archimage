@@ -151,10 +151,12 @@ function formatTimeToRegen(ms) {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
 
+    const h = typeof t === 'function' ? t('btl_hours') : 'h';
+    const m = typeof t === 'function' ? t('btl_minutes') : 'm';
     if (hours > 0) {
-        return `${hours}ч ${minutes}м`;
+        return `${hours}${h} ${minutes}${m}`;
     }
-    return `${minutes}м`;
+    return `${minutes}${m}`;
 }
 
 // Обновление UI
@@ -168,7 +170,8 @@ function updateBattleEnergyUI() {
     const max = window.BATTLE_ENERGY.MAX;
     const timeToNext = getTimeToNextRegen();
 
-    let html = `⚡ Попытки: ${current}/${max}`;
+    const attemptsLabel = typeof t === 'function' ? t('btl_attempts') : 'Attempts';
+    let html = `⚡ ${attemptsLabel}: ${current}/${max}`;
 
     if (current < max && timeToNext > 0) {
         html += ` (${formatTimeToRegen(timeToNext)})`;
@@ -220,7 +223,11 @@ function checkBattleEnergyBeforeFight() {
 
     if (!hasBattleEnergy()) {
         const timeToNext = getTimeToNextRegen();
-        alert(`⚡ Недостаточно энергии для боя!\n\nВы можете провести максимум ${window.BATTLE_ENERGY.MAX} боев в сутки.\nСледующая попытка восстановится через ${formatTimeToRegen(timeToNext)}.`);
+        const noEnergy = typeof t === 'function' ? t('btl_no_energy') : 'Not enough energy for battle!';
+        const maxFights = typeof t === 'function' ? t('btl_max_fights_per_day') : 'You can have a maximum of';
+        const perDay = typeof t === 'function' ? t('btl_fights_per_day') : 'fights per day.';
+        const nextAttempt = typeof t === 'function' ? t('btl_next_attempt') : 'Next attempt restores in';
+        alert(`⚡ ${noEnergy}\n\n${maxFights} ${window.BATTLE_ENERGY.MAX} ${perDay}\n${nextAttempt} ${formatTimeToRegen(timeToNext)}.`);
         return false;
     }
 

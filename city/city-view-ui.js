@@ -90,9 +90,12 @@ function switchToCityView(faction) {
     
     // Загружаем построенные здания
     loadBuiltBuildingsNew(faction, cityContainer);
-    
+
     // Создаём панель управления (для всех устройств)
     createBottomControlPanel();
+
+    // Создаём плавающую кнопку переключения языка
+    createLangSwitchButton();
 
     // На мобильных добавляем минимальный UI overlay
     if (isMobile) {
@@ -747,7 +750,65 @@ function createEmptySlot() {
 
 // Показ меню выбора места для строительства с фоном башни
 
+/**
+ * Создаёт маленькую плавающую кнопку переключения языка (RU/EN)
+ * Располагается в правом верхнем углу экрана
+ */
+function createLangSwitchButton() {
+    // Удаляем старую кнопку если есть
+    const old = document.getElementById('lang-switch-btn');
+    if (old) old.remove();
+
+    const btn = document.createElement('button');
+    btn.id = 'lang-switch-btn';
+
+    const lang = typeof getLang === 'function' ? getLang() : (window.LANG || 'ru');
+    btn.textContent = lang === 'ru' ? '🇬🇧' : '🇷🇺';
+    btn.title = lang === 'ru' ? 'Switch to English' : 'Переключить на русский';
+
+    btn.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 10002;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 215, 0, 0.5);
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        font-size: 18px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        line-height: 1;
+        backdrop-filter: blur(4px);
+        transition: all 0.2s;
+        pointer-events: auto;
+    `;
+
+    btn.onmouseover = () => {
+        btn.style.transform = 'scale(1.15)';
+        btn.style.borderColor = 'rgba(255, 215, 0, 0.9)';
+    };
+    btn.onmouseout = () => {
+        btn.style.transform = 'scale(1)';
+        btn.style.borderColor = 'rgba(255, 215, 0, 0.5)';
+    };
+
+    btn.onclick = () => {
+        if (typeof window.switchLanguage === 'function') {
+            window.switchLanguage();
+        }
+    };
+
+    document.body.appendChild(btn);
+}
+
 // Экспорт UI функций
 window.createBottomControlPanel = createBottomControlPanel;
+window.createLangSwitchButton = createLangSwitchButton;
 
 console.log('🏙️ City View UI загружен');

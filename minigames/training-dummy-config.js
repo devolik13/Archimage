@@ -109,17 +109,18 @@ const DUMMY_CONFIG = {
 };
 
 // Награды по урону за неделю (накопительные пороги)
+// UI показывает реальный инкремент за лигу (reward - prevReward)
 const WEEKLY_REWARDS = [
-    { minDamage: 0,      reward: 60,    description: "Участник" },        // 1 час
-    { minDamage: 1000,   reward: 120,   description: "Новичок" },         // 2 часа
-    { minDamage: 3000,   reward: 240,   description: "Ученик" },          // 4 часа
-    { minDamage: 5000,   reward: 480,   description: "Боец" },            // 8 часов
-    { minDamage: 10000,  reward: 720,   description: "Воин" },            // 12 часов
-    { minDamage: 20000,  reward: 1440,  description: "Ветеран" },         // 1 день
-    { minDamage: 35000,  reward: 2880,  description: "Элита" },           // 2 дня
-    { minDamage: 50000,  reward: 4320,  description: "Мастер" },          // 3 дня
-    { minDamage: 75000,  reward: 7200,  description: "Грандмастер" },     // 5 дней
-    { minDamage: 100000, reward: 10080, description: "Легенда" }          // 7 дней
+    { minDamage: 0,      reward: 60,    description: "Участник" },        // +1ч
+    { minDamage: 1000,   reward: 120,   description: "Новичок" },         // +1ч
+    { minDamage: 3000,   reward: 240,   description: "Ученик" },          // +2ч
+    { minDamage: 5000,   reward: 480,   description: "Боец" },            // +4ч
+    { minDamage: 10000,  reward: 720,   description: "Воин" },            // +4ч
+    { minDamage: 20000,  reward: 1440,  description: "Ветеран" },         // +12ч
+    { minDamage: 35000,  reward: 2880,  description: "Элита" },           // +1д
+    { minDamage: 50000,  reward: 4320,  description: "Мастер" },          // +1д
+    { minDamage: 75000,  reward: 7200,  description: "Грандмастер" },     // +2д
+    { minDamage: 100000, reward: 10080, description: "Легенда" }          // +2д
 ];
 
 // Бонусы за топ места в лидерборде

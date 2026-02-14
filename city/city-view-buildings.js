@@ -122,12 +122,12 @@ function setupBuildingSelectionUI() {
 
     // Конфигурация зданий (pvp_arena убрана - функционал работает без здания)
     const buildableBuildings = [
-        { id: 'library', name: 'Библиотека', description: 'Изучение заклинаний', icon: '📚' },
-        { id: 'wizard_tower', name: 'Башня мага', description: 'Найм новых магов', icon: '🏯' },
-        { id: 'guild', name: 'Гильдия', description: 'Объединение игроков', icon: '🏰' },
-        { id: 'blessing_tower', name: 'Башня благословения', description: 'Временные бонусы', icon: '🙏' },
-        { id: 'arcane_lab', name: 'Лаборатория', description: 'Ускорение изучения', icon: '🔬' },
-        { id: 'time_generator', name: 'Генератор времени', description: 'Производство времени', icon: '⏳' }
+        { id: 'library', name: t('bld_library'), description: t('bld_library_desc'), icon: '📚' },
+        { id: 'wizard_tower', name: t('bld_wizard_tower'), description: t('bld_wizard_tower_desc'), icon: '🏯' },
+        { id: 'guild', name: t('bld_guild'), description: t('bld_guild_desc'), icon: '🏰' },
+        { id: 'blessing_tower', name: t('bld_blessing_tower'), description: t('bld_blessing_tower_desc'), icon: '🙏' },
+        { id: 'arcane_lab', name: t('bld_arcane_lab'), description: t('bld_arcane_lab_desc'), icon: '🔬' },
+        { id: 'time_generator', name: t('bld_time_generator'), description: t('bld_time_generator_desc'), icon: '⏳' }
     ];
 
     // === ЗАГОЛОВОК ===
@@ -151,7 +151,7 @@ function setupBuildingSelectionUI() {
             font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
             text-align: center;
-        ">Управление зданиями</div>
+        ">${t('bld_title')}</div>
     `;
     overlay.appendChild(headerContainer);
 
@@ -213,39 +213,37 @@ function setupBuildingSelectionUI() {
         let statusText, statusColor, buttonText, buttonColor, isClickable, constructionIdx = -1;
 
         if (isUnderConstruction) {
-            // Здание строится
             const timeStr = window.formatTimeCurrency ? window.formatTimeCurrency(activeConstruction.time_remaining) : activeConstruction.time_remaining;
-            statusText = `🔨 Строится: ${timeStr}`;
+            statusText = `${t('bld_building_status')}: ${timeStr}`;
             statusColor = '#ffa500';
-            buttonText = 'Ускорить';
+            buttonText = t('bld_speed_up');
             buttonColor = 'linear-gradient(145deg, #ffa500, #cc8400)';
             isClickable = true;
             constructionIdx = constructions.indexOf(activeConstruction);
         } else if (isUnderUpgrade) {
-            // Здание улучшается
             const timeStr = window.formatTimeCurrency ? window.formatTimeCurrency(activeConstruction.time_remaining) : activeConstruction.time_remaining;
-            statusText = `⚙️ Улучшается: ${timeStr}`;
+            statusText = `${t('bld_upgrading_status')}: ${timeStr}`;
             statusColor = '#4CAF50';
-            buttonText = 'Ускорить';
+            buttonText = t('bld_speed_up');
             buttonColor = 'linear-gradient(145deg, #4CAF50, #388E3C)';
             isClickable = true;
             constructionIdx = constructions.indexOf(activeConstruction);
         } else if (!isBuilt) {
-            statusText = 'Не построено';
+            statusText = t('bld_not_built');
             statusColor = '#888';
-            buttonText = 'Построить';
+            buttonText = t('bld_build');
             buttonColor = 'linear-gradient(145deg, #7289da, #5b6eae)';
             isClickable = true;
         } else if (isMaxLevel) {
-            statusText = `Уровень ${currentLevel}/${maxLevel}`;
+            statusText = `${t('common_level')} ${currentLevel}/${maxLevel}`;
             statusColor = '#4ade80';
-            buttonText = 'Макс. уровень';
+            buttonText = t('bld_max_level');
             buttonColor = '#555';
             isClickable = false;
         } else {
-            statusText = `Уровень ${currentLevel}/${maxLevel}`;
+            statusText = `${t('common_level')} ${currentLevel}/${maxLevel}`;
             statusColor = '#ffa500';
-            buttonText = 'Улучшить';
+            buttonText = t('bld_upgrade');
             buttonColor = 'linear-gradient(145deg, #ffa500, #cc8400)';
             isClickable = true;
         }
@@ -342,7 +340,7 @@ function setupBuildingSelectionUI() {
     `;
 
     const closeBtn = document.createElement('button');
-    closeBtn.textContent = 'Закрыть';
+    closeBtn.textContent = t('common_close');
     closeBtn.style.cssText = `
         padding: 10px 40px;
         background: rgba(0, 0, 0, 0.6);
@@ -415,13 +413,13 @@ function showBuildingDetailsInOverlay(buildingId, isUpgrade = false) {
 
     // Данные здания
     const buildingNames = {
-        'library': { name: 'Библиотека', icon: '📚' },
-        'wizard_tower': { name: 'Башня мага', icon: '🏯' },
-        'guild': { name: 'Гильдия', icon: '🏰' },
-        'pvp_arena': { name: 'Арена', icon: '🏟️' },
-        'blessing_tower': { name: 'Башня благословения', icon: '🙏' },
-        'arcane_lab': { name: 'Лаборатория', icon: '🔬' },
-        'time_generator': { name: 'Генератор времени', icon: '⏳' }
+        'library': { name: t('bld_library'), icon: '📚' },
+        'wizard_tower': { name: t('bld_wizard_tower'), icon: '🏯' },
+        'guild': { name: t('bld_guild'), icon: '🏰' },
+        'pvp_arena': { name: t('bld_arena'), icon: '🏟️' },
+        'blessing_tower': { name: t('bld_blessing_tower'), icon: '🙏' },
+        'arcane_lab': { name: t('bld_arcane_lab'), icon: '🔬' },
+        'time_generator': { name: t('bld_time_generator'), icon: '⏳' }
     };
 
     const buildingInfo = buildingNames[buildingId] || { name: buildingId, icon: '🏗️' };
@@ -434,7 +432,7 @@ function showBuildingDetailsInOverlay(buildingId, isUpgrade = false) {
             window.CONSTRUCTION_TIME.getUpgradeTime(buildingId, targetLevel) : 144 * targetLevel) :
         (window.CONSTRUCTION_TIME?.[buildingId] || 144);
 
-    const timeFormatted = window.formatTimeCurrency ? window.formatTimeCurrency(timeRequired) : timeRequired + ' мин';
+    const timeFormatted = window.formatTimeCurrency ? window.formatTimeCurrency(timeRequired) : timeRequired + ' ' + t('common_min');
 
     // Получаем описание из BUILDING_DESCRIPTIONS
     let description = '';
@@ -499,9 +497,9 @@ function showBuildingDetailsInOverlay(buildingId, isUpgrade = false) {
             padding: 10px;
             text-align: center;
         ">
-            <div style="color: #aaa; font-size: ${smallFontSize}px;">Улучшение</div>
+            <div style="color: #aaa; font-size: ${smallFontSize}px;">${t('bld_upgrade_label')}</div>
             <div style="color: #ffd700; font-size: ${baseFontSize + 4}px; font-weight: bold;">
-                Уровень ${currentLevel} → ${targetLevel}
+                ${t('common_level')} ${currentLevel} → ${targetLevel}
             </div>
         </div>
         ` : ''}
@@ -527,7 +525,7 @@ function showBuildingDetailsInOverlay(buildingId, isUpgrade = false) {
             padding: 12px;
         ">
             <div style="color: #ffa500; font-size: ${smallFontSize}px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase;">
-                ${isUpgrade ? 'Новый бонус:' : 'Что даст:'}
+                ${isUpgrade ? t('bld_new_bonus') : t('bld_what_gives')}
             </div>
             <div style="color: #4ade80; font-size: ${baseFontSize}px; font-weight: bold;">
                 ${levelInfo}
@@ -544,7 +542,7 @@ function showBuildingDetailsInOverlay(buildingId, isUpgrade = false) {
             text-align: center;
         ">
             <div style="color: #aaa; font-size: ${smallFontSize}px; margin-bottom: 5px;">
-                Время ${isUpgrade ? 'улучшения' : 'строительства'}:
+                ${isUpgrade ? t('bld_time_upgrade') : t('bld_time_build')}
             </div>
             <div style="color: #ffa500; font-size: ${baseFontSize + 6}px; font-weight: bold;">
                 ⏳ ${timeFormatted}
@@ -571,7 +569,7 @@ function showBuildingDetailsInOverlay(buildingId, isUpgrade = false) {
 
     // Кнопка "Назад"
     const backBtn = document.createElement('button');
-    backBtn.textContent = '← Назад';
+    backBtn.textContent = t('airdrop_back');
     backBtn.style.cssText = `
         padding: 10px 25px;
         background: rgba(0, 0, 0, 0.6);
@@ -589,7 +587,7 @@ function showBuildingDetailsInOverlay(buildingId, isUpgrade = false) {
 
     // Кнопка "Построить/Улучшить"
     const confirmBtn = document.createElement('button');
-    confirmBtn.textContent = isUpgrade ? '⚙️ Улучшить' : '✅ Построить';
+    confirmBtn.textContent = isUpgrade ? t('bld_confirm_upgrade') : t('bld_confirm_build');
     confirmBtn.style.cssText = `
         padding: 10px 30px;
         background: linear-gradient(145deg, #4ade80, #22c55e);
@@ -639,8 +637,8 @@ function showBuildingSelectionMenuFallback() {
     `;
 
     modal.innerHTML = `
-        <h3 style="margin-top: 0; color: #7289da;">Управление зданиями</h3>
-        <p style="color: #888;">Не удалось загрузить интерфейс</p>
+        <h3 style="margin-top: 0; color: #7289da;">${t('bld_title')}</h3>
+        <p style="color: #888;">${t('bld_fallback_error')}</p>
         <button onclick="closeBuildingModal()" style="
             width: 100%;
             padding: 10px;
@@ -649,7 +647,7 @@ function showBuildingSelectionMenuFallback() {
             border-radius: 8px;
             color: white;
             cursor: pointer;
-        ">Закрыть</button>
+        ">${t('common_close')}</button>
     `;
 
     const overlay = document.createElement('div');
@@ -722,7 +720,7 @@ function buildBuilding(buildingId) {
         }
         
         // Показываем уведомление
-        showNotification(`✅ Здание построено!`);
+        showNotification(t('bld_built_notif'));
     }
 }
 
@@ -757,7 +755,7 @@ function onBuildingClick(buildingId) {
             if (window.showLibrary) {
                 window.showLibrary();
             } else {
-                showBuildingInfo(buildingId, 'Библиотека', 'Здесь можно изучать новые заклинания');
+                showBuildingInfo(buildingId, t('bld_library'), t('bld_library_click_desc'));
             }
             break;
             
@@ -765,7 +763,7 @@ function onBuildingClick(buildingId) {
             if (window.showWizardTowerModalBg) {
     		window.showWizardTowerModalBg();
             } else {
-                showBuildingInfo(buildingId, 'Башня мага', 'Здесь можно нанимать новых магов');
+                showBuildingInfo(buildingId, t('bld_wizard_tower'), t('bld_wizard_tower_click_desc'));
             }
             break;
             
@@ -775,7 +773,7 @@ function onBuildingClick(buildingId) {
             } else if (window.startDemoBattle) {
                 window.startDemoBattle();
             } else {
-                showBuildingInfo(buildingId, 'Арена', 'Место для PvP сражений');
+                showBuildingInfo(buildingId, t('bld_arena'), t('bld_arena_click_desc'));
             }
             break;
             
@@ -785,7 +783,7 @@ function onBuildingClick(buildingId) {
             } else if (window.showGuildModal) {
                 window.showGuildModal();
             } else {
-                showBuildingInfo(buildingId, 'Гильдия', 'Объединение игроков для бонусов');
+                showBuildingInfo(buildingId, t('bld_guild'), t('bld_guild_click_desc'));
             }
             break;
             
@@ -799,7 +797,7 @@ function onBuildingClick(buildingId) {
             } else if (window.showBlessingTowerModal) {
                 window.showBlessingTowerModal();
             } else {
-                showBuildingInfo(buildingId, 'Башня благословения', 'Временные бонусы для города');
+                showBuildingInfo(buildingId, t('bld_blessing_tower'), t('bld_blessing_click_desc'));
             }
             break;
             
@@ -809,12 +807,12 @@ function onBuildingClick(buildingId) {
             } else if (window.showArcaneLabModal) {
                 window.showArcaneLabModal();
             } else {
-                showBuildingInfo(buildingId, 'Арканный лаборатория', 'Исследование новых технологий');
+                showBuildingInfo(buildingId, t('bld_arcane_lab'), t('bld_arcane_click_desc'));
             }
             break;
             
         default:
-            showBuildingInfo(buildingId, 'Здание', 'Описание здания');
+            showBuildingInfo(buildingId, t('bld_building'), t('bld_building_desc'));
     }
 }
 
@@ -853,7 +851,7 @@ function showBuildingInfo(buildingId, name, description) {
         <h3 style="color: #7289da; margin-top: 0;">🏯 ${name}</h3>
         <p style="color: #aaa; font-size: 14px;">${description}</p>
         <div style="background: rgba(0, 0, 0, 0.3); padding: 10px; border-radius: 10px; margin: 15px 0;">
-            <div style="color: #ffa500;">⭐ Уровень: ${level}</div>
+            <div style="color: #ffa500;">⭐ ${t('common_level')}: ${level}</div>
         </div>
         <button onclick="closeBuildingInfoModal()" style="
             padding: 10px 20px;
@@ -864,7 +862,7 @@ function showBuildingInfo(buildingId, name, description) {
             cursor: pointer;
             font-size: 14px;
             margin-top: 10px;
-        ">Закрыть</button>
+        ">${t('common_close')}</button>
     `;
     
     modal.innerHTML = modalContent;
