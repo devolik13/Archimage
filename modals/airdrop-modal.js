@@ -734,6 +734,20 @@ function setupAirdropUI() {
                         color: #888;
                         font-size: ${smallFontSize}px;
                     ">✓ Получено</div>
+                ` : (() => {
+                    let gkOpened = false;
+                    try { gkOpened = localStorage.getItem('gift_kombat_opened') === '1'; } catch(e) {}
+                    return gkOpened ? `
+                    <button onclick="window.checkGiftKombat()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #f97316, #ea580c);
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: ${smallFontSize}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Проверить</button>
                 ` : `
                     <button onclick="window.openGiftKombat()" style="
                         padding: 8px 16px;
@@ -745,6 +759,87 @@ function setupAirdropUI() {
                         font-weight: bold;
                         cursor: pointer;
                     ">Начать</button>
+                `;
+                })()}
+            </div>
+            <!-- Tinlake -->
+            <div id="tinlake-reward" style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(56, 189, 248, 0.1);
+                border: 1px solid rgba(56, 189, 248, 0.3);
+                border-radius: 8px;
+                padding: 10px;
+                margin-top: 8px;
+            ">
+                <div style="flex: 1;">
+                    <div style="font-size: ${baseFontSize}px; color: #fff;">
+                        📚 Tinlake | #1 EdTech TMA on Ton
+                    </div>
+                    <div style="font-size: ${smallFontSize}px; color: #38bdf8; margin-top: 4px;">
+                        +100 BPM + ⏰ 2 часа
+                    </div>
+                </div>
+                ${window.userData?.completed_tasks?.tinlake ? `
+                    <div style="
+                        padding: 8px 16px;
+                        background: #333;
+                        border-radius: 8px;
+                        color: #888;
+                        font-size: ${smallFontSize}px;
+                    ">✓ Получено</div>
+                ` : `
+                    <button onclick="window.openTinlake()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #38bdf8, #0284c7);
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: ${smallFontSize}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Начать</button>
+                `}
+            </div>
+            <!-- Star Industry -->
+            <div id="star-industry-reward" style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(250, 204, 21, 0.1);
+                border: 1px solid rgba(250, 204, 21, 0.3);
+                border-radius: 8px;
+                padding: 10px;
+                margin-top: 8px;
+            ">
+                <div style="flex: 1;">
+                    <div style="font-size: ${baseFontSize}px; color: #fff;">
+                        ⭐ Star Industry | Play & Claim Your Share of $4,000
+                    </div>
+                    <div style="font-size: ${smallFontSize}px; color: #facc15; margin-top: 4px;">
+                        +100 BPM + ⏰ 2 часа
+                    </div>
+                </div>
+                ${window.userData?.completed_tasks?.star_industry ? `
+                    <div style="
+                        padding: 8px 16px;
+                        background: #333;
+                        border-radius: 8px;
+                        color: #888;
+                        font-size: ${smallFontSize}px;
+                    ">✓ Получено</div>
+                ` : `
+                    <button onclick="window.openStarIndustry()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #facc15, #ca8a04);
+                        border: none;
+                        border-radius: 8px;
+                        color: #000;
+                        font-size: ${smallFontSize}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Играть</button>
                 `}
             </div>
         </div>
@@ -1207,6 +1302,16 @@ function openBetmodeLuck() {
     setTimeout(() => claimTaskReward('betmode_luck', 'Betmode Luck'), 2000);
 }
 
+function openTinlake() {
+    window.open('https://t.me/tinlake_bot/start?startapp=80YW0I9HD', '_blank');
+    setTimeout(() => claimTaskReward('tinlake', 'Tinlake'), 2000);
+}
+
+function openStarIndustry() {
+    window.open('https://t.me/starindustry_bot/game?startapp=viABSUSk', '_blank');
+    setTimeout(() => claimTaskReward('star_industry', 'Star Industry'), 2000);
+}
+
 /**
  * Проверить выполнение Creaky Tasks и выдать награду
  * @param {boolean} completed - выполнено ли задание
@@ -1309,6 +1414,9 @@ function openPandaFit() {
  */
 function openGiftKombat() {
     window.open('https://t.me/gift_kombat_bot?startapp=963796674utm_archimage', '_blank');
+
+    // Сохраняем флаг что бот был открыт (переживёт перезагрузку/возврат в приложение)
+    try { localStorage.setItem('gift_kombat_opened', '1'); } catch(e) {}
 
     // Меняем кнопку на "Проверить"
     const taskDiv = document.getElementById('gift-kombat-reward');
@@ -1436,7 +1544,9 @@ function updateTaskButton(taskKey) {
         'pandafit': 'pandafit-reward',
         'quadroyal': 'quadroyal-reward',
         'betmode_luck': 'betmode-luck-reward',
-        'gift_kombat': 'gift-kombat-reward'
+        'gift_kombat': 'gift-kombat-reward',
+        'tinlake': 'tinlake-reward',
+        'star_industry': 'star-industry-reward'
     };
     const taskDiv = document.getElementById(idMap[taskKey]);
     if (!taskDiv) return;
@@ -1459,6 +1569,8 @@ window.checkGroupSubscription = checkGroupSubscription;
 window.openCreakyTasks = openCreakyTasks;
 window.openQuadRoyal = openQuadRoyal;
 window.openBetmodeLuck = openBetmodeLuck;
+window.openTinlake = openTinlake;
+window.openStarIndustry = openStarIndustry;
 window.openMoneyMining = openMoneyMining;
 window.openPandaFit = openPandaFit;
 window.openGiftKombat = openGiftKombat;
