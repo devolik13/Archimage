@@ -271,7 +271,10 @@ function formatTimeReward(minutes) {
 function generateRewardsTable(currentDamage) {
     let html = '<div style="font-size: 12px;">';
 
-    for (const tier of window.WEEKLY_REWARDS) {
+    for (let i = 0; i < window.WEEKLY_REWARDS.length; i++) {
+        const tier = window.WEEKLY_REWARDS[i];
+        const prevReward = i > 0 ? window.WEEKLY_REWARDS[i - 1].reward : 0;
+        const actualReward = tier.reward - prevReward;
         const isAchieved = currentDamage >= tier.minDamage;
         const isCurrent = isAchieved && (!window.WEEKLY_REWARDS.find(t =>
             t.minDamage > tier.minDamage && currentDamage >= t.minDamage
@@ -291,7 +294,7 @@ function generateRewardsTable(currentDamage) {
                     ${isAchieved ? '✓' : '○'} ${tier.description}
                 </span>
                 <span style="color: ${isAchieved ? '#ffd700' : '#666'};">
-                    ${tier.minDamage.toLocaleString()} → ${formatTimeReward(tier.reward)}
+                    ${tier.minDamage.toLocaleString()} → +${formatTimeReward(actualReward)}
                 </span>
             </div>
         `;
