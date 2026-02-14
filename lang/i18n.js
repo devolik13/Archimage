@@ -527,6 +527,124 @@ const STRINGS = {
         ru: 'FAQ',
         en: 'FAQ'
     },
+
+    // === SPELL LIBRARY ===
+    lib_no_spell_data: {
+        ru: 'Нет данных о заклинаниях',
+        en: 'No spell data available'
+    },
+    lib_learning: {
+        ru: '📖 Изучается...',
+        en: '📖 Learning...'
+    },
+    lib_locked: {
+        ru: '🔒 Заблокировано',
+        en: '🔒 Locked'
+    },
+    lib_locked_req: {
+        ru: 'Треб. Ур.5 предыдущего',
+        en: 'Req. Lvl 5 of previous'
+    },
+    lib_not_learned: {
+        ru: '🔒 Не изучено',
+        en: '🔒 Not learned'
+    },
+    lib_learn: {
+        ru: 'Изучить',
+        en: 'Learn'
+    },
+    lib_upgrade_spell: {
+        ru: 'Улучшить',
+        en: 'Upgrade'
+    },
+    lib_max_level: {
+        ru: '✅ Макс. Ур.5',
+        en: '✅ Max Lvl 5'
+    },
+    lib_unavailable: {
+        ru: '🔒 Недоступно',
+        en: '🔒 Unavailable'
+    },
+    lib_description: {
+        ru: '📋 Описание',
+        en: '📋 Description'
+    },
+    lib_school: {
+        ru: 'Школа',
+        en: 'School'
+    },
+    lib_tier: {
+        ru: 'Тир',
+        en: 'Tier'
+    },
+    lib_type: {
+        ru: 'Тип',
+        en: 'Type'
+    },
+    lib_type_single: {
+        ru: 'Одна цель',
+        en: 'Single target'
+    },
+    lib_type_aoe: {
+        ru: 'Область',
+        en: 'Area'
+    },
+    lib_type_multi: {
+        ru: 'Несколько целей',
+        en: 'Multi target'
+    },
+    lib_base_damage: {
+        ru: 'Базовый урон',
+        en: 'Base damage'
+    },
+    lib_on_upgrade: {
+        ru: '📈 При улучшении:',
+        en: '📈 On upgrade:'
+    },
+    lib_damage_label: {
+        ru: 'Урон',
+        en: 'Damage'
+    },
+    lib_learn_btn: {
+        ru: '📖 Изучить',
+        en: '📖 Learn'
+    },
+    lib_upgrade_btn: {
+        ru: '⬆️ Улучшить',
+        en: '⬆️ Upgrade'
+    },
+    lib_type_single_icon: {
+        ru: '🎯 Одна цель',
+        en: '🎯 Single target'
+    },
+    lib_type_multi_icon: {
+        ru: '🎯🎯 Несколько целей',
+        en: '🎯🎯 Multi target'
+    },
+    lib_type_aoe_icon: {
+        ru: '💥 Область',
+        en: '💥 Area'
+    },
+    lib_damage_by_level: {
+        ru: '⚔️ Урон по уровням:',
+        en: '⚔️ Damage by level:'
+    },
+    lib_effects: {
+        ru: '✨ Эффекты:',
+        en: '✨ Effects:'
+    },
+    lib_learned_status: {
+        ru: 'Изучено',
+        en: 'Learned'
+    },
+    lib_not_learned_short: {
+        ru: '✗ Не изучено',
+        en: '✗ Not learned'
+    },
+    lib_lvl: {
+        ru: 'Ур.',
+        en: 'Lvl '
+    },
 };
 
 /**
