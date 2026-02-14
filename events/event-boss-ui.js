@@ -803,15 +803,32 @@ async function showEventBossResult(battleResult, hpDamage) {
             </div>` : ''}
 
             <!-- Нанесённый урон -->
-            <div style="
-                background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3);
-                border-radius: 10px; padding: 12px; margin: 12px 0;
-            ">
-                <div style="font-size: 12px; color: #888; margin-bottom: 4px;">Нанесённый урон</div>
-                <div style="font-size: 32px; color: #ff6b6b; font-weight: bold;">
-                    ${manager ? manager.formatDamage(damageDealt) : damageDealt}
-                </div>
-            </div>
+            ${(() => {
+                const multiplier = window.EVENT_BOSS_CONFIG?.incomingDamageMultiplier || 1.0;
+                const hasBonus = multiplier > 1.0 && damageDealt > 0;
+                const rawDamage = hasBonus ? Math.round(damageDealt / multiplier) : damageDealt;
+                const bonusDamage = damageDealt - rawDamage;
+                const bonusPercent = Math.round((multiplier - 1) * 100);
+                const fmt = (v) => manager ? manager.formatDamage(v) : v;
+                return `
+                <div style="
+                    background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3);
+                    border-radius: 10px; padding: 12px; margin: 12px 0;
+                ">
+                    <div style="font-size: 12px; color: #888; margin-bottom: 4px;">Нанесённый урон</div>
+                    <div style="font-size: 32px; color: #ff6b6b; font-weight: bold;">
+                        ${fmt(damageDealt)}
+                    </div>
+                    ${hasBonus ? `
+                    <div style="font-size: 11px; color: #c9a0dc; margin-top: 6px; line-height: 1.4;">
+                        <span style="color: #888;">${fmt(rawDamage)}</span>
+                        <span style="color: #4ade80;"> + ${bonusPercent}% ослабление</span>
+                        <span style="color: #888;"> (+${fmt(bonusDamage)})</span>
+                    </div>
+                    <div style="font-size: 10px; color: #666; margin-top: 2px;">✨ Благословение Архимага Света</div>
+                    ` : ''}
+                </div>`;
+            })()}
 
             ${bossDefeated ? `
                 <div style="
