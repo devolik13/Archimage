@@ -13,7 +13,8 @@
  * ПОПЫТКИ: 10 бесплатных в день, доп. покупаются за Stars.
  *
  * ВРЕМЯ ИВЕНТА: 1 неделя (168 часов).
- * Во время ивента добыча времени у всех -20%.
+ * Во время ивента добыча времени у всех -15% (ослаблено Архимагом Света).
+ * Босс ослаблен: входящий урон +30% (incomingDamageMultiplier: 1.3).
  * Победа (босс убит) → +30% добычи следующую неделю.
  * Поражение (босс выжил) → -50% добычи следующую неделю.
  */
@@ -39,6 +40,10 @@ const EVENT_BOSS_CONFIG = {
 
     // Множитель урона босса
     damageMultiplier: 1.0,
+
+    // Множитель ВХОДЯЩЕГО урона (ослабление босса Архимагом Света)
+    // 1.3 = босс получает на 30% больше урона
+    incomingDamageMultiplier: 1.3,
 
     // Иммунитет к стакам яда (яд не накладывается на босса)
     poisonImmune: true,
@@ -81,7 +86,7 @@ const EVENT_BOSS_CONFIG = {
 
     // Модификатор добычи времени
     timeCurrencyModifier: {
-        duringEvent: 0,            // -20% отключено на время теста
+        duringEvent: -0.15,        // -15% во время ивента (ослаблено Архимагом Света)
         onVictory: 0.30,          // +30% если игроки победили
         onDefeat: -0.50           // -50% если игроки проиграли
     },
@@ -148,6 +153,12 @@ function calculateEventBossDamage() {
         hpDamage += maxHp - currentHp;
     }
 
+    // Ослабление босса Архимагом Света — входящий урон увеличен
+    const multiplier = EVENT_BOSS_CONFIG.incomingDamageMultiplier || 1.0;
+    if (multiplier !== 1.0) {
+        hpDamage = Math.round(hpDamage * multiplier);
+    }
+
     return { hpDamage: Math.max(0, hpDamage) };
 }
 
@@ -162,7 +173,7 @@ function getEventBossTimeModifier() {
 
     const boss = manager.currentBoss;
 
-    // Если босс активен — во время ивента -20%
+    // Если босс активен — во время ивента -15%
     if (boss.status === 'active') {
         return EVENT_BOSS_CONFIG.timeCurrencyModifier.duringEvent;
     }
