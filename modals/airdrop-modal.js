@@ -372,23 +372,7 @@ function setupAirdropUI() {
             font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
             text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        ">
-            <span>${t('airdrop_title')}</span>
-            <button id="lang-switch-btn" onclick="window.switchLanguage()" style="
-                background: rgba(255,255,255,0.15);
-                border: 1px solid rgba(255,215,0,0.4);
-                border-radius: 6px;
-                padding: 2px 8px;
-                font-size: ${smallFontSize}px;
-                cursor: pointer;
-                color: #fff;
-                line-height: 1.2;
-            ">${window.getLang?.() === 'ru' ? '🇬🇧' : '🇷🇺'}</button>
-        </div>
+        ">${t('airdrop_title')}</div>
     `;
     overlay.appendChild(headerContainer);
 
