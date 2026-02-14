@@ -762,6 +762,46 @@ function setupAirdropUI() {
                 `;
                 })()}
             </div>
+            <!-- Tinlake -->
+            <div id="tinlake-reward" style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(56, 189, 248, 0.1);
+                border: 1px solid rgba(56, 189, 248, 0.3);
+                border-radius: 8px;
+                padding: 10px;
+                margin-top: 8px;
+            ">
+                <div style="flex: 1;">
+                    <div style="font-size: ${baseFontSize}px; color: #fff;">
+                        📚 Tinlake | #1 EdTech TMA on Ton
+                    </div>
+                    <div style="font-size: ${smallFontSize}px; color: #38bdf8; margin-top: 4px;">
+                        +100 BPM + ⏰ 2 часа
+                    </div>
+                </div>
+                ${window.userData?.completed_tasks?.tinlake ? `
+                    <div style="
+                        padding: 8px 16px;
+                        background: #333;
+                        border-radius: 8px;
+                        color: #888;
+                        font-size: ${smallFontSize}px;
+                    ">✓ Получено</div>
+                ` : `
+                    <button onclick="window.openTinlake()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #38bdf8, #0284c7);
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: ${smallFontSize}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Начать</button>
+                `}
+            </div>
         </div>
 
         <!-- Как заработать -->
@@ -1222,6 +1262,11 @@ function openBetmodeLuck() {
     setTimeout(() => claimTaskReward('betmode_luck', 'Betmode Luck'), 2000);
 }
 
+function openTinlake() {
+    window.open('https://t.me/tinlake_bot/start?startapp=80YW0I9HD', '_blank');
+    setTimeout(() => claimTaskReward('tinlake', 'Tinlake'), 2000);
+}
+
 /**
  * Проверить выполнение Creaky Tasks и выдать награду
  * @param {boolean} completed - выполнено ли задание
@@ -1454,7 +1499,8 @@ function updateTaskButton(taskKey) {
         'pandafit': 'pandafit-reward',
         'quadroyal': 'quadroyal-reward',
         'betmode_luck': 'betmode-luck-reward',
-        'gift_kombat': 'gift-kombat-reward'
+        'gift_kombat': 'gift-kombat-reward',
+        'tinlake': 'tinlake-reward'
     };
     const taskDiv = document.getElementById(idMap[taskKey]);
     if (!taskDiv) return;
@@ -1477,6 +1523,7 @@ window.checkGroupSubscription = checkGroupSubscription;
 window.openCreakyTasks = openCreakyTasks;
 window.openQuadRoyal = openQuadRoyal;
 window.openBetmodeLuck = openBetmodeLuck;
+window.openTinlake = openTinlake;
 window.openMoneyMining = openMoneyMining;
 window.openPandaFit = openPandaFit;
 window.openGiftKombat = openGiftKombat;
