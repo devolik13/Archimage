@@ -3,12 +3,14 @@
 // === ФУНКЦИИ ДЛЯ ФРАКЦИЙ ===
 
 window.getFactionName = function(faction) {
-    // i18n: используем перевод если доступен
-    if (typeof window.t === 'function') {
-        const fallbackNames = { 'fire': 'Огонь', 'water': 'Вода', 'wind': 'Ветер', 'earth': 'Земля', 'nature': 'Природа', 'poison': 'Яд', 'light': 'Свет', 'dark': 'Тьма', 'necromant': 'Некромантия', 'hybrid': 'Гибрид' };
-        return window.t(`school_${faction}_name`, fallbackNames[faction] || faction);
-    }
-    const names = { 'fire': 'Огонь', 'water': 'Вода', 'wind': 'Ветер', 'earth': 'Земля', 'nature': 'Природа', 'poison': 'Яд', 'light': 'Свет', 'dark': 'Тьма', 'necromant': 'Некромантия', 'hybrid': 'Гибрид' };
+    const names = {
+        'fire': 'Огонь',
+        'water': 'Вода',
+        'wind': 'Ветер',
+        'earth': 'Земля',
+        'nature': 'Природа',
+        'poison': 'Яд'
+    };
     return names[faction] || faction;
 };
 

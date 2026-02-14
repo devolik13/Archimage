@@ -102,15 +102,6 @@ async function claimLeagueReward(leagueId) {
     // Выдаем награды
     const rewards = league.rewards;
 
-    // ВАЖНО: Сначала помечаем награду как полученную, ДО начисления ресурсов.
-    // Это предотвращает гонку сохранений, когда addAirdropPoints/addTimeCurrency
-    // запускают свой savePlayer() с пустым season_league_rewards_claimed.
-    if (!window.userData.season_league_rewards_claimed) {
-        window.userData.season_league_rewards_claimed = [];
-    }
-    window.userData.season_league_rewards_claimed.push(leagueId);
-
-    // Начисляем time_currency
     if (rewards.currency_base) {
         if (typeof window.addTimeCurrency === 'function') {
             await window.addTimeCurrency(rewards.currency_base);
@@ -123,26 +114,17 @@ async function claimLeagueReward(leagueId) {
         console.log(`⏰ Получено времени: +${rewards.currency_base}`);
     }
 
-    // Начисляем airdrop points (обновляем только локально, сохранение через saveImmediate ниже)
-    if (rewards.airdrop_points) {
-        const oldPoints = window.userData.airdrop_points || 0;
-        window.userData.airdrop_points = oldPoints + rewards.airdrop_points;
-
-        if (!window.userData.airdrop_breakdown) {
-            window.userData.airdrop_breakdown = {};
-        }
-        const category = 'Достижение лиги';
-        window.userData.airdrop_breakdown[category] = (window.userData.airdrop_breakdown[category] || 0) + rewards.airdrop_points;
-
-        console.log(`🪙 Airdrop: +${rewards.airdrop_points} за лигу. Всего: ${window.userData.airdrop_points}`);
-
-        if (window.showNotification && rewards.airdrop_points > 0) {
-            window.showNotification(`🪙 +${rewards.airdrop_points} BPM coin!`);
-        }
+    if (rewards.airdrop_points && typeof window.addAirdropPoints === 'function') {
+        window.addAirdropPoints(rewards.airdrop_points, 'Достижение лиги');
     }
 
-    // ЕДИНОЕ НЕМЕДЛЕННОЕ сохранение всех данных в БД
-    // (season_league_rewards_claimed + airdrop_points + time_currency — всё в одном запросе)
+    // Добавляем лигу в список полученных наград
+    if (!window.userData.season_league_rewards_claimed) {
+        window.userData.season_league_rewards_claimed = [];
+    }
+    window.userData.season_league_rewards_claimed.push(leagueId);
+
+    // НЕМЕДЛЕННОЕ сохранение в БД (чтобы нельзя было получить повторно при перезагрузке)
     try {
         if (window.eventSaveManager && typeof window.eventSaveManager.saveImmediate === 'function') {
             await window.eventSaveManager.saveImmediate('league_reward_claimed');
@@ -153,17 +135,8 @@ async function claimLeagueReward(leagueId) {
         }
     } catch (saveError) {
         console.error('❌ Ошибка сохранения награды:', saveError);
-        // Откатываем ВСЕ изменения если сохранение не удалось
+        // Откатываем изменения если сохранение не удалось
         window.userData.season_league_rewards_claimed = window.userData.season_league_rewards_claimed.filter(id => id !== leagueId);
-        if (rewards.airdrop_points) {
-            window.userData.airdrop_points = (window.userData.airdrop_points || 0) - rewards.airdrop_points;
-            const category = 'Достижение лиги';
-            if (window.userData.airdrop_breakdown && window.userData.airdrop_breakdown[category]) {
-                window.userData.airdrop_breakdown[category] -= rewards.airdrop_points;
-            }
-        }
-        // time_currency_base: если addTimeCurrency RPC уже отработал — откатить нельзя,
-        // но при следующей попытке claimed будет пустой, игрок сможет повторить
         return false;
     }
 

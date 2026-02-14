@@ -13,8 +13,7 @@
  * ПОПЫТКИ: 10 бесплатных в день, доп. покупаются за Stars.
  *
  * ВРЕМЯ ИВЕНТА: 1 неделя (168 часов).
- * Во время ивента добыча времени у всех -15% (ослаблено Архимагом Света).
- * Босс ослаблен: входящий урон +30% (incomingDamageMultiplier: 1.3).
+ * Во время ивента добыча времени у всех -20%.
  * Победа (босс убит) → +30% добычи следующую неделю.
  * Поражение (босс выжил) → -50% добычи следующую неделю.
  */
@@ -40,10 +39,6 @@ const EVENT_BOSS_CONFIG = {
 
     // Множитель урона босса
     damageMultiplier: 1.0,
-
-    // Множитель ВХОДЯЩЕГО урона (ослабление босса Архимагом Света)
-    // 1.3 = босс получает на 30% больше урона
-    incomingDamageMultiplier: 1.3,
 
     // Иммунитет к стакам яда (яд не накладывается на босса)
     poisonImmune: true,
@@ -85,10 +80,8 @@ const EVENT_BOSS_CONFIG = {
     extraAttemptPriceUSD: 0.98,   // Цена в USD (для конвертации в TON)
 
     // Модификатор добычи времени
-    // duringEventActive: true/false — ручное вкл/выкл штрафа добычи
     timeCurrencyModifier: {
-        duringEventActive: true,   // ← переключить вручную
-        duringEvent: -0.15,        // -15% во время ивента (ослаблено Архимагом Света)
+        duringEvent: 0,            // -20% отключено на время теста
         onVictory: 0.30,          // +30% если игроки победили
         onDefeat: -0.50           // -50% если игроки проиграли
     },
@@ -155,50 +148,57 @@ function calculateEventBossDamage() {
         hpDamage += maxHp - currentHp;
     }
 
-    // Ослабление босса Архимагом Света — входящий урон увеличен
-    const multiplier = EVENT_BOSS_CONFIG.incomingDamageMultiplier || 1.0;
-    if (multiplier !== 1.0) {
-        hpDamage = Math.round(hpDamage * multiplier);
-    }
-
     return { hpDamage: Math.max(0, hpDamage) };
 }
 
 /**
  * Получить текущий модификатор добычи времени от ивент босса.
- * Возвращает число (напр. -0.15 = минус 15%, 0.30 = плюс 30%).
+ * Возвращает число (напр. -0.20 = минус 20%, 0.30 = плюс 30%).
  * Возвращает 0 если нет активного модификатора.
- *
- * duringEvent — ручной флаг duringEventActive (true/false в конфиге).
- * onVictory/onDefeat — зависят от статуса босса (defeated/expired).
  */
 function getEventBossTimeModifier() {
-    const config = EVENT_BOSS_CONFIG;
-    const mod = config.timeCurrencyModifier;
+    const manager = window.eventBossManager;
+    if (!manager || !manager.currentBoss) return 0;
 
-    // Штраф во время ивента — ручной флаг
-    if (mod.duringEventActive) {
-        return mod.duringEvent;
+    const boss = manager.currentBoss;
+
+    // Если босс активен — во время ивента -20%
+    if (boss.status === 'active') {
+        return EVENT_BOSS_CONFIG.timeCurrencyModifier.duringEvent;
     }
 
-    // Пост-ивент: бонус/штраф по статусу босса
-    const manager = window.eventBossManager;
-    const boss = manager?.currentBoss;
-    if (!boss) return 0;
-
-    if (boss.status === 'defeated') {
-        const defeatedAt = new Date(boss.defeated_at || boss.ends_at);
-        const bonusEndsAt = new Date(defeatedAt.getTime() + 7 * 24 * 60 * 60 * 1000);
-        if (new Date() < bonusEndsAt) {
-            return mod.onVictory;
+    // Пост-ивент модификаторы: только если нет запланированного нового ивента.
+    // Иначе старый expired/defeated босс будет давать штраф/бонус когда не должен.
+    const startStr = EVENT_BOSS_CONFIG.eventStartUTC;
+    if (startStr) {
+        const eventStart = new Date(startStr);
+        const now = new Date();
+        // Новый ивент запланирован но ещё не начался — не применяем пост-ивент модификаторы
+        if (now < eventStart && boss.id !== undefined) {
+            // Проверяем: этот босс из старого ивента (ends_at < eventStart)?
+            const bossEnd = new Date(boss.ends_at);
+            if (bossEnd < eventStart) {
+                return 0;
+            }
         }
     }
 
+    // Если босс побежден — бонус +30%
+    if (boss.status === 'defeated') {
+        // Проверяем, не истёк ли бонусный период (1 неделя после победы)
+        const defeatedAt = new Date(boss.defeated_at || boss.ends_at);
+        const bonusEndsAt = new Date(defeatedAt.getTime() + 7 * 24 * 60 * 60 * 1000);
+        if (new Date() < bonusEndsAt) {
+            return EVENT_BOSS_CONFIG.timeCurrencyModifier.onVictory;
+        }
+    }
+
+    // Если босс expired (не убит) — штраф -50%
     if (boss.status === 'expired') {
         const expiredAt = new Date(boss.ends_at);
         const penaltyEndsAt = new Date(expiredAt.getTime() + 7 * 24 * 60 * 60 * 1000);
         if (new Date() < penaltyEndsAt) {
-            return mod.onDefeat;
+            return EVENT_BOSS_CONFIG.timeCurrencyModifier.onDefeat;
         }
     }
 
