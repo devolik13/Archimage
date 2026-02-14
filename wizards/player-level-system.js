@@ -1,5 +1,8 @@
 // player-level-system.js - Система общего уровня игрока
 
+// Версия клиента — бампать при каждом релизе, отображается в профиле игрока
+const GAME_VERSION = '0.8.1';
+
 // Конфигурация очков за достижения
 const PLAYER_LEVEL_CONFIG = {
     SPELL_LEARNED: 1,      // За изученное заклинание
@@ -330,6 +333,11 @@ function showPlayerProfile() {
                     </div>
                 </div>
             </div>
+
+            <!-- Версия клиента -->
+            <div style="text-align: right; margin-top: ${4 * scaleY}px; font-size: ${Math.max(9, 11 * scaleY)}px; color: rgba(255,255,255,0.35);">
+                v${GAME_VERSION}
+            </div>
         `;
 
         // Асинхронно загружаем количество рефералов
@@ -587,3 +595,4 @@ window.createPlayerAvatarUI = createPlayerAvatarUI;
 window.showPlayerProfile = showPlayerProfile;
 window.updatePlayerLevel = updatePlayerLevel;
 window.PLAYER_LEVEL_CONFIG = PLAYER_LEVEL_CONFIG;
+window.GAME_VERSION = GAME_VERSION;
