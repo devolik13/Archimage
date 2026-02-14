@@ -516,7 +516,7 @@ function setupSpellsScreen(faction) {
         
         spellDiv.innerHTML = `
             <div style="text-align: center; color: white; font-size: ${fontSize}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); line-height: 1.1; width: 100%;">
-                <div style="font-weight: bold; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${spell.name}</div>
+                <div style="font-weight: bold; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${typeof window.t === 'function' ? window.t('spell_' + spellId + '_name', spell.name) : spell.name}</div>
                 <div style="font-size: ${fontSize * 0.85}px; color: #aaa; margin-bottom: 2px;">${status}</div>
                 ${buttonHTML}
                 ${infoButtonHTML}
@@ -619,8 +619,8 @@ function renderLibrary() {
 
 // ========== МОДАЛЬНОЕ ОКНО С ИНФОРМАЦИЕЙ О ЗАКЛИНАНИИ ==========
 function showSpellInfoModal(spellId, faction, currentLevel, action) {
-    // Получаем полную информацию о заклинании
-    const spellData = window.SPELL_FULL_DATA?.[spellId];
+    // Получаем полную информацию о заклинании (с локализацией)
+    const spellData = typeof getSpellFullData === 'function' ? getSpellFullData(spellId) : window.SPELL_FULL_DATA?.[spellId];
     if (!spellData) {
         console.error('Данные заклинания не найдены:', spellId);
         // Fallback - вызываем старую функцию
@@ -779,7 +779,7 @@ function showSpellInfoModal(spellId, faction, currentLevel, action) {
 
 // ========== МОДАЛЬНОЕ ОКНО ОПИСАНИЯ ЗАКЛИНАНИЯ ==========
 function showSpellDescriptionModal(spellId, faction) {
-    const spellData = window.SPELL_FULL_DATA?.[spellId];
+    const spellData = typeof getSpellFullData === 'function' ? getSpellFullData(spellId) : window.SPELL_FULL_DATA?.[spellId];
     if (!spellData) {
         console.error('Данные заклинания не найдены:', spellId);
         return;
