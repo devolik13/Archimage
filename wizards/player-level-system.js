@@ -1,5 +1,10 @@
 // player-level-system.js - Система общего уровня игрока
 
+// Версия клиента — инжектится Vite при билде автоматически (git hash + время)
+// В dev-режиме (без Vite) будет 'dev'
+const GAME_VERSION = typeof __GIT_HASH__ !== 'undefined' ? __GIT_HASH__ : 'dev';
+const BUILD_TIME = typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : '';
+
 // Конфигурация очков за достижения
 const PLAYER_LEVEL_CONFIG = {
     SPELL_LEARNED: 1,      // За изученное заклинание
@@ -330,6 +335,11 @@ function showPlayerProfile() {
                     </div>
                 </div>
             </div>
+
+            <!-- Версия клиента -->
+            <div style="text-align: right; margin-top: ${4 * scaleY}px; font-size: ${Math.max(9, 11 * scaleY)}px; color: rgba(255,255,255,0.35);">
+                ${GAME_VERSION}${BUILD_TIME ? ' • ' + BUILD_TIME : ''}
+            </div>
         `;
 
         // Асинхронно загружаем количество рефералов
@@ -587,3 +597,4 @@ window.createPlayerAvatarUI = createPlayerAvatarUI;
 window.showPlayerProfile = showPlayerProfile;
 window.updatePlayerLevel = updatePlayerLevel;
 window.PLAYER_LEVEL_CONFIG = PLAYER_LEVEL_CONFIG;
+window.GAME_VERSION = GAME_VERSION;
