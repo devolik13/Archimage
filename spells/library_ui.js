@@ -620,7 +620,7 @@ function renderLibrary() {
 // ========== МОДАЛЬНОЕ ОКНО С ИНФОРМАЦИЕЙ О ЗАКЛИНАНИИ ==========
 function showSpellInfoModal(spellId, faction, currentLevel, action) {
     // Получаем полную информацию о заклинании (с локализацией)
-    const spellData = typeof getSpellFullData === 'function' ? getSpellFullData(spellId) : window.SPELL_FULL_DATA?.[spellId];
+    const spellData = typeof window.getSpellFullData === 'function' ? window.getSpellFullData(spellId) : window.SPELL_FULL_DATA?.[spellId];
     if (!spellData) {
         console.error('Данные заклинания не найдены:', spellId);
         // Fallback - вызываем старую функцию
@@ -779,7 +779,7 @@ function showSpellInfoModal(spellId, faction, currentLevel, action) {
 
 // ========== МОДАЛЬНОЕ ОКНО ОПИСАНИЯ ЗАКЛИНАНИЯ ==========
 function showSpellDescriptionModal(spellId, faction) {
-    const spellData = typeof getSpellFullData === 'function' ? getSpellFullData(spellId) : window.SPELL_FULL_DATA?.[spellId];
+    const spellData = typeof window.getSpellFullData === 'function' ? window.getSpellFullData(spellId) : window.SPELL_FULL_DATA?.[spellId];
     if (!spellData) {
         console.error('Данные заклинания не найдены:', spellId);
         return;

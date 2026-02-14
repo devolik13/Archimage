@@ -556,4 +556,8 @@ function getSpellIcon(spellId) {
 if (typeof window !== 'undefined') {
     window.SPELL_FULL_DATA = SPELL_FULL_DATA;
     window.SPELL_LIBRARY = SPELL_FULL_DATA; // Альтернативное имя для обратной совместимости
+    window.getSpellFullData = getSpellFullData;
+    window.getSpellDescription = getSpellDescription;
+    window.getSpellName = getSpellName;
+    window.getSpellIcon = getSpellIcon;
 }
