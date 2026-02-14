@@ -734,6 +734,20 @@ function setupAirdropUI() {
                         color: #888;
                         font-size: ${smallFontSize}px;
                     ">✓ Получено</div>
+                ` : (() => {
+                    let gkOpened = false;
+                    try { gkOpened = localStorage.getItem('gift_kombat_opened') === '1'; } catch(e) {}
+                    return gkOpened ? `
+                    <button onclick="window.checkGiftKombat()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #f97316, #ea580c);
+                        border: none;
+                        border-radius: 8px;
+                        color: white;
+                        font-size: ${smallFontSize}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Проверить</button>
                 ` : `
                     <button onclick="window.openGiftKombat()" style="
                         padding: 8px 16px;
@@ -745,7 +759,8 @@ function setupAirdropUI() {
                         font-weight: bold;
                         cursor: pointer;
                     ">Начать</button>
-                `}
+                `;
+                })()}
             </div>
         </div>
 
@@ -1309,6 +1324,9 @@ function openPandaFit() {
  */
 function openGiftKombat() {
     window.open('https://t.me/gift_kombat_bot?startapp=963796674utm_archimage', '_blank');
+
+    // Сохраняем флаг что бот был открыт (переживёт перезагрузку/возврат в приложение)
+    try { localStorage.setItem('gift_kombat_opened', '1'); } catch(e) {}
 
     // Меняем кнопку на "Проверить"
     const taskDiv = document.getElementById('gift-kombat-reward');
