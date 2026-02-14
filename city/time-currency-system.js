@@ -160,8 +160,7 @@ function createTimeCurrencyUI() {
                     if (!modText) return '';
                     const isNegative = modText.startsWith('-');
                     const color = isNegative ? '#ff6b6b' : '#4ade80';
-                    const icon = isNegative ? '🐉' : '✨';
-                    return `<div style="font-size: 11px; color: ${color}; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);" title="Влияние Отродья Тьмы на добычу">${icon}${modText}</div>`;
+                    return `<div style="font-size: 10px; color: ${color}; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">${modText}</div>`;
                 })()}
             </div>
         </div>

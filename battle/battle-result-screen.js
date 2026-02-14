@@ -28,7 +28,7 @@ function showBattleResult(result, battleData = {}) {
     console.log('⚠️ showArenaResult недоступна, используем fallback');
 
     const {
-        opponentName = t('btl_opponent'),
+        opponentName = 'Противник',
         opponentRating = 1000,
         ratingChange = 0,
         rewards = {},
@@ -42,7 +42,7 @@ function showBattleResult(result, battleData = {}) {
     const bgColor = isWin ? 'linear-gradient(135deg, #1e3a20 0%, #2d5016 100%)' : 'linear-gradient(135deg, #3a1e1e 0%, #501616 100%)';
     const titleColor = isWin ? '#4CAF50' : '#f44336';
     const titleIcon = isWin ? '🏆' : '💀';
-    const titleText = isWin ? t('btl_you_won') : t('btl_you_lost');
+    const titleText = isWin ? 'Вы выиграли!' : 'Вы проиграли!';
 
     // Форматируем изменение рейтинга
     const ratingChangeText = ratingChange > 0 ? `+${ratingChange}` : ratingChange;
@@ -94,10 +94,10 @@ function showBattleResult(result, battleData = {}) {
                     text-align: center;
                 ">
                     <div style="font-size: 14px; color: #ffa500; font-weight: bold; margin-bottom: 5px;">
-                        ℹ️ ${t('btl_early_exit')}
+                        ℹ️ Досрочный выход из боя
                     </div>
                     <div style="font-size: 12px; color: #ffd699; line-height: 1.4;">
-                        ${t('btl_early_exit_desc')}
+                        Бой был просчитан до конца автоматически. Результат соответствует реальному исходу сражения.
                     </div>
                 </div>
             ` : ''}
@@ -110,9 +110,9 @@ function showBattleResult(result, battleData = {}) {
                 margin-bottom: 15px;
                 text-align: center;
             ">
-                <div style="font-size: 12px; color: #aaa; margin-bottom: 3px;">${t('btl_opponent')}</div>
+                <div style="font-size: 12px; color: #aaa; margin-bottom: 3px;">Противник</div>
                 <div style="font-size: 16px; font-weight: bold; color: white;">${opponentName}</div>
-                <div style="font-size: 12px; color: #aaa; margin-top: 3px;">${t('btl_rating')}: ${opponentRating}</div>
+                <div style="font-size: 12px; color: #aaa; margin-top: 3px;">Рейтинг: ${opponentRating}</div>
             </div>
 
             <!-- Изменение рейтинга -->
@@ -125,7 +125,7 @@ function showBattleResult(result, battleData = {}) {
                 <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center;">
                     <!-- Текущий рейтинг -->
                     <div style="text-align: center;">
-                        <div style="font-size: 10px; color: #aaa; margin-bottom: 3px;">${t('btl_was')}</div>
+                        <div style="font-size: 10px; color: #aaa; margin-bottom: 3px;">Было</div>
                         <div style="font-size: 16px; color: #7289da; font-weight: bold;">${currentRating}</div>
                     </div>
 
@@ -138,7 +138,7 @@ function showBattleResult(result, battleData = {}) {
 
                     <!-- Новый рейтинг -->
                     <div style="text-align: center;">
-                        <div style="font-size: 10px; color: #aaa; margin-bottom: 3px;">${t('btl_became')}</div>
+                        <div style="font-size: 10px; color: #aaa; margin-bottom: 3px;">Стало</div>
                         <div style="font-size: 16px; color: ${titleColor}; font-weight: bold;">${newRating}</div>
                     </div>
                 </div>
@@ -165,7 +165,7 @@ function showBattleResult(result, battleData = {}) {
                     text-align: center;
                     border: 1px solid rgba(255, 165, 0, 0.3);
                 ">
-                    <div style="font-size: 12px; color: #ffa500; margin-bottom: 3px;">${t('btl_exp_gained')}</div>
+                    <div style="font-size: 12px; color: #ffa500; margin-bottom: 3px;">Опыт получен</div>
                     <div style="font-size: 18px; color: #ffa500; font-weight: bold;">+${expGained} XP</div>
                 </div>
             ` : ''}
@@ -179,15 +179,15 @@ function showBattleResult(result, battleData = {}) {
             ">
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; font-size: 10px;">
                     <div>
-                        <div style="color: #aaa;">${t('btl_wins')}</div>
+                        <div style="color: #aaa;">Побед</div>
                         <div style="color: #4CAF50; font-size: 16px; font-weight: bold;">${window.userData?.wins || 0}</div>
                     </div>
                     <div>
-                        <div style="color: #aaa;">${t('btl_losses')}</div>
+                        <div style="color: #aaa;">Поражений</div>
                         <div style="color: #f44336; font-size: 16px; font-weight: bold;">${window.userData?.losses || 0}</div>
                     </div>
                     <div>
-                        <div style="color: #aaa;">${t('btl_total_battles')}</div>
+                        <div style="color: #aaa;">Всего боёв</div>
                         <div style="color: #7289da; font-size: 16px; font-weight: bold;">${window.userData?.total_battles || 0}</div>
                     </div>
                 </div>
@@ -209,7 +209,7 @@ function showBattleResult(result, battleData = {}) {
                 "
                 onmouseover="this.style.background='#5a6ebd'"
                 onmouseout="this.style.background='#7289da'">
-                    ⚔️ ${t('btl_new_fight')}
+                    ⚔️ Новый бой
                 </button>
 
                 <button id="battle-result-return" style="
@@ -226,7 +226,7 @@ function showBattleResult(result, battleData = {}) {
                 "
                 onmouseover="this.style.background='rgba(114, 137, 218, 0.1)'"
                 onmouseout="this.style.background='transparent'">
-                    🏠 ${t('btl_return')}
+                    🏠 Вернуться
                 </button>
             </div>
         </div>

@@ -112,19 +112,9 @@ const SCHOOL_CONFIG = {
     }
 };
 
-// Вспомогательные функции (с локализацией)
+// Вспомогательные функции
 function getSchoolName(schoolId) {
-    if (typeof window.t === 'function') {
-        return window.t(`school_${schoolId}_name`, SCHOOL_CONFIG[schoolId]?.name || schoolId);
-    }
     return SCHOOL_CONFIG[schoolId]?.name || schoolId;
-}
-
-function getSchoolDescription(schoolId) {
-    if (typeof window.t === 'function') {
-        return window.t(`school_${schoolId}_desc`, SCHOOL_CONFIG[schoolId]?.description || '');
-    }
-    return SCHOOL_CONFIG[schoolId]?.description || '';
 }
 
 function getSchoolEmoji(schoolId) {

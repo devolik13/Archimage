@@ -515,36 +515,14 @@ const SPELL_FULL_DATA = {
     }
 };
 
-// Функция получения полных данных заклинания (с локализацией)
+// Функция получения полных данных заклинания
 function getSpellFullData(spellId) {
-    const spell = SPELL_FULL_DATA[spellId];
-    if (!spell) return null;
-
-    // Если i18n доступен — возвращаем локализованную копию
-    if (typeof window.t === 'function') {
-        return {
-            ...spell,
-            name: window.t(`spell_${spellId}_name`, spell.name),
-            description: window.t(`spell_${spellId}_desc`, spell.description)
-        };
-    }
-    return spell;
+    return SPELL_FULL_DATA[spellId] || null;
 }
 
-// Функция получения описания заклинания (с локализацией)
+// Функция получения описания заклинания
 function getSpellDescription(spellId) {
-    if (typeof window.t === 'function') {
-        return window.t(`spell_${spellId}_desc`, SPELL_FULL_DATA[spellId]?.description || "Описание недоступно");
-    }
     return SPELL_FULL_DATA[spellId]?.description || "Описание недоступно";
-}
-
-// Функция получения локализованного имени заклинания
-function getSpellName(spellId) {
-    if (typeof window.t === 'function') {
-        return window.t(`spell_${spellId}_name`, SPELL_FULL_DATA[spellId]?.name || spellId);
-    }
-    return SPELL_FULL_DATA[spellId]?.name || spellId;
 }
 
 // Функция получения иконки заклинания
