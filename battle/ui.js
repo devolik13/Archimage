@@ -84,7 +84,7 @@ function renderBattleField() {
                         border-radius: 50%;
                         animation: battle-spin 1s linear infinite;
                     "></div>
-                    <div style="color: #ffd700; margin-top: 15px; font-size: 16px;">Подготовка к бою...</div>
+                    <div style="color: #ffd700; margin-top: 15px; font-size: 16px;">${t('btl_preparing')}</div>
                 </div>
                 <style>
                     @keyframes battle-spin {
@@ -114,7 +114,7 @@ function renderBattleField() {
                 
                 <div id="weather-display" style="display: flex; align-items: center; gap: 5px;">
                     <div id="weather-icon" style="font-size: 20px;">❓</div>
-                    <div id="weather-name" style="font-size: 11px;">Загрузка...</div>
+                    <div id="weather-name" style="font-size: 11px;">${t('btl_loading')}</div>
                 </div>
             </div>
             
@@ -139,7 +139,7 @@ function renderBattleField() {
                     font-size: 20px;
                     cursor: pointer;
                     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-                " onclick="toggleBattleLog()" title="Лог боя">📜</button>
+                " onclick="toggleBattleLog()" title="${t('btl_battle_log')}">📜</button>
                 
                 <button id="pause-button" style="
                     width: 50px;
@@ -151,7 +151,7 @@ function renderBattleField() {
                     font-size: 20px;
                     cursor: pointer;
                     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-                " onclick="togglePause()" title="Пауза">⏸</button>
+                " onclick="togglePause()" title="${t('btl_pause')}">⏸</button>
                 
                 <button id="speed-button" style="
                     width: 50px;
@@ -163,7 +163,7 @@ function renderBattleField() {
                     font-size: 20px;
                     cursor: pointer;
                     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-                " onclick="toggleBattleSpeed()" title="Скорость">▶</button>
+                " onclick="toggleBattleSpeed()" title="${t('btl_speed')}">▶</button>
                 
                 <button style="
                     width: 50px;
@@ -175,7 +175,7 @@ function renderBattleField() {
                     font-size: 20px;
                     cursor: pointer;
                     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-                " onclick="closeBattleFieldModal()" title="Закрыть">❌</button>
+                " onclick="closeBattleFieldModal()" title="${t('btl_close')}">❌</button>
             </div>
             
             <!-- Выезжающая панель логов -->
@@ -196,7 +196,7 @@ function renderBattleField() {
                 box-shadow: -4px 0 12px rgba(0,0,0,0.5);
             ">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h3 style="color: #7289da; font-size: 16px; margin: 0;">📜 Лог боя</h3>
+                    <h3 style="color: #7289da; font-size: 16px; margin: 0;">📜 ${t('btl_battle_log')}</h3>
                     <button onclick="toggleBattleLog()" style="
                         background: none;
                         border: none;
@@ -213,7 +213,7 @@ function renderBattleField() {
                 ">
                     ${(window.battleLog || []).length > 0 ? 
                         window.battleLog.map(log => `<div style="margin-bottom: 5px; padding: 5px; background: rgba(255,255,255,0.05); border-radius: 4px;">${log}</div>`).join('') : 
-                        '<div style="color: #777;">Бой начался...</div>'}
+                        `<div style="color: #777;">${t('btl_battle_started')}</div>`}
                 </div>
             </div>
         </div>
@@ -257,7 +257,7 @@ function createBattleInfoTop() {
     const playerLevel = typeof window.calculatePlayerLevel === 'function' ?
         window.calculatePlayerLevel() : 1;
     const enemyLevel = window.selectedOpponent?.level || playerLevel;
-    const enemyName = window.selectedOpponent?.username || 'Противник';
+    const enemyName = window.selectedOpponent?.username || t('btl_opponent');
     
     infoContainer.innerHTML = `
         <!-- Игрок -->
@@ -274,8 +274,8 @@ function createBattleInfoTop() {
                 border: 2px solid #4CAF50;
             ">👤</div>
             <div>
-                <div style="font-size: 10px; color: #4CAF50; font-weight: bold;">${typeof window.getCurrentPlayerDisplayName === 'function' ? window.getCurrentPlayerDisplayName() : (window.userData?.username || 'Игрок')}</div>
-                <div style="font-size: 9px; color: #ffa500;">⭐ Ур. ${playerLevel}</div>
+                <div style="font-size: 10px; color: #4CAF50; font-weight: bold;">${typeof window.getCurrentPlayerDisplayName === 'function' ? window.getCurrentPlayerDisplayName() : (window.userData?.username || t('btl_player'))}</div>
+                <div style="font-size: 9px; color: #ffa500;">⭐ ${t('btl_lvl')}${playerLevel}</div>
             </div>
         </div>
         
@@ -296,7 +296,7 @@ function createBattleInfoTop() {
             ">🤖</div>
             <div>
                 <div style="font-size: 10px; color: #ff6b6b; font-weight: bold;">${enemyName}</div>
-                <div style="font-size: 9px; color: #ffa500;">⭐ Ур. ${enemyLevel}</div>
+                <div style="font-size: 9px; color: #ffa500;">⭐ ${t('btl_lvl')}${enemyLevel}</div>
             </div>
         </div>
     `;
@@ -313,15 +313,15 @@ function setWeatherDisplay() {
     
     if (!currentWeather) {
         weatherIcon.innerHTML = '❓';
-        weatherName.innerHTML = 'Не установлена';
+        weatherName.innerHTML = t('btl_not_set');
         return;
     }
     
     const weatherInfo = {
-        'drought': { icon: '☀️', name: 'Засуха' },
-        'ice_fog': { icon: '❄️', name: 'Ледяной туман' },
-        'sandstorm': { icon: '🏜️', name: 'Песчаная буря' },
-        'storm': { icon: '🌪️', name: 'Шторм' }
+        'drought': { icon: '☀️', name: t('btl_weather_drought') },
+        'ice_fog': { icon: '❄️', name: t('btl_weather_ice_fog') },
+        'sandstorm': { icon: '🏜️', name: t('btl_weather_sandstorm') },
+        'storm': { icon: '🌪️', name: t('btl_weather_storm') }
     };
     
     const info = weatherInfo[currentWeather];
@@ -722,7 +722,7 @@ async function closeBattleFieldModal() {
 
                 if (typeof window.showBattleResult === 'function') {
                     const battleData = {
-                        opponentName: window.selectedOpponent?.username || 'Противник',
+                        opponentName: window.selectedOpponent?.username || t('btl_opponent'),
                         opponentRating: typeof window.selectedOpponent?.rating === 'number' ? window.selectedOpponent.rating : 0,
                         ratingChange: ratingChange,
                         rewards: { exp: 0 },

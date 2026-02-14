@@ -645,6 +645,166 @@ const STRINGS = {
         ru: 'Ур.',
         en: 'Lvl '
     },
+
+    // === BATTLE UI ===
+    btl_preparing: {
+        ru: 'Подготовка к бою...',
+        en: 'Preparing for battle...'
+    },
+    btl_battle_log: {
+        ru: 'Лог боя',
+        en: 'Battle Log'
+    },
+    btl_pause: {
+        ru: 'Пауза',
+        en: 'Pause'
+    },
+    btl_speed: {
+        ru: 'Скорость',
+        en: 'Speed'
+    },
+    btl_close: {
+        ru: 'Закрыть',
+        en: 'Close'
+    },
+    btl_battle_started: {
+        ru: 'Бой начался...',
+        en: 'Battle started...'
+    },
+    btl_player: {
+        ru: 'Игрок',
+        en: 'Player'
+    },
+    btl_opponent: {
+        ru: 'Противник',
+        en: 'Opponent'
+    },
+    btl_lvl: {
+        ru: 'Ур.',
+        en: 'Lvl '
+    },
+    btl_loading: {
+        ru: 'Загрузка...',
+        en: 'Loading...'
+    },
+    btl_not_set: {
+        ru: 'Не установлена',
+        en: 'Not set'
+    },
+    btl_weather_drought: {
+        ru: 'Засуха',
+        en: 'Drought'
+    },
+    btl_weather_ice_fog: {
+        ru: 'Ледяной туман',
+        en: 'Ice Fog'
+    },
+    btl_weather_sandstorm: {
+        ru: 'Песчаная буря',
+        en: 'Sandstorm'
+    },
+    btl_weather_storm: {
+        ru: 'Шторм',
+        en: 'Storm'
+    },
+
+    // === BATTLE RESULT ===
+    btl_you_won: {
+        ru: 'Вы выиграли!',
+        en: 'You won!'
+    },
+    btl_you_lost: {
+        ru: 'Вы проиграли!',
+        en: 'You lost!'
+    },
+    btl_early_exit: {
+        ru: 'Досрочный выход из боя',
+        en: 'Early exit from battle'
+    },
+    btl_early_exit_desc: {
+        ru: 'Бой был просчитан до конца автоматически. Результат соответствует реальному исходу сражения.',
+        en: 'The battle was auto-simulated to the end. The result matches the actual outcome.'
+    },
+    btl_was: {
+        ru: 'Было',
+        en: 'Before'
+    },
+    btl_became: {
+        ru: 'Стало',
+        en: 'After'
+    },
+    btl_rating: {
+        ru: 'Рейтинг',
+        en: 'Rating'
+    },
+    btl_exp_gained: {
+        ru: 'Опыт получен',
+        en: 'Experience gained'
+    },
+    btl_wins: {
+        ru: 'Побед',
+        en: 'Wins'
+    },
+    btl_losses: {
+        ru: 'Поражений',
+        en: 'Losses'
+    },
+    btl_total_battles: {
+        ru: 'Всего боёв',
+        en: 'Total battles'
+    },
+    btl_new_fight: {
+        ru: 'Новый бой',
+        en: 'New fight'
+    },
+    btl_return: {
+        ru: 'Вернуться',
+        en: 'Return'
+    },
+
+    // === BATTLE SPEED ===
+    btl_speed_up: {
+        ru: 'Ускорить',
+        en: 'Speed up'
+    },
+    btl_speed_down: {
+        ru: 'Замедлить',
+        en: 'Slow down'
+    },
+    btl_resume: {
+        ru: 'Продолжить',
+        en: 'Resume'
+    },
+
+    // === BATTLE ENERGY ===
+    btl_attempts: {
+        ru: 'Попытки',
+        en: 'Attempts'
+    },
+    btl_hours: {
+        ru: 'ч',
+        en: 'h'
+    },
+    btl_minutes: {
+        ru: 'м',
+        en: 'm'
+    },
+    btl_no_energy: {
+        ru: 'Недостаточно энергии для боя!',
+        en: 'Not enough energy for battle!'
+    },
+    btl_max_fights_per_day: {
+        ru: 'Вы можете провести максимум',
+        en: 'You can have a maximum of'
+    },
+    btl_fights_per_day: {
+        ru: 'боев в сутки.',
+        en: 'fights per day.'
+    },
+    btl_next_attempt: {
+        ru: 'Следующая попытка восстановится через',
+        en: 'Next attempt restores in'
+    },
 };
 
 /**
