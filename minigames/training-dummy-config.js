@@ -108,19 +108,19 @@ const DUMMY_CONFIG = {
     WEEK_DURATION_DAYS: 7
 };
 
-// Награды по урону за неделю (накопительные пороги, reward = кумулятивная сумма)
-// Реальный инкремент за лигу = reward текущей - reward предыдущей
+// Награды по урону за неделю (накопительные пороги)
+// UI показывает реальный инкремент за лигу (reward - prevReward)
 const WEEKLY_REWARDS = [
-    { minDamage: 0,      reward: 60,     description: "Участник" },       // +1ч
-    { minDamage: 1000,   reward: 180,    description: "Новичок" },        // +2ч
-    { minDamage: 3000,   reward: 360,    description: "Ученик" },         // +3ч
-    { minDamage: 5000,   reward: 720,    description: "Боец" },           // +6ч
-    { minDamage: 10000,  reward: 1200,   description: "Воин" },           // +8ч
-    { minDamage: 20000,  reward: 1920,   description: "Ветеран" },        // +12ч
-    { minDamage: 35000,  reward: 3360,   description: "Элита" },          // +1д
-    { minDamage: 50000,  reward: 6240,   description: "Мастер" },         // +2д
-    { minDamage: 75000,  reward: 10560,  description: "Грандмастер" },    // +3д
-    { minDamage: 100000, reward: 16320,  description: "Легенда" }         // +4д
+    { minDamage: 0,      reward: 60,    description: "Участник" },        // +1ч
+    { minDamage: 1000,   reward: 120,   description: "Новичок" },         // +1ч
+    { minDamage: 3000,   reward: 240,   description: "Ученик" },          // +2ч
+    { minDamage: 5000,   reward: 480,   description: "Боец" },            // +4ч
+    { minDamage: 10000,  reward: 720,   description: "Воин" },            // +4ч
+    { minDamage: 20000,  reward: 1440,  description: "Ветеран" },         // +12ч
+    { minDamage: 35000,  reward: 2880,  description: "Элита" },           // +1д
+    { minDamage: 50000,  reward: 4320,  description: "Мастер" },          // +1д
+    { minDamage: 75000,  reward: 7200,  description: "Грандмастер" },     // +2д
+    { minDamage: 100000, reward: 10080, description: "Легенда" }          // +2д
 ];
 
 // Бонусы за топ места в лидерборде
