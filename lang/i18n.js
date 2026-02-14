@@ -315,6 +315,218 @@ const STRINGS = {
         ru: 'дней',
         en: 'days'
     },
+    common_level: {
+        ru: 'Уровень',
+        en: 'Level'
+    },
+    common_min: {
+        ru: 'мин',
+        en: 'min'
+    },
+    common_articles: {
+        ru: 'статей',
+        en: 'articles'
+    },
+
+    // === BUILDINGS ===
+    bld_title: {
+        ru: 'Управление зданиями',
+        en: 'Building Management'
+    },
+    bld_library: {
+        ru: 'Библиотека',
+        en: 'Library'
+    },
+    bld_library_desc: {
+        ru: 'Изучение заклинаний',
+        en: 'Spell learning'
+    },
+    bld_wizard_tower: {
+        ru: 'Башня мага',
+        en: 'Wizard Tower'
+    },
+    bld_wizard_tower_desc: {
+        ru: 'Найм новых магов',
+        en: 'Hire new wizards'
+    },
+    bld_guild: {
+        ru: 'Гильдия',
+        en: 'Guild'
+    },
+    bld_guild_desc: {
+        ru: 'Объединение игроков',
+        en: 'Player alliance'
+    },
+    bld_blessing_tower: {
+        ru: 'Башня благословения',
+        en: 'Blessing Tower'
+    },
+    bld_blessing_tower_desc: {
+        ru: 'Временные бонусы',
+        en: 'Temporary bonuses'
+    },
+    bld_arcane_lab: {
+        ru: 'Лаборатория',
+        en: 'Laboratory'
+    },
+    bld_arcane_lab_desc: {
+        ru: 'Ускорение изучения',
+        en: 'Research boost'
+    },
+    bld_time_generator: {
+        ru: 'Генератор времени',
+        en: 'Time Generator'
+    },
+    bld_time_generator_desc: {
+        ru: 'Производство времени',
+        en: 'Time production'
+    },
+    bld_arena: {
+        ru: 'Арена',
+        en: 'Arena'
+    },
+    bld_building: {
+        ru: 'Здание',
+        en: 'Building'
+    },
+    bld_building_desc: {
+        ru: 'Описание здания',
+        en: 'Building description'
+    },
+    bld_not_built: {
+        ru: 'Не построено',
+        en: 'Not built'
+    },
+    bld_max_level: {
+        ru: 'Макс. уровень',
+        en: 'Max level'
+    },
+    bld_build: {
+        ru: 'Построить',
+        en: 'Build'
+    },
+    bld_upgrade: {
+        ru: 'Улучшить',
+        en: 'Upgrade'
+    },
+    bld_speed_up: {
+        ru: 'Ускорить',
+        en: 'Speed up'
+    },
+    bld_building_status: {
+        ru: '🔨 Строится',
+        en: '🔨 Building'
+    },
+    bld_upgrading_status: {
+        ru: '⚙️ Улучшается',
+        en: '⚙️ Upgrading'
+    },
+    bld_upgrade_label: {
+        ru: 'Улучшение',
+        en: 'Upgrade'
+    },
+    bld_time_build: {
+        ru: 'Время строительства:',
+        en: 'Build time:'
+    },
+    bld_time_upgrade: {
+        ru: 'Время улучшения:',
+        en: 'Upgrade time:'
+    },
+    bld_new_bonus: {
+        ru: 'Новый бонус:',
+        en: 'New bonus:'
+    },
+    bld_what_gives: {
+        ru: 'Что даст:',
+        en: 'Benefits:'
+    },
+    bld_confirm_build: {
+        ru: '✅ Построить',
+        en: '✅ Build'
+    },
+    bld_confirm_upgrade: {
+        ru: '⚙️ Улучшить',
+        en: '⚙️ Upgrade'
+    },
+    bld_built_notif: {
+        ru: '✅ Здание построено!',
+        en: '✅ Building constructed!'
+    },
+    bld_fallback_error: {
+        ru: 'Не удалось загрузить интерфейс',
+        en: 'Failed to load interface'
+    },
+
+    // Building click fallback descriptions
+    bld_library_click_desc: {
+        ru: 'Здесь можно изучать новые заклинания',
+        en: 'Learn new spells here'
+    },
+    bld_wizard_tower_click_desc: {
+        ru: 'Здесь можно нанимать новых магов',
+        en: 'Hire new wizards here'
+    },
+    bld_arena_click_desc: {
+        ru: 'Место для PvP сражений',
+        en: 'PvP battle arena'
+    },
+    bld_guild_click_desc: {
+        ru: 'Объединение игроков для бонусов',
+        en: 'Player alliance for bonuses'
+    },
+    bld_blessing_click_desc: {
+        ru: 'Временные бонусы для города',
+        en: 'Temporary bonuses for the city'
+    },
+    bld_arcane_click_desc: {
+        ru: 'Исследование новых технологий',
+        en: 'Research new technologies'
+    },
+
+    // === KNOWLEDGE BOOK ===
+    kb_title: {
+        ru: '📖 Книга Знаний',
+        en: '📖 Book of Knowledge'
+    },
+
+    // Category titles
+    kb_cat_community: {
+        ru: 'Сообщество',
+        en: 'Community'
+    },
+    kb_cat_buildings: {
+        ru: 'Здания',
+        en: 'Buildings'
+    },
+    kb_cat_wizards: {
+        ru: 'Маги',
+        en: 'Wizards'
+    },
+    kb_cat_spells: {
+        ru: 'Заклинания',
+        en: 'Spells'
+    },
+    kb_cat_battle: {
+        ru: 'Бой',
+        en: 'Battle'
+    },
+    kb_cat_rewards: {
+        ru: 'Награды',
+        en: 'Rewards'
+    },
+    kb_cat_airdrop: {
+        ru: 'Airdrop',
+        en: 'Airdrop'
+    },
+    kb_cat_factions: {
+        ru: 'Фракции',
+        en: 'Factions'
+    },
+    kb_cat_faq: {
+        ru: 'FAQ',
+        en: 'FAQ'
+    },
 };
 
 /**

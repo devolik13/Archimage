@@ -10,9 +10,11 @@ const KNOWLEDGE_BOOK_DATA = {
             id: 'community',
             icon: '📢',
             title: 'Сообщество',
+            title_en: 'Community',
             articles: [
                 {
                     title: 'Официальный канал',
+                    title_en: 'Official Channel',
                     content: `<b>📢 Archimage Community</b>
 
 Присоединяйся к официальному каналу:
@@ -23,17 +25,36 @@ const KNOWLEDGE_BOOK_DATA = {
 • ❓ Задавай вопросы и получай советы
 • 🤝 Ищи союзников для гильдии
 
-<a href="https://t.me/archimage_chat" target="_blank" style="color: #4FC3F7;">👉 Присоединиться к @archimage_chat</a>`
+<a href="https://t.me/archimage_chat" target="_blank" style="color: #4FC3F7;">👉 Присоединиться к @archimage_chat</a>`,
+                    content_en: `<b>📢 Archimage Community</b>
+
+Join the official channel:
+• 🎮 Updates and patch notes
+• 🎉 Event announcements
+• 🎁 Giveaways and promo codes
+• 🗣️ Chat with other mages
+• ❓ Ask questions and get advice
+• 🤝 Find allies for your guild
+
+<a href="https://t.me/archimage_chat" target="_blank" style="color: #4FC3F7;">👉 Join @archimage_chat</a>`
                 },
                 {
                     title: 'Обратная связь',
+                    title_en: 'Feedback',
                     content: `<b>📝 Связь с разработчиком</b>
 
 Нашёл баг или есть идея?
 • Напиши в чат сообщества
 • Или в личные сообщения бота
 
-<b>Мы читаем все отзывы!</b>`
+<b>Мы читаем все отзывы!</b>`,
+                    content_en: `<b>📝 Contact the Developer</b>
+
+Found a bug or have an idea?
+• Write in the community chat
+• Or send a direct message to the bot
+
+<b>We read all feedback!</b>`
                 }
             ]
         },
@@ -41,9 +62,11 @@ const KNOWLEDGE_BOOK_DATA = {
             id: 'buildings',
             icon: '🏰',
             title: 'Здания',
+            title_en: 'Buildings',
             articles: [
                 {
                     title: 'Башня мага',
+                    title_en: 'Wizard Tower',
                     content: `<b>Башня мага</b> — найм и управление магами.
 
 <b>Функции:</b>
@@ -57,10 +80,25 @@ const KNOWLEDGE_BOOK_DATA = {
 
 <b>Пример:</b>
 Башня 5 ур. = +50% HP и +10% урона
-Башня 10 ур. = +100% HP и +20% урона`
+Башня 10 ур. = +100% HP и +20% урона`,
+                    content_en: `<b>Wizard Tower</b> — hire and manage wizards.
+
+<b>Functions:</b>
+• Hire new wizards for Time Currency
+• Each wizard has a unique element
+• Upgrade the tower to hire more wizards
+
+<b>Tower level bonuses:</b>
+• ❤️ +10% wizard HP per level
+• ⚔️ +2% damage per level
+
+<b>Example:</b>
+Tower lvl 5 = +50% HP and +10% damage
+Tower lvl 10 = +100% HP and +20% damage`
                 },
                 {
                     title: 'Библиотека',
+                    title_en: 'Library',
                     content: `<b>Библиотека</b> — изучай и улучшай заклинания.
 
 <b>Функции:</b>
@@ -69,10 +107,20 @@ const KNOWLEDGE_BOOK_DATA = {
 • Открывай мощные школы магии
 
 <b>Школы магии:</b>
-Каждая стихия имеет свой набор заклинаний с уникальными эффектами.`
+Каждая стихия имеет свой набор заклинаний с уникальными эффектами.`,
+                    content_en: `<b>Library</b> — learn and upgrade spells.
+
+<b>Functions:</b>
+• Learn new spells for battle
+• Upgrade existing spells
+• Unlock powerful magic schools
+
+<b>Magic schools:</b>
+Each element has its own set of spells with unique effects.`
                 },
                 {
                     title: 'Арена',
+                    title_en: 'Arena',
                     content: `<b>Арена</b> — сражайся с другими игроками!
 
 <b>Функции:</b>
@@ -81,10 +129,20 @@ const KNOWLEDGE_BOOK_DATA = {
 • Зарабатывай рейтинг и поднимайся в лигах
 
 <b>Лиги:</b>
-Адепт → Ученик → Подмастерье → Искусный → Мастер → Великий → Верховный → Архимаг`
+Адепт → Ученик → Подмастерье → Искусный → Мастер → Великий → Верховный → Архимаг`,
+                    content_en: `<b>Arena</b> — fight other players!
+
+<b>Functions:</b>
+• PvP battles with real players
+• Weekly dummy challenge
+• Earn rating and climb the leagues
+
+<b>Leagues:</b>
+Adept → Apprentice → Journeyman → Skilled → Master → Grand → Supreme → Archmage`
                 },
                 {
                     title: 'Гильдия',
+                    title_en: 'Guild',
                     content: `<b>Гильдия</b> — объединяйся с другими игроками!
 
 <b>Бонусы за уровень гильдии:</b>
@@ -96,10 +154,23 @@ const KNOWLEDGE_BOOK_DATA = {
 +100% HP, +10% урона, 20 игроков
 
 <b>Исследования:</b>
-Очки дают +0.5% сопротивления к школе (макс 30 очков = 15%)`
+Очки дают +0.5% сопротивления к школе (макс 30 очков = 15%)`,
+                    content_en: `<b>Guild</b> — unite with other players!
+
+<b>Guild level bonuses:</b>
+• ❤️ +10% HP per level
+• ⚔️ +1% damage per level
+• 👥 +5 capacity at lvl 5/10/15/20/25/30
+
+<b>Example at lvl 10:</b>
++100% HP, +10% damage, 20 players
+
+<b>Research:</b>
+Points give +0.5% resistance to a school (max 30 points = 15%)`
                 },
                 {
                     title: 'Башня благословения',
+                    title_en: 'Blessing Tower',
                     content: `<b>Башня благословения</b> — временные бонусы на 3 часа.
 
 <b>Благословения по уровням:</b>
@@ -109,10 +180,21 @@ const KNOWLEDGE_BOOK_DATA = {
 • 4 ур: 💚 +3% регенерации/ход
 • 5 ур: ✨ Комбо (все бонусы слабее)
 
-<b>Кулдаун:</b> 24 часа между использованиями`
+<b>Кулдаун:</b> 24 часа между использованиями`,
+                    content_en: `<b>Blessing Tower</b> — temporary 3-hour bonuses.
+
+<b>Blessings by level:</b>
+• Lvl 1: 🛡️ +15 armor
+• Lvl 2: ⚔️ +12% damage
+• Lvl 3: ❤️ +20% HP
+• Lvl 4: 💚 +3% regen/turn
+• Lvl 5: ✨ Combo (all bonuses weaker)
+
+<b>Cooldown:</b> 24 hours between uses`
                 },
                 {
                     title: 'Арканская лаборатория',
+                    title_en: 'Arcane Laboratory',
                     content: `<b>Арканская лаборатория</b> — ускорение исследований.
 
 <b>Бонусы за уровень:</b>
@@ -122,10 +204,21 @@ const KNOWLEDGE_BOOK_DATA = {
 <b>Примеры:</b>
 • 5 ур: +10% скорость, +5% урон
 • 10 ур: +20% скорость, +10% урон
-• 15 ур (макс): +30% скорость, +15% урон`
+• 15 ур (макс): +30% скорость, +15% урон`,
+                    content_en: `<b>Arcane Laboratory</b> — research acceleration.
+
+<b>Level bonuses:</b>
+• 📖 +2% spell learning speed
+• ⚔️ +1% spell damage
+
+<b>Examples:</b>
+• Lvl 5: +10% speed, +5% damage
+• Lvl 10: +20% speed, +10% damage
+• Lvl 15 (max): +30% speed, +15% damage`
                 },
                 {
                     title: 'Генератор времени',
+                    title_en: 'Time Generator',
                     content: `<b>Генератор времени</b> — пассивный доход.
 
 <b>Производство TC в час:</b>
@@ -138,7 +231,20 @@ const KNOWLEDGE_BOOK_DATA = {
 36 + (уровень-1) × 7.6 мин/час
 
 <b>Совет:</b>
-Генератор копит TC даже офлайн!`
+Генератор копит TC даже офлайн!`,
+                    content_en: `<b>Time Generator</b> — passive income.
+
+<b>TC production per hour:</b>
+• Lvl 1: 36 min/h (14h/day)
+• Lvl 5: 66 min/h (26h/day)
+• Lvl 10: 104 min/h (41h/day)
+• Lvl 15: 142 min/h (57h/day)
+
+<b>Formula:</b>
+36 + (level-1) × 7.6 min/hour
+
+<b>Tip:</b>
+Generator accumulates TC even offline!`
                 }
             ]
         },
@@ -146,9 +252,11 @@ const KNOWLEDGE_BOOK_DATA = {
             id: 'wizards',
             icon: '🧙',
             title: 'Маги',
+            title_en: 'Wizards',
             articles: [
                 {
                     title: 'Основы',
+                    title_en: 'Basics',
                     content: `<b>Маги</b> — твои бойцы на арене.
 
 <b>Характеристики мага:</b>
@@ -157,10 +265,20 @@ const KNOWLEDGE_BOOK_DATA = {
 • 📊 Уровень — растёт с опытом
 
 <b>Стихии:</b>
-Каждый маг принадлежит к одной из 6 стихий, определяющей его заклинания.`
+Каждый маг принадлежит к одной из 6 стихий, определяющей его заклинания.`,
+                    content_en: `<b>Wizards</b> — your fighters in the arena.
+
+<b>Wizard stats:</b>
+• ❤️ HP — health
+• 🛡️ Armor — absorbs damage before HP
+• 📊 Level — grows with experience
+
+<b>Elements:</b>
+Each wizard belongs to one of 6 elements that determine their spells.`
                 },
                 {
                     title: 'Прокачка',
+                    title_en: 'Leveling Up',
                     content: `<b>Как прокачивать магов:</b>
 
 • Маги получают опыт за бои
@@ -172,10 +290,23 @@ const KNOWLEDGE_BOOK_DATA = {
 
 <b>Бонус 40 уровня:</b>
 • ❤️ +200% HP (×3 от базы!)
-• ⚔️ +40% урона`
+• ⚔️ +40% урона`,
+                    content_en: `<b>How to level up wizards:</b>
+
+• Wizards gain experience from battles
+• Maximum level — 40
+
+<b>Level bonuses:</b>
+• ❤️ +5% HP per level
+• ⚔️ +1% damage per level
+
+<b>Level 40 bonus:</b>
+• ❤️ +200% HP (×3 from base!)
+• ⚔️ +40% damage`
                 },
                 {
                     title: 'Сопротивления',
+                    title_en: 'Resistances',
                     content: `<b>Сопротивление магии</b> снижает входящий урон.
 
 <b>Как получить:</b>
@@ -185,10 +316,21 @@ const KNOWLEDGE_BOOK_DATA = {
 Искра 5 ур. = +7.5% к огню
 Все заклинания огня = суммируются
 
-<b>Максимум:</b> 75% сопротивления`
+<b>Максимум:</b> 75% сопротивления`,
+                    content_en: `<b>Magic resistance</b> reduces incoming damage.
+
+<b>How to get:</b>
+Each spell level gives +1.5% resistance to its school.
+
+<b>Example:</b>
+Spark lvl 5 = +7.5% fire resistance
+All fire spells = stack
+
+<b>Maximum:</b> 75% resistance`
                 },
                 {
                     title: 'Формация',
+                    title_en: 'Formation',
                     content: `<b>Формация</b> — расположение магов в бою.
 
 • У тебя 5 слотов для магов
@@ -196,7 +338,15 @@ const KNOWLEDGE_BOOK_DATA = {
 • Экспериментируй с разными составами
 
 <b>Совет:</b>
-Используй магов со взаимодополняющими заклинаниями!`
+Используй магов со взаимодополняющими заклинаниями!`,
+                    content_en: `<b>Formation</b> — wizard placement in battle.
+
+• You have 5 wizard slots
+• Combine wizards of different elements
+• Experiment with different compositions
+
+<b>Tip:</b>
+Use wizards with complementary spells!`
                 }
             ]
         },
@@ -204,9 +354,11 @@ const KNOWLEDGE_BOOK_DATA = {
             id: 'spells',
             icon: '✨',
             title: 'Заклинания',
+            title_en: 'Spells',
             articles: [
                 {
                     title: 'Основы',
+                    title_en: 'Basics',
                     content: `<b>Заклинания</b> — магические атаки и способности.
 
 <b>Типы заклинаний:</b>
@@ -216,10 +368,21 @@ const KNOWLEDGE_BOOK_DATA = {
 • ⚡ Эффекты — яды, ослабления, усиления
 
 <b>Изучение:</b>
-Новые заклинания открываются в Библиотеке.`
+Новые заклинания открываются в Библиотеке.`,
+                    content_en: `<b>Spells</b> — magical attacks and abilities.
+
+<b>Spell types:</b>
+• 💥 Damage — deal damage to enemies
+• 🛡️ Defense — shields and barriers
+• 💚 Healing — restore HP
+• ⚡ Effects — poisons, debuffs, buffs
+
+<b>Learning:</b>
+New spells are unlocked in the Library.`
                 },
                 {
                     title: 'Улучшение',
+                    title_en: 'Upgrading',
                     content: `<b>Улучшение заклинаний:</b>
 
 • Каждое заклинание можно улучшить до 5 уровня
@@ -227,10 +390,19 @@ const KNOWLEDGE_BOOK_DATA = {
 • Требуется Time Currency
 
 <b>Совет:</b>
-Сначала улучшай часто используемые заклинания!`
+Сначала улучшай часто используемые заклинания!`,
+                    content_en: `<b>Upgrading spells:</b>
+
+• Each spell can be upgraded to level 5
+• Upgrading increases damage/effect
+• Requires Time Currency
+
+<b>Tip:</b>
+Upgrade your most used spells first!`
                 },
                 {
                     title: '🔥 Огонь',
+                    title_en: '🔥 Fire',
                     content: `<b>Заклинания огня:</b>
 
 • Искра — урон по 1 цели
@@ -239,10 +411,20 @@ const KNOWLEDGE_BOOK_DATA = {
 • Огненный шар — взрыв 3×3
 • Огненное цунами — полное покрытие
 
-<b>Особенность:</b> шанс поджечь врага`
+<b>Особенность:</b> шанс поджечь врага`,
+                    content_en: `<b>Fire spells:</b>
+
+• Spark — single target damage
+• Fire Arrow — multiple arrows
+• Fire Wall — area damage
+• Fireball — 3×3 explosion
+• Fire Tsunami — full coverage
+
+<b>Special:</b> chance to ignite enemy`
                 },
                 {
                     title: '💧 Вода',
+                    title_en: '💧 Water',
                     content: `<b>Заклинания воды:</b>
 
 • Сосулька — урон по 1 цели
@@ -251,10 +433,20 @@ const KNOWLEDGE_BOOK_DATA = {
 • Метель — массовый урон
 • Абсолютный ноль — мощная заморозка
 
-<b>Особенность:</b> охлаждение/заморозка врага`
+<b>Особенность:</b> охлаждение/заморозка врага`,
+                    content_en: `<b>Water spells:</b>
+
+• Icicle — single target damage
+• Ice Arrow — multiple arrows
+• Ice Rain — area damage
+• Blizzard — mass damage
+• Absolute Zero — powerful freeze
+
+<b>Special:</b> chill/freeze enemy`
                 },
                 {
                     title: '💨 Ветер',
+                    title_en: '💨 Wind',
                     content: `<b>Заклинания ветра:</b>
 
 • Порыв — урон по 1 цели
@@ -263,10 +455,20 @@ const KNOWLEDGE_BOOK_DATA = {
 • Грозовое облако — урон по области
 • Шаровая молния — мощный урон
 
-<b>Особенность:</b> шанс двойного урона`
+<b>Особенность:</b> шанс двойного урона`,
+                    content_en: `<b>Wind spells:</b>
+
+• Gust — single target damage
+• Wind Blade — quick attack
+• Wind Wall — defense
+• Storm Cloud — area damage
+• Ball Lightning — powerful damage
+
+<b>Special:</b> chance for double damage`
                 },
                 {
                     title: '🌍 Земля',
+                    title_en: '🌍 Earth',
                     content: `<b>Заклинания земли:</b>
 
 • Камешек — урон по 1 цели
@@ -275,10 +477,20 @@ const KNOWLEDGE_BOOK_DATA = {
 • Каменный грот — укрытие
 • Метеоритный дождь — массовый урон
 
-<b>Особенность:</b> игнорирование брони`
+<b>Особенность:</b> игнорирование брони`,
+                    content_en: `<b>Earth spells:</b>
+
+• Pebble — single target damage
+• Stone Spike — enemy damage
+• Stone Wall — defense
+• Stone Grotto — shelter
+• Meteor Rain — mass damage
+
+<b>Special:</b> armor piercing`
                 },
                 {
                     title: '🌿 Природа',
+                    title_en: '🌿 Nature',
                     content: `<b>Заклинания природы:</b>
 
 • Зов волка — призыв волка
@@ -287,10 +499,20 @@ const KNOWLEDGE_BOOK_DATA = {
 • Энт — призыв энта-защитника
 • Метеокинез — контроль погоды
 
-<b>Особенность:</b> призывы и лечение`
+<b>Особенность:</b> призывы и лечение`,
+                    content_en: `<b>Nature spells:</b>
+
+• Wolf Call — summon wolf
+• Tree Bark — armor
+• Leaf Cover — team defense
+• Ent — summon ent defender
+• Meteokinesis — weather control
+
+<b>Special:</b> summons and healing`
                 },
                 {
                     title: '☠️ Яд',
+                    title_en: '☠️ Poison',
                     content: `<b>Заклинания яда:</b>
 
 • Отравленный клинок — яд 1 цели
@@ -299,7 +521,16 @@ const KNOWLEDGE_BOOK_DATA = {
 • Чума — распространяющийся яд
 • Эпидемия — массовое отравление
 
-<b>Особенность:</b> урон по времени (DoT)`
+<b>Особенность:</b> урон по времени (DoT)`,
+                    content_en: `<b>Poison spells:</b>
+
+• Poisoned Blade — poison 1 target
+• Poison Glade — poison zone
+• Foul Cloud — poisonous gas
+• Plague — spreading poison
+• Epidemic — mass poisoning
+
+<b>Special:</b> damage over time (DoT)`
                 }
             ]
         },
@@ -307,9 +538,11 @@ const KNOWLEDGE_BOOK_DATA = {
             id: 'battle',
             icon: '⚔️',
             title: 'Бой',
+            title_en: 'Battle',
             articles: [
                 {
                     title: 'Механика боя',
+                    title_en: 'Battle Mechanics',
                     content: `<b>Как проходит бой:</b>
 
 1. Ты и враг ходите по очереди
@@ -318,10 +551,20 @@ const KNOWLEDGE_BOOK_DATA = {
 4. Бой идёт до победы одной стороны
 
 <b>Победа:</b>
-Уничтожь всех вражеских магов!`
+Уничтожь всех вражеских магов!`,
+                    content_en: `<b>How battle works:</b>
+
+1. You and the enemy take turns
+2. All your wizards attack per turn
+3. Choose a spell for each wizard
+4. Battle continues until one side wins
+
+<b>Victory:</b>
+Destroy all enemy wizards!`
                 },
                 {
                     title: 'Энергия',
+                    title_en: 'Energy',
                     content: `<b>Энергия боя:</b>
 
 • Максимум: 12 единиц
@@ -329,10 +572,19 @@ const KNOWLEDGE_BOOK_DATA = {
 • Восстановление: 1 единица каждые 2 часа
 
 <b>Совет:</b>
-Энергия восстанавливается даже офлайн!`
+Энергия восстанавливается даже офлайн!`,
+                    content_en: `<b>Battle energy:</b>
+
+• Maximum: 12 units
+• 1 battle = 1 energy
+• Recovery: 1 unit every 2 hours
+
+<b>Tip:</b>
+Energy recovers even offline!`
                 },
                 {
                     title: 'Рейтинг',
+                    title_en: 'Rating',
                     content: `<b>Рейтинговая система:</b>
 
 • Победа = +рейтинг
@@ -347,10 +599,26 @@ const KNOWLEDGE_BOOK_DATA = {
 ✨ Мастер (2500-2999)
 ⭐ Великий (3000-3999)
 🔥 Верховный (4000+)
-👑 Архимаг (9999)`
+👑 Архимаг (9999)`,
+                    content_en: `<b>Rating system:</b>
+
+• Win = +rating
+• Loss = -rating
+• Rating determines your league
+
+<b>Leagues:</b>
+🔰 Adept (0-999)
+📘 Apprentice (1000-1499)
+📗 Journeyman (1500-1999)
+🔮 Skilled (2000-2499)
+✨ Master (2500-2999)
+⭐ Grand (3000-3999)
+🔥 Supreme (4000+)
+👑 Archmage (9999)`
                 },
                 {
                     title: 'Испытание',
+                    title_en: 'Challenge',
                     content: `<b>Еженедельное испытание</b> — покажи максимальный урон!
 
 <b>Как работает:</b>
@@ -363,10 +631,24 @@ const KNOWLEDGE_BOOK_DATA = {
 Каждую неделю новый голем с разными сопротивлениями!
 
 <b>Награды:</b>
-От 1 часа (участник) до 7 дней (легенда) TC`
+От 1 часа (участник) до 7 дней (легенда) TC`,
+                    content_en: `<b>Weekly Challenge</b> — show your maximum damage!
+
+<b>How it works:</b>
+• Fight a dummy (doesn't attack)
+• 3 attempts per day, 10 rounds per attempt
+• Damage accumulates all week
+• End of week — rewards based on results
+
+<b>Dummy:</b>
+Each week a new golem with different resistances!
+
+<b>Rewards:</b>
+From 1 hour (participant) to 7 days (legend) TC`
                 },
                 {
                     title: 'Погода',
+                    title_en: 'Weather',
                     content: `<b>Погода</b> — случайный бонус в бою.
 
 <b>Типы погоды (+15% урона):</b>
@@ -376,10 +658,21 @@ const KNOWLEDGE_BOOK_DATA = {
 • 🌪️ Шторм → 💨 Ветер
 
 <b>Совет:</b>
-Используй магов с заклинаниями, подходящими под погоду!`
+Используй магов с заклинаниями, подходящими под погоду!`,
+                    content_en: `<b>Weather</b> — random battle bonus.
+
+<b>Weather types (+15% damage):</b>
+• ☀️ Drought → 🔥 Fire
+• ❄️ Ice Fog → 💧 Water
+• 🏜️ Sandstorm → 🌍 Earth
+• 🌪️ Storm → 💨 Wind
+
+<b>Tip:</b>
+Use wizards with spells matching the weather!`
                 },
                 {
                     title: 'Метеокинез',
+                    title_en: 'Meteokinesis',
                     content: `<b>Метеокинез</b> — заклинание Природы 5-го тира.
 
 <b>Эффекты по уровням:</b>
@@ -388,7 +681,16 @@ const KNOWLEDGE_BOOK_DATA = {
 • 5 ур: +15% урон + отключает погоду врагу (весь бой)
 
 <b>Важно:</b>
-Бонус действует на все стихийные заклинания команды!`
+Бонус действует на все стихийные заклинания команды!`,
+                    content_en: `<b>Meteokinesis</b> — Nature tier 5 spell.
+
+<b>Effects by level:</b>
+• Lvl 1-3: +5%/10%/15% ally damage
+• Lvl 4: +15% damage + disables enemy weather (2 turns)
+• Lvl 5: +15% damage + disables enemy weather (entire battle)
+
+<b>Important:</b>
+Bonus affects all elemental spells of the team!`
                 }
             ]
         },
@@ -396,9 +698,11 @@ const KNOWLEDGE_BOOK_DATA = {
             id: 'rewards',
             icon: '🎁',
             title: 'Награды',
+            title_en: 'Rewards',
             articles: [
                 {
                     title: 'Ежедневный вход',
+                    title_en: 'Daily Login',
                     content: `<b>Ежедневные награды:</b>
 
 • Заходи каждый день и получай награды
@@ -406,10 +710,19 @@ const KNOWLEDGE_BOOK_DATA = {
 • Максимум 7 дней в цикле
 
 <b>Streak бонус:</b>
-Заходи несколько дней подряд для бонуса!`
+Заходи несколько дней подряд для бонуса!`,
+                    content_en: `<b>Daily rewards:</b>
+
+• Log in every day to receive rewards
+• Rewards increase each day
+• Maximum 7 days per cycle
+
+<b>Streak bonus:</b>
+Log in several days in a row for a bonus!`
                 },
                 {
                     title: 'Time Currency',
+                    title_en: 'Time Currency',
                     content: `<b>Time Currency ⏰</b> — основная валюта игры.
 
 <b>Как получить:</b>
@@ -421,10 +734,23 @@ const KNOWLEDGE_BOOK_DATA = {
 <b>Использование:</b>
 • Найм магов
 • Изучение заклинаний
-• Улучшения`
+• Улучшения`,
+                    content_en: `<b>Time Currency ⏰</b> — the main game currency.
+
+<b>How to get:</b>
+• Offline accumulation (1/min)
+• Daily rewards
+• Battle victories
+• League rewards
+
+<b>Usage:</b>
+• Hire wizards
+• Learn spells
+• Upgrades`
                 },
                 {
                     title: 'Лиговые награды',
+                    title_en: 'League Rewards',
                     content: `<b>Награды за лиги:</b>
 
 При достижении новой лиги ты получаешь награду (раз за сезон)!
@@ -436,10 +762,23 @@ const KNOWLEDGE_BOOK_DATA = {
 • ✨ Мастер — 2000 TC + 1000 BPM
 • ⭐ Великий — 4000 TC + 2000 BPM
 • 🔥 Верховный — 10000 TC + 5000 BPM
-• 👑 Архимаг — 20000 TC + 12500 BPM`
+• 👑 Архимаг — 20000 TC + 12500 BPM`,
+                    content_en: `<b>League rewards:</b>
+
+When reaching a new league you receive a reward (once per season)!
+
+• 🔰 Adept — 100 TC + 50 BPM
+• 📘 Apprentice — 300 TC + 125 BPM
+• 📗 Journeyman — 600 TC + 250 BPM
+• 🔮 Skilled — 1000 TC + 500 BPM
+• ✨ Master — 2000 TC + 1000 BPM
+• ⭐ Grand — 4000 TC + 2000 BPM
+• 🔥 Supreme — 10000 TC + 5000 BPM
+• 👑 Archmage — 20000 TC + 12500 BPM`
                 },
                 {
                     title: 'Реферальная программа',
+                    title_en: 'Referral Program',
                     content: `<b>Пригласи друга!</b>
 
 <b>Награды за приглашение:</b>
@@ -450,7 +789,18 @@ const KNOWLEDGE_BOOK_DATA = {
 💎 +10% от BPM очков друга при его покупках — навсегда!
 
 <b>Как пригласить:</b>
-Airdrop → Пригласить друга → Скопировать ссылку`
+Airdrop → Пригласить друга → Скопировать ссылку`,
+                    content_en: `<b>Invite a friend!</b>
+
+<b>Referral rewards:</b>
+• 🎁 You get: 1 day TC + 200 BPM
+• 🎁 Friend gets: 1 day TC + 200 BPM
+
+<b>Purchase bonus:</b>
+💎 +10% of friend's BPM from their purchases — forever!
+
+<b>How to invite:</b>
+Airdrop → Invite friend → Copy link`
                 }
             ]
         },
@@ -458,9 +808,11 @@ Airdrop → Пригласить друга → Скопировать ссыл�
             id: 'airdrop',
             icon: '💎',
             title: 'Airdrop',
+            title_en: 'Airdrop',
             articles: [
                 {
                     title: 'Что такое Airdrop?',
+                    title_en: 'What is Airdrop?',
                     content: `<b>BPM Coin Airdrop</b>
 
 Играй и зарабатывай BPM очки, которые будут конвертированы в токены при запуске!
@@ -469,10 +821,20 @@ Airdrop → Пригласить друга → Скопировать ссыл�
 • 🎮 Побеждай в боях
 • 📅 Заходи каждый день
 • 👛 Подключи TON кошелёк
-• 👥 Приглашай друзей`
+• 👥 Приглашай друзей`,
+                    content_en: `<b>BPM Coin Airdrop</b>
+
+Play and earn BPM points that will be converted to tokens at launch!
+
+<b>How to earn:</b>
+• 🎮 Win battles
+• 📅 Log in daily
+• 👛 Connect TON wallet
+• 👥 Invite friends`
                 },
                 {
                     title: 'TON Кошелёк',
+                    title_en: 'TON Wallet',
                     content: `<b>Подключение кошелька:</b>
 
 1. Открой раздел Airdrop
@@ -481,7 +843,16 @@ Airdrop → Пригласить друга → Скопировать ссыл�
 4. Подтверди подключение
 
 <b>Бонус:</b>
-За подключение кошелька ты получишь BPM очки!`
+За подключение кошелька ты получишь BPM очки!`,
+                    content_en: `<b>Connecting wallet:</b>
+
+1. Open the Airdrop section
+2. Press "Connect wallet"
+3. Choose Tonkeeper, MyTonWallet or other
+4. Confirm connection
+
+<b>Bonus:</b>
+You'll get BPM points for connecting a wallet!`
                 }
             ]
         },
@@ -489,9 +860,11 @@ Airdrop → Пригласить друга → Скопировать ссыл�
             id: 'factions',
             icon: '⚜️',
             title: 'Фракции',
+            title_en: 'Factions',
             articles: [
                 {
                     title: '🔥 Огонь',
+                    title_en: '🔥 Fire',
                     content: `<b>Фракция Огня</b>
 
 <b>Бонус фракции:</b>
@@ -499,10 +872,19 @@ Airdrop → Пригласить друга → Скопировать ссыл�
 Горение: 10% от макс. HP (до 100) на 3 хода.
 
 <b>Изучение:</b>
-📚 Заклинания огня изучаются на 15% быстрее`
+📚 Заклинания огня изучаются на 15% быстрее`,
+                    content_en: `<b>Fire Faction</b>
+
+<b>Faction bonus:</b>
+Fire attacks have 10% chance to ignite enemy.
+Burn: 10% of max HP (up to 100) for 3 turns.
+
+<b>Learning:</b>
+📚 Fire spells are learned 15% faster`
                 },
                 {
                     title: '💧 Вода',
+                    title_en: '💧 Water',
                     content: `<b>Фракция Воды</b>
 
 <b>Бонус фракции:</b>
@@ -510,10 +892,19 @@ Airdrop → Пригласить друга → Скопировать ссыл�
 5 ур: 15% шанс заморозить (-20% урона)
 
 <b>Изучение:</b>
-📚 Заклинания воды изучаются на 15% быстрее`
+📚 Заклинания воды изучаются на 15% быстрее`,
+                    content_en: `<b>Water Faction</b>
+
+<b>Faction bonus:</b>
+Lvl 1-4: 15% chance to chill enemy (-15% damage)
+Lvl 5: 15% chance to freeze (-20% damage)
+
+<b>Learning:</b>
+📚 Water spells are learned 15% faster`
                 },
                 {
                     title: '💨 Ветер',
+                    title_en: '💨 Wind',
                     content: `<b>Фракция Ветра</b>
 
 <b>Бонус фракции:</b>
@@ -521,10 +912,19 @@ Airdrop → Пригласить друга → Скопировать ссыл�
 Удар молнии пробивает любую защиту.
 
 <b>Изучение:</b>
-📚 Заклинания ветра изучаются на 15% быстрее`
+📚 Заклинания ветра изучаются на 15% быстрее`,
+                    content_en: `<b>Wind Faction</b>
+
+<b>Faction bonus:</b>
+Wind attacks have 5% chance for double damage.
+Lightning strike pierces any defense.
+
+<b>Learning:</b>
+📚 Wind spells are learned 15% faster`
                 },
                 {
                     title: '🪨 Земля',
+                    title_en: '🪨 Earth',
                     content: `<b>Фракция Земли</b>
 
 <b>Бонус фракции:</b>
@@ -532,20 +932,37 @@ Airdrop → Пригласить друга → Скопировать ссыл�
 Удар камня пробивает защиту.
 
 <b>Изучение:</b>
-📚 Заклинания земли изучаются на 15% быстрее`
+📚 Заклинания земли изучаются на 15% быстрее`,
+                    content_en: `<b>Earth Faction</b>
+
+<b>Faction bonus:</b>
+Earth attacks have 10% chance to ignore 20% armor.
+Stone strike pierces defense.
+
+<b>Learning:</b>
+📚 Earth spells are learned 15% faster`
                 },
                 {
                     title: '🌱 Природа',
+                    title_en: '🌱 Nature',
                     content: `<b>Фракция Природы</b>
 
 <b>Бонус фракции:</b>
 После заклинания 5% шанс исцелить союзника на 5% HP.
 
 <b>Изучение:</b>
-📚 Заклинания природы изучаются на 15% быстрее`
+📚 Заклинания природы изучаются на 15% быстрее`,
+                    content_en: `<b>Nature Faction</b>
+
+<b>Faction bonus:</b>
+After casting, 5% chance to heal an ally for 5% HP.
+
+<b>Learning:</b>
+📚 Nature spells are learned 15% faster`
                 },
                 {
                     title: '☠️ Яд',
+                    title_en: '☠️ Poison',
                     content: `<b>Фракция Яда</b>
 
 <b>Бонус фракции:</b>
@@ -553,7 +970,15 @@ Airdrop → Пригласить друга → Скопировать ссыл�
 Каждый стак: 5 урона в начале хода.
 
 <b>Изучение:</b>
-📚 Заклинания яда изучаются на 15% быстрее`
+📚 Заклинания яда изучаются на 15% быстрее`,
+                    content_en: `<b>Poison Faction</b>
+
+<b>Faction bonus:</b>
+When poisoning, 5% chance to apply extra poison stack.
+Each stack: 5 damage at turn start.
+
+<b>Learning:</b>
+📚 Poison spells are learned 15% faster`
                 }
             ]
         },
@@ -561,17 +986,25 @@ Airdrop → Пригласить друга → Скопировать ссыл�
             id: 'faq',
             icon: '❓',
             title: 'FAQ',
+            title_en: 'FAQ',
             articles: [
                 {
                     title: 'Мой прогресс сохраняется?',
+                    title_en: 'Is my progress saved?',
                     content: `<b>Да!</b> Твой прогресс автоматически сохраняется в облаке.
 
 • Прогресс привязан к твоему Telegram аккаунту
 • Можешь играть с любого устройства
-• Данные синхронизируются автоматически`
+• Данные синхронизируются автоматически`,
+                    content_en: `<b>Yes!</b> Your progress is automatically saved in the cloud.
+
+• Progress is linked to your Telegram account
+• You can play from any device
+• Data syncs automatically`
                 },
                 {
                     title: 'Как сменить фракцию?',
+                    title_en: 'How to change faction?',
                     content: `<b>Смена фракции:</b>
 
 • Первая смена бесплатна
@@ -579,20 +1012,37 @@ Airdrop → Пригласить друга → Скопировать ссыл�
 • Твои маги и заклинания сохраняются
 
 <b>Как:</b>
-Открой Магазин → Смена фракции`
+Открой Магазин → Смена фракции`,
+                    content_en: `<b>Changing faction:</b>
+
+• First change is free
+• Further changes cost Stars ⭐
+• Your wizards and spells are kept
+
+<b>How:</b>
+Open Shop → Change faction`
                 },
                 {
                     title: 'Почему я проигрываю?',
+                    title_en: 'Why am I losing?',
                     content: `<b>Советы по улучшению:</b>
 
 • 📈 Прокачивай магов в боях
 • ✨ Улучшай заклинания в Библиотеке
 • 🧙 Нанимай новых магов
 • ⚔️ Экспериментируй с формацией
-• 🎯 Используй комбо заклинаний`
+• 🎯 Используй комбо заклинаний`,
+                    content_en: `<b>Tips for improvement:</b>
+
+• 📈 Level up wizards in battles
+• ✨ Upgrade spells in the Library
+• 🧙 Hire new wizards
+• ⚔️ Experiment with formation
+• 🎯 Use spell combos`
                 },
                 {
                     title: 'Игра зависла, что делать?',
+                    title_en: 'Game frozen, what to do?',
                     content: `<b>Решение проблем:</b>
 
 1. Обнови страницу (потяни вниз)
@@ -600,17 +1050,33 @@ Airdrop → Пригласить друга → Скопировать ссыл�
 3. Проверь интернет-соединение
 
 <b>Важно:</b>
-Твой прогресс сохраняется автоматически, ничего не потеряется!`
+Твой прогресс сохраняется автоматически, ничего не потеряется!`,
+                    content_en: `<b>Troubleshooting:</b>
+
+1. Refresh the page (pull down)
+2. Close and reopen the game
+3. Check your internet connection
+
+<b>Important:</b>
+Your progress is saved automatically, nothing will be lost!`
                 },
                 {
                     title: 'Как получить больше магов?',
+                    title_en: 'How to get more wizards?',
                     content: `<b>Получение магов:</b>
 
 • 🏛️ Нанимай в Башне мага за Time Currency
 • 🎁 Стартовый маг при выборе фракции
 
 <b>Совет:</b>
-Улучшай Башню мага чтобы нанимать больше магов!`
+Улучшай Башню мага чтобы нанимать больше магов!`,
+                    content_en: `<b>Getting wizards:</b>
+
+• 🏛️ Hire at the Wizard Tower for Time Currency
+• 🎁 Starter wizard when choosing faction
+
+<b>Tip:</b>
+Upgrade the Wizard Tower to hire more wizards!`
                 }
             ]
         }
@@ -622,6 +1088,17 @@ Airdrop → Пригласить друга → Скопировать ссыл�
  */
 let currentCategory = null;
 let currentArticle = null;
+
+/**
+ * Получить локализованное поле из объекта (title/title_en, content/content_en)
+ */
+function kbLocalize(obj, field) {
+    const lang = typeof getLang === 'function' ? getLang() : (window.LANG || 'ru');
+    if (lang === 'en' && obj[field + '_en']) {
+        return obj[field + '_en'];
+    }
+    return obj[field];
+}
 
 /**
  * Показать модалку Книги Знаний
@@ -682,7 +1159,7 @@ function showKnowledgeBookModal() {
                 color: #ffd700;
                 font-size: 20px;
                 text-shadow: 0 0 10px rgba(255,215,0,0.5);
-            ">📖 Книга Знаний</h2>
+            ">${t('kb_title')}</h2>
             <button id="kb-close-btn" style="
                 background: rgba(255,100,100,0.2);
                 border: 1px solid rgba(255,100,100,0.5);
@@ -724,12 +1201,13 @@ function showCategories() {
     const title = document.getElementById('kb-title');
     const backBtn = document.getElementById('kb-back-btn');
 
-    title.textContent = '📖 Книга Знаний';
+    title.textContent = t('kb_title');
     backBtn.style.display = 'none';
 
     let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
 
     KNOWLEDGE_BOOK_DATA.categories.forEach(category => {
+        const catTitle = kbLocalize(category, 'title');
         html += `
             <div class="kb-category-item" data-category="${category.id}" style="
                 background: linear-gradient(145deg, rgba(50,50,80,0.8), rgba(30,30,50,0.8));
@@ -744,8 +1222,8 @@ function showCategories() {
             ">
                 <span style="font-size: 32px;">${category.icon}</span>
                 <div>
-                    <div style="color: #fff; font-size: 18px; font-weight: bold;">${category.title}</div>
-                    <div style="color: #888; font-size: 14px;">${category.articles.length} статей</div>
+                    <div style="color: #fff; font-size: 18px; font-weight: bold;">${catTitle}</div>
+                    <div style="color: #888; font-size: 14px;">${category.articles.length} ${t('common_articles')}</div>
                 </div>
                 <span style="margin-left: auto; color: #ffd700; font-size: 20px;">›</span>
             </div>
@@ -787,12 +1265,13 @@ function showCategoryArticles(categoryId) {
     const title = document.getElementById('kb-title');
     const backBtn = document.getElementById('kb-back-btn');
 
-    title.textContent = `${category.icon} ${category.title}`;
+    title.textContent = `${category.icon} ${kbLocalize(category, 'title')}`;
     backBtn.style.display = 'block';
 
     let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
 
     category.articles.forEach((article, index) => {
+        const artTitle = kbLocalize(article, 'title');
         html += `
             <div class="kb-article-item" data-index="${index}" style="
                 background: rgba(40,40,60,0.8);
@@ -802,7 +1281,7 @@ function showCategoryArticles(categoryId) {
                 cursor: pointer;
                 transition: all 0.3s;
             ">
-                <div style="color: #fff; font-size: 16px;">${article.title}</div>
+                <div style="color: #fff; font-size: 16px;">${artTitle}</div>
             </div>
         `;
     });
@@ -839,10 +1318,10 @@ function showArticle(category, articleIndex) {
     const content = document.getElementById('knowledge-book-content');
     const title = document.getElementById('kb-title');
 
-    title.textContent = article.title;
+    title.textContent = kbLocalize(article, 'title');
 
     // Форматируем контент (заменяем переносы строк на <br>)
-    const formattedContent = article.content
+    const formattedContent = kbLocalize(article, 'content')
         .replace(/\n/g, '<br>')
         .replace(/<b>/g, '<span style="color: #ffd700; font-weight: bold;">')
         .replace(/<\/b>/g, '</span>');
