@@ -802,6 +802,46 @@ function setupAirdropUI() {
                     ">Начать</button>
                 `}
             </div>
+            <!-- Star Industry -->
+            <div id="star-industry-reward" style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background: rgba(250, 204, 21, 0.1);
+                border: 1px solid rgba(250, 204, 21, 0.3);
+                border-radius: 8px;
+                padding: 10px;
+                margin-top: 8px;
+            ">
+                <div style="flex: 1;">
+                    <div style="font-size: ${baseFontSize}px; color: #fff;">
+                        ⭐ Star Industry | Play & Claim Your Share of $4,000
+                    </div>
+                    <div style="font-size: ${smallFontSize}px; color: #facc15; margin-top: 4px;">
+                        +100 BPM + ⏰ 2 часа
+                    </div>
+                </div>
+                ${window.userData?.completed_tasks?.star_industry ? `
+                    <div style="
+                        padding: 8px 16px;
+                        background: #333;
+                        border-radius: 8px;
+                        color: #888;
+                        font-size: ${smallFontSize}px;
+                    ">✓ Получено</div>
+                ` : `
+                    <button onclick="window.openStarIndustry()" style="
+                        padding: 8px 16px;
+                        background: linear-gradient(135deg, #facc15, #ca8a04);
+                        border: none;
+                        border-radius: 8px;
+                        color: #000;
+                        font-size: ${smallFontSize}px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    ">Играть</button>
+                `}
+            </div>
         </div>
 
         <!-- Как заработать -->
@@ -1267,6 +1307,11 @@ function openTinlake() {
     setTimeout(() => claimTaskReward('tinlake', 'Tinlake'), 2000);
 }
 
+function openStarIndustry() {
+    window.open('https://t.me/starindustry_bot/game?startapp=viABSUSk', '_blank');
+    setTimeout(() => claimTaskReward('star_industry', 'Star Industry'), 2000);
+}
+
 /**
  * Проверить выполнение Creaky Tasks и выдать награду
  * @param {boolean} completed - выполнено ли задание
@@ -1500,7 +1545,8 @@ function updateTaskButton(taskKey) {
         'quadroyal': 'quadroyal-reward',
         'betmode_luck': 'betmode-luck-reward',
         'gift_kombat': 'gift-kombat-reward',
-        'tinlake': 'tinlake-reward'
+        'tinlake': 'tinlake-reward',
+        'star_industry': 'star-industry-reward'
     };
     const taskDiv = document.getElementById(idMap[taskKey]);
     if (!taskDiv) return;
@@ -1524,6 +1570,7 @@ window.openCreakyTasks = openCreakyTasks;
 window.openQuadRoyal = openQuadRoyal;
 window.openBetmodeLuck = openBetmodeLuck;
 window.openTinlake = openTinlake;
+window.openStarIndustry = openStarIndustry;
 window.openMoneyMining = openMoneyMining;
 window.openPandaFit = openPandaFit;
 window.openGiftKombat = openGiftKombat;
