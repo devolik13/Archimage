@@ -38,7 +38,7 @@ const EVENT_BOSS_CONFIG = {
     spriteSheet: "spawn_of_darkness", // assets/sprites/event_boss/spawn_of_darkness.webp
 
     // Множитель урона босса
-    damageMultiplier: 2.0,
+    damageMultiplier: 1.0,
 
     // Иммунитет к стакам яда (яд не накладывается на босса)
     poisonImmune: true,
