@@ -206,8 +206,23 @@ async function showArenaFormation() {
             const name = prompt('Название пресета:', `Пресет ${count + 1}`);
             if (!name || !name.trim()) return;
 
+            // Сохраняем формацию + заклинания каждого мага
+            const wizardSpells = {};
+            const allWizards = window.userData.wizards || [];
+            currentFormation.forEach(wizId => {
+                if (wizId) {
+                    const wiz = allWizards.find(w => w.id === wizId);
+                    if (wiz) {
+                        wizardSpells[wizId] = [...(wiz.spells || [])];
+                    }
+                }
+            });
+
             const trimmedName = name.trim().substring(0, 20);
-            currentPresets[trimmedName] = [...currentFormation];
+            currentPresets[trimmedName] = {
+                formation: [...currentFormation],
+                spells: wizardSpells
+            };
             window.userData.formation_presets = currentPresets;
 
             if (window.dbManager) {
@@ -222,12 +237,26 @@ async function showArenaFormation() {
             const preset = currentPresets[presetName];
             if (!preset) return;
 
+            // Поддержка старого формата (просто массив) и нового ({ formation, spells })
+            const presetFormation = Array.isArray(preset) ? preset : preset.formation;
+            const presetSpells = Array.isArray(preset) ? null : (preset.spells || null);
+
             // Проверяем что маги из пресета всё ещё существуют у игрока
-            const wizardIds = (window.userData.wizards || []).map(w => w.id);
-            const validFormation = preset.map(id => {
+            const allWizards = window.userData.wizards || [];
+            const wizardIds = allWizards.map(w => w.id);
+            const validFormation = presetFormation.map(id => {
                 if (id && wizardIds.includes(id)) return id;
                 return null;
             });
+
+            // Восстанавливаем заклинания магов
+            if (presetSpells) {
+                allWizards.forEach(wiz => {
+                    if (presetSpells[wiz.id]) {
+                        wiz.spells = [...presetSpells[wiz.id]];
+                    }
+                });
+            }
 
             window.userData.formation = [...validFormation];
             window.arenaSelectedWizardId = null;
@@ -392,7 +421,8 @@ async function showArenaFormation() {
         const presetEntries = Object.entries(presets);
         if (presetEntries.length > 0) {
             presetsHTML = presetEntries.map(([name, preset]) => {
-                const filledCount = preset.filter(id => id !== null).length;
+                const presetFormation = Array.isArray(preset) ? preset : (preset.formation || []);
+                const filledCount = presetFormation.filter(id => id !== null).length;
                 return `
                     <div style="
                         display: flex;
