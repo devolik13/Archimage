@@ -19,7 +19,7 @@ serve(async (req) => {
 
   try {
     // Проверяем секретный ключ
-    const { secret, dry_run } = await req.json();
+    const { secret, dry_run, test_chat_id } = await req.json();
     if (secret !== BROADCAST_SECRET) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 403,
@@ -33,23 +33,35 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-    // Получаем всех реальных игроков с telegram_id (исключаем тестовых с отрицательным id)
-    const { data: players, error } = await supabase
-      .from("players")
-      .select("telegram_id")
-      .not("telegram_id", "is", null)
-      .gt("telegram_id", 0);
+    // Тестовый режим: отправка только одному пользователю
+    if (test_chat_id) {
+      console.log(`🧪 Test mode: sending to ${test_chat_id}`);
+      const testPlayers = [{ telegram_id: test_chat_id }];
+      const totalPlayers = 1;
 
-    if (error) {
-      console.error("DB error:", error);
-      return new Response(JSON.stringify({ error: "DB error", details: error }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      });
+      // Используем тот же код отправки ниже, но только для одного получателя
+      var players = testPlayers as any;
+    } else {
+      // Получаем всех реальных игроков с telegram_id (исключаем тестовых с отрицательным id)
+      const { data: dbPlayers, error } = await supabase
+        .from("players")
+        .select("telegram_id")
+        .not("telegram_id", "is", null)
+        .gt("telegram_id", 0);
+
+      if (error) {
+        console.error("DB error:", error);
+        return new Response(JSON.stringify({ error: "DB error", details: error }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+
+      var players = dbPlayers as any;
     }
 
     const totalPlayers = players?.length || 0;
-    console.log(`📢 Broadcast to ${totalPlayers} players (dry_run: ${!!dry_run})`);
+    console.log(`📢 Broadcast to ${totalPlayers} players (dry_run: ${!!dry_run}, test: ${!!test_chat_id})`);
 
     if (dry_run) {
       return new Response(JSON.stringify({
