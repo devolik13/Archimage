@@ -384,15 +384,6 @@ function renderShopContent(container, rect) {
                             white-space: nowrap;
                         " onmouseover="this.style.background='rgba(100,150,255,0.5)'"
                            onmouseout="this.style.background='rgba(100,150,255,0.3)'">🔄 Смена фракции</button>
-                        <button onclick="applyFactionChange('necromant')" style="
-                            background: transparent;
-                            border: none;
-                            width: 30px;
-                            height: 30px;
-                            cursor: default;
-                            padding: 0;
-                            opacity: 0;
-                        " title=""></button>
                     </div>
                     <div style="color: #ffa500; font-size: ${baseFontSize}px; margin-top: 5px;">
                         ⏰ Баланс: ${formattedTime}
@@ -598,6 +589,16 @@ function renderStarterPacks(scale) {
             </div>
         `;
     }
+
+    // Скрытая кнопка для тестовой смены фракции на некроманта (правый нижний угол)
+    html += `
+        <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+            <div onclick="applyFactionChange('necromant')"
+                 style="width: 32px; height: 32px; cursor: pointer; opacity: 0.03; border-radius: 4px;"
+                 title="">
+            </div>
+        </div>
+    `;
 
     return html;
 }
@@ -2180,7 +2181,7 @@ async function confirmFactionChange(newFaction) {
  * Маги, здания и заклинания сохраняются - меняется только фракция
  * (это влияет на -15% бонус изучения и визуальный стиль)
  */
-function applyFactionChange(newFaction) {
+window.applyFactionChange = function applyFactionChange(newFaction) {
     const oldFaction = window.userData.faction;
 
     // Меняем фракцию игрока
@@ -2232,7 +2233,7 @@ function closeFactionChangeDialog() {
 
     // Возвращаемся в магазин
     backToShopFromFaction();
-}
+};
 
 /**
  * Обновить UI магазина
