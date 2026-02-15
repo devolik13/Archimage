@@ -291,7 +291,9 @@ function initializeWizardHealth() {
     wizardsInFormation.forEach(wizard => {
         // Используем original_max_hp как истинную базу (если есть)
         // Это значение устанавливается при создании мага и не включает бонусы
-        const trueBaseHp = wizard.original_max_hp || wizard.max_hp || 100;
+        // Защита: если original_max_hp раздуто множителями — сбрасываем к 100
+        if (wizard.original_max_hp && wizard.original_max_hp > 100) wizard.original_max_hp = 100;
+        const trueBaseHp = wizard.original_max_hp || 100;
         const trueBaseArmor = wizard.original_max_armor || wizard.max_armor || 100;
 
         // Сохраняем/обновляем оригинальные значения
@@ -470,6 +472,8 @@ function initializeWizardHealth() {
     // То же самое для врагов
     window.enemyWizards.forEach(wizard => {
         // Используем original_max_hp как истинную базу (если есть)
+        // Защита: если original_max_hp раздуто множителями — сбрасываем к 100
+        if (wizard.original_max_hp && wizard.original_max_hp > 100) wizard.original_max_hp = 100;
         const trueBaseHp = wizard.original_max_hp || wizard.max_hp || 100;
         const trueBaseArmor = wizard.original_max_armor || wizard.max_armor || 100;
 
@@ -1734,7 +1738,25 @@ async function checkBattleEnd() {
         // ИСПРАВЛЕНО: Сохраняем опыт магов через Supabase вместо localhost
         if (window.userData && window.playerWizards) {
             if (!isPvEBattle) {
-                // Для PvP сохраняем всё
+                // Для PvP: восстанавливаем HP магов к базовым значениям (без боевых множителей)
+                // чтобы бонусы башни/гильдии/благословений не сохранялись в раздутом виде
+                window.playerWizards.forEach(wizard => {
+                    const baseHP = wizard.original_max_hp || 100;
+                    // Пересчитываем max_hp только с бонусом уровня (без башни/гильдии/благословений)
+                    let hpBonus = 1.0;
+                    if (wizard.level === 40) {
+                        hpBonus = 3.0;
+                    } else if (wizard.level > 1) {
+                        hpBonus = 1 + (wizard.level - 1) * 0.05;
+                    }
+                    const correctMaxHp = Math.floor(baseHP * hpBonus);
+                    // Сохраняем соотношение текущего HP к максимальному
+                    const hpRatio = wizard.max_hp > 0 ? wizard.hp / wizard.max_hp : 1;
+                    wizard.max_hp = correctMaxHp;
+                    wizard.hp = Math.floor(correctMaxHp * hpRatio);
+                    // Гарантируем что original_max_hp = 100 (истинная база)
+                    wizard.original_max_hp = baseHP;
+                });
                 window.userData.wizards = window.playerWizards;
             } else {
                 // Для PvE сохраняем ТОЛЬКО опыт и уровень, но не HP и эффекты
