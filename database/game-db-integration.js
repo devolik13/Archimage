@@ -163,6 +163,9 @@ async function initGameWithDatabase() {
     // Выполненные задания (airdrop)
     window.userData.completed_tasks = player.completed_tasks || {};
 
+    // Пресеты формаций (до 3 сохранённых расстановок)
+    window.userData.formation_presets = player.formation_presets || {};
+
     // КРИТИЧНО: Проверяем есть ли фракция
     if (!player.faction || player.faction === null) {
         // Новый игрок - показываем выбор фракции
