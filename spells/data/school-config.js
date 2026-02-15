@@ -121,6 +121,7 @@ function getSchoolDescription(schoolId) {
     return SCHOOL_CONFIG[schoolId]?.description || '';
 }
 
+
 function getSchoolEmoji(schoolId) {
     return SCHOOL_CONFIG[schoolId]?.emoji || "❓";
 }

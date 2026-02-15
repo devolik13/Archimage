@@ -530,6 +530,7 @@ function getSpellName(spellId) {
     return SPELL_FULL_DATA[spellId]?.name || spellId;
 }
 
+
 // Функция получения иконки заклинания
 function getSpellIcon(spellId) {
     return SPELL_FULL_DATA[spellId]?.icon || "❓";

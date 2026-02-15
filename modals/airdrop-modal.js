@@ -372,7 +372,7 @@ function setupAirdropUI() {
             font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
             text-align: center;
-        ">${t('airdrop_title')}</div>
+        ">🪂 AIRDROP</div>
     `;
     overlay.appendChild(headerContainer);
 
@@ -394,7 +394,7 @@ function setupAirdropUI() {
     // Форматируем адрес кошелька
     const walletDisplay = walletAddress
         ? `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`
-        : t('airdrop_not_connected');
+        : 'Не подключен';
     const walletStatusColor = walletAddress ? '#4ade80' : '#888';
 
     contentContainer.innerHTML = `
@@ -423,10 +423,10 @@ function setupAirdropUI() {
             cursor: pointer;
             transition: all 0.2s;
         " onmouseover="this.style.background='linear-gradient(135deg, rgba(255,215,0,0.3) 0%, rgba(255,165,0,0.2) 100%)'" onmouseout="this.style.background='linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,165,0,0.1) 100%)'">
-            <div style="font-size: ${smallFontSize}px; color: #aaa; margin-bottom: 5px;">${t('airdrop_your_bpm')}</div>
+            <div style="font-size: ${smallFontSize}px; color: #aaa; margin-bottom: 5px;">Твои BPM coin 🪙</div>
             <div id="airdrop-points-value" style="font-size: ${bigFontSize}px; color: #ffd700; font-weight: bold;">${airdropPoints.toLocaleString()} <span style="font-size: ${baseFontSize}px;">BPM</span></div>
             <div style="font-size: ${smallFontSize}px; color: #888; margin-top: 5px;">
-                ${t('airdrop_tap_details')}
+                📊 Нажми для детализации
             </div>
         </div>
 
@@ -440,7 +440,7 @@ function setupAirdropUI() {
         ">
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <div>
-                    <div style="font-size: ${smallFontSize}px; color: #aaa;">${t('airdrop_wallet_ton')}</div>
+                    <div style="font-size: ${smallFontSize}px; color: #aaa;">👛 Кошелек TON</div>
                     <div style="font-size: ${baseFontSize}px; color: ${walletStatusColor}; font-weight: bold; margin-top: 4px;">
                         ${walletDisplay}
                     </div>
@@ -454,7 +454,7 @@ function setupAirdropUI() {
                     font-size: ${smallFontSize}px;
                     cursor: pointer;
                     font-weight: bold;
-                ">${walletAddress ? t('airdrop_disconnect') : t('airdrop_connect')}</button>
+                ">${walletAddress ? 'Отключить' : 'Подключить'}</button>
             </div>
         </div>
 
@@ -467,7 +467,7 @@ function setupAirdropUI() {
             margin-bottom: 12px;
         ">
             <div style="font-size: ${baseFontSize}px; color: #4ade80; font-weight: bold; margin-bottom: 10px;">
-                ${t('airdrop_tasks')}
+                🎯 Задания
             </div>
             <div id="group-reward-task" style="
                 display: flex;
@@ -481,10 +481,10 @@ function setupAirdropUI() {
             ">
                 <div style="flex: 1;">
                     <div style="font-size: ${baseFontSize}px; color: #fff;">
-                        ${t('airdrop_join_group')}
+                        👥 Вступить в группу
                     </div>
                     <div style="font-size: ${smallFontSize}px; color: #4ade80; margin-top: 4px;">
-                        ${t('airdrop_join_reward')}
+                        +500 BPM + ⏰ 2 дня
                     </div>
                 </div>
                 ${window.userData?.group_reward_claimed ? `
@@ -494,7 +494,7 @@ function setupAirdropUI() {
                         border-radius: 8px;
                         color: #888;
                         font-size: ${smallFontSize}px;
-                    ">${t('airdrop_claimed')}</div>
+                    ">✓ Получено</div>
                 ` : `
                     <button onclick="window.checkGroupSubscription()" style="
                         padding: 8px 16px;
@@ -505,7 +505,7 @@ function setupAirdropUI() {
                         font-size: ${smallFontSize}px;
                         font-weight: bold;
                         cursor: pointer;
-                    ">${t('airdrop_check_btn')}</button>
+                    ">Проверить</button>
                 `}
             </div>
             <!-- Creaky Tasks -->
@@ -520,10 +520,10 @@ function setupAirdropUI() {
             ">
                 <div style="flex: 1;">
                     <div style="font-size: ${baseFontSize}px; color: #fff;">
-                        ${t('airdrop_creaky_tasks')}
+                        📋 Creaky Tasks | Выполнить 3 любых задания
                     </div>
                     <div style="font-size: ${smallFontSize}px; color: #60a5fa; margin-top: 4px;">
-                        ${t('airdrop_task_reward_100')}
+                        +100 BPM + ⏰ 2 часа
                     </div>
                 </div>
                 ${window.userData?.completed_tasks?.creaky_tasks ? `
@@ -533,7 +533,7 @@ function setupAirdropUI() {
                         border-radius: 8px;
                         color: #888;
                         font-size: ${smallFontSize}px;
-                    ">${t('airdrop_claimed')}</div>
+                    ">✓ Получено</div>
                 ` : `
                     <button onclick="window.openCreakyTasks()" style="
                         padding: 8px 16px;
@@ -544,7 +544,7 @@ function setupAirdropUI() {
                         font-size: ${smallFontSize}px;
                         font-weight: bold;
                         cursor: pointer;
-                    ">${t('airdrop_creaky_btn')}</button>
+                    ">Выполнить</button>
                 `}
             </div>
             <!-- Money Mining -->
@@ -560,10 +560,10 @@ function setupAirdropUI() {
             ">
                 <div style="flex: 1;">
                     <div style="font-size: ${baseFontSize}px; color: #fff;">
-                        ${t('airdrop_money_mining')}
+                        ⛏️ Присоединяйся к игре Money Mining
                     </div>
                     <div style="font-size: ${smallFontSize}px; color: #facc15; margin-top: 4px;">
-                        ${t('airdrop_task_reward_100')}
+                        +100 BPM + ⏰ 2 часа
                     </div>
                 </div>
                 ${window.userData?.completed_tasks?.money_mining ? `
@@ -573,7 +573,7 @@ function setupAirdropUI() {
                         border-radius: 8px;
                         color: #888;
                         font-size: ${smallFontSize}px;
-                    ">${t('airdrop_claimed')}</div>
+                    ">✓ Получено</div>
                 ` : `
                     <button onclick="window.openMoneyMining()" style="
                         padding: 8px 16px;
@@ -584,7 +584,7 @@ function setupAirdropUI() {
                         font-size: ${smallFontSize}px;
                         font-weight: bold;
                         cursor: pointer;
-                    ">${t('airdrop_play')}</button>
+                    ">Играть</button>
                 `}
             </div>
             <!-- PandaFiT -->
@@ -600,10 +600,10 @@ function setupAirdropUI() {
             ">
                 <div style="flex: 1;">
                     <div style="font-size: ${baseFontSize}px; color: #fff;">
-                        ${t('airdrop_pandafit')}
+                        🐼 PandaFiT: прокачай панду до 5 lvl и забирай награду
                     </div>
                     <div style="font-size: ${smallFontSize}px; color: #4ade80; margin-top: 4px;">
-                        ${t('airdrop_task_reward_100')}
+                        +100 BPM + ⏰ 2 часа
                     </div>
                 </div>
                 ${window.userData?.completed_tasks?.pandafit ? `
@@ -613,7 +613,7 @@ function setupAirdropUI() {
                         border-radius: 8px;
                         color: #888;
                         font-size: ${smallFontSize}px;
-                    ">${t('airdrop_claimed')}</div>
+                    ">✓ Получено</div>
                 ` : `
                     <button onclick="window.openPandaFit()" style="
                         padding: 8px 16px;
@@ -624,7 +624,7 @@ function setupAirdropUI() {
                         font-size: ${smallFontSize}px;
                         font-weight: bold;
                         cursor: pointer;
-                    ">${t('airdrop_play')}</button>
+                    ">Играть</button>
                 `}
             </div>
             <!-- QuadRoyal -->
@@ -643,7 +643,7 @@ function setupAirdropUI() {
                         🧩 Play QuadRoyal: Competitive Puzzle
                     </div>
                     <div style="font-size: ${smallFontSize}px; color: #a855f7; margin-top: 4px;">
-                        ${t('airdrop_task_reward_100')}
+                        +100 BPM + ⏰ 2 часа
                     </div>
                 </div>
                 ${window.userData?.completed_tasks?.quadroyal ? `
@@ -653,7 +653,7 @@ function setupAirdropUI() {
                         border-radius: 8px;
                         color: #888;
                         font-size: ${smallFontSize}px;
-                    ">${t('airdrop_claimed')}</div>
+                    ">✓ Получено</div>
                 ` : `
                     <button onclick="window.openQuadRoyal()" style="
                         padding: 8px 16px;
@@ -664,7 +664,7 @@ function setupAirdropUI() {
                         font-size: ${smallFontSize}px;
                         font-weight: bold;
                         cursor: pointer;
-                    ">${t('airdrop_play')}</button>
+                    ">Играть</button>
                 `}
             </div>
             <!-- Betmode Luck -->
@@ -683,7 +683,7 @@ function setupAirdropUI() {
                         🍀 Launch the Betmode Luck game!
                     </div>
                     <div style="font-size: ${smallFontSize}px; color: #fbbf24; margin-top: 4px;">
-                        ${t('airdrop_task_reward_100')}
+                        +100 BPM + ⏰ 2 часа
                     </div>
                 </div>
                 ${window.userData?.completed_tasks?.betmode_luck ? `
@@ -693,7 +693,7 @@ function setupAirdropUI() {
                         border-radius: 8px;
                         color: #888;
                         font-size: ${smallFontSize}px;
-                    ">${t('airdrop_claimed')}</div>
+                    ">✓ Получено</div>
                 ` : `
                     <button onclick="window.openBetmodeLuck()" style="
                         padding: 8px 16px;
@@ -704,7 +704,7 @@ function setupAirdropUI() {
                         font-size: ${smallFontSize}px;
                         font-weight: bold;
                         cursor: pointer;
-                    ">${t('airdrop_play')}</button>
+                    ">Играть</button>
                 `}
             </div>
             <!-- Gift Kombat -->
@@ -720,10 +720,10 @@ function setupAirdropUI() {
             ">
                 <div style="flex: 1;">
                     <div style="font-size: ${baseFontSize}px; color: #fff;">
-                        ${t('airdrop_gift_kombat')}
+                        🥊 Gift Kombat | Получи 2ур. и начни сражение за NFT подарки
                     </div>
                     <div style="font-size: ${smallFontSize}px; color: #ef4444; margin-top: 4px;">
-                        ${t('airdrop_task_reward_100')}
+                        +100 BPM + ⏰ 2 часа
                     </div>
                 </div>
                 ${window.userData?.completed_tasks?.gift_kombat ? `
@@ -733,7 +733,7 @@ function setupAirdropUI() {
                         border-radius: 8px;
                         color: #888;
                         font-size: ${smallFontSize}px;
-                    ">${t('airdrop_claimed')}</div>
+                    ">✓ Получено</div>
                 ` : (() => {
                     let gkOpened = false;
                     try { gkOpened = localStorage.getItem('gift_kombat_opened') === '1'; } catch(e) {}
@@ -747,7 +747,7 @@ function setupAirdropUI() {
                         font-size: ${smallFontSize}px;
                         font-weight: bold;
                         cursor: pointer;
-                    ">${t('airdrop_check_btn')}</button>
+                    ">Проверить</button>
                 ` : `
                     <button onclick="window.openGiftKombat()" style="
                         padding: 8px 16px;
@@ -758,7 +758,7 @@ function setupAirdropUI() {
                         font-size: ${smallFontSize}px;
                         font-weight: bold;
                         cursor: pointer;
-                    ">${t('airdrop_start')}</button>
+                    ">Начать</button>
                 `;
                 })()}
             </div>
@@ -778,7 +778,7 @@ function setupAirdropUI() {
                         📚 Tinlake | #1 EdTech TMA on Ton
                     </div>
                     <div style="font-size: ${smallFontSize}px; color: #38bdf8; margin-top: 4px;">
-                        ${t('airdrop_task_reward_100')}
+                        +100 BPM + ⏰ 2 часа
                     </div>
                 </div>
                 ${window.userData?.completed_tasks?.tinlake ? `
@@ -788,7 +788,7 @@ function setupAirdropUI() {
                         border-radius: 8px;
                         color: #888;
                         font-size: ${smallFontSize}px;
-                    ">${t('airdrop_claimed')}</div>
+                    ">✓ Получено</div>
                 ` : `
                     <button onclick="window.openTinlake()" style="
                         padding: 8px 16px;
@@ -799,7 +799,7 @@ function setupAirdropUI() {
                         font-size: ${smallFontSize}px;
                         font-weight: bold;
                         cursor: pointer;
-                    ">${t('airdrop_start')}</button>
+                    ">Начать</button>
                 `}
             </div>
             <!-- Star Industry -->
@@ -818,7 +818,7 @@ function setupAirdropUI() {
                         ⭐ Star Industry | Play & Claim Your Share of $4,000
                     </div>
                     <div style="font-size: ${smallFontSize}px; color: #facc15; margin-top: 4px;">
-                        ${t('airdrop_task_reward_100')}
+                        +100 BPM + ⏰ 2 часа
                     </div>
                 </div>
                 ${window.userData?.completed_tasks?.star_industry ? `
@@ -828,7 +828,7 @@ function setupAirdropUI() {
                         border-radius: 8px;
                         color: #888;
                         font-size: ${smallFontSize}px;
-                    ">${t('airdrop_claimed')}</div>
+                    ">✓ Получено</div>
                 ` : `
                     <button onclick="window.openStarIndustry()" style="
                         padding: 8px 16px;
@@ -839,7 +839,7 @@ function setupAirdropUI() {
                         font-size: ${smallFontSize}px;
                         font-weight: bold;
                         cursor: pointer;
-                    ">${t('airdrop_play')}</button>
+                    ">Играть</button>
                 `}
             </div>
         </div>
@@ -853,35 +853,35 @@ function setupAirdropUI() {
             margin-bottom: 12px;
         ">
             <div style="font-size: ${baseFontSize}px; color: #ffd700; font-weight: bold; margin-bottom: 10px;">
-                ${t('airdrop_how_to_earn')}
+                📈 Как заработать BPM coin
             </div>
             <div style="display: flex; flex-direction: column; gap: 6px;">
                 <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">${t('airdrop_earn_pvp')}</span>
+                    <span style="color: #ccc;">⚔️ Победа в PvP</span>
                     <span style="color: #4ade80;">+10</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">${t('airdrop_earn_daily')}</span>
+                    <span style="color: #ccc;">📅 Ежедневный вход</span>
                     <span style="color: #4ade80;">+20</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">${t('airdrop_earn_spell')}</span>
+                    <span style="color: #ccc;">📚 Изучение заклинания</span>
                     <span style="color: #4ade80;">+100</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">${t('airdrop_earn_invite')}</span>
+                    <span style="color: #ccc;">👥 Приглашение друга</span>
                     <span style="color: #4ade80;">+200</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">${t('airdrop_earn_building')}</span>
+                    <span style="color: #ccc;">🏰 Постройка/улучшение здания</span>
                     <span style="color: #4ade80;">+100</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">${t('airdrop_earn_pve')}</span>
+                    <span style="color: #ccc;">🎯 Прохождение главы PvE</span>
                     <span style="color: #4ade80;">+500</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
-                    <span style="color: #ccc;">${t('airdrop_earn_streak')}</span>
+                    <span style="color: #ccc;">🔥 Streak 7/30/100 дней</span>
                     <span style="color: #4ade80;">+100/500/1000</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: ${smallFontSize}px;">
@@ -899,10 +899,10 @@ function setupAirdropUI() {
             padding: 12px;
         ">
             <div style="font-size: ${baseFontSize}px; color: #ffd700; font-weight: bold; margin-bottom: 10px;">
-                ${t('airdrop_top_players')}
+                🏆 Топ игроков
             </div>
             <div id="airdrop-leaderboard" style="display: flex; flex-direction: column; gap: 4px; font-size: ${smallFontSize}px; color: #888;">
-                ${t('airdrop_loading')}
+                Загрузка...
             </div>
         </div>
     `;
@@ -926,7 +926,7 @@ function setupAirdropUI() {
 
     // Кнопка "Назад"
     const closeBtn = document.createElement('button');
-    closeBtn.textContent = t('airdrop_back');
+    closeBtn.textContent = '← Назад';
     closeBtn.style.cssText = `
         padding: 10px 25px;
         background: rgba(0, 0, 0, 0.6);
@@ -950,7 +950,7 @@ function setupAirdropUI() {
 
     // Кнопка "Пригласить друга"
     const referralBtn = document.createElement('button');
-    referralBtn.textContent = t('airdrop_invite');
+    referralBtn.textContent = '🎁 Пригласить';
     referralBtn.style.cssText = `
         padding: 10px 20px;
         background: linear-gradient(135deg, #4ade80, #22c55e);
@@ -980,7 +980,7 @@ function setupAirdropUI() {
 
     // Кнопка "Новости"
     const newsBtn = document.createElement('button');
-    newsBtn.textContent = t('airdrop_news');
+    newsBtn.textContent = '📢 Новости';
     newsBtn.style.cssText = `
         padding: 10px 20px;
         background: linear-gradient(135deg, #60a5fa, #3b82f6);
@@ -1059,7 +1059,7 @@ async function connectWallet() {
         console.error('❌ TON Connect не удалось инициализировать');
         console.error('❌ window.TON_CONNECT_UI:', window.TON_CONNECT_UI);
         if (window.showNotification) {
-            window.showNotification(t('notif_wallet_error'));
+            window.showNotification('❌ Кошелёк недоступен. Попробуйте обновить страницу.');
         }
         return;
     }
@@ -1087,7 +1087,7 @@ async function connectWallet() {
         console.error('❌ Ошибка подключения кошелька:', error);
         console.error('❌ Stack:', error.stack);
         if (window.showNotification) {
-            window.showNotification(t('notif_connect_error') + ': ' + error.message);
+            window.showNotification('❌ Ошибка подключения: ' + error.message);
         }
     }
 }
@@ -1122,7 +1122,7 @@ async function disconnectWallet() {
     } catch (error) {
         console.error('❌ Ошибка отключения кошелька:', error);
         if (window.showNotification) {
-            window.showNotification(t('notif_disconnect_error'));
+            window.showNotification('❌ Ошибка отключения кошелька');
         }
     }
 }
@@ -1195,7 +1195,7 @@ async function checkGroupSubscription() {
     const telegramId = window.dbManager?.getTelegramId?.() || window.userData?.user_id;
 
     if (!telegramId) {
-        window.showNotification?.(t('notif_user_error'));
+        window.showNotification?.('❌ Ошибка: не удалось определить пользователя');
         return;
     }
 
@@ -1203,7 +1203,7 @@ async function checkGroupSubscription() {
     window.open('https://t.me/archimage_chat', '_blank');
 
     // Показываем уведомление
-    window.showNotification?.(t('notif_join_group_first'));
+    window.showNotification?.('👥 Вступите в группу и нажмите "Проверить" снова');
 
     // Делаем запрос на проверку через 2 секунды
     setTimeout(async () => {
@@ -1235,7 +1235,7 @@ async function checkGroupSubscription() {
                 }
                 window.userData.airdrop_breakdown['Вступление в группу'] = result.reward.bpm_points;
 
-                window.showNotification?.(`${t('notif_reward_received_bpm_days')} +${result.reward.bpm_points} BPM + ⏰ 2 ${t('common_days')}`);
+                window.showNotification?.(`🎉 Награда получена! +${result.reward.bpm_points} BPM + ⏰ 2 дня`);
 
                 // Обновляем UI кнопки без перезагрузки всей модалки
                 updateGroupTaskButton();
@@ -1248,15 +1248,15 @@ async function checkGroupSubscription() {
             } else if (result.error === 'already_claimed') {
                 window.userData.group_reward_claimed = true;
                 updateGroupTaskButton();
-                window.showNotification?.(t('notif_already_claimed_before'));
+                window.showNotification?.('✓ Награда уже получена ранее');
             } else if (result.error === 'not_subscribed') {
-                window.showNotification?.(t('notif_not_subscribed'));
+                window.showNotification?.('❌ Вы не подписаны на группу. Вступите и попробуйте снова.');
             } else {
-                window.showNotification?.(t('notif_check_error'));
+                window.showNotification?.('❌ Ошибка проверки. Попробуйте позже.');
             }
         } catch (error) {
             console.error('Error checking group subscription:', error);
-            window.showNotification?.(t('notif_network_error'));
+            window.showNotification?.('❌ Ошибка сети. Попробуйте позже.');
         }
     }, 2000);
 }
@@ -1279,7 +1279,7 @@ function updateGroupTaskButton() {
                 border-radius: 8px;
                 color: #888;
                 font-size: 12px;
-            ">${t('airdrop_claimed')}</div>
+            ">✓ Получено</div>
         `;
     }
 }
@@ -1320,7 +1320,7 @@ async function claimCreakyTasksReward(completed = true) {
     if (!completed) return;
 
     if (window.userData?.completed_tasks?.creaky_tasks) {
-        window.showNotification?.(t('notif_reward_already_claimed'));
+        window.showNotification?.('✓ Награда уже получена');
         return;
     }
 
@@ -1361,7 +1361,7 @@ async function claimCreakyTasksReward(completed = true) {
         await window.dbManager.savePlayer(window.userData);
     }
 
-    window.showNotification?.(`${t('notif_reward_received')} +${bpmReward} BPM + ⏰ 2 ${t('common_hours')}`);
+    window.showNotification?.(`🎉 Награда получена! +${bpmReward} BPM + ⏰ 2 часа`);
 
     // Обновляем UI
     updateCreakyTasksButton();
@@ -1388,7 +1388,7 @@ function updateCreakyTasksButton() {
                 border-radius: 8px;
                 color: #888;
                 font-size: 12px;
-            ">${t('airdrop_claimed')}</div>
+            ">✓ Получено</div>
         `;
     }
 }
@@ -1423,13 +1423,13 @@ function openGiftKombat() {
     if (taskDiv) {
         const btn = taskDiv.querySelector('button');
         if (btn) {
-            btn.textContent = t('airdrop_check_btn');
+            btn.textContent = 'Проверить';
             btn.setAttribute('onclick', 'window.checkGiftKombat()');
             btn.style.background = 'linear-gradient(135deg, #f97316, #ea580c)';
         }
     }
 
-    window.showNotification?.(t('notif_gift_kombat_hint'));
+    window.showNotification?.('🥊 Получи 2 уровень в Gift Kombat и нажми "Проверить"');
 }
 
 /**
@@ -1437,13 +1437,13 @@ function openGiftKombat() {
  */
 async function checkGiftKombat() {
     if (window.userData?.completed_tasks?.gift_kombat) {
-        window.showNotification?.(t('notif_reward_already_claimed'));
+        window.showNotification?.('✓ Награда уже получена');
         return;
     }
 
     const telegramId = window.dbManager?.getTelegramId?.() || window.userData?.user_id;
     if (!telegramId) {
-        window.showNotification?.(t('notif_user_error'));
+        window.showNotification?.('❌ Ошибка: не удалось определить пользователя');
         return;
     }
 
@@ -1452,7 +1452,7 @@ async function checkGiftKombat() {
     const btn = taskDiv?.querySelector('button');
     if (btn) {
         btn.disabled = true;
-        btn.textContent = t('airdrop_checking');
+        btn.textContent = 'Проверка...';
     }
 
     try {
@@ -1463,20 +1463,20 @@ async function checkGiftKombat() {
 
         if (data && (data.exists === true || data.success === true || data === true)) {
             await claimTaskReward('gift_kombat', 'Gift Kombat');
-            window.showNotification?.(t('notif_gift_kombat_done'));
+            window.showNotification?.('🎉 Gift Kombat задание выполнено!');
         } else {
-            window.showNotification?.(t('notif_char_not_found'));
+            window.showNotification?.('❌ Персонаж 2 уровня не найден. Продолжай играть!');
             if (btn) {
                 btn.disabled = false;
-                btn.textContent = t('airdrop_check_btn');
+                btn.textContent = 'Проверить';
             }
         }
     } catch (err) {
         console.error('Gift Kombat API error:', err);
-        window.showNotification?.(t('notif_check_failed'));
+        window.showNotification?.('⚠️ Не удалось проверить. Попробуй позже');
         if (btn) {
             btn.disabled = false;
-            btn.textContent = t('airdrop_check_btn');
+            btn.textContent = 'Проверить';
         }
     }
 }
@@ -1524,7 +1524,7 @@ async function claimTaskReward(taskKey, taskName) {
         }
     }
 
-    window.showNotification?.(`${t('notif_reward_received')} +${bpmReward} BPM + ⏰ 2 ${t('common_hours')}`);
+    window.showNotification?.(`🎉 Награда получена! +${bpmReward} BPM + ⏰ 2 часа`);
 
     updateTaskButton(taskKey);
     updateAirdropPointsDisplay();
@@ -1560,7 +1560,7 @@ function updateTaskButton(taskKey) {
                 border-radius: 8px;
                 color: #888;
                 font-size: 12px;
-            ">${t('airdrop_claimed')}</div>
+            ">✓ Получено</div>
         `;
     }
 }
