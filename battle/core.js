@@ -336,6 +336,13 @@ function initializeWizardHealth() {
             wizard.hp = wizard.max_hp;
         }
 
+        // Очищаем runtime-эффекты прошлого боя (защита от стакания между боями)
+        delete wizard.damageMultiplier;
+        delete wizard.buffs;
+        delete wizard.effects;
+        delete wizard.spellDamageMultiplier;
+        delete wizard.armorBonus;
+
         // И ТОЛЬКО ПОТОМ применяем бонус от Башни магов
         let healthMultiplier = 1.0;
         if (typeof window.applyWizardTowerHealthBonus === 'function') {
@@ -1756,6 +1763,12 @@ async function checkBattleEnd() {
                     wizard.hp = Math.floor(correctMaxHp * hpRatio);
                     // Гарантируем что original_max_hp = 100 (истинная база)
                     wizard.original_max_hp = baseHP;
+                    // Очищаем боевые эффекты чтобы не стакались между боями
+                    delete wizard.damageMultiplier;
+                    delete wizard.buffs;
+                    delete wizard.effects;
+                    delete wizard.spellDamageMultiplier;
+                    delete wizard.armorBonus;
                 });
                 window.userData.wizards = window.playerWizards;
             } else {
