@@ -106,9 +106,10 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
     if (hpPercent < 25) hpColor = '#f44336';
 
     const isDefeated = boss.status === 'defeated' || boss.current_hp <= 0;
+    const displayMaxHp = manager.getDisplayMaxHp();
     const statusText = isDefeated
         ? 'ПОБЕЖДЕН!'
-        : `${manager.formatDamage(boss.current_hp)} / ${manager.formatDamage(boss.max_hp)}`;
+        : `${manager.formatDamage(boss.current_hp)} / ${manager.formatDamage(displayMaxHp)}`;
 
     // Статистика игрока
     const pDamage = playerStats?.total_damage || 0;
@@ -714,8 +715,9 @@ async function showEventBossResult(battleResult, hpDamage) {
     const finishingBlow = serverResult?.finishing_blow || false;
     const bossNewHp = serverResult?.boss_new_hp;
     const bossMaxHp = serverResult?.boss_max_hp;
+    const displayMaxHp = manager?.getDisplayMaxHp() || bossMaxHp;
     const playerTotalDamage = serverResult?.player_total_damage || damageDealt;
-    const hpPercent = bossMaxHp ? ((bossNewHp / bossMaxHp) * 100) : 0;
+    const hpPercent = displayMaxHp ? Math.min(100, (bossNewHp / displayMaxHp) * 100) : 0;
 
     // === Награды раздаются автоматически через серверный триггер (migration 054) ===
     // Триггер distribute_event_boss_rewards срабатывает при status='defeated'

@@ -600,12 +600,24 @@ class EventBossManager {
     }
 
     /**
-     * Процент HP босса
+     * Визуальный максимум HP (из конфига), чтобы игроки видели оригинальное значение
+     */
+    getDisplayMaxHp() {
+        const configMax = window.EVENT_BOSS_CONFIG?.totalHp;
+        const realMax = this.currentBoss?.max_hp || 0;
+        // Показываем конфиг-значение если оно есть и меньше реального
+        return (configMax && configMax < realMax) ? configMax : realMax;
+    }
+
+    /**
+     * Процент HP босса (на основе визуального максимума)
      */
     getHpPercent() {
         if (!this.currentBoss) return 0;
+        const displayMax = this.getDisplayMaxHp();
+        if (displayMax <= 0) return 0;
         return Math.max(0, Math.min(100,
-            (this.currentBoss.current_hp / this.currentBoss.max_hp) * 100
+            (this.currentBoss.current_hp / displayMax) * 100
         ));
     }
 }
