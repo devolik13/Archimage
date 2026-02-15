@@ -159,7 +159,7 @@ function setupLibraryClickableZones() {
         color: #7289da;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
     `;
-    backBtn.textContent = t('common_back');
+    backBtn.textContent = 'Назад';
     backBtn.addEventListener('click', closeLibrary);
     backBtn.addEventListener('touchend', (e) => { e.preventDefault(); closeLibrary(); });
     zonesContainer.appendChild(backBtn);
@@ -336,7 +336,7 @@ function setupSpellsScreen(faction) {
     );
     
     if (spellIds.length === 0) {
-        overlay.innerHTML = '<div style="color: white; text-align: center;">' + t('lib_no_spell_data') + '</div>';
+        overlay.innerHTML = '<div style="color: white; text-align: center;">Нет данных о заклинаниях</div>';
         return;
     }
     
@@ -403,7 +403,8 @@ function setupSpellsScreen(faction) {
         let buttonHTML = '';
         
         if (isLearning) {
-            status = t('lib_learning');
+            // ИЗУЧАЕТСЯ
+            status = '📖 Изучается...';
             const constructionIndex = constructions.indexOf(activeSpellLearning);
             buttonHTML = `
                 <button
@@ -423,10 +424,12 @@ function setupSpellsScreen(faction) {
                 >⏱️ ${window.formatTimeCurrency ? window.formatTimeCurrency(activeSpellLearning.time_remaining) : activeSpellLearning.time_remaining}</button>
             `;
         } else if (tierIndex > activeIndex && !isLastMaxLevel) {
-            status = t('lib_locked');
-            buttonHTML = '<div style="font-size: ' + (fontSize * 0.7) + 'px; color: #777; margin-top: 3px;">' + t('lib_locked_req') + '</div>';
+            // ЗАБЛОКИРОВАНО - не достигнут 5 уровень предыдущего
+            status = '🔒 Заблокировано';
+            buttonHTML = '<div style="font-size: ' + (fontSize * 0.7) + 'px; color: #777; margin-top: 3px;">Треб. Ур.5 предыдущего</div>';
         } else if (spell.level === 0 && isActive) {
-            status = t('lib_not_learned');
+            // НЕ ИЗУЧЕНО (активное)
+            status = '🔒 Не изучено';
             const learnTime = window.SPELL_LEARNING_TIME?.getLearnTime ?
                 window.SPELL_LEARNING_TIME.getLearnTime(tierIndex + 1, 0, faction) : 144;
             buttonHTML = `
@@ -444,10 +447,11 @@ function setupSpellsScreen(faction) {
                         width: 85%;
                     "
                     onclick="console.log('🔵 Клик Изучить:', '${spellId}', '${faction}'); showSpellInfoModal('${spellId}', '${faction}', ${spell.level || 0}, 'learn')"
-                >${t('lib_learn')} (${window.formatTimeCurrency ? window.formatTimeCurrency(learnTime) : learnTime})</button>
+                >Изучить (${window.formatTimeCurrency ? window.formatTimeCurrency(learnTime) : learnTime})</button>
             `;
         } else if (spell.level > 0 && spell.level < 5 && isActive) {
-            status = `${t('lib_lvl')}${spell.level}/5`;
+            // УЛУЧШИТЬ (активное)
+            status = `Ур.${spell.level}/5`;
             const upgradeTime = window.SPELL_LEARNING_TIME?.getLearnTime ?
                 window.SPELL_LEARNING_TIME.getLearnTime(tierIndex + 1, spell.level, faction) : 144;
             buttonHTML = `
@@ -465,16 +469,19 @@ function setupSpellsScreen(faction) {
                         width: 85%;
                     "
                     onclick="console.log('🟠 Клик Улучшить:', '${spellId}', ${spell.level + 1}, '${faction}'); showSpellInfoModal('${spellId}', '${faction}', ${spell.level}, 'upgrade')"
-                >${t('lib_upgrade_spell')} (${window.formatTimeCurrency ? window.formatTimeCurrency(upgradeTime) : upgradeTime})</button>
+                >Улучшить (${window.formatTimeCurrency ? window.formatTimeCurrency(upgradeTime) : upgradeTime})</button>
             `;
         } else if (spell.level === 5) {
-            status = t('lib_max_level');
+            // МАКСИМАЛЬНЫЙ УРОВЕНЬ
+            status = '✅ Макс. Ур.5';
             buttonHTML = '';
         } else if (spell.level > 0) {
-            status = `${t('lib_lvl')}${spell.level}/5`;
+            // ИЗУЧЕНО но неактивное
+            status = `Ур.${spell.level}/5`;
             buttonHTML = '';
         } else {
-            status = t('lib_unavailable');
+            // НЕДОСТУПНО
+            status = '🔒 Недоступно';
             buttonHTML = '';
         }
 
@@ -495,7 +502,7 @@ function setupSpellsScreen(faction) {
                     width: 85%;
                 "
                 onclick="event.stopPropagation(); showSpellDescriptionModal('${spellId}', '${faction}')"
-            >${t('lib_description')}</button>
+            >📋 Описание</button>
         ` : '';
         
         const spellDiv = document.createElement('div');
@@ -516,7 +523,7 @@ function setupSpellsScreen(faction) {
         
         spellDiv.innerHTML = `
             <div style="text-align: center; color: white; font-size: ${fontSize}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); line-height: 1.1; width: 100%;">
-                <div style="font-weight: bold; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${typeof window.t === 'function' ? window.t('spell_' + spellId + '_name', spell.name) : spell.name}</div>
+                <div style="font-weight: bold; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${spell.name}</div>
                 <div style="font-size: ${fontSize * 0.85}px; color: #aaa; margin-bottom: 2px;">${status}</div>
                 ${buttonHTML}
                 ${infoButtonHTML}
@@ -547,7 +554,7 @@ function setupSpellsScreen(faction) {
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
     `;
 
-    backDiv.textContent = t('common_back');
+    backDiv.textContent = 'Назад';
 
     // DEV: Подсветка кликабельной зоны
     if (window.DEV_MODE) {
@@ -619,8 +626,8 @@ function renderLibrary() {
 
 // ========== МОДАЛЬНОЕ ОКНО С ИНФОРМАЦИЕЙ О ЗАКЛИНАНИИ ==========
 function showSpellInfoModal(spellId, faction, currentLevel, action) {
-    // Получаем полную информацию о заклинании (с локализацией)
-    const spellData = typeof window.getSpellFullData === 'function' ? window.getSpellFullData(spellId) : window.SPELL_FULL_DATA?.[spellId];
+    // Получаем полную информацию о заклинании
+    const spellData = window.SPELL_FULL_DATA?.[spellId];
     if (!spellData) {
         console.error('Данные заклинания не найдены:', spellId);
         // Fallback - вызываем старую функцию
@@ -689,7 +696,7 @@ function showSpellInfoModal(spellId, faction, currentLevel, action) {
                 ${spellData.name}
             </h2>
             <div style="color: #aaa; font-size: 14px; margin-top: 5px;">
-                ${t('lib_school')}: ${window.getFactionName ? window.getFactionName(faction) : faction} • ${t('lib_tier')} ${tier}
+                Школа: ${window.getFactionName ? window.getFactionName(faction) : faction} • Тир ${tier}
             </div>
         </div>
 
@@ -701,21 +708,21 @@ function showSpellInfoModal(spellId, faction, currentLevel, action) {
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
             <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; text-align: center;">
-                <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">${t('lib_type')}</div>
-                <div style="color: #fff; font-weight: bold;">${spellData.type === 'single_target' ? t('lib_type_single') : spellData.type === 'aoe' ? t('lib_type_aoe') : t('lib_type_multi')}</div>
+                <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">Тип</div>
+                <div style="color: #fff; font-weight: bold;">${spellData.type === 'single_target' ? 'Одна цель' : spellData.type === 'aoe' ? 'Область' : 'Несколько целей'}</div>
             </div>
 
             <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; text-align: center;">
-                <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">${t('lib_base_damage')}</div>
+                <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">Базовый урон</div>
                 <div style="color: #ffa500; font-weight: bold; font-size: 18px;">${spellData.base_damage}💥</div>
             </div>
         </div>
 
         ${action === 'upgrade' && currentLevel > 0 ? `
             <div style="background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <div style="color: #ffa500; font-size: 13px; font-weight: bold; margin-bottom: 8px;">${t('lib_on_upgrade')}</div>
+                <div style="color: #ffa500; font-size: 13px; font-weight: bold; margin-bottom: 8px;">📈 При улучшении:</div>
                 <div style="color: #fff; font-size: 14px;">
-                    ${t('lib_damage_label')}: ${currentDamage}💥 → ${nextDamage}💥 (+${nextDamage - currentDamage})
+                    Урон: ${currentDamage}💥 → ${nextDamage}💥 (+${nextDamage - currentDamage})
                 </div>
             </div>
         ` : ''}
@@ -732,7 +739,7 @@ function showSpellInfoModal(spellId, faction, currentLevel, action) {
                 font-weight: bold;
                 cursor: pointer;
                 transition: all 0.2s;
-            ">${t('common_cancel')}</button>
+            ">Отмена</button>
 
             <button id="spell-confirm-btn" style="
                 flex: 2;
@@ -745,7 +752,7 @@ function showSpellInfoModal(spellId, faction, currentLevel, action) {
                 font-weight: bold;
                 cursor: pointer;
                 transition: all 0.2s;
-            ">${action === 'learn' ? t('lib_learn_btn') : t('lib_upgrade_btn')} (${window.formatTimeCurrency ? window.formatTimeCurrency(learnTime) : learnTime})</button>
+            ">${action === 'learn' ? '📖 Изучить' : '⬆️ Улучшить'} (${window.formatTimeCurrency ? window.formatTimeCurrency(learnTime) : learnTime})</button>
         </div>
     `;
 
@@ -779,7 +786,7 @@ function showSpellInfoModal(spellId, faction, currentLevel, action) {
 
 // ========== МОДАЛЬНОЕ ОКНО ОПИСАНИЯ ЗАКЛИНАНИЯ ==========
 function showSpellDescriptionModal(spellId, faction) {
-    const spellData = typeof window.getSpellFullData === 'function' ? window.getSpellFullData(spellId) : window.SPELL_FULL_DATA?.[spellId];
+    const spellData = window.SPELL_FULL_DATA?.[spellId];
     if (!spellData) {
         console.error('Данные заклинания не найдены:', spellId);
         return;
@@ -836,9 +843,9 @@ function showSpellDescriptionModal(spellId, faction) {
 
     // Определяем тип заклинания на русском
     const spellTypes = {
-        'single_target': t('lib_type_single_icon'),
-        'multi_target': t('lib_type_multi_icon'),
-        'aoe': t('lib_type_aoe_icon')
+        'single_target': '🎯 Одна цель',
+        'multi_target': '🎯🎯 Несколько целей',
+        'aoe': '💥 Область'
     };
     const typeText = spellTypes[spellData.type] || spellData.type;
 
@@ -847,7 +854,7 @@ function showSpellDescriptionModal(spellId, faction) {
     if (damageByLevel.some(d => d > 0)) {
         damageTableHTML = `
             <div style="margin-top: 15px;">
-                <div style="color: #ffa500; font-weight: bold; margin-bottom: 10px; font-size: 14px;">${t('lib_damage_by_level')}</div>
+                <div style="color: #ffa500; font-weight: bold; margin-bottom: 10px; font-size: 14px;">⚔️ Урон по уровням:</div>
                 <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px;">
                     ${[1, 2, 3, 4, 5].map(lvl => {
                         const isCurrentLevel = lvl === currentLevel;
@@ -860,7 +867,7 @@ function showSpellDescriptionModal(spellId, faction) {
                                 padding: 8px 4px;
                                 text-align: center;
                             ">
-                                <div style="color: #888; font-size: 11px;">${t('lib_lvl')}${lvl}</div>
+                                <div style="color: #888; font-size: 11px;">Ур.${lvl}</div>
                                 <div style="color: ${isLearned ? '#fff' : '#666'}; font-weight: bold; font-size: 16px;">
                                     ${damageByLevel[lvl - 1]}💥
                                 </div>
@@ -877,7 +884,7 @@ function showSpellDescriptionModal(spellId, faction) {
     if (spellData.effects) {
         effectsHTML = `
             <div style="margin-top: 15px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px;">
-                <div style="color: #9b59b6; font-weight: bold; margin-bottom: 8px; font-size: 14px;">${t('lib_effects')}</div>
+                <div style="color: #9b59b6; font-weight: bold; margin-bottom: 8px; font-size: 14px;">✨ Эффекты:</div>
                 <div style="color: #ccc; font-size: 13px; line-height: 1.5;">
                     ${spellData.effects}
                 </div>
@@ -901,15 +908,15 @@ function showSpellDescriptionModal(spellId, faction) {
                 ${spellData.name}
             </h2>
             <div style="color: #888; font-size: 13px; margin-top: 5px;">
-                ${factionName} • ${t('lib_tier')} ${tier} • ${typeText}
+                ${factionName} • Тир ${tier} • ${typeText}
             </div>
             ${currentLevel > 0 ? `
                 <div style="margin-top: 8px; display: inline-block; background: rgba(74, 222, 128, 0.2); border: 1px solid #4ade80; padding: 4px 12px; border-radius: 12px; color: #4ade80; font-size: 12px;">
-                    ✓ ${t('lib_learned_status')}: ${t('common_level')} ${currentLevel}/5
+                    ✓ Изучено: Уровень ${currentLevel}/5
                 </div>
             ` : `
                 <div style="margin-top: 8px; display: inline-block; background: rgba(255, 107, 107, 0.2); border: 1px solid #ff6b6b; padding: 4px 12px; border-radius: 12px; color: #ff6b6b; font-size: 12px;">
-                    ${t('lib_not_learned_short')}
+                    ✗ Не изучено
                 </div>
             `}
         </div>
@@ -935,7 +942,7 @@ function showSpellDescriptionModal(spellId, faction) {
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
-        ">${t('common_close')}</button>
+        ">Закрыть</button>
     `;
 
     overlay.appendChild(modal);
