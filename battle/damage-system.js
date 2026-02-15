@@ -827,8 +827,8 @@ function applyAoeDamageToSummons(caster, baseDamage, spellId, casterType) {
 
         let damage = baseDamage;
 
-        // Фракционный бонус некроманта для Костяного Дракона (-10% кроме Света)
-        if (summon.type === 'bone_dragon') {
+        // Фракционный бонус некроманта для призванных существ (-10% кроме Света)
+        if (summon.type === 'bone_dragon' || summon.type === 'necromant_skeleton') {
             const school = typeof window.getSpellSchool === 'function' ? window.getSpellSchool(spellId) : null;
             if (school !== 'light') {
                 damage = Math.floor(damage * 0.9);
