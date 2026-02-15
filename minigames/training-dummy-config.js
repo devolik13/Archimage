@@ -749,18 +749,15 @@ function checkAndClaimDamageTierRewards(oldDamage, newDamage, claimedTiers = [])
                     actualReward: tierReward
                 });
 
-                // Начисляем награду
-                if (window.userData) {
+                // Начисляем награду через RPC (корректно работает с lazy time currency)
+                if (typeof window.addTimeCurrency === 'function') {
+                    window.addTimeCurrency(tierReward).catch(err => {
+                        console.error('Ошибка начисления награды за урон:', err);
+                    });
+                } else if (window.userData) {
                     window.userData.time_currency = (window.userData.time_currency || 0) + tierReward;
-                    console.log(`🏆 Награда за урон: ${tier.description} +${tierReward} мин`);
-
-                    // Сохраняем в БД
-                    if (window.dbManager && window.dbManager.savePlayer) {
-                        window.dbManager.savePlayer(window.userData).catch(err => {
-                            console.error('Ошибка сохранения награды:', err);
-                        });
-                    }
                 }
+                console.log(`🏆 Награда за урон: ${tier.description} +${tierReward} мин`);
 
                 // Показываем уведомление
                 showDamageTierRewardNotification(tier, tierReward);
