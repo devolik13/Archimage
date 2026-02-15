@@ -3,14 +3,7 @@
 // === ФУНКЦИИ ДЛЯ ФРАКЦИЙ ===
 
 window.getFactionName = function(faction) {
-    const names = {
-        'fire': 'Огонь',
-        'water': 'Вода',
-        'wind': 'Ветер',
-        'earth': 'Земля',
-        'nature': 'Природа',
-        'poison': 'Яд'
-    };
+    const names = { 'fire': 'Огонь', 'water': 'Вода', 'wind': 'Ветер', 'earth': 'Земля', 'nature': 'Природа', 'poison': 'Яд', 'light': 'Свет', 'dark': 'Тьма', 'necromant': 'Некромантия', 'hybrid': 'Гибрид' };
     return names[faction] || faction;
 };
 

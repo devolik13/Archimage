@@ -126,11 +126,18 @@
         });
         
         function createAnimatedArrow(frames, arrowData, index) {
+            // Проверяем что поле боя ещё существует
+            if (!casterCell || !effectsContainer || effectsContainer.destroyed) {
+                completedArrows++;
+                checkComplete();
+                return;
+            }
+
             // ИСПОЛЬЗУЕМ ТОЧНЫЕ КООРДИНАТЫ из multi-layer-protection
             const targetCol = arrowData.impactCol;
             const targetRow = arrowData.impactRow;
             const targetCell = gridCells[targetCol]?.[targetRow];
-            
+
             if (!targetCell) {
                 console.warn(`⚠️ Не найдена клетка [${targetCol}, ${targetRow}]`);
                 completedArrows++;

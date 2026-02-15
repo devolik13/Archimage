@@ -73,11 +73,8 @@ serve(async (req) => {
       });
     }
 
-    // Текст рассылки — ивент босс "Отродье Тьмы" (обновлённый)
-    const caption = `🔥 Отродье Тьмы уже здесь!\n\nТолько вместе мы сможем его победить!\n\n✨ Архимаг Света пожертвовал собой, чтобы благословить нас на победу!\n\n⚔️ Вступай в бой — каждый удар приближает нас к победе!\n🏆 Награды ждут всех, кто сразится!`;
-
-    // file_id видео — промо ивент босса
-    const videoFileId = "BAACAgIAAxkBAAIrNmmRfZyIt-rkDyQgSk_H2kBgVTfzAAJ7kwACsd2ISBunfOi2pUE6OgQ";
+    // Текст рассылки — технические работы завершены
+    const messageText = `✅ Технические работы завершены!\n\nСпасибо за ваше терпение! 🙏\n\nВ благодарность каждый игрок получает:\n🎁 +7 дней игрового времени ⏰\n\nЗаходите и забирайте свой подарок! 🎮`;
 
     let sent = 0;
     let failed = 0;
@@ -86,16 +83,15 @@ serve(async (req) => {
 
     for (const player of players || []) {
       try {
-        const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendVideo`, {
+        const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             chat_id: player.telegram_id,
-            video: videoFileId,
-            caption,
+            text: messageText,
             reply_markup: {
               inline_keyboard: [
-                [{ text: "🎮 Играть", url: "https://t.me/archimage_bot/app" }],
+                [{ text: "🎁 Забрать подарок", url: "https://t.me/archimage_bot/app" }],
                 [{ text: "👥 Сообщество", url: "https://t.me/archimage_chat" }]
               ]
             }
