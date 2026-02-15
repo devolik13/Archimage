@@ -44,6 +44,32 @@ async function initGameWithDatabase() {
 
     // Игровые данные (JSONB)
     window.userData.wizards = player.wizards || [];
+
+    // Миграция: исправляем раздутое HP у магов (баг со стакающимися боевыми множителями)
+    window.userData.wizards.forEach(wizard => {
+        // Базовое HP мага всегда 100, original_max_hp не может быть > 100
+        if (wizard.original_max_hp && wizard.original_max_hp > 100) {
+            wizard.original_max_hp = 100;
+        }
+        // Вычисляем максимально допустимое HP: база 100 × бонус уровня (макс ×3 на 40 лвл)
+        const level = wizard.level || 1;
+        let maxAllowedHp;
+        if (level === 40) {
+            maxAllowedHp = 300; // 100 × 3.0
+        } else if (level > 1) {
+            maxAllowedHp = Math.floor(100 * (1 + (level - 1) * 0.05));
+        } else {
+            maxAllowedHp = 100;
+        }
+        if (wizard.max_hp > maxAllowedHp) {
+            console.log(`🔧 [HP-FIX] ${wizard.name}: max_hp ${wizard.max_hp} → ${maxAllowedHp}`);
+            wizard.max_hp = maxAllowedHp;
+            wizard.hp = Math.min(wizard.hp, maxAllowedHp);
+        }
+        // Чистим runtime-поля благословений если остались
+        delete wizard.blessingEffects;
+    });
+
     window.userData.formation = player.formation || [null, null, null, null, null];
     window.userData.spells = player.spells || {};
     window.userData.buildings = player.buildings || {};
