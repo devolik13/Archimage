@@ -202,6 +202,17 @@ function applyBlessingEffects(blessing) {
                     if (!wizard.original_max_hp) {
                         wizard.original_max_hp = wizard.max_hp;
                     }
+                    // Защита: original_max_hp не может превышать base(100) * levelBonus
+                    // Ловит случай когда max_hp был раздут боевыми множителями
+                    const _base = 100;
+                    const _level = wizard.level || 1;
+                    let _levelBonus = 1.0;
+                    if (_level === 40) _levelBonus = 3.0;
+                    else if (_level > 1) _levelBonus = 1 + (_level - 1) * 0.05;
+                    const _maxBase = Math.floor(_base * _levelBonus);
+                    if (wizard.original_max_hp > _maxBase) {
+                        wizard.original_max_hp = _maxBase;
+                    }
                     const baseMaxHp = wizard.original_max_hp;
                     wizard.max_hp = Math.floor(baseMaxHp * wizard.blessingEffects.healthMultiplier);
                     // Увеличиваем текущее здоровье пропорционально
@@ -217,27 +228,57 @@ function applyBlessingEffects(blessing) {
     console.log('🙏 Эффекты благословения применены к магам');
 }
 
-// Очистить остаточные blessingEffects с магов (могут остаться в БД после перезагрузки)
+// Очистить остаточные blessingEffects с магов и нормализовать HP
+// Вызывается при инициализации если благословение неактивно/истекло.
+// ВАЖНО: blessingEffects стрипается при сохранении в БД, поэтому
+// нельзя полагаться ТОЛЬКО на его наличие — нужно также проверять
+// original_max_hp и кэпать max_hp к уровневому максимуму.
 function cleanupResidualBlessingEffects() {
     if (!window.userData?.wizards) return;
     let cleaned = false;
 
     window.userData.wizards.forEach(wizard => {
+        // Случай 1: blessingEffects ещё в памяти (не сохранялись)
         if (wizard.blessingEffects) {
-            // Восстанавливаем HP если было увеличено
             if (wizard.original_max_hp) {
                 const currentRatio = wizard.max_hp > 0 ? wizard.hp / wizard.max_hp : 1;
                 wizard.max_hp = wizard.original_max_hp;
                 wizard.hp = Math.floor(wizard.original_max_hp * currentRatio);
-                delete wizard.original_max_hp;
             }
             delete wizard.blessingEffects;
+            delete wizard.original_max_hp;
+            cleaned = true;
+        }
+        // Случай 2: blessingEffects стрипнут при сохранении, но original_max_hp остался
+        else if (wizard.original_max_hp) {
+            if (wizard.max_hp > wizard.original_max_hp) {
+                const currentRatio = wizard.max_hp > 0 ? wizard.hp / wizard.max_hp : 1;
+                wizard.max_hp = wizard.original_max_hp;
+                wizard.hp = Math.floor(wizard.original_max_hp * currentRatio);
+            }
+            delete wizard.original_max_hp;
+            cleaned = true;
+        }
+
+        // Защитный кэп: max_hp не может быть больше base(100) * levelBonus
+        // Ловит случаи когда боевые множители (башня/гильдия) утекли в сохранение
+        const base = 100;
+        const level = wizard.level || 1;
+        let levelBonus = 1.0;
+        if (level === 40) levelBonus = 3.0;
+        else if (level > 1) levelBonus = 1 + (level - 1) * 0.05;
+        const maxAllowed = Math.floor(base * levelBonus);
+
+        if (wizard.max_hp > maxAllowed) {
+            const currentRatio = wizard.max_hp > 0 ? wizard.hp / wizard.max_hp : 1;
+            wizard.max_hp = maxAllowed;
+            wizard.hp = Math.max(1, Math.floor(maxAllowed * currentRatio));
             cleaned = true;
         }
     });
 
     if (cleaned) {
-        console.log('🧹 Очищены остаточные blessingEffects с магов');
+        console.log('🧹 Очищены остаточные blessingEffects / нормализован HP магов');
     }
 }
 
@@ -484,6 +525,11 @@ function initBlessingSystem() {
     const activeBlessing = getActiveBlessing();
     const now = Date.now();
 
+    // ВСЕГДА сначала нормализуем HP магов — убираем любой раздутый HP
+    // который мог попасть в БД из-за боевых множителей или старых багов.
+    // cleanupResidualBlessingEffects также кэпает max_hp к уровневому максимуму.
+    cleanupResidualBlessingEffects();
+
     // Если есть активное благословение которое еще не истекло - применяем эффекты
     if (activeBlessing && activeBlessing.expires_at > now) {
         console.log(`🙏 Восстановление активного благословения: ${activeBlessing.name}`);
@@ -494,9 +540,6 @@ function initBlessingSystem() {
             console.log(`🕯️ Благословение истекло оффлайн: ${activeBlessing.name}`);
             window.userData.active_blessing = null;
         }
-
-        // Чистим остаточные blessingEffects на магах (могли остаться в БД)
-        cleanupResidualBlessingEffects();
 
         if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
             window.dbManager.savePlayer(window.userData);
