@@ -127,7 +127,7 @@ function renderNoGuildView(container) {
         <div style="padding: 20px; height: 100%; display: flex; flex-direction: column; pointer-events: auto;">
             <!-- Заголовок -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="margin: 0; color: #ffd700; font-size: 24px;">${t('guild_title')}</h2>
+                <h2 style="margin: 0; color: #ffd700; font-size: 24px;">Гильдия</h2>
                 <button onclick="closeGuildModal()" style="
                     background: rgba(255,255,255,0.1);
                     border: none;
@@ -151,7 +151,7 @@ function renderNoGuildView(container) {
                     font-size: 16px;
                     font-weight: bold;
                     cursor: pointer;
-                ">${t('guild_create_btn')}</button>
+                ">Создать гильдию</button>
                 <button onclick="showSearchGuilds()" style="
                     flex: 1;
                     padding: 15px;
@@ -162,7 +162,7 @@ function renderNoGuildView(container) {
                     font-size: 16px;
                     font-weight: bold;
                     cursor: pointer;
-                ">${t('guild_find_btn')}</button>
+                ">Найти гильдию</button>
             </div>
 
             <!-- Контент -->
@@ -175,8 +175,8 @@ function renderNoGuildView(container) {
             ">
                 <div style="text-align: center; color: #aaa; padding: 50px 20px;">
                     <div style="font-size: 60px; margin-bottom: 20px;">🏰</div>
-                    <p style="font-size: 16px; margin-bottom: 10px;">${t('guild_not_member')}</p>
-                    <p style="font-size: 14px;">${t('guild_create_or_join')}</p>
+                    <p style="font-size: 16px; margin-bottom: 10px;">Вы не состоите в гильдии</p>
+                    <p style="font-size: 14px;">Создайте свою или вступите в существующую</p>
                 </div>
             </div>
         </div>
@@ -190,11 +190,11 @@ function showCreateGuildForm() {
 
     content.innerHTML = `
         <div style="max-width: 400px; margin: 0 auto;">
-            <h3 style="color: #ffd700; margin-bottom: 20px; text-align: center;">${t('guild_create_form_title')}</h3>
+            <h3 style="color: #ffd700; margin-bottom: 20px; text-align: center;">Создание гильдии</h3>
 
             <div style="margin-bottom: 15px;">
-                <label style="color: #aaa; display: block; margin-bottom: 5px;">${t('guild_name_label')}</label>
-                <input type="text" id="guild-name-input" maxlength="50" placeholder="${t('guild_name_placeholder')}" style="
+                <label style="color: #aaa; display: block; margin-bottom: 5px;">Название гильдии</label>
+                <input type="text" id="guild-name-input" maxlength="50" placeholder="Введите название..." style="
                     width: 100%;
                     padding: 12px;
                     border: 2px solid #444;
@@ -204,11 +204,11 @@ function showCreateGuildForm() {
                     font-size: 16px;
                     box-sizing: border-box;
                 ">
-                <small style="color: #666;">${t('guild_name_hint')}</small>
+                <small style="color: #666;">От 3 до 50 символов</small>
             </div>
 
             <div style="margin-bottom: 20px;">
-                <label style="color: #aaa; display: block; margin-bottom: 5px;">${t('guild_tag_label')}</label>
+                <label style="color: #aaa; display: block; margin-bottom: 5px;">Тег гильдии</label>
                 <input type="text" id="guild-tag-input" maxlength="5" placeholder="TAG" style="
                     width: 100%;
                     padding: 12px;
@@ -220,7 +220,7 @@ function showCreateGuildForm() {
                     text-transform: uppercase;
                     box-sizing: border-box;
                 ">
-                <small style="color: #666;">${t('guild_tag_hint')}</small>
+                <small style="color: #666;">От 2 до 5 символов (отображается как [TAG])</small>
             </div>
 
             <div id="create-guild-error" style="color: #ef4444; margin-bottom: 15px; display: none;"></div>
@@ -235,7 +235,7 @@ function showCreateGuildForm() {
                 font-size: 16px;
                 font-weight: bold;
                 cursor: pointer;
-            ">${t('guild_create_submit')}</button>
+            ">Создать</button>
         </div>
     `;
 }
@@ -250,13 +250,13 @@ async function createGuild() {
     const tag = tagInput?.value?.trim();
 
     if (!name || !tag) {
-        errorDiv.textContent = t('guild_fill_all_fields');
+        errorDiv.textContent = 'Заполните все поля';
         errorDiv.style.display = 'block';
         return;
     }
 
     if (!window.guildManager) {
-        errorDiv.textContent = t('guild_system_not_loaded');
+        errorDiv.textContent = 'Система гильдий не загружена';
         errorDiv.style.display = 'block';
         return;
     }
@@ -264,7 +264,7 @@ async function createGuild() {
     const result = await window.guildManager.createGuild(name, tag);
 
     if (result.success) {
-        showNotification(t('guild_created'));
+        showNotification('Гильдия создана!');
         openGuildModal(); // Перезагружаем модалку
     } else {
         errorDiv.textContent = result.error;
@@ -279,10 +279,10 @@ async function showSearchGuilds() {
 
     content.innerHTML = `
         <div style="max-width: 500px; margin: 0 auto;">
-            <h3 style="color: #ffd700; margin-bottom: 20px; text-align: center;">${t('guild_search_title')}</h3>
+            <h3 style="color: #ffd700; margin-bottom: 20px; text-align: center;">Поиск гильдий</h3>
 
             <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                <input type="text" id="guild-search-input" placeholder="${t('guild_search_placeholder')}" style="
+                <input type="text" id="guild-search-input" placeholder="Поиск по названию или тегу..." style="
                     flex: 1;
                     padding: 12px;
                     border: 2px solid #444;
@@ -298,11 +298,11 @@ async function showSearchGuilds() {
                     border-radius: 8px;
                     color: white;
                     cursor: pointer;
-                ">${t('guild_search_find')}</button>
+                ">Найти</button>
             </div>
 
             <div id="guild-search-results" style="max-height: 350px; overflow-y: auto;">
-                <p style="color: #aaa; text-align: center;">${t('guild_search_hint')}</p>
+                <p style="color: #aaa; text-align: center;">Введите запрос для поиска</p>
             </div>
 
             <button onclick="renderNoGuildView(document.getElementById('guild-no-guild-content'))" style="
@@ -315,7 +315,7 @@ async function showSearchGuilds() {
                 color: white;
                 cursor: pointer;
                 font-size: 14px;
-            ">${t('guild_back')}</button>
+            ">← Назад</button>
         </div>
     `;
 
@@ -328,17 +328,17 @@ async function searchGuilds() {
     const results = document.getElementById('guild-search-results');
     const query = input?.value?.trim() || '';
 
-    results.innerHTML = '<p style="color: #aaa; text-align: center;">' + t('guild_loading') + '</p>';
+    results.innerHTML = '<p style="color: #aaa; text-align: center;">Загрузка...</p>';
 
     if (!window.guildManager) {
-        results.innerHTML = '<p style="color: #ef4444; text-align: center;">' + t('guild_system_not_loaded') + '</p>';
+        results.innerHTML = '<p style="color: #ef4444; text-align: center;">Система гильдий не загружена</p>';
         return;
     }
 
     const guilds = await window.guildManager.searchGuilds(query);
 
     if (guilds.length === 0) {
-        results.innerHTML = '<p style="color: #aaa; text-align: center;">' + t('guild_not_found') + '</p>';
+        results.innerHTML = '<p style="color: #aaa; text-align: center;">Гильдии не найдены</p>';
         return;
     }
 
@@ -355,7 +355,7 @@ async function searchGuilds() {
             <div>
                 <div style="color: #ffd700; font-weight: bold;">[${g.tag}] ${g.name}</div>
                 <div style="color: #aaa; font-size: 12px;">
-                    ${t('guild_level')} ${g.level} | ${g.memberCount}/${g.capacity} ${t('guild_members_count')}
+                    Уровень ${g.level} | ${g.memberCount}/${g.capacity} участников
                 </div>
             </div>
             <button onclick="joinGuild(${g.id})" style="
@@ -366,7 +366,7 @@ async function searchGuilds() {
                 color: white;
                 cursor: pointer;
                 font-size: 12px;
-            ">${t('guild_join_btn')}</button>
+            ">Вступить</button>
         </div>
     `).join('');
 }
@@ -399,7 +399,7 @@ function renderGuildView(container) {
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <div>
                     <h2 style="margin: 0; color: #ffd700; font-size: 18px;">[${guild.tag}] ${guild.name}</h2>
-                    <div style="color: #aaa; font-size: 11px;">${t('guild_level')} ${guild.level}</div>
+                    <div style="color: #aaa; font-size: 11px;">Уровень ${guild.level}</div>
                 </div>
                 <button onclick="closeGuildModal()" style="
                     background: rgba(255,255,255,0.1);
@@ -415,7 +415,7 @@ function renderGuildView(container) {
             <!-- Прогресс опыта -->
             <div style="margin-bottom: 8px;">
                 <div style="display: flex; justify-content: space-between; color: #aaa; font-size: 10px; margin-bottom: 2px;">
-                    <span>${t('guild_exp')}</span>
+                    <span>Опыт</span>
                     <span>${guild.experience} / ${expToNext}</span>
                 </div>
                 <div style="background: rgba(0,0,0,0.5); border-radius: 8px; height: 10px; overflow: hidden;">
@@ -428,7 +428,7 @@ function renderGuildView(container) {
                 <button onclick="switchGuildTab('info')" id="tab-info" class="guild-tab active" style="
                     flex: 1; padding: 8px; border: none; border-radius: 6px;
                     background: #3b82f6; color: white; cursor: pointer; font-size: 11px;
-                ">${t('guild_tab_info')}</button>
+                ">Инфо</button>
                 <button onclick="switchGuildTab('top')" id="tab-top" class="guild-tab" style="
                     flex: 1; padding: 8px; border: none; border-radius: 6px;
                     background: rgba(255,255,255,0.1); color: #aaa; cursor: pointer; font-size: 11px;
@@ -436,11 +436,11 @@ function renderGuildView(container) {
                 <button onclick="switchGuildTab('members')" id="tab-members" class="guild-tab" style="
                     flex: 1; padding: 8px; border: none; border-radius: 6px;
                     background: rgba(255,255,255,0.1); color: #aaa; cursor: pointer; font-size: 11px;
-                ">${t('guild_tab_members')}</button>
+                ">Участники</button>
                 <button onclick="switchGuildTab('research')" id="tab-research" class="guild-tab" style="
                     flex: 1; padding: 8px; border: none; border-radius: 6px;
                     background: rgba(255,255,255,0.1); color: #aaa; cursor: pointer; font-size: 11px;
-                ">${t('guild_tab_research')}</button>
+                ">Исслед.</button>
                 <button onclick="switchGuildTab('settings')" id="tab-settings" class="guild-tab" style="
                     padding: 8px 12px; border: none; border-radius: 6px;
                     background: rgba(255,255,255,0.1); color: #aaa; cursor: pointer; font-size: 11px;
@@ -466,7 +466,7 @@ function renderGuildView(container) {
                 color: white;
                 cursor: pointer;
                 font-size: 13px;
-            ">${t('guild_back')}</button>
+            ">← Назад</button>
         </div>
     `;
 
@@ -507,8 +507,8 @@ function renderGuildInfo(container) {
 
     // Природа исключена - у неё нет атакующих заклинаний
     const schoolNames = {
-        fire: t('school_fire_name'), water: t('school_water_name'), earth: t('school_earth_name'), wind: t('school_wind_name'),
-        poison: t('school_poison_name'), light: t('school_light_name'), dark: t('school_dark_name')
+        fire: 'Огонь', water: 'Вода', earth: 'Земля', wind: 'Ветер',
+        poison: 'Яд', light: 'Свет', dark: 'Тьма'
     };
     const schoolEmojis = {
         fire: '🔥', water: '💧', earth: '🪨', wind: '💨',
@@ -516,20 +516,20 @@ function renderGuildInfo(container) {
     };
 
     container.innerHTML = `
-        <h4 style="color: #ffd700; margin: 0 0 15px 0;">${t('guild_bonuses_title')}</h4>
+        <h4 style="color: #ffd700; margin: 0 0 15px 0;">Бонусы гильдии</h4>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
             <div style="background: rgba(74,222,128,0.1); padding: 15px; border-radius: 10px; text-align: center;">
                 <div style="font-size: 24px; color: #4ade80; font-weight: bold;">+${bonuses.hpBonus}%</div>
-                <div style="color: #aaa; font-size: 12px;">${t('guild_hp')}</div>
+                <div style="color: #aaa; font-size: 12px;">Здоровье</div>
             </div>
             <div style="background: rgba(239,68,68,0.1); padding: 15px; border-radius: 10px; text-align: center;">
                 <div style="font-size: 24px; color: #ef4444; font-weight: bold;">+${bonuses.damageBonus}%</div>
-                <div style="color: #aaa; font-size: 12px;">${t('guild_damage')}</div>
+                <div style="color: #aaa; font-size: 12px;">Урон</div>
             </div>
         </div>
 
-        <h4 style="color: #ffd700; margin: 0 0 10px 0;">${t('guild_resistances')}</h4>
+        <h4 style="color: #ffd700; margin: 0 0 10px 0;">Сопротивления</h4>
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px;">
             ${Object.entries(bonuses.resistances).map(([school, res]) => `
                 <div style="background: rgba(255,255,255,0.05); padding: 10px 5px; border-radius: 8px; text-align: center;">
@@ -541,15 +541,15 @@ function renderGuildInfo(container) {
 
         <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
             <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                <span style="color: #aaa;">${t('guild_capacity')}</span>
+                <span style="color: #aaa;">Вместимость</span>
                 <span style="color: white;">${window.guildManager.guildMembers.length} / ${capacity}</span>
             </div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                <span style="color: #aaa;">${t('guild_join_mode')}</span>
-                <span style="color: white;">${guild.join_mode === 'free' ? t('guild_join_mode_free') : t('guild_join_mode_request')}</span>
+                <span style="color: #aaa;">Режим вступления</span>
+                <span style="color: white;">${guild.join_mode === 'free' ? 'Свободный' : 'По заявке'}</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
-                <span style="color: #aaa;">${t('guild_research_points')}</span>
+                <span style="color: #aaa;">Очков исследований</span>
                 <span style="color: #ffd700; font-weight: bold;">${guild.bonus_points}</span>
             </div>
         </div>
@@ -561,7 +561,7 @@ async function renderGuildTop(container) {
     container.innerHTML = `
         <div style="text-align: center; padding: 20px;">
             <div style="font-size: 24px;">⏳</div>
-            <div style="color: #aaa; margin-top: 10px;">${t('guild_loading_rating')}</div>
+            <div style="color: #aaa; margin-top: 10px;">Загрузка рейтинга...</div>
         </div>
     `;
 
@@ -597,7 +597,7 @@ async function renderGuildTop(container) {
         const rankEmojis = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
 
         container.innerHTML = `
-            <h4 style="color: #ffd700; margin: 0 0 15px 0; text-align: center;">${t('guild_top_title')}</h4>
+            <h4 style="color: #ffd700; margin: 0 0 15px 0; text-align: center;">🏆 Топ гильдий</h4>
             <div style="display: flex; flex-direction: column; gap: 8px;">
                 ${topGuilds.map((guild, i) => {
                     const isCurrentGuild = currentGuild && guild.id === currentGuild.id;
@@ -616,16 +616,16 @@ async function renderGuildTop(container) {
                                 <div>
                                     <div style="color: white; font-weight: bold;">
                                         [${guild.tag}] ${guild.name}
-                                        ${isCurrentGuild ? '<span style="color: #3b82f6; font-size: 10px;"> (' + t('guild_yours') + ')</span>' : ''}
+                                        ${isCurrentGuild ? '<span style="color: #3b82f6; font-size: 10px;"> (ваша)</span>' : ''}
                                     </div>
                                     <div style="color: #aaa; font-size: 11px;">
-                                        ${t('guild_level')} ${guild.level}
+                                        Уровень ${guild.level}
                                     </div>
                                 </div>
                             </div>
                             <div style="text-align: right;">
                                 <div style="color: #ffd700; font-weight: bold;">${guild.experience.toLocaleString()}</div>
-                                <div style="color: #666; font-size: 10px;">${t('guild_exp_unit')}</div>
+                                <div style="color: #666; font-size: 10px;">опыта</div>
                             </div>
                         </div>
                     `;
@@ -641,15 +641,15 @@ async function renderGuildTop(container) {
                     border-radius: 10px;
                     text-align: center;
                 ">
-                    <div style="color: #aaa; font-size: 12px;">${t('guild_your_guild')}</div>
+                    <div style="color: #aaa; font-size: 12px;">Ваша гильдия</div>
                     <div style="color: white; font-weight: bold; margin: 5px 0;">
                         [${currentGuild.tag}] ${currentGuild.name}
                     </div>
                     <div style="color: #ffd700; font-size: 18px; font-weight: bold;">
-                        #${currentGuildRank} ${t('guild_rank_position')}
+                        #${currentGuildRank} место
                     </div>
                     <div style="color: #aaa; font-size: 11px;">
-                        ${currentGuild.experience.toLocaleString()} ${t('guild_exp_unit')}
+                        ${currentGuild.experience.toLocaleString()} опыта
                     </div>
                 </div>
             ` : ''}
@@ -659,7 +659,7 @@ async function renderGuildTop(container) {
         console.error('Ошибка загрузки топа гильдий:', error);
         container.innerHTML = `
             <div style="text-align: center; padding: 20px; color: #f44336;">
-                ${t('guild_load_rating_error')}
+                ❌ Ошибка загрузки рейтинга
             </div>
         `;
     }
@@ -677,7 +677,7 @@ function renderGuildMembers(container) {
     });
 
     container.innerHTML = `
-        <h4 style="color: #ffd700; margin: 0 0 15px 0;">${t('guild_members_title')} (${members.length})</h4>
+        <h4 style="color: #ffd700; margin: 0 0 15px 0;">Участники (${members.length})</h4>
         <div style="display: flex; flex-direction: column; gap: 8px;">
             ${sortedMembers.map((m, i) => `
                 <div style="
@@ -694,13 +694,13 @@ function renderGuildMembers(container) {
                             ${m.id === guild.leader_id ? '👑 ' : ''}${m.username}
                         </div>
                         <div style="color: #aaa; font-size: 11px;">
-                            ${t('guild_member_lvl')} ${m.level} | ${t('guild_member_rating')}: ${typeof m.rating === 'number' ? m.rating : 0}
+                            Ур. ${m.level} | Рейтинг: ${typeof m.rating === 'number' ? m.rating : 0}
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <div style="text-align: right;">
                             <div style="color: #ffd700; font-weight: bold;">${m.guild_contribution || 0}</div>
-                            <div style="color: #666; font-size: 10px;">${t('guild_contribution')}</div>
+                            <div style="color: #666; font-size: 10px;">вклад</div>
                         </div>
                         ${isLeader && m.id !== guild.leader_id ? `
                             <button onclick="confirmTransferLeadership(${m.id}, '${m.username}')" style="
@@ -711,7 +711,7 @@ function renderGuildMembers(container) {
                                 color: #ffd700;
                                 cursor: pointer;
                                 font-size: 11px;
-                            " title="${t('guild_transfer_leadership')}">👑</button>
+                            " title="Передать лидерство">👑</button>
                             <button onclick="confirmKickMember(${m.id}, '${m.username}')" style="
                                 padding: 6px 10px;
                                 background: rgba(239, 68, 68, 0.3);
@@ -720,7 +720,7 @@ function renderGuildMembers(container) {
                                 color: #ef4444;
                                 cursor: pointer;
                                 font-size: 11px;
-                            " title="${t('guild_kick_member')}">👢</button>
+                            " title="Исключить">👢</button>
                         ` : ''}
                     </div>
                 </div>
@@ -731,7 +731,7 @@ function renderGuildMembers(container) {
 
 // === КИК УЧАСТНИКА ===
 function confirmKickMember(playerId, username) {
-    if (confirm(t('guild_kick_confirm').replace('{name}', username))) {
+    if (confirm(`Исключить ${username} из гильдии?`)) {
         kickMember(playerId);
     }
 }
@@ -751,7 +751,7 @@ async function kickMember(playerId) {
 
 // === ПЕРЕДАЧА ЛИДЕРСТВА ===
 function confirmTransferLeadership(playerId, username) {
-    if (confirm(t('guild_transfer_confirm').replace('{name}', username))) {
+    if (confirm(`Передать лидерство ${username}? Это действие нельзя отменить.`)) {
         transferLeadershipTo(playerId);
     }
 }
@@ -762,12 +762,12 @@ async function transferLeadershipTo(playerId) {
     const result = await window.guildManager.transferLeadership(playerId);
 
     if (result.success) {
-        showNotification(t('guild_leadership_transferred'));
+        showNotification('Лидерство передано');
         // Перезагружаем данные гильдии
         await window.guildManager.loadPlayerGuild();
         renderGuildView(document.getElementById('guild-modal-content'));
     } else {
-        showNotification(result.error || t('guild_leadership_transfer_error'));
+        showNotification(result.error || 'Ошибка передачи лидерства');
     }
 }
 
@@ -779,7 +779,7 @@ function renderGuildResearch(container) {
 
     // Природа исключена - у неё нет атакующих заклинаний
     const schoolNames = {
-        fire: t('school_fire_name'), water: t('school_water_name'), earth: t('school_earth_name'), wind: t('school_wind_name'), poison: t('school_poison_name'), light: t('school_light_name'), dark: t('school_dark_name')
+        fire: 'Огонь', water: 'Вода', earth: 'Земля', wind: 'Ветер', poison: 'Яд', light: 'Свет', dark: 'Тьма'
     };
     const schoolEmojis = {
         fire: '🔥', water: '💧', earth: '🪨', wind: '💨', poison: '☠️', light: '✨', dark: '🌑'
@@ -787,15 +787,15 @@ function renderGuildResearch(container) {
 
     container.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h4 style="color: #ffd700; margin: 0;">${t('guild_research_title')}</h4>
+            <h4 style="color: #ffd700; margin: 0;">Исследования</h4>
             <div style="color: #ffd700; font-weight: bold;">
-                ${t('guild_research_points_label')}: ${guild.bonus_points}
+                Очков: ${guild.bonus_points}
             </div>
         </div>
 
         <p style="color: #aaa; font-size: 12px; margin-bottom: 15px;">
-            ${t('guild_research_desc')}
-            ${isLeader ? '' : t('guild_research_leader_only')}
+            Каждое очко даёт +0.5% сопротивления к выбранной школе магии.
+            ${isLeader ? '' : 'Только глава гильдии может распределять очки.'}
         </p>
 
         <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -860,11 +860,11 @@ function renderGuildSettings(container) {
     let leaderSettingsHTML = '';
     if (isLeader) {
         leaderSettingsHTML = `
-            <h4 style="color: #ffd700; margin: 0 0 15px 0;">${t('guild_settings_title')}</h4>
+            <h4 style="color: #ffd700; margin: 0 0 15px 0;">Настройки гильдии</h4>
 
             <!-- Режим вступления -->
             <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-                <div style="color: white; margin-bottom: 10px;">${t('guild_join_mode')}</div>
+                <div style="color: white; margin-bottom: 10px;">Режим вступления</div>
                 <div style="display: flex; gap: 10px;">
                     <button onclick="setJoinMode('free')" style="
                         flex: 1; padding: 10px;
@@ -872,20 +872,20 @@ function renderGuildSettings(container) {
                         border: none; border-radius: 8px;
                         color: ${guild.join_mode === 'free' ? 'white' : '#aaa'};
                         cursor: pointer;
-                    ">${t('guild_join_mode_free')}</button>
+                    ">Свободный</button>
                     <button onclick="setJoinMode('request')" style="
                         flex: 1; padding: 10px;
                         background: ${guild.join_mode === 'request' ? '#4ade80' : 'rgba(255,255,255,0.1)'};
                         border: none; border-radius: 8px;
                         color: ${guild.join_mode === 'request' ? 'white' : '#aaa'};
                         cursor: pointer;
-                    ">${t('guild_join_mode_request')}</button>
+                    ">По заявке</button>
                 </div>
             </div>
 
             <!-- Заявки -->
             ${requests.length > 0 ? `
-                <h4 style="color: #ffd700; margin: 0 0 10px 0;">${t('guild_requests_title')} (${requests.length})</h4>
+                <h4 style="color: #ffd700; margin: 0 0 10px 0;">Заявки (${requests.length})</h4>
                 <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
                     ${requests.map(r => `
                         <div style="
@@ -903,13 +903,13 @@ function renderGuildSettings(container) {
                                     background: #4ade80;
                                     border: none; border-radius: 6px;
                                     color: white; cursor: pointer;
-                                ">${t('guild_accept')}</button>
+                                ">Принять</button>
                                 <button onclick="handleRequest(${r.player_id}, false)" style="
                                     padding: 6px 12px;
                                     background: #ef4444;
                                     border: none; border-radius: 6px;
                                     color: white; cursor: pointer;
-                                ">${t('guild_decline')}</button>
+                                ">Отклонить</button>
                             </div>
                         </div>
                     `).join('')}
@@ -932,7 +932,7 @@ function renderGuildSettings(container) {
             cursor: pointer;
             font-size: 14px;
             ${isLeader ? '' : 'margin-top: 0;'}
-        ">${t('guild_leave_btn')}</button>
+        ">🚪 Покинуть гильдию</button>
     `;
 }
 
@@ -942,7 +942,7 @@ async function setJoinMode(mode) {
     const result = await window.guildManager.setJoinMode(mode);
 
     if (result.success) {
-        showNotification(`${t('guild_mode_changed')}: ${mode === 'free' ? t('guild_join_mode_free') : t('guild_join_mode_request')}`);
+        showNotification(`Режим изменён: ${mode === 'free' ? 'Свободный' : 'По заявке'}`);
         renderGuildSettings(document.getElementById('guild-tab-content'));
     } else {
         showNotification(result.error);
@@ -955,7 +955,7 @@ async function handleRequest(playerId, approve) {
     const result = await window.guildManager.handleJoinRequest(playerId, approve);
 
     if (result.success) {
-        showNotification(approve ? t('guild_request_accepted') : t('guild_request_declined'));
+        showNotification(approve ? 'Игрок принят' : 'Заявка отклонена');
         await window.guildManager.loadGuildMembers();
         renderGuildSettings(document.getElementById('guild-tab-content'));
     } else {
@@ -967,8 +967,8 @@ async function handleRequest(playerId, approve) {
 function confirmLeaveGuild() {
     const isLeader = window.guildManager?.isLeader();
     const message = isLeader
-        ? t('guild_leave_leader_confirm')
-        : t('guild_leave_confirm');
+        ? 'Вы глава гильдии. При выходе лидерство перейдёт к самому активному участнику. Выйти?'
+        : 'Вы уверены что хотите покинуть гильдию?';
 
     if (confirm(message)) {
         leaveGuild();
@@ -981,7 +981,7 @@ async function leaveGuild() {
     const result = await window.guildManager.leaveGuild();
 
     if (result.success) {
-        showNotification(t('guild_left'));
+        showNotification('Вы вышли из гильдии');
         openGuildModal();
     } else {
         showNotification(result.error);

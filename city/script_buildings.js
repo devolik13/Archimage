@@ -24,17 +24,17 @@ function showPvPArenaModal() {
             const totalMinutes = Math.ceil(timeToNext / 60000);
             const hours = Math.floor(totalMinutes / 60);
             const minutes = totalMinutes % 60;
-            regenText = hours > 0 ? ` (${t('bld_regen_hours')} ${hours}${t('common_hours_short', 'ч')} ${minutes}${t('common_min', 'м')})` : ` (${t('bld_regen_hours')} ${minutes}${t('common_min', 'м')})`;
+            regenText = hours > 0 ? ` (след. через ${hours}ч ${minutes}м)` : ` (след. через ${minutes}м)`;
         }
 
         const color = current > 0 ? '#4ade80' : '#ff6b6b';
         battleEnergyInfo = `
             <div style="background: #3d3d5c; padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
                 <div style="font-size: 22px; color: ${color}; font-weight: bold;">
-                    ${t('bld_battle_attempts')}: ${current}/${max}${regenText}
+                    ⚡ Попытки боев: ${current}/${max}${regenText}
                 </div>
                 <div style="font-size: 16px; color: #aaa; margin-top: 8px;">
-                    ${t('bld_regen_info')}
+                    Каждые 2 часа восстанавливается 1 попытка
                 </div>
             </div>
         `;
@@ -46,39 +46,39 @@ function showPvPArenaModal() {
         : "padding: 12px; border: none; border-radius: 6px; background: #333; color: #666; cursor: not-allowed; font-size: 16px; opacity: 0.5;";
     const battleButtonOnClick = hasArena
     	? "if (!checkFormationBeforeBattle()) return; closePvPArenaModal(); window.showOpponentSelection()"
-    	: `alert('${t('bld_arena_required')}')`;
+    	: "alert('⚠️ Постройте Арену чтобы участвовать в PvP боях!')";
     const modalContent = `
     	<div style="padding: 24px; width: 600px; background: #2c2c3d; border-radius: 12px; color: white;">
-    	    <h3 style="margin: 0 0 16px 0; color: #7289da; font-size: 28px;">${t('bld_arena_title')}</h3>
-    	    <p style="margin: 0 0 20px 0; font-size: 18px;">${t('bld_arena_welcome')}</p>
+    	    <h3 style="margin: 0 0 16px 0; color: #7289da; font-size: 28px;">⚔️ PvP Арена</h3>
+    	    <p style="margin: 0 0 20px 0; font-size: 18px;">Добро пожаловать на арену! Здесь вы можете сражаться с другими магами.</p>
 
     	    ${battleEnergyInfo}
 
     	    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
     	        <button style="padding: 20px 16px; border: none; border-radius: 10px; background: #7289da; color: white; cursor: pointer; font-size: 22px;"
     	                onclick="window.showBattleSetup()">
-    	            ${t('bld_setup_formation')}
+    	            🎯 Расставить войска
     	        </button>
     	        <button style="${battleButtonStyle.replace('padding: 12px', 'padding: 20px 16px').replace('font-size: 16px', 'font-size: 22px').replace('border-radius: 6px', 'border-radius: 10px')}"
     	                onclick="${battleButtonOnClick}"
     	                ${hasArena ? '' : 'disabled'}>
-    	            ${t('bld_battle_pvp')} ${hasArena ? '' : '🔒'}
+    	            ⚔️ В бой (PvP) ${hasArena ? '' : '🔒'}
     	        </button>
     	        <button style="padding: 20px 16px; border: none; border-radius: 10px; background: #FFD700; color: #333; cursor: pointer; font-size: 22px; font-weight: bold;"
     	                onclick="closePvPArenaModal(); window.showLeaderboard()">
-    	            ${t('bld_leaderboard')}
+    	            🏆 Рейтинг
     	        </button>
     	        <button style="padding: 20px 16px; border: none; border-radius: 10px; background: #4CAF50; color: white; cursor: pointer; font-size: 22px; font-weight: bold;"
     	                onclick="closePvPArenaModal(); window.showAdventureHub()">
-    	            ${t('bld_adventure_pve')}
+    	            🗺️ Приключения (PvE)
     	        </button>
     	    </div>
 
-    	    ${!hasArena ? `<p style="color: #ff6b6b; font-size: 18px; text-align: center; margin: 0 0 16px 0;">${t('bld_arena_required_msg')}</p>` : ''}
+    	    ${!hasArena ? '<p style="color: #ff6b6b; font-size: 18px; text-align: center; margin: 0 0 16px 0;">⚠️ Постройте Арену для PvP боёв</p>' : ''}
 
     	    <button style="margin-top: 0; padding: 16px; width: 100%; border: 2px solid #7289da; border-radius: 10px; background: transparent; color: #7289da; cursor: pointer; font-size: 20px;"
     	            onclick="closePvPArenaModal()">
-    	        ❌ ${t('common_close')}
+    	        ❌ Закрыть
     	    </button>
     	</div>
     `;
@@ -249,7 +249,7 @@ async function hireNewWizard() {
     const maxWizards = 5;
 
     if (wizards.length >= maxWizards) {
-        showNotification(t('bld_wizard_limit'));
+        showNotification('Достигнут лимит магов!');
         return;
     }
 
@@ -268,14 +268,14 @@ async function hireNewWizard() {
 
     const requiredLevel = towerRequirements[wizardIndex];
     if (towerLevel < requiredLevel) {
-        showNotification(t('bld_wizard_tower_required').replace('{n}', wizardIndex + 1).replace('{req}', requiredLevel).replace('{cur}', towerLevel));
+        showNotification(`⚠️ Для найма ${wizardIndex + 1}-го мага требуется башня магов ${requiredLevel} уровня! (сейчас: ${towerLevel})`);
         return;
     }
 
     // Маги больше НЕ блокируют строительство!
     // Проверяем только что нет другого найма мага
     if (window.hasActiveConstruction && window.hasActiveConstruction('wizard')) {
-        showNotification(t('bld_hire_in_progress'));
+        showNotification('⚠️ Уже идет найм другого мага!');
         return;
     }
 
@@ -289,7 +289,7 @@ async function hireNewWizard() {
             } else {
                 closeAllModals();
             }
-            showNotification(t('bld_hire_started'));
+            showNotification('🧙‍♂️ Начат найм мага');
             setTimeout(() => {
                 if (typeof showWizardTowerModalBg === 'function') {
                     showWizardTowerModalBg();
@@ -299,11 +299,11 @@ async function hireNewWizard() {
             }, 100);
         } else {
             // Ошибка при запуске найма
-            showNotification(t('bld_hire_failed'));
+            showNotification('❌ Не удалось начать найм');
         }
     } else {
         console.error('❌ startWizardHire не найдена!');
-        showNotification(t('bld_hire_system_error'));
+        showNotification('❌ Ошибка системы найма');
     }
 }
 
@@ -319,22 +319,22 @@ async function selectBuildingToBuild(buildingId, cellIndex) {
         );
         if (activeConstruction) {
             if (activeConstruction.is_upgrade) {
-                showNotification(t('bld_cannot_build_upgrading'));
+                showNotification('⚠️ Нельзя строить пока идет улучшение!');
             } else {
-                showNotification(t('bld_one_at_time'));
+                showNotification('⚠️ Можно строить только одно здание одновременно!');
             }
         }
         return;
     }
     if (!userId) {
-        showNotification(t('bld_user_id_error'));
+        showNotification('❌ Ошибка: Не удалось получить ID пользователя.');
         return;
     }
     // Запускаем строительство через систему времени
     if (typeof window.startConstruction === 'function') {
         const success = await window.startConstruction(buildingId, cellIndex, false, 1);
         if (success) {
-            showNotification(`${t('bld_construction_started')} ${getBuildingsConfig()[buildingId].name}`);
+            showNotification(`🔨 Начато строительство ${getBuildingsConfig()[buildingId].name}`);
         }
         return;
     }
@@ -361,7 +361,7 @@ async function selectBuildingToBuild(buildingId, cellIndex) {
         }
     } catch (error) {
         console.error('Ошибка при постройке:', error);
-        showNotification(t('bld_network_error'));
+        showNotification('❌ Ошибка сети при попытке построить здание.');
     }
 }
 
@@ -500,9 +500,9 @@ async function confirmUpgrade(buildingId, targetLevel) {
         );
         if (activeConstruction) {
             if (activeConstruction.is_upgrade) {
-                showNotification(t('bld_upgrade_in_progress'));
+                showNotification('⚠️ Уже идет улучшение другого здания!');
             } else {
-                showNotification(t('bld_cannot_upgrade_building'));
+                showNotification('⚠️ Нельзя улучшать пока идет строительство!');
             }
         }
         return;
@@ -516,14 +516,14 @@ async function confirmUpgrade(buildingId, targetLevel) {
     if (typeof window.startConstruction === 'function') {
         const success = await window.startConstruction(buildingId, null, true, targetLevel);
         if (success) {
-            showNotification(`${t('bld_upgrade_started')} ${targetLevel}`);
+            showNotification(`🔨 Начато улучшение до уровня ${targetLevel}`);
         }
         return;
     }
     // Старый код для обратной совместимости
     const currentLevel = userData.buildings?.[buildingId]?.level || 1;
     if (targetLevel <= currentLevel) {
-        showNotification(t('bld_level_already_reached'));
+        showNotification('❌ Уровень уже достигнут или выше!');
         return;
     }
     try {
@@ -554,7 +554,7 @@ async function confirmUpgrade(buildingId, targetLevel) {
         }
     } catch (error) {
         console.error("Ошибка при улучшении:", error);
-        showNotification(t('bld_upgrade_network_error'));
+        showNotification("❌ Ошибка сети при улучшении здания.");
     }
 }
 
@@ -563,7 +563,7 @@ async function upgradeWizardTower() {
     const currentLevel = userData.buildings?.wizard_tower?.level || 1;
     const maxLevel = getBuildingMaxLevel('wizard_tower');
     if (currentLevel >= maxLevel) {
-        showNotification(`${t('bld_tower_max_level')} (${maxLevel})`);
+        showNotification(`⚠️ Башня магов уже максимального уровня (${maxLevel})`);
         return;
     }
     
@@ -594,7 +594,7 @@ function showGuildModal() {
     if (typeof window.openGuildModal === 'function') {
         window.openGuildModal();
     } else {
-        showNotification(t('bld_guild_loading'));
+        showNotification('Система гильдий загружается...');
     }
 }
 
@@ -754,7 +754,7 @@ function startBuildingGuildFromModal() {
 
     // Проверяем, нет ли активного строительства
     if (window.hasActiveConstruction && window.hasActiveConstruction('any_building_or_wizard')) {
-        showNotification(t('bld_already_building'));
+        showNotification('⚠️ Уже идёт строительство другого здания!');
         return;
     }
 
@@ -1010,9 +1010,9 @@ function checkFormationBeforeBattle() {
     
     if (!hasWizards) {
         if (window.showNotification) {
-            window.showNotification(t('bld_setup_troops'), 'warning');
+            window.showNotification('⚠️ Расставь войска и выбери заклинания!', 'warning');
         } else {
-            alert(t('bld_setup_troops'));
+            alert('⚠️ Расставь войска и выбери заклинания!');
         }
         return false;
     }
