@@ -2778,5 +2778,8 @@ window.closeWizardSelectDialog = closeWizardSelectDialog;
 window.confirmFactionChange = confirmFactionChange;
 window.closeFactionChangeDialog = closeFactionChangeDialog;
 window.backToShopFromFaction = backToShopFromFaction;
+window.calculateTonPrice = calculateTonPrice;
+window.saveTonPayment = saveTonPayment;
+window.TON_RECEIVER_ADDRESS = TON_RECEIVER_ADDRESS;
 
 console.log('🛒 Модуль магазина загружен');
