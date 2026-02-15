@@ -121,6 +121,14 @@ class DatabaseManager {
             // Формируем данные для RPC
             // LAZY ACCRUAL v2: сохраняем base и updated_at
             const rawTimeCurrency = playerData.time_currency_base ?? playerData.timeCurrency ?? playerData.time_currency ?? 0;
+
+            // Стрипаем runtime-поля благословений из магов перед сохранением
+            const wizardsClean = (playerData.wizards || []).map(w => {
+                if (!w.blessingEffects && !w.original_max_hp) return w;
+                const { blessingEffects, original_max_hp, ...clean } = w;
+                return clean;
+            });
+
             const rpcData = {
                 time_currency: Math.floor(rawTimeCurrency),
                 time_currency_base: Math.floor(rawTimeCurrency),
@@ -129,7 +137,7 @@ class DatabaseManager {
                 experience: playerData.experience || 0,
                 faction: playerData.faction || null,
                 faction_changed: playerData.faction_changed || false, // Флаг бесплатной смены фракции
-                wizards: playerData.wizards || [],
+                wizards: wizardsClean,
                 formation: playerData.formation || [null, null, null, null, null],
                 spells: playerData.spells || {},
                 buildings: buildingsWithConstructions,
