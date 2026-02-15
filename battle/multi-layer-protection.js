@@ -110,8 +110,8 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
             // AOE + не-Энт: саммон получает урон, но НЕ поглощает за мага
             if (isAOESpell && !summonedCreature.isDefensive) {
                 let aoeDamage = remainingDamage;
-                // Фракционный бонус некроманта для Костяного Дракона
-                if (summonedCreature.type === 'bone_dragon') {
+                // Фракционный бонус некроманта для призванных существ (-10% кроме Света)
+                if (summonedCreature.type === 'bone_dragon' || summonedCreature.type === 'necromant_skeleton') {
                     const school = typeof window.getSpellSchool === 'function' ? window.getSpellSchool(spellId) : null;
                     if (school !== 'light') {
                         aoeDamage = Math.floor(aoeDamage * 0.9);
@@ -141,8 +141,8 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
                 // remainingDamage НЕ уменьшается — маг получает полный урон
             } else {
                 // Single target ИЛИ Энт (AOE/single) — стандартное поглощение
-                // 🐉 Фракционный бонус некроманта для Костяного Дракона (-10% кроме Света)
-                if (summonedCreature.type === 'bone_dragon') {
+                // 🐉 Фракционный бонус некроманта для призванных существ (-10% кроме Света)
+                if (summonedCreature.type === 'bone_dragon' || summonedCreature.type === 'necromant_skeleton') {
                     const school = typeof window.getSpellSchool === 'function' ? window.getSpellSchool(spellId) : null;
                     if (school !== 'light') {
                         remainingDamage = Math.floor(remainingDamage * 0.9);

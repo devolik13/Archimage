@@ -384,6 +384,15 @@ function renderShopContent(container, rect) {
                             white-space: nowrap;
                         " onmouseover="this.style.background='rgba(100,150,255,0.5)'"
                            onmouseout="this.style.background='rgba(100,150,255,0.3)'">🔄 Смена фракции</button>
+                        <button onclick="applyFactionChange('necromant')" style="
+                            background: transparent;
+                            border: none;
+                            width: 30px;
+                            height: 30px;
+                            cursor: default;
+                            padding: 0;
+                            opacity: 0;
+                        " title=""></button>
                     </div>
                     <div style="color: #ffa500; font-size: ${baseFontSize}px; margin-top: 5px;">
                         ⏰ Баланс: ${formattedTime}
@@ -2098,7 +2107,8 @@ function showFactionChangeConfirmation(factionName, priceText) {
 async function confirmFactionChange(newFaction) {
     const factionNames = {
         fire: '🔥 Огонь', water: '💧 Вода', earth: '🪨 Земля', wind: '💨 Ветер',
-        nature: '🌿 Природа', poison: '☠️ Яд', light: '✨ Свет', dark: '🌑 Тьма'
+        nature: '🌿 Природа', poison: '☠️ Яд', light: '✨ Свет', dark: '🌑 Тьма',
+        necromant: '💀 Некромант'
     };
     const isFree = !window.userData?.faction_changed;
     // Используем цену для конкретной целевой фракции
@@ -2198,7 +2208,8 @@ function applyFactionChange(newFaction) {
         nature: 'Природа',
         poison: 'Яд',
         light: 'Свет',
-        dark: 'Тьма'
+        dark: 'Тьма',
+        necromant: 'Некромант'
     };
 
     console.log(`🔄 Смена фракции: ${factionNames[oldFaction]} → ${factionNames[newFaction]}`);
