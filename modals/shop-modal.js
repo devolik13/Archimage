@@ -2181,7 +2181,7 @@ async function confirmFactionChange(newFaction) {
  * Маги, здания и заклинания сохраняются - меняется только фракция
  * (это влияет на -15% бонус изучения и визуальный стиль)
  */
-function applyFactionChange(newFaction) {
+window.applyFactionChange = function applyFactionChange(newFaction) {
     const oldFaction = window.userData.faction;
 
     // Меняем фракцию игрока
@@ -2233,7 +2233,7 @@ function closeFactionChangeDialog() {
 
     // Возвращаемся в магазин
     backToShopFromFaction();
-}
+};
 
 /**
  * Обновить UI магазина
