@@ -184,8 +184,10 @@ function applyBlessingEffects(blessing) {
         blessing.effect.effects : [blessing.effect];
     
     window.userData.wizards.forEach(wizard => {
-        if (!wizard.blessingEffects) wizard.blessingEffects = {};
-        
+        // ВАЖНО: всегда сбрасываем старые эффекты, чтобы не накапливались
+        // остатки от предыдущих благословений (могут остаться в БД)
+        wizard.blessingEffects = {};
+
         effects.forEach(effect => {
             switch (effect.type) {
                 case 'armor_bonus':
@@ -196,8 +198,11 @@ function applyBlessingEffects(blessing) {
                     break;
                 case 'health_bonus':
                     wizard.blessingEffects.healthMultiplier = 1 + effect.value;
-                    // Пересчитываем максимальное здоровье
-                    const baseMaxHp = wizard.original_max_hp || wizard.max_hp;
+                    // Сохраняем базовое HP ДО модификации (для корректного снятия)
+                    if (!wizard.original_max_hp) {
+                        wizard.original_max_hp = wizard.max_hp;
+                    }
+                    const baseMaxHp = wizard.original_max_hp;
                     wizard.max_hp = Math.floor(baseMaxHp * wizard.blessingEffects.healthMultiplier);
                     // Увеличиваем текущее здоровье пропорционально
                     wizard.hp = Math.min(wizard.hp + Math.floor(baseMaxHp * effect.value), wizard.max_hp);
@@ -212,6 +217,30 @@ function applyBlessingEffects(blessing) {
     console.log('🙏 Эффекты благословения применены к магам');
 }
 
+// Очистить остаточные blessingEffects с магов (могут остаться в БД после перезагрузки)
+function cleanupResidualBlessingEffects() {
+    if (!window.userData?.wizards) return;
+    let cleaned = false;
+
+    window.userData.wizards.forEach(wizard => {
+        if (wizard.blessingEffects) {
+            // Восстанавливаем HP если было увеличено
+            if (wizard.original_max_hp) {
+                const currentRatio = wizard.max_hp > 0 ? wizard.hp / wizard.max_hp : 1;
+                wizard.max_hp = wizard.original_max_hp;
+                wizard.hp = Math.floor(wizard.original_max_hp * currentRatio);
+                delete wizard.original_max_hp;
+            }
+            delete wizard.blessingEffects;
+            cleaned = true;
+        }
+    });
+
+    if (cleaned) {
+        console.log('🧹 Очищены остаточные blessingEffects с магов');
+    }
+}
+
 // Снять эффекты благословения
 function removeBlessingEffects() {
     if (!window.userData?.wizards) return;
@@ -219,13 +248,13 @@ function removeBlessingEffects() {
     window.userData.wizards.forEach(wizard => {
         if (wizard.blessingEffects) {
             // Восстанавливаем здоровье если было увеличено
-            if (wizard.blessingEffects.healthMultiplier) {
-                const baseMaxHp = wizard.original_max_hp || wizard.max_hp;
+            if (wizard.blessingEffects.healthMultiplier && wizard.original_max_hp) {
                 const currentRatio = wizard.hp / wizard.max_hp;
-                wizard.max_hp = baseMaxHp;
-                wizard.hp = Math.floor(baseMaxHp * currentRatio);
+                wizard.max_hp = wizard.original_max_hp;
+                wizard.hp = Math.floor(wizard.original_max_hp * currentRatio);
+                delete wizard.original_max_hp;
             }
-            
+
             delete wizard.blessingEffects;
         }
     });
@@ -459,10 +488,16 @@ function initBlessingSystem() {
     if (activeBlessing && activeBlessing.expires_at > now) {
         console.log(`🙏 Восстановление активного благословения: ${activeBlessing.name}`);
         applyBlessingEffects(activeBlessing);
-    } else if (activeBlessing && activeBlessing.expires_at <= now) {
-        // Благословение истекло пока были оффлайн — очищаем и сохраняем
-        console.log(`🕯️ Благословение истекло оффлайн: ${activeBlessing.name}`);
-        window.userData.active_blessing = null;
+    } else {
+        // Нет активного благословения или оно истекло — чистим всё
+        if (activeBlessing) {
+            console.log(`🕯️ Благословение истекло оффлайн: ${activeBlessing.name}`);
+            window.userData.active_blessing = null;
+        }
+
+        // Чистим остаточные blessingEffects на магах (могли остаться в БД)
+        cleanupResidualBlessingEffects();
+
         if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
             window.dbManager.savePlayer(window.userData);
         }

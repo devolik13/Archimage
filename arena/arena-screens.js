@@ -181,6 +181,102 @@ async function showArenaFormation() {
             }
         };
         
+        // Функции для пресетов формаций
+        const presets = window.userData.formation_presets || {};
+        const presetNames = Object.keys(presets);
+        const MAX_PRESETS = 3;
+
+        window.saveFormationAsPreset = function() {
+            const currentFormation = window.userData.formation || [null, null, null, null, null];
+            const filledSlots = currentFormation.filter(id => id !== null).length;
+
+            if (filledSlots === 0) {
+                alert('Расставьте хотя бы одного мага!');
+                return;
+            }
+
+            const currentPresets = window.userData.formation_presets || {};
+            const count = Object.keys(currentPresets).length;
+
+            if (count >= MAX_PRESETS) {
+                alert(`Максимум ${MAX_PRESETS} пресета. Удалите старый, чтобы сохранить новый.`);
+                return;
+            }
+
+            const name = prompt('Название пресета:', `Пресет ${count + 1}`);
+            if (!name || !name.trim()) return;
+
+            // Сохраняем формацию + заклинания каждого мага
+            const wizardSpells = {};
+            const allWizards = window.userData.wizards || [];
+            currentFormation.forEach(wizId => {
+                if (wizId) {
+                    const wiz = allWizards.find(w => w.id === wizId);
+                    if (wiz) {
+                        wizardSpells[wizId] = [...(wiz.spells || [])];
+                    }
+                }
+            });
+
+            const trimmedName = name.trim().substring(0, 20);
+            currentPresets[trimmedName] = {
+                formation: [...currentFormation],
+                spells: wizardSpells
+            };
+            window.userData.formation_presets = currentPresets;
+
+            if (window.dbManager) {
+                window.dbManager.saveFormationPresets(currentPresets);
+            }
+
+            showArenaFormation();
+        };
+
+        window.loadFormationPreset = function(presetName) {
+            const currentPresets = window.userData.formation_presets || {};
+            const preset = currentPresets[presetName];
+            if (!preset) return;
+
+            // Поддержка старого формата (просто массив) и нового ({ formation, spells })
+            const presetFormation = Array.isArray(preset) ? preset : preset.formation;
+            const presetSpells = Array.isArray(preset) ? null : (preset.spells || null);
+
+            // Проверяем что маги из пресета всё ещё существуют у игрока
+            const allWizards = window.userData.wizards || [];
+            const wizardIds = allWizards.map(w => w.id);
+            const validFormation = presetFormation.map(id => {
+                if (id && wizardIds.includes(id)) return id;
+                return null;
+            });
+
+            // Восстанавливаем заклинания магов
+            if (presetSpells) {
+                allWizards.forEach(wiz => {
+                    if (presetSpells[wiz.id]) {
+                        wiz.spells = [...presetSpells[wiz.id]];
+                    }
+                });
+            }
+
+            window.userData.formation = [...validFormation];
+            window.arenaSelectedWizardId = null;
+            showArenaFormation();
+        };
+
+        window.deleteFormationPreset = function(presetName) {
+            if (!confirm(`Удалить пресет "${presetName}"?`)) return;
+
+            const currentPresets = window.userData.formation_presets || {};
+            delete currentPresets[presetName];
+            window.userData.formation_presets = currentPresets;
+
+            if (window.dbManager) {
+                window.dbManager.saveFormationPresets(currentPresets);
+            }
+
+            showArenaFormation();
+        };
+
         // Функция для добавления в расстановку
         window.addToArenaFormation = function(wizardId) {
             // Выбираем мага для размещения
@@ -320,27 +416,85 @@ async function showArenaFormation() {
             `;
         });
         
+        // Генерируем HTML для пресетов
+        let presetsHTML = '';
+        const presetEntries = Object.entries(presets);
+        if (presetEntries.length > 0) {
+            presetsHTML = presetEntries.map(([name, preset]) => {
+                const presetFormation = Array.isArray(preset) ? preset : (preset.formation || []);
+                const filledCount = presetFormation.filter(id => id !== null).length;
+                return `
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                        background: rgba(0, 0, 0, 0.3);
+                        border: 1px solid rgba(114, 137, 218, 0.5);
+                        border-radius: 6px;
+                        padding: 4px 8px;
+                    ">
+                        <span style="
+                            color: white;
+                            font-size: 11px;
+                            cursor: pointer;
+                            flex: 1;
+                        " onclick="loadFormationPreset('${name.replace(/'/g, "\\'")}')"
+                           title="Загрузить пресет">
+                            📋 ${name} (${filledCount})
+                        </span>
+                        <span style="
+                            color: #ff6b6b;
+                            font-size: 14px;
+                            cursor: pointer;
+                            line-height: 1;
+                        " onclick="deleteFormationPreset('${name.replace(/'/g, "\\'")}')"
+                           title="Удалить пресет">×</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
         container.innerHTML = `
             <h3 style="margin-top: 0; color: #7289da;">⚔️ Расстановка войск</h3>
             <div style="font-size: 12px; color: #aaa; margin-bottom: 10px; text-align: center;">
-                ${window.arenaSelectedWizardId ? 
-                    '<span style="color: #ffa500;">🎯 Выберите позицию для выбранного мага</span>' : 
+                ${window.arenaSelectedWizardId ?
+                    '<span style="color: #ffa500;">🎯 Выберите позицию для выбранного мага</span>' :
                     '<span>📍 Выберите мага снизу, затем позицию сверху</span>'
                 }
             </div>
-            
+
             <div style="margin-bottom: 15px;">
                 <div style="display: flex; gap: 10px; justify-content: center;">
                     ${formationHTML}
                 </div>
             </div>
-            
+
+            <!-- Пресеты формаций -->
+            <div style="margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
+                    ${presetsHTML}
+                    ${presetEntries.length < MAX_PRESETS ? `
+                        <button style="
+                            padding: 4px 10px;
+                            background: rgba(114, 137, 218, 0.2);
+                            border: 1px dashed rgba(114, 137, 218, 0.6);
+                            border-radius: 6px;
+                            color: #7289da;
+                            cursor: pointer;
+                            font-size: 11px;
+                        " onclick="saveFormationAsPreset()">
+                            + Сохранить пресет
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+
             <div>
                 <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
                     ${availableWizardsHTML || '<p style="color: #777;">У вас нет магов</p>'}
                 </div>
             </div>
-            
+
             <div style="margin-top: 20px; text-align: center;">
                 <button style="
                     padding: 10px 20px;

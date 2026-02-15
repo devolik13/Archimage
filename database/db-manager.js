@@ -121,6 +121,14 @@ class DatabaseManager {
             // Формируем данные для RPC
             // LAZY ACCRUAL v2: сохраняем base и updated_at
             const rawTimeCurrency = playerData.time_currency_base ?? playerData.timeCurrency ?? playerData.time_currency ?? 0;
+
+            // Стрипаем runtime-поля благословений из магов перед сохранением
+            const wizardsClean = (playerData.wizards || []).map(w => {
+                if (!w.blessingEffects && !w.original_max_hp) return w;
+                const { blessingEffects, original_max_hp, ...clean } = w;
+                return clean;
+            });
+
             const rpcData = {
                 time_currency: Math.floor(rawTimeCurrency),
                 time_currency_base: Math.floor(rawTimeCurrency),
@@ -129,8 +137,9 @@ class DatabaseManager {
                 experience: playerData.experience || 0,
                 faction: playerData.faction || null,
                 faction_changed: playerData.faction_changed || false, // Флаг бесплатной смены фракции
-                wizards: playerData.wizards || [],
+                wizards: wizardsClean,
                 formation: playerData.formation || [null, null, null, null, null],
+                formation_presets: playerData.formation_presets || {},
                 spells: playerData.spells || {},
                 buildings: buildingsWithConstructions,
                 total_battles: playerData.total_battles || 0,
@@ -236,6 +245,30 @@ class DatabaseManager {
         }
     }
 
+    // Сохранить пресеты формаций (через безопасную RPC)
+    async saveFormationPresets(presets) {
+        if (!this.currentPlayer) {
+            console.error('currentPlayer не существует!');
+            return false;
+        }
+
+        try {
+            const { data, error } = await this.supabase.rpc('update_player_safe', {
+                p_telegram_id: this.getTelegramId(),
+                p_data: { formation_presets: presets }
+            });
+
+            if (error) throw error;
+
+            console.log('Пресеты формаций сохранены:', presets);
+            return true;
+
+        } catch (error) {
+            console.error('Ошибка сохранения пресетов:', error);
+            return false;
+        }
+    }
+
     // ПРИМЕЧАНИЕ: Здания теперь сохраняются в поле buildings (JSONB) через метод savePlayer()
     // Отдельная таблица player_buildings больше не используется
     // Здания загружаются из поля buildings (JSONB) в методе loadOrCreatePlayer()
@@ -336,6 +369,7 @@ class DatabaseManager {
                     faction_changed: window.userData.faction_changed,
                     wizards: window.userData.wizards,
                     formation: window.userData.formation,
+                    formation_presets: window.userData.formation_presets,
                     spells: window.userData.spells,
                     constructions: window.userData.constructions,
                     buildings: window.userData.buildings,
@@ -392,6 +426,7 @@ class DatabaseManager {
                     faction_changed: window.userData.faction_changed,
                     wizards: window.userData.wizards,
                     formation: window.userData.formation,
+                    formation_presets: window.userData.formation_presets,
                     spells: window.userData.spells,
                     constructions: window.userData.constructions,
                     buildings: window.userData.buildings,
