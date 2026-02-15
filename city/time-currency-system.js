@@ -39,7 +39,7 @@ function calculateProduction() {
     let baseProduction = TIME_CURRENCY_CONFIG.GENERATOR_BASE_RATE +
            (generatorLevel - 1) * TIME_CURRENCY_CONFIG.GENERATOR_PER_LEVEL;
 
-    // Применяем модификатор ивент босса (-20% во время ивента, +30%/-50% после)
+    // Применяем модификатор ивент босса (-30% во время ивента, +30%/-50% после)
     const eventModifier = typeof window.getEventBossTimeModifier === 'function'
         ? window.getEventBossTimeModifier() : 0;
     if (eventModifier !== 0) {
