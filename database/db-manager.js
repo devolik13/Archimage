@@ -123,9 +123,10 @@ class DatabaseManager {
             const rawTimeCurrency = playerData.time_currency_base ?? playerData.timeCurrency ?? playerData.time_currency ?? 0;
 
             // Стрипаем runtime-поля благословений из магов перед сохранением
+            // ВАЖНО: original_max_hp НЕ удаляем — это истинная база HP (всегда 100)
             const wizardsClean = (playerData.wizards || []).map(w => {
-                if (!w.blessingEffects && !w.original_max_hp) return w;
-                const { blessingEffects, original_max_hp, ...clean } = w;
+                if (!w.blessingEffects) return w;
+                const { blessingEffects, ...clean } = w;
                 return clean;
             });
 

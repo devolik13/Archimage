@@ -27,7 +27,8 @@ function addExperienceToWizard(wizard, expAmount) {
     // Инициализируем поля опыта если их нет (для старых магов)
     if (!wizard.level) wizard.level = 1;
     if (!wizard.exp_to_next) wizard.exp_to_next = calculateExpToNext(wizard.level);
-    if (!wizard.original_max_hp) wizard.original_max_hp = wizard.max_hp || 100;
+    // Базовое HP всегда 100 — если original_max_hp раздуто боевыми множителями, сбрасываем
+    if (!wizard.original_max_hp || wizard.original_max_hp > 100) wizard.original_max_hp = 100;
 
     wizard.experience = (wizard.experience || 0) + expAmount;
 
@@ -51,6 +52,8 @@ function addExperienceToWizard(wizard, expAmount) {
 
 // Применение бонусов за уровень (линейный рост + особый бонус на 40)
 function applyLevelBonuses(wizard) {
+    // Базовое HP всегда 100 — если раздуто, сбрасываем
+    if (wizard.original_max_hp && wizard.original_max_hp > 100) wizard.original_max_hp = 100;
     const baseHP = wizard.original_max_hp || 100;
     let hpBonus;
 
@@ -290,7 +293,8 @@ function initializeWizardLevel(wizard) {
     if (!wizard.level) wizard.level = 1;
     if (!wizard.experience) wizard.experience = 0;
     if (!wizard.exp_to_next) wizard.exp_to_next = calculateExpToNext(wizard.level);
-    if (!wizard.original_max_hp) wizard.original_max_hp = wizard.max_hp;
+    // Базовое HP всегда 100 — если раздуто боевыми множителями, сбрасываем
+    if (!wizard.original_max_hp || wizard.original_max_hp > 100) wizard.original_max_hp = 100;
 }
 
 // Экспорт

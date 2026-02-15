@@ -1229,7 +1229,7 @@ function applyStarterPackRewards(pack) {
     if (window.userData.wizards.length > 0 && rewards.experience > 0) {
         const expPerWizard = Math.floor(rewards.experience / window.userData.wizards.length);
         window.userData.wizards.forEach(wizard => {
-            if (!wizard.original_max_hp) wizard.original_max_hp = 100;
+            if (!wizard.original_max_hp || wizard.original_max_hp > 100) wizard.original_max_hp = 100;
             wizard.experience = (wizard.experience || 0) + expPerWizard;
             updateWizardLevel(wizard);
         });
@@ -1320,7 +1320,7 @@ function updateWizardLevel(wizard) {
 
     // Инициализируем поля если их нет
     if (!wizard.level) wizard.level = 1;
-    if (!wizard.original_max_hp) wizard.original_max_hp = 100;
+    if (!wizard.original_max_hp || wizard.original_max_hp > 100) wizard.original_max_hp = 100;
     if (!wizard.exp_to_next) {
         wizard.exp_to_next = 60 + (wizard.level * wizard.level * 20);
     }
