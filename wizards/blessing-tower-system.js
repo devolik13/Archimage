@@ -66,38 +66,39 @@ function getActiveBlessing() {
 
 // Проверить доступность использования благословения
 function canUseBlessingTower() {
-    const towerLevel = window.getBuildingLevel('blessing_tower');
+    const towerLevel = typeof window.getBuildingLevel === 'function' ? window.getBuildingLevel('blessing_tower') : 0;
     if (towerLevel === 0) {
         return { canUse: false, reason: 'Башня благословений не построена' };
     }
-    
+
+    const fmt = typeof window.formatTimeCurrency === 'function' ? window.formatTimeCurrency : (m) => m + ' мин';
     const now = Date.now();
     const lastUsed = window.userData?.blessing_last_used || 0;
     const cooldownEnd = lastUsed + (BLESSING_TOWER_CONFIG.COOLDOWN_DURATION * 60 * 1000);
-    
+
     if (now < cooldownEnd) {
         const remainingTime = Math.ceil((cooldownEnd - now) / (60 * 1000));
-        return { 
-            canUse: false, 
-            reason: `Кулдаун: ${window.formatTimeCurrency(remainingTime)}` 
+        return {
+            canUse: false,
+            reason: `Кулдаун: ${fmt(remainingTime)}`
         };
     }
-    
+
     const activeBlessing = getActiveBlessing();
     if (activeBlessing && activeBlessing.expires_at > now) {
         const remainingTime = Math.ceil((activeBlessing.expires_at - now) / (60 * 1000));
-        return { 
-            canUse: false, 
-            reason: `Активно: ${activeBlessing.name} (${window.formatTimeCurrency(remainingTime)})` 
+        return {
+            canUse: false,
+            reason: `Активно: ${activeBlessing.name} (${fmt(remainingTime)})`
         };
     }
-    
+
     return { canUse: true };
 }
 
 // Получить доступные благословения для уровня башни
 function getAvailableBlessings() {
-    const towerLevel = window.getBuildingLevel('blessing_tower');
+    const towerLevel = typeof window.getBuildingLevel === 'function' ? window.getBuildingLevel('blessing_tower') : 0;
     const blessings = [];
     
     for (let level = 1; level <= towerLevel; level++) {
@@ -166,7 +167,10 @@ async function activateBlessing(blessingLevel) {
         window.dbManager.savePlayer(window.userData);
     }
 
-    // Закрываем модалку полностью через Modal.closeAll
+    // Закрываем модалку — проверяем оба варианта (обычный Modal и bg-модалка)
+    if (typeof window.closeBlessingTowerModalBg === 'function') {
+        window.closeBlessingTowerModalBg();
+    }
     if (window.Modal && window.Modal.closeAll) {
         window.Modal.closeAll();
     } else if (typeof window.closeCurrentModal === 'function') {
@@ -355,18 +359,19 @@ function showBlessingTowerModal() {
         window.closeAllModals();
     }
     
-    const towerLevel = window.getBuildingLevel('blessing_tower');
+    const towerLevel = typeof window.getBuildingLevel === 'function' ? window.getBuildingLevel('blessing_tower') : 0;
     if (towerLevel === 0) {
         if (typeof window.showNotification === 'function') {
             window.showNotification('Башня благословений не построена');
         }
         return;
     }
-    
+
+    const fmt = typeof window.formatTimeCurrency === 'function' ? window.formatTimeCurrency : (m) => m + ' мин';
     const canUseCheck = canUseBlessingTower();
     const availableBlessings = getAvailableBlessings();
     const activeBlessing = getActiveBlessing();
-    
+
     let activeBlessingHTML = '';
     if (activeBlessing && activeBlessing.expires_at > Date.now()) {
         const remainingTime = Math.ceil((activeBlessing.expires_at - Date.now()) / (60 * 1000));
@@ -377,7 +382,7 @@ function showBlessingTowerModal() {
                     <div>
                         <div style="font-weight: bold;">${activeBlessing.name}</div>
                         <div style="font-size: 12px; opacity: 0.9;">
-                            Осталось: ${window.formatTimeCurrency(remainingTime)}
+                            Осталось: ${fmt(remainingTime)}
                         </div>
                     </div>
                 </div>
@@ -418,19 +423,19 @@ function showBlessingTowerModal() {
     }
     
     // Кнопка улучшения башни
-    const maxTowerLevel = window.getBuildingMaxLevel('blessing_tower');
-    const upgradeTime = window.CONSTRUCTION_TIME?.getUpgradeTime ? 
-        window.CONSTRUCTION_TIME.getUpgradeTime('blessing_tower', towerLevel + 1) : 
+    const maxTowerLevel = typeof window.getBuildingMaxLevel === 'function' ? window.getBuildingMaxLevel('blessing_tower') : 5;
+    const upgradeTime = window.CONSTRUCTION_TIME?.getUpgradeTime ?
+        window.CONSTRUCTION_TIME.getUpgradeTime('blessing_tower', towerLevel + 1) :
         144 * (towerLevel + 1);
 
-    const upgradeButton = towerLevel < maxTowerLevel ? 
+    const upgradeButton = towerLevel < maxTowerLevel ?
         `<button style="margin: 10px 0; padding: 10px 15px; font-size: 14px; width: 100%; border: none; border-radius: 6px; background: #555; color: white; cursor: pointer;"
             onclick="upgradeBlessingTower()">
             ⬆️ Улучшить башню (ур. ${towerLevel} → ${towerLevel + 1})
             <div style="font-size: 11px; margin-top: 3px; opacity: 0.9;">
-                ⏱️ ${window.formatTimeCurrency(upgradeTime)}
+                ⏱️ ${fmt(upgradeTime)}
             </div>
-        </button>` : 
+        </button>` :
         `<div style="text-align: center; color: #777; padding: 10px; font-size: 14px;">
             ✅ Башня максимального уровня (${maxTowerLevel})
         </div>`;
@@ -551,8 +556,8 @@ function initBlessingSystem() {
 
 }
 async function upgradeBlessingTower() {
-    const currentLevel = window.getBuildingLevel('blessing_tower');
-    const maxLevel = window.getBuildingMaxLevel('blessing_tower');
+    const currentLevel = typeof window.getBuildingLevel === 'function' ? window.getBuildingLevel('blessing_tower') : 0;
+    const maxLevel = typeof window.getBuildingMaxLevel === 'function' ? window.getBuildingMaxLevel('blessing_tower') : 5;
     
     if (currentLevel >= maxLevel) {
         if (typeof window.showNotification === 'function') {

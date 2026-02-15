@@ -194,7 +194,7 @@ function setupBlessingUI() {
                     <span style="font-size: ${titleFontSize}px;">${activeBlessing.icon}</span>
                     <div style="flex: 1;">
                         <div style="font-size: ${smallFontSize}px; color: white; font-weight: bold;">${activeBlessing.name}</div>
-                        <div style="font-size: ${smallFontSize * 0.8}px; color: rgba(255,255,255,0.9);">Осталось: ${window.formatTimeCurrency(remainingTime)}</div>
+                        <div style="font-size: ${smallFontSize * 0.8}px; color: rgba(255,255,255,0.9);">Осталось: ${typeof window.formatTimeCurrency === 'function' ? window.formatTimeCurrency(remainingTime) : remainingTime + ' мин'}</div>
                     </div>
                 </div>
                 <div style="width: 100%; background: rgba(255,255,255,0.3); height: 4px; border-radius: 2px; overflow: hidden;">
@@ -250,7 +250,7 @@ function setupBlessingUI() {
         <button style="width: 100%; padding: 10px; font-size: ${smallFontSize}px; border: 1px solid rgba(255, 215, 0, 0.6); border-radius: 6px; background: rgba(255, 215, 0, 0.15); color: white; cursor: pointer; backdrop-filter: blur(3px); font-weight: bold;"
             onclick="showBlessingUpgradeConfirm(${towerLevel}, ${upgradeTime})">
             ⬆️ Улучшить башню ${towerLevel}→${towerLevel + 1}<br>
-            <span style="font-size: ${smallFontSize * 0.85}px;">⏱️ ${window.formatTimeCurrency(upgradeTime)}</span>
+            <span style="font-size: ${smallFontSize * 0.85}px;">⏱️ ${typeof window.formatTimeCurrency === 'function' ? window.formatTimeCurrency(upgradeTime) : upgradeTime + ' мин'}</span>
         </button>
     ` : `
         <div style="text-align: center; padding: 10px; font-size: ${smallFontSize}px; background: rgba(0, 0, 0, 0.15); border-radius: 6px; backdrop-filter: blur(3px); color: #4ade80;">
