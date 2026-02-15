@@ -122,11 +122,35 @@ class DatabaseManager {
             // LAZY ACCRUAL v2: сохраняем base и updated_at
             const rawTimeCurrency = playerData.time_currency_base ?? playerData.timeCurrency ?? playerData.time_currency ?? 0;
 
-            // Стрипаем runtime-поля благословений из магов перед сохранением
-            // ВАЖНО: original_max_hp НЕ удаляем — это истинная база HP (всегда 100)
+            // Стрипаем runtime-поля благословений и нормализуем HP перед сохранением.
+            // В БД всегда должен быть "чистый" max_hp = base(100) * levelBonus.
+            // При загрузке initBlessingSystem заново применит бонус если благословение активно.
             const wizardsClean = (playerData.wizards || []).map(w => {
-                if (!w.blessingEffects) return w;
-                const { blessingEffects, ...clean } = w;
+                const clean = { ...w };
+
+                // Стрипаем runtime-поля (не должны храниться в БД)
+                delete clean.blessingEffects;
+                delete clean.original_max_hp;
+
+                // Пересчитываем корректный max_hp: base(100) * levelBonus
+                // Это гарантирует что ни боевые множители, ни благословения не утекут в БД
+                const base = 100;
+                const level = clean.level || 1;
+                let levelBonus = 1.0;
+                if (level === 40) {
+                    levelBonus = 3.0;
+                } else if (level > 1) {
+                    levelBonus = 1 + (level - 1) * 0.05;
+                }
+                const correctMaxHp = Math.floor(base * levelBonus);
+
+                if (!clean.max_hp || clean.max_hp > correctMaxHp) {
+                    // HP раздуто — нормализуем, сохраняя пропорцию hp/max_hp
+                    const ratio = clean.max_hp > 0 ? clean.hp / clean.max_hp : 1;
+                    clean.max_hp = correctMaxHp;
+                    clean.hp = Math.max(1, Math.min(correctMaxHp, Math.floor(correctMaxHp * ratio)));
+                }
+
                 return clean;
             });
 
