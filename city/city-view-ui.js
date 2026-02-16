@@ -239,7 +239,18 @@ function createBottomControlPanel() {
         showBuildingSelectionMenu();
     });
 
-    // Собираем стек: гильдия сверху, стройка снизу
+    // Кнопка рекламы (самый верх стека)
+    const adsButton = createControlButton('📢', 'Реклама', () => {
+        console.log('📢 Открыть окно рекламных заданий');
+        if (typeof window.showAdsModal === 'function') {
+            window.showAdsModal();
+        } else {
+            showNotification('Реклама загружается...');
+        }
+    });
+
+    // Собираем стек: реклама сверху, гильдия, стройка снизу
+    buildGuildStack.appendChild(adsButton);
     buildGuildStack.appendChild(guildButton);
     buildGuildStack.appendChild(buildButton);
 
