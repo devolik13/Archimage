@@ -569,6 +569,129 @@ function setupAdsUI() {
                 ">Играть</button>
             `}
         </div>
+
+        <!-- CryptoCyetaUA -->
+        <div id="ads-cryptocyeta" style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+        ">
+            <div style="flex: 1;">
+                <div style="font-size: ${baseFontSize}px; color: #fff;">
+                    📢 Подписаться на CryptoCyetaUA
+                </div>
+                <div style="font-size: ${smallFontSize}px; color: #22c55e; margin-top: 4px;">
+                    +100 BPM + ⏰ 2 часа
+                </div>
+            </div>
+            ${window.userData?.completed_tasks?.cryptocyeta ? `
+                <div style="
+                    padding: 8px 16px;
+                    background: #333;
+                    border-radius: 8px;
+                    color: #888;
+                    font-size: ${smallFontSize}px;
+                ">✓ Получено</div>
+            ` : `
+                <button onclick="window.openCryptoCyeta()" style="
+                    padding: 8px 16px;
+                    background: linear-gradient(135deg, #22c55e, #16a34a);
+                    border: none;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: ${smallFontSize}px;
+                    font-weight: bold;
+                    cursor: pointer;
+                ">Подписаться</button>
+            `}
+        </div>
+
+        <!-- Крипто роботяги -->
+        <div id="ads-cryptworks" style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+        ">
+            <div style="flex: 1;">
+                <div style="font-size: ${baseFontSize}px; color: #fff;">
+                    📢 Подписаться на Крипто роботяги
+                </div>
+                <div style="font-size: ${smallFontSize}px; color: #8b5cf6; margin-top: 4px;">
+                    +100 BPM + ⏰ 2 часа
+                </div>
+            </div>
+            ${window.userData?.completed_tasks?.cryptworks ? `
+                <div style="
+                    padding: 8px 16px;
+                    background: #333;
+                    border-radius: 8px;
+                    color: #888;
+                    font-size: ${smallFontSize}px;
+                ">✓ Получено</div>
+            ` : `
+                <button onclick="window.openCryptworks()" style="
+                    padding: 8px 16px;
+                    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+                    border: none;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: ${smallFontSize}px;
+                    font-weight: bold;
+                    cursor: pointer;
+                ">Подписаться</button>
+            `}
+        </div>
+
+        <!-- dreamdares 18+ -->
+        <div id="ads-dreamdares" style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+        ">
+            <div style="flex: 1;">
+                <div style="font-size: ${baseFontSize}px; color: #fff;">
+                    📢 Подписаться на dreamdares 18+
+                </div>
+                <div style="font-size: ${smallFontSize}px; color: #f43f5e; margin-top: 4px;">
+                    +100 BPM + ⏰ 2 часа
+                </div>
+            </div>
+            ${window.userData?.completed_tasks?.dreamdares ? `
+                <div style="
+                    padding: 8px 16px;
+                    background: #333;
+                    border-radius: 8px;
+                    color: #888;
+                    font-size: ${smallFontSize}px;
+                ">✓ Получено</div>
+            ` : `
+                <button onclick="window.openDreamdares()" style="
+                    padding: 8px 16px;
+                    background: linear-gradient(135deg, #f43f5e, #e11d48);
+                    border: none;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: ${smallFontSize}px;
+                    font-weight: bold;
+                    cursor: pointer;
+                ">Подписаться</button>
+            `}
+        </div>
     `;
     contentContainer.className = 'ads-content';
     overlay.appendChild(contentContainer);
