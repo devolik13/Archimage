@@ -136,7 +136,7 @@
             frameCount: 25, // 5×5 сетка
             gridColumns: 5,
             animationSpeed: 0.12,
-            scale: 0.350
+            scale: 0.420 // +20% от стандартного 0.350
         },
         goblin: {
             idle: 'images/enemies/goblin/idle.webp',
