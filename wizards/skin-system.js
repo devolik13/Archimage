@@ -106,6 +106,23 @@ const SKINS_CONFIG = {
         currency: 'dual', // Stars или TON
         unlockText: '165 ⭐ или TON'
     },
+    mixic_demon: {
+        id: 'mixic_demon',
+        name: 'Демон Миксик',
+        description: 'Тёмный демон из глубин преисподней',
+        icon: '😈',
+        faction: 'fire',
+        spriteConfig: 'mixic_demon',
+        customSpritePath: 'images/wizards/demon/Mixic_Demon',
+        customSpriteNames: { idle: 'Mixic-Demon_idle.webp', cast: 'Mixic-Demon_cast.webp', death: 'Mixic-Demon_death.webp' },
+        isDefault: false,
+        isPremium: true,
+        unlockType: 'purchase',
+        price: 350, // Stars
+        priceUSD: 4.55, // 350 × $0.013
+        currency: 'dual', // Stars или TON
+        unlockText: '350 ⭐ или TON'
+    },
     lord_demon: {
         id: 'lord_demon',
         name: 'Повелитель Хаоса',

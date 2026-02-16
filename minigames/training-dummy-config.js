@@ -659,7 +659,7 @@ function saveDummyProgress(progress, immediate = false) {
  * @param {number} damage - нанесённый урон
  * @param {number} remainingHp - остаток HP манекена
  */
-function recordAttempt(damage, remainingHp = null) {
+async function recordAttempt(damage, remainingHp = null) {
     console.log(`🎯 recordAttempt вызван: damage=${damage}, remainingHp=${remainingHp}`);
 
     const progress = loadDummyProgress();
@@ -700,7 +700,8 @@ function recordAttempt(damage, remainingHp = null) {
     console.log(`🎯 Прогресс после обновления: totalDamage=${progress.totalDamage}, bestAttempt=${progress.bestAttempt}, attemptsToday=${progress.attemptsToday}`);
 
     // Проверяем и выдаём награды за новые уровни урона
-    const newRewards = checkAndClaimDamageTierRewards(oldTotalDamage, progress.totalDamage, progress.claimedTiers);
+    // ВАЖНО: await чтобы addTimeCurrency завершился ДО любого savePlayer()
+    const newRewards = await checkAndClaimDamageTierRewards(oldTotalDamage, progress.totalDamage, progress.claimedTiers);
     if (newRewards.length > 0) {
         // Обновляем список полученных наград
         newRewards.forEach(tier => {
@@ -727,7 +728,7 @@ function recordAttempt(damage, remainingHp = null) {
  * @param {Array} claimedTiers - уже полученные уровни
  * @returns {Array} - список новых полученных наград
  */
-function checkAndClaimDamageTierRewards(oldDamage, newDamage, claimedTiers = []) {
+async function checkAndClaimDamageTierRewards(oldDamage, newDamage, claimedTiers = []) {
     const newRewards = [];
 
     for (const tier of WEEKLY_REWARDS) {
@@ -750,12 +751,15 @@ function checkAndClaimDamageTierRewards(oldDamage, newDamage, claimedTiers = [])
                 });
 
                 // Начисляем награду через RPC (корректно работает с lazy time currency)
+                // ВАЖНО: await чтобы time_currency_base обновился ДО следующего savePlayer()
                 if (typeof window.addTimeCurrency === 'function') {
-                    window.addTimeCurrency(tierReward).catch(err => {
+                    try {
+                        await window.addTimeCurrency(tierReward);
+                    } catch (err) {
                         console.error('Ошибка начисления награды за урон:', err);
-                    });
+                    }
                 } else if (window.userData) {
-                    window.userData.time_currency = (window.userData.time_currency || 0) + tierReward;
+                    window.userData.time_currency_base = (window.userData.time_currency_base || 0) + tierReward;
                 }
                 console.log(`🏆 Награда за урон: ${tier.description} +${tierReward} мин`);
 

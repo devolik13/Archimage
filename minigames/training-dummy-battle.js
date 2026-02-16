@@ -228,7 +228,8 @@ async function endDummyBattle() {
     const remainingHp = dummy ? Math.max(0, dummy.hp) : 0;
 
     // Записываем результат с остатком HP
-    const progress = window.recordAttempt(totalDamage, remainingHp);
+    // ВАЖНО: await чтобы addTimeCurrency завершился ДО savePlayer (onWizardsGainedExperience)
+    const progress = await window.recordAttempt(totalDamage, remainingHp);
 
     // Рассчитываем и начисляем опыт (тренировка всегда считается победой)
     let expResults = [];

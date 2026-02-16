@@ -75,6 +75,13 @@ const PRODUCTS: Record<string, { title: string; description: string; price: numb
     type: "skin"
   },
 
+  skin_mixic_demon: {
+    title: "😈 Демон Миксик",
+    description: "Тёмный демон из глубин преисподней",
+    price: 350,
+    type: "skin"
+  },
+
   // ===== ИВЕНТ БОСС =====
   event_boss_attempt: {
     title: "⚔️ Доп. попытка атаки",

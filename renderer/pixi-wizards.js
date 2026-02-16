@@ -127,6 +127,18 @@
             animationSpeed: 0.12,
             scale: 0.350
         },
+        mixic_demon: {
+            idle: 'images/wizards/demon/Mixic_Demon/Mixic-Demon_idle.webp',
+            cast: 'images/wizards/demon/Mixic_Demon/Mixic-Demon_cast.webp',
+            death: 'images/wizards/demon/Mixic_Demon/Mixic-Demon_death.webp',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 25, // 5×5 сетка
+            gridColumns: 5,
+            animationSpeed: 0.12,
+            scale: 0.420, // +20% от стандартного 0.350
+            idleScale: 0.378 // idle на 10% меньше (0.420 * 0.9)
+        },
         goblin: {
             idle: 'images/enemies/goblin/idle.webp',
             cast: 'images/enemies/goblin/attack.webp',
@@ -586,9 +598,16 @@
                     window.getScaledAnimationSpeed(baseSpeed) : baseSpeed;
                 sprite.baseAnimationSpeed = baseSpeed; // Сохраняем для обновления при смене скорости
                 sprite.anchor.set(0.5);
-                sprite.scale.set(scale * (config.scale || 0.5));
+                const idleScaleValue = config.idleScale || config.scale || 0.5;
+                sprite.scale.set(scale * idleScaleValue);
                 sprite.loop = true; // Зацикливаем idle анимацию
                 sprite.play();
+
+                // Сохраняем полный scale для каста (без idleScale уменьшения)
+                if (config.idleScale && config.scale) {
+                    sprite.castScaleValue = scale * config.scale;
+                    sprite.idleScaleValue = scale * config.idleScale;
+                }
 
                 // ИСПРАВЛЕНО: Безопасное сохранение базового scale
                 try {
@@ -818,6 +837,13 @@
                 // Переключаем на атаку
                 sprite.stop();
                 sprite.textures = container.attackFrames;
+
+                // Если есть отдельный castScale — увеличиваем для каста
+                if (sprite.castScaleValue) {
+                    const sign = sprite.scale.x < 0 ? -1 : 1;
+                    sprite.scale.set(sign * sprite.castScaleValue, sprite.castScaleValue);
+                }
+
                 // Используем масштабируемую скорость для каста
                 const castSpeed = window.getScaledAnimationSpeed ?
                     window.getScaledAnimationSpeed(0.24) : 0.24;
@@ -846,6 +872,12 @@
                             sprite.animationSpeed = originalSpeed;
                             sprite.loop = true;
                             sprite.gotoAndPlay(0);
+
+                            // Возвращаем idle scale если есть
+                            if (sprite.idleScaleValue) {
+                                const sign = sprite.scale.x < 0 ? -1 : 1;
+                                sprite.scale.set(sign * sprite.idleScaleValue, sprite.idleScaleValue);
+                            }
                         } else if (areTexturesValid(originalFrames)) {
                             // Fallback на оригинальные фреймы
                             sprite.textures = originalFrames;
