@@ -469,7 +469,7 @@ async function closeBattleFieldModal() {
 
             try {
                 const remainingHp = await simulateTrialToEnd();
-                const progress = window.recordAttempt ? window.recordAttempt(dummyState.totalDamage, remainingHp) : null;
+                const progress = window.recordAttempt ? await window.recordAttempt(dummyState.totalDamage, remainingHp) : null;
                 console.log(`🎯 Испытание досимулировано. Урон: ${dummyState.totalDamage}`);
 
                 // Показываем арену и результат (как в PvP)
@@ -491,7 +491,7 @@ async function closeBattleFieldModal() {
                 const dummy = window.enemyFormation?.find(e => e && e.isTrainingDummy);
                 const remainingHp = dummy ? Math.max(0, dummy.hp) : 0;
                 if (window.recordAttempt) {
-                    window.recordAttempt(dummyState.totalDamage, remainingHp);
+                    await window.recordAttempt(dummyState.totalDamage, remainingHp);
                 }
                 // Показываем арену и меню
                 if (typeof window.showPvPArenaModalBg === 'function') {
