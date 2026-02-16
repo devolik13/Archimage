@@ -271,8 +271,9 @@ function loadSkinPreviews(skinIds) {
         // Определяем путь к спрайту
         let spritePath;
         if (skin.customSpritePath) {
-            // Кастомный путь (например enemies/lord_demon)
-            spritePath = `${skin.customSpritePath}/idle.webp`;
+            // Кастомный путь (например enemies/lord_demon или wizards/demon/Mixic_Demon)
+            const idleName = skin.customSpriteNames?.idle || 'idle.webp';
+            spritePath = `${skin.customSpritePath}/${idleName}`;
         } else if (skin.isPremium) {
             // Премиум скины - путь через spriteConfig
             // Например: lady_fire -> images/wizards/fire/lady_fire_idle.webp
@@ -634,6 +635,7 @@ const SKIN_ANIMATION_CONFIG = {
     poison: { frameCount: 25, gridColumns: 5 },  // 5×5 сетка
     // Премиум скины
     lady_fire: { frameCount: 25, gridColumns: 5 }, // 5×5 сетка
+    mixic_demon: { frameCount: 25, gridColumns: 5 }, // 5×5 сетка
     lord_demon: { frameCount: 25, gridColumns: 5 } // 5×5 сетка
 };
 
@@ -816,9 +818,11 @@ function startSkinPreviewAnimation(skin, canvasId) {
     let animConfig;
 
     if (skin.customSpritePath) {
-        // Кастомный путь (например enemies/lord_demon)
-        idlePath = `${skin.customSpritePath}/idle.webp`;
-        castPath = `${skin.customSpritePath}/cast.webp`;
+        // Кастомный путь (например enemies/lord_demon или wizards/demon/Mixic_Demon)
+        const idleName = skin.customSpriteNames?.idle || 'idle.webp';
+        const castName = skin.customSpriteNames?.cast || 'cast.webp';
+        idlePath = `${skin.customSpritePath}/${idleName}`;
+        castPath = `${skin.customSpritePath}/${castName}`;
         animConfig = SKIN_ANIMATION_CONFIG[skin.spriteConfig] || { frameCount: 25, gridColumns: 5 };
     } else if (skin.isPremium) {
         // Премиум скины - путь через spriteConfig
