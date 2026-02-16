@@ -104,6 +104,17 @@
             animationSpeed: 0.12,
             scale: 0.350
         },
+        necromant: {
+            idle: 'images/wizards/necromant/idle.webp',
+            cast: 'images/wizards/necromant/cast.webp',
+            death: 'images/wizards/necromant/death.webp',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 25, // 5×5 сетка (1280×1280)
+            gridColumns: 5,
+            animationSpeed: 0.12,
+            scale: 0.350
+        },
         // Премиум образы
         lady_fire: {
             idle: 'images/wizards/fire/lady_fire_idle.webp',
