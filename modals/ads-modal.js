@@ -652,6 +652,47 @@ function setupAdsUI() {
             `}
         </div>
 
+        <!-- CryptoHud -->
+        <div id="ads-cryptohud" style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+        ">
+            <div style="flex: 1;">
+                <div style="font-size: ${baseFontSize}px; color: #fff;">
+                    📢 Подпишись CryptoHud
+                </div>
+                <div style="font-size: ${smallFontSize}px; color: #3b82f6; margin-top: 4px;">
+                    +100 BPM + ⏰ 2 часа
+                </div>
+            </div>
+            ${window.userData?.completed_tasks?.cryptohud ? `
+                <div style="
+                    padding: 8px 16px;
+                    background: #333;
+                    border-radius: 8px;
+                    color: #888;
+                    font-size: ${smallFontSize}px;
+                ">✓ Получено</div>
+            ` : `
+                <button onclick="window.openCryptoHud()" style="
+                    padding: 8px 16px;
+                    background: linear-gradient(135deg, #3b82f6, #2563eb);
+                    border: none;
+                    border-radius: 8px;
+                    color: white;
+                    font-size: ${smallFontSize}px;
+                    font-weight: bold;
+                    cursor: pointer;
+                ">Подписаться</button>
+            `}
+        </div>
+
         <!-- dreamdares 18+ -->
         <div id="ads-dreamdares" style="
             display: flex;

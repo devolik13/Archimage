@@ -998,6 +998,11 @@ function openDreamdares() {
     setTimeout(() => claimTaskReward('dreamdares', 'dreamdares 18+'), 2000);
 }
 
+function openCryptoHud() {
+    window.open('https://t.me/+DS4m3oLUkc5lMjBi', '_blank');
+    setTimeout(() => claimTaskReward('cryptohud', 'CryptoHud'), 2000);
+}
+
 /**
  * Проверить выполнение Creaky Tasks и выдать награду
  * @param {boolean} completed - выполнено ли задание
@@ -1236,7 +1241,8 @@ function updateTaskButton(taskKey) {
         'diamond_dynasty': 'diamond-dynasty-reward',
         'cryptocyeta': 'ads-cryptocyeta',
         'cryptworks': 'ads-cryptworks',
-        'dreamdares': 'ads-dreamdares'
+        'dreamdares': 'ads-dreamdares',
+        'cryptohud': 'ads-cryptohud'
     };
     const taskDiv = document.getElementById(idMap[taskKey]);
     if (!taskDiv) return;
@@ -1270,6 +1276,7 @@ window.claimCreakyTasksReward = claimCreakyTasksReward;
 window.openCryptoCyeta = openCryptoCyeta;
 window.openCryptworks = openCryptworks;
 window.openDreamdares = openDreamdares;
+window.openCryptoHud = openCryptoHud;
 
 /**
  * Добавить очки airdrop игроку
