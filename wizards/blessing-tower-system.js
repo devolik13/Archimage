@@ -273,7 +273,7 @@ function cleanupResidualBlessingEffects() {
         else if (level > 1) levelBonus = 1 + (level - 1) * 0.05;
         const maxAllowed = Math.floor(base * levelBonus);
 
-        if (wizard.max_hp > maxAllowed) {
+        if (wizard.max_hp !== maxAllowed) {
             const currentRatio = wizard.max_hp > 0 ? wizard.hp / wizard.max_hp : 1;
             wizard.max_hp = maxAllowed;
             wizard.hp = Math.max(1, Math.floor(maxAllowed * currentRatio));

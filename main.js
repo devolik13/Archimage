@@ -29,6 +29,7 @@ import './database/guild-manager.js';
 import './database/referral-manager.js';
 import './modals/guild-modal.js';
 import './modals/airdrop-modal.js';
+import './modals/ads-modal.js';
 import './modals/shop-modal.js';
 import './modals/knowledge-book-modal.js';
 import './modals/hint-slider-modal.js';

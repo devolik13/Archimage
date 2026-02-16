@@ -131,6 +131,11 @@ class DatabaseManager {
                 // Стрипаем runtime-поля (не должны храниться в БД)
                 delete clean.blessingEffects;
                 delete clean.original_max_hp;
+                delete clean.damageMultiplier;
+                delete clean.buffs;
+                delete clean.effects;
+                delete clean.spellDamageMultiplier;
+                delete clean.armorBonus;
 
                 // Пересчитываем корректный max_hp: base(100) * levelBonus
                 // Это гарантирует что ни боевые множители, ни благословения не утекут в БД
@@ -144,8 +149,8 @@ class DatabaseManager {
                 }
                 const correctMaxHp = Math.floor(base * levelBonus);
 
-                if (!clean.max_hp || clean.max_hp > correctMaxHp) {
-                    // HP раздуто — нормализуем, сохраняя пропорцию hp/max_hp
+                if (!clean.max_hp || clean.max_hp !== correctMaxHp) {
+                    // HP не совпадает с формулой — нормализуем
                     const ratio = clean.max_hp > 0 ? clean.hp / clean.max_hp : 1;
                     clean.max_hp = correctMaxHp;
                     clean.hp = Math.max(1, Math.min(correctMaxHp, Math.floor(correctMaxHp * ratio)));
