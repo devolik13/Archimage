@@ -62,7 +62,7 @@ serve(async (req) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
-          video: "BAACAgIAAxkBAAIqFmmOSk1nEncUo5-frAFHz1CE13tgAAI2igACri15SGvBVzjittuDOgQ",
+          video: "BAACAgIAAxkBAAIrNmmRfZyIt-rkDyQgSk_H2kBgVTfzAAJ7kwACsd2ISBunfOi2pUE6OgQ",
           caption: startText,
           reply_markup: {
             inline_keyboard: [
@@ -125,7 +125,7 @@ serve(async (req) => {
           results: [{
             type: "video",
             id: "archimage_promo",
-            video_file_id: "BAACAgIAAxkBAAIqFmmOSk1nEncUo5-frAFHz1CE13tgAAI2igACri15SGvBVzjittuDOgQ",
+            video_file_id: "BAACAgIAAxkBAAIrNmmRfZyIt-rkDyQgSk_H2kBgVTfzAAJ7kwACsd2ISBunfOi2pUE6OgQ",
             title: "Archimage — Битва Магов",
             caption: "🕳 Портал разрывается! Тёмная трещина расширяется с каждой минутой.\n\nИз неё сочится древнее зло — Отродья Тьмы уже проникают в наш мир.\n\n⚡ Войди в портал и уничтожь зло, пока оно не поглотило всё живое!\n\n⚔️ Собери отряд магов и дай отпор Тьме!",
             reply_markup: {
