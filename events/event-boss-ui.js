@@ -307,7 +307,7 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
                     <div>🥈 2 место: <span style="color: #c0c0c0;">+10 дней</span></div>
                     <div>🥉 3 место: <span style="color: #cd7f32;">+5 дней</span></div>
                     <div>✅ Участие: <span style="color: #4CAF50;">+1 день</span></div>
-                    <div>💀 Босс убит: <span style="color: #9B59B6;">+3 дня каждому + добыча +35% на неделю</span></div>
+                    <div>💀 Босс убит: <span style="color: #9B59B6;">+3 дня каждому + добыча +30% на неделю</span></div>
                     <div>⚔️ Контрольный удар: <span style="color: #ff4500;">+7 дней тому, кто добьёт босса</span></div>
                     <div>❌ Босс выжил: <span style="color: #ff6b6b;">добыча -50% на неделю</span></div>
                     <div style="margin-top: 6px;">🎁 <span style="color: #e040fb;">Бонус NFT токены от админа получат игроки, выполнившие секретный квест с боссом. Результаты в группе.</span></div>
@@ -840,7 +840,7 @@ async function showEventBossResult(battleResult, hpDamage) {
                     <div style="font-size: 24px; margin-bottom: 4px;">💀</div>
                     <div style="color: #4CAF50; font-weight: bold; font-size: 16px;">БОСС ПОБЕЖДЕН!</div>
                     <div style="color: #81c784; font-size: 12px; margin-top: 4px;">
-                        Добыча времени +35% на неделю!
+                        Добыча времени +30% на неделю!
                     </div>
                 </div>
                 ${finishingBlow ? `
@@ -1387,7 +1387,7 @@ function showEventBossAnnouncement() {
                 font-size: 11px; line-height: 1.4;
             ">
                 <div style="color: #ff6b6b; font-weight: bold; margin-bottom: 2px;">Последствия:</div>
-                <div style="color: #4CAF50;">Победа → +35% добычи времени на неделю</div>
+                <div style="color: #4CAF50;">Победа → +30% добычи времени на неделю</div>
                 <div style="color: #f44336;">Поражение → -50% добычи времени на неделю</div>
                 <div style="color: #e040fb; margin-top: 3px;">🎁 Секретный квест → NFT токены от админа</div>
             </div>
