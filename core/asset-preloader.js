@@ -29,7 +29,10 @@ const PRELOAD_ASSETS = {
         'assets/ui/window/tower_wind.webp',
         'assets/ui/window/tower_earth.webp',
         'assets/ui/window/tower_nature.webp',
-        'assets/ui/window/tower_poison.webp'
+        'assets/ui/window/tower_poison.webp',
+        'assets/ui/window/tower_light.webp',
+        'assets/ui/window/tower_dark.webp',
+        'assets/ui/window/tower_necromant.webp'
     ],
 
     // Арена
@@ -39,7 +42,10 @@ const PRELOAD_ASSETS = {
         'assets/ui/arena/arena_wind.webp',
         'assets/ui/arena/arena_earth.webp',
         'assets/ui/arena/arena_nature.webp',
-        'assets/ui/arena/arena_poison.webp'
+        'assets/ui/arena/arena_poison.webp',
+        'assets/ui/arena/arena_light.webp',
+        'assets/ui/arena/arena_dark.webp',
+        'assets/ui/arena/arena_necromant.webp'
     ],
 
     // Гильдия/Магазин
@@ -49,7 +55,10 @@ const PRELOAD_ASSETS = {
         'assets/ui/guild/guild_wind.webp',
         'assets/ui/guild/guild_earth.webp',
         'assets/ui/guild/guild_nature.webp',
-        'assets/ui/guild/guild_poison.webp'
+        'assets/ui/guild/guild_poison.webp',
+        'assets/ui/guild/guild_light.webp',
+        'assets/ui/guild/guild_dark.webp',
+        'assets/ui/guild/guild_necromant.webp'
     ],
 
     // Библиотека заклинаний
@@ -60,7 +69,9 @@ const PRELOAD_ASSETS = {
         'assets/ui/modals/spells_wind.webp',
         'assets/ui/modals/spells_earth.webp',
         'assets/ui/modals/spells_nature.webp',
-        'assets/ui/modals/spells_poison.webp'
+        'assets/ui/modals/spells_poison.webp',
+        'assets/ui/modals/spells_light.webp',
+        'assets/ui/modals/spells_dark.webp'
     ],
 
     // Подсказки (768x512 webp)
@@ -324,7 +335,10 @@ async function preloadPixiTextures() {
         'images/wizards/light/death.webp',
         'images/wizards/dark/idle.webp',
         'images/wizards/dark/cast.webp',
-        'images/wizards/dark/death.webp'
+        'images/wizards/dark/death.webp',
+        'images/wizards/necromant/idle.webp',
+        'images/wizards/necromant/cast.webp',
+        'images/wizards/necromant/death.webp'
     ];
 
     // Загружаем параллельно через PIXI.Assets

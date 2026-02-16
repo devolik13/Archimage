@@ -983,6 +983,21 @@ function openDiamondDynasty() {
     setTimeout(() => claimTaskReward('diamond_dynasty', 'Diamond Dynasty'), 2000);
 }
 
+function openCryptoCyeta() {
+    window.open('https://t.me/CryptoCyetaUa', '_blank');
+    setTimeout(() => claimTaskReward('cryptocyeta', 'CryptoCyetaUA'), 2000);
+}
+
+function openCryptworks() {
+    window.open('https://t.me/cryptworks', '_blank');
+    setTimeout(() => claimTaskReward('cryptworks', 'Крипто роботяги'), 2000);
+}
+
+function openDreamdares() {
+    window.open('https://t.me/kazhantvv', '_blank');
+    setTimeout(() => claimTaskReward('dreamdares', 'dreamdares 18+'), 2000);
+}
+
 /**
  * Проверить выполнение Creaky Tasks и выдать награду
  * @param {boolean} completed - выполнено ли задание
@@ -1218,7 +1233,10 @@ function updateTaskButton(taskKey) {
         'gift_kombat': 'gift-kombat-reward',
         'tinlake': 'tinlake-reward',
         'star_industry': 'star-industry-reward',
-        'diamond_dynasty': 'diamond-dynasty-reward'
+        'diamond_dynasty': 'diamond-dynasty-reward',
+        'cryptocyeta': 'ads-cryptocyeta',
+        'cryptworks': 'ads-cryptworks',
+        'dreamdares': 'ads-dreamdares'
     };
     const taskDiv = document.getElementById(idMap[taskKey]);
     if (!taskDiv) return;
@@ -1249,6 +1267,9 @@ window.openPandaFit = openPandaFit;
 window.openGiftKombat = openGiftKombat;
 window.checkGiftKombat = checkGiftKombat;
 window.claimCreakyTasksReward = claimCreakyTasksReward;
+window.openCryptoCyeta = openCryptoCyeta;
+window.openCryptworks = openCryptworks;
+window.openDreamdares = openDreamdares;
 
 /**
  * Добавить очки airdrop игроку

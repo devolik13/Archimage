@@ -138,6 +138,14 @@ import './battle/demo-battle.js';
 import './battle/script_battle_setup.js';
 
 // ============================================
+// 9.5 СИСТЕМА ЧЕМПИОНАТОВ (Tournament)
+// ============================================
+import './tournament/headless-battle.js';
+import './tournament/tournament-manager.js';
+import './tournament/tournament-ui.js';
+import './tournament/tournament-admin.js';
+
+// ============================================
 // 10. ЛОГИКА ЗАКЛИНАНИЙ ПО ШКОЛАМ (Spells Logic)
 // ============================================
 import './spells/logic/spells-fire.js';

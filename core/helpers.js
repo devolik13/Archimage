@@ -14,7 +14,10 @@ window.getFactionEmoji = function(faction) {
         'wind': '💨',
         'earth': '🪨',
         'nature': '🌿',
-        'poison': '☠️'
+        'poison': '☠️',
+        'light': '✨',
+        'dark': '🌑',
+        'necromant': '💀'
     };
     return emojis[faction] || '⭐';
 };
@@ -26,7 +29,10 @@ window.getFactionColor = function(faction) {
         'wind': '#81c784',
         'earth': '#a1887f',
         'nature': '#66bb6a',
-        'poison': '#ab47bc'
+        'poison': '#ab47bc',
+        'light': '#ffd700',
+        'dark': '#6a0dad',
+        'necromant': '#2d1b3d'
     };
     return colors[faction] || '#7289da';
 };
@@ -40,7 +46,10 @@ window.getSchoolColor = function(school) {
         'wind': '#81c784',
         'earth': '#a1887f',
         'nature': '#66bb6a',
-        'poison': '#ab47bc'
+        'poison': '#ab47bc',
+        'light': '#ffd700',
+        'dark': '#6a0dad',
+        'necromant': '#2d1b3d'
     };
     return colors[school] || '#7289da';
 };

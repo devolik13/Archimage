@@ -239,18 +239,7 @@ function createBottomControlPanel() {
         showBuildingSelectionMenu();
     });
 
-    // Кнопка рекламы (самый верх стека)
-    const adsButton = createControlButton('📢', 'Реклама', () => {
-        console.log('📢 Открыть окно рекламных заданий');
-        if (typeof window.showAdsModal === 'function') {
-            window.showAdsModal();
-        } else {
-            showNotification('Реклама загружается...');
-        }
-    });
-
-    // Собираем стек: реклама сверху, гильдия, стройка снизу
-    buildGuildStack.appendChild(adsButton);
+    // Собираем стек: гильдия сверху, стройка снизу
     buildGuildStack.appendChild(guildButton);
     buildGuildStack.appendChild(buildButton);
 
@@ -353,7 +342,18 @@ function createBottomControlPanel() {
         }
     });
 
-    // Собираем стек: подсказка сверху, помощь, airdrop, магазин снизу
+    // Кнопка рекламы (самый верх правого стека)
+    const adsButton = createControlButton('📢', 'Реклама', () => {
+        console.log('📢 Открыть окно рекламных заданий');
+        if (typeof window.showAdsModal === 'function') {
+            window.showAdsModal();
+        } else {
+            showNotification('Реклама загружается...');
+        }
+    });
+
+    // Собираем стек: реклама, подсказка, помощь, airdrop, магазин
+    airdropShopStack.appendChild(adsButton);
     airdropShopStack.appendChild(hintButton);
     airdropShopStack.appendChild(knowledgeButton);
     airdropShopStack.appendChild(airdropButton);
