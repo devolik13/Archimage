@@ -716,8 +716,9 @@ function loadShopSkinPreviews(skinIds) {
         if (!canvas) return;
 
         const ctx = canvas.getContext('2d');
+        const idleName = skin.customSpriteNames?.idle || 'idle.webp';
         const spritePath = skin.customSpritePath
-            ? `${skin.customSpritePath}/idle.webp`
+            ? `${skin.customSpritePath}/${idleName}`
             : `images/wizards/${skin.faction}/${skin.spriteConfig}_idle.webp`;
 
         const img = new Image();
@@ -875,8 +876,9 @@ function showSkinPaymentDialog(skinId) {
                 ctx.clearRect(0, 0, 80, 80);
                 ctx.drawImage(img, 0, 0, 256, 256, 0, 0, 80, 80);
             };
+            const idleName = skin.customSpriteNames?.idle || 'idle.webp';
             img.src = skin.customSpritePath
-                ? `${skin.customSpritePath}/idle.webp`
+                ? `${skin.customSpritePath}/${idleName}`
                 : `images/wizards/${skin.faction}/${skin.spriteConfig}_idle.webp`;
         }
     }, 50);
