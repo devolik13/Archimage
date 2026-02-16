@@ -241,6 +241,17 @@ function showArenaMainMenu() {
             },
             enabled: hasArena,
             cyan: true // Голубой цвет для дуэли
+        },
+        {
+            text: '🏆 Чемпионат',
+            onClick: () => {
+                closePvPArenaModalBg();
+                if (typeof window.showTournamentUI === 'function') {
+                    window.showTournamentUI();
+                }
+            },
+            enabled: true,
+            gold: true // Золотой цвет для чемпионата
         }
     ];
     
@@ -251,7 +262,7 @@ function showArenaMainMenu() {
     drawArenaBackButton(scaleX, scaleY, overlay, closePvPArenaModalBg, '← Закрыть');
 }
 
-// Утилита для рисования кнопок арены (поддержка 5 кнопок: 3+2)
+// Утилита для рисования кнопок арены (2 ряда: 3 сверху + остальные снизу)
 function drawArenaButtons(buttons, buttonsArea, scaleX, scaleY, overlay) {
     const buttonFontSize = Math.max(12, 16 * Math.min(scaleX, scaleY));
     const borderRadius = Math.max(4, 8 * Math.min(scaleX, scaleY));
