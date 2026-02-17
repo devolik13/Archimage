@@ -39,6 +39,9 @@ const ADS_CATEGORIES = [
 // Конфигурация заданий
 const ADS_TASKS = [
     // --- Каналы о Крипте ---
+    { id: 'cryptomax', category: 'crypto', icon: '👑', name: 'Crypto Max', reward: '+100 BPM + ⏰ 1 день', taskKey: 'cryptomax', action: 'window.openCryptoMax()', checkAction: 'window.checkCryptoMax()', btnLabel: 'Подписаться', btnGradient: ['#ffd700', '#cc9900'], btnTextColor: '#000' },
+    { id: 'cryptobronia', category: 'crypto', icon: '📢', name: 'Crypto Bronia', reward: '+100 BPM + ⏰ 2ч', taskKey: 'cryptobronia', action: 'window.openCryptoBronia()', btnLabel: 'Подписаться', btnGradient: ['#22c55e', '#16a34a'], btnTextColor: '#fff' },
+    { id: 'cryptozarabotok', category: 'crypto', icon: '📢', name: 'Crypto_Zarabotok', reward: '+100 BPM + ⏰ 2ч', taskKey: 'cryptozarabotok', action: 'window.openCryptoZarabotok()', btnLabel: 'Подписаться', btnGradient: ['#f59e0b', '#d97706'], btnTextColor: '#000' },
     { id: 'cryptocyeta', category: 'crypto', icon: '📢', name: 'CryptoCyetaUA', reward: '+100 BPM + ⏰ 2ч', taskKey: 'cryptocyeta', action: 'window.openCryptoCyeta()', btnLabel: 'Подписаться', btnGradient: ['#22c55e', '#16a34a'], btnTextColor: '#fff' },
     { id: 'cryptworks', category: 'crypto', icon: '📢', name: 'Крипто роботяги', reward: '+100 BPM + ⏰ 2ч', taskKey: 'cryptworks', action: 'window.openCryptworks()', btnLabel: 'Подписаться', btnGradient: ['#8b5cf6', '#7c3aed'], btnTextColor: '#fff' },
     { id: 'cryptohud', category: 'crypto', icon: '📢', name: 'CryptoHud', reward: '+100 BPM + ⏰ 2ч', taskKey: 'cryptohud', action: 'window.openCryptoHud()', btnLabel: 'Подписаться', btnGradient: ['#3b82f6', '#2563eb'], btnTextColor: '#fff' },
@@ -359,9 +362,9 @@ function renderTaskCard(task, fontSize, smallFontSize) {
             text-align: center; white-space: nowrap;
         ">✓</div>`;
     } else if (task.checkAction) {
-        let gkOpened = false;
-        try { gkOpened = localStorage.getItem('gift_kombat_opened') === '1'; } catch(e) {}
-        if (gkOpened) {
+        let taskOpened = false;
+        try { taskOpened = localStorage.getItem(`${task.taskKey}_opened`) === '1'; } catch(e) {}
+        if (taskOpened) {
             buttonHtml = `<button onclick="${task.checkAction}" style="
                 padding: 4px 10px; background: linear-gradient(135deg, #f97316, #ea580c);
                 border: none; border-radius: 6px; color: white;
