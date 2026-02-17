@@ -45,7 +45,7 @@
 
         console.log(`💀 Создание нового скелета ${skeletonId}`);
 
-        const idleTexturePath = 'images/spells/necro/idle.webp';
+        const idleTexturePath = 'images/spells/necro/sceleton/idle.webp';
 
         PIXI.Assets.load(idleTexturePath).then(baseTexture => {
             if (!baseTexture || !baseTexture.valid) {

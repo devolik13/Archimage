@@ -29,8 +29,8 @@ class SummonsManager {
             },
             'necromant_skeleton': {
                 name: 'Скелет',
-                sprite: 'images/spells/necro/idle.webp',
-                attackSprite: 'images/spells/necro/attack.webp',
+                sprite: 'images/spells/necro/sceleton/idle.webp',
+                attackSprite: 'images/spells/necro/sceleton/attack.webp',
                 frameWidth: 256,   // 1280 / 5
                 frameHeight: 256,  // 1280 / 5
                 framesX: 5,
