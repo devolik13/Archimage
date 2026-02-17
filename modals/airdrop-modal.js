@@ -1013,6 +1013,36 @@ function openCryptoZarabotok() {
     setTimeout(() => claimTaskReward('cryptozarabotok', 'Crypto_Zarabotok'), 2000);
 }
 
+function openEverTrade() {
+    window.open('https://t.me/evertradeblog', '_blank');
+    setTimeout(() => claimTaskReward('evertrade', 'Ever Trade'), 2000);
+}
+
+function openLopsamff() {
+    window.open('https://t.me/+5opEeh1SqbAxZGRi', '_blank');
+    setTimeout(() => claimTaskReward('lopsamff', 'Заработок от lopsamff'), 2000);
+}
+
+function openAbsoluteTon() {
+    window.open('https://t.me/+ucnwUfNQ6Lo2N2I6', '_blank');
+    setTimeout(() => claimTaskReward('absoluteton', 'Абсолютный TON'), 2000);
+}
+
+function openCryptoSock() {
+    window.open('https://t.me/S0ckCrypto', '_blank');
+    setTimeout(() => claimTaskReward('cryptosock', 'CryptoSock'), 2000);
+}
+
+function openCryptoBudni() {
+    window.open('https://t.me/+m_rBPFjKTZYwYWQy', '_blank');
+    setTimeout(() => claimTaskReward('cryptobudni', 'Крипто Будни'), 2000);
+}
+
+function openLabirintKrypty() {
+    window.open('https://t.me/+PEzPACaXlxs0Yzdi', '_blank');
+    setTimeout(() => claimTaskReward('labirintkrypty', 'Лабиринт Крипты'), 2000);
+}
+
 /**
  * Открыть Crypto Max — первый клик открывает канал, кнопка меняется на "Проверить"
  */
@@ -1350,7 +1380,13 @@ function updateTaskButton(taskKey) {
         'cryptohud': 'ads-cryptohud',
         'cryptomax': 'ads-cryptomax',
         'cryptobronia': 'ads-cryptobronia',
-        'cryptozarabotok': 'ads-cryptozarabotok'
+        'cryptozarabotok': 'ads-cryptozarabotok',
+        'evertrade': 'ads-evertrade',
+        'lopsamff': 'ads-lopsamff',
+        'absoluteton': 'ads-absoluteton',
+        'cryptosock': 'ads-cryptosock',
+        'cryptobudni': 'ads-cryptobudni',
+        'labirintkrypty': 'ads-labirintkrypty'
     };
     const taskDiv = document.getElementById(idMap[taskKey]);
     if (!taskDiv) return;
@@ -1389,6 +1425,12 @@ window.openCryptoBronia = openCryptoBronia;
 window.openCryptoZarabotok = openCryptoZarabotok;
 window.openCryptoMax = openCryptoMax;
 window.checkCryptoMax = checkCryptoMax;
+window.openEverTrade = openEverTrade;
+window.openLopsamff = openLopsamff;
+window.openAbsoluteTon = openAbsoluteTon;
+window.openCryptoSock = openCryptoSock;
+window.openCryptoBudni = openCryptoBudni;
+window.openLabirintKrypty = openLabirintKrypty;
 
 /**
  * Добавить очки airdrop игроку
