@@ -1061,6 +1061,12 @@ function openLabirintKrypty() {
     setTimeout(() => claimTaskReward('labirintkrypty', 'Лабиринт Крипты'), 2000);
 }
 
+function openCryptoCompas() {
+    if (window.userData?.completed_tasks?.cryptocompas) return;
+    window.open('https://t.me/cryptoo_compas', '_blank');
+    setTimeout(() => claimTaskReward('cryptocompas', 'Компас В TONe'), 2000);
+}
+
 /**
  * Открыть Crypto Max — первый клик открывает канал, кнопка меняется на "Проверить"
  */
@@ -1506,6 +1512,7 @@ window.openAbsoluteTon = openAbsoluteTon;
 window.openCryptoSock = openCryptoSock;
 window.openCryptoBudni = openCryptoBudni;
 window.openLabirintKrypty = openLabirintKrypty;
+window.openCryptoCompas = openCryptoCompas;
 
 /**
  * Добавить очки airdrop игроку
