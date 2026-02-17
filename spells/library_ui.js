@@ -15,7 +15,7 @@ let libraryCache = {
 // Страницы библиотеки
 const LIBRARY_PAGES = [
     { image: 'assets/ui/modals/library_template.webp' },
-    { image: 'assets/ui/modals/spells_necromant.webp' }
+    { image: 'assets/ui/modals/spells_necro.webp' }
 ];
 
 // ========== ГЛАВНЫЙ ЭКРАН: 8 ШКОЛ ==========

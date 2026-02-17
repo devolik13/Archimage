@@ -72,7 +72,7 @@ const PRELOAD_ASSETS = {
         'assets/ui/modals/spells_poison.webp',
         'assets/ui/modals/spells_light.webp',
         'assets/ui/modals/spells_dark.webp',
-        'assets/ui/modals/spells_necromant.webp'
+        'assets/ui/modals/spells_necro.webp'
     ],
 
     // Подсказки (768x512 webp)
