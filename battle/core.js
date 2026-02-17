@@ -221,7 +221,9 @@ function startBattle() {
         if (window.spellAnimations.call_wolf?.clearAll) {
             window.spellAnimations.call_wolf.clearAll();
         }
-        // Здесь можно добавить очистку других анимаций по мере добавления
+        if (window.spellAnimations.summon_skeleton?.clearAll) {
+            window.spellAnimations.summon_skeleton.clearAll();
+        }
     }
 
     window.activeMeteorokinesis = [];
@@ -965,6 +967,14 @@ async function executeSingleMageAttack(wizard, position, casterType) {
                 if (summon.type === 'nature_wolf') {
                     if (typeof window.performWolfAttack === 'function') {
                         window.performWolfAttack(summon, wizard);
+                        if (await checkBattleEnd()) {
+                            return false;
+                        }
+                    }
+                }
+                if (summon.type === 'necromant_skeleton') {
+                    if (typeof window.performSkeletonAttack === 'function') {
+                        window.performSkeletonAttack(summon, wizard);
                         if (await checkBattleEnd()) {
                             return false;
                         }

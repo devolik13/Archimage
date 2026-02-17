@@ -77,20 +77,38 @@ function performSkeletonAttack(skeleton, caster) {
         // Урон скелета для XP хозяина подсчитывается через дельту HP в core.js
 
         // Обновляем визуальный HP бар цели
-        if (typeof window.updateWizardVisualHP === 'function') {
-            const targetColumn = target.column || (skeleton.casterType === 'player' ? 5 : 0);
-            window.updateWizardVisualHP(target.wizard, targetColumn, target.position);
+        if (window.pixiWizards && typeof window.pixiWizards.updateHP === 'function') {
+            const targetCol = target.column !== undefined ? target.column : (skeleton.casterType === 'player' ? 0 : 5);
+            const targetRow = target.position;
+            const key = `${targetCol}_${targetRow}`;
+            window.pixiWizards.updateHP(key, target.wizard.hp, target.wizard.max_hp);
         }
 
-        if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`💀 Скелет атакует ${target.wizard.name}: ${finalDamage} урона`);
-        }
-
-        // Проверяем смерть
+        // Проверка смерти и анимация
         if (target.wizard.hp <= 0) {
+            if (window.pixiWizards && typeof window.pixiWizards.playDeath === 'function') {
+                const targetCol = target.column !== undefined ? target.column : (skeleton.casterType === 'player' ? 0 : 5);
+                const targetRow = target.position;
+                const key = `${targetCol}_${targetRow}`;
+                const container = window.wizardSprites?.[key];
+                if (container && !container.deathAnimationStarted) {
+                    container.deathAnimationStarted = true;
+                    window.pixiWizards.playDeath(targetCol, targetRow);
+                }
+            }
             if (typeof window.trackBattleKill === 'function' && skeleton.casterType === 'player') {
                 window.trackBattleKill(caster);
             }
+        }
+
+        // Логирование
+        if (typeof window.logSpellHit === 'function') {
+            const bonuses = [];
+            if (skeleton.level) bonuses.push(`Ур.${skeleton.level}`);
+            if (caster.name !== skeleton.name) bonuses.push(`от ${caster.name}`);
+            window.logSpellHit(skeleton, target.wizard, finalDamage, 'Удар скелета', bonuses);
+        } else if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`💀 Скелет атакует ${target.wizard.name}: ${finalDamage} урона (${target.wizard.hp}/${target.wizard.max_hp} HP)`);
         }
     }
 }

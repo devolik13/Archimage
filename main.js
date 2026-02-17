@@ -258,6 +258,7 @@ import './animations/dark/fading.js';
 // ============================================
 // 21. АНИМАЦИИ ЗАКЛИНАНИЙ - НЕКРОМАНТИЯ (Necromant)
 // ============================================
+import './animations/necromant/summon-skeleton.js';
 import './animations/necromant/bone-spear.js';
 
 // ============================================
