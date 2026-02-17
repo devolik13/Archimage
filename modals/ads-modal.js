@@ -371,12 +371,19 @@ function renderTaskCard(task, fontSize, smallFontSize) {
         let taskOpened = false;
         try { taskOpened = localStorage.getItem(`${task.taskKey}_opened`) === '1'; } catch(e) {}
         if (taskOpened) {
-            buttonHtml = `<button onclick="${task.checkAction}" style="
-                padding: 4px 10px; background: linear-gradient(135deg, #f97316, #ea580c);
-                border: none; border-radius: 6px; color: white;
-                font-size: ${smallFontSize * 0.85}px; font-weight: bold;
-                cursor: pointer; white-space: nowrap;
-            ">Проверить</button>`;
+            buttonHtml = `<div style="display: flex; gap: 4px; align-items: center;">
+                <button onclick="${task.action}" style="
+                    padding: 4px 8px; background: rgba(255,255,255,0.15);
+                    border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; color: #aaa;
+                    font-size: ${smallFontSize * 0.75}px; cursor: pointer; white-space: nowrap;
+                ">Перейти</button>
+                <button onclick="${task.checkAction}" style="
+                    padding: 4px 10px; background: linear-gradient(135deg, #f97316, #ea580c);
+                    border: none; border-radius: 6px; color: white;
+                    font-size: ${smallFontSize * 0.85}px; font-weight: bold;
+                    cursor: pointer; white-space: nowrap;
+                ">Проверить</button>
+            </div>`;
         } else {
             buttonHtml = `<button onclick="${task.action}" style="
                 padding: 4px 10px; background: linear-gradient(135deg, ${task.btnGradient[0]}, ${task.btnGradient[1]});
