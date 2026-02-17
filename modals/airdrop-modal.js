@@ -1104,9 +1104,31 @@ async function checkCryptoMax() {
 
         const result = await response.json();
 
-        if (result.success || result.subscribed) {
-            await claimTaskRewardDay('cryptomax', 'Crypto Max');
-            window.showNotification?.('🎉 Crypto Max — награда получена! +100 BPM + ⏰ 1 день');
+        if (result.success && result.reward) {
+            // Награда начислена серверно — обновляем локальные данные
+            if (!window.userData.completed_tasks) window.userData.completed_tasks = {};
+            window.userData.completed_tasks[result.reward.task_key] = true;
+
+            // Синхронизируем время локально (серверно уже начислено через RPC)
+            const currentBalance = typeof window.getTimeCurrency === 'function' ? window.getTimeCurrency() : (window.userData.time_currency_base || 0);
+            window.userData.time_currency_base = currentBalance + result.reward.time_minutes;
+            window.userData.time_currency_updated_at = typeof getServerNow === 'function' ? getServerNow().toISOString() : new Date().toISOString();
+
+            // Синхронизируем BPM локально
+            window.userData.airdrop_points = (window.userData.airdrop_points || 0) + result.reward.bpm_points;
+            if (!window.userData.airdrop_breakdown) window.userData.airdrop_breakdown = {};
+            window.userData.airdrop_breakdown['Crypto Max'] = (window.userData.airdrop_breakdown['Crypto Max'] || 0) + result.reward.bpm_points;
+
+            updateTaskButton('cryptomax');
+            updateAirdropPointsDisplay();
+            if (typeof window.updateTimerDisplay === 'function') window.updateTimerDisplay();
+
+            window.showNotification?.(`🎉 Crypto Max — награда получена! +${result.reward.bpm_points} BPM + ⏰ 1 день`);
+        } else if (result.error === 'already_claimed') {
+            if (!window.userData.completed_tasks) window.userData.completed_tasks = {};
+            window.userData.completed_tasks.cryptomax = true;
+            updateTaskButton('cryptomax');
+            window.showNotification?.('✓ Награда уже получена ранее');
         } else {
             window.open('https://t.me/cryptomaxbablo', '_blank');
             window.showNotification?.('❌ Вы не подписаны на канал. Подпишитесь и нажмите "Проверить" снова.');

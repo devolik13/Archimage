@@ -69,4 +69,3 @@ window.CITY_POSITIONS.earth = {
         ]
     }
 };
-
