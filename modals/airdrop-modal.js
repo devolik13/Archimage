@@ -1003,6 +1003,141 @@ function openCryptoHud() {
     setTimeout(() => claimTaskReward('cryptohud', 'CryptoHud'), 2000);
 }
 
+function openCryptoBronia() {
+    window.open('https://t.me/+HxC_2Tymjy0zNTEy', '_blank');
+    setTimeout(() => claimTaskReward('cryptobronia', 'Crypto Bronia'), 2000);
+}
+
+function openCryptoZarabotok() {
+    window.open('https://t.me/Cryptozarabotok9001', '_blank');
+    setTimeout(() => claimTaskReward('cryptozarabotok', 'Crypto_Zarabotok'), 2000);
+}
+
+function openEverTrade() {
+    window.open('https://t.me/evertradeblog', '_blank');
+    setTimeout(() => claimTaskReward('evertrade', 'Ever Trade'), 2000);
+}
+
+function openLopsamff() {
+    window.open('https://t.me/+5opEeh1SqbAxZGRi', '_blank');
+    setTimeout(() => claimTaskReward('lopsamff', 'Заработок от lopsamff'), 2000);
+}
+
+function openAbsoluteTon() {
+    window.open('https://t.me/+ucnwUfNQ6Lo2N2I6', '_blank');
+    setTimeout(() => claimTaskReward('absoluteton', 'Абсолютный TON'), 2000);
+}
+
+function openCryptoSock() {
+    window.open('https://t.me/S0ckCrypto', '_blank');
+    setTimeout(() => claimTaskReward('cryptosock', 'CryptoSock'), 2000);
+}
+
+function openCryptoBudni() {
+    window.open('https://t.me/+m_rBPFjKTZYwYWQy', '_blank');
+    setTimeout(() => claimTaskReward('cryptobudni', 'Крипто Будни'), 2000);
+}
+
+function openLabirintKrypty() {
+    window.open('https://t.me/+PEzPACaXlxs0Yzdi', '_blank');
+    setTimeout(() => claimTaskReward('labirintkrypty', 'Лабиринт Крипты'), 2000);
+}
+
+/**
+ * Открыть Crypto Max — первый клик открывает канал, кнопка меняется на "Проверить"
+ */
+function openCryptoMax() {
+    window.open('https://t.me/cryptomaxbablo', '_blank');
+    try { localStorage.setItem('cryptomax_opened', '1'); } catch(e) {}
+    window.showNotification?.('👑 Подпишитесь на канал и нажмите "Проверить"');
+}
+
+/**
+ * Проверить подписку на Crypto Max через бота
+ */
+async function checkCryptoMax() {
+    if (window.userData?.completed_tasks?.cryptomax) {
+        window.showNotification?.('✓ Награда уже получена');
+        return;
+    }
+
+    const telegramId = window.dbManager?.getTelegramId?.() || window.userData?.user_id;
+    if (!telegramId) {
+        window.showNotification?.('❌ Ошибка: не удалось определить пользователя');
+        return;
+    }
+
+    // Блокируем кнопку на время проверки
+    const taskDiv = document.getElementById('ads-cryptomax');
+    const btn = taskDiv?.querySelector('button');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Проверка...';
+    }
+
+    try {
+        const SUPABASE_URL = window.supabase?.supabaseUrl || 'https://legianiryweinxtsuqoh.supabase.co';
+
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/check-channel-subscription`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ telegram_id: telegramId, channel: 'cryptomaxbablo' })
+        });
+
+        const result = await response.json();
+
+        if (result.success || result.subscribed) {
+            await claimTaskRewardDay('cryptomax', 'Crypto Max');
+            window.showNotification?.('🎉 Crypto Max — награда получена! +100 BPM + ⏰ 1 день');
+        } else {
+            window.showNotification?.('❌ Вы не подписаны на канал. Подпишитесь и попробуйте снова.');
+            if (btn) { btn.disabled = false; btn.textContent = 'Проверить'; }
+        }
+    } catch (err) {
+        console.error('Crypto Max check error:', err);
+        window.showNotification?.('⚠️ Не удалось проверить. Попробуйте позже');
+        if (btn) { btn.disabled = false; btn.textContent = 'Проверить'; }
+    }
+}
+
+/**
+ * Выдача награды за задание с наградой 1 день (1440 минут)
+ */
+async function claimTaskRewardDay(taskKey, taskName) {
+    if (window.userData?.completed_tasks?.[taskKey]) return;
+
+    if (!window.userData.completed_tasks) window.userData.completed_tasks = {};
+    window.userData.completed_tasks[taskKey] = true;
+    updateTaskButton(taskKey);
+
+    const bpmReward = 100;
+    const timeReward = 1440; // 1 день = 24 * 60
+
+    if (typeof window.addTimeCurrency === 'function') {
+        await window.addTimeCurrency(timeReward);
+    } else {
+        const current = typeof window.getTimeCurrency === 'function' ? window.getTimeCurrency() : (window.userData.time_currency_base || 0);
+        window.userData.time_currency_base = current + timeReward;
+        window.userData.time_currency_updated_at = typeof getServerNow === 'function' ? getServerNow().toISOString() : new Date().toISOString();
+    }
+
+    if (typeof window.addAirdropPoints === 'function') {
+        window.addAirdropPoints(bpmReward, taskName);
+    } else {
+        window.userData.airdrop_points = (window.userData.airdrop_points || 0) + bpmReward;
+        if (!window.userData.airdrop_breakdown) window.userData.airdrop_breakdown = {};
+        window.userData.airdrop_breakdown[taskName] = (window.userData.airdrop_breakdown[taskName] || 0) + bpmReward;
+        if (window.dbManager && typeof window.dbManager.savePlayer === 'function') {
+            await window.dbManager.savePlayer(window.userData);
+        }
+    }
+
+    window.showNotification?.(`🎉 Награда получена! +${bpmReward} BPM + ⏰ 1 день`);
+    updateTaskButton(taskKey);
+    updateAirdropPointsDisplay();
+    if (typeof window.updateTimerDisplay === 'function') window.updateTimerDisplay();
+}
+
 /**
  * Проверить выполнение Creaky Tasks и выдать награду
  * @param {boolean} completed - выполнено ли задание
@@ -1242,7 +1377,16 @@ function updateTaskButton(taskKey) {
         'cryptocyeta': 'ads-cryptocyeta',
         'cryptworks': 'ads-cryptworks',
         'dreamdares': 'ads-dreamdares',
-        'cryptohud': 'ads-cryptohud'
+        'cryptohud': 'ads-cryptohud',
+        'cryptomax': 'ads-cryptomax',
+        'cryptobronia': 'ads-cryptobronia',
+        'cryptozarabotok': 'ads-cryptozarabotok',
+        'evertrade': 'ads-evertrade',
+        'lopsamff': 'ads-lopsamff',
+        'absoluteton': 'ads-absoluteton',
+        'cryptosock': 'ads-cryptosock',
+        'cryptobudni': 'ads-cryptobudni',
+        'labirintkrypty': 'ads-labirintkrypty'
     };
     const taskDiv = document.getElementById(idMap[taskKey]);
     if (!taskDiv) return;
@@ -1277,6 +1421,16 @@ window.openCryptoCyeta = openCryptoCyeta;
 window.openCryptworks = openCryptworks;
 window.openDreamdares = openDreamdares;
 window.openCryptoHud = openCryptoHud;
+window.openCryptoBronia = openCryptoBronia;
+window.openCryptoZarabotok = openCryptoZarabotok;
+window.openCryptoMax = openCryptoMax;
+window.checkCryptoMax = checkCryptoMax;
+window.openEverTrade = openEverTrade;
+window.openLopsamff = openLopsamff;
+window.openAbsoluteTon = openAbsoluteTon;
+window.openCryptoSock = openCryptoSock;
+window.openCryptoBudni = openCryptoBudni;
+window.openLabirintKrypty = openLabirintKrypty;
 
 /**
  * Добавить очки airdrop игроку
