@@ -1129,6 +1129,9 @@ async function checkCryptoMax() {
             window.userData.completed_tasks.cryptomax = true;
             updateTaskButton('cryptomax');
             window.showNotification?.('✓ Награда уже получена ранее');
+        } else if (result.error === 'telegram_api_error') {
+            window.showNotification?.('⚠️ Не удалось проверить подписку. Попробуйте позже или обратитесь в поддержку.');
+            if (btn) { btn.disabled = false; btn.textContent = 'Проверить'; }
         } else {
             window.open('https://t.me/cryptomaxbablo', '_blank');
             window.showNotification?.('❌ Вы не подписаны на канал. Подпишитесь и нажмите "Проверить" снова.');
