@@ -115,16 +115,25 @@ function getAvailableBlessings() {
 
 // Активировать благословение
 async function activateBlessing(blessingLevel) {
+    // Защита от повторных быстрых кликов
+    if (window._isActivatingBlessing) {
+        console.log('⚠️ activateBlessing уже в процессе, пропускаем');
+        return false;
+    }
+    window._isActivatingBlessing = true;
+
     const blessing = BLESSING_TOWER_CONFIG.BLESSINGS[blessingLevel];
     if (!blessing) {
+        window._isActivatingBlessing = false;
         if (typeof window.showNotification === 'function') {
             window.showNotification('Неизвестное благословение');
         }
         return false;
     }
-    
+
     const canUseCheck = canUseBlessingTower();
     if (!canUseCheck.canUse) {
+        window._isActivatingBlessing = false;
         if (typeof window.showNotification === 'function') {
             window.showNotification(canUseCheck.reason);
         }
@@ -176,6 +185,9 @@ async function activateBlessing(blessingLevel) {
     } else if (typeof window.closeCurrentModal === 'function') {
         window.closeCurrentModal();
     }
+
+    // Снимаем лок после завершения
+    window._isActivatingBlessing = false;
 
     return true;
 }

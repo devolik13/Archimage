@@ -83,9 +83,18 @@ async function claimLeagueReward(leagueId) {
         return false;
     }
 
+    // Защита от быстрых повторных кликов
+    if (!window._claimingLeagues) window._claimingLeagues = {};
+    if (window._claimingLeagues[leagueId]) {
+        console.log(`⚠️ claimLeagueReward('${leagueId}') уже в процессе, пропускаем`);
+        return false;
+    }
+    window._claimingLeagues[leagueId] = true;
+
     // Проверяем, можно ли получить награду
     if (!canClaimLeagueReward(leagueId)) {
         console.error('❌ Награду невозможно получить');
+        delete window._claimingLeagues[leagueId];
         return false;
     }
 
@@ -93,6 +102,7 @@ async function claimLeagueReward(leagueId) {
     const league = window.LEAGUES.find(l => l.id === leagueId);
     if (!league || !league.rewards) {
         console.error('❌ Награды для лиги не найдены:', leagueId);
+        delete window._claimingLeagues[leagueId];
         return false;
     }
 
@@ -164,6 +174,7 @@ async function claimLeagueReward(leagueId) {
         }
         // time_currency_base: если addTimeCurrency RPC уже отработал — откатить нельзя,
         // но при следующей попытке claimed будет пустой, игрок сможет повторить
+        if (window._claimingLeagues) delete window._claimingLeagues[leagueId];
         return false;
     }
 
@@ -176,6 +187,9 @@ async function claimLeagueReward(leagueId) {
     if (typeof window.updateCurrencyDisplay === 'function') {
         window.updateCurrencyDisplay();
     }
+
+    // Снимаем лок
+    if (window._claimingLeagues) delete window._claimingLeagues[leagueId];
 
     return true;
 }
