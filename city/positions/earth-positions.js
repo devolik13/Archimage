@@ -5,58 +5,67 @@ window.CITY_POSITIONS = window.CITY_POSITIONS || {};
 
 // Координаты в пикселях для изображения 768x512
 window.CITY_POSITIONS.earth = {
+    guild: { // Гильдия
+        buildingId: 'guild',
+        points: [
+            {x: 27, y: 506},
+            {x: 256, y: 506},
+            {x: 256, y: 400},
+            {x: 27, y: 400}
+        ]
+    },
     time_generator: { // Генератор времени
         buildingId: 'time_generator',
         points: [
-            {x: 203, y: 383},
-            {x: 204, y: 450},
-            {x: 580, y: 450},
-            {x: 580, y: 383}
+            {x: 382, y: 500},
+            {x: 660, y: 500},
+            {x: 660, y: 370},
+            {x: 382, y: 370}
         ]
     },
     blessing_tower: { // Башня благословений
         buildingId: 'blessing_tower',
         points: [
-            {x: 600, y: 406},
-            {x: 750, y: 406},
-            {x: 750, y: 70},
-            {x: 600, y: 70}
+            {x: 640, y: 400},
+            {x: 760, y: 400},
+            {x: 760, y: 50},
+            {x: 640, y: 50}
         ]
     },
     wizard_tower: { // Башня магов
         buildingId: 'wizard_tower',
         points: [
-            {x: 142, y: 370},
-            {x: 250, y: 370},
-            {x: 250, y: 50},
-            {x: 142, y: 50}
+            {x: 10, y: 350},
+            {x: 180, y: 350},
+            {x: 100, y: 30},
+            {x: 10, y: 100}
         ]
     },
     arcane_lab: { // Арканская лаборатория
         buildingId: 'arcane_lab',
         points: [
-            {x: 10, y: 420},
-            {x: 110, y: 420},
-            {x: 110, y: 110},
-            {x: 10, y: 110}
+            {x: 500, y: 270},
+            {x: 650, y: 270},
+            {x: 650, y: 60},
+            {x: 500, y: 60}
         ]
     },
     pvp_arena: { // PvP Арена
         buildingId: 'pvp_arena',
         points: [
-            {x: 299, y: 363},
-            {x: 400, y: 363},
-            {x: 410, y: 160},
-            {x: 299, y: 160}
+            {x: 180, y: 315},
+            {x: 350, y: 315},
+            {x: 300, y: 150},
+            {x: 170, y: 150}
         ]
     },
     library: { // Библиотека
         buildingId: 'library',
         points: [
-            {x: 410, y: 370},
-            {x: 500, y: 370},
-            {x: 500, y: 100},
-            {x: 410, y: 100}
+            {x: 318, y: 280},
+            {x: 415, y: 280},
+            {x: 415, y: 10},
+            {x: 318, y: 10}
         ]
     }
 };
