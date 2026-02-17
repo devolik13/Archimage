@@ -15,7 +15,7 @@ let libraryCache = {
 // Страницы библиотеки
 const LIBRARY_PAGES = [
     { image: 'assets/ui/modals/library_template.webp' },
-    { image: 'assets/ui/modals/spells_necro.webp' }
+    { image: 'assets/ui/modals/library_template-2.webp' }
 ];
 
 // ========== ГЛАВНЫЙ ЭКРАН: 8 ШКОЛ ==========
@@ -149,16 +149,17 @@ function setupLibraryClickableZones() {
             zonesContainer.appendChild(zoneDiv);
         });
     } else if (currentLibraryPage === 1) {
-        // Страница 2: Некромантия — иконка на левой странице книги
+        // Страница 2: Некромантия — иконка черепа на левой странице
         const necroZone = document.createElement('div');
         necroZone.style.cssText = `
             position: absolute;
-            left: ${150 * scaleX}px;
+            left: ${170 * scaleX}px;
             top: ${100 * scaleY}px;
-            width: ${200 * scaleX}px;
-            height: ${280 * scaleY}px;
+            width: ${140 * scaleX}px;
+            height: ${220 * scaleY}px;
             cursor: pointer;
             transition: background 0.2s;
+            border-radius: ${10 * btnScale}px;
         `;
 
         if (window.DEV_MODE) {
@@ -172,7 +173,7 @@ function setupLibraryClickableZones() {
         zonesContainer.appendChild(necroZone);
     }
 
-    // === Стрелки листания страниц ===
+    // === Стрелки листания страниц (красные, крупные) ===
     const totalPages = LIBRARY_PAGES.length;
 
     // Стрелка «влево» (предыдущая страница)
@@ -180,23 +181,25 @@ function setupLibraryClickableZones() {
         const leftArrow = document.createElement('div');
         leftArrow.style.cssText = `
             position: absolute;
-            left: ${10 * scaleX}px;
+            left: ${5 * scaleX}px;
             top: 50%;
             transform: translateY(-50%);
-            width: ${40 * btnScale}px;
-            height: ${60 * btnScale}px;
+            width: ${55 * btnScale}px;
+            height: ${90 * btnScale}px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: ${28 * btnScale}px;
-            color: #d4c9a8;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            background: rgba(0,0,0,0.3);
-            border-radius: ${8 * btnScale}px;
+            font-size: ${48 * btnScale}px;
+            font-weight: bold;
+            color: #cc3333;
+            text-shadow: 0 0 8px rgba(200,50,50,0.6), 2px 2px 4px rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(200,50,50,0.4);
+            border-radius: ${10 * btnScale}px;
             user-select: none;
         `;
-        leftArrow.textContent = '‹';
+        leftArrow.textContent = '\u2039';
         const goLeft = () => showLibraryMainScreen(currentLibraryPage - 1);
         leftArrow.addEventListener('click', goLeft);
         leftArrow.addEventListener('touchend', (e) => { e.preventDefault(); goLeft(); });
@@ -208,23 +211,25 @@ function setupLibraryClickableZones() {
         const rightArrow = document.createElement('div');
         rightArrow.style.cssText = `
             position: absolute;
-            right: ${10 * scaleX}px;
+            right: ${5 * scaleX}px;
             top: 50%;
             transform: translateY(-50%);
-            width: ${40 * btnScale}px;
-            height: ${60 * btnScale}px;
+            width: ${55 * btnScale}px;
+            height: ${90 * btnScale}px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: ${28 * btnScale}px;
-            color: #d4c9a8;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            background: rgba(0,0,0,0.3);
-            border-radius: ${8 * btnScale}px;
+            font-size: ${48 * btnScale}px;
+            font-weight: bold;
+            color: #cc3333;
+            text-shadow: 0 0 8px rgba(200,50,50,0.6), 2px 2px 4px rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(200,50,50,0.4);
+            border-radius: ${10 * btnScale}px;
             user-select: none;
         `;
-        rightArrow.textContent = '›';
+        rightArrow.textContent = '\u203A';
         const goRight = () => showLibraryMainScreen(currentLibraryPage + 1);
         rightArrow.addEventListener('click', goRight);
         rightArrow.addEventListener('touchend', (e) => { e.preventDefault(); goRight(); });
