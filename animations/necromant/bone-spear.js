@@ -37,44 +37,82 @@
         const startY = startCell.y + startCell.height / 2;
         const endX = endCell.x + endCell.width / 2;
         const cellScale = startCell.cellScale || 1;
-
-        // Создаём копьё (PIXI.Graphics fallback)
-        const spear = new PIXI.Graphics();
-        const spearLength = 30 * cellScale;
-        const spearWidth = 4 * cellScale;
         const direction = casterType === 'player' ? -1 : 1;
 
-        // Древко копья (кость)
-        spear.beginFill(0xE8DCC8, 1);
-        spear.drawRect(-spearLength / 2, -spearWidth / 2, spearLength, spearWidth);
-        spear.endFill();
+        // Загружаем спрайт копья
+        const spearTexturePath = 'images/spells/necro/bone spear/bone_spear.webp';
 
-        // Наконечник (острый)
-        spear.beginFill(0xCCBBAA, 1);
-        const tipX = direction > 0 ? spearLength / 2 : -spearLength / 2;
-        spear.moveTo(tipX, -spearWidth);
-        spear.lineTo(tipX + direction * 12 * cellScale, 0);
-        spear.lineTo(tipX, spearWidth);
-        spear.closePath();
-        spear.endFill();
+        PIXI.Assets.load(spearTexturePath).then(texture => {
+            if (!texture || !texture.valid) {
+                createFallbackSpear();
+                return;
+            }
 
-        // Хвост (трещины/декор)
-        spear.beginFill(0xB8A898, 0.8);
-        const tailX = direction > 0 ? -spearLength / 2 : spearLength / 2;
-        spear.drawCircle(tailX, 0, 3 * cellScale);
-        spear.endFill();
+            const spear = new PIXI.Sprite(texture);
+            spear.anchor.set(0.5);
 
-        spear.x = startX;
-        spear.y = startY;
-        spear.alpha = 0.95;
+            // Масштабируем: целевая ширина ~80px * cellScale
+            const targetWidth = 80 * cellScale;
+            const spriteScale = targetWidth / texture.width;
+            spear.scale.set(spriteScale);
 
-        effectsContainer.addChild(spear);
+            // Спрайт направлен наконечником вправо; для игрока (летит влево) зеркалим
+            if (direction < 0) {
+                spear.scale.x = -spriteScale;
+            }
 
-        // Шлейф тёмной энергии
-        const trail = new PIXI.Graphics();
-        effectsContainer.addChild(trail);
+            spear.x = startX;
+            spear.y = startY;
+            spear.alpha = 0.95;
 
-        // Анимация полёта
+            effectsContainer.addChild(spear);
+
+            // Шлейф тёмной энергии
+            const trail = new PIXI.Graphics();
+            effectsContainer.addChild(trail);
+
+            runFlyAnimation(spear, trail, startX, startY, endX, direction, cellScale, targets, gridCells, effectsContainer, onComplete);
+        }).catch(() => {
+            createFallbackSpear();
+        });
+
+        function createFallbackSpear() {
+            const spear = new PIXI.Graphics();
+            const spearLength = 30 * cellScale;
+            const spearWidth = 4 * cellScale;
+
+            spear.beginFill(0xE8DCC8, 1);
+            spear.drawRect(-spearLength / 2, -spearWidth / 2, spearLength, spearWidth);
+            spear.endFill();
+
+            spear.beginFill(0xCCBBAA, 1);
+            const tipX = direction > 0 ? spearLength / 2 : -spearLength / 2;
+            spear.moveTo(tipX, -spearWidth);
+            spear.lineTo(tipX + direction * 12 * cellScale, 0);
+            spear.lineTo(tipX, spearWidth);
+            spear.closePath();
+            spear.endFill();
+
+            spear.beginFill(0xB8A898, 0.8);
+            const tailX = direction > 0 ? -spearLength / 2 : spearLength / 2;
+            spear.drawCircle(tailX, 0, 3 * cellScale);
+            spear.endFill();
+
+            spear.x = startX;
+            spear.y = startY;
+            spear.alpha = 0.95;
+
+            effectsContainer.addChild(spear);
+
+            const trail = new PIXI.Graphics();
+            effectsContainer.addChild(trail);
+
+            runFlyAnimation(spear, trail, startX, startY, endX, direction, cellScale, targets, gridCells, effectsContainer, onComplete);
+        }
+    }
+
+    // Анимация полёта копья (общая для спрайта и fallback)
+    function runFlyAnimation(spear, trail, startX, startY, endX, direction, cellScale, targets, gridCells, effectsContainer, onComplete) {
         const duration = 500;
         const startTime = Date.now();
         let animActive = true;

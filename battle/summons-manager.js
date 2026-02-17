@@ -29,12 +29,16 @@ class SummonsManager {
             },
             'necromant_skeleton': {
                 name: 'Скелет',
-                sprite: null, // пока без спрайта
-                color: 0xCCCCCC,
-                width: 15,
-                height: 25,
+                sprite: 'images/spells/necro/sceleton/idle.webp',
+                attackSprite: 'images/spells/necro/sceleton/attack.webp',
+                frameWidth: 256,   // 1280 / 5
+                frameHeight: 256,  // 1280 / 5
+                framesX: 5,
+                framesY: 5,
+                frames: 25,
+                animationSpeed: 0.08,
+                scale: 0.45,
                 yOffset: 0.7,
-                scale: 0.60,
                 attackAnimation: 'slash'
             },
             'nature_ent': {

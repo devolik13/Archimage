@@ -1061,6 +1061,12 @@ function openLabirintKrypty() {
     setTimeout(() => claimTaskReward('labirintkrypty', 'Лабиринт Крипты'), 2000);
 }
 
+function openCryptoCompas() {
+    if (window.userData?.completed_tasks?.cryptocompas) return;
+    window.open('https://t.me/cryptoo_compas', '_blank');
+    setTimeout(() => claimTaskReward('cryptocompas', 'Компас В TONe'), 2000);
+}
+
 /**
  * Открыть Crypto Max — первый клик открывает канал, кнопка меняется на "Проверить"
  */
@@ -1129,6 +1135,9 @@ async function checkCryptoMax() {
             window.userData.completed_tasks.cryptomax = true;
             updateTaskButton('cryptomax');
             window.showNotification?.('✓ Награда уже получена ранее');
+        } else if (result.error === 'telegram_api_error') {
+            window.showNotification?.('⚠️ Не удалось проверить подписку. Попробуйте позже или обратитесь в поддержку.');
+            if (btn) { btn.disabled = false; btn.textContent = 'Проверить'; }
         } else {
             window.open('https://t.me/cryptomaxbablo', '_blank');
             window.showNotification?.('❌ Вы не подписаны на канал. Подпишитесь и нажмите "Проверить" снова.');
@@ -1503,6 +1512,7 @@ window.openAbsoluteTon = openAbsoluteTon;
 window.openCryptoSock = openCryptoSock;
 window.openCryptoBudni = openCryptoBudni;
 window.openLabirintKrypty = openLabirintKrypty;
+window.openCryptoCompas = openCryptoCompas;
 
 /**
  * Добавить очки airdrop игроку
