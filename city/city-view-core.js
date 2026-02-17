@@ -274,9 +274,10 @@ function loadBuildingImageNew(faction, buildingId, container, zIndex) {
     };
     
     buildingImg.onerror = () => {
-        console.error(`❌ Не удалось загрузить здание: ${buildingPath}`);
+        console.warn(`⚠️ Нет картинки здания: ${buildingPath} — пропускаем`);
+        buildingImg.remove();
     };
-    
+
     container.appendChild(buildingImg);
 }
 

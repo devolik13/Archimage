@@ -5,7 +5,7 @@ window.CITY_POSITIONS = window.CITY_POSITIONS || {};
 
 // Координаты в пикселях для изображения 768x512
 window.CITY_POSITIONS.necromant = {
-    time_generator: { // Генератор времени
+    time_generator: { // Генератор времени (без отдельной картинки — встроен в фон)
         buildingId: 'time_generator',
         points: [
             {x: 203, y: 383},
