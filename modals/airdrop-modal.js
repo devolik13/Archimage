@@ -1108,7 +1108,8 @@ async function checkCryptoMax() {
             await claimTaskRewardDay('cryptomax', 'Crypto Max');
             window.showNotification?.('🎉 Crypto Max — награда получена! +100 BPM + ⏰ 1 день');
         } else {
-            window.showNotification?.('❌ Вы не подписаны на канал. Подпишитесь и попробуйте снова.');
+            window.open('https://t.me/cryptomaxbablo', '_blank');
+            window.showNotification?.('❌ Вы не подписаны на канал. Подпишитесь и нажмите "Проверить" снова.');
             if (btn) { btn.disabled = false; btn.textContent = 'Проверить'; }
         }
     } catch (err) {
