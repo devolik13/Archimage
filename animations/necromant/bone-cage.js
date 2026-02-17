@@ -1,0 +1,242 @@
+// animations/necromant/bone-cage.js - Анимация заклинания "Костяная клетка"
+// Клетка из костей появляется на цели, захватывая её
+
+(function() {
+    const ANIMATION_ID = 'bone_cage';
+
+    function playBoneCageAnimation(params) {
+        const { casterType, position, targets, level, onComplete } = params;
+
+        if (window.fastSimulation) {
+            if (onComplete) onComplete();
+            return;
+        }
+
+        const effectsContainer = window.pixiCore?.getEffectsContainer();
+        const gridCells = window.pixiCore?.getGridCells();
+
+        if (!effectsContainer || !gridCells) {
+            if (onComplete) onComplete();
+            return;
+        }
+
+        // Определяем позицию цели
+        const target = targets?.[0];
+        const targetCol = target?.column ?? (casterType === 'player' ? 0 : 5);
+        const targetRow = target?.position ?? position;
+        const targetCell = gridCells[targetCol]?.[targetRow];
+
+        if (!targetCell) {
+            if (onComplete) onComplete();
+            return;
+        }
+
+        const targetX = targetCell.x + targetCell.width / 2;
+        const targetY = targetCell.y + targetCell.height / 2;
+        const cellScale = targetCell.cellScale || 1;
+
+        // Загружаем спрайт клетки
+        const cageTexturePath = 'images/spells/necro/bone cage/bone_cage.webp';
+
+        PIXI.Assets.load(cageTexturePath).then(texture => {
+            if (!texture || !texture.valid) {
+                createFallbackCage();
+                return;
+            }
+
+            const cage = new PIXI.Sprite(texture);
+            cage.anchor.set(0.5);
+
+            // Масштаб: целевая высота ~70px * cellScale
+            const targetHeight = 70 * cellScale;
+            const spriteScale = targetHeight / texture.height;
+            cage.scale.set(spriteScale * 0.1);
+
+            cage.x = targetX;
+            cage.y = targetY;
+            cage.alpha = 0;
+
+            effectsContainer.addChild(cage);
+
+            // Тёмные частицы при появлении
+            createBoneParticles(targetX, targetY, cellScale, effectsContainer);
+
+            // Анимация: вырастает из земли
+            const startTime = Date.now();
+            const growDuration = 400;
+
+            const animateGrow = () => {
+                if (!window.pixiAnimUtils?.isValid(cage)) {
+                    if (onComplete) onComplete();
+                    return;
+                }
+
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / growDuration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+
+                try {
+                    cage.scale.set(spriteScale * (0.1 + 0.9 * eased));
+                    cage.alpha = eased * 0.9;
+                    // Поднимается снизу
+                    cage.y = targetY + (1 - eased) * 15 * cellScale;
+                } catch (e) {
+                    cleanup();
+                    if (onComplete) onComplete();
+                    return;
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateGrow);
+                } else {
+                    // Держим клетку видимой на мгновение, затем плавно убираем
+                    setTimeout(() => fadeOut(cage, effectsContainer, onComplete), 600);
+                }
+            };
+            animateGrow();
+
+            function cleanup() {
+                if (cage && cage.parent) {
+                    effectsContainer.removeChild(cage);
+                    cage.destroy();
+                }
+            }
+
+        }).catch(() => {
+            createFallbackCage();
+        });
+
+        function createFallbackCage() {
+            // Фоллбэк: рисуем простую решётку
+            const cage = new PIXI.Graphics();
+            const w = 25 * cellScale;
+            const h = 35 * cellScale;
+
+            // Вертикальные прутья
+            cage.lineStyle(2 * cellScale, 0xE8DCC8, 0.9);
+            for (let i = -2; i <= 2; i++) {
+                cage.moveTo(i * w / 4, -h / 2);
+                cage.lineTo(i * w / 4, h / 2);
+            }
+            // Горизонтальные перекладины
+            cage.moveTo(-w / 2, -h / 3);
+            cage.lineTo(w / 2, -h / 3);
+            cage.moveTo(-w / 2, h / 3);
+            cage.lineTo(w / 2, h / 3);
+
+            cage.x = targetX;
+            cage.y = targetY;
+            cage.alpha = 0;
+            cage.scale.set(0.1);
+
+            effectsContainer.addChild(cage);
+
+            createBoneParticles(targetX, targetY, cellScale, effectsContainer);
+
+            const startTime = Date.now();
+            const growDuration = 400;
+
+            const animateGrow = () => {
+                if (!window.pixiAnimUtils?.isValid(cage)) {
+                    if (onComplete) onComplete();
+                    return;
+                }
+
+                const progress = Math.min((Date.now() - startTime) / growDuration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+
+                try {
+                    cage.scale.set(0.1 + 0.9 * eased);
+                    cage.alpha = eased * 0.9;
+                    cage.y = targetY + (1 - eased) * 15 * cellScale;
+                } catch (e) {
+                    if (onComplete) onComplete();
+                    return;
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateGrow);
+                } else {
+                    setTimeout(() => fadeOut(cage, effectsContainer, onComplete), 600);
+                }
+            };
+            animateGrow();
+        }
+    }
+
+    function fadeOut(sprite, container, onComplete) {
+        const startTime = Date.now();
+        const duration = 300;
+
+        const animate = () => {
+            if (!window.pixiAnimUtils?.isValid(sprite)) {
+                if (onComplete) onComplete();
+                return;
+            }
+
+            const progress = Math.min((Date.now() - startTime) / duration, 1);
+
+            try {
+                sprite.alpha = 0.9 * (1 - progress);
+            } catch (e) {
+                if (onComplete) onComplete();
+                return;
+            }
+
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                if (sprite.parent) container.removeChild(sprite);
+                sprite.destroy();
+                if (onComplete) onComplete();
+            }
+        };
+        animate();
+    }
+
+    function createBoneParticles(x, y, cellScale, container) {
+        for (let i = 0; i < 8; i++) {
+            const particle = new PIXI.Graphics();
+            particle.beginFill(0xCCBBAA, 0.8);
+            particle.drawPolygon([0, 0, 3 * cellScale, -1, 2 * cellScale, 2 * cellScale]);
+            particle.endFill();
+
+            particle.x = x + (Math.random() - 0.5) * 20 * cellScale;
+            particle.y = y + 15 * cellScale; // Снизу
+            container.addChild(particle);
+
+            const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.2; // Вверх
+            const speed = 1.5 + Math.random() * 2;
+            const vx = Math.cos(angle) * speed;
+            const vy = Math.sin(angle) * speed;
+            const startTime = Date.now();
+
+            const animateParticle = () => {
+                if (!window.pixiAnimUtils?.isValid(particle)) return;
+                const p = Math.min((Date.now() - startTime) / 400, 1);
+                try {
+                    particle.x += vx * (1 - p);
+                    particle.y += vy * (1 - p);
+                    particle.alpha = 0.8 * (1 - p);
+                    particle.rotation += 0.15;
+                } catch (e) { return; }
+
+                if (p < 1 && particle.parent) {
+                    requestAnimationFrame(animateParticle);
+                } else if (particle.parent) {
+                    container.removeChild(particle);
+                    particle.destroy();
+                }
+            };
+            animateParticle();
+        }
+    }
+
+    // Регистрация
+    if (!window.spellAnimations) window.spellAnimations = {};
+    window.spellAnimations[ANIMATION_ID] = {
+        play: playBoneCageAnimation
+    };
+
+    console.log('🪤 Анимация "Костяная клетка" зарегистрирована');
+})();

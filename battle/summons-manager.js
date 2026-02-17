@@ -52,10 +52,16 @@ class SummonsManager {
             },
             'bone_dragon': {
                 name: 'Костяной Дракон',
-                sprite: null, // пока без спрайта
+                sprite: 'images/spells/necro/bone dragon/idle.webp',
+                attackSprite: 'images/spells/necro/bone dragon/attack.webp',
+                deathSprite: 'images/spells/necro/bone dragon/death.webp',
+                frameWidth: 256,   // 1280 / 5
+                frameHeight: 256,  // 1280 / 5
+                framesX: 5,
+                framesY: 5,
+                frames: 25,
+                animationSpeed: 0.08,
                 color: 0x8B7355,
-                width: 30,
-                height: 35,
                 yOffset: 0.6,
                 scale: 0.70,
                 attackAnimation: 'bite'
