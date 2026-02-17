@@ -68,6 +68,13 @@ async function checkDailyLoginReward() {
         return;
     }
 
+    // Защита от повторных вызовов (может произойти при двойной инициализации)
+    if (window._isCheckingDailyLogin) {
+        console.log('⚠️ checkDailyLoginReward уже в процессе, пропускаем');
+        return;
+    }
+    window._isCheckingDailyLogin = true;
+
     // Инициализируем если нет
     initDailyLoginData(window.userData);
 
@@ -77,6 +84,7 @@ async function checkDailyLoginReward() {
     // Проверяем, получали ли уже награду сегодня
     if (!isNewDay(dailyData.last_reward_date)) {
         console.log(`🎁 Награда уже получена сегодня (день ${dailyData.day})`);
+        window._isCheckingDailyLogin = false;
         return;
     }
 
@@ -142,6 +150,9 @@ async function checkDailyLoginReward() {
 
     // Показываем модальное окно с наградой
     showDailyRewardModal(dailyData.day, hoursReward);
+
+    // Снимаем лок после завершения
+    window._isCheckingDailyLogin = false;
 }
 
 // Показ модального окна с наградой (с красивым фоном)

@@ -954,91 +954,109 @@ function updateGroupTaskButton() {
  * Открыть Creaky Tasks
  */
 function openCreakyTasks() {
+    if (window.userData?.completed_tasks?.creaky_tasks) return;
     window.open('https://t.me/CreakyTasksBot?start=ltZMmENT', '_blank');
     setTimeout(() => claimTaskReward('creaky_tasks', 'Creaky Tasks'), 2000);
 }
 
 function openQuadRoyal() {
+    if (window.userData?.completed_tasks?.quadroyal) return;
     window.open('https://t.me/QuadRoyalBot/QuadRoyal?startapp=campaign_archimage', '_blank');
     setTimeout(() => claimTaskReward('quadroyal', 'QuadRoyal'), 2000);
 }
 
 function openBetmodeLuck() {
+    if (window.userData?.completed_tasks?.betmode_luck) return;
     window.open('https://t.me/bm_luck_bot?startapp=0-utm_source-archimage-utm_medium-cpc-utm_campaign-launch_01', '_blank');
     setTimeout(() => claimTaskReward('betmode_luck', 'Betmode Luck'), 2000);
 }
 
 function openTinlake() {
+    if (window.userData?.completed_tasks?.tinlake) return;
     window.open('https://t.me/tinlake_bot/start?startapp=80YW0I9HD', '_blank');
     setTimeout(() => claimTaskReward('tinlake', 'Tinlake'), 2000);
 }
 
 function openStarIndustry() {
+    if (window.userData?.completed_tasks?.star_industry) return;
     window.open('https://t.me/starindustry_bot/game?startapp=viABSUSk', '_blank');
     setTimeout(() => claimTaskReward('star_industry', 'Star Industry'), 2000);
 }
 
 function openDiamondDynasty() {
+    if (window.userData?.completed_tasks?.diamond_dynasty) return;
     window.open('https://t.me/diamond_dynasty_bot?startapp=ref_7690597821D', '_blank');
     setTimeout(() => claimTaskReward('diamond_dynasty', 'Diamond Dynasty'), 2000);
 }
 
 function openCryptoCyeta() {
+    if (window.userData?.completed_tasks?.cryptocyeta) return;
     window.open('https://t.me/CryptoCyetaUa', '_blank');
     setTimeout(() => claimTaskReward('cryptocyeta', 'CryptoCyetaUA'), 2000);
 }
 
 function openCryptworks() {
+    if (window.userData?.completed_tasks?.cryptworks) return;
     window.open('https://t.me/cryptworks', '_blank');
     setTimeout(() => claimTaskReward('cryptworks', 'Крипто роботяги'), 2000);
 }
 
 function openDreamdares() {
+    if (window.userData?.completed_tasks?.dreamdares) return;
     window.open('https://t.me/kazhantvv', '_blank');
     setTimeout(() => claimTaskReward('dreamdares', 'dreamdares 18+'), 2000);
 }
 
 function openCryptoHud() {
+    if (window.userData?.completed_tasks?.cryptohud) return;
     window.open('https://t.me/+DS4m3oLUkc5lMjBi', '_blank');
     setTimeout(() => claimTaskReward('cryptohud', 'CryptoHud'), 2000);
 }
 
 function openCryptoBronia() {
+    if (window.userData?.completed_tasks?.cryptobronia) return;
     window.open('https://t.me/+HxC_2Tymjy0zNTEy', '_blank');
     setTimeout(() => claimTaskReward('cryptobronia', 'Crypto Bronia'), 2000);
 }
 
 function openCryptoZarabotok() {
+    if (window.userData?.completed_tasks?.cryptozarabotok) return;
     window.open('https://t.me/Cryptozarabotok9001', '_blank');
     setTimeout(() => claimTaskReward('cryptozarabotok', 'Crypto_Zarabotok'), 2000);
 }
 
 function openEverTrade() {
+    if (window.userData?.completed_tasks?.evertrade) return;
     window.open('https://t.me/evertradeblog', '_blank');
     setTimeout(() => claimTaskReward('evertrade', 'Ever Trade'), 2000);
 }
 
 function openLopsamff() {
+    if (window.userData?.completed_tasks?.lopsamff) return;
     window.open('https://t.me/+5opEeh1SqbAxZGRi', '_blank');
     setTimeout(() => claimTaskReward('lopsamff', 'Заработок от lopsamff'), 2000);
 }
 
 function openAbsoluteTon() {
+    if (window.userData?.completed_tasks?.absoluteton) return;
     window.open('https://t.me/+ucnwUfNQ6Lo2N2I6', '_blank');
     setTimeout(() => claimTaskReward('absoluteton', 'Абсолютный TON'), 2000);
 }
 
 function openCryptoSock() {
+    if (window.userData?.completed_tasks?.cryptosock) return;
     window.open('https://t.me/S0ckCrypto', '_blank');
     setTimeout(() => claimTaskReward('cryptosock', 'CryptoSock'), 2000);
 }
 
 function openCryptoBudni() {
+    if (window.userData?.completed_tasks?.cryptobudni) return;
     window.open('https://t.me/+m_rBPFjKTZYwYWQy', '_blank');
     setTimeout(() => claimTaskReward('cryptobudni', 'Крипто Будни'), 2000);
 }
 
 function openLabirintKrypty() {
+    if (window.userData?.completed_tasks?.labirintkrypty) return;
     window.open('https://t.me/+PEzPACaXlxs0Yzdi', '_blank');
     setTimeout(() => claimTaskReward('labirintkrypty', 'Лабиринт Крипты'), 2000);
 }
@@ -1106,6 +1124,11 @@ async function checkCryptoMax() {
 async function claimTaskRewardDay(taskKey, taskName) {
     if (window.userData?.completed_tasks?.[taskKey]) return;
 
+    // Защита от параллельных вызовов
+    if (!window._claimingTasks) window._claimingTasks = {};
+    if (window._claimingTasks[taskKey]) return;
+    window._claimingTasks[taskKey] = true;
+
     if (!window.userData.completed_tasks) window.userData.completed_tasks = {};
     window.userData.completed_tasks[taskKey] = true;
     updateTaskButton(taskKey);
@@ -1136,6 +1159,9 @@ async function claimTaskRewardDay(taskKey, taskName) {
     updateTaskButton(taskKey);
     updateAirdropPointsDisplay();
     if (typeof window.updateTimerDisplay === 'function') window.updateTimerDisplay();
+
+    // Снимаем лок после завершения
+    if (window._claimingTasks) delete window._claimingTasks[taskKey];
 }
 
 /**
@@ -1149,6 +1175,11 @@ async function claimCreakyTasksReward(completed = true) {
         window.showNotification?.('✓ Награда уже получена');
         return;
     }
+
+    // Защита от параллельных вызовов
+    if (!window._claimingTasks) window._claimingTasks = {};
+    if (window._claimingTasks['creaky_tasks']) return;
+    window._claimingTasks['creaky_tasks'] = true;
 
     // Инициализируем completed_tasks если нет
     if (!window.userData.completed_tasks) {
@@ -1196,6 +1227,9 @@ async function claimCreakyTasksReward(completed = true) {
     if (typeof window.updateTimerDisplay === 'function') {
         window.updateTimerDisplay();
     }
+
+    // Снимаем лок
+    if (window._claimingTasks) delete window._claimingTasks['creaky_tasks'];
 }
 
 /**
@@ -1223,6 +1257,7 @@ function updateCreakyTasksButton() {
  * Открыть Money Mining
  */
 function openMoneyMining() {
+    if (window.userData?.completed_tasks?.money_mining) return;
     window.open('https://t.me/Money_Mining_Bot/MoneyMiningGame?startapp=695099195', '_blank');
     setTimeout(() => claimTaskReward('money_mining', 'Money Mining'), 2000);
 }
@@ -1231,6 +1266,7 @@ function openMoneyMining() {
  * Открыть PandaFiT
  */
 function openPandaFit() {
+    if (window.userData?.completed_tasks?.pandafit) return;
     window.open('https://t.me/PandaFiT_bot/PandaFiT?startapp=rId963796674', '_blank');
     setTimeout(() => claimTaskReward('pandafit', 'PandaFiT'), 2000);
 }
@@ -1309,11 +1345,21 @@ async function checkGiftKombat() {
 
 /**
  * Универсальная функция выдачи награды за задание
+ * Защита от повторных вызовов через _claimingTasks lock
  */
 async function claimTaskReward(taskKey, taskName) {
+    // Проверка: задание уже выполнено
     if (window.userData?.completed_tasks?.[taskKey]) {
         return;
     }
+
+    // Защита от параллельных вызовов (множественные клики / setTimeout)
+    if (!window._claimingTasks) window._claimingTasks = {};
+    if (window._claimingTasks[taskKey]) {
+        console.log(`⚠️ claimTaskReward('${taskKey}') уже в процессе, пропускаем`);
+        return;
+    }
+    window._claimingTasks[taskKey] = true;
 
     if (!window.userData.completed_tasks) {
         window.userData.completed_tasks = {};
@@ -1358,6 +1404,9 @@ async function claimTaskReward(taskKey, taskName) {
     if (typeof window.updateTimerDisplay === 'function') {
         window.updateTimerDisplay();
     }
+
+    // Снимаем лок после завершения
+    if (window._claimingTasks) delete window._claimingTasks[taskKey];
 }
 
 /**

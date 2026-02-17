@@ -811,7 +811,15 @@ async function completeConstruction(constructionIndex) {
         console.error('Конструкция не найдена');
         return;
     }
-    
+
+    // Защита от повторного завершения одной и той же конструкции
+    // (может произойти при одновременном вызове из таймера и ускорения)
+    if (construction._completing) {
+        console.log('⚠️ Конструкция уже в процессе завершения, пропускаем');
+        return;
+    }
+    construction._completing = true;
+
     // Удаляем конструкцию из списка
     window.userData.constructions.splice(constructionIndex, 1);
     
