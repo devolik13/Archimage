@@ -143,18 +143,43 @@ function setupLibraryClickableZones() {
         zonesContainer.appendChild(zoneDiv);
     });
 
-    // Кнопка "Назад" для возврата в город
-    const backBtn = document.createElement('div');
     const backScaleX = currentWidth / originalWidth;
     const backScaleY = currentHeight / originalHeight;
+    const btnScale = Math.min(backScaleX, backScaleY);
+
+    // Кнопка "Некромантия" для перехода в школу некромантии
+    const necroBtn = document.createElement('div');
+    necroBtn.style.cssText = `
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: ${55 * backScaleY}px;
+        padding: ${8 * btnScale}px ${20 * btnScale}px;
+        cursor: pointer;
+        font-size: ${18 * btnScale}px;
+        font-weight: bold;
+        color: #708090;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        background: rgba(112, 128, 144, 0.15);
+        border: 1px solid rgba(112, 128, 144, 0.4);
+        border-radius: ${8 * btnScale}px;
+    `;
+    necroBtn.textContent = '💀 Некромантия';
+    const openNecro = () => openSchoolSpells('necromant');
+    necroBtn.addEventListener('click', openNecro);
+    necroBtn.addEventListener('touchend', (e) => { e.preventDefault(); openNecro(); });
+    zonesContainer.appendChild(necroBtn);
+
+    // Кнопка "Назад" для возврата в город
+    const backBtn = document.createElement('div');
     backBtn.style.cssText = `
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
         bottom: ${20 * backScaleY}px;
-        padding: ${10 * Math.min(backScaleX, backScaleY)}px ${30 * Math.min(backScaleX, backScaleY)}px;
+        padding: ${10 * btnScale}px ${30 * btnScale}px;
         cursor: pointer;
-        font-size: ${24 * Math.min(backScaleX, backScaleY)}px;
+        font-size: ${24 * btnScale}px;
         font-weight: bold;
         color: #7289da;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
