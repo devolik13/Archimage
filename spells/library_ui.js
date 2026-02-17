@@ -412,7 +412,7 @@ function setupSpellsScreen(faction) {
         color: ${factionColor};
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
     `;
-    nameOverlay.textContent = faction === 'light' ? '' : factionName;
+    nameOverlay.textContent = (faction === 'light' || faction === 'necromant') ? '' : factionName;
     
     // Получаем данные
     const factionSpells = (window.userData?.spells || {})[faction] || {};
