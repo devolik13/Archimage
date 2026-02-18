@@ -199,7 +199,11 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     	if (target.faction === 'necromant') {
     	    const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
     	    if (spellSchool !== 'light') {
+    	        const before = finalDamage;
     	        finalDamage = Math.floor(finalDamage * 0.9);
+    	        if (typeof window.addToBattleLog === 'function' && before !== finalDamage) {
+    	            window.addToBattleLog(`   💀 Некромантия: -10% урона (${before} → ${finalDamage})`);
+    	        }
     	    }
     	}
 
@@ -360,7 +364,11 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     if (target.faction === 'necromant') {
         const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
         if (spellSchool !== 'light') {
+            const before = finalDamage;
             finalDamage = Math.floor(finalDamage * 0.9);
+            if (typeof window.addToBattleLog === 'function' && before !== finalDamage) {
+                window.addToBattleLog(`   💀 Некромантия: -10% урона (${before} → ${finalDamage})`);
+            }
         }
     }
 

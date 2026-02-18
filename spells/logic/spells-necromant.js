@@ -48,9 +48,6 @@ function castSummonSkeleton(wizard, spellData, position, casterType) {
 
     // Скелет атакует сразу после призыва/восстановления
     performSkeletonAttack(skeleton, wizard);
-
-    // Применяем бонус фракции некроманта
-    applyNecromantFactionBonus(wizard, casterType);
 }
 
 // Атака скелета
@@ -226,23 +223,9 @@ function castBoneSpear(wizard, spellData, position, casterType) {
     // Наносим урон каждой цели в ряду
     let totalDamage = 0;
     for (const target of targets) {
-        let actualDamage = baseDamage;
-
-        // Фракционный бонус некроманта (двойной урон)
-        const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
-        if (wizard.faction === 'necromant' && typeof window.checkFactionDoubleDamage === 'function') {
-            const isDouble = window.checkFactionDoubleDamage(wizard.faction, 'necromant', casterInfo);
-            if (isDouble) {
-                actualDamage = baseDamage * 2;
-                if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`   💀 Двойной урон некромантии!`);
-                }
-            }
-        }
-
         // Применяем урон через систему урона (isAOE = true для пронзания)
         const finalDamage = typeof window.applyFinalDamage === 'function' ?
-            window.applyFinalDamage(wizard, target.wizard, actualDamage, 'bone_spear', armorIgnore, true) : actualDamage;
+            window.applyFinalDamage(wizard, target.wizard, baseDamage, 'bone_spear', armorIgnore, true) : baseDamage;
 
         target.wizard.hp -= finalDamage;
         if (target.wizard.hp < 0) target.wizard.hp = 0;
@@ -595,12 +578,6 @@ function checkBoneDragonAura() {
             }
         }
     }
-}
-
-// Бонус фракции Некроманта (заглушка — основной бонус в damage-system.js)
-function applyNecromantFactionBonus(wizard, casterType) {
-    // Основной бонус некроманта (-10% входящего урона кроме света)
-    // реализован в damage-system.js
 }
 
 // Экспорт

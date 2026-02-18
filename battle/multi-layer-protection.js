@@ -299,7 +299,11 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
         if (target.wizard.faction === 'necromant') {
             const spellSchoolForNecro = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
             if (spellSchoolForNecro !== 'light') {
+                const before = finalDamage;
                 finalDamage = Math.floor(finalDamage * 0.9);
+                if (typeof window.addToBattleLog === 'function' && before !== finalDamage) {
+                    window.addToBattleLog(`   💀 Некромантия: -10% урона (${before} → ${finalDamage})`);
+                }
             }
         }
 
