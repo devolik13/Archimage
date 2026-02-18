@@ -5,14 +5,15 @@
  * Показывается один раз (localStorage).
  */
 function showNecromancerPromoModal() {
-    const storageKey = 'necromancer_promo_seen_v1';
-    if (localStorage.getItem(storageKey)) return;
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const storageKey = 'necromancer_promo_seen_date';
+    if (localStorage.getItem(storageKey) === today) return;
 
     // Не показываем новым игрокам без фракции
     if (!window.userData?.faction) return;
 
     function closePromo() {
-        localStorage.setItem(storageKey, '1');
+        localStorage.setItem(storageKey, today);
         const el = document.getElementById('necromancer-promo-overlay');
         if (el) {
             el.style.opacity = '0';
