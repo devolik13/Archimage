@@ -25,7 +25,7 @@ const STARTER_PACKS = {
     small: {
         id: 'starter_pack_small',
         name: '🎁 Малый пакет',
-        description: '+1 маг (макс 2), Башня до 3 ур, 7 дней, 5000 XP',
+        description: '+1 маг (до 2 макс), Башня до 3 ур, 7 дней, 5000 XP',
         icon: '🎁',
         price: 2320,
         priceUSD: 30.16, // 2320 Stars × $0.013
@@ -43,14 +43,14 @@ const STARTER_PACKS = {
     medium: {
         id: 'starter_pack_medium',
         name: '📦 Средний пакет',
-        description: '+1 маг (макс 3), Башня до 5 ур, 30 дней, 30000 XP',
+        description: '+1 маг (до 3 макс), Башня до 5 ур, 30 дней, 30000 XP',
         icon: '📦',
         price: 8320,
         priceUSD: 108.16, // 8320 Stars × $0.013
         currency: 'dual',
         fullPrice: 8320,
         discount: 30,
-        requires: 'starter_pack_small', // После малого пакета
+        requires: null, // Доступен всем
         rewards: {
             time: 43200, // 30 дней в минутах
             towerLevel: 5,
@@ -61,14 +61,14 @@ const STARTER_PACKS = {
     large: {
         id: 'starter_pack_large',
         name: '💎 Крупный пакет',
-        description: '+1 маг (макс 4), Башня до 7 ур, 90 дней, 200000 XP',
+        description: '+1 маг (до 4 макс), Башня до 7 ур, 90 дней, 200000 XP',
         icon: '💎',
         price: 32000,
         priceUSD: 416.00, // 32000 Stars × $0.013
         currency: 'dual',
         fullPrice: 32000,
         discount: 30,
-        requires: 'starter_pack_medium', // После среднего пакета
+        requires: null, // Доступен всем
         rewards: {
             time: 129600, // 90 дней в минутах
             towerLevel: 7,
@@ -528,8 +528,7 @@ function renderStarterPacks(scale) {
 
     for (const [key, pack] of Object.entries(STARTER_PACKS)) {
         const isPurchased = purchasedPacks[pack.id];
-        const isLocked = pack.requires && !purchasedPacks[pack.requires];
-        const canBuy = !isPurchased && !isLocked;
+        const canBuy = !isPurchased;
 
         let statusText = '';
         let statusColor = '#4ade80';
@@ -539,21 +538,50 @@ function renderStarterPacks(scale) {
             statusText = '✅ Куплено';
             statusColor = '#888';
             btnText = 'Получено';
-        } else if (isLocked) {
-            const requiredPack = Object.values(STARTER_PACKS).find(p => p.id === pack.requires);
-            statusText = `🔒 Сначала купите: ${requiredPack?.name || 'предыдущий пакет'}`;
-            statusColor = '#ff6b6b';
-            btnText = 'Недоступно';
         }
 
+        // Расчёт компенсаций для текущего игрока
+        const currentTowerLevel = window.userData?.buildings?.wizard_tower?.level || 1;
+        const currentWizardCount = window.userData?.wizards?.length || 1;
+        let compensationLines = [];
+        let totalCompensation = 0;
+
+        // Компенсация за башню
+        if (currentTowerLevel >= pack.rewards.towerLevel) {
+            const comp = PACK_COMPENSATIONS.tower[pack.rewards.towerLevel] || 0;
+            if (comp > 0) {
+                totalCompensation += comp;
+                compensationLines.push(`🏯 Башня уже ${currentTowerLevel} ур → +${Math.floor(comp / 1440)} дн времени`);
+            }
+        }
+
+        // Компенсация за магов
+        if (currentWizardCount >= pack.rewards.wizardCount) {
+            const comp = PACK_COMPENSATIONS.wizard[pack.rewards.wizardCount] || 0;
+            if (comp > 0) {
+                totalCompensation += comp;
+                compensationLines.push(`🧙 Уже ${currentWizardCount} магов → +${Math.floor(comp / 1440)} дн времени`);
+            }
+        }
+
+        const compensationHTML = compensationLines.length > 0 && !isPurchased ? `
+            <div style="text-align: left; font-size: ${smallFontSize * 0.85}px; color: #ffa500; margin: 5px 0; padding: 6px 8px; background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.3); border-radius: 6px;">
+                <div style="font-weight: bold; margin-bottom: 3px;">💰 Ваша компенсация:</div>
+                ${compensationLines.map(l => `<div>${l}</div>`).join('')}
+                <div style="margin-top: 3px; color: #4ade80; font-weight: bold;">Итого: +${Math.floor(totalCompensation / 1440)} дн доп. времени</div>
+            </div>
+        ` : '';
+
         // Детали награды
+        const effectiveTime = pack.rewards.time + totalCompensation;
         const rewardsHTML = `
             <div style="text-align: left; font-size: ${smallFontSize * 0.9}px; color: #ccc; margin: 10px 0; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 6px;">
-                <div>⏰ ${Math.floor(pack.rewards.time / 1440)} дней времени</div>
-                <div>🏯 Башня магов ${pack.rewards.towerLevel} ур</div>
-                <div>🧙 ${pack.rewards.wizardCount} маг${pack.rewards.wizardCount > 1 ? 'а' : ''}</div>
+                <div>⏰ ${Math.floor(pack.rewards.time / 1440)} дней времени${totalCompensation > 0 && !isPurchased ? ` <span style="color: #4ade80;">(+${Math.floor(totalCompensation / 1440)} дн бонус = ${Math.floor(effectiveTime / 1440)} дн)</span>` : ''}</div>
+                <div>🏯 Башня магов до ${pack.rewards.towerLevel} ур${currentTowerLevel >= pack.rewards.towerLevel && !isPurchased ? ` <span style="color: #ffa500;">(уже есть)</span>` : ''}</div>
+                <div>🧙 до ${pack.rewards.wizardCount} магов (макс)${currentWizardCount >= pack.rewards.wizardCount && !isPurchased ? ` <span style="color: #ffa500;">(уже есть)</span>` : ''}</div>
                 <div>✨ ${pack.rewards.experience.toLocaleString()} XP</div>
             </div>
+            ${compensationHTML}
         `;
 
         // Полная цена (зачёркнутая)
@@ -1079,14 +1107,6 @@ async function buyStarterPack(packKey) {
     if (purchasedPacks[pack.id]) {
         if (window.showNotification) {
             window.showNotification('⚠️ Этот пакет уже куплен!');
-        }
-        return;
-    }
-
-    // Проверяем требования
-    if (pack.requires && !purchasedPacks[pack.requires]) {
-        if (window.showNotification) {
-            window.showNotification('⚠️ Сначала купите предыдущий пакет!');
         }
         return;
     }
@@ -2275,6 +2295,56 @@ async function calculateTonPrice(priceUSD) {
 /**
  * Показать диалог выбора способа оплаты (Stars или TON)
  */
+/**
+ * Генерация HTML-превью компенсации для диалога покупки пакета
+ */
+function getCompensationPreviewHTML(pack) {
+    const currentTowerLevel = window.userData?.buildings?.wizard_tower?.level || 1;
+    const currentWizardCount = window.userData?.wizards?.length || 1;
+    const rewards = pack.rewards;
+    if (!rewards) return '';
+
+    let lines = [];
+    let totalComp = 0;
+
+    if (currentTowerLevel >= rewards.towerLevel) {
+        const comp = PACK_COMPENSATIONS.tower[rewards.towerLevel] || 0;
+        if (comp > 0) {
+            totalComp += comp;
+            lines.push(`🏯 Башня уже ${currentTowerLevel} ур → +${Math.floor(comp / 1440)} дн`);
+        }
+    }
+
+    if (currentWizardCount >= rewards.wizardCount) {
+        const comp = PACK_COMPENSATIONS.wizard[rewards.wizardCount] || 0;
+        if (comp > 0) {
+            totalComp += comp;
+            lines.push(`🧙 Уже ${currentWizardCount} магов → +${Math.floor(comp / 1440)} дн`);
+        }
+    }
+
+    if (lines.length === 0) return '';
+
+    return `
+        <div style="
+            text-align: left;
+            font-size: 13px;
+            color: #ffa500;
+            margin: 0 0 15px 0;
+            padding: 10px;
+            background: rgba(255,165,0,0.1);
+            border: 1px solid rgba(255,165,0,0.3);
+            border-radius: 10px;
+        ">
+            <div style="font-weight: bold; margin-bottom: 5px;">💰 Ваша компенсация:</div>
+            ${lines.map(l => `<div style="margin: 2px 0;">${l}</div>`).join('')}
+            <div style="margin-top: 5px; color: #4ade80; font-weight: bold;">
+                Итого время: ${Math.floor(rewards.time / 1440)} + ${Math.floor(totalComp / 1440)} = ${Math.floor((rewards.time + totalComp) / 1440)} дней
+            </div>
+        </div>
+    `;
+}
+
 async function showPaymentMethodDialog(item, packKey = null) {
     console.log('💳 Показ диалога выбора способа оплаты для:', item.name);
 
@@ -2310,9 +2380,11 @@ async function showPaymentMethodDialog(item, packKey = null) {
             <h2 style="color: #ffd700; margin: 0 0 10px 0; text-align: center; font-size: 24px;">
                 ${item.icon} ${item.name}
             </h2>
-            <p style="color: #aaa; text-align: center; margin: 0 0 25px 0; font-size: 14px;">
+            <p style="color: #aaa; text-align: center; margin: 0 0 15px 0; font-size: 14px;">
                 ${item.description}
             </p>
+
+            ${packKey ? getCompensationPreviewHTML(item) : ''}
 
             <div style="color: #fff; font-size: 18px; font-weight: bold; margin-bottom: 20px; text-align: center;">
                 Выберите способ оплаты:

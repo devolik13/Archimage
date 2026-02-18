@@ -173,8 +173,30 @@ function setupLibraryClickableZones() {
         zonesContainer.appendChild(necroZone);
     }
 
-    // === Стрелки листания страниц (красные, крупные) ===
+    // === Стрелки листания страниц (красные, крупные, жирные) ===
     const totalPages = LIBRARY_PAGES.length;
+
+    // Индикатор страницы сверху (красный)
+    const pageIndicator = document.createElement('div');
+    pageIndicator.style.cssText = `
+        position: absolute;
+        top: ${12 * scaleY}px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: ${4 * btnScale}px ${16 * btnScale}px;
+        font-size: ${18 * btnScale}px;
+        font-weight: bold;
+        color: #ff4444;
+        text-shadow: 0 0 8px rgba(255,50,50,0.5), 1px 1px 3px rgba(0,0,0,0.9);
+        background: rgba(0,0,0,0.5);
+        border: 1px solid rgba(255,50,50,0.5);
+        border-radius: ${8 * btnScale}px;
+        user-select: none;
+        z-index: 10;
+        font-family: 'Segoe UI', Arial, sans-serif;
+    `;
+    pageIndicator.textContent = `Страница ${currentLibraryPage + 1}/${totalPages}`;
+    zonesContainer.appendChild(pageIndicator);
 
     // Стрелка «влево» (предыдущая страница)
     if (currentLibraryPage > 0) {
@@ -184,22 +206,22 @@ function setupLibraryClickableZones() {
             left: ${5 * scaleX}px;
             top: 50%;
             transform: translateY(-50%);
-            width: ${55 * btnScale}px;
-            height: ${90 * btnScale}px;
+            width: ${60 * btnScale}px;
+            height: ${100 * btnScale}px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: ${48 * btnScale}px;
-            font-weight: bold;
-            color: #cc3333;
-            text-shadow: 0 0 8px rgba(200,50,50,0.6), 2px 2px 4px rgba(0,0,0,0.8);
-            background: rgba(0,0,0,0.35);
-            border: 1px solid rgba(200,50,50,0.4);
+            font-size: ${56 * btnScale}px;
+            font-weight: 900;
+            color: #ff4444;
+            text-shadow: 0 0 12px rgba(255,50,50,0.7), 0 0 4px rgba(255,50,50,0.9), 2px 2px 4px rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.45);
+            border: 2px solid rgba(255,50,50,0.6);
             border-radius: ${10 * btnScale}px;
             user-select: none;
         `;
-        leftArrow.textContent = '\u2039';
+        leftArrow.textContent = '\u276E';
         const goLeft = () => showLibraryMainScreen(currentLibraryPage - 1);
         leftArrow.addEventListener('click', goLeft);
         leftArrow.addEventListener('touchend', (e) => { e.preventDefault(); goLeft(); });
@@ -214,22 +236,22 @@ function setupLibraryClickableZones() {
             right: ${5 * scaleX}px;
             top: 50%;
             transform: translateY(-50%);
-            width: ${55 * btnScale}px;
-            height: ${90 * btnScale}px;
+            width: ${60 * btnScale}px;
+            height: ${100 * btnScale}px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: ${48 * btnScale}px;
-            font-weight: bold;
-            color: #cc3333;
-            text-shadow: 0 0 8px rgba(200,50,50,0.6), 2px 2px 4px rgba(0,0,0,0.8);
-            background: rgba(0,0,0,0.35);
-            border: 1px solid rgba(200,50,50,0.4);
+            font-size: ${56 * btnScale}px;
+            font-weight: 900;
+            color: #ff4444;
+            text-shadow: 0 0 12px rgba(255,50,50,0.7), 0 0 4px rgba(255,50,50,0.9), 2px 2px 4px rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.45);
+            border: 2px solid rgba(255,50,50,0.6);
             border-radius: ${10 * btnScale}px;
             user-select: none;
         `;
-        rightArrow.textContent = '\u203A';
+        rightArrow.textContent = '\u276F';
         const goRight = () => showLibraryMainScreen(currentLibraryPage + 1);
         rightArrow.addEventListener('click', goRight);
         rightArrow.addEventListener('touchend', (e) => { e.preventDefault(); goRight(); });
