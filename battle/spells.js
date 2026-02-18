@@ -100,12 +100,25 @@ function delay(ms) {
 }
 
 // --- Главная функция использования заклинаний магом (async) ---
+// Пассивные заклинания, применяемые только в начале боя (не кастуются каждый ход)
+const PASSIVE_START_ONLY_SPELLS = new Set([
+    'leaf_canopy', 'meteorokinesis', 'death_shroud', 'bone_dragon',
+    'rainbow_shield', 'dawn', 'stone_grotto'
+]);
+
 async function useWizardSpells(wizard, position, casterType) {
     const spells = wizard.spells || [];
-    const availableSpells = spells.filter(spell => spell !== null && spell !== undefined);
+    const allSpells = spells.filter(spell => spell !== null && spell !== undefined);
+    // Фильтруем пассивные заклинания — они уже применены в начале боя
+    const availableSpells = allSpells.filter(spell => !PASSIVE_START_ONLY_SPELLS.has(spell));
+    const hasPassiveSpells = allSpells.length > availableSpells.length;
 
     if (availableSpells.length === 0) {
-        castBasicAttack(wizard, position, casterType);
+        // Если у мага есть только пассивные заклинания — не делаем обычную атаку
+        // (пассивки ЭТО его заклинания, просто они работают автоматически)
+        if (!hasPassiveSpells) {
+            castBasicAttack(wizard, position, casterType);
+        }
         return;
     }
 

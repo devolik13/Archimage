@@ -960,45 +960,6 @@ async function executeSingleMageAttack(wizard, position, casterType) {
         return true;
     }
 
-    // Призванные существа
-    if (window.summonsManager) {
-        for (const [id, summon] of window.summonsManager.summons) {
-            // Проверяем что маг-хозяин ЖИВ
-            if (summon.casterId === wizard.id && 
-                summon.isAlive && 
-                wizard.hp > 0) {  // ДОБАВИТЬ эту проверку
-                if (summon.type === 'nature_wolf') {
-                    if (typeof window.performWolfAttack === 'function') {
-                        window.performWolfAttack(summon, wizard);
-                        if (await checkBattleEnd()) {
-                            return false;
-                        }
-                    }
-                }
-                if (summon.type === 'necromant_skeleton') {
-                    if (typeof window.performSkeletonAttack === 'function') {
-                        window.performSkeletonAttack(summon, wizard);
-                        if (await checkBattleEnd()) {
-                            return false;
-                        }
-                    }
-                }
-                if (summon.type === 'bone_dragon') {
-                    if (typeof window.performBoneDragonAttack === 'function') {
-                        window.performBoneDragonAttack(summon, wizard);
-                        // Проверяем ауру после атаки (дракон мог погибнуть)
-                        if (typeof window.checkBoneDragonAura === 'function') {
-                            window.checkBoneDragonAura();
-                        }
-                        if (await checkBattleEnd()) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     // Огненные стены
     if (typeof window.processFireWallsForWizard === 'function') {
         window.processFireWallsForWizard(wizard, casterType);
@@ -1022,6 +983,27 @@ async function executeSingleMageAttack(wizard, position, casterType) {
     // 👁️ Ослепление проверяется в findTarget для каждого боевого заклинания отдельно
     if (typeof window.useWizardSpells === 'function') {
         await window.useWizardSpells(wizard, position, casterType);
+    }
+
+    // 🐉 Атака призванных существ (пассивные саммоны — после заклинаний мага)
+    // Волк и скелет атакуют через свои активные заклинания (call_wolf, summon_skeleton),
+    // дракон — пассивный призыв, атакует отдельно после хода мага
+    if (window.summonsManager && wizard.hp > 0) {
+        for (const [id, summon] of window.summonsManager.summons) {
+            if (summon.casterId === wizard.id && summon.isAlive) {
+                if (summon.type === 'bone_dragon') {
+                    if (typeof window.performBoneDragonAttack === 'function') {
+                        window.performBoneDragonAttack(summon, wizard);
+                        if (typeof window.checkBoneDragonAura === 'function') {
+                            window.checkBoneDragonAura();
+                        }
+                        if (await checkBattleEnd()) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // 👁️ Снимаем эффект ослепления после хода (счётчик ходов)

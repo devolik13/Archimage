@@ -11,6 +11,10 @@ function castNecromantSpell(wizard, spellId, spellData, position, casterType) {
         case 'bone_cage':
             castBoneCage(wizard, spellData, position, casterType);
             break;
+        case 'death_shroud':
+        case 'bone_dragon':
+            // Пассивные заклинания — уже применены в начале боя, не кастуются каждый ход
+            break;
         default:
             if (typeof window.castBasicAttack === 'function') {
                 window.castBasicAttack(wizard, position, casterType);
