@@ -1857,12 +1857,14 @@ function renderFactionChangeContent(container, rect) {
         nature: '🌿 Природа',
         poison: '☠️ Яд',
         light: '✨ Свет',
-        dark: '🌑 Тьма'
+        dark: '🌑 Тьма',
+        necromant: '💀 Некромант'
     };
 
     const factionChangePrice = 1000;
+    const necromantPrice = 1500; // Ранний доступ — всегда платный
 
-    // Генерируем кнопки фракций
+    // Генерируем кнопки обычных фракций
     const factionButtons = factions
         .filter(f => f !== currentFaction)
         .map(faction => {
@@ -1887,6 +1889,32 @@ function renderFactionChangeContent(container, rect) {
                 </button>
             `;
         }).join('');
+
+    // Кнопка некроманта (всегда платный, отдельный стиль)
+    const necromantButton = currentFaction === 'necromant' ? '' : `
+        <button onclick="showNecromancerConfirmDialog()" style="
+            padding: ${12 * scale}px ${16 * scale}px;
+            background: linear-gradient(135deg, rgba(10,10,26,0.9), rgba(26,16,40,0.9));
+            border: 1px solid rgba(100, 255, 150, 0.4);
+            border-radius: 10px;
+            color: white;
+            font-size: ${baseFontSize}px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            min-width: ${120 * scale}px;
+            grid-column: 1 / -1;
+            box-shadow: 0 0 15px rgba(80, 200, 120, 0.15);
+        " onmouseover="this.style.borderColor='#7cffcb'; this.style.boxShadow='0 0 25px rgba(80,200,120,0.3)'"
+           onmouseout="this.style.borderColor='rgba(100,255,150,0.4)'; this.style.boxShadow='0 0 15px rgba(80,200,120,0.15)'">
+            <div style="font-size: ${baseFontSize * 1.2}px; margin-bottom: 4px;">
+                💀 Некромант <span style="font-size: ${smallFontSize}px; color: #7cffcb;">НОВЫЙ</span>
+            </div>
+            <div style="font-size: ${baseFontSize}px; color: #ffd700; font-weight: bold;">
+                ⭐${necromantPrice} <span style="font-size: ${smallFontSize}px; color: #aaa;">(ранний доступ)</span>
+            </div>
+        </button>
+    `;
 
     // Заголовок с информацией
     const headerText = isFree
@@ -1952,6 +1980,7 @@ function renderFactionChangeContent(container, rect) {
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: ${10 * scale}px;">
                     ${factionButtons}
+                    ${necromantButton}
                 </div>
             </div>
 
