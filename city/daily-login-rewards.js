@@ -275,7 +275,7 @@ function showDailyRewardModal(day, hours) {
                     ? `Завтра получите ${tomorrowHours} ${tomorrowText}!`
                     : 'Максимальная награда достигнута!'}
             </div>
-            <button onclick="document.getElementById('daily-reward-screen').remove()" style="
+            <button onclick="closeDailyRewardAndShowPromo()" style="
                 background: linear-gradient(145deg, #667eea, #764ba2);
                 border: none;
                 padding: ${12 * scale}px ${35 * scale}px;
@@ -297,8 +297,20 @@ function showDailyRewardModal(day, hours) {
 
 }
 
+// Закрытие ежедневной награды + показ промо некроманта
+function closeDailyRewardAndShowPromo() {
+    const el = document.getElementById('daily-reward-screen');
+    if (el) el.remove();
+
+    // Показываем промо некроманта после закрытия награды
+    if (typeof window.showNecromancerPromoModal === 'function') {
+        setTimeout(() => window.showNecromancerPromoModal(), 500);
+    }
+}
+
 // Экспорт функций
 window.initDailyLoginData = initDailyLoginData;
 window.checkDailyLoginReward = checkDailyLoginReward;
 window.showDailyRewardModal = showDailyRewardModal;
+window.closeDailyRewardAndShowPromo = closeDailyRewardAndShowPromo;
 

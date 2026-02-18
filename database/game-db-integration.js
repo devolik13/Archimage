@@ -307,6 +307,9 @@ async function initGameWithDatabase() {
         if (typeof window.showEventBossAnnouncement === 'function') {
             setTimeout(() => window.showEventBossAnnouncement(), 1500);
         }
+
+        // Промо некроманта показывается после закрытия ежедневной награды
+        // (см. closeDailyRewardAndShowPromo в daily-login-rewards.js)
     }
 
     // Обновляем UI если есть функции

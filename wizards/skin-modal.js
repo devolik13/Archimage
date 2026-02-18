@@ -205,7 +205,7 @@ function showSkinCategoryModal(category) {
             ">
                 <div>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <button onclick="showSkinModal(currentWizardForSkin)" style="
+                        <button onclick="backToSkinCategories()" style="
                             background: rgba(0, 0, 0, 0.5);
                             border: 2px solid rgba(255, 255, 255, 0.3);
                             border-radius: 8px;
@@ -963,6 +963,78 @@ async function applySkin(skinId) {
 /**
  * Закрывает модальное окно
  */
+/**
+ * Возврат к выбору категории (Стандартные/Премиум) без пересоздания оверлея
+ */
+function backToSkinCategories() {
+    const contentContainer = document.getElementById('skin-modal-content');
+    if (!contentContainer) return;
+
+    contentContainer.innerHTML = `
+        <div style="
+            padding: 30px;
+            animation: scaleIn 0.3s ease-out;
+            text-align: center;
+        ">
+            <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 25px;
+            ">
+                <h2 style="margin: 0; color: #ffd700; font-size: 22px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
+                    🎨 Выбор облика
+                </h2>
+                <button onclick="closeSkinModal()" style="
+                    background: rgba(0, 0, 0, 0.5);
+                    border: 2px solid rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    color: white;
+                    font-size: 22px;
+                    width: 36px;
+                    height: 36px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">×</button>
+            </div>
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <button onclick="showSkinCategoryModal('standard')" style="
+                    width: 160px;
+                    padding: 20px;
+                    background: linear-gradient(135deg, rgba(74, 144, 226, 0.3), rgba(74, 144, 226, 0.1));
+                    border: 2px solid rgba(74, 144, 226, 0.6);
+                    border-radius: 16px;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    text-align: center;
+                " onmouseover="this.style.transform='scale(1.05)'; this.style.borderColor='rgba(74, 144, 226, 1)'"
+                   onmouseout="this.style.transform='scale(1)'; this.style.borderColor='rgba(74, 144, 226, 0.6)'">
+                    <div style="font-size: 40px; margin-bottom: 10px;">⚔️</div>
+                    <div style="color: #fff; font-size: 16px; font-weight: bold; margin-bottom: 5px;">Стандартные</div>
+                    <div style="color: #aaa; font-size: 12px;">Открываются за достижения</div>
+                </button>
+                <button onclick="showSkinCategoryModal('premium')" style="
+                    width: 160px;
+                    padding: 20px;
+                    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.1));
+                    border: 2px solid rgba(255, 215, 0, 0.6);
+                    border-radius: 16px;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    text-align: center;
+                " onmouseover="this.style.transform='scale(1.05)'; this.style.borderColor='rgba(255, 215, 0, 1)'"
+                   onmouseout="this.style.transform='scale(1)'; this.style.borderColor='rgba(255, 215, 0, 0.6)'">
+                    <div style="font-size: 40px; margin-bottom: 10px;">👑</div>
+                    <div style="color: #ffd700; font-size: 16px; font-weight: bold; margin-bottom: 5px;">Премиум</div>
+                    <div style="color: #c9a961; font-size: 12px;">Эксклюзивные образы</div>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
 function closeSkinModal() {
     const overlay = document.getElementById('skin-modal-overlay');
     if (overlay) {
@@ -1041,6 +1113,7 @@ window.showSkinCategoryModal = showSkinCategoryModal;
 window.buySkinFromModal = buySkinFromModal;
 window.closeSkinPurchaseDialog = closeSkinPurchaseDialog;
 window.confirmSkinPurchase = confirmSkinPurchase;
+window.backToSkinCategories = backToSkinCategories;
 
 // Геттер для currentWizardForSkin (для кнопки "Назад")
 Object.defineProperty(window, 'currentWizardForSkin', {
