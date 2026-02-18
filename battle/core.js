@@ -979,15 +979,8 @@ async function executeSingleMageAttack(wizard, position, casterType) {
         window.restoreBoneCages(wizard.id);
     }
 
-    // ИСПОЛЬЗОВАНИЕ ЗАКЛИНАНИЙ - ждём завершения всех кастов
-    // 👁️ Ослепление проверяется в findTarget для каждого боевого заклинания отдельно
-    if (typeof window.useWizardSpells === 'function') {
-        await window.useWizardSpells(wizard, position, casterType);
-    }
-
-    // 🐉 Атака призванных существ (пассивные саммоны — после заклинаний мага)
-    // Волк и скелет атакуют через свои активные заклинания (call_wolf, summon_skeleton),
-    // дракон — пассивный призыв, атакует отдельно после хода мага
+    // 🐉 Атака Костяного Дракона (пассивный саммон — перед заклинаниями мага)
+    // Волк и скелет атакуют через свои активные заклинания (call_wolf, summon_skeleton)
     if (window.summonsManager && wizard.hp > 0) {
         for (const [id, summon] of window.summonsManager.summons) {
             if (summon.casterId === wizard.id && summon.isAlive) {
@@ -1004,6 +997,12 @@ async function executeSingleMageAttack(wizard, position, casterType) {
                 }
             }
         }
+    }
+
+    // ИСПОЛЬЗОВАНИЕ ЗАКЛИНАНИЙ - ждём завершения всех кастов
+    // 👁️ Ослепление проверяется в findTarget для каждого боевого заклинания отдельно
+    if (typeof window.useWizardSpells === 'function') {
+        await window.useWizardSpells(wizard, position, casterType);
     }
 
     // 👁️ Снимаем эффект ослепления после хода (счётчик ходов)
@@ -1125,6 +1124,11 @@ async function executePlayerPhase(mageCount) {
         }
     }
 
+    // Убиваем саммонов мёртвых магов (если маг погиб — дракон/волк/скелет тоже)
+    if (window.summonsManager?.killOrphanedSummons) {
+        window.summonsManager.killOrphanedSummons();
+    }
+
     // Проверка на Метеокинез
     if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
         window.checkMeteorokinesisCasterAlive();
@@ -1169,6 +1173,11 @@ async function executeEnemyPhase(mageCount) {
         if (mageData.wizard.hp > 0) {
             await executeSingleMageAttack(mageData.wizard, mageData.position, 'enemy');
         }
+    }
+
+    // Убиваем саммонов мёртвых магов (если маг погиб — дракон/волк/скелет тоже)
+    if (window.summonsManager?.killOrphanedSummons) {
+        window.summonsManager.killOrphanedSummons();
     }
 
     // Проверка на Метеокинез

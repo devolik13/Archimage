@@ -244,10 +244,19 @@ function castBoneSpear(wizard, spellData, position, casterType) {
             window.updateWizardVisualHP(target.wizard, target.column, target.position);
         }
 
-        // Лог попадания
+        // Лог попадания с подробностями
         if (typeof window.addToBattleLog === 'function') {
             const targetName = target.isWall ? 'Стена' : (target.isSummoned ? target.wizard.name || 'Существо' : target.wizard.name);
-            window.addToBattleLog(`   🦴 → ${targetName}: ${finalDamage} урона`);
+            const targetArmor = target.wizard.armor || target.wizard.base_armor || 0;
+            const armorBonus = target.wizard.armorBonus || 0;
+            const totalArmor = targetArmor + armorBonus;
+            let details = `базовый: ${actualDamage}`;
+            if (totalArmor > 0) {
+                details += `, броня: ${totalArmor}`;
+                if (armorIgnore > 0) details += ` (игнор ${Math.round(armorIgnore * 100)}%)`;
+            }
+            details += `, итого: ${finalDamage}`;
+            window.addToBattleLog(`   🦴 → ${targetName}: ${details} (HP: ${target.wizard.hp}/${target.wizard.max_hp || target.wizard.maxHP || '?'})`);
         }
 
         // Урон для XP подсчитывается через дельту HP в core.js

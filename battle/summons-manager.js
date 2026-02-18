@@ -303,6 +303,39 @@ class SummonsManager {
         return toRemove.length;
     }
     
+    // Убить саммонов мёртвых магов (маг умер → дракон/волк/скелет умирает)
+    killOrphanedSummons() {
+        const toKill = [];
+
+        for (const [id, summon] of this.summons) {
+            if (!summon.isAlive) continue;
+
+            // Ищем хозяина
+            let ownerAlive = false;
+            if (summon.casterType === 'player') {
+                const owner = window.playerWizards?.find(w => w.id === summon.casterId);
+                ownerAlive = owner && owner.hp > 0;
+            } else {
+                const owner = window.enemyFormation?.find(w => w && w.id === summon.casterId);
+                ownerAlive = owner && owner.hp > 0;
+            }
+
+            if (!ownerAlive) {
+                toKill.push({ id, summon });
+            }
+        }
+
+        for (const { id, summon } of toKill) {
+            if (typeof window.addToBattleLog === 'function') {
+                const typeName = this.summonTypes[summon.type]?.name || summon.type;
+                window.addToBattleLog(`💀 ${typeName} погибает — хозяин мёртв!`);
+            }
+            this.killSummon(id, true);
+        }
+
+        return toKill.length;
+    }
+
     // Полная очистка
     clearAll() {
         console.log('🧹 Начинаем полную очистку призванных');
