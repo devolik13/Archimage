@@ -124,7 +124,7 @@ function openSpellSelection(wizardIndex, spellSlotIndex) {
     });
     const currentWizard = userData.wizards[wizardIndex];
     const currentSpellInSlot = currentWizard.spells?.[spellSlotIndex];
-    ['fire', 'water', 'wind', 'earth', 'nature', 'poison', 'light', 'dark'].forEach(faction => {
+    ['fire', 'water', 'wind', 'earth', 'nature', 'poison', 'light', 'dark', 'necromant'].forEach(faction => {
         const factionSpells = userSpells[faction];
         if (factionSpells) {
             Object.entries(factionSpells).forEach(([spellId, spellData]) => {
@@ -171,6 +171,7 @@ function showSpellSelectionModal() {
     const poisonCount = allLearnedSpellsGlobal.filter(s => s.faction === 'poison').length;
     const lightCount = allLearnedSpellsGlobal.filter(s => s.faction === 'light').length;
     const darkCount = allLearnedSpellsGlobal.filter(s => s.faction === 'dark').length;
+    const necromantCount = allLearnedSpellsGlobal.filter(s => s.faction === 'necromant').length;
     const spellsListHTML = renderSpellsList(allLearnedSpellsGlobal);
     const modalContent = `
         <div style="padding: 15px; width: 350px; background: #2c2c3d; border-radius: 10px; color: white;">
@@ -197,6 +198,7 @@ function showSpellSelectionModal() {
                     ${poisonCount > 0 ? `<option value="poison">☠️ Яд (${poisonCount})</option>` : ''}
                     ${lightCount > 0 ? `<option value="light">✨ Свет (${lightCount})</option>` : ''}
                     ${darkCount > 0 ? `<option value="dark">🌑 Тьма (${darkCount})</option>` : ''}
+                    ${necromantCount > 0 ? `<option value="necromant">💀 Некромантия (${necromantCount})</option>` : ''}
                 </select>
             </div>
             <div style="max-height: 300px; overflow-y: auto; margin-bottom: 10px;" id="spells-filter-container">
