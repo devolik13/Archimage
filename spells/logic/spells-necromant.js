@@ -244,19 +244,13 @@ function castBoneSpear(wizard, spellData, position, casterType) {
             window.updateWizardVisualHP(target.wizard, target.column, target.position);
         }
 
-        // Лог попадания с подробностями
-        if (typeof window.addToBattleLog === 'function') {
+        // Лог попадания (единый формат через logSpellHit)
+        if (typeof window.logSpellHit === 'function') {
             const targetName = target.isWall ? 'Стена' : (target.isSummoned ? target.wizard.name || 'Существо' : target.wizard.name);
-            const targetArmor = target.wizard.armor || target.wizard.base_armor || 0;
-            const armorBonus = target.wizard.armorBonus || 0;
-            const totalArmor = targetArmor + armorBonus;
-            let details = `базовый: ${actualDamage}`;
-            if (totalArmor > 0) {
-                details += `, броня: ${totalArmor}`;
-                if (armorIgnore > 0) details += ` (игнор ${Math.round(armorIgnore * 100)}%)`;
-            }
-            details += `, итого: ${finalDamage}`;
-            window.addToBattleLog(`   🦴 → ${targetName}: ${details} (HP: ${target.wizard.hp}/${target.wizard.max_hp || target.wizard.maxHP || '?'})`);
+            window.logSpellHit(wizard, target.wizard, finalDamage, `Костяное копьё → ${targetName}`);
+        } else if (typeof window.addToBattleLog === 'function') {
+            const targetName = target.isWall ? 'Стена' : (target.isSummoned ? target.wizard.name || 'Существо' : target.wizard.name);
+            window.addToBattleLog(`🦴 → ${targetName}: ${finalDamage} урона (HP: ${target.wizard.hp}/${target.wizard.max_hp || '?'})`);
         }
 
         // Урон для XP подсчитывается через дельту HP в core.js
@@ -295,7 +289,9 @@ function applyDeathShroudAtStart(wizard, level, position, casterType) {
     };
 
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`🦇 ${wizard.name} окутан Покровом смерти [Ур.${level}]: -${darkPoisonResist}% урона от Тьмы/Яда, +${lightVulnerability}% урона от Света`);
+        window.addToBattleLog(`🎯 Покров смерти [Ур.${level}] → ${wizard.name}`);
+        window.addToBattleLog(`    ├─ 🛡️ Сопротивление Тьме/Яду: -${darkPoisonResist}%`);
+        window.addToBattleLog(`    └─ ⚠️ Уязвимость к Свету: +${lightVulnerability}%`);
     }
 }
 
@@ -331,10 +327,11 @@ function castBoneCage(wizard, spellData, position, casterType) {
 
     if (typeof window.addToBattleLog === 'function') {
         const boostText = window.getAoeBoostText ? window.getAoeBoostText(wizard) : '';
-        window.addToBattleLog(`🪤 ${wizard.name} заключает ${targetWizard.name} в Костяную клетку [Ур.${level}]! ${boostText}HP клетки: ${cageHP}`);
+        window.addToBattleLog(`🎯 Костяная клетка [Ур.${level}] → ${targetWizard.name} ${boostText}(HP клетки: ${cageHP}/${cageHP})`);
         if (level >= 5) {
-            window.addToBattleLog(`   💀 Каждый каст наносит ${cageHP} урона захваченному магу!`);
+            window.addToBattleLog(`    ├─ 💀 Каждый каст наносит ${cageHP} урона захваченному магу`);
         }
+        window.addToBattleLog(`    └─ HP цели: ${targetWizard.hp}/${targetWizard.max_hp}`);
     }
 
     // Запускаем анимацию
@@ -360,8 +357,10 @@ function processBoneCageOnCast(cagedWizard, spellId, baseDamage) {
         cagedWizard.hp -= selfDamage;
         if (cagedWizard.hp < 0) cagedWizard.hp = 0;
 
-        if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`🪤💀 ${cagedWizard.name} получает ${selfDamage} урона от Костяной клетки!`);
+        if (typeof window.logSpellHit === 'function') {
+            window.logSpellHit({ name: 'Костяная клетка' }, cagedWizard, selfDamage, 'Самоурон Костяной клетки');
+        } else if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`🪤💀 ${cagedWizard.name} получает ${selfDamage} урона от Костяной клетки! (HP: ${cagedWizard.hp}/${cagedWizard.max_hp})`);
         }
 
         // Обновляем HP бар
@@ -389,9 +388,9 @@ function processBoneCageOnCast(cagedWizard, spellId, baseDamage) {
 
         if (typeof window.addToBattleLog === 'function') {
             if (cage.hp <= 0) {
-                window.addToBattleLog(`🪤 Костяная клетка разрушена! Остаток урона: ${remaining}`);
+                window.addToBattleLog(`🪤 Костяная клетка разрушена! (поглотила ${cageDamage} урона, остаток: ${remaining})`);
             } else {
-                window.addToBattleLog(`🪤 Костяная клетка поглотила ${cageDamage} урона (осталось HP: ${cage.hp})`);
+                window.addToBattleLog(`🪤 Костяная клетка поглотила ${cageDamage} урона (HP клетки: ${cage.hp}/${cage.maxHP})`);
             }
         }
 
@@ -459,7 +458,12 @@ function summonBoneDragonAtStart(wizard, level, position, casterType) {
         dragon.noHeal = true;
 
         if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`🐉 ${wizard.name} призывает Костяного Дракона (HP: ${dragonHP}, Урон: ${dragonDamage})`);
+            window.addToBattleLog(`🎯 Костяной Дракон [Ур.${level}] призван ${wizard.name}`);
+            window.addToBattleLog(`    ├─ HP: ${dragonHP}/${dragonHP}, Урон: ${dragonDamage}`);
+            if (level >= 5) {
+                window.addToBattleLog(`    ├─ 💀 Аура: снижение брони всех врагов на 20`);
+            }
+            window.addToBattleLog(`    └─ Не восстанавливает HP`);
         }
 
         // На 5 уровне — аура снижения брони
@@ -505,14 +509,19 @@ function performBoneDragonAttack(dragon, caster) {
             window.updateWizardVisualHP(target.wizard, targetColumn, target.position);
         }
 
-        if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`🐉 Костяной Дракон атакует ${target.wizard.name}: ${finalDamage} урона`);
+        // Лог попадания (единый формат)
+        if (typeof window.logSpellHit === 'function') {
+            const bonuses = [];
+            if (dragon.level) bonuses.push(`Ур.${dragon.level}`);
+            window.logSpellHit(caster, target.wizard, finalDamage, 'Атака Костяного Дракона', bonuses);
+        } else if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`🐉 Костяной Дракон → ${target.wizard.name}: ${finalDamage} урона (HP: ${target.wizard.hp}/${target.wizard.max_hp})`);
         }
 
         // Проверка на смерть цели
         if (target.wizard.hp <= 0) {
-            if (typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`💀 ${target.wizard.name} погиб от атаки Костяного Дракона!`);
+            if (typeof window.trackBattleKill === 'function' && dragon.casterType === 'player') {
+                window.trackBattleKill(caster);
             }
         }
     }

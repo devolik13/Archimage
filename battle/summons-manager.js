@@ -837,16 +837,19 @@ class SummonsManager {
     // Логирование
     logSummon(action, summonData) {
         if (typeof window.addToBattleLog !== 'function') return;
-        
-        const messages = {
-            'create': `🎭 Призван ${summonData.name} (HP: ${summonData.hp}/${summonData.maxHP})`,
-            'restore': `💚 ${summonData.name} восстановлен (HP: ${summonData.hp}/${summonData.maxHP})`,
-            'death': `💀 ${summonData.name} погиб`
-        };
-        
-        const message = messages[action];
-        if (message) {
-            window.addToBattleLog(message);
+
+        switch (action) {
+            case 'create':
+                window.addToBattleLog(`🎯 Призван ${summonData.name} [Ур.${summonData.level || 1}]`);
+                window.addToBattleLog(`    └─ HP: ${summonData.hp}/${summonData.maxHP}, Урон: ${summonData.damage}`);
+                break;
+            case 'restore':
+                window.addToBattleLog(`🎯 ${summonData.name} восстановлен`);
+                window.addToBattleLog(`    └─ HP: ${summonData.hp}/${summonData.maxHP}`);
+                break;
+            case 'death':
+                window.addToBattleLog(`💀 ${summonData.name} погиб`);
+                break;
         }
     }
     
