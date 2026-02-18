@@ -331,12 +331,20 @@ class SummonsManager {
     // ========================================
     
     // Создать визуал существа
-    createVisual(summonId, summonData) {
+    createVisual(summonId, summonData, retryCount = 0) {
         const container = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
 
         if (!container || !gridCells) {
-            console.warn(`⚠️ Не могу создать визуал ${summonData.type} - нет PIXI контейнера`);
+            // PIXI ещё не готов — откладываем (дракон призывается при startBattle до инициализации PIXI)
+            if (retryCount < 20) {
+                setTimeout(() => this.createVisual(summonId, summonData, retryCount + 1), 100);
+                if (retryCount === 0) {
+                    console.log(`⏳ PIXI не готов, откладываем визуал ${summonData.type}...`);
+                }
+                return;
+            }
+            console.warn(`⚠️ Не могу создать визуал ${summonData.type} - PIXI не инициализирован после ${retryCount} попыток`);
             return;
         }
 

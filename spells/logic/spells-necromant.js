@@ -124,42 +124,70 @@ function castBoneSpear(wizard, spellData, position, casterType) {
     // Враг атакует: стена(3) → призванные(4) → маги(5)
     const targetColumns = casterType === 'player' ? [2, 1, 0] : [3, 4, 5];
 
-    // Находим все цели в ряду (по позиции кастера)
-    const targets = [];
-    for (const col of targetColumns) {
-        // Стены (колонки 2 и 3)
-        if (col === 2 || col === 3) {
-            if (typeof window.findEarthWallAt === 'function') {
-                const wall = window.findEarthWallAt(col, position);
-                if (wall && wall.hp > 0) {
-                    targets.push({ wizard: { ...wall, type: 'earth_wall_hp' }, position: position, column: col, isWall: true });
+    // Определяем ряд для атаки: сначала пробуем ряд кастера,
+    // если там пусто — ищем ближайший ряд с живым врагом
+    let targetRow = position;
+
+    const findTargetsInRow = (row) => {
+        const rowTargets = [];
+        for (const col of targetColumns) {
+            // Стены (колонки 2 и 3)
+            if (col === 2 || col === 3) {
+                if (typeof window.findEarthWallAt === 'function') {
+                    const wall = window.findEarthWallAt(col, row);
+                    if (wall && wall.hp > 0) {
+                        rowTargets.push({ wizard: { ...wall, type: 'earth_wall_hp' }, position: row, column: col, isWall: true });
+                    }
+                }
+            }
+            // Призванные существа (колонки 1 и 4)
+            else if (col === 1 || col === 4) {
+                if (typeof window.findSummonedCreatureAt === 'function') {
+                    const summoned = window.findSummonedCreatureAt(col, row);
+                    if (summoned && summoned.hp > 0) {
+                        rowTargets.push({ wizard: summoned, position: row, column: col, isSummoned: true });
+                    }
+                }
+            }
+            // Маги (колонки 0 и 5)
+            else if (col === 0) {
+                const enemy = window.enemyFormation?.[row];
+                if (enemy && enemy.hp > 0) {
+                    rowTargets.push({ wizard: enemy, position: row, column: col });
+                }
+            }
+            else if (col === 5) {
+                const wizardId = window.playerFormation?.[row];
+                if (wizardId) {
+                    const target = window.playerWizards?.find(w => w.id === wizardId);
+                    if (target && target.hp > 0) {
+                        rowTargets.push({ wizard: target, position: row, column: col });
+                    }
                 }
             }
         }
-        // Призванные существа (колонки 1 и 4)
-        else if (col === 1 || col === 4) {
-            if (typeof window.findSummonedCreatureAt === 'function') {
-                const summoned = window.findSummonedCreatureAt(col, position);
-                if (summoned && summoned.hp > 0) {
-                    targets.push({ wizard: summoned, position: position, column: col, isSummoned: true });
+        return rowTargets;
+    };
+
+    // Сначала ищем в ряду кастера
+    let targets = findTargetsInRow(position);
+
+    // Если в ряду кастера пусто — ищем ближайший ряд с целью
+    if (targets.length === 0) {
+        const maxRows = 5;
+        for (let offset = 1; offset < maxRows; offset++) {
+            // Проверяем ряды выше и ниже
+            for (const row of [position - offset, position + offset]) {
+                if (row >= 0 && row < maxRows) {
+                    const rowTargets = findTargetsInRow(row);
+                    if (rowTargets.length > 0) {
+                        targets = rowTargets;
+                        targetRow = row;
+                        break;
+                    }
                 }
             }
-        }
-        // Маги (колонки 0 и 5)
-        else if (col === 0) {
-            const enemy = window.enemyFormation?.[position];
-            if (enemy && enemy.hp > 0) {
-                targets.push({ wizard: enemy, position: position, column: col });
-            }
-        }
-        else if (col === 5) {
-            const wizardId = window.playerFormation?.[position];
-            if (wizardId) {
-                const target = window.playerWizards?.find(w => w.id === wizardId);
-                if (target && target.hp > 0) {
-                    targets.push({ wizard: target, position: position, column: col });
-                }
-            }
+            if (targets.length > 0) break;
         }
     }
 
@@ -355,8 +383,12 @@ function processBoneCageOnCast(cagedWizard, spellId, baseDamage) {
         }
 
         if (cage.hp <= 0) {
-            // Клетка разрушена — остаток пролетит в цель (через обычную логику)
-            // Возвращаем remaining как новый базовый урон
+            // Клетка разрушена — убираем визуал
+            if (window.spellAnimations?.bone_cage?.removeCage) {
+                window.spellAnimations.bone_cage.removeCage(cagedWizard.id);
+            }
+            delete cagedWizard.effects.bone_cage;
+            // Остаток пролетит в цель (через обычную логику)
             return { absorbed: false, remainingDamage: remaining };
         }
 

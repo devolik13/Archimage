@@ -224,6 +224,9 @@ function startBattle() {
         if (window.spellAnimations.summon_skeleton?.clearAll) {
             window.spellAnimations.summon_skeleton.clearAll();
         }
+        if (window.spellAnimations.bone_cage?.clearAll) {
+            window.spellAnimations.bone_cage.clearAll();
+        }
     }
 
     window.activeMeteorokinesis = [];
