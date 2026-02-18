@@ -114,7 +114,11 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
                 if (summonedCreature.type === 'bone_dragon' || summonedCreature.type === 'necromant_skeleton') {
                     const school = typeof window.getSpellSchool === 'function' ? window.getSpellSchool(spellId) : null;
                     if (school !== 'light') {
+                        const before = aoeDamage;
                         aoeDamage = Math.floor(aoeDamage * 0.9);
+                        if (before !== aoeDamage) {
+                            protectionLayers.push(`💀 Некромантия: ${summonedCreature.name} -10% урона (${before} → ${aoeDamage})`);
+                        }
                     }
                 }
                 const actualDamage = Math.min(aoeDamage, summonedCreature.hp);
@@ -141,11 +145,15 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
                 // remainingDamage НЕ уменьшается — маг получает полный урон
             } else {
                 // Single target ИЛИ Энт (AOE/single) — стандартное поглощение
-                // 🐉 Фракционный бонус некроманта для призванных существ (-10% кроме Света)
+                // Фракционный бонус некроманта для призванных существ (-10% кроме Света)
                 if (summonedCreature.type === 'bone_dragon' || summonedCreature.type === 'necromant_skeleton') {
                     const school = typeof window.getSpellSchool === 'function' ? window.getSpellSchool(spellId) : null;
                     if (school !== 'light') {
+                        const before = remainingDamage;
                         remainingDamage = Math.floor(remainingDamage * 0.9);
+                        if (before !== remainingDamage) {
+                            protectionLayers.push(`💀 Некромантия: ${summonedCreature.name} -10% урона (${before} → ${remainingDamage})`);
+                        }
                     }
                 }
 

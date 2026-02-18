@@ -631,7 +631,7 @@ function applyDamageWithMultiLayerProtection(caster, targetInfo, baseDamage, spe
 
     // 2. Призванные существа (только если цель не AOE)
     if (!window.isAOESpell || !window.isAOESpell(spellId)) {
-        const summonProtection = checkSummonProtection(targetInfo.position, casterType);
+        const summonProtection = checkSummonProtection(targetInfo.position, casterType, spellId);
         if (summonProtection.blocked > 0) {
             blocked += summonProtection.blocked;
             finalDamage = Math.max(0, finalDamage - summonProtection.blocked);
@@ -728,17 +728,26 @@ function checkWallProtection(position, casterType, spellId) {
 }
 
 // --- Проверка защиты призванных существ ---
-function checkSummonProtection(position, casterType) {
+function checkSummonProtection(position, casterType, spellId) {
     let blocked = 0;
     let type = '';
-    
+
     if (typeof window.findSummonedCreatureAt === 'function') {
         const summon = window.findSummonedCreatureAt(casterType === 'player' ? 4 : 1, position);
         if (summon && summon.hp > 0) {
             blocked = Math.min(summon.hp, 15);
+
+            // Фракционный бонус некроманта (-10% кроме Света)
+            if (summon.type === 'bone_dragon' || summon.type === 'necromant_skeleton') {
+                const school = typeof window.getSpellSchool === 'function' ? window.getSpellSchool(spellId) : null;
+                if (school !== 'light') {
+                    blocked = Math.floor(blocked * 0.9);
+                }
+            }
+
             summon.hp -= blocked;
             type = summon.name || 'Призванное существо';
-            
+
             if (summon.hp <= 0) {
                 if (typeof window.removeDeadSummons === 'function') {
                     (window.battleTimeout || setTimeout)(() => {
@@ -748,7 +757,7 @@ function checkSummonProtection(position, casterType) {
             }
         }
     }
-    
+
     return { blocked, type };
 }
 
@@ -842,7 +851,11 @@ function applyAoeDamageToSummons(caster, baseDamage, spellId, casterType) {
         if (summon.type === 'bone_dragon' || summon.type === 'necromant_skeleton') {
             const school = typeof window.getSpellSchool === 'function' ? window.getSpellSchool(spellId) : null;
             if (school !== 'light') {
+                const before = damage;
                 damage = Math.floor(damage * 0.9);
+                if (typeof window.addToBattleLog === 'function' && before !== damage) {
+                    window.addToBattleLog(`   💀 Некромантия: ${summon.name} -10% урона (${before} → ${damage})`);
+                }
             }
         }
 
