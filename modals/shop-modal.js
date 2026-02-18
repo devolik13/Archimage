@@ -372,7 +372,7 @@ function renderShopContent(container, rect) {
                         <h2 style="margin: 0; color: #ffd700; font-size: ${titleFontSize}px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
                             🛒 Магазин
                         </h2>
-                        <button onclick="showChangeFactionDialog({id:'faction_change',price:280,priceUSD:6.3,currency:'dual',amount:1,checkFree:true,dynamicPrice:true})" style="
+                        <button onclick="showChangeFactionDialog({id:'faction_change',price:1000,currency:'dual',amount:1,checkFree:true})" style="
                             background: rgba(100,150,255,0.3);
                             border: 1px solid rgba(100,150,255,0.5);
                             color: white;
@@ -477,10 +477,6 @@ function renderShopItems(tab, scale) {
             // Проверяем бесплатную смену фракции
             if (item.checkFree && !window.userData?.faction_changed) {
                 priceText = '🆓 Бесплатно';
-                canBuy = true;
-            } else if (item.dynamicPrice) {
-                // Динамическая цена - показываем в диалоге
-                priceText = 'Узнать цену';
                 canBuy = true;
             }
         } else if (item.currency === 'dual') {
@@ -1794,85 +1790,11 @@ function formatTimePurchase(minutes) {
  * Рассчитывает время, потраченное на изучение заклинаний каждой фракции
  * Данные берутся напрямую из userData.spells - всегда актуальны
  */
-function calculateSpellTimeFromDB() {
-    const spellTime = { fire: 0, water: 0, earth: 0, wind: 0, nature: 0, poison: 0, light: 0, dark: 0 };
-    const spells = window.userData?.spells || {};
-
-    // Базовое время по тирам (в минутах)
-    const tierTimes = { 1: 1440, 2: 2880, 3: 4320, 4: 7200, 5: 10080 };
-
-    // Для каждой фракции считаем потраченное время
-    Object.keys(spells).forEach(faction => {
-        const factionSpells = spells[faction] || {};
-
-        Object.values(factionSpells).forEach(spell => {
-            const level = spell.level || 0;
-            const tier = spell.tier || 1;
-
-            if (level > 0) {
-                // Формула: время = tierTime × L × (L+1) / 4
-                // Где L = текущий уровень заклинания
-                const baseTime = tierTimes[tier] || 1440;
-                const totalTime = Math.floor(baseTime * level * (level + 1) / 4);
-                spellTime[faction] = (spellTime[faction] || 0) + totalTime;
-            }
-        });
-    });
-
-    return spellTime;
-}
-
 /**
- * Расчёт динамической цены смены фракции на конкретную целевую фракцию
- * Формула: цена зависит от баланса между сэкономленным (на своей) и переплаченным (на целевой)
- * Минимум: 280⭐ (~500₽), максимум: неограничено
+ * Фиксированная цена смены фракции: 1000⭐ (~$13 / ~1170₽)
  */
 function calculateFactionChangePrice(targetFaction) {
-    const MIN_PRICE_STARS = 280; // ~500 рублей минимум
-    const STARS_PER_DAY = 168;   // 7⭐ × 24ч
-
-    const currentFaction = window.userData?.faction || 'fire';
-    // Всегда считаем актуальные данные из БД
-    const spellTime = calculateSpellTimeFromDB();
-
-    // Время на текущую (свою) фракцию - игрок получил скидку 15%
-    const ownTime = spellTime[currentFaction] || 0;
-    // Время на целевую фракцию - игрок переплатил (не было скидки)
-    const targetTime = spellTime[targetFaction] || 0;
-
-    // Экономия от скидки 15% на своей = потраченное время × 0.176
-    // Переплата на целевой = то что бы сэкономил со скидкой
-    const savedMinutes = ownTime * 0.176;
-    const overpaidMinutes = targetTime * 0.176;
-
-    // Баланс: сэкономленное - переплаченное
-    // Если больше сэкономил на своей → платит больше за уход
-    // Если больше переплатил на целевой → платит меньше за переход
-    const balanceMinutes = savedMinutes - overpaidMinutes;
-
-    // Переводим в Stars (минуты → дни → Stars)
-    const balanceDays = balanceMinutes / 1440;
-    const balanceStars = Math.ceil(balanceDays * STARS_PER_DAY);
-
-    // Итоговая цена: минимум MIN_PRICE_STARS
-    const finalPrice = Math.max(MIN_PRICE_STARS, balanceStars);
-
-    // Время в днях для отображения
-    const ownDays = Math.round(ownTime / 1440 * 10) / 10;
-    const targetDays = Math.round(targetTime / 1440 * 10) / 10;
-
-    console.log(`💰 Цена ${currentFaction}→${targetFaction}: своя=${ownDays}дн, цель=${targetDays}дн, баланс=${balanceMinutes.toFixed(0)}мин, цена=${finalPrice}⭐`);
-
-    return {
-        price: finalPrice,
-        ownTime,
-        targetTime,
-        ownDays,
-        targetDays,
-        savedMinutes: Math.round(savedMinutes),
-        overpaidMinutes: Math.round(overpaidMinutes),
-        isMinimum: balanceStars <= MIN_PRICE_STARS
-    };
+    return { price: 1000 };
 }
 
 /**
@@ -1918,25 +1840,12 @@ function renderFactionChangeContent(container, rect) {
         dark: '🌑 Тьма'
     };
 
-    // Рассчитываем цену для каждой целевой фракции
-    const factionPrices = {};
-    factions.filter(f => f !== currentFaction).forEach(faction => {
-        factionPrices[faction] = calculateFactionChangePrice(faction);
-    });
-
-    // Сохраняем цены для использования в confirmFactionChange
-    window._factionChangePrices = factionPrices;
+    const factionChangePrice = 1000;
 
     // Генерируем кнопки фракций
     const factionButtons = factions
         .filter(f => f !== currentFaction)
         .map(faction => {
-            const priceInfo = factionPrices[faction];
-            const priceColor = priceInfo.isMinimum ? '#4ade80' : '#ffa500';
-            const timeSpentText = priceInfo.targetDays > 0
-                ? `изучено ${priceInfo.targetDays} дн.`
-                : 'не изучалось';
-
             return `
                 <button onclick="confirmFactionChange('${faction}')" style="
                     padding: ${12 * scale}px ${16 * scale}px;
@@ -1952,9 +1861,8 @@ function renderFactionChangeContent(container, rect) {
                 " onmouseover="this.style.borderColor='#ffd700'; this.style.background='rgba(0,0,0,0.8)'"
                    onmouseout="this.style.borderColor='rgba(255,215,0,0.3)'; this.style.background='rgba(0,0,0,0.6)'">
                     <div style="font-size: ${baseFontSize * 1.1}px; margin-bottom: 4px;">${factionNames[faction]}</div>
-                    <div style="font-size: ${smallFontSize}px; color: #888; margin-bottom: 4px;">${timeSpentText}</div>
-                    <div style="font-size: ${baseFontSize}px; color: ${priceColor}; font-weight: bold;">
-                        ${isFree ? '🆓 Бесплатно' : `⭐${priceInfo.price}`}
+                    <div style="font-size: ${baseFontSize}px; color: #4ade80; font-weight: bold;">
+                        ${isFree ? '🆓 Бесплатно' : `⭐${factionChangePrice}`}
                     </div>
                 </button>
             `;
@@ -1963,7 +1871,7 @@ function renderFactionChangeContent(container, rect) {
     // Заголовок с информацией
     const headerText = isFree
         ? '<span style="color: #4ade80;">Первая смена бесплатно!</span>'
-        : 'Цена зависит от изученных заклинаний';
+        : `Стоимость: ${factionChangePrice} ⭐`;
 
     container.innerHTML = `
         <div style="padding: 15px; height: 100%; display: flex; flex-direction: column; pointer-events: auto;">
@@ -2114,10 +2022,9 @@ async function confirmFactionChange(newFaction) {
         necromant: '💀 Некромант'
     };
     const isFree = !window.userData?.faction_changed;
-    // Используем цену для конкретной целевой фракции
-    const dynamicPrice = window._factionChangePrices?.[newFaction]?.price || 280;
+    const factionChangePrice = 1000;
 
-    const priceText = isFree ? 'Бесплатно' : `${dynamicPrice} ⭐`;
+    const priceText = isFree ? 'Бесплатно' : `${factionChangePrice} ⭐`;
     const confirmed = await showFactionChangeConfirmation(factionNames[newFaction] || newFaction, priceText);
     if (!confirmed) return;
 
@@ -2129,13 +2036,13 @@ async function confirmFactionChange(newFaction) {
             return;
         }
 
-        console.log('🔄 Смена фракции на:', newFaction, `(${dynamicPrice} Stars)`);
+        console.log('🔄 Смена фракции на:', newFaction, `(${factionChangePrice} Stars)`);
 
         try {
             // Создаём invoice через Edge Function с целевой фракцией
             const invoiceUrl = await createStarsInvoice(
                 { id: 'faction_change' },
-                dynamicPrice,
+                factionChangePrice,
                 newFaction
             );
 
@@ -2145,8 +2052,8 @@ async function confirmFactionChange(newFaction) {
 
                 if (status === 'paid') {
                     // Начисляем airdrop очки за покупку Stars (100 Stars = 10 очков)
-                    if (typeof window.addAirdropPoints === 'function' && dynamicPrice) {
-                        const airdropPoints = Math.floor(dynamicPrice / 10);
+                    if (typeof window.addAirdropPoints === 'function' && factionChangePrice) {
+                        const airdropPoints = Math.floor(factionChangePrice / 10);
                         if (airdropPoints > 0) {
                             window.addAirdropPoints(airdropPoints, 'Покупка Telegram Stars');
 
