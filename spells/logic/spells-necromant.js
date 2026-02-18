@@ -12,8 +12,21 @@ function castNecromantSpell(wizard, spellId, spellData, position, casterType) {
             castBoneCage(wizard, spellData, position, casterType);
             break;
         case 'death_shroud':
+            // Пассивное заклинание — уже применено в начале боя
+            break;
         case 'bone_dragon':
-            // Пассивные заклинания — уже применены в начале боя, не кастуются каждый ход
+            // Дракон призван в начале боя, каждый ход атакует (по паттерну скелета)
+            if (window.summonsManager) {
+                for (const [id, summon] of window.summonsManager.summons) {
+                    if (summon.casterId === wizard.id && summon.isAlive && summon.type === 'bone_dragon') {
+                        performBoneDragonAttack(summon, wizard);
+                        if (typeof window.checkBoneDragonAura === 'function') {
+                            window.checkBoneDragonAura();
+                        }
+                        break;
+                    }
+                }
+            }
             break;
         default:
             if (typeof window.castBasicAttack === 'function') {
@@ -64,11 +77,10 @@ function performSkeletonAttack(skeleton, caster) {
 
         // На 5 уровне: 50% шанс пробить 50% брони
         let armorIgnore = 0;
+        let armorPierced = false;
         if (skeleton.level >= 5 && Math.random() < 0.5) {
             armorIgnore = 0.5; // 50% брони игнорируется
-            if (typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`💀 Скелет пробивает броню!`);
-            }
+            armorPierced = true;
         }
 
         // Применяем урон
@@ -109,6 +121,7 @@ function performSkeletonAttack(skeleton, caster) {
         if (typeof window.logSpellHit === 'function') {
             const bonuses = [];
             if (skeleton.level) bonuses.push(`Ур.${skeleton.level}`);
+            if (armorPierced) bonuses.push(`💀-50% брони`);
             if (caster.name !== skeleton.name) bonuses.push(`от ${caster.name}`);
             window.logSpellHit(skeleton, target.wizard, finalDamage, 'Удар скелета', bonuses);
         } else if (typeof window.addToBattleLog === 'function') {
@@ -246,8 +259,7 @@ function castBoneSpear(wizard, spellData, position, casterType) {
 
         // Лог попадания (единый формат через logSpellHit)
         if (typeof window.logSpellHit === 'function') {
-            const targetName = target.isWall ? 'Стена' : (target.isSummoned ? target.wizard.name || 'Существо' : target.wizard.name);
-            window.logSpellHit(wizard, target.wizard, finalDamage, `Костяное копьё → ${targetName}`);
+            window.logSpellHit(wizard, target.wizard, finalDamage, 'Костяное копьё');
         } else if (typeof window.addToBattleLog === 'function') {
             const targetName = target.isWall ? 'Стена' : (target.isSummoned ? target.wizard.name || 'Существо' : target.wizard.name);
             window.addToBattleLog(`🦴 → ${targetName}: ${finalDamage} урона (HP: ${target.wizard.hp}/${target.wizard.max_hp || '?'})`);
@@ -356,10 +368,11 @@ function processBoneCageOnCast(cagedWizard, spellId, baseDamage) {
         cagedWizard.hp -= selfDamage;
         if (cagedWizard.hp < 0) cagedWizard.hp = 0;
 
+        const spellDisplayName = window.SPELL_NAMES?.[spellId] || spellId;
         if (typeof window.logSpellHit === 'function') {
-            window.logSpellHit({ name: 'Костяная клетка' }, cagedWizard, selfDamage, 'Самоурон Костяной клетки');
+            window.logSpellHit({ name: 'Костяная клетка' }, cagedWizard, selfDamage, `Самоурон Костяной клетки (${spellDisplayName})`);
         } else if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`🪤💀 ${cagedWizard.name} получает ${selfDamage} урона от Костяной клетки! (HP: ${cagedWizard.hp}/${cagedWizard.max_hp})`);
+            window.addToBattleLog(`🪤💀 ${cagedWizard.name} получает ${selfDamage} урона от Костяной клетки при касте ${spellDisplayName}! (HP: ${cagedWizard.hp}/${cagedWizard.max_hp})`);
         }
 
         // Обновляем HP бар

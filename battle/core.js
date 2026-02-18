@@ -979,25 +979,7 @@ async function executeSingleMageAttack(wizard, position, casterType) {
         window.restoreBoneCages(wizard.id);
     }
 
-    // 🐉 Атака Костяного Дракона (пассивный саммон — перед заклинаниями мага)
-    // Волк и скелет атакуют через свои активные заклинания (call_wolf, summon_skeleton)
-    if (window.summonsManager && wizard.hp > 0) {
-        for (const [id, summon] of window.summonsManager.summons) {
-            if (summon.casterId === wizard.id && summon.isAlive) {
-                if (summon.type === 'bone_dragon') {
-                    if (typeof window.performBoneDragonAttack === 'function') {
-                        window.performBoneDragonAttack(summon, wizard);
-                        if (typeof window.checkBoneDragonAura === 'function') {
-                            window.checkBoneDragonAura();
-                        }
-                        if (await checkBattleEnd()) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-    }
+    // 🐉 Атака Костяного Дракона теперь происходит через систему заклинаний (bone_dragon case в castNecromantSpell)
 
     // ИСПОЛЬЗОВАНИЕ ЗАКЛИНАНИЙ - ждём завершения всех кастов
     // 👁️ Ослепление проверяется в findTarget для каждого боевого заклинания отдельно
