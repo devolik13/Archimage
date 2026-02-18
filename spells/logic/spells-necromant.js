@@ -267,7 +267,7 @@ function castBoneSpear(wizard, spellData, position, casterType) {
     if (window.spellAnimations?.bone_spear?.play) {
         window.spellAnimations.bone_spear.play({
             casterType: casterType,
-            position: position,
+            position: targetRow,
             targets: targets,
             level: level
         });
@@ -326,8 +326,7 @@ function castBoneCage(wizard, spellData, position, casterType) {
     };
 
     if (typeof window.addToBattleLog === 'function') {
-        const boostText = window.getAoeBoostText ? window.getAoeBoostText(wizard) : '';
-        window.addToBattleLog(`🎯 Костяная клетка [Ур.${level}] → ${targetWizard.name} ${boostText}(HP клетки: ${cageHP}/${cageHP})`);
+        window.addToBattleLog(`🎯 Костяная клетка [Ур.${level}] → ${targetWizard.name} (HP клетки: ${cageHP}/${cageHP})`);
         if (level >= 5) {
             window.addToBattleLog(`    ├─ 💀 Каждый каст наносит ${cageHP} урона захваченному магу`);
         }

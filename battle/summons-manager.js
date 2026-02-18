@@ -135,8 +135,10 @@ class SummonsManager {
 	    this.createVisual(summonId, summonData);
 	}
         
-        // Логируем
-        this.logSummon('create', summonData);
+        // Логируем (bone_dragon имеет свой детальный лог в summonBoneDragonAtStart)
+        if (type !== 'bone_dragon') {
+            this.logSummon('create', summonData);
+        }
         
         return summonData;
     }
