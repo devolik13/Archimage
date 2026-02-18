@@ -159,6 +159,12 @@ function loadAtlases() {
             window.pixiWizards.init();
             window.pixiWizards.update();
         }
+
+        // Пересоздаём визуалы призванных существ (дракон призывается до PIXI-инита)
+        if (window.summonsManager) {
+            window.summonsManager.recreateMissingVisuals();
+        }
+
         startBattleSync();
 
         // Ждём загрузки фона перед скрытием спиннера

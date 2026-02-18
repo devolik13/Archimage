@@ -48,9 +48,6 @@ function castSummonSkeleton(wizard, spellData, position, casterType) {
 
     // Скелет атакует сразу после призыва/восстановления
     performSkeletonAttack(skeleton, wizard);
-
-    // Применяем бонус фракции некроманта
-    applyNecromantFactionBonus(wizard, casterType);
 }
 
 // Атака скелета
@@ -221,32 +218,14 @@ function castBoneSpear(wizard, spellData, position, casterType) {
         window.addToBattleLog(`🦴 ${wizard.name} метает Костяное копьё [Ур.${level}]! ${boostText}Пронзает ${targets.length} ${targets.length === 1 ? 'цель' : 'целей'}`);
     }
 
-    if (level >= 5 && armorIgnore > 0) {
-        if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`   💀 Копьё пронзает броню! (-50% брони)`);
-        }
-    }
+    // Пронзание брони теперь отображается в damage-system.js отдельной строкой
 
     // Наносим урон каждой цели в ряду
     let totalDamage = 0;
     for (const target of targets) {
-        let actualDamage = baseDamage;
-
-        // Фракционный бонус некроманта (двойной урон)
-        const casterInfo = { faction: wizard.faction, casterType: casterType, position: position };
-        if (wizard.faction === 'necromant' && typeof window.checkFactionDoubleDamage === 'function') {
-            const isDouble = window.checkFactionDoubleDamage(wizard.faction, 'necromant', casterInfo);
-            if (isDouble) {
-                actualDamage = baseDamage * 2;
-                if (typeof window.addToBattleLog === 'function') {
-                    window.addToBattleLog(`   💀 Двойной урон некромантии!`);
-                }
-            }
-        }
-
         // Применяем урон через систему урона (isAOE = true для пронзания)
         const finalDamage = typeof window.applyFinalDamage === 'function' ?
-            window.applyFinalDamage(wizard, target.wizard, actualDamage, 'bone_spear', armorIgnore, true) : actualDamage;
+            window.applyFinalDamage(wizard, target.wizard, baseDamage, 'bone_spear', armorIgnore, true) : baseDamage;
 
         target.wizard.hp -= finalDamage;
         if (target.wizard.hp < 0) target.wizard.hp = 0;
@@ -292,18 +271,28 @@ function applyDeathShroudAtStart(wizard, level, position, casterType) {
     const darkPoisonResist = [15, 20, 25, 30, 40][level - 1] || 15;
     const lightVulnerability = [5, 10, 15, 20, 25][level - 1] || 5;
 
-    if (!wizard.buffs) wizard.buffs = {};
+    // Покров смерти — массовый бафф на всех союзных магов
+    const allies = casterType === 'player' ? window.playerWizards : window.enemyWizards;
+    if (!allies) return;
 
-    wizard.buffs.death_shroud = {
-        darkPoisonResist: darkPoisonResist,
-        lightVulnerability: lightVulnerability,
-        level: level
-    };
+    const affectedNames = [];
+    for (const ally of allies) {
+        if (ally && ally.hp > 0) {
+            if (!ally.buffs) ally.buffs = {};
+            ally.buffs.death_shroud = {
+                darkPoisonResist: darkPoisonResist,
+                lightVulnerability: lightVulnerability,
+                level: level
+            };
+            affectedNames.push(ally.name);
+        }
+    }
 
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`🎯 Покров смерти [Ур.${level}] → ${wizard.name}`);
+        window.addToBattleLog(`🎯 Покров смерти [Ур.${level}] → ${wizard.name} накладывает на всех союзников`);
         window.addToBattleLog(`    ├─ 🛡️ Сопротивление Тьме/Яду: -${darkPoisonResist}%`);
-        window.addToBattleLog(`    └─ ⚠️ Уязвимость к Свету: +${lightVulnerability}%`);
+        window.addToBattleLog(`    ├─ ⚠️ Уязвимость к Свету: +${lightVulnerability}%`);
+        window.addToBattleLog(`    └─ 👥 Затронуто: ${affectedNames.join(', ')}`);
     }
 }
 
@@ -479,9 +468,7 @@ function summonBoneDragonAtStart(wizard, level, position, casterType) {
         }
 
         // На 5 уровне — аура снижения брони
-        if (level >= 5) {
-            applyBoneDragonAura(wizard.id, casterType);
-        }
+        // Применяется ПОСЛЕ инициализации всех магов (core.js) чтобы armorBonus не сбросился
     }
 }
 
@@ -601,12 +588,6 @@ function checkBoneDragonAura() {
     }
 }
 
-// Бонус фракции Некроманта (заглушка — основной бонус в damage-system.js)
-function applyNecromantFactionBonus(wizard, casterType) {
-    // Основной бонус некроманта (-10% входящего урона кроме света)
-    // реализован в damage-system.js
-}
-
 // Экспорт
 if (typeof window !== 'undefined') {
     window.castNecromantSpell = castNecromantSpell;
@@ -618,4 +599,5 @@ if (typeof window !== 'undefined') {
     window.summonBoneDragonAtStart = summonBoneDragonAtStart;
     window.performBoneDragonAttack = performBoneDragonAttack;
     window.checkBoneDragonAura = checkBoneDragonAura;
+    window.applyBoneDragonAura = applyBoneDragonAura;
 }

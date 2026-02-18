@@ -63,7 +63,7 @@ class SummonsManager {
                 animationSpeed: 0.08,
                 color: 0x8B7355,
                 yOffset: 0.6,
-                scale: 0.70,
+                scale: 0.56,
                 attackAnimation: 'bite'
             }
             // Здесь можно добавить других существ:
@@ -364,7 +364,27 @@ class SummonsManager {
     // ========================================
     // ВИЗУАЛИЗАЦИЯ
     // ========================================
-    
+
+    // Пересоздать визуалы для существ, чей спрайт был уничтожен при переинициализации PIXI
+    recreateMissingVisuals() {
+        const container = window.pixiCore?.getEffectsContainer();
+        const gridCells = window.pixiCore?.getGridCells();
+        if (!container || !gridCells) return;
+
+        for (const [summonId, summon] of this.summons) {
+            if (!summon.isAlive) continue;
+            if (summon.type === 'nature_ent') continue;
+
+            const visual = this.visuals.get(summonId);
+            // Визуал отсутствует или уничтожен — пересоздаём
+            if (!visual || visual.destroyed || !visual.parent) {
+                console.log(`🔄 Пересоздаём визуал для ${summon.type} (${summonId})`);
+                this.visuals.delete(summonId);
+                this.createVisual(summonId, summon);
+            }
+        }
+    }
+
     // Создать визуал существа
     createVisual(summonId, summonData, retryCount = 0) {
         const container = window.pixiCore?.getEffectsContainer();
@@ -459,13 +479,18 @@ class SummonsManager {
             this.fadeIn(sprite, () => {
                 sprite.play();
             });
-            
+
             // Сохраняем визуал
             this.visuals.set(summonId, sprite);
-            
+
             // Добавляем HP бар
             this.addHPBar(summonId, sprite, summonData);
-            
+
+            // Загружаем attack спрайт если есть в конфиге
+            if (config.attackSprite) {
+                this.loadAttackSprite(summonId, config, sprite, cell, summonData.casterType, container);
+            }
+
         }).catch(err => {
             console.warn(`❌ Ошибка загрузки спрайта ${summonData.type}:`, err);
             this.createGraphicsVisual(summonId, summonData, config, cell, container);
@@ -774,20 +799,101 @@ class SummonsManager {
         animate();
     }
     
+    // Загрузить attack спрайт для существа
+    loadAttackSprite(summonId, config, idleSprite, cell, casterType, container) {
+        PIXI.Assets.load(config.attackSprite).then(baseTexture => {
+            if (!baseTexture || !baseTexture.valid) {
+                console.warn(`⚠️ Attack текстура невалидна для ${config.name}`);
+                return;
+            }
+            console.log(`✅ Attack спрайт загружен для ${config.name}`);
+
+            // Нарезаем кадры
+            const frames = [];
+            const cols = config.framesX || 3;
+            const rows = config.framesY || Math.ceil(config.frames / cols);
+
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    if (frames.length >= config.frames) break;
+                    frames.push(new PIXI.Texture(
+                        baseTexture,
+                        new PIXI.Rectangle(
+                            col * config.frameWidth,
+                            row * config.frameHeight,
+                            config.frameWidth,
+                            config.frameHeight
+                        )
+                    ));
+                }
+            }
+
+            // Создаём attack спрайт (скрытый)
+            const attackSprite = new PIXI.AnimatedSprite(frames);
+            attackSprite.x = idleSprite.x;
+            attackSprite.y = idleSprite.y;
+            attackSprite.anchor.set(0.5, 0.5);
+            attackSprite.scale.copyFrom(idleSprite.scale);
+            attackSprite.animationSpeed = config.animationSpeed * 1.5; // Атака быстрее
+            attackSprite.loop = false;
+            attackSprite.visible = false;
+            container.addChild(attackSprite);
+
+            // Сохраняем ссылку на attack спрайт
+            idleSprite._attackSprite = attackSprite;
+        }).catch(err => {
+            console.warn(`❌ Ошибка загрузки attack спрайта:`, err);
+        });
+    }
+
+    // Анимация атаки через смену спрайтов (idle -> attack -> idle)
+    playSpriteAttackAnimation(summonId, onComplete) {
+        const idleSprite = this.visuals.get(summonId);
+        if (!idleSprite || !idleSprite._attackSprite) {
+            if (onComplete) onComplete();
+            return;
+        }
+
+        const attackSprite = idleSprite._attackSprite;
+
+        // Скрываем idle, показываем attack
+        idleSprite.visible = false;
+        attackSprite.currentFrame = 0;
+        attackSprite.visible = true;
+        attackSprite.play();
+
+        // Когда анимация атаки закончится — возврат к idle
+        attackSprite.onComplete = () => {
+            attackSprite.stop();
+            attackSprite.visible = false;
+            attackSprite.onComplete = null;
+
+            idleSprite.visible = true;
+
+            if (onComplete) onComplete();
+        };
+    }
+
     // Анимация атаки
     playAttackAnimation(summonId, targetX, targetY, onComplete) {
         const visual = this.visuals.get(summonId);
         if (!visual) return;
-        
+
+        // Если у существа есть attack спрайт — используем смену спрайтов
+        if (visual._attackSprite) {
+            this.playSpriteAttackAnimation(summonId, onComplete);
+            return;
+        }
+
         const startX = visual.x;
         const startY = visual.y;
-        
-        // Прыжок к цели и обратно
+
+        // Прыжок к цели и обратно (fallback для существ без attack спрайта)
         const jumpTo = () => {
             const progress = Math.min((Date.now() - startTime) / 200, 1);
             visual.x = startX + (targetX - startX) * progress * 0.3;
             visual.y = startY + (targetY - startY) * progress * 0.3;
-            
+
             if (progress < 1) {
                 requestAnimationFrame(jumpTo);
             } else {
@@ -797,7 +903,7 @@ class SummonsManager {
                     const returnProgress = Math.min((Date.now() - returnStart) / 200, 1);
                     visual.x = startX + (targetX - startX) * 0.3 * (1 - returnProgress);
                     visual.y = startY + (targetY - startY) * 0.3 * (1 - returnProgress);
-                    
+
                     if (returnProgress < 1) {
                         requestAnimationFrame(jumpBack);
                     } else {
@@ -807,7 +913,7 @@ class SummonsManager {
                 jumpBack();
             }
         };
-        
+
         const startTime = Date.now();
         jumpTo();
     }

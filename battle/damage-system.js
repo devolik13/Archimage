@@ -199,7 +199,11 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     	if (target.faction === 'necromant') {
     	    const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
     	    if (spellSchool !== 'light') {
+    	        const before = finalDamage;
     	        finalDamage = Math.floor(finalDamage * 0.9);
+    	        if (typeof window.addToBattleLog === 'function' && before !== finalDamage) {
+    	            window.addToBattleLog(`   💀 Некромантия: -10% урона (${before} → ${finalDamage})`);
+    	        }
     	    }
     	}
 
@@ -360,7 +364,11 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     if (target.faction === 'necromant') {
         const spellSchool = window.getSpellSchoolFallback ? window.getSpellSchoolFallback(spellId) : null;
         if (spellSchool !== 'light') {
+            const before = finalDamage;
             finalDamage = Math.floor(finalDamage * 0.9);
+            if (typeof window.addToBattleLog === 'function' && before !== finalDamage) {
+                window.addToBattleLog(`   💀 Некромантия: -10% урона (${before} → ${finalDamage})`);
+            }
         }
     }
 
@@ -577,14 +585,13 @@ function applyDamageWithEffects(caster, target, baseDamage, spellId = 'basic', a
         const damageBeforeArmor = finalDamage;
         finalDamage = Math.round(finalDamage * (1 - armorModifier));
         
+        if (armorIgnorePercent > 0) {
+            damageSteps.push(`⚔️ Пронзание брони: ${totalArmor} → ${effectiveArmor.toFixed(0)} (-${armorIgnorePercent}%)`);
+        }
         if (effectiveArmor !== standardArmor) {
             const armorEffect = effectiveArmor > standardArmor ? 'Броня' : 'Уязвимость';
             const percentChange = Math.abs(armorModifier * 100).toFixed(0);
-            if (armorIgnorePercent > 0) {
-                damageSteps.push(`${armorEffect} (${totalArmor}→${effectiveArmor.toFixed(0)}, -${armorIgnorePercent}% пронзание): ${damageBeforeArmor} → ${finalDamage} (${percentChange}%)`);
-            } else {
-                damageSteps.push(`${armorEffect} (${effectiveArmor.toFixed(0)}): ${damageBeforeArmor} → ${finalDamage} (${percentChange}%)`);
-            }
+            damageSteps.push(`${armorEffect} (${effectiveArmor.toFixed(0)}): ${damageBeforeArmor} → ${finalDamage} (${percentChange}%)`);
         }
     }
     
@@ -624,7 +631,7 @@ function applyDamageWithMultiLayerProtection(caster, targetInfo, baseDamage, spe
 
     // 2. Призванные существа (только если цель не AOE)
     if (!window.isAOESpell || !window.isAOESpell(spellId)) {
-        const summonProtection = checkSummonProtection(targetInfo.position, casterType);
+        const summonProtection = checkSummonProtection(targetInfo.position, casterType, spellId);
         if (summonProtection.blocked > 0) {
             blocked += summonProtection.blocked;
             finalDamage = Math.max(0, finalDamage - summonProtection.blocked);
@@ -721,17 +728,26 @@ function checkWallProtection(position, casterType, spellId) {
 }
 
 // --- Проверка защиты призванных существ ---
-function checkSummonProtection(position, casterType) {
+function checkSummonProtection(position, casterType, spellId) {
     let blocked = 0;
     let type = '';
-    
+
     if (typeof window.findSummonedCreatureAt === 'function') {
         const summon = window.findSummonedCreatureAt(casterType === 'player' ? 4 : 1, position);
         if (summon && summon.hp > 0) {
             blocked = Math.min(summon.hp, 15);
+
+            // Фракционный бонус некроманта (-10% кроме Света)
+            if (summon.type === 'bone_dragon' || summon.type === 'necromant_skeleton') {
+                const school = typeof window.getSpellSchool === 'function' ? window.getSpellSchool(spellId) : null;
+                if (school !== 'light') {
+                    blocked = Math.floor(blocked * 0.9);
+                }
+            }
+
             summon.hp -= blocked;
             type = summon.name || 'Призванное существо';
-            
+
             if (summon.hp <= 0) {
                 if (typeof window.removeDeadSummons === 'function') {
                     (window.battleTimeout || setTimeout)(() => {
@@ -741,7 +757,7 @@ function checkSummonProtection(position, casterType) {
             }
         }
     }
-    
+
     return { blocked, type };
 }
 
@@ -835,7 +851,11 @@ function applyAoeDamageToSummons(caster, baseDamage, spellId, casterType) {
         if (summon.type === 'bone_dragon' || summon.type === 'necromant_skeleton') {
             const school = typeof window.getSpellSchool === 'function' ? window.getSpellSchool(spellId) : null;
             if (school !== 'light') {
+                const before = damage;
                 damage = Math.floor(damage * 0.9);
+                if (typeof window.addToBattleLog === 'function' && before !== damage) {
+                    window.addToBattleLog(`   💀 Некромантия: ${summon.name} -10% урона (${before} → ${damage})`);
+                }
             }
         }
 

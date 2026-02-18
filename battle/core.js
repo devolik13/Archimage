@@ -456,16 +456,7 @@ function initializeWizardHealth() {
             }
         }
 
-        // Применение "Покрова смерти" (Некромантия, Tier 3)
-        if (wizard.spells && wizard.spells.includes('death_shroud')) {
-            const level = wizard.spellLevels?.['death_shroud'] || 1;
-            if (level > 0) {
-                const position = window.playerFormation.findIndex(id => id === wizard.id);
-                if (position !== -1 && typeof window.applyDeathShroudAtStart === 'function') {
-                    window.applyDeathShroudAtStart(wizard, level, position, 'player');
-                }
-            }
-        }
+        // Покров смерти и Костяной Дракон — применяются ПОСЛЕ инициализации всех магов (см. ниже)
 
         // Призыв "Костяного Дракона" (Некромантия, Tier 5)
         if (wizard.spells && wizard.spells.includes('bone_dragon')) {
@@ -502,6 +493,7 @@ function initializeWizardHealth() {
         wizard.effects = {};
         wizard.buffs = {};  // Очищаем баффы (rainbow_shield, dawn и др.)
         wizard.armorBonus = 0;
+        wizard.armorBonuses = {};
         wizard.isStunned = false;
         wizard.spellDamageMultiplier = undefined;
         wizard.stunTurns = 0;
@@ -564,14 +556,7 @@ function initializeWizardHealth() {
             }
         }
 
-        // Применение "Покрова смерти" для врагов (Некромантия, Tier 3)
-        if (wizard.spells && wizard.spells.includes('death_shroud')) {
-            const level = wizard.spellLevels?.['death_shroud'] || 1;
-            const position = window.enemyFormation.findIndex(w => w && w.id === wizard.id);
-            if (position !== -1 && typeof window.applyDeathShroudAtStart === 'function') {
-                window.applyDeathShroudAtStart(wizard, level, position, 'enemy');
-            }
-        }
+        // Покров смерти — применяется ПОСЛЕ инициализации всех магов (см. ниже)
 
         // Призыв "Костяного Дракона" для врагов (Некромантия, Tier 5)
         if (wizard.spells && wizard.spells.includes('bone_dragon')) {
@@ -600,6 +585,39 @@ function initializeWizardHealth() {
         window.enemyFormation.forEach((wizard, index) => {
             if (wizard) wizard.effects = wizard.effects || {};
         });
+    }
+
+    // Покров смерти — ПОСЛЕ инициализации всех магов (массовый бафф, buffs не сбросятся)
+    // Покров смерти игрока
+    window.playerWizards.forEach(wizard => {
+        if (wizard.spells && wizard.spells.includes('death_shroud')) {
+            const level = wizard.spellLevels?.['death_shroud'] || 1;
+            if (level > 0) {
+                const position = window.playerFormation.findIndex(id => id === wizard.id);
+                if (position !== -1 && typeof window.applyDeathShroudAtStart === 'function') {
+                    window.applyDeathShroudAtStart(wizard, level, position, 'player');
+                }
+            }
+        }
+    });
+    // Покров смерти врагов
+    window.enemyWizards.forEach(wizard => {
+        if (wizard.spells && wizard.spells.includes('death_shroud')) {
+            const level = wizard.spellLevels?.['death_shroud'] || 1;
+            const position = window.enemyFormation.findIndex(w => w && w.id === wizard.id);
+            if (position !== -1 && typeof window.applyDeathShroudAtStart === 'function') {
+                window.applyDeathShroudAtStart(wizard, level, position, 'enemy');
+            }
+        }
+    });
+
+    // Аура Костяного Дракона — ПОСЛЕ инициализации всех магов (чтобы armorBonus не сбросился)
+    if (window.summonsManager && typeof window.applyBoneDragonAura === 'function') {
+        for (const [id, summon] of window.summonsManager.summons) {
+            if (summon.type === 'bone_dragon' && summon.isAlive && summon.hp > 0 && summon.level >= 5) {
+                window.applyBoneDragonAura(summon.casterId, summon.casterType);
+            }
+        }
     }
 
     // Применение Миазмы ПОСЛЕ инициализации всех магов (чтобы effects не сбросились)
