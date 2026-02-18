@@ -71,6 +71,10 @@ async function initGameWithDatabase() {
 
     window.userData.formation = player.formation || [null, null, null, null, null];
     window.userData.spells = player.spells || {};
+    // Миграция: добавляем некромантию для существующих игроков
+    if (!window.userData.spells.necromant) {
+        window.userData.spells.necromant = {};
+    }
     window.userData.buildings = player.buildings || {};
 
     // Статистика боев (с валидацией)

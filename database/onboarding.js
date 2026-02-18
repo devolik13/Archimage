@@ -81,7 +81,8 @@ async function selectFaction(faction) {
         "nature": { "call_wolf": { name: "Зов волка", level: 1, tier: 1 } },
         "poison": { "poisoned_blade": { name: "Отравленный клинок", level: 1, tier: 1 } },
         "light": { "flash": { name: "Вспышка", level: 1, tier: 1 } },
-        "dark": { "dark_clot": { name: "Сгусток тьмы", level: 1, tier: 1 } }
+        "dark": { "dark_clot": { name: "Сгусток тьмы", level: 1, tier: 1 } },
+        "necromant": { "summon_skeleton": { name: "Призыв скелета", level: 1, tier: 1 } }
     };
     
     // Стартовые здания: Библиотека и Генератор времени (арена работает без здания)
