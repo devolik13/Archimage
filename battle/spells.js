@@ -102,8 +102,9 @@ function delay(ms) {
 // --- Главная функция использования заклинаний магом (async) ---
 // Пассивные заклинания, применяемые только в начале боя (не кастуются каждый ход)
 const PASSIVE_START_ONLY_SPELLS = new Set([
-    'leaf_canopy', 'meteorokinesis', 'death_shroud', 'bone_dragon',
+    'leaf_canopy', 'meteorokinesis', 'death_shroud',
     'rainbow_shield', 'dawn', 'stone_grotto'
+    // bone_dragon убран — он призывается при старте, но АТАКУЕТ каждый ход через castNecromantSpell
 ]);
 
 async function useWizardSpells(wizard, position, casterType) {

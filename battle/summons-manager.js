@@ -364,7 +364,27 @@ class SummonsManager {
     // ========================================
     // ВИЗУАЛИЗАЦИЯ
     // ========================================
-    
+
+    // Пересоздать визуалы для существ, чей спрайт был уничтожен при переинициализации PIXI
+    recreateMissingVisuals() {
+        const container = window.pixiCore?.getEffectsContainer();
+        const gridCells = window.pixiCore?.getGridCells();
+        if (!container || !gridCells) return;
+
+        for (const [summonId, summon] of this.summons) {
+            if (!summon.isAlive) continue;
+            if (summon.type === 'nature_ent') continue;
+
+            const visual = this.visuals.get(summonId);
+            // Визуал отсутствует или уничтожен — пересоздаём
+            if (!visual || visual.destroyed || !visual.parent) {
+                console.log(`🔄 Пересоздаём визуал для ${summon.type} (${summonId})`);
+                this.visuals.delete(summonId);
+                this.createVisual(summonId, summon);
+            }
+        }
+    }
+
     // Создать визуал существа
     createVisual(summonId, summonData, retryCount = 0) {
         const container = window.pixiCore?.getEffectsContainer();
