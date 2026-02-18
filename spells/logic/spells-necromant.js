@@ -271,18 +271,28 @@ function applyDeathShroudAtStart(wizard, level, position, casterType) {
     const darkPoisonResist = [15, 20, 25, 30, 40][level - 1] || 15;
     const lightVulnerability = [5, 10, 15, 20, 25][level - 1] || 5;
 
-    if (!wizard.buffs) wizard.buffs = {};
+    // Покров смерти — массовый бафф на всех союзных магов
+    const allies = casterType === 'player' ? window.playerWizards : window.enemyWizards;
+    if (!allies) return;
 
-    wizard.buffs.death_shroud = {
-        darkPoisonResist: darkPoisonResist,
-        lightVulnerability: lightVulnerability,
-        level: level
-    };
+    const affectedNames = [];
+    for (const ally of allies) {
+        if (ally && ally.hp > 0) {
+            if (!ally.buffs) ally.buffs = {};
+            ally.buffs.death_shroud = {
+                darkPoisonResist: darkPoisonResist,
+                lightVulnerability: lightVulnerability,
+                level: level
+            };
+            affectedNames.push(ally.name);
+        }
+    }
 
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`🎯 Покров смерти [Ур.${level}] → ${wizard.name}`);
+        window.addToBattleLog(`🎯 Покров смерти [Ур.${level}] → ${wizard.name} накладывает на всех союзников`);
         window.addToBattleLog(`    ├─ 🛡️ Сопротивление Тьме/Яду: -${darkPoisonResist}%`);
-        window.addToBattleLog(`    └─ ⚠️ Уязвимость к Свету: +${lightVulnerability}%`);
+        window.addToBattleLog(`    ├─ ⚠️ Уязвимость к Свету: +${lightVulnerability}%`);
+        window.addToBattleLog(`    └─ 👥 Затронуто: ${affectedNames.join(', ')}`);
     }
 }
 
@@ -458,9 +468,7 @@ function summonBoneDragonAtStart(wizard, level, position, casterType) {
         }
 
         // На 5 уровне — аура снижения брони
-        if (level >= 5) {
-            applyBoneDragonAura(wizard.id, casterType);
-        }
+        // Применяется ПОСЛЕ инициализации всех магов (core.js) чтобы armorBonus не сбросился
     }
 }
 
@@ -591,4 +599,5 @@ if (typeof window !== 'undefined') {
     window.summonBoneDragonAtStart = summonBoneDragonAtStart;
     window.performBoneDragonAttack = performBoneDragonAttack;
     window.checkBoneDragonAura = checkBoneDragonAura;
+    window.applyBoneDragonAura = applyBoneDragonAura;
 }
