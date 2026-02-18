@@ -295,6 +295,16 @@ function castBoneCage(wizard, spellData, position, casterType) {
             window.addToBattleLog(`   💀 Каждый каст наносит ${cageHP} урона захваченному магу!`);
         }
     }
+
+    // Запускаем анимацию
+    if (window.spellAnimations?.bone_cage?.play) {
+        window.spellAnimations.bone_cage.play({
+            casterType: casterType,
+            position: position,
+            targets: [target],
+            level: level
+        });
+    }
 }
 
 // Проверка и обработка клетки перед кастом мага

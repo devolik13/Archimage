@@ -78,7 +78,7 @@
             skeleton.y = summonCell.y + summonCell.height * 0.7;
             skeleton.anchor.set(0.5, 0.5);
 
-            const scale = summonCell.cellScale * 0.45;
+            const scale = summonCell.cellScale * 0.32;
             const direction = casterType === 'player' ? -1 : 1;
             skeleton.scale.set(scale * direction, scale);
 

@@ -36,7 +36,7 @@
         const cellScale = targetCell.cellScale || 1;
 
         // Загружаем спрайт клетки
-        const cageTexturePath = 'images/spells/necro/bone cage/bone_cage.webp';
+        const cageTexturePath = 'images/spells/necro/bone%20cage/bone_cage.webp';
 
         PIXI.Assets.load(cageTexturePath).then(texture => {
             if (!texture || !texture.valid) {

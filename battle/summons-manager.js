@@ -37,7 +37,7 @@ class SummonsManager {
                 framesY: 5,
                 frames: 25,
                 animationSpeed: 0.08,
-                scale: 0.45,
+                scale: 0.32,
                 yOffset: 0.7,
                 attackAnimation: 'slash'
             },
@@ -52,9 +52,9 @@ class SummonsManager {
             },
             'bone_dragon': {
                 name: 'Костяной Дракон',
-                sprite: 'images/spells/necro/bone dragon/idle.webp',
-                attackSprite: 'images/spells/necro/bone dragon/attack.webp',
-                deathSprite: 'images/spells/necro/bone dragon/death.webp',
+                sprite: 'images/spells/necro/bone%20dragon/idle.webp',
+                attackSprite: 'images/spells/necro/bone%20dragon/attack.webp',
+                deathSprite: 'images/spells/necro/bone%20dragon/death.webp',
                 frameWidth: 256,   // 1280 / 5
                 frameHeight: 256,  // 1280 / 5
                 framesX: 5,
@@ -334,17 +334,25 @@ class SummonsManager {
     createVisual(summonId, summonData) {
         const container = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
-        
+
         if (!container || !gridCells) {
-            console.warn('Не могу создать визуал - нет PIXI контейнера');
+            console.warn(`⚠️ Не могу создать визуал ${summonData.type} - нет PIXI контейнера`);
             return;
         }
-        
+
         const cell = gridCells[summonData.column]?.[summonData.position];
-        if (!cell) return;
-        
+        if (!cell) {
+            console.warn(`⚠️ Не могу создать визуал ${summonData.type} - ячейка [${summonData.column}][${summonData.position}] не найдена`);
+            return;
+        }
+
         const typeConfig = this.summonTypes[summonData.type];
-        if (!typeConfig) return;
+        if (!typeConfig) {
+            console.warn(`⚠️ Не могу создать визуал - тип ${summonData.type} не найден в конфиге`);
+            return;
+        }
+
+        console.log(`🎨 Создаём визуал ${summonData.type} в ячейке [${summonData.column}][${summonData.position}]`);
         
         // Создаем визуал в зависимости от типа
         if (typeConfig.sprite) {
@@ -356,11 +364,14 @@ class SummonsManager {
     
     // Создать спрайтовый визуал (для волка)
     createSpriteVisual(summonId, summonData, config, cell, container) {
+        console.log(`🖼️ Загружаем спрайт: ${config.sprite}`);
         PIXI.Assets.load(config.sprite).then(baseTexture => {
             if (!baseTexture || !baseTexture.valid) {
+                console.warn(`⚠️ Текстура невалидна для ${summonData.type}, используем fallback`);
                 this.createGraphicsVisual(summonId, summonData, config, cell, container);
                 return;
             }
+            console.log(`✅ Спрайт загружен для ${summonData.type}`);
             
             // Нарезаем кадры анимации
             const frames = [];
@@ -413,7 +424,7 @@ class SummonsManager {
             this.addHPBar(summonId, sprite, summonData);
             
         }).catch(err => {
-            console.warn('Ошибка загрузки спрайта:', err);
+            console.warn(`❌ Ошибка загрузки спрайта ${summonData.type}:`, err);
             this.createGraphicsVisual(summonId, summonData, config, cell, container);
         });
     }
