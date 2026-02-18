@@ -292,7 +292,12 @@ function getAllSkinsOrdered() {
         // Второй ряд
         'earth_default',
         'nature_default',
-        'poison_default'
+        'poison_default',
+
+        // Третий ряд
+        'light_default',
+        'dark_default',
+        'necromant_default'
     ];
 }
 
