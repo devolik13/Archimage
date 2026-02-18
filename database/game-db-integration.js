@@ -307,6 +307,11 @@ async function initGameWithDatabase() {
         if (typeof window.showEventBossAnnouncement === 'function') {
             setTimeout(() => window.showEventBossAnnouncement(), 1500);
         }
+
+        // Промо некроманта (один раз при входе, после анонса босса)
+        if (typeof window.showNecromancerPromoModal === 'function') {
+            setTimeout(() => window.showNecromancerPromoModal(), 2500);
+        }
     }
 
     // Обновляем UI если есть функции
