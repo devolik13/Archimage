@@ -71,6 +71,12 @@ function showLibraryMainScreen(page) {
     currentLibrarySchool = null;
     if (page !== undefined) currentLibraryPage = page;
 
+    // Блокируем доступ к странице некромантии для не-некромантов
+    const playerFaction = window.userData?.faction;
+    if (currentLibraryPage === 1 && playerFaction !== 'necromant') {
+        currentLibraryPage = 0;
+    }
+
     // Останавливаем автообновление
     if (libraryUpdateInterval) {
         clearInterval(libraryUpdateInterval);
@@ -98,6 +104,8 @@ function setupLibraryClickableZones() {
     const img = document.getElementById('library-image');
     const zonesContainer = document.getElementById('library-clickable-zones');
     if (!img || !zonesContainer) return;
+
+    const playerFaction = window.userData?.faction;
 
     const originalWidth = 768, originalHeight = 512;
     const currentWidth = img.offsetWidth, currentHeight = img.offsetHeight;
@@ -174,7 +182,8 @@ function setupLibraryClickableZones() {
     }
 
     // === Стрелки листания страниц (красные, крупные, жирные) ===
-    const totalPages = LIBRARY_PAGES.length;
+    // Некромантия (стр. 2) доступна только некромантам
+    const totalPages = playerFaction === 'necromant' ? LIBRARY_PAGES.length : 1;
 
     // Индикатор страницы сверху (красный)
     const pageIndicator = document.createElement('div');
@@ -196,7 +205,10 @@ function setupLibraryClickableZones() {
         font-family: 'Segoe UI', Arial, sans-serif;
     `;
     pageIndicator.textContent = `Страница ${currentLibraryPage + 1}/${totalPages}`;
-    zonesContainer.appendChild(pageIndicator);
+    // Не показываем индикатор если доступна только 1 страница
+    if (totalPages > 1) {
+        zonesContainer.appendChild(pageIndicator);
+    }
 
     // Стрелка «влево» (предыдущая страница)
     if (currentLibraryPage > 0) {
@@ -280,6 +292,12 @@ function setupLibraryClickableZones() {
 
 // ========== ЭКРАН ШКОЛЫ: С ТАЙМЕРАМИ ==========
 function openSchoolSpells(faction) {
+    // Блокируем доступ к некромантии для не-некромантов
+    if (faction === 'necromant' && window.userData?.faction !== 'necromant') {
+        console.log('🚫 Доступ к школе Некромантии заблокирован');
+        return;
+    }
+
     console.log('📖 Открытие школы:', faction);
     currentLibrarySchool = faction;
 

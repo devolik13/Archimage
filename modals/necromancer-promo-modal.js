@@ -159,8 +159,8 @@ function showNecromancerPromoModal() {
         document.getElementById('necro-promo-sprite').style.backgroundPosition = `${xPercent}% ${yPercent}%`;
     }, 100);
 
-    // Запоминаем что показали
-    localStorage.setItem(storageKey, '1');
+    // Запоминаем что показали сегодня
+    localStorage.setItem(storageKey, today);
 }
 
 /**
