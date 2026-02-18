@@ -40,7 +40,7 @@
         const direction = casterType === 'player' ? -1 : 1;
 
         // Загружаем спрайт копья
-        const spearTexturePath = 'images/spells/necro/bone spear/bone_spear.webp';
+        const spearTexturePath = 'images/spells/necro/bone%20spear/bone_spear.webp';
 
         PIXI.Assets.load(spearTexturePath).then(texture => {
             if (!texture || !texture.valid) {

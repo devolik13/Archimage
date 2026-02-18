@@ -11,6 +11,23 @@ function castNecromantSpell(wizard, spellId, spellData, position, casterType) {
         case 'bone_cage':
             castBoneCage(wizard, spellData, position, casterType);
             break;
+        case 'death_shroud':
+            // Пассивное заклинание — уже применено в начале боя
+            break;
+        case 'bone_dragon':
+            // Дракон призван в начале боя, каждый ход атакует (по паттерну скелета)
+            if (window.summonsManager) {
+                for (const [id, summon] of window.summonsManager.summons) {
+                    if (summon.casterId === wizard.id && summon.isAlive && summon.type === 'bone_dragon') {
+                        performBoneDragonAttack(summon, wizard);
+                        if (typeof window.checkBoneDragonAura === 'function') {
+                            window.checkBoneDragonAura();
+                        }
+                        break;
+                    }
+                }
+            }
+            break;
         default:
             if (typeof window.castBasicAttack === 'function') {
                 window.castBasicAttack(wizard, position, casterType);
@@ -60,11 +77,10 @@ function performSkeletonAttack(skeleton, caster) {
 
         // На 5 уровне: 50% шанс пробить 50% брони
         let armorIgnore = 0;
+        let armorPierced = false;
         if (skeleton.level >= 5 && Math.random() < 0.5) {
-            armorIgnore = 0.5; // 50% брони игнорируется
-            if (typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`💀 Скелет пробивает броню!`);
-            }
+            armorIgnore = 50; // 50% брони игнорируется (в процентах для applyFinalDamage)
+            armorPierced = true;
         }
 
         // Применяем урон
@@ -105,6 +121,7 @@ function performSkeletonAttack(skeleton, caster) {
         if (typeof window.logSpellHit === 'function') {
             const bonuses = [];
             if (skeleton.level) bonuses.push(`Ур.${skeleton.level}`);
+            if (armorPierced) bonuses.push(`💀-50% брони`);
             if (caster.name !== skeleton.name) bonuses.push(`от ${caster.name}`);
             window.logSpellHit(skeleton, target.wizard, finalDamage, 'Удар скелета', bonuses);
         } else if (typeof window.addToBattleLog === 'function') {
@@ -117,49 +134,77 @@ function performSkeletonAttack(skeleton, caster) {
 function castBoneSpear(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
     const baseDamage = [10, 13, 16, 20, 24][level - 1] || 10;
-    const armorIgnore = level >= 5 ? 0.5 : 0; // Lv5: 50% игнор брони
+    const armorIgnore = level >= 5 ? 50 : 0; // Lv5: 50% игнор брони (в процентах для applyFinalDamage)
 
     // Определяем колонки для пронзания (от ближней к дальней)
     // Игрок атакует: стена(2) → призванные(1) → маги(0)
     // Враг атакует: стена(3) → призванные(4) → маги(5)
     const targetColumns = casterType === 'player' ? [2, 1, 0] : [3, 4, 5];
 
-    // Находим все цели в ряду (по позиции кастера)
-    const targets = [];
-    for (const col of targetColumns) {
-        // Стены (колонки 2 и 3)
-        if (col === 2 || col === 3) {
-            if (typeof window.findEarthWallAt === 'function') {
-                const wall = window.findEarthWallAt(col, position);
-                if (wall && wall.hp > 0) {
-                    targets.push({ wizard: { ...wall, type: 'earth_wall_hp' }, position: position, column: col, isWall: true });
+    // Определяем ряд для атаки: сначала пробуем ряд кастера,
+    // если там пусто — ищем ближайший ряд с живым врагом
+    let targetRow = position;
+
+    const findTargetsInRow = (row) => {
+        const rowTargets = [];
+        for (const col of targetColumns) {
+            // Стены (колонки 2 и 3)
+            if (col === 2 || col === 3) {
+                if (typeof window.findEarthWallAt === 'function') {
+                    const wall = window.findEarthWallAt(col, row);
+                    if (wall && wall.hp > 0) {
+                        rowTargets.push({ wizard: { ...wall, type: 'earth_wall_hp' }, position: row, column: col, isWall: true });
+                    }
+                }
+            }
+            // Призванные существа (колонки 1 и 4)
+            else if (col === 1 || col === 4) {
+                if (typeof window.findSummonedCreatureAt === 'function') {
+                    const summoned = window.findSummonedCreatureAt(col, row);
+                    if (summoned && summoned.hp > 0) {
+                        rowTargets.push({ wizard: summoned, position: row, column: col, isSummoned: true });
+                    }
+                }
+            }
+            // Маги (колонки 0 и 5)
+            else if (col === 0) {
+                const enemy = window.enemyFormation?.[row];
+                if (enemy && enemy.hp > 0) {
+                    rowTargets.push({ wizard: enemy, position: row, column: col });
+                }
+            }
+            else if (col === 5) {
+                const wizardId = window.playerFormation?.[row];
+                if (wizardId) {
+                    const target = window.playerWizards?.find(w => w.id === wizardId);
+                    if (target && target.hp > 0) {
+                        rowTargets.push({ wizard: target, position: row, column: col });
+                    }
                 }
             }
         }
-        // Призванные существа (колонки 1 и 4)
-        else if (col === 1 || col === 4) {
-            if (typeof window.findSummonedCreatureAt === 'function') {
-                const summoned = window.findSummonedCreatureAt(col, position);
-                if (summoned && summoned.hp > 0) {
-                    targets.push({ wizard: summoned, position: position, column: col, isSummoned: true });
+        return rowTargets;
+    };
+
+    // Сначала ищем в ряду кастера
+    let targets = findTargetsInRow(position);
+
+    // Если в ряду кастера пусто — ищем ближайший ряд с целью
+    if (targets.length === 0) {
+        const maxRows = 5;
+        for (let offset = 1; offset < maxRows; offset++) {
+            // Проверяем ряды выше и ниже
+            for (const row of [position - offset, position + offset]) {
+                if (row >= 0 && row < maxRows) {
+                    const rowTargets = findTargetsInRow(row);
+                    if (rowTargets.length > 0) {
+                        targets = rowTargets;
+                        targetRow = row;
+                        break;
+                    }
                 }
             }
-        }
-        // Маги (колонки 0 и 5)
-        else if (col === 0) {
-            const enemy = window.enemyFormation?.[position];
-            if (enemy && enemy.hp > 0) {
-                targets.push({ wizard: enemy, position: position, column: col });
-            }
-        }
-        else if (col === 5) {
-            const wizardId = window.playerFormation?.[position];
-            if (wizardId) {
-                const target = window.playerWizards?.find(w => w.id === wizardId);
-                if (target && target.hp > 0) {
-                    targets.push({ wizard: target, position: position, column: col });
-                }
-            }
+            if (targets.length > 0) break;
         }
     }
 
@@ -212,10 +257,12 @@ function castBoneSpear(wizard, spellData, position, casterType) {
             window.updateWizardVisualHP(target.wizard, target.column, target.position);
         }
 
-        // Лог попадания
-        if (typeof window.addToBattleLog === 'function') {
+        // Лог попадания (единый формат через logSpellHit)
+        if (typeof window.logSpellHit === 'function') {
+            window.logSpellHit(wizard, target.wizard, finalDamage, 'Костяное копьё');
+        } else if (typeof window.addToBattleLog === 'function') {
             const targetName = target.isWall ? 'Стена' : (target.isSummoned ? target.wizard.name || 'Существо' : target.wizard.name);
-            window.addToBattleLog(`   🦴 → ${targetName}: ${finalDamage} урона`);
+            window.addToBattleLog(`🦴 → ${targetName}: ${finalDamage} урона (HP: ${target.wizard.hp}/${target.wizard.max_hp || '?'})`);
         }
 
         // Урон для XP подсчитывается через дельту HP в core.js
@@ -232,7 +279,7 @@ function castBoneSpear(wizard, spellData, position, casterType) {
     if (window.spellAnimations?.bone_spear?.play) {
         window.spellAnimations.bone_spear.play({
             casterType: casterType,
-            position: position,
+            position: targetRow,
             targets: targets,
             level: level
         });
@@ -254,7 +301,9 @@ function applyDeathShroudAtStart(wizard, level, position, casterType) {
     };
 
     if (typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`🦇 ${wizard.name} окутан Покровом смерти [Ур.${level}]: -${darkPoisonResist}% урона от Тьмы/Яда, +${lightVulnerability}% урона от Света`);
+        window.addToBattleLog(`🎯 Покров смерти [Ур.${level}] → ${wizard.name}`);
+        window.addToBattleLog(`    ├─ 🛡️ Сопротивление Тьме/Яду: -${darkPoisonResist}%`);
+        window.addToBattleLog(`    └─ ⚠️ Уязвимость к Свету: +${lightVulnerability}%`);
     }
 }
 
@@ -289,11 +338,21 @@ function castBoneCage(wizard, spellData, position, casterType) {
     };
 
     if (typeof window.addToBattleLog === 'function') {
-        const boostText = window.getAoeBoostText ? window.getAoeBoostText(wizard) : '';
-        window.addToBattleLog(`🪤 ${wizard.name} заключает ${targetWizard.name} в Костяную клетку [Ур.${level}]! ${boostText}HP клетки: ${cageHP}`);
+        window.addToBattleLog(`🎯 Костяная клетка [Ур.${level}] → ${targetWizard.name} (HP клетки: ${cageHP}/${cageHP})`);
         if (level >= 5) {
-            window.addToBattleLog(`   💀 Каждый каст наносит ${cageHP} урона захваченному магу!`);
+            window.addToBattleLog(`    ├─ 💀 Каждый каст наносит ${cageHP} урона захваченному магу`);
         }
+        window.addToBattleLog(`    └─ HP цели: ${targetWizard.hp}/${targetWizard.max_hp}`);
+    }
+
+    // Запускаем анимацию
+    if (window.spellAnimations?.bone_cage?.play) {
+        window.spellAnimations.bone_cage.play({
+            casterType: casterType,
+            position: position,
+            targets: [target],
+            level: level
+        });
     }
 }
 
@@ -309,8 +368,11 @@ function processBoneCageOnCast(cagedWizard, spellId, baseDamage) {
         cagedWizard.hp -= selfDamage;
         if (cagedWizard.hp < 0) cagedWizard.hp = 0;
 
-        if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`🪤💀 ${cagedWizard.name} получает ${selfDamage} урона от Костяной клетки!`);
+        const spellDisplayName = window.SPELL_NAMES?.[spellId] || spellId;
+        if (typeof window.logSpellHit === 'function') {
+            window.logSpellHit({ name: 'Костяная клетка' }, cagedWizard, selfDamage, `Самоурон Костяной клетки (${spellDisplayName})`);
+        } else if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`🪤💀 ${cagedWizard.name} получает ${selfDamage} урона от Костяной клетки при касте ${spellDisplayName}! (HP: ${cagedWizard.hp}/${cagedWizard.max_hp})`);
         }
 
         // Обновляем HP бар
@@ -338,15 +400,19 @@ function processBoneCageOnCast(cagedWizard, spellId, baseDamage) {
 
         if (typeof window.addToBattleLog === 'function') {
             if (cage.hp <= 0) {
-                window.addToBattleLog(`🪤 Костяная клетка разрушена! Остаток урона: ${remaining}`);
+                window.addToBattleLog(`🪤 Костяная клетка разрушена! (поглотила ${cageDamage} урона, остаток: ${remaining})`);
             } else {
-                window.addToBattleLog(`🪤 Костяная клетка поглотила ${cageDamage} урона (осталось HP: ${cage.hp})`);
+                window.addToBattleLog(`🪤 Костяная клетка поглотила ${cageDamage} урона (HP клетки: ${cage.hp}/${cage.maxHP})`);
             }
         }
 
         if (cage.hp <= 0) {
-            // Клетка разрушена — остаток пролетит в цель (через обычную логику)
-            // Возвращаем remaining как новый базовый урон
+            // Клетка разрушена — убираем визуал
+            if (window.spellAnimations?.bone_cage?.removeCage) {
+                window.spellAnimations.bone_cage.removeCage(cagedWizard.id);
+            }
+            delete cagedWizard.effects.bone_cage;
+            // Остаток пролетит в цель (через обычную логику)
             return { absorbed: false, remainingDamage: remaining };
         }
 
@@ -404,7 +470,12 @@ function summonBoneDragonAtStart(wizard, level, position, casterType) {
         dragon.noHeal = true;
 
         if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`🐉 ${wizard.name} призывает Костяного Дракона (HP: ${dragonHP}, Урон: ${dragonDamage})`);
+            window.addToBattleLog(`🎯 Костяной Дракон [Ур.${level}] призван ${wizard.name}`);
+            window.addToBattleLog(`    ├─ HP: ${dragonHP}/${dragonHP}, Урон: ${dragonDamage}`);
+            if (level >= 5) {
+                window.addToBattleLog(`    ├─ 💀 Аура: снижение брони всех врагов на 20`);
+            }
+            window.addToBattleLog(`    └─ Не восстанавливает HP`);
         }
 
         // На 5 уровне — аура снижения брони
@@ -450,14 +521,19 @@ function performBoneDragonAttack(dragon, caster) {
             window.updateWizardVisualHP(target.wizard, targetColumn, target.position);
         }
 
-        if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`🐉 Костяной Дракон атакует ${target.wizard.name}: ${finalDamage} урона`);
+        // Лог попадания (единый формат)
+        if (typeof window.logSpellHit === 'function') {
+            const bonuses = [];
+            if (dragon.level) bonuses.push(`Ур.${dragon.level}`);
+            window.logSpellHit(caster, target.wizard, finalDamage, 'Атака Костяного Дракона', bonuses);
+        } else if (typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`🐉 Костяной Дракон → ${target.wizard.name}: ${finalDamage} урона (HP: ${target.wizard.hp}/${target.wizard.max_hp})`);
         }
 
         // Проверка на смерть цели
         if (target.wizard.hp <= 0) {
-            if (typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`💀 ${target.wizard.name} погиб от атаки Костяного Дракона!`);
+            if (typeof window.trackBattleKill === 'function' && dragon.casterType === 'player') {
+                window.trackBattleKill(caster);
             }
         }
     }

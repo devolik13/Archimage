@@ -37,7 +37,7 @@ class SummonsManager {
                 framesY: 5,
                 frames: 25,
                 animationSpeed: 0.08,
-                scale: 0.45,
+                scale: 0.32,
                 yOffset: 0.7,
                 attackAnimation: 'slash'
             },
@@ -52,10 +52,16 @@ class SummonsManager {
             },
             'bone_dragon': {
                 name: 'Костяной Дракон',
-                sprite: null, // пока без спрайта
+                sprite: 'images/spells/necro/bone%20dragon/idle.webp',
+                attackSprite: 'images/spells/necro/bone%20dragon/attack.webp',
+                deathSprite: 'images/spells/necro/bone%20dragon/death.webp',
+                frameWidth: 256,   // 1280 / 5
+                frameHeight: 256,  // 1280 / 5
+                framesX: 5,
+                framesY: 5,
+                frames: 25,
+                animationSpeed: 0.08,
                 color: 0x8B7355,
-                width: 30,
-                height: 35,
                 yOffset: 0.6,
                 scale: 0.70,
                 attackAnimation: 'bite'
@@ -129,8 +135,10 @@ class SummonsManager {
 	    this.createVisual(summonId, summonData);
 	}
         
-        // Логируем
-        this.logSummon('create', summonData);
+        // Логируем (bone_dragon имеет свой детальный лог в summonBoneDragonAtStart)
+        if (type !== 'bone_dragon') {
+            this.logSummon('create', summonData);
+        }
         
         return summonData;
     }
@@ -297,6 +305,39 @@ class SummonsManager {
         return toRemove.length;
     }
     
+    // Убить саммонов мёртвых магов (маг умер → дракон/волк/скелет умирает)
+    killOrphanedSummons() {
+        const toKill = [];
+
+        for (const [id, summon] of this.summons) {
+            if (!summon.isAlive) continue;
+
+            // Ищем хозяина
+            let ownerAlive = false;
+            if (summon.casterType === 'player') {
+                const owner = window.playerWizards?.find(w => w.id === summon.casterId);
+                ownerAlive = owner && owner.hp > 0;
+            } else {
+                const owner = window.enemyFormation?.find(w => w && w.id === summon.casterId);
+                ownerAlive = owner && owner.hp > 0;
+            }
+
+            if (!ownerAlive) {
+                toKill.push({ id, summon });
+            }
+        }
+
+        for (const { id, summon } of toKill) {
+            if (typeof window.addToBattleLog === 'function') {
+                const typeName = this.summonTypes[summon.type]?.name || summon.type;
+                window.addToBattleLog(`💀 ${typeName} погибает — хозяин мёртв!`);
+            }
+            this.killSummon(id, true);
+        }
+
+        return toKill.length;
+    }
+
     // Полная очистка
     clearAll() {
         console.log('🧹 Начинаем полную очистку призванных');
@@ -325,20 +366,36 @@ class SummonsManager {
     // ========================================
     
     // Создать визуал существа
-    createVisual(summonId, summonData) {
+    createVisual(summonId, summonData, retryCount = 0) {
         const container = window.pixiCore?.getEffectsContainer();
         const gridCells = window.pixiCore?.getGridCells();
-        
+
         if (!container || !gridCells) {
-            console.warn('Не могу создать визуал - нет PIXI контейнера');
+            // PIXI ещё не готов — откладываем (дракон призывается при startBattle до инициализации PIXI)
+            if (retryCount < 20) {
+                setTimeout(() => this.createVisual(summonId, summonData, retryCount + 1), 100);
+                if (retryCount === 0) {
+                    console.log(`⏳ PIXI не готов, откладываем визуал ${summonData.type}...`);
+                }
+                return;
+            }
+            console.warn(`⚠️ Не могу создать визуал ${summonData.type} - PIXI не инициализирован после ${retryCount} попыток`);
             return;
         }
-        
+
         const cell = gridCells[summonData.column]?.[summonData.position];
-        if (!cell) return;
-        
+        if (!cell) {
+            console.warn(`⚠️ Не могу создать визуал ${summonData.type} - ячейка [${summonData.column}][${summonData.position}] не найдена`);
+            return;
+        }
+
         const typeConfig = this.summonTypes[summonData.type];
-        if (!typeConfig) return;
+        if (!typeConfig) {
+            console.warn(`⚠️ Не могу создать визуал - тип ${summonData.type} не найден в конфиге`);
+            return;
+        }
+
+        console.log(`🎨 Создаём визуал ${summonData.type} в ячейке [${summonData.column}][${summonData.position}]`);
         
         // Создаем визуал в зависимости от типа
         if (typeConfig.sprite) {
@@ -350,11 +407,14 @@ class SummonsManager {
     
     // Создать спрайтовый визуал (для волка)
     createSpriteVisual(summonId, summonData, config, cell, container) {
+        console.log(`🖼️ Загружаем спрайт: ${config.sprite}`);
         PIXI.Assets.load(config.sprite).then(baseTexture => {
             if (!baseTexture || !baseTexture.valid) {
+                console.warn(`⚠️ Текстура невалидна для ${summonData.type}, используем fallback`);
                 this.createGraphicsVisual(summonId, summonData, config, cell, container);
                 return;
             }
+            console.log(`✅ Спрайт загружен для ${summonData.type}`);
             
             // Нарезаем кадры анимации
             const frames = [];
@@ -407,7 +467,7 @@ class SummonsManager {
             this.addHPBar(summonId, sprite, summonData);
             
         }).catch(err => {
-            console.warn('Ошибка загрузки спрайта:', err);
+            console.warn(`❌ Ошибка загрузки спрайта ${summonData.type}:`, err);
             this.createGraphicsVisual(summonId, summonData, config, cell, container);
         });
     }
@@ -779,16 +839,19 @@ class SummonsManager {
     // Логирование
     logSummon(action, summonData) {
         if (typeof window.addToBattleLog !== 'function') return;
-        
-        const messages = {
-            'create': `🎭 Призван ${summonData.name} (HP: ${summonData.hp}/${summonData.maxHP})`,
-            'restore': `💚 ${summonData.name} восстановлен (HP: ${summonData.hp}/${summonData.maxHP})`,
-            'death': `💀 ${summonData.name} погиб`
-        };
-        
-        const message = messages[action];
-        if (message) {
-            window.addToBattleLog(message);
+
+        switch (action) {
+            case 'create':
+                window.addToBattleLog(`🎯 Призван ${summonData.name} [Ур.${summonData.level || 1}]`);
+                window.addToBattleLog(`    └─ HP: ${summonData.hp}/${summonData.maxHP}, Урон: ${summonData.damage}`);
+                break;
+            case 'restore':
+                window.addToBattleLog(`🎯 ${summonData.name} восстановлен`);
+                window.addToBattleLog(`    └─ HP: ${summonData.hp}/${summonData.maxHP}`);
+                break;
+            case 'death':
+                window.addToBattleLog(`💀 ${summonData.name} погиб`);
+                break;
         }
     }
     

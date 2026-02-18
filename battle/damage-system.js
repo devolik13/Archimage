@@ -580,7 +580,11 @@ function applyDamageWithEffects(caster, target, baseDamage, spellId = 'basic', a
         if (effectiveArmor !== standardArmor) {
             const armorEffect = effectiveArmor > standardArmor ? 'Броня' : 'Уязвимость';
             const percentChange = Math.abs(armorModifier * 100).toFixed(0);
-            damageSteps.push(`${armorEffect} (${effectiveArmor.toFixed(0)}): ${damageBeforeArmor} → ${finalDamage} (${percentChange}%)`);
+            if (armorIgnorePercent > 0) {
+                damageSteps.push(`${armorEffect} (${totalArmor}→${effectiveArmor.toFixed(0)}, -${armorIgnorePercent}% пронзание): ${damageBeforeArmor} → ${finalDamage} (${percentChange}%)`);
+            } else {
+                damageSteps.push(`${armorEffect} (${effectiveArmor.toFixed(0)}): ${damageBeforeArmor} → ${finalDamage} (${percentChange}%)`);
+            }
         }
     }
     

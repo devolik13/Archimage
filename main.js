@@ -260,6 +260,7 @@ import './animations/dark/fading.js';
 // ============================================
 import './animations/necromant/summon-skeleton.js';
 import './animations/necromant/bone-spear.js';
+import './animations/necromant/bone-cage.js';
 
 // ============================================
 // 22. ТЕСТОВЫЕ КОМАНДЫ DLC

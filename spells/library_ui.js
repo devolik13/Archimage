@@ -2,6 +2,7 @@
 
 let currentLibrarySchool = null;
 let libraryUpdateInterval = null;
+let currentLibraryPage = 0; // 0 = основные школы, 1 = некромантия
 
 // === КЭШИРОВАНИЕ для быстрого открытия ===
 let libraryCache = {
@@ -10,6 +11,12 @@ let libraryCache = {
     schoolScreens: {},         // Кэш экранов школ: { fire: element, water: element, ... }
     initialized: false
 };
+
+// Страницы библиотеки
+const LIBRARY_PAGES = [
+    { image: 'assets/ui/modals/library_template.webp' },
+    { image: 'assets/ui/modals/library_template-2.webp' }
+];
 
 // ========== ГЛАВНЫЙ ЭКРАН: 8 ШКОЛ ==========
 function showLibrary() {
@@ -31,7 +38,7 @@ function showLibrary() {
         // Кэш есть - просто показываем
         console.log('🚀 Библиотека: используем кэш (быстрое открытие)');
         libraryContainer.style.display = 'flex';
-        showLibraryMainScreen();
+        showLibraryMainScreen(0);
         return;
     }
 
@@ -57,11 +64,12 @@ function showLibrary() {
         libraryCache.initialized = true;
     }
 
-    showLibraryMainScreen();
+    showLibraryMainScreen(0);
 }
 
-function showLibraryMainScreen() {
+function showLibraryMainScreen(page) {
     currentLibrarySchool = null;
+    if (page !== undefined) currentLibraryPage = page;
 
     // Останавливаем автообновление
     if (libraryUpdateInterval) {
@@ -71,14 +79,16 @@ function showLibraryMainScreen() {
 
     const libraryContainer = document.getElementById('library-fullscreen');
     if (!libraryContainer) return;
-    
+
+    const pageData = LIBRARY_PAGES[currentLibraryPage] || LIBRARY_PAGES[0];
+
     libraryContainer.innerHTML = `
         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-            <img id="library-image" src="assets/ui/modals/library_template.webp" style="max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="Библиотека">
+            <img id="library-image" src="${pageData.image}" style="max-width: 100%; max-height: 100%; width: auto; height: auto; display: block;" alt="Библиотека">
             <div id="library-clickable-zones" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
         </div>
     `;
-    
+
     const img = document.getElementById('library-image');
     img.onload = () => setupLibraryClickableZones();
     if (img.complete) setupLibraryClickableZones();
@@ -92,69 +102,150 @@ function setupLibraryClickableZones() {
     const originalWidth = 768, originalHeight = 512;
     const currentWidth = img.offsetWidth, currentHeight = img.offsetHeight;
     const scaleX = currentWidth / originalWidth, scaleY = currentHeight / originalHeight;
+    const btnScale = Math.min(scaleX, scaleY);
 
     zonesContainer.style.width = currentWidth + 'px';
     zonesContainer.style.height = currentHeight + 'px';
     zonesContainer.innerHTML = '';
-    
-    const zones = [
-        { id: 'fire', coords: [150, 70, 225, 225], faction: 'fire' },
-        { id: 'water', coords: [255, 70, 340, 225], faction: 'water' },
-        { id: 'earth', coords: [150, 230, 240, 360], faction: 'earth' },
-        { id: 'wind', coords: [250, 235, 340, 350], faction: 'wind' },
-        { id: 'nature', coords: [410, 70, 520, 230], faction: 'nature' },
-        { id: 'poison', coords: [520, 70, 625, 225], faction: 'poison' },
-        { id: 'light', coords: [410, 240, 515, 360], faction: 'light' },
-        { id: 'dark', coords: [520, 240, 620, 360], faction: 'dark' }
-    ];
-    
-    zones.forEach(zone => {
-        const [x1, y1, x2, y2] = zone.coords;
-        const zoneDiv = document.createElement('div');
-        zoneDiv.style.cssText = `
+
+    // === Кликабельные зоны зависят от страницы ===
+    if (currentLibraryPage === 0) {
+        // Страница 1: 8 основных школ
+        const zones = [
+            { id: 'fire', coords: [150, 70, 225, 225], faction: 'fire' },
+            { id: 'water', coords: [255, 70, 340, 225], faction: 'water' },
+            { id: 'earth', coords: [150, 230, 240, 360], faction: 'earth' },
+            { id: 'wind', coords: [250, 235, 340, 350], faction: 'wind' },
+            { id: 'nature', coords: [410, 70, 520, 230], faction: 'nature' },
+            { id: 'poison', coords: [520, 70, 625, 225], faction: 'poison' },
+            { id: 'light', coords: [410, 240, 515, 360], faction: 'light' },
+            { id: 'dark', coords: [520, 240, 620, 360], faction: 'dark' }
+        ];
+
+        zones.forEach(zone => {
+            const [x1, y1, x2, y2] = zone.coords;
+            const zoneDiv = document.createElement('div');
+            zoneDiv.style.cssText = `
+                position: absolute;
+                left: ${x1 * scaleX}px;
+                top: ${y1 * scaleY}px;
+                width: ${(x2 - x1) * scaleX}px;
+                height: ${(y2 - y1) * scaleY}px;
+                cursor: pointer;
+                transition: background 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+
+            if (window.DEV_MODE) {
+                zoneDiv.addEventListener('mouseenter', () => zoneDiv.style.background = 'rgba(114, 137, 218, 0.3)');
+                zoneDiv.addEventListener('mouseleave', () => zoneDiv.style.background = 'transparent');
+            }
+
+            const clickHandler = () => openSchoolSpells(zone.faction);
+            zoneDiv.addEventListener('click', clickHandler);
+            zoneDiv.addEventListener('touchend', (e) => { e.preventDefault(); clickHandler(); });
+            zonesContainer.appendChild(zoneDiv);
+        });
+    } else if (currentLibraryPage === 1) {
+        // Страница 2: Некромантия — иконка черепа на левой странице
+        const necroZone = document.createElement('div');
+        necroZone.style.cssText = `
             position: absolute;
-            left: ${x1 * scaleX}px;
-            top: ${y1 * scaleY}px;
-            width: ${(x2 - x1) * scaleX}px;
-            height: ${(y2 - y1) * scaleY}px;
+            left: ${170 * scaleX}px;
+            top: ${100 * scaleY}px;
+            width: ${140 * scaleX}px;
+            height: ${220 * scaleY}px;
             cursor: pointer;
             transition: background 0.2s;
+            border-radius: ${10 * btnScale}px;
+        `;
+
+        if (window.DEV_MODE) {
+            necroZone.addEventListener('mouseenter', () => necroZone.style.background = 'rgba(112, 128, 144, 0.3)');
+            necroZone.addEventListener('mouseleave', () => necroZone.style.background = 'transparent');
+        }
+
+        const openNecro = () => openSchoolSpells('necromant');
+        necroZone.addEventListener('click', openNecro);
+        necroZone.addEventListener('touchend', (e) => { e.preventDefault(); openNecro(); });
+        zonesContainer.appendChild(necroZone);
+    }
+
+    // === Стрелки листания страниц (красные, крупные) ===
+    const totalPages = LIBRARY_PAGES.length;
+
+    // Стрелка «влево» (предыдущая страница)
+    if (currentLibraryPage > 0) {
+        const leftArrow = document.createElement('div');
+        leftArrow.style.cssText = `
+            position: absolute;
+            left: ${5 * scaleX}px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: ${55 * btnScale}px;
+            height: ${90 * btnScale}px;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: ${48 * btnScale}px;
+            font-weight: bold;
+            color: #cc3333;
+            text-shadow: 0 0 8px rgba(200,50,50,0.6), 2px 2px 4px rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(200,50,50,0.4);
+            border-radius: ${10 * btnScale}px;
+            user-select: none;
         `;
+        leftArrow.textContent = '\u2039';
+        const goLeft = () => showLibraryMainScreen(currentLibraryPage - 1);
+        leftArrow.addEventListener('click', goLeft);
+        leftArrow.addEventListener('touchend', (e) => { e.preventDefault(); goLeft(); });
+        zonesContainer.appendChild(leftArrow);
+    }
 
-        // DEV: Подсветка кликабельных зон
-        if (window.DEV_MODE) {
-            zoneDiv.addEventListener('mouseenter', () => zoneDiv.style.background = 'rgba(114, 137, 218, 0.3)');
-            zoneDiv.addEventListener('mouseleave', () => zoneDiv.style.background = 'transparent');
-        }
+    // Стрелка «вправо» (следующая страница)
+    if (currentLibraryPage < totalPages - 1) {
+        const rightArrow = document.createElement('div');
+        rightArrow.style.cssText = `
+            position: absolute;
+            right: ${5 * scaleX}px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: ${55 * btnScale}px;
+            height: ${90 * btnScale}px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: ${48 * btnScale}px;
+            font-weight: bold;
+            color: #cc3333;
+            text-shadow: 0 0 8px rgba(200,50,50,0.6), 2px 2px 4px rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(200,50,50,0.4);
+            border-radius: ${10 * btnScale}px;
+            user-select: none;
+        `;
+        rightArrow.textContent = '\u203A';
+        const goRight = () => showLibraryMainScreen(currentLibraryPage + 1);
+        rightArrow.addEventListener('click', goRight);
+        rightArrow.addEventListener('touchend', (e) => { e.preventDefault(); goRight(); });
+        zonesContainer.appendChild(rightArrow);
+    }
 
-        const clickHandler = () => {
-            if (zone.faction) {
-                openSchoolSpells(zone.faction);
-            } else {
-                closeLibrary();
-            }
-        };
-
-        zoneDiv.addEventListener('click', clickHandler);
-        zoneDiv.addEventListener('touchend', (e) => { e.preventDefault(); clickHandler(); });
-        zonesContainer.appendChild(zoneDiv);
-    });
-
-    // Кнопка "Назад" для возврата в город
+    // === Кнопка "Назад" ===
     const backBtn = document.createElement('div');
-    const backScaleX = currentWidth / originalWidth;
-    const backScaleY = currentHeight / originalHeight;
     backBtn.style.cssText = `
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
-        bottom: ${20 * backScaleY}px;
-        padding: ${10 * Math.min(backScaleX, backScaleY)}px ${30 * Math.min(backScaleX, backScaleY)}px;
+        bottom: ${20 * scaleY}px;
+        padding: ${10 * btnScale}px ${30 * btnScale}px;
         cursor: pointer;
-        font-size: ${24 * Math.min(backScaleX, backScaleY)}px;
+        font-size: ${24 * btnScale}px;
         font-weight: bold;
         color: #7289da;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
@@ -321,7 +412,7 @@ function setupSpellsScreen(faction) {
         color: ${factionColor};
         text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
     `;
-    nameOverlay.textContent = faction === 'light' ? '' : factionName;
+    nameOverlay.textContent = (faction === 'light' || faction === 'necromant') ? '' : factionName;
     
     // Получаем данные
     const factionSpells = (window.userData?.spells || {})[faction] || {};
@@ -567,7 +658,7 @@ function setupSpellsScreen(faction) {
             backDiv.style.color = '#7289da';
         });
     }
-    backDiv.addEventListener('click', showLibraryMainScreen);
+    backDiv.addEventListener('click', () => showLibraryMainScreen());
     overlay.appendChild(backDiv);
 }
 

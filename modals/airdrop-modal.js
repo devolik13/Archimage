@@ -1350,23 +1350,50 @@ async function checkGiftKombat() {
     }
 
     try {
-        const response = await fetch(
-            `https://gift-kombat.com/api/characters/check-lvl-2-exists?tg_user_id=${telegramId}`
-        );
-        const data = await response.json();
+        const SUPABASE_URL = window.supabase?.supabaseUrl || 'https://legianiryweinxtsuqoh.supabase.co';
 
-        if (data && (data.exists === true || data.success === true || data === true)) {
-            await claimTaskReward('gift_kombat', 'Gift Kombat');
-            window.showNotification?.('🎉 Gift Kombat задание выполнено!');
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/check-gift-kombat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ telegram_id: telegramId })
+        });
+
+        const result = await response.json();
+
+        if (result.success && result.reward) {
+            // Награда начислена серверно — обновляем локальные данные
+            if (!window.userData.completed_tasks) window.userData.completed_tasks = {};
+            window.userData.completed_tasks[result.reward.task_key] = true;
+
+            // Синхронизируем время локально (серверно уже начислено через RPC)
+            const currentBalance = typeof window.getTimeCurrency === 'function' ? window.getTimeCurrency() : (window.userData.time_currency_base || 0);
+            window.userData.time_currency_base = currentBalance + result.reward.time_minutes;
+            window.userData.time_currency_updated_at = typeof getServerNow === 'function' ? getServerNow().toISOString() : new Date().toISOString();
+
+            // Синхронизируем BPM локально
+            window.userData.airdrop_points = (window.userData.airdrop_points || 0) + result.reward.bpm_points;
+            if (!window.userData.airdrop_breakdown) window.userData.airdrop_breakdown = {};
+            window.userData.airdrop_breakdown['Gift Kombat'] = (window.userData.airdrop_breakdown['Gift Kombat'] || 0) + result.reward.bpm_points;
+
+            updateTaskButton('gift_kombat');
+            updateAirdropPointsDisplay();
+            if (typeof window.updateTimerDisplay === 'function') window.updateTimerDisplay();
+
+            window.showNotification?.(`🎉 Gift Kombat — награда получена! +${result.reward.bpm_points} BPM + ⏰ 2 часа`);
+        } else if (result.error === 'already_claimed') {
+            if (!window.userData.completed_tasks) window.userData.completed_tasks = {};
+            window.userData.completed_tasks.gift_kombat = true;
+            updateTaskButton('gift_kombat');
+            window.showNotification?.('✓ Награда уже получена ранее');
+        } else if (result.error === 'api_error') {
+            window.showNotification?.('⚠️ Не удалось проверить Gift Kombat. Попробуйте позже.');
+            if (btn) { btn.disabled = false; btn.textContent = 'Проверить'; }
         } else {
             window.showNotification?.('❌ Персонаж 2 уровня не найден. Продолжай играть!');
-            if (btn) {
-                btn.disabled = false;
-                btn.textContent = 'Проверить';
-            }
+            if (btn) { btn.disabled = false; btn.textContent = 'Проверить'; }
         }
     } catch (err) {
-        console.error('Gift Kombat API error:', err);
+        console.error('Gift Kombat check error:', err);
         window.showNotification?.('⚠️ Не удалось проверить. Попробуй позже');
         if (btn) {
             btn.disabled = false;

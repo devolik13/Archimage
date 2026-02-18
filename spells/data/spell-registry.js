@@ -54,7 +54,7 @@ const SPELL_ANIMATIONS_REGISTRY = {
     // Некромантия
     summon_skeleton: 'necromant/summon-skeleton',
     bone_spear: 'necromant/bone-spear',
-    death_shroud: 'necromant/death-shroud',
+    // death_shroud — пассивка, анимация не нужна (лог в начале боя)
     bone_cage: 'necromant/bone-cage',
     bone_dragon: 'necromant/bone-dragon'
 };
