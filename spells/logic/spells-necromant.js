@@ -221,11 +221,7 @@ function castBoneSpear(wizard, spellData, position, casterType) {
         window.addToBattleLog(`🦴 ${wizard.name} метает Костяное копьё [Ур.${level}]! ${boostText}Пронзает ${targets.length} ${targets.length === 1 ? 'цель' : 'целей'}`);
     }
 
-    if (level >= 5 && armorIgnore > 0) {
-        if (typeof window.addToBattleLog === 'function') {
-            window.addToBattleLog(`   💀 Копьё пронзает броню! (-50% брони)`);
-        }
-    }
+    // Пронзание брони теперь отображается в damage-system.js отдельной строкой
 
     // Наносим урон каждой цели в ряду
     let totalDamage = 0;
