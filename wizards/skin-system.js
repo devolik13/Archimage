@@ -90,6 +90,40 @@ const SKINS_CONFIG = {
         unlockText: 'Доступен только магам Яда'
     },
 
+    light_default: {
+        id: 'light_default',
+        name: 'Маг Света',
+        description: 'Облик хранителя зари',
+        icon: '✨',
+        faction: 'light',
+        spriteConfig: 'light',
+        isDefault: true,
+        unlockType: 'faction_only',
+        unlockText: 'Доступен только магам Света'
+    },
+    dark_default: {
+        id: 'dark_default',
+        name: 'Маг Тьмы',
+        description: 'Облик повелителя теней',
+        icon: '🌑',
+        faction: 'dark',
+        spriteConfig: 'dark',
+        isDefault: true,
+        unlockType: 'faction_only',
+        unlockText: 'Доступен только магам Тьмы'
+    },
+    necromant_default: {
+        id: 'necromant_default',
+        name: 'Некромант',
+        description: 'Облик повелителя смерти',
+        icon: '💀',
+        faction: 'necromant',
+        spriteConfig: 'necromant',
+        isDefault: true,
+        unlockType: 'faction_only',
+        unlockText: 'Доступен только магам Некромантии'
+    },
+
     // ===== ПРЕМИУМ ОБРАЗЫ (покупаемые) =====
     lady_fire: {
         id: 'lady_fire',
