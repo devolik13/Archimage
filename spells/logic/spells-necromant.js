@@ -79,7 +79,7 @@ function performSkeletonAttack(skeleton, caster) {
         let armorIgnore = 0;
         let armorPierced = false;
         if (skeleton.level >= 5 && Math.random() < 0.5) {
-            armorIgnore = 0.5; // 50% брони игнорируется
+            armorIgnore = 50; // 50% брони игнорируется (в процентах для applyFinalDamage)
             armorPierced = true;
         }
 
@@ -134,7 +134,7 @@ function performSkeletonAttack(skeleton, caster) {
 function castBoneSpear(wizard, spellData, position, casterType) {
     const level = spellData.level || 1;
     const baseDamage = [10, 13, 16, 20, 24][level - 1] || 10;
-    const armorIgnore = level >= 5 ? 0.5 : 0; // Lv5: 50% игнор брони
+    const armorIgnore = level >= 5 ? 50 : 0; // Lv5: 50% игнор брони (в процентах для applyFinalDamage)
 
     // Определяем колонки для пронзания (от ближней к дальней)
     // Игрок атакует: стена(2) → призванные(1) → маги(0)
