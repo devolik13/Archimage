@@ -337,6 +337,9 @@ function showDummyResult(damage, progress, expResults = []) {
     window.isTrainingDummyBattle = false;
 
     const reward = window.getRewardForDamage(progress.totalDamage);
+    const rewardIndex = window.WEEKLY_REWARDS.indexOf(reward);
+    const prevReward = rewardIndex > 0 ? window.WEEKLY_REWARDS[rewardIndex - 1].reward : 0;
+    const rewardActual = reward.reward - prevReward;
     const nextReward = window.WEEKLY_REWARDS.find(r => r.minDamage > progress.totalDamage);
     const remaining = window.getRemainingAttempts();
     const config = window.getCurrentDummyConfig();
@@ -414,7 +417,7 @@ function showDummyResult(damage, progress, expResults = []) {
                     📈 За неделю: ${progress.totalDamage.toLocaleString()}
                 </div>
                 <div style="font-size: 14px; color: #86efac;">
-                    ${reward.description} (${Math.floor(reward.reward / 60)}ч)
+                    ${reward.description} (+${window.formatTimeReward ? window.formatTimeReward(rewardActual) : Math.floor(rewardActual / 60) + 'ч'})
                 </div>
                 ${nextReward ? `
                     <div style="font-size: 12px; color: #888; margin-top: 8px;">
@@ -505,7 +508,7 @@ function showDummyResult(damage, progress, expResults = []) {
                         📈 За неделю: ${progress.totalDamage.toLocaleString()}
                     </div>
                     <div style="font-size: 14px; color: #86efac;">
-                        ${reward.description} (${Math.floor(reward.reward / 60)}ч)
+                        ${reward.description} (+${window.formatTimeReward ? window.formatTimeReward(rewardActual) : Math.floor(rewardActual / 60) + 'ч'})
                     </div>
                     ${nextReward ? `
                         <div style="font-size: 12px; color: #888; margin-top: 10px;">
