@@ -893,6 +893,7 @@ function getDummyInfo() {
         progress.bestAttempt = 0;
         progress.history = [];
         progress.lastDummyHp = null;
+        progress.claimedTiers = [];  // Сброс полученных наград (новая неделя — новые награды)
         saveDummyProgress(progress);
     }
 
@@ -903,6 +904,14 @@ function getDummyInfo() {
     const rewardIndex = WEEKLY_REWARDS.indexOf(reward);
     const prevReward = rewardIndex > 0 ? WEEKLY_REWARDS[rewardIndex - 1].reward : 0;
     const currentRewardActual = reward.reward - prevReward;
+
+    // Вычисляем инкрементальную награду за следующий тир
+    let nextRewardActual = 0;
+    if (nextReward) {
+        const nextRewardIndex = WEEKLY_REWARDS.indexOf(nextReward);
+        const prevNextReward = nextRewardIndex > 0 ? WEEKLY_REWARDS[nextRewardIndex - 1].reward : 0;
+        nextRewardActual = nextReward.reward - prevNextReward;
+    }
 
     return {
         dummy: config,
@@ -917,6 +926,7 @@ function getDummyInfo() {
         currentReward: reward,
         currentRewardActual: currentRewardActual,  // Инкремент за текущий тир
         nextReward: nextReward,
+        nextRewardActual: nextRewardActual,  // Инкремент за следующий тир
         timeUntilReset: formatTimeUntilWeekEnd(),
         timeUntilAttemptReset: formatTimeUntilAttemptReset()  // Время до сброса попыток
     };
