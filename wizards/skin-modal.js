@@ -636,7 +636,8 @@ const SKIN_ANIMATION_CONFIG = {
     // Премиум скины
     lady_fire: { frameCount: 25, gridColumns: 5 }, // 5×5 сетка
     mixic_demon: { frameCount: 25, gridColumns: 5 }, // 5×5 сетка
-    lord_demon: { frameCount: 25, gridColumns: 5 } // 5×5 сетка
+    lord_demon: { frameCount: 25, gridColumns: 5 }, // 5×5 сетка
+    private_roman: { frameCount: 25, gridColumns: 5 } // 5×5 сетка
 };
 
 // Хранилище для текущей анимации превью
