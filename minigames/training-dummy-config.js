@@ -899,6 +899,11 @@ function getDummyInfo() {
     const reward = getRewardForDamage(progress.totalDamage);
     const nextReward = WEEKLY_REWARDS.find(r => r.minDamage > progress.totalDamage);
 
+    // Вычисляем инкрементальную награду за текущий тир (не кумулятивную)
+    const rewardIndex = WEEKLY_REWARDS.indexOf(reward);
+    const prevReward = rewardIndex > 0 ? WEEKLY_REWARDS[rewardIndex - 1].reward : 0;
+    const currentRewardActual = reward.reward - prevReward;
+
     return {
         dummy: config,
         hp: DUMMY_CONFIG.HP,
@@ -910,6 +915,7 @@ function getDummyInfo() {
         bestAttempt: progress.bestAttempt,
         lastDummyHp: progress.lastDummyHp,  // Остаток HP манекена после последней попытки
         currentReward: reward,
+        currentRewardActual: currentRewardActual,  // Инкремент за текущий тир
         nextReward: nextReward,
         timeUntilReset: formatTimeUntilWeekEnd(),
         timeUntilAttemptReset: formatTimeUntilAttemptReset()  // Время до сброса попыток
