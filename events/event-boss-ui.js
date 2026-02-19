@@ -1324,6 +1324,10 @@ function showEventBossWarpPortal(show) {
                 0%, 100% { box-shadow: 0 0 20px rgba(120,20,20,0.5), inset 0 0 20px rgba(80,0,0,0.3); }
                 50% { box-shadow: 0 0 40px rgba(180,30,30,0.8), inset 0 0 30px rgba(120,0,0,0.5); }
             }
+            @keyframes eventBossPortalGlowCleansed {
+                0%, 100% { box-shadow: 0 0 20px rgba(180,200,255,0.5), inset 0 0 20px rgba(200,210,255,0.3); }
+                50% { box-shadow: 0 0 40px rgba(200,220,255,0.8), inset 0 0 30px rgba(220,230,255,0.5); }
+            }
             @keyframes portalLocked {
                 0%, 100% { opacity: 0.4; }
                 50% { opacity: 0.7; }
@@ -1351,12 +1355,19 @@ function showEventBossWarpPortal(show) {
         const manager = window.eventBossManager;
         const hpPercent = manager ? manager.getHpPercent() : 100;
         const attemptsLeft = manager ? manager.getRemainingAttempts() : 0;
+        const isBossDefeated = manager?.currentBoss?.status === 'defeated' || (manager?.currentBoss?.current_hp === 0);
 
         let timerLabel = '';
         let timerValue = '';
         // Тёмно-красный/чёрный стиль — зловещий портал
         let portalColor = 'rgba(140,20,20,'; // Dark red
         let ringColor = 'rgba(180,30,30,';
+
+        if (isBossDefeated) {
+            // Босс мёртв — портал очищен, белый свет
+            portalColor = 'rgba(200,210,255,'; // Pale white-blue
+            ringColor = 'rgba(220,225,255,';
+        }
 
         if (isLocked) {
             timerLabel = 'Портал откроется через';
@@ -1367,7 +1378,7 @@ function showEventBossWarpPortal(show) {
             timerLabel = 'До закрытия портала';
             timerValue = formatCountdown(timerStatus.diff);
         } else {
-            timerLabel = 'Ивент завершён';
+            timerLabel = isBossDefeated ? 'Портал очищен' : 'Ивент завершён';
             timerValue = '';
         }
 
@@ -1407,7 +1418,7 @@ function showEventBossWarpPortal(show) {
                     border-radius: 50%;
                     background: radial-gradient(circle, rgba(0,0,0,0.9) 0%, ${portalColor}0.6) 40%, ${portalColor}0) 70%);
                     display: flex; align-items: center; justify-content: center;
-                    ${isLocked ? 'animation: portalLocked 3s ease-in-out infinite;' : 'animation: eventBossPortalGlow 2s ease-in-out infinite;'}
+                    ${isLocked ? 'animation: portalLocked 3s ease-in-out infinite;' : isBossDefeated ? 'animation: eventBossPortalGlowCleansed 2s ease-in-out infinite;' : 'animation: eventBossPortalGlow 2s ease-in-out infinite;'}
                 ">
                     <div style="
                         position: absolute; width: 70px; height: 70px;
@@ -1429,13 +1440,13 @@ function showEventBossWarpPortal(show) {
                         animation: portalFlicker 3s ease-in-out infinite;
                     "></div>
                     <div style="font-size: 26px; z-index: 1; text-shadow: 0 0 15px rgba(0,0,0,1), 0 0 30px ${portalColor}0.6);">
-                        ${isLocked ? '🔒' : isEnded ? '💀' : '🕳'}
+                        ${isLocked ? '🔒' : isBossDefeated ? '✨' : isEnded ? '💀' : '🕳'}
                     </div>
                 </div>
             </div>
             <!-- Инфо -->
             <div style="text-align: center; margin-top: 4px;">
-                <div style="font-size: 9px; color: #777; text-shadow: 0 0 4px rgba(0,0,0,1); letter-spacing: 0.5px;">
+                <div style="font-size: 9px; color: ${isBossDefeated ? '#b0b8ff' : '#777'}; text-shadow: 0 0 4px ${isBossDefeated ? 'rgba(180,200,255,0.8)' : 'rgba(0,0,0,1)'}; letter-spacing: 0.5px;">
                     ${timerLabel}
                 </div>
                 ${timerValue ? `
@@ -1465,7 +1476,7 @@ function showEventBossWarpPortal(show) {
         display: flex;
         flex-direction: column;
         align-items: center;
-        filter: drop-shadow(0 4px 16px rgba(100,0,0,0.5)) drop-shadow(0 0 8px rgba(0,0,0,0.8));
+        filter: ${isBossDefeated ? 'drop-shadow(0 4px 16px rgba(180,200,255,0.5)) drop-shadow(0 0 8px rgba(200,220,255,0.6))' : 'drop-shadow(0 4px 16px rgba(100,0,0,0.5)) drop-shadow(0 0 8px rgba(0,0,0,0.8))'};
         transition: transform 0.3s;
     `;
 
