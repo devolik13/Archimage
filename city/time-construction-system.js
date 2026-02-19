@@ -629,9 +629,49 @@ function showConstructionModalFallback(constructionIndex) {
 
 // Добавьте новую функцию для ускорения
 async function speedupConstruction(constructionIndex) {
-    // ⛔ ВРЕМЕННО ОТКЛЮЧЕНО
-    alert('⏳ Ускорение временно отключено. Скоро исправим!');
-    return;
+    const construction = window.userData.constructions[constructionIndex];
+    if (!construction) return;
+
+    const cost = construction.time_remaining;
+
+    // БЛОКИРУЕМ повторное открытие модалки
+    blockConstructionModalReopen = true;
+
+    // Закрываем модалку СРАЗУ
+    closeConstructionModalBg(); // Новое окно с фоном
+    if (window.Modal && window.Modal.close) {
+        window.Modal.close(false);
+    }
+    if (window.closeCurrentModal) {
+        window.closeCurrentModal();
+    }
+
+    // useTimeCurrency теперь async — используем await
+    const success = await window.useTimeCurrency(cost, () => {
+        completeConstruction(constructionIndex);
+        updateConstructionUI();
+        updateAllConstructionTimers();
+        if (typeof window.showNotification === 'function') {
+            let processName = 'Строительство';
+            if (construction.type === 'spell') {
+                processName = 'Изучение заклинания';
+            } else if (construction.type === 'wizard') {
+                processName = 'Найм мага';
+            } else if (construction.is_upgrade) {
+                processName = 'Улучшение';
+            }
+            window.showNotification(`⚡ ${processName} ускорено за ${formatTimeCurrency(cost)}`);
+        }
+
+        // Разблокируем через 500ms
+        setTimeout(() => {
+            blockConstructionModalReopen = false;
+        }, 500);
+    });
+    if (!success) {
+        // Если не хватило ресурсов - разблокируем сразу
+        blockConstructionModalReopen = false;
+    }
 }
 
 async function devInstantComplete(constructionIndex) {
