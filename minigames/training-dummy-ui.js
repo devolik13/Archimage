@@ -141,7 +141,7 @@ function showTrainingGroundScreen() {
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
                     <span style="color: #888;">Получите:</span>
-                    <span style="color: #ffd700;">${formatTimeReward(info.currentReward.reward)}</span>
+                    <span style="color: #ffd700;">+${formatTimeReward(info.currentRewardActual)}</span>
                 </div>
             </div>
 
@@ -442,10 +442,11 @@ function showTrialMenuInArena() {
         text-align: center;
     `;
 
-    // Текущая награда
+    // Текущая награда (показываем инкремент, не кумулятив)
     const currentReward = info.currentReward || { description: 'Участник', reward: 60 };
+    const currentRewardActual = info.currentRewardActual || currentReward.reward;
     const nextReward = info.nextReward;
-    const rewardText = window.formatTimeReward ? window.formatTimeReward(currentReward.reward) : `${currentReward.reward} мин`;
+    const rewardText = window.formatTimeReward ? '+' + window.formatTimeReward(currentRewardActual) : `+${currentRewardActual} мин`;
 
     // Прогресс до следующей награды
     let progressBarHtml = '';
@@ -922,9 +923,12 @@ async function checkAndClaimTrialReward() {
             // Показываем уведомление
             showTrialRewardNotification(result);
 
-            // Обновляем время игрока локально
+            // Обновляем time_currency_base (НЕ time_currency — оно вычисляемое)
+            // RPC уже добавил reward_time на сервере, синхронизируем локальный base
             if (window.userData) {
-                window.userData.time_currency = (window.userData.time_currency || 0) + result.reward_time;
+                const currentBase = window.userData.time_currency_base ?? window.userData.time_currency ?? 0;
+                window.userData.time_currency_base = currentBase + result.reward_time;
+                window.userData.time_currency_updated_at = new Date().toISOString();
             }
 
             return result;

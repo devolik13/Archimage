@@ -12,8 +12,10 @@ function showNecromancerPromoModal() {
     // Не показываем новым игрокам без фракции
     if (!window.userData?.faction) return;
 
+    // Запоминаем что показали сегодня
+    localStorage.setItem(storageKey, today);
+
     function closePromo() {
-        localStorage.setItem(storageKey, today);
         const el = document.getElementById('necromancer-promo-overlay');
         if (el) {
             el.style.opacity = '0';
@@ -23,144 +25,180 @@ function showNecromancerPromoModal() {
 
     function onBuyClick() {
         closePromo();
-        // Показываем окно подтверждения перед покупкой
         showNecromancerConfirmDialog();
     }
 
-    const overlay = document.createElement('div');
-    overlay.id = 'necromancer-promo-overlay';
-    overlay.style.cssText = `
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.90); z-index: 10003;
+    // Фон — башня некроманта (как в ежедневной награде)
+    const backgroundPath = 'assets/ui/window/tower_necromant.webp';
+
+    const screen = document.createElement('div');
+    screen.id = 'necromancer-promo-overlay';
+    screen.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0, 0, 0, 0.9); z-index: 10003;
         display: flex; align-items: center; justify-content: center;
-        overflow-y: auto; -webkit-overflow-scrolling: touch;
-        padding: 16px 0;
-        opacity: 0; transition: opacity 0.3s ease;
+        animation: necroFadeIn 0.3s ease;
     `;
 
-    // Закрытие по клику на оверлей
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) closePromo();
+    screen.innerHTML = `
+        <style>
+            @keyframes necroFadeIn { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes necroSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+            @keyframes necroFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        </style>
+        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <div id="necro-promo-wrapper" style="position: relative; display: inline-block;">
+                <img id="necro-promo-bg" src="${backgroundPath}" alt="Фон" style="
+                    max-width: 100vw;
+                    max-height: 100vh;
+                    object-fit: contain;
+                    display: block;
+                ">
+                <div id="necro-promo-content" style="
+                    position: absolute;
+                    top: 0; left: 0; width: 100%; height: 100%;
+                    display: flex; flex-direction: column;
+                    align-items: center; justify-content: center;
+                    text-align: center; padding: 20px; box-sizing: border-box;
+                "></div>
+            </div>
+        </div>
+    `;
+
+    // Закрытие по клику на фон
+    screen.addEventListener('click', (e) => {
+        if (e.target === screen) closePromo();
     });
 
-    overlay.innerHTML = `
-        <div style="
-            background: linear-gradient(135deg, #0a0a1a 0%, #1a1028 40%, #0d1a0d 100%);
-            border: 2px solid rgba(100, 255, 150, 0.3);
-            border-radius: 16px; padding: 24px 20px; text-align: center;
-            color: white; width: 320px; max-width: 92vw;
-            max-height: calc(100vh - 32px); overflow-y: auto;
-            box-shadow: 0 0 60px rgba(80, 200, 120, 0.2), 0 0 120px rgba(100, 60, 180, 0.15);
-            margin: auto; flex-shrink: 0;
-        ">
-            <!-- Анимированный спрайт некроманта -->
+    document.body.appendChild(screen);
+
+    // Ждём загрузку изображения для масштабирования
+    const img = document.getElementById('necro-promo-bg');
+    const setupUI = () => {
+        const content = document.getElementById('necro-promo-content');
+        if (!content || !img) return;
+
+        const rect = img.getBoundingClientRect();
+        const scaleX = rect.width / 768;
+        const scaleY = rect.height / 512;
+        const scale = Math.min(scaleX, scaleY);
+
+        // Масштабируемые размеры (как в ежедневной награде)
+        const titleSize = Math.max(18, 26 * scale);
+        const subtitleSize = Math.max(12, 16 * scale);
+        const tagSize = Math.max(8, 10 * scale);
+        const textSize = Math.max(11, 14 * scale);
+        const btnSize = Math.max(13, 16 * scale);
+        const btnSmallSize = Math.max(11, 13 * scale);
+        const spriteSize = Math.max(80, 130 * scale);
+        const boxRadius = Math.max(8, 12 * scale);
+        const boxPad = Math.max(8, 12 * scale);
+        const gap = Math.max(4, 8 * scale);
+
+        content.style.animation = 'necroSlideUp 0.5s ease';
+
+        content.innerHTML = `
             <div id="necro-promo-sprite" style="
-                width: 140px; height: 140px; margin: 0 auto 12px;
+                width: ${spriteSize}px; height: ${spriteSize}px; margin-bottom: ${gap}px;
                 background: url('images/wizards/necromant/idle.webp') 0% 0% / 500% 500% no-repeat;
                 image-rendering: pixelated;
-                filter: drop-shadow(0 0 20px rgba(100, 200, 150, 0.5));
+                filter: drop-shadow(0 0 ${15 * scale}px rgba(100, 200, 150, 0.5));
+                animation: necroFloat 2s ease-in-out infinite;
             "></div>
 
-            <!-- Тег -->
             <div style="
-                font-size: 10px; color: rgba(100, 255, 150, 0.7);
-                letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px;
+                font-size: ${tagSize}px; color: rgba(100, 255, 150, 0.7);
+                letter-spacing: ${2 * scale}px; text-transform: uppercase; margin-bottom: ${3 * scale}px;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             ">Новая фракция</div>
 
-            <!-- Заголовок -->
             <div style="
-                font-size: 22px; font-weight: bold;
+                font-size: ${titleSize}px; font-weight: bold;
                 background: linear-gradient(135deg, #b8ff9e, #7cffcb);
                 -webkit-background-clip: text; -webkit-text-fill-color: transparent;
                 background-clip: text;
-                margin-bottom: 6px;
+                margin-bottom: ${4 * scale}px;
+                filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
             ">Некромантия</div>
 
-            <!-- Подзаголовок -->
             <div style="
-                font-size: 14px; color: #ccc; line-height: 1.5; margin-bottom: 16px;
+                font-size: ${subtitleSize}px; color: #ccc; line-height: 1.5; margin-bottom: ${gap * 1.5}px;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             ">
                 Встречайте <b style="color: #b8ff9e;">9-ю школу магии</b><br>
                 Призывай скелетов, дракона и повелевай смертью
             </div>
 
-            <!-- Будь первым -->
             <div style="
-                background: rgba(100, 255, 150, 0.08);
-                border: 1px solid rgba(100, 255, 150, 0.2);
-                border-radius: 10px; padding: 10px 14px; margin-bottom: 16px;
-                font-size: 13px; line-height: 1.5;
+                background: rgba(0, 0, 0, 0.4);
+                border: 1px solid rgba(100, 255, 150, 0.25);
+                border-radius: ${boxRadius}px; padding: ${boxPad}px ${boxPad * 1.2}px; margin-bottom: ${gap * 1.5}px;
+                line-height: 1.5;
             ">
-                <div style="color: #7cffcb; font-weight: bold; font-size: 15px; margin-bottom: 4px;">
+                <div style="color: #7cffcb; font-weight: bold; font-size: ${Math.max(12, 15 * scale)}px; margin-bottom: ${3 * scale}px;
+                    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
                     Будь первым!
                 </div>
-                <div style="color: #aaa;">
+                <div style="color: #aaa; font-size: ${textSize}px; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
                     Получи ранний доступ и начни играть<br>за некроманта уже сейчас
                 </div>
             </div>
 
-            <!-- Дата выхода -->
             <div style="
-                font-size: 12px; color: #888; margin-bottom: 16px;
+                font-size: ${Math.max(10, 12 * scale)}px; color: #888; margin-bottom: ${gap * 1.5}px;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             ">
                 Официальный выход фракции — <b style="color: #b8ff9e;">28 февраля</b>
             </div>
 
-            <!-- Кнопки -->
-            <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; flex-direction: column; gap: ${gap}px; width: ${Math.min(280, 260 * scale)}px; max-width: 80%;">
                 <button id="necro-promo-buy-btn" style="
                     background: linear-gradient(135deg, #2d8a4e, #4ade80);
-                    border: none; color: white; padding: 12px 24px;
-                    border-radius: 10px; font-size: 15px; font-weight: bold;
+                    border: none; color: white; padding: ${Math.max(8, 12 * scale)}px ${Math.max(16, 24 * scale)}px;
+                    border-radius: ${Math.max(8, 10 * scale)}px; font-size: ${btnSize}px; font-weight: bold;
                     cursor: pointer; text-shadow: 0 1px 3px rgba(0,0,0,0.4);
                     box-shadow: 0 4px 18px rgba(74, 222, 128, 0.35);
                     transition: transform 0.15s, box-shadow 0.15s;
-                ">
+                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     Получить ранний доступ
                 </button>
                 <button id="necro-promo-close-btn" style="
                     background: rgba(255,255,255,0.08);
                     border: 1px solid rgba(255,255,255,0.15);
-                    color: #888; padding: 8px 20px;
-                    border-radius: 8px; font-size: 13px;
+                    color: #888; padding: ${Math.max(6, 8 * scale)}px ${Math.max(14, 20 * scale)}px;
+                    border-radius: ${Math.max(6, 8 * scale)}px; font-size: ${btnSmallSize}px;
                     cursor: pointer; transition: color 0.15s;
                 ">
                     Закрыть
                 </button>
             </div>
-        </div>
-    `;
+        `;
 
-    document.body.appendChild(overlay);
+        // Привязка кнопок
+        document.getElementById('necro-promo-buy-btn').addEventListener('click', onBuyClick);
+        document.getElementById('necro-promo-close-btn').addEventListener('click', closePromo);
 
-    // Плавное появление
-    requestAnimationFrame(() => {
-        overlay.style.opacity = '1';
-    });
+        // Анимация спрайта (5×5 grid = 25 кадров)
+        let frame = 0;
+        const totalFrames = 25;
+        const cols = 5;
+        const spriteInterval = setInterval(() => {
+            const sprite = document.getElementById('necro-promo-sprite');
+            if (!sprite) {
+                clearInterval(spriteInterval);
+                return;
+            }
+            frame = (frame + 1) % totalFrames;
+            const col = frame % cols;
+            const row = Math.floor(frame / cols);
+            const xPercent = (col / (cols - 1)) * 100;
+            const yPercent = (row / (cols - 1)) * 100;
+            sprite.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
+        }, 100);
+    };
 
-    // Привязка кнопок
-    document.getElementById('necro-promo-buy-btn').addEventListener('click', onBuyClick);
-    document.getElementById('necro-promo-close-btn').addEventListener('click', closePromo);
-
-    // Анимация спрайта (5×5 grid = 25 кадров)
-    let frame = 0;
-    const totalFrames = 25;
-    const cols = 5;
-    const spriteInterval = setInterval(() => {
-        if (!document.getElementById('necro-promo-sprite')) {
-            clearInterval(spriteInterval);
-            return;
-        }
-        frame = (frame + 1) % totalFrames;
-        const col = frame % cols;
-        const row = Math.floor(frame / cols);
-        const xPercent = (col / (cols - 1)) * 100;
-        const yPercent = (row / (cols - 1)) * 100;
-        document.getElementById('necro-promo-sprite').style.backgroundPosition = `${xPercent}% ${yPercent}%`;
-    }, 100);
-
-    // Запоминаем что показали сегодня
-    localStorage.setItem(storageKey, today);
+    img.onload = setupUI;
+    if (img.complete) setupUI();
 }
 
 /**

@@ -363,7 +363,7 @@ function showResistancesModal(wizardIndex) {
     const schoolNames = {
         fire: 'Огонь', water: 'Вода', wind: 'Ветер',
         earth: 'Земля', nature: 'Природа', poison: 'Яд',
-        light: 'Свет', dark: 'Тьма'
+        light: 'Свет', dark: 'Тьма', necromant: 'Некромант'
     };
 
     const resistancesHTML = Object.entries(resistances).map(([school, value]) => {

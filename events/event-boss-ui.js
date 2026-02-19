@@ -32,8 +32,8 @@ async function openEventBossScreen() {
 
     const boss = await manager.fetchActiveBoss(true);
 
-    if (!boss || !boss.active) {
-        // Если ивент активен по таймеру, но босс ещё не в БД — ждём
+    if (!boss) {
+        // Босс не найден в БД
         const timerStatus = getEventTimerStatus();
         closeEventBossScreen();
         if (timerStatus.status === 'active') {
@@ -44,14 +44,25 @@ async function openEventBossScreen() {
         return;
     }
 
-    // Загружаем статистику, лидерборд и попытки параллельно
+    const isDefeated = boss.status === 'defeated' || boss.current_hp <= 0;
+
+    if (isDefeated) {
+        // Побеждённый босс — показываем экран результатов (только чтение из БД)
+        const [playerStats, leaderboard] = await Promise.all([
+            manager.fetchPlayerStats(),
+            manager.fetchLeaderboard(20)
+        ]);
+        renderDefeatedBossResultsScreen(boss, playerStats, leaderboard);
+        return;
+    }
+
+    // Активный босс — полный экран с атакой
     const [playerStats, leaderboard, _attempts] = await Promise.all([
         manager.fetchPlayerStats(),
         manager.fetchLeaderboard(20),
         manager.fetchAttempts()
     ]);
 
-    // Рендер
     renderEventBossScreen(boss, playerStats, leaderboard);
 }
 
@@ -348,6 +359,199 @@ function renderEventBossScreen(boss, playerStats, leaderboard) {
             sprite.style.backgroundPosition = '100% 100%';
         }
     }
+}
+
+/**
+ * Экран результатов побеждённого босса.
+ * Только чтение — никаких записей в БД.
+ */
+function renderDefeatedBossResultsScreen(boss, playerStats, leaderboard) {
+    const screen = document.getElementById('event-boss-screen');
+    if (!screen) return;
+
+    const manager = window.eventBossManager;
+
+    // Статистика игрока
+    const pDamage = playerStats?.total_damage || 0;
+    const pAttacks = playerStats?.attacks_count || 0;
+    const pRank = playerStats?.rank || '-';
+    const pBest = playerStats?.best_single_attack || 0;
+    const participated = playerStats?.participated || pDamage > 0;
+
+    // Лидерборд (топ-10)
+    const telegramId = window.userId ? parseInt(window.userId) : null;
+    const top10 = (leaderboard || []).slice(0, 10);
+    let leaderboardHTML = '';
+    if (top10.length > 0) {
+        leaderboardHTML = top10.map(entry => {
+            const isMe = entry.telegram_id === telegramId;
+            const rankIcon = entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : `#${entry.rank}`;
+            const bgStyle = isMe
+                ? 'background: rgba(114, 137, 218, 0.25); border: 1px solid rgba(114, 137, 218, 0.5);'
+                : 'background: rgba(255,255,255,0.05);';
+            const nameFormatted = typeof window.formatPlayerName === 'function'
+                ? window.formatPlayerName(entry.username || 'Маг', null, entry.badges)
+                : (entry.username || 'Маг');
+            return `
+                <div style="
+                    display: flex; align-items: center; justify-content: space-between;
+                    padding: 10px 12px; border-radius: 8px; margin-bottom: 4px; ${bgStyle}
+                ">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 16px; min-width: 32px; text-align: center;">${rankIcon}</span>
+                        <span style="color: ${isMe ? '#7289da' : '#ddd'}; font-size: 14px; font-weight: ${isMe ? 'bold' : 'normal'};">
+                            ${nameFormatted}
+                        </span>
+                    </div>
+                    <span style="color: #ff6b6b; font-size: 14px; font-weight: bold;">
+                        ${manager.formatDamage(entry.total_damage)}
+                    </span>
+                </div>
+            `;
+        }).join('');
+    } else {
+        leaderboardHTML = '<div style="text-align: center; color: #666; padding: 20px;">Нет данных</div>';
+    }
+
+    // Награда игрока
+    let playerRewardHTML = '';
+    if (participated) {
+        let rewardText = '+4 дня (участие + победа)';
+        if (pRank === 1) rewardText = '+24 дня (участие + победа + 1 место)';
+        else if (pRank === 2) rewardText = '+14 дней (участие + победа + 2 место)';
+        else if (pRank === 3) rewardText = '+9 дней (участие + победа + 3 место)';
+
+        playerRewardHTML = `
+            <div style="text-align: center; margin-top: 6px; padding: 6px; background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); border-radius: 6px;">
+                <span style="font-size: 12px; color: #4ade80;">Ваша награда: <b>${rewardText}</b></span>
+            </div>
+        `;
+    }
+
+    screen.innerHTML = `
+        <style>
+            @keyframes defeatGlow { 0%, 100% { text-shadow: 0 0 10px rgba(74,222,128,0.5); } 50% { text-shadow: 0 0 25px rgba(74,222,128,0.8), 0 0 50px rgba(74,222,128,0.3); } }
+        </style>
+        <div style="
+            width: 100%; height: 100%; overflow-y: auto;
+            background: linear-gradient(180deg, #0a0a1a 0%, #0d1a0d 30%, #0a0a1a 100%);
+            padding: 16px; box-sizing: border-box;
+        ">
+            <!-- Заголовок -->
+            <div style="text-align: center; margin-bottom: 12px;">
+                <div style="font-size: 24px; font-weight: bold; color: #4CAF50; animation: defeatGlow 2s ease-in-out infinite;">
+                    БОСС ПОВЕРЖЕН!
+                </div>
+                <div style="font-size: 13px; color: #888; margin-top: 4px;">${boss.name}</div>
+            </div>
+
+            <!-- Спрайт мёртвого босса -->
+            <div style="text-align: center; margin-bottom: 16px;">
+                <div id="event-boss-preview-sprite" style="
+                    width: 160px; height: 160px; margin: 0 auto;
+                    background: url('assets/sprites/event_boss/death.webp') 100% 100% / 500% 500% no-repeat;
+                    image-rendering: pixelated;
+                    filter: grayscale(30%) brightness(0.8);
+                "></div>
+            </div>
+
+            <!-- Контрольный удар -->
+            ${boss.finishing_blow_by ? `
+            <div style="
+                text-align: center; margin-bottom: 16px; padding: 12px;
+                background: rgba(255,69,0,0.08); border: 1px solid rgba(255,69,0,0.3);
+                border-radius: 10px;
+            ">
+                <div style="font-size: 13px; color: #ff8c60;">⚔️ Контрольный удар нанёс</div>
+                <div style="font-size: 18px; color: #ff4500; font-weight: bold; margin-top: 4px;">${boss.finishing_blow_by}</div>
+            </div>
+            ` : ''}
+
+            <!-- Ваша статистика -->
+            ${participated ? `
+            <div style="
+                margin-bottom: 16px; padding: 12px;
+                background: rgba(114, 137, 218, 0.08);
+                border-radius: 10px; border: 1px solid rgba(114, 137, 218, 0.25);
+            ">
+                <div style="font-size: 13px; color: #7289da; font-weight: bold; text-align: center; margin-bottom: 8px;">
+                    Ваша статистика
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px;">
+                    <div style="text-align: center; padding: 8px 4px; background: rgba(0,0,0,0.3); border-radius: 6px;">
+                        <div style="font-size: 10px; color: #888;">Урон</div>
+                        <div style="font-size: 15px; color: #ff6b6b; font-weight: bold;">${manager.formatDamage(pDamage)}</div>
+                    </div>
+                    <div style="text-align: center; padding: 8px 4px; background: rgba(0,0,0,0.3); border-radius: 6px;">
+                        <div style="font-size: 10px; color: #888;">Место</div>
+                        <div style="font-size: 15px; color: #ffd700; font-weight: bold;">${pRank}</div>
+                    </div>
+                    <div style="text-align: center; padding: 8px 4px; background: rgba(0,0,0,0.3); border-radius: 6px;">
+                        <div style="font-size: 10px; color: #888;">Атак</div>
+                        <div style="font-size: 15px; color: #ddd; font-weight: bold;">${pAttacks}</div>
+                    </div>
+                    <div style="text-align: center; padding: 8px 4px; background: rgba(0,0,0,0.3); border-radius: 6px;">
+                        <div style="font-size: 10px; color: #888;">Лучший</div>
+                        <div style="font-size: 15px; color: #ff9800; font-weight: bold;">${manager.formatDamage(pBest)}</div>
+                    </div>
+                </div>
+                ${playerRewardHTML}
+            </div>
+            ` : `
+            <div style="text-align: center; margin-bottom: 16px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+                <div style="font-size: 13px; color: #666;">Вы не участвовали в этом ивенте</div>
+            </div>
+            `}
+
+            <!-- Топ-10 -->
+            <div style="
+                padding: 12px; background: rgba(0,0,0,0.3);
+                border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+                margin-bottom: 16px;
+            ">
+                <div style="font-size: 14px; color: #ffd700; margin-bottom: 10px; font-weight: bold; text-align: center;">
+                    Топ-10 по урону
+                </div>
+                <div id="event-boss-leaderboard">
+                    ${leaderboardHTML}
+                </div>
+                <div style="text-align: center; font-size: 11px; color: #555; margin-top: 8px;">
+                    Всего участников: ${boss.total_participants || 0}
+                </div>
+            </div>
+
+            <!-- Итоги наград -->
+            <div style="
+                margin-bottom: 16px; padding: 12px;
+                background: rgba(255, 215, 0, 0.05);
+                border-radius: 10px; border: 1px solid rgba(255, 215, 0, 0.15);
+            ">
+                <div style="font-size: 13px; color: #ffd700; margin-bottom: 8px; font-weight: bold;">Награды начислены</div>
+                <div style="font-size: 12px; color: #aaa; line-height: 1.8;">
+                    <div>🏆 1 место: <span style="color: #ffd700;">+20 дней</span></div>
+                    <div>🥈 2 место: <span style="color: #c0c0c0;">+10 дней</span></div>
+                    <div>🥉 3 место: <span style="color: #cd7f32;">+5 дней</span></div>
+                    <div>⚔️ Контрольный удар: <span style="color: #ff4500;">+7 дней</span></div>
+                    <div>✅ Участие + победа: <span style="color: #4CAF50;">+4 дня каждому</span></div>
+                    <div>📈 Добыча времени: <span style="color: #9B59B6;">+30% на неделю</span></div>
+                </div>
+            </div>
+
+            <!-- Кнопка назад -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button onclick="closeEventBossScreen()" style="
+                    padding: 12px 40px;
+                    background: linear-gradient(145deg, #667eea, #764ba2);
+                    border: none; border-radius: 12px;
+                    color: white; font-size: 16px; font-weight: bold;
+                    cursor: pointer; box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+                    transition: transform 0.2s;
+                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    В город
+                </button>
+            </div>
+        </div>
+    `;
 }
 
 /** Запуск анимации спрайта босса на превью-экране */
