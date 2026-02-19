@@ -1,13 +1,10 @@
--- Migration 064: update_player_safe больше НЕ трогает time_currency_base
--- Причина: миграция 062 запретила уменьшение time_currency_base через update_player_safe,
--- но auto-save отправляет старое (до списания) значение, которое БОЛЬШЕ текущего в БД,
--- и миграция 062 принимает его → откат списания → бесконечные ресурсы.
+-- Migration 064: ОТКАТ защиты time_currency_base из миграции 062
+-- Миграция 062 запрещала уменьшение time_currency_base через update_player_safe.
+-- Это привело к бесконечным ресурсам: после траты auto-save отправлял старое значение,
+-- которое БОЛЬШЕ текущего, и 062 его принимала → откат списания.
 --
--- Решение: update_player_safe вообще не трогает time_currency_base / time_currency / time_currency_updated_at.
--- Эти поля меняют ТОЛЬКО атомарные RPC функции:
---   - spend_time_currency (списание)
---   - add_time_currency (начисление)
---   - process_referral (реферальная награда)
+-- РЕШЕНИЕ: возврат к простому поведению (как в миграции 055).
+-- time_currency_base пишется как обычное поле, без защиты от уменьшения.
 
 CREATE OR REPLACE FUNCTION update_player_safe(p_telegram_id BIGINT, p_data JSONB)
 RETURNS VOID AS $$
@@ -25,9 +22,6 @@ BEGIN
         RAISE NOTICE 'airdrop_points: attempt to decrease % -> %, keeping %', current_points, new_points, current_points;
         new_points := current_points;
     END IF;
-
-    -- time_currency_base, time_currency, time_currency_updated_at
-    -- НЕ ТРОГАЕМ! Их меняют только RPC: spend_time_currency / add_time_currency
 
     UPDATE players
     SET
@@ -64,9 +58,23 @@ BEGIN
             THEN p_data->'buildings'
             ELSE buildings
         END,
-        -- time_currency_base = НЕ ТРОГАЕМ (только через RPC)
-        -- time_currency_updated_at = НЕ ТРОГАЕМ (только через RPC)
-        -- time_currency = НЕ ТРОГАЕМ (только через RPC)
+        time_currency_base = CASE
+            WHEN p_data ? 'time_currency_base' AND p_data->>'time_currency_base' IS NOT NULL
+            THEN (p_data->>'time_currency_base')::INTEGER
+            ELSE time_currency_base
+        END,
+        time_currency_updated_at = CASE
+            WHEN p_data ? 'time_currency_updated_at' AND p_data->>'time_currency_updated_at' IS NOT NULL
+            THEN (p_data->>'time_currency_updated_at')::TIMESTAMPTZ
+            ELSE time_currency_updated_at
+        END,
+        time_currency = CASE
+            WHEN p_data ? 'time_currency_base' AND p_data->>'time_currency_base' IS NOT NULL
+            THEN (p_data->>'time_currency_base')::INTEGER
+            WHEN p_data ? 'time_currency' AND p_data->>'time_currency' IS NOT NULL
+            THEN (p_data->>'time_currency')::INTEGER
+            ELSE time_currency
+        END,
         last_login = CASE
             WHEN p_data ? 'last_login' AND p_data->>'last_login' IS NOT NULL
             THEN (p_data->>'last_login')::TIMESTAMPTZ

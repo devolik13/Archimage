@@ -119,7 +119,7 @@ class DatabaseManager {
             };
 
             // Формируем данные для RPC
-            // time_currency_base НЕ отправляем — его меняют только RPC spend/add_time_currency
+            const rawTimeCurrency = playerData.time_currency_base ?? playerData.timeCurrency ?? playerData.time_currency ?? 0;
 
             // Стрипаем runtime-поля благословений и нормализуем HP перед сохранением.
             // В БД всегда должен быть "чистый" max_hp = base(100) * levelBonus.
@@ -159,8 +159,9 @@ class DatabaseManager {
             });
 
             const rpcData = {
-                // time_currency_base и time_currency НЕ включаем!
-                // Баланс времени меняется ТОЛЬКО через RPC: spend_time_currency / add_time_currency
+                time_currency: Math.floor(rawTimeCurrency),
+                time_currency_base: Math.floor(rawTimeCurrency),
+                time_currency_updated_at: playerData.time_currency_updated_at || new Date().toISOString(),
                 level: playerData.level || 1,
                 experience: playerData.experience || 0,
                 faction: playerData.faction || null,
@@ -387,7 +388,9 @@ class DatabaseManager {
         this.autoSaveInterval = setInterval(async () => {
             if (this.hasUnsavedChanges && window.userData) {
                 const playerData = {
-                    // time_currency_base НЕ сохраняем! Только через RPC: spend/add_time_currency
+                    time_currency_base: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
+                    time_currency_updated_at: window.userData.time_currency_updated_at || new Date().toISOString(),
+                    timeCurrency: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
                     level: window.userData.level,
                     experience: window.userData.experience,
                     faction: window.userData.faction,
@@ -441,7 +444,9 @@ class DatabaseManager {
         window.addEventListener('beforeunload', async () => {
             if (this.hasUnsavedChanges && window.userData) {
                 const playerData = {
-                    // time_currency_base НЕ сохраняем! Только через RPC: spend/add_time_currency
+                    time_currency_base: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
+                    time_currency_updated_at: window.userData.time_currency_updated_at || new Date().toISOString(),
+                    timeCurrency: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
                     level: window.userData.level,
                     experience: window.userData.experience,
                     faction: window.userData.faction,
