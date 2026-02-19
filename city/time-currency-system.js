@@ -175,10 +175,49 @@ function createTimeCurrencyUI() {
 
 // Использование времени (через серверную RPC)
 async function useTimeCurrency(minutes, callback) {
-    // ⛔ ВРЕМЕННО ОТКЛЮЧЕНО — трата времени заблокирована до исправления бага
-    alert('⏳ Трата времени временно отключена. Скоро исправим!');
-    console.warn('⛔ useTimeCurrency ЗАБЛОКИРОВАНА — временно отключено');
-    return false;
+    const current = getTimeCurrency();
+
+    if (typeof window.formatTimeCurrency !== 'function') {
+        console.error('❌ formatTimeCurrency не найдена');
+        return false;
+    }
+
+    if (current < minutes) {
+        alert(`Недостаточно времени! Нужно: ${window.formatTimeCurrency(minutes)}, есть: ${window.formatTimeCurrency(current)}`);
+        return false;
+    }
+
+    // Вызываем серверную RPC для атомарной траты
+    if (window.dbManager && window.dbManager.supabase) {
+        try {
+            const { data, error } = await window.dbManager.supabase.rpc('spend_time_currency', {
+                p_telegram_id: window.dbManager.getTelegramId(),
+                p_amount: Math.floor(minutes)
+            });
+
+            if (error) {
+                console.error('❌ Ошибка RPC spend_time_currency:', error);
+                return useTimeCurrencyLocal(minutes, callback);
+            }
+
+            if (data && data.success) {
+                window.userData.time_currency_base = data.new_balance;
+                window.userData.time_currency_updated_at = getServerNow().toISOString();
+
+                createTimeCurrencyUI();
+                if (callback) callback();
+                return true;
+            } else {
+                alert(`Недостаточно времени! Нужно: ${window.formatTimeCurrency(minutes)}, есть: ${window.formatTimeCurrency(data?.current || 0)}`);
+                return false;
+            }
+        } catch (err) {
+            console.error('❌ Ошибка при трате времени:', err);
+            return useTimeCurrencyLocal(minutes, callback);
+        }
+    }
+
+    return useTimeCurrencyLocal(minutes, callback);
 }
 
 // Локальный fallback для траты (если RPC недоступна)
