@@ -508,11 +508,11 @@ function renderGuildInfo(container) {
     // Природа исключена - у неё нет атакующих заклинаний
     const schoolNames = {
         fire: 'Огонь', water: 'Вода', earth: 'Земля', wind: 'Ветер',
-        poison: 'Яд', light: 'Свет', dark: 'Тьма'
+        poison: 'Яд', light: 'Свет', dark: 'Тьма', necromant: 'Некромант'
     };
     const schoolEmojis = {
         fire: '🔥', water: '💧', earth: '🪨', wind: '💨',
-        poison: '☠️', light: '✨', dark: '🌑'
+        poison: '☠️', light: '✨', dark: '🌑', necromant: '💀'
     };
 
     container.innerHTML = `
@@ -779,10 +779,10 @@ function renderGuildResearch(container) {
 
     // Природа исключена - у неё нет атакующих заклинаний
     const schoolNames = {
-        fire: 'Огонь', water: 'Вода', earth: 'Земля', wind: 'Ветер', poison: 'Яд', light: 'Свет', dark: 'Тьма'
+        fire: 'Огонь', water: 'Вода', earth: 'Земля', wind: 'Ветер', poison: 'Яд', light: 'Свет', dark: 'Тьма', necromant: 'Некромант'
     };
     const schoolEmojis = {
-        fire: '🔥', water: '💧', earth: '🪨', wind: '💨', poison: '☠️', light: '✨', dark: '🌑'
+        fire: '🔥', water: '💧', earth: '🪨', wind: '💨', poison: '☠️', light: '✨', dark: '🌑', necromant: '💀'
     };
 
     container.innerHTML = `

@@ -12,7 +12,7 @@ const GUILD_CONFIG = {
     RESISTANCE_PER_POINT: 0.5,       // 0.5% сопротивления за 1 очко
     MAX_RESISTANCE_POINTS: 30,       // Макс очков на школу
     INACTIVE_DAYS_FOR_TRANSFER: 7,   // Дней неактивности для передачи лидерства
-    SCHOOLS: ['fire', 'water', 'earth', 'wind', 'poison', 'light', 'dark'], // Школы для исследований (без nature - нет атакующих)
+    SCHOOLS: ['fire', 'water', 'earth', 'wind', 'poison', 'light', 'dark', 'necromant'], // Школы для исследований (без nature - нет атакующих)
     RESEARCH_CYCLE_MULTIPLIER: 0.20  // +20% за каждое очко исследований после 30 уровня
 };
 
