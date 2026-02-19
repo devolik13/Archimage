@@ -943,11 +943,24 @@ async function checkAndClaimTrialReward() {
             showTrialRewardNotification(result);
 
             // Обновляем time_currency_base (НЕ time_currency — оно вычисляемое)
-            // RPC уже добавил reward_time на сервере, синхронизируем локальный base
+            // RPC уже добавил reward_time на сервере через add_time_currency,
+            // синхронизируем локальный base
             if (window.userData) {
                 const currentBase = window.userData.time_currency_base ?? window.userData.time_currency ?? 0;
                 window.userData.time_currency_base = currentBase + result.reward_time;
                 window.userData.time_currency_updated_at = new Date().toISOString();
+            }
+
+            // КРИТИЧНО: Принудительно сохраняем обновлённое значение в БД,
+            // чтобы параллельный saveImmediate('time_currency_init') из initTimeCurrency()
+            // не перезаписал награду старым значением time_currency_base
+            if (window.eventSaveManager) {
+                await window.eventSaveManager.saveImmediate('trial_reward_claimed');
+            }
+
+            // Обновляем UI валюты
+            if (typeof createTimeCurrencyUI === 'function') {
+                createTimeCurrencyUI();
             }
 
             return result;

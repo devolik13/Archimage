@@ -117,9 +117,11 @@ async function checkDailyLoginReward() {
     console.log(`🎁 День ${dailyData.day}: награда ${hoursReward} часов`);
 
     // Добавляем время
+    // ВАЖНО: await чтобы time_currency_base обновился ДО savePlayer() ниже,
+    // иначе savePlayer отправит старое значение и перезапишет награду в БД
     if (typeof window.addTimeCurrency === 'function') {
         const minutesReward = hoursReward * 60;
-        window.addTimeCurrency(minutesReward);
+        await window.addTimeCurrency(minutesReward);
     }
 
     // Начисляем airdrop очки за ежедневный вход
