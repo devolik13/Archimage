@@ -713,6 +713,13 @@ async function recordAttempt(damage, remainingHp = null) {
 
     saveDummyProgress(progress, true); // immediate save to DB
 
+    // Если были начислены награды за уровни урона, принудительно сохраняем
+    // полное состояние игрока (включая time_currency_base),
+    // чтобы auto-save не перезаписал обновлённый баланс старым значением
+    if (newRewards.length > 0 && window.eventSaveManager) {
+        window.eventSaveManager.saveImmediate('trial_damage_rewards');
+    }
+
     // Сохраняем результат в Supabase для глобального рейтинга
     if (typeof window.saveTrialResultSupabase === 'function') {
         window.saveTrialResultSupabase(damage);
