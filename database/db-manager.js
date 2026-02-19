@@ -389,10 +389,7 @@ class DatabaseManager {
         this.autoSaveInterval = setInterval(async () => {
             if (this.hasUnsavedChanges && window.userData) {
                 const playerData = {
-                    // LAZY ACCRUAL v2: сохраняем base, не вычисленное значение
-                    time_currency_base: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
-                    time_currency_updated_at: window.userData.time_currency_updated_at || new Date().toISOString(),
-                    timeCurrency: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
+                    // time_currency_base НЕ сохраняем! Только через RPC: spend/add_time_currency
                     level: window.userData.level,
                     experience: window.userData.experience,
                     faction: window.userData.faction,
@@ -446,10 +443,7 @@ class DatabaseManager {
         window.addEventListener('beforeunload', async () => {
             if (this.hasUnsavedChanges && window.userData) {
                 const playerData = {
-                    // LAZY ACCRUAL v2: сохраняем base, не вычисленное значение
-                    time_currency_base: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
-                    time_currency_updated_at: window.userData.time_currency_updated_at || new Date().toISOString(),
-                    timeCurrency: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
+                    // time_currency_base НЕ сохраняем! Только через RPC: spend/add_time_currency
                     level: window.userData.level,
                     experience: window.userData.experience,
                     faction: window.userData.faction,

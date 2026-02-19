@@ -75,11 +75,9 @@ class EventSaveManager {
 
         try {
             const playerData = {
-                // LAZY ACCRUAL v2: сохраняем base и updated_at вместо вычисленного значения
-                time_currency_base: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
-                time_currency_updated_at: window.userData.time_currency_updated_at || new Date().toISOString(),
-                // Совместимость: старое поле для обратной совместимости
-                timeCurrency: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
+                // time_currency_base и time_currency_updated_at НЕ сохраняем здесь!
+                // Их меняют ТОЛЬКО RPC функции: spend_time_currency / add_time_currency
+                // Иначе update_player_safe() откатывает списания (миграция 062)
                 level: window.userData.level,
                 experience: window.userData.experience,
                 faction: window.userData.faction,
