@@ -222,6 +222,41 @@ const SHOP_CONFIG = {
 };
 
 /**
+ * Хелпер: списать time_currency через серверный RPC (атомарно).
+ * Возвращает true при успехе, false при ошибке.
+ */
+async function _shopSpendTimeCurrency(amount) {
+    if (!window.dbManager?.supabase) {
+        showShopNotification('❌ Нет подключения к серверу!', 'error');
+        return false;
+    }
+    try {
+        const { data, error } = await window.dbManager.supabase.rpc('spend_time_currency', {
+            p_telegram_id: window.dbManager.getTelegramId(),
+            p_amount: Math.floor(amount)
+        });
+        if (error) {
+            console.error('❌ RPC spend_time_currency error:', error);
+            showShopNotification('❌ Ошибка сервера!', 'error');
+            return false;
+        }
+        if (data && data.success) {
+            // Обновляем локальный кэш
+            window.userData.time_currency_base = data.new_balance;
+            window.userData.time_currency_updated_at = new Date().toISOString();
+            return true;
+        } else {
+            showShopNotification('❌ Недостаточно времени!', 'error');
+            return false;
+        }
+    } catch (err) {
+        console.error('❌ Ошибка при трате времени:', err);
+        showShopNotification('❌ Ошибка сети!', 'error');
+        return false;
+    }
+}
+
+/**
  * Открыть магазин
  */
 function showShopModal() {
@@ -1428,9 +1463,9 @@ function buyShopItem(itemId) {
 }
 
 /**
- * Покупка энергии
+ * Покупка энергии (через RPC spend_time_currency)
  */
-function buyEnergy(item) {
+async function buyEnergy(item) {
     const timeCurrency = window.userData?.time_currency || 0;
 
     if (timeCurrency < item.price) {
@@ -1446,15 +1481,16 @@ function buyEnergy(item) {
         return;
     }
 
-    // Списываем валюту
-    window.userData.time_currency -= item.price;
+    // Списываем валюту через RPC (атомарно на сервере)
+    const spendResult = await _shopSpendTimeCurrency(item.price);
+    if (!spendResult) return;
 
     // Добавляем энергию (не превышая максимум)
     const newEnergy = Math.min(currentEnergy + item.amount, maxEnergy);
     const actualAdded = newEnergy - currentEnergy;
     window.userData.battle_energy.current = newEnergy;
 
-    // Сохраняем
+    // Сохраняем остальные данные (энергию)
     if (window.eventSaveManager) {
         window.eventSaveManager.saveImmediate('shop_buy_energy');
     }
@@ -1462,7 +1498,6 @@ function buyEnergy(item) {
     showShopNotification(`⚡ +${actualAdded} энергии!`, 'success');
     refreshShopUI();
 
-    // Обновляем UI времени если есть
     if (typeof window.updateTimeCurrencyDisplay === 'function') {
         window.updateTimeCurrencyDisplay();
     }
@@ -1574,7 +1609,7 @@ function showWizardSelectDialog(item) {
 /**
  * Применить свиток опыта к магу
  */
-function applyExpScroll(wizardIndex, price, expAmount) {
+async function applyExpScroll(wizardIndex, price, expAmount) {
     const wizard = window.userData?.wizards?.[wizardIndex];
 
     if (!wizard) {
@@ -1589,8 +1624,12 @@ function applyExpScroll(wizardIndex, price, expAmount) {
         return;
     }
 
-    // Списываем валюту
-    window.userData.time_currency -= price;
+    // Списываем валюту через RPC
+    const spendResult = await _shopSpendTimeCurrency(price);
+    if (!spendResult) {
+        closeWizardSelectDialog();
+        return;
+    }
 
     // Добавляем опыт
     if (typeof window.addExperienceToWizard === 'function') {
@@ -1630,8 +1669,9 @@ async function buyGuildExp(item) {
         return;
     }
 
-    // Списываем валюту
-    window.userData.time_currency -= item.price;
+    // Списываем валюту через RPC
+    const spendResult = await _shopSpendTimeCurrency(item.price);
+    if (!spendResult) return;
 
     // Добавляем опыт гильдии через RPC (считается как взнос / guild_contribution)
     const result = await window.guildManager.addGuildExperience(item.amount);
@@ -1643,8 +1683,14 @@ async function buyGuildExp(item) {
         }
         showShopNotification(msg, 'success');
     } else {
-        // Возвращаем валюту при ошибке
-        window.userData.time_currency += item.price;
+        // Возвращаем валюту через RPC при ошибке
+        if (window.dbManager?.supabase) {
+            await window.dbManager.supabase.rpc('add_time_currency', {
+                p_telegram_id: window.dbManager.getTelegramId(),
+                p_amount: item.price
+            });
+            window.userData.time_currency_base = (window.userData.time_currency_base || 0) + item.price;
+        }
         showShopNotification('❌ Ошибка: ' + (result.error || 'не удалось'), 'error');
     }
 
