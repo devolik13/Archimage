@@ -1467,6 +1467,9 @@ function showEventBossWarpPortal(show) {
         portal.style.cursor = isLocked ? 'default' : 'pointer';
     }
 
+    const manager = window.eventBossManager;
+    const isBossDefeated = manager?.currentBoss?.status === 'defeated' || (manager?.currentBoss?.current_hp === 0);
+
     portal.style.cssText = `
         position: fixed;
         top: 45px;
