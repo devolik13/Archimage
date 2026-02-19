@@ -101,7 +101,7 @@ const DUMMY_CONFIGURATIONS = [
 
 // Константы
 const DUMMY_CONFIG = {
-    HP: 10000,
+    HP: 100000,
     ARMOR: 100,                    // Стандартная броня
     MAX_ROUNDS: 10,                // Раундов на попытку (раунд = все маги атакуют по очереди)
     DAILY_ATTEMPTS: 3,             // Попыток в день

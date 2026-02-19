@@ -168,6 +168,33 @@ async function executeDummyBattlePhase() {
         await new Promise(resolve => setTimeout(resolve, delay));
     }
 
+    // ═══ ХОД МАНЕКЕНА: наносит 1 урон случайному живому магу ═══
+    if (dummy && dummy.hp > 0) {
+        const aliveTargets = [];
+        for (let pos = 0; pos < 5; pos++) {
+            const wizardId = window.playerFormation[pos];
+            if (wizardId) {
+                const wizard = window.playerWizards.find(w => w.id === wizardId);
+                if (wizard && wizard.hp > 0) {
+                    aliveTargets.push(wizard);
+                }
+            }
+        }
+
+        if (aliveTargets.length > 0) {
+            const target = aliveTargets[Math.floor(Math.random() * aliveTargets.length)];
+            target.hp = Math.max(0, target.hp - 1);
+
+            if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`🎯 Манекен бьёт ${target.name} на 1 урон`);
+            }
+
+            if (!window.fastSimulation && typeof window.updateBattleField === 'function') {
+                window.updateBattleField();
+            }
+        }
+    }
+
     // Подсчитываем нанесённый урон за раунд
     const hpAfter = dummy ? Math.max(0, dummy.hp) : 0;
     const damageThisRound = Math.max(0, hpBefore - hpAfter);
