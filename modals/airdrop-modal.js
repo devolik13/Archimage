@@ -1151,6 +1151,89 @@ async function checkCryptoMax() {
 }
 
 /**
+ * Открыть Криптовидение — первый клик открывает канал, кнопка меняется на "Проверить"
+ */
+function openCriptoVidenie() {
+    window.open('https://t.me/CriptoVidenie7320', '_blank');
+    try { localStorage.setItem('criptovidenie_opened', '1'); } catch(e) {}
+    window.showNotification?.('🔮 Подпишитесь на канал и нажмите "Проверить"');
+}
+
+/**
+ * Проверить подписку на Криптовидение через бота
+ */
+async function checkCriptoVidenie() {
+    if (window.userData?.completed_tasks?.criptovidenie) {
+        window.showNotification?.('✓ Награда уже получена');
+        return;
+    }
+
+    const telegramId = window.dbManager?.getTelegramId?.() || window.userData?.user_id;
+    if (!telegramId) {
+        window.showNotification?.('❌ Ошибка: не удалось определить пользователя');
+        return;
+    }
+
+    // Блокируем кнопку на время проверки
+    const taskDiv = document.getElementById('ads-criptovidenie');
+    const btn = taskDiv?.querySelector('button');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Проверка...';
+    }
+
+    try {
+        const SUPABASE_URL = window.supabase?.supabaseUrl || 'https://legianiryweinxtsuqoh.supabase.co';
+
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/check-channel-subscription`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ telegram_id: telegramId, channel: 'CriptoVidenie7320' })
+        });
+
+        const result = await response.json();
+
+        if (result.success && result.reward) {
+            // Награда начислена серверно — обновляем локальные данные
+            if (!window.userData.completed_tasks) window.userData.completed_tasks = {};
+            window.userData.completed_tasks[result.reward.task_key] = true;
+
+            // Синхронизируем время локально (серверно уже начислено через RPC)
+            const currentBalance = typeof window.getTimeCurrency === 'function' ? window.getTimeCurrency() : (window.userData.time_currency_base || 0);
+            window.userData.time_currency_base = currentBalance + result.reward.time_minutes;
+            window.userData.time_currency_updated_at = typeof getServerNow === 'function' ? getServerNow().toISOString() : new Date().toISOString();
+
+            // Синхронизируем BPM локально
+            window.userData.airdrop_points = (window.userData.airdrop_points || 0) + result.reward.bpm_points;
+            if (!window.userData.airdrop_breakdown) window.userData.airdrop_breakdown = {};
+            window.userData.airdrop_breakdown['Криптовидение'] = (window.userData.airdrop_breakdown['Криптовидение'] || 0) + result.reward.bpm_points;
+
+            updateTaskButton('criptovidenie');
+            updateAirdropPointsDisplay();
+            if (typeof window.updateTimerDisplay === 'function') window.updateTimerDisplay();
+
+            window.showNotification?.(`🎉 Криптовидение — награда получена! +${result.reward.bpm_points} BPM + ⏰ 1 день`);
+        } else if (result.error === 'already_claimed') {
+            if (!window.userData.completed_tasks) window.userData.completed_tasks = {};
+            window.userData.completed_tasks.criptovidenie = true;
+            updateTaskButton('criptovidenie');
+            window.showNotification?.('✓ Награда уже получена ранее');
+        } else if (result.error === 'telegram_api_error') {
+            window.showNotification?.('⚠️ Не удалось проверить подписку. Попробуйте позже или обратитесь в поддержку.');
+            if (btn) { btn.disabled = false; btn.textContent = 'Проверить'; }
+        } else {
+            window.open('https://t.me/CriptoVidenie7320', '_blank');
+            window.showNotification?.('❌ Вы не подписаны на канал. Подпишитесь и нажмите "Проверить" снова.');
+            if (btn) { btn.disabled = false; btn.textContent = 'Проверить'; }
+        }
+    } catch (err) {
+        console.error('CriptoVidenie check error:', err);
+        window.showNotification?.('⚠️ Не удалось проверить. Попробуйте позже');
+        if (btn) { btn.disabled = false; btn.textContent = 'Проверить'; }
+    }
+}
+
+/**
  * Выдача награды за задание с наградой 1 день (1440 минут)
  */
 async function claimTaskRewardDay(taskKey, taskName) {
@@ -1487,6 +1570,7 @@ function updateTaskButton(taskKey) {
         'dreamdares': 'ads-dreamdares',
         'cryptohud': 'ads-cryptohud',
         'cryptomax': 'ads-cryptomax',
+        'criptovidenie': 'ads-criptovidenie',
         'cryptobronia': 'ads-cryptobronia',
         'cryptozarabotok': 'ads-cryptozarabotok',
         'evertrade': 'ads-evertrade',
@@ -1533,6 +1617,8 @@ window.openCryptoBronia = openCryptoBronia;
 window.openCryptoZarabotok = openCryptoZarabotok;
 window.openCryptoMax = openCryptoMax;
 window.checkCryptoMax = checkCryptoMax;
+window.openCriptoVidenie = openCriptoVidenie;
+window.checkCriptoVidenie = checkCriptoVidenie;
 window.openEverTrade = openEverTrade;
 window.openLopsamff = openLopsamff;
 window.openAbsoluteTon = openAbsoluteTon;

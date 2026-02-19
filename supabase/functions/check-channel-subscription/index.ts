@@ -27,6 +27,13 @@ const CHANNEL_CONFIG: Record<string, {
     time_minutes: 1440, // 1 день
     reward_name: "Crypto Max",
   },
+  "CriptoVidenie7320": {
+    chat_id: "@CriptoVidenie7320",
+    task_key: "criptovidenie",
+    bpm_points: 100,
+    time_minutes: 1440, // 1 день
+    reward_name: "Криптовидение",
+  },
 };
 
 serve(async (req) => {
