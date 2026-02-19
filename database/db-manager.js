@@ -119,8 +119,7 @@ class DatabaseManager {
             };
 
             // Формируем данные для RPC
-            // LAZY ACCRUAL v2: сохраняем base и updated_at
-            const rawTimeCurrency = playerData.time_currency_base ?? playerData.timeCurrency ?? playerData.time_currency ?? 0;
+            // time_currency_base НЕ отправляем — его меняют только RPC spend/add_time_currency
 
             // Стрипаем runtime-поля благословений и нормализуем HP перед сохранением.
             // В БД всегда должен быть "чистый" max_hp = base(100) * levelBonus.
@@ -160,9 +159,8 @@ class DatabaseManager {
             });
 
             const rpcData = {
-                time_currency: Math.floor(rawTimeCurrency),
-                time_currency_base: Math.floor(rawTimeCurrency),
-                time_currency_updated_at: playerData.time_currency_updated_at || new Date().toISOString(),
+                // time_currency_base и time_currency НЕ включаем!
+                // Баланс времени меняется ТОЛЬКО через RPC: spend_time_currency / add_time_currency
                 level: playerData.level || 1,
                 experience: playerData.experience || 0,
                 faction: playerData.faction || null,
