@@ -32,8 +32,8 @@ async function openEventBossScreen() {
 
     const boss = await manager.fetchActiveBoss(true);
 
-    if (!boss || !boss.active) {
-        // Если ивент активен по таймеру, но босс ещё не в БД — ждём
+    if (!boss) {
+        // Босс не найден в БД
         const timerStatus = getEventTimerStatus();
         closeEventBossScreen();
         if (timerStatus.status === 'active') {
