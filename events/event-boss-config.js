@@ -42,8 +42,8 @@ const EVENT_BOSS_CONFIG = {
     damageMultiplier: 1.0,
 
     // Множитель ВХОДЯЩЕГО урона (ослабление босса Архимагом Света)
-    // 2.5 = босс получает на 150% больше урона
-    incomingDamageMultiplier: 2.5,
+    // 1.0 = без бонуса (ивент завершён)
+    incomingDamageMultiplier: 1.0,
 
     // Иммунитет к стакам яда (яд не накладывается на босса)
     poisonImmune: true,
@@ -87,8 +87,10 @@ const EVENT_BOSS_CONFIG = {
     // Модификатор добычи времени
     // duringEventActive: true/false — ручное вкл/выкл штрафа добычи
     timeCurrencyModifier: {
-        duringEventActive: true,   // ← переключить вручную
+        duringEventActive: false,  // ← ивент завершён, штраф выключен
         duringEvent: -0.50,        // -50% во время ивента (проклятие Отродья Тьмы)
+        postEventBonusActive: true, // ← ручной пост-ивентный бонус (босс побеждён)
+        postEventBonus: 0.30,      // +30% добычи после победы над боссом
         onVictory: 0.30,          // +30% если игроки победили
         onDefeat: -0.50           // -50% если игроки проиграли
     },
@@ -179,6 +181,11 @@ function getEventBossTimeModifier() {
     // Штраф во время ивента — ручной флаг
     if (mod.duringEventActive) {
         return mod.duringEvent;
+    }
+
+    // Ручной пост-ивентный бонус (если задан)
+    if (mod.postEventBonusActive) {
+        return mod.postEventBonus || 0;
     }
 
     // Пост-ивент: бонус/штраф по статусу босса

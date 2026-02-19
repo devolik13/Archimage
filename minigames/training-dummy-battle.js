@@ -168,6 +168,33 @@ async function executeDummyBattlePhase() {
         await new Promise(resolve => setTimeout(resolve, delay));
     }
 
+    // ═══ ХОД МАНЕКЕНА: наносит 1 урон случайному живому магу ═══
+    if (dummy && dummy.hp > 0) {
+        const aliveTargets = [];
+        for (let pos = 0; pos < 5; pos++) {
+            const wizardId = window.playerFormation[pos];
+            if (wizardId) {
+                const wizard = window.playerWizards.find(w => w.id === wizardId);
+                if (wizard && wizard.hp > 0) {
+                    aliveTargets.push(wizard);
+                }
+            }
+        }
+
+        if (aliveTargets.length > 0) {
+            const target = aliveTargets[Math.floor(Math.random() * aliveTargets.length)];
+            target.hp = Math.max(0, target.hp - 1);
+
+            if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
+                window.addToBattleLog(`🎯 Манекен бьёт ${target.name} на 1 урон`);
+            }
+
+            if (!window.fastSimulation && typeof window.updateBattleField === 'function') {
+                window.updateBattleField();
+            }
+        }
+    }
+
     // Подсчитываем нанесённый урон за раунд
     const hpAfter = dummy ? Math.max(0, dummy.hp) : 0;
     const damageThisRound = Math.max(0, hpBefore - hpAfter);
@@ -310,6 +337,9 @@ function showDummyResult(damage, progress, expResults = []) {
     window.isTrainingDummyBattle = false;
 
     const reward = window.getRewardForDamage(progress.totalDamage);
+    const rewardIndex = window.WEEKLY_REWARDS.indexOf(reward);
+    const prevReward = rewardIndex > 0 ? window.WEEKLY_REWARDS[rewardIndex - 1].reward : 0;
+    const rewardActual = reward.reward - prevReward;
     const nextReward = window.WEEKLY_REWARDS.find(r => r.minDamage > progress.totalDamage);
     const remaining = window.getRemainingAttempts();
     const config = window.getCurrentDummyConfig();
@@ -387,7 +417,7 @@ function showDummyResult(damage, progress, expResults = []) {
                     📈 За неделю: ${progress.totalDamage.toLocaleString()}
                 </div>
                 <div style="font-size: 14px; color: #86efac;">
-                    ${reward.description} (${Math.floor(reward.reward / 60)}ч)
+                    ${reward.description} (+${window.formatTimeReward ? window.formatTimeReward(rewardActual) : Math.floor(rewardActual / 60) + 'ч'})
                 </div>
                 ${nextReward ? `
                     <div style="font-size: 12px; color: #888; margin-top: 8px;">
@@ -478,7 +508,7 @@ function showDummyResult(damage, progress, expResults = []) {
                         📈 За неделю: ${progress.totalDamage.toLocaleString()}
                     </div>
                     <div style="font-size: 14px; color: #86efac;">
-                        ${reward.description} (${Math.floor(reward.reward / 60)}ч)
+                        ${reward.description} (+${window.formatTimeReward ? window.formatTimeReward(rewardActual) : Math.floor(rewardActual / 60) + 'ч'})
                     </div>
                     ${nextReward ? `
                         <div style="font-size: 12px; color: #888; margin-top: 10px;">

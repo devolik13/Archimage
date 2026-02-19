@@ -172,6 +172,21 @@ const SKINS_CONFIG = {
         priceUSD: 100.00,
         currency: 'dual', // Stars или TON
         unlockText: '7700 ⭐ или TON'
+    },
+    private_roman: {
+        id: 'private_roman',
+        name: 'Рядовой Роман',
+        description: 'Бравый воин, готовый к любому бою',
+        icon: '⚔️',
+        faction: 'neutral',
+        spriteConfig: 'private_roman',
+        isDefault: false,
+        isPremium: true,
+        unlockType: 'purchase',
+        price: 500, // Stars
+        priceUSD: 6.50, // 500 × $0.013
+        currency: 'dual', // Stars или TON
+        unlockText: '500 ⭐ или TON'
     }
 };
 

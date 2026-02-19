@@ -101,7 +101,7 @@ const DUMMY_CONFIGURATIONS = [
 
 // Константы
 const DUMMY_CONFIG = {
-    HP: 10000,
+    HP: 100000,
     ARMOR: 100,                    // Стандартная броня
     MAX_ROUNDS: 10,                // Раундов на попытку (раунд = все маги атакуют по очереди)
     DAILY_ATTEMPTS: 3,             // Попыток в день
@@ -111,16 +111,16 @@ const DUMMY_CONFIG = {
 // Награды по урону за неделю (накопительные пороги)
 // UI показывает реальный инкремент за лигу (reward - prevReward)
 const WEEKLY_REWARDS = [
-    { minDamage: 0,      reward: 60,    description: "Участник" },        // +1ч
-    { minDamage: 1000,   reward: 120,   description: "Новичок" },         // +1ч
-    { minDamage: 3000,   reward: 240,   description: "Ученик" },          // +2ч
-    { minDamage: 5000,   reward: 480,   description: "Боец" },            // +4ч
-    { minDamage: 10000,  reward: 720,   description: "Воин" },            // +4ч
-    { minDamage: 20000,  reward: 1440,  description: "Ветеран" },         // +12ч
-    { minDamage: 35000,  reward: 2880,  description: "Элита" },           // +1д
-    { minDamage: 50000,  reward: 4320,  description: "Мастер" },          // +1д
-    { minDamage: 75000,  reward: 7200,  description: "Грандмастер" },     // +2д
-    { minDamage: 100000, reward: 10080, description: "Легенда" }          // +2д
+    { minDamage: 0,       reward: 60,    description: "Участник" },        // +1ч
+    { minDamage: 1500,    reward: 120,   description: "Новичок" },         // +1ч
+    { minDamage: 5000,    reward: 240,   description: "Ученик" },          // +2ч
+    { minDamage: 8000,    reward: 480,   description: "Боец" },            // +4ч
+    { minDamage: 15000,   reward: 720,   description: "Воин" },            // +4ч
+    { minDamage: 30000,   reward: 1440,  description: "Ветеран" },         // +12ч
+    { minDamage: 50000,   reward: 2880,  description: "Элита" },           // +1д
+    { minDamage: 75000,   reward: 4320,  description: "Мастер" },          // +1д
+    { minDamage: 110000,  reward: 7200,  description: "Грандмастер" },     // +2д
+    { minDamage: 150000,  reward: 10080, description: "Легенда" }          // +2д
 ];
 
 // Бонусы за топ места в лидерборде
@@ -893,6 +893,7 @@ function getDummyInfo() {
         progress.bestAttempt = 0;
         progress.history = [];
         progress.lastDummyHp = null;
+        progress.claimedTiers = [];  // Сброс полученных наград (новая неделя — новые награды)
         saveDummyProgress(progress);
     }
 
@@ -903,6 +904,14 @@ function getDummyInfo() {
     const rewardIndex = WEEKLY_REWARDS.indexOf(reward);
     const prevReward = rewardIndex > 0 ? WEEKLY_REWARDS[rewardIndex - 1].reward : 0;
     const currentRewardActual = reward.reward - prevReward;
+
+    // Вычисляем инкрементальную награду за следующий тир
+    let nextRewardActual = 0;
+    if (nextReward) {
+        const nextRewardIndex = WEEKLY_REWARDS.indexOf(nextReward);
+        const prevNextReward = nextRewardIndex > 0 ? WEEKLY_REWARDS[nextRewardIndex - 1].reward : 0;
+        nextRewardActual = nextReward.reward - prevNextReward;
+    }
 
     return {
         dummy: config,
@@ -917,6 +926,7 @@ function getDummyInfo() {
         currentReward: reward,
         currentRewardActual: currentRewardActual,  // Инкремент за текущий тир
         nextReward: nextReward,
+        nextRewardActual: nextRewardActual,  // Инкремент за следующий тир
         timeUntilReset: formatTimeUntilWeekEnd(),
         timeUntilAttemptReset: formatTimeUntilAttemptReset()  // Время до сброса попыток
     };

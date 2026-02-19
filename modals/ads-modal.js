@@ -40,6 +40,7 @@ const ADS_CATEGORIES = [
 const ADS_TASKS = [
     // --- Каналы о Крипте ---
     { id: 'cryptomax', category: 'crypto', icon: '👑', name: 'Crypto Max', reward: '+100 BPM + ⏰ 1 день', taskKey: 'cryptomax', action: 'window.openCryptoMax()', checkAction: 'window.checkCryptoMax()', btnLabel: 'Подписаться', btnGradient: ['#ffd700', '#cc9900'], btnTextColor: '#000' },
+    { id: 'criptovidenie', category: 'crypto', icon: '🔮', name: 'Криптовидение', reward: '+100 BPM + ⏰ 1 день', taskKey: 'criptovidenie', action: 'window.openCriptoVidenie()', checkAction: 'window.checkCriptoVidenie()', btnLabel: 'Подписаться', btnGradient: ['#8b5cf6', '#6d28d9'], btnTextColor: '#fff' },
     { id: 'cryptobronia', category: 'crypto', icon: '📢', name: 'Crypto Bronia', reward: '+100 BPM + ⏰ 2ч', taskKey: 'cryptobronia', action: 'window.openCryptoBronia()', btnLabel: 'Подписаться', btnGradient: ['#22c55e', '#16a34a'], btnTextColor: '#fff' },
     { id: 'cryptozarabotok', category: 'crypto', icon: '📢', name: 'Crypto_Zarabotok', reward: '+100 BPM + ⏰ 2ч', taskKey: 'cryptozarabotok', action: 'window.openCryptoZarabotok()', btnLabel: 'Подписаться', btnGradient: ['#f59e0b', '#d97706'], btnTextColor: '#000' },
     { id: 'cryptocyeta', category: 'crypto', icon: '📢', name: 'CryptoCyetaUA', reward: '+100 BPM + ⏰ 2ч', taskKey: 'cryptocyeta', action: 'window.openCryptoCyeta()', btnLabel: 'Подписаться', btnGradient: ['#22c55e', '#16a34a'], btnTextColor: '#fff' },

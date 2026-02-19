@@ -82,6 +82,13 @@ const PRODUCTS: Record<string, { title: string; description: string; price: numb
     type: "skin"
   },
 
+  skin_private_roman: {
+    title: "⚔️ Рядовой Роман",
+    description: "Бравый воин, готовый к любому бою",
+    price: 500,
+    type: "skin"
+  },
+
   // ===== ИВЕНТ БОСС =====
   event_boss_attempt: {
     title: "⚔️ Доп. попытка атаки",

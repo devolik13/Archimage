@@ -139,6 +139,17 @@
             scale: 0.420, // +20% от стандартного 0.350
             idleScale: 0.378 // idle на 10% меньше (0.420 * 0.9)
         },
+        private_roman: {
+            idle: 'images/wizards/neutral/private_roman_idle.webp',
+            cast: 'images/wizards/neutral/private_roman_cast.webp',
+            death: 'images/wizards/neutral/private_roman_death.webp',
+            frameWidth: 256,
+            frameHeight: 256,
+            frameCount: 25, // 5×5 сетка
+            gridColumns: 5,
+            animationSpeed: 0.12,
+            scale: 0.350
+        },
         goblin: {
             idle: 'images/enemies/goblin/idle.webp',
             cast: 'images/enemies/goblin/attack.webp',

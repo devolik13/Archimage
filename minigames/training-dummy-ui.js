@@ -135,14 +135,24 @@ function showTrainingGroundScreen() {
             </div>
 
             <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #2a5a2a;">
+                ${info.nextReward ? `
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: #888;">Текущая награда:</span>
-                    <span style="color: #4ade80; font-weight: bold;">${info.currentReward.description}</span>
+                    <span style="color: #888;">Следующая награда:</span>
+                    <span style="color: #4a9eff; font-weight: bold;">🎯 ${info.nextReward.description}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
                     <span style="color: #888;">Получите:</span>
-                    <span style="color: #ffd700;">+${formatTimeReward(info.currentRewardActual)}</span>
+                    <span style="color: #ffd700;">+${formatTimeReward(info.nextRewardActual)}</span>
                 </div>
+                ` : `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: #888;">Ранг:</span>
+                    <span style="color: #ffd700; font-weight: bold;">🏆 ${info.currentReward.description}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                    <span style="color: #888;">Максимальный ранг достигнут!</span>
+                </div>
+                `}
             </div>
 
             ${progressBarHtml}
@@ -442,11 +452,20 @@ function showTrialMenuInArena() {
         text-align: center;
     `;
 
-    // Текущая награда (показываем инкремент, не кумулятив)
+    // Следующая награда (показываем что ждёт игрока)
     const currentReward = info.currentReward || { description: 'Участник', reward: 60 };
-    const currentRewardActual = info.currentRewardActual || currentReward.reward;
     const nextReward = info.nextReward;
-    const rewardText = window.formatTimeReward ? '+' + window.formatTimeReward(currentRewardActual) : `+${currentRewardActual} мин`;
+    let rewardLabel, rewardName, rewardText;
+    if (nextReward) {
+        rewardLabel = 'Следующая';
+        rewardName = '🎯 ' + nextReward.description;
+        rewardText = window.formatTimeReward ? '+' + window.formatTimeReward(info.nextRewardActual) : `+${info.nextRewardActual} мин`;
+    } else {
+        rewardLabel = 'Ранг';
+        rewardName = '🏆 ' + currentReward.description;
+        const currentRewardActual = info.currentRewardActual || currentReward.reward;
+        rewardText = window.formatTimeReward ? '+' + window.formatTimeReward(currentRewardActual) : `+${currentRewardActual} мин`;
+    }
 
     // Прогресс до следующей награды
     let progressBarHtml = '';
@@ -476,8 +495,8 @@ function showTrialMenuInArena() {
                 <div style="font-size: ${Math.max(14, 18 * scale)}px; color: #4a9eff;">🏆 ${(info.bestAttempt || 0).toLocaleString()}</div>
             </div>
             <div>
-                <div style="font-size: ${Math.max(10, 11 * scale)}px; color: #888;">Награда</div>
-                <div style="font-size: ${Math.max(12, 14 * scale)}px; color: #4ade80;">🎁 ${currentReward.description}</div>
+                <div style="font-size: ${Math.max(10, 11 * scale)}px; color: #888;">${rewardLabel}</div>
+                <div style="font-size: ${Math.max(12, 14 * scale)}px; color: ${nextReward ? '#4a9eff' : '#ffd700'};">${rewardName}</div>
                 <div style="font-size: ${Math.max(9, 10 * scale)}px; color: #86efac;">${rewardText}</div>
             </div>
         </div>

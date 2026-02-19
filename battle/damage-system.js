@@ -264,6 +264,9 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
         }
     }
 
+    // Запоминаем урон до бонусов для логирования
+    const damageBeforeBonuses = finalDamage;
+
     // Применяем бонус от Башни магов
     if (typeof window.getWizardTowerDamageBonus === 'function') {
         const towerBonus = window.getWizardTowerDamageBonus();
@@ -290,6 +293,13 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
             finalDamage = Math.floor(finalDamage * guildDamageMultiplier);
             console.log(`🏰 Гильдия: урон +${guildBonuses.damageBonus}%`);
         }
+    }
+
+    // Логируем усиление урона в шаги расчёта (для отображения в логе боя)
+    if (target && finalDamage > damageBeforeBonuses) {
+        const boostPercent = Math.round((finalDamage / damageBeforeBonuses - 1) * 100);
+        if (!target._lastDamageSteps) target._lastDamageSteps = [];
+        target._lastDamageSteps.push(`⚔️ Усиление урона: ${damageBeforeBonuses} → ${finalDamage} (+${boostPercent}%)`);
     }
 
     // ГИЛЬДИЯ: Сопротивление от гильдии (уменьшение входящего урона, отключено в дуэлях)
