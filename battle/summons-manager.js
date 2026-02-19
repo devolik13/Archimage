@@ -248,7 +248,7 @@ class SummonsManager {
     // Убить существо (skipLog = true если вызывающий код сам логирует смерть)
     killSummon(summonId, skipLog = false) {
         const summon = this.summons.get(summonId);
-        if (!summon) return false;
+        if (!summon || !summon.isAlive) return false;
 
         summon.isAlive = false;
         summon.hp = 0;

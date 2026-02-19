@@ -217,7 +217,7 @@
     // Удаление при смерти
     const originalKillSummon = window.summonsManager?.killSummon;
     if (originalKillSummon) {
-        window.summonsManager.killSummon = function(summonId) {
+        window.summonsManager.killSummon = function(summonId, skipLog) {
             const ent = activeEnts.get(summonId);
             if (ent) {
                 // Анимация смерти
@@ -243,8 +243,8 @@
                 };
                 fadeOut();
             }
-            
-            return originalKillSummon.call(this, summonId);
+
+            return originalKillSummon.call(this, summonId, skipLog);
         };
     }
     

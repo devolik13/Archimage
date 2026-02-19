@@ -169,9 +169,9 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
                 summonedCreature.hp -= creatureDamage;
                 if (summonedCreature.hp < 0) summonedCreature.hp = 0;
 
-                // Обновляем визуальный HP бар через менеджер
-                if (window.summonsManager && typeof window.summonsManager.updateHP === 'function') {
-                    window.summonsManager.updateHP(summonedCreature.id, summonedCreature.hp);
+                // Обновляем визуальный HP бар (без триггера смерти — смерть обрабатываем ниже)
+                if (window.summonsManager && typeof window.summonsManager.updateVisualHP === 'function') {
+                    window.summonsManager.updateVisualHP(summonedCreature.id, summonedCreature.hp, summonedCreature.maxHP);
                 }
 
                 // Логирование
