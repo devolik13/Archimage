@@ -422,7 +422,8 @@ class DatabaseManager {
                     airdrop_points: window.userData.airdrop_points || 0,
                     airdrop_breakdown: window.userData.airdrop_breakdown || {},
                     purchased_packs: window.userData.purchased_packs || {},
-                    completed_tasks: window.userData.completed_tasks || {}
+                    completed_tasks: window.userData.completed_tasks || {},
+                    badges: window.userData.badges || []
                 };
                 await this.savePlayer(playerData);
             }
@@ -478,7 +479,8 @@ class DatabaseManager {
                     airdrop_points: window.userData.airdrop_points || 0,
                     airdrop_breakdown: window.userData.airdrop_breakdown || {},
                     purchased_packs: window.userData.purchased_packs || {},
-                    completed_tasks: window.userData.completed_tasks || {}
+                    completed_tasks: window.userData.completed_tasks || {},
+                    badges: window.userData.badges || []
                 };
                 await this.savePlayer(playerData);
             }
