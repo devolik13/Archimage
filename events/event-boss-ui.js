@@ -1225,6 +1225,13 @@ function closeEventBossScreen() {
  * Показывает портал если ивент ещё не закончился (до старта — с замком, после старта — активный).
  */
 async function checkEventBossAvailability() {
+    // Портал скрыт через конфиг
+    const config = window.EVENT_BOSS_CONFIG;
+    if (config && config.portalVisible === false) {
+        showEventBossWarpPortal(false);
+        return false;
+    }
+
     const timerStatus = getEventTimerStatus();
 
     // До старта ивента — показываем заблокированный портал с таймером
