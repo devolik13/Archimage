@@ -73,6 +73,9 @@ const EVENT_BOSS_CONFIG = {
         dark: 75      // Родная школа — высокое сопротивление
     },
 
+    // Видимость портала в городе (false = портал скрыт)
+    portalVisible: false,
+
     // Время ивента (UTC)
     // Старт: 14 февраля 2026, 12:00 МСК = 09:00 UTC
     eventStartUTC: "2026-02-14T09:00:00Z",
@@ -89,7 +92,7 @@ const EVENT_BOSS_CONFIG = {
     timeCurrencyModifier: {
         duringEventActive: false,  // ← ивент завершён, штраф выключен
         duringEvent: -0.50,        // -50% во время ивента (проклятие Отродья Тьмы)
-        postEventBonusActive: true, // ← ручной пост-ивентный бонус (босс побеждён)
+        postEventBonusActive: false, // ← бонус вынесен в PRODUCTION_BONUS (time-currency-system.js)
         postEventBonus: 0.30,      // +30% добычи после победы над боссом
         onVictory: 0.30,          // +30% если игроки победили
         onDefeat: -0.50           // -50% если игроки проиграли

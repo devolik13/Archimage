@@ -66,6 +66,8 @@ const ADS_TASKS = [
     { id: 'diamond-dynasty', category: 'games', icon: '💎', name: 'Diamond Dynasty', reward: '+100 BPM + ⏰ 2ч', taskKey: 'diamond_dynasty', action: 'window.openDiamondDynasty()', btnLabel: 'Играть', btnGradient: ['#facc15', '#ca8a04'], btnTextColor: '#000' },
     // --- Каналы 18+ ---
     { id: 'dreamdares', category: 'adult', icon: '🔥', name: 'dreamdares 18+', reward: '+100 BPM + ⏰ 2ч', taskKey: 'dreamdares', action: 'window.openDreamdares()', btnLabel: 'Подписаться', btnGradient: ['#f43f5e', '#e11d48'], btnTextColor: '#fff' },
+    // --- Прочее ---
+    { id: 'giffer', category: 'other', icon: '🎁', name: 'Giffer', reward: '+100 BPM + ⏰ 2ч', taskKey: 'giffer', action: 'window.openGiffer()', btnLabel: 'Подписаться', btnGradient: ['#a78bfa', '#7c3aed'], btnTextColor: '#fff' },
 ];
 
 /**

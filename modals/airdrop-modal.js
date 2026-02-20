@@ -1073,6 +1073,12 @@ function openCryptoCompas() {
     setTimeout(() => claimTaskReward('cryptocompas', 'Компас В TONe'), 2000);
 }
 
+function openGiffer() {
+    if (window.userData?.completed_tasks?.giffer) return;
+    window.open('https://t.me/+Y93nQI3WLdEyMzEy', '_blank');
+    setTimeout(() => claimTaskReward('giffer', 'Giffer'), 2000);
+}
+
 /**
  * Открыть Crypto Max — первый клик открывает канал, кнопка меняется на "Проверить"
  */
@@ -1584,7 +1590,8 @@ function updateTaskButton(taskKey) {
         'absoluteton': 'ads-absoluteton',
         'cryptosock': 'ads-cryptosock',
         'cryptobudni': 'ads-cryptobudni',
-        'labirintkrypty': 'ads-labirintkrypty'
+        'labirintkrypty': 'ads-labirintkrypty',
+        'giffer': 'ads-giffer'
     };
     const taskDiv = document.getElementById(idMap[taskKey]);
     if (!taskDiv) return;
@@ -1633,6 +1640,7 @@ window.openCryptoBudni = openCryptoBudni;
 window.openLabirintKrypty = openLabirintKrypty;
 window.openCryptoCompas = openCryptoCompas;
 window.openGemiFaucet = openGemiFaucet;
+window.openGiffer = openGiffer;
 
 /**
  * Добавить очки airdrop игроку
