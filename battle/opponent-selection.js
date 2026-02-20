@@ -413,7 +413,7 @@ async function searchDuelOpponent() {
     try {
         const { data, error } = await window.dbManager.supabase
             .from('players')
-            .select('telegram_id, username, rating, level, wins, losses, faction')
+            .select('telegram_id, username, rating, level, wins, losses, faction, badges')
             .eq('telegram_id', telegramId)
             .single();
 
@@ -439,7 +439,7 @@ async function searchDuelOpponent() {
                 ✅ Найден!
             </div>
             <div style="color: white; font-size: 18px; font-weight: bold; margin-bottom: 5px;">
-                ${factionEmoji} ${data.username}
+                ${factionEmoji} ${typeof window.formatPlayerName === 'function' ? window.formatPlayerName(data.username, null, data.badges) : data.username}
             </div>
             <div style="color: #aaa; font-size: 13px; margin-bottom: 5px;">
                 ${leagueInfo} • Уровень ${data.level}
