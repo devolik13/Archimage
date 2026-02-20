@@ -710,6 +710,8 @@ const PLAYER_BADGES = {
     event_boss_top3: { icon: '⚔', color: '#cd7f32', title: 'Убийца боссов — 3 место' },
     // Контрольный удар
     event_boss_finisher: { icon: '🗡', color: '#ff4500', title: 'Нанёс контрольный удар' },
+    // Участник рейда
+    event_boss_participant: { icon: '🐉', color: '#8b5cf6', title: 'Участник рейда' },
 };
 
 /**
