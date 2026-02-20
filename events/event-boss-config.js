@@ -92,7 +92,7 @@ const EVENT_BOSS_CONFIG = {
     timeCurrencyModifier: {
         duringEventActive: false,  // ← ивент завершён, штраф выключен
         duringEvent: -0.50,        // -50% во время ивента (проклятие Отродья Тьмы)
-        postEventBonusActive: true, // ← ручной пост-ивентный бонус (босс побеждён)
+        postEventBonusActive: false, // ← бонус вынесен в PRODUCTION_BONUS (time-currency-system.js)
         postEventBonus: 0.30,      // +30% добычи после победы над боссом
         onVictory: 0.30,          // +30% если игроки победили
         onDefeat: -0.50           // -50% если игроки проиграли

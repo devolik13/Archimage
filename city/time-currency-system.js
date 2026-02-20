@@ -18,6 +18,12 @@ const TIME_CURRENCY_CONFIG = {
     STORAGE_PER_LEVEL: 219      // добыча за сутки + 20% на каждый уровень
 };
 
+// Глобальный бонус добычи (независимый от ивентов, ручное вкл/выкл)
+const PRODUCTION_BONUS = {
+    active: true,       // true = бонус работает, false = выключен
+    modifier: 0.30,     // +30% к добыче времени
+};
+
 // Серверное время загрузки (для корректного отображения между загрузками)
 let _serverLoadTime = null;   // Серверное время на момент загрузки
 let _clientLoadTime = null;   // Клиентское время на момент загрузки
@@ -39,7 +45,12 @@ function calculateProduction() {
     let baseProduction = TIME_CURRENCY_CONFIG.GENERATOR_BASE_RATE +
            (generatorLevel - 1) * TIME_CURRENCY_CONFIG.GENERATOR_PER_LEVEL;
 
-    // Применяем модификатор ивент босса (-30% во время ивента, +30%/-50% после)
+    // Глобальный бонус добычи (независимый от ивентов)
+    if (PRODUCTION_BONUS.active && PRODUCTION_BONUS.modifier !== 0) {
+        baseProduction = baseProduction * (1 + PRODUCTION_BONUS.modifier);
+    }
+
+    // Модификатор ивент босса (штраф/бонус во время ивентов)
     const eventModifier = typeof window.getEventBossTimeModifier === 'function'
         ? window.getEventBossTimeModifier() : 0;
     if (eventModifier !== 0) {
@@ -49,13 +60,23 @@ function calculateProduction() {
     return Math.max(0, baseProduction);
 }
 
-// Получить текущий модификатор производства от ивент босса (для отображения в UI)
+// Получить текущий модификатор производства для отображения в UI
 function getProductionModifierText() {
+    let totalModifier = 0;
+
+    // Глобальный бонус
+    if (PRODUCTION_BONUS.active && PRODUCTION_BONUS.modifier !== 0) {
+        totalModifier += PRODUCTION_BONUS.modifier;
+    }
+
+    // Модификатор ивент босса
     const eventModifier = typeof window.getEventBossTimeModifier === 'function'
         ? window.getEventBossTimeModifier() : 0;
-    if (eventModifier === 0) return '';
+    totalModifier += eventModifier;
 
-    const percent = Math.round(eventModifier * 100);
+    if (totalModifier === 0) return '';
+
+    const percent = Math.round(totalModifier * 100);
     if (percent > 0) return `+${percent}%`;
     return `${percent}%`;
 }
