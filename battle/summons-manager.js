@@ -87,6 +87,8 @@ class SummonsManager {
             hp,
             maxHP,
             damage = 0,
+            baseHP,
+            baseDamage,
             special = {}
         } = params;
         
@@ -107,6 +109,8 @@ class SummonsManager {
             maxHP: maxHP,
             damage: damage,
             level: level,
+            baseHP: baseHP || hp,
+            baseDamage: baseDamage || damage,
             
             // Позиционирование
             position: position,
@@ -947,14 +951,31 @@ class SummonsManager {
         if (typeof window.addToBattleLog !== 'function') return;
 
         switch (action) {
-            case 'create':
+            case 'create': {
                 window.addToBattleLog(`🎯 Призван ${summonData.name} [Ур.${summonData.level || 1}]`);
-                window.addToBattleLog(`    └─ HP: ${summonData.hp}/${summonData.maxHP}, Урон: ${summonData.damage}`);
+                // Показываем усиление ХП если есть бонусы
+                const baseHP = summonData.baseHP || summonData.hp;
+                const baseDmg = summonData.baseDamage || summonData.damage;
+                if (baseHP < summonData.hp) {
+                    const hpBoost = Math.round((summonData.hp / baseHP - 1) * 100);
+                    window.addToBattleLog(`    ├─ HP: ${baseHP} → ${summonData.hp}/${summonData.maxHP} (+${hpBoost}%)`);
+                } else {
+                    window.addToBattleLog(`    ├─ HP: ${summonData.hp}/${summonData.maxHP}`);
+                }
+                window.addToBattleLog(`    └─ Урон: ${baseDmg}`);
                 break;
-            case 'restore':
+            }
+            case 'restore': {
                 window.addToBattleLog(`🎯 ${summonData.name} восстановлен`);
-                window.addToBattleLog(`    └─ HP: ${summonData.hp}/${summonData.maxHP}`);
+                const baseHP = summonData.baseHP || summonData.hp;
+                if (baseHP < summonData.hp) {
+                    const hpBoost = Math.round((summonData.hp / baseHP - 1) * 100);
+                    window.addToBattleLog(`    └─ HP: ${baseHP} → ${summonData.hp}/${summonData.maxHP} (+${hpBoost}%)`);
+                } else {
+                    window.addToBattleLog(`    └─ HP: ${summonData.hp}/${summonData.maxHP}`);
+                }
                 break;
+            }
             case 'death':
                 window.addToBattleLog(`💀 ${summonData.name} погиб`);
                 break;
@@ -1095,7 +1116,9 @@ window.createWolfSummon = function(wizard, casterType, position, level) {
             level: level,
             hp: boostedHP,
             maxHP: boostedHP,
-            damage: stats.damage
+            damage: stats.damage,
+            baseHP: stats.hp,
+            baseDamage: stats.damage
         });
     }
 };
@@ -1135,6 +1158,8 @@ window.createSkeletonSummon = function(wizard, casterType, position, level) {
             casterType: casterType,
             position: position,
             level: level,
+            baseHP: stats.hp,
+            baseDamage: stats.damage,
             hp: boostedHP,
             maxHP: boostedHP,
             damage: stats.damage
