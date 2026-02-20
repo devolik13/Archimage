@@ -649,10 +649,10 @@ function renderStarterPacks(scale) {
         `;
     }
 
-    // Скрытая кнопка для тестовой смены фракции на некроманта (правый нижний угол)
+    // Секретная кнопка — открывает окно турнира (правый нижний угол)
     html += `
         <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
-            <div onclick="applyFactionChange('necromant')"
+            <div onclick="showSecretTournamentEntry()"
                  style="width: 32px; height: 32px; cursor: pointer; opacity: 0.03; border-radius: 4px;"
                  title="">
             </div>

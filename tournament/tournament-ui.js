@@ -631,10 +631,190 @@ function getFightResultColor(result, isPlayer1) {
     return '#ff6b6b';
 }
 
+// ═══════════════════════════════════════
+// Секретная кнопка — точка входа из магазина
+// ═══════════════════════════════════════
+
+/**
+ * Показать окно чемпионата (вход через секретную кнопку в магазине)
+ * 3 кнопки: Правила, Регистрация, Назад
+ */
+function showSecretTournamentEntry() {
+    // Закрываем магазин если открыт
+    if (typeof window.closeCurrentModal === 'function') {
+        window.closeCurrentModal();
+    }
+
+    const overlay = document.createElement('div');
+    overlay.id = 'tournament-overlay';
+    overlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.85); z-index: 10000;
+        display: flex; align-items: center; justify-content: center;
+    `;
+
+    overlay.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            color: white;
+        ">
+            <div style="font-size: 48px; margin-bottom: 8px;">🏆</div>
+            <h3 style="color: #ffd700; margin: 0 0 8px 0; font-size: 20px;">Чемпионат Архимагов</h3>
+            <p style="color: #aaa; font-size: 12px; margin: 0 0 20px 0;">
+                Сражайтесь с лучшими магами в турнирной сетке
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Правила -->
+                <button id="secret-btn-rules" style="
+                    padding: 14px;
+                    background: rgba(114, 137, 218, 0.25);
+                    border: 1px solid rgba(114, 137, 218, 0.6);
+                    border-radius: 10px;
+                    color: #7289da;
+                    font-size: 15px;
+                    font-weight: bold;
+                    cursor: pointer;
+                ">📜 Правила</button>
+
+                <!-- Регистрация -->
+                <button id="secret-btn-register" style="
+                    padding: 14px;
+                    background: linear-gradient(135deg, rgba(255,215,0,0.25), rgba(245,158,11,0.25));
+                    border: 1px solid rgba(255,215,0,0.6);
+                    border-radius: 10px;
+                    color: #ffd700;
+                    font-size: 15px;
+                    font-weight: bold;
+                    cursor: pointer;
+                ">⚔️ Регистрация</button>
+
+                <!-- Назад -->
+                <button id="secret-btn-back" style="
+                    padding: 12px;
+                    background: rgba(255,255,255,0.08);
+                    border: 1px solid rgba(255,255,255,0.2);
+                    border-radius: 10px;
+                    color: #888;
+                    font-size: 14px;
+                    cursor: pointer;
+                ">← Назад</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Обработчики
+    document.getElementById('secret-btn-rules').onclick = () => {
+        showTournamentRules(overlay);
+    };
+
+    document.getElementById('secret-btn-register').onclick = async () => {
+        // Переходим к полному UI турнира (регистрация/статус)
+        overlay.remove();
+        showTournamentUI();
+    };
+
+    document.getElementById('secret-btn-back').onclick = () => {
+        overlay.remove();
+    };
+}
+
+/**
+ * Показать правила чемпионата
+ */
+function showTournamentRules(overlay) {
+    overlay.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid #7289da;
+            border-radius: 15px;
+            padding: 22px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            color: white;
+        ">
+            <h3 style="color: #ffd700; margin: 0 0 15px 0; text-align: center; font-size: 18px;">
+                📜 Правила чемпионата
+            </h3>
+
+            <div style="font-size: 13px; line-height: 1.6; color: #ccc;">
+                <div style="margin-bottom: 12px;">
+                    <div style="color: #ffd700; font-weight: bold; margin-bottom: 4px;">⚔️ Формат</div>
+                    Олимпийская система (Single Elimination).<br>
+                    Проиграл — выбываешь. Победитель идёт дальше.
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <div style="color: #ffd700; font-weight: bold; margin-bottom: 4px;">🎯 Матчи</div>
+                    Каждый матч — 2 боя:<br>
+                    • Бой 1 — вы атакуете противника<br>
+                    • Бой 2 — противник атакует вас<br>
+                    Побеждает тот, кто выиграл больше боёв.
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <div style="color: #ffd700; font-weight: bold; margin-bottom: 4px;">🔒 Формация</div>
+                    При регистрации ваша текущая формация, маги и заклинания фиксируются.
+                    Изменить их до конца турнира нельзя.
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <div style="color: #ffd700; font-weight: bold; margin-bottom: 4px;">🏆 Награды</div>
+                    Победитель получает уникальный титул и призы.<br>
+                    Подробности будут объявлены перед стартом.
+                </div>
+
+                <div style="
+                    background: rgba(255,165,0,0.1);
+                    border: 1px solid rgba(255,165,0,0.3);
+                    border-radius: 8px;
+                    padding: 10px;
+                    font-size: 12px;
+                    color: #ffa500;
+                ">
+                    💡 Расставьте лучшую формацию перед регистрацией!
+                    После фиксации изменить её будет нельзя.
+                </div>
+            </div>
+
+            <button onclick="showSecretTournamentEntry(); document.getElementById('tournament-overlay')?.remove();" style="
+                width: 100%;
+                padding: 12px;
+                background: rgba(255,255,255,0.08);
+                border: 1px solid rgba(255,255,255,0.2);
+                border-radius: 10px;
+                color: #888;
+                font-size: 14px;
+                cursor: pointer;
+                margin-top: 15px;
+            ">← Назад</button>
+        </div>
+    `;
+
+    // Кнопка "Назад" — удаляем оверлей и открываем заново главное окно
+    const backBtn = overlay.querySelector('button:last-child');
+    backBtn.onclick = () => {
+        overlay.remove();
+        showSecretTournamentEntry();
+    };
+}
+
 // Экспорт
 window.showTournamentUI = showTournamentUI;
 window.closeTournamentUI = closeTournamentUI;
 window.showTournamentReplay = showTournamentReplay;
 window.showTournamentAllMatches = showTournamentAllMatches;
+window.showSecretTournamentEntry = showSecretTournamentEntry;
+window.showTournamentRules = showTournamentRules;
 
 console.log('🏆 Tournament UI загружен');
