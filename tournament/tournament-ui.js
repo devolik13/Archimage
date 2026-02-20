@@ -780,6 +780,11 @@ function showTournamentRules(overlay) {
                 </div>
 
                 <div style="margin-bottom: 12px;">
+                    <div style="color: #ffd700; font-weight: bold; margin-bottom: 4px;">⚖️ Ничья 1:1</div>
+                    Если каждый выиграл по одному бою — побеждает тот, кто нанёс <span style="color: #fff; font-weight: bold;">больше суммарного урона</span> за оба боя.
+                </div>
+
+                <div style="margin-bottom: 12px;">
                     <div style="color: #ffd700; font-weight: bold; margin-bottom: 4px;">🚫 Ограничения</div>
                     • Бонусы гильдий <span style="color: #ff6b6b;">не действуют</span><br>
                     • Изменения магов в турнире изолированы — на основную игру не влияют
