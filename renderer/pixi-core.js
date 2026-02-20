@@ -357,22 +357,22 @@ function loadBattleFieldBackground() {
 
     // Массив доступных фонов (768x512 webp)
     const backgrounds = [
-        'images/battle/field-background-1.webp',
-        'images/battle/field-background-2.webp',
-        'images/battle/field-background-3.webp',
-        'images/battle/field-background-4.webp',
-        'images/battle/field-background-5.webp',
-        'images/battle/field-background-6.webp',
-        'images/battle/field-background-7.webp',
-        'images/battle/field-background-8.webp',
-        'images/battle/field-background-9.webp',
-        'images/battle/field-background-10.webp',
-        'images/battle/field-background-11.webp',
         'images/battle/field-background-12.webp',
         'images/battle/field-background-13.webp',
         'images/battle/field-background-14.webp',
         'images/battle/field-background-15.webp',
-        'images/battle/field-background-16.webp'
+        'images/battle/field-background-16.webp',
+        'images/battle/field-background-17.webp',
+        'images/battle/field-background-18.webp',
+        'images/battle/field-background-19.webp',
+        'images/battle/field-background-20.webp',
+        'images/battle/field-background-21.webp',
+        'images/battle/field-background-22.webp',
+        'images/battle/field-background-23.webp',
+        'images/battle/field-background-24.webp',
+        'images/battle/field-background-25.webp',
+        'images/battle/field-background-26.webp',
+        'images/battle/field-background-27.webp'
     ];
 
     // Выбираем случайный
