@@ -256,8 +256,11 @@ function createBattleInfoTop() {
     
     const playerLevel = typeof window.calculatePlayerLevel === 'function' ?
         window.calculatePlayerLevel() : 1;
-    const enemyLevel = window.selectedOpponent?.level || playerLevel;
+    const enemyLevel = (window.isDuelBattle && typeof window.calculateLevelFromData === 'function' && window.selectedOpponent)
+        ? window.calculateLevelFromData(window.selectedOpponent)
+        : (window.selectedOpponent?.level || playerLevel);
     const enemyName = window.selectedOpponent?.username || 'Противник';
+    const enemyBadges = window.selectedOpponent?.badges || [];
     
     infoContainer.innerHTML = `
         <!-- Игрок -->
@@ -295,7 +298,7 @@ function createBattleInfoTop() {
                 border: 2px solid #ff6b6b;
             ">🤖</div>
             <div>
-                <div style="font-size: 10px; color: #ff6b6b; font-weight: bold;">${enemyName}</div>
+                <div style="font-size: 10px; color: #ff6b6b; font-weight: bold;">${typeof window.formatPlayerName === 'function' ? window.formatPlayerName(enemyName, null, enemyBadges) : enemyName}</div>
                 <div style="font-size: 9px; color: #ffa500;">⭐ Ур. ${enemyLevel}</div>
             </div>
         </div>

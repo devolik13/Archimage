@@ -16,20 +16,16 @@ const PLAYER_LEVEL_CONFIG = {
 };
 
 // Расчет общего уровня игрока
-function calculatePlayerLevel() {
-    // Проверяем наличие userData
-    if (!window.userData) {
-        console.warn('⚠️ userData не загружена, уровень = 0');
-        return 0;
-    }
+function calculateLevelFromData(data) {
+    if (!data) return 0;
 
     let totalPoints = 0;
 
     // Очки за заклинания
-    if (window.userData.spells) {
+    if (data.spells) {
         ['fire', 'water', 'wind', 'earth', 'nature', 'poison'].forEach(faction => {
-            if (window.userData.spells[faction]) {
-                Object.values(window.userData.spells[faction]).forEach(spell => {
+            if (data.spells[faction]) {
+                Object.values(data.spells[faction]).forEach(spell => {
                     if (spell.level > 0) {
                         totalPoints += spell.level * PLAYER_LEVEL_CONFIG.SPELL_LEARNED;
                     }
@@ -39,8 +35,8 @@ function calculatePlayerLevel() {
     }
 
     // Очки за здания
-    if (window.userData.buildings) {
-        Object.entries(window.userData.buildings).forEach(([key, building]) => {
+    if (data.buildings) {
+        Object.entries(data.buildings).forEach(([key, building]) => {
             // Пропускаем специальные поля (массив строек)
             if (key === '_active_constructions') return;
 
@@ -53,11 +49,15 @@ function calculatePlayerLevel() {
     }
 
     // Очки за магов
-    if (window.userData.wizards) {
-        totalPoints += window.userData.wizards.length * PLAYER_LEVEL_CONFIG.WIZARD_HIRED;
+    if (data.wizards) {
+        totalPoints += data.wizards.length * PLAYER_LEVEL_CONFIG.WIZARD_HIRED;
     }
 
     return totalPoints;
+}
+
+function calculatePlayerLevel() {
+    return calculateLevelFromData(window.userData);
 }
 
 // Создание UI элемента аватара
@@ -593,6 +593,7 @@ function updatePlayerLevel() {
 
 // Экспорт
 window.calculatePlayerLevel = calculatePlayerLevel;
+window.calculateLevelFromData = calculateLevelFromData;
 window.createPlayerAvatarUI = createPlayerAvatarUI;
 window.showPlayerProfile = showPlayerProfile;
 window.updatePlayerLevel = updatePlayerLevel;
