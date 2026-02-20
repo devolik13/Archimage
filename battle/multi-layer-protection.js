@@ -20,7 +20,6 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
         const levelBonus = window.getDamageBonusFromLevel(caster);
         if (levelBonus > 1.0) {
             damageMultiplier *= levelBonus;
-            remainingDamage = Math.floor(remainingDamage * levelBonus);
         }
     }
 
@@ -29,7 +28,6 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
         const towerBonus = window.getWizardTowerDamageBonus();
         if (towerBonus > 1.0) {
             damageMultiplier *= towerBonus;
-            remainingDamage = Math.floor(remainingDamage * towerBonus);
         }
     }
 
@@ -37,10 +35,13 @@ function applyDamageWithMultiLayerProtection(caster, target, baseDamage, spellId
     if (isPlayerCaster && window.guildManager?.currentGuild && !window.isDuelBattle) {
         const guildBonuses = window.guildManager.getGuildBonuses();
         if (guildBonuses && guildBonuses.damageBonus > 0) {
-            const guildDamageMultiplier = 1 + (guildBonuses.damageBonus / 100);
-            damageMultiplier *= guildDamageMultiplier;
-            remainingDamage = Math.floor(remainingDamage * guildDamageMultiplier);
+            damageMultiplier *= 1 + (guildBonuses.damageBonus / 100);
         }
+    }
+
+    // Применяем все бонусы одним умножением
+    if (damageMultiplier > 1.0) {
+        remainingDamage = Math.round(remainingDamage * damageMultiplier);
     }
 
     // Общий % усиления для лога (используем реальный множитель, а не обратный расчёт)
