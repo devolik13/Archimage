@@ -4,11 +4,6 @@
 const PRELOAD_ASSETS = {
     // Фоны боёв
     battleBackgrounds: [
-        'images/battle/field-background-12.webp',
-        'images/battle/field-background-13.webp',
-        'images/battle/field-background-14.webp',
-        'images/battle/field-background-15.webp',
-        'images/battle/field-background-16.webp',
         'images/battle/field-background-17.webp',
         'images/battle/field-background-18.webp',
         'images/battle/field-background-19.webp',
@@ -309,7 +304,6 @@ async function preloadPixiTextures() {
     // Критичные текстуры для боёв
     const pixiAssets = [
         // Фоны боёв (выбираем несколько для начала)
-        'images/battle/field-background-12.webp',
         'images/battle/field-background-17.webp',
         'images/battle/field-background-20.webp',
         // Спрайты магов (все фракции)
