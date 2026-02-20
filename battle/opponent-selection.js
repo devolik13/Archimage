@@ -15,39 +15,51 @@ async function getOpponentsList(playerRating, count = 4) {
 
         const currentTelegramId = window.dbManager.getTelegramId();
 
-        // Оптимизация: ищем только в диапазоне ±500 от рейтинга игрока
-        // и загружаем только нужные поля (без тяжёлых JSON)
-        const ratingMin = Math.max(0, playerRating - 500);
-        const ratingMax = playerRating + 500;
+        // Расширяющийся поиск: начинаем с ±500, если мало — расширяем
+        const searchRanges = [500, 1500, 5000, 10000];
+        let data = null;
 
-        // Первый запрос - только лёгкие данные для списка
-        const { data, error } = await window.dbManager.supabase
-            .from('players')
-            .select('id, telegram_id, username, rating, level, wins, losses, faction, badges')
-            .neq('telegram_id', currentTelegramId)
-            .gte('rating', ratingMin)
-            .lte('rating', ratingMax)
-            .order('rating', { ascending: true })
-            .limit(20); // Ограничиваем выборку
+        for (const range of searchRanges) {
+            const ratingMin = Math.max(0, playerRating - range);
+            const ratingMax = playerRating + range;
 
-        if (error) {
-            console.error('❌ Ошибка загрузки списка игроков:', error);
-            return [];
+            const { data: rangeData, error } = await window.dbManager.supabase
+                .from('players')
+                .select('id, telegram_id, username, rating, level, wins, losses, faction, badges')
+                .neq('telegram_id', currentTelegramId)
+                .gte('rating', ratingMin)
+                .lte('rating', ratingMax)
+                .order('rating', { ascending: true })
+                .limit(20);
+
+            if (error) {
+                console.error('❌ Ошибка загрузки списка игроков:', error);
+                return [];
+            }
+
+            if (rangeData && rangeData.length >= count) {
+                data = rangeData;
+                break;
+            }
+            // Запоминаем даже неполный результат
+            if (rangeData && rangeData.length > 0) {
+                data = rangeData;
+            }
         }
 
         if (!data || data.length === 0) {
-            // Fallback: если в диапазоне нет игроков, берём любых
+            // Fallback: если вообще нет игроков — берём ближайших по рейтингу сверху
             const { data: fallbackData, error: fallbackError } = await window.dbManager.supabase
                 .from('players')
                 .select('id, telegram_id, username, rating, level, wins, losses, faction, badges')
                 .neq('telegram_id', currentTelegramId)
-                .order('rating', { ascending: true })
+                .order('rating', { ascending: false })
                 .limit(10);
 
             if (fallbackError || !fallbackData) {
                 return [];
             }
-            return fallbackData.slice(0, count);
+            data = fallbackData;
         }
 
         // Находим ближайших по рейтингу

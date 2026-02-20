@@ -138,11 +138,14 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     	// БОНУСЫ УРОНА (применяются первыми, до защит)
     	// ========================================
 
+    	const damageBeforeBonusesAOE = finalDamage;
+    	let damageMultiplierAOE = 1.0;
+
     	// Бонус урона от уровня мага (+1% за уровень, +40% на 40)
     	if (typeof window.getDamageBonusFromLevel === 'function') {
     	    const levelBonus = window.getDamageBonusFromLevel(caster);
     	    if (levelBonus > 1.0) {
-    	        finalDamage = Math.floor(finalDamage * levelBonus);
+    	        damageMultiplierAOE *= levelBonus;
     	    }
     	}
 
@@ -150,7 +153,7 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     	if (isPlayerCaster && typeof window.getWizardTowerDamageBonus === 'function') {
     	    const towerBonus = window.getWizardTowerDamageBonus();
     	    if (towerBonus > 1.0) {
-    	        finalDamage = Math.floor(finalDamage * towerBonus);
+    	        damageMultiplierAOE *= towerBonus;
     	    }
     	}
 
@@ -158,9 +161,20 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     	if (isPlayerCaster && window.guildManager?.currentGuild && !window.isDuelBattle) {
     	    const guildBonuses = window.guildManager.getGuildBonuses();
     	    if (guildBonuses && guildBonuses.damageBonus > 0) {
-    	        const guildDamageMultiplier = 1 + (guildBonuses.damageBonus / 100);
-    	        finalDamage = Math.floor(finalDamage * guildDamageMultiplier);
+    	        damageMultiplierAOE *= 1 + (guildBonuses.damageBonus / 100);
     	    }
+    	}
+
+    	// Применяем все бонусы одним умножением
+    	if (damageMultiplierAOE > 1.0) {
+    	    finalDamage = Math.round(finalDamage * damageMultiplierAOE);
+    	}
+
+    	// Логируем усиление урона в шаги расчёта
+    	if (target && finalDamage > damageBeforeBonusesAOE) {
+    	    const boostPercent = Math.round((damageMultiplierAOE - 1) * 100);
+    	    if (!target._lastDamageSteps) target._lastDamageSteps = [];
+    	    target._lastDamageSteps.push(`⚔️ Усиление урона: ${damageBeforeBonusesAOE} → ${finalDamage} (+${boostPercent}%)`);
     	}
 
     	// Метеокинез
@@ -273,7 +287,6 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
         const towerBonus = window.getWizardTowerDamageBonus();
         if (towerBonus > 1.0) {
             damageMultiplier *= towerBonus;
-            finalDamage = Math.floor(finalDamage * towerBonus);
             console.log(`🏰 Башня магов: урон ×${towerBonus}`);
         }
     }
@@ -283,9 +296,6 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
         const levelBonus = window.getDamageBonusFromLevel(caster);
         if (levelBonus > 1.0) {
             damageMultiplier *= levelBonus;
-        }
-        finalDamage = Math.floor(finalDamage * levelBonus);
-        if (levelBonus > 1.0) {
             console.log(`⭐ Бонус уровня ${caster.level}: урон ×${levelBonus.toFixed(2)}`);
         }
     }
@@ -294,11 +304,14 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     if (isPlayerCasterST && window.guildManager?.currentGuild && !window.isDuelBattle) {
         const guildBonuses = window.guildManager.getGuildBonuses();
         if (guildBonuses && guildBonuses.damageBonus > 0) {
-            const guildDamageMultiplier = 1 + (guildBonuses.damageBonus / 100);
-            damageMultiplier *= guildDamageMultiplier;
-            finalDamage = Math.floor(finalDamage * guildDamageMultiplier);
+            damageMultiplier *= 1 + (guildBonuses.damageBonus / 100);
             console.log(`🏰 Гильдия: урон +${guildBonuses.damageBonus}%`);
         }
+    }
+
+    // Применяем все бонусы одним умножением
+    if (damageMultiplier > 1.0) {
+        finalDamage = Math.round(finalDamage * damageMultiplier);
     }
 
     // Логируем усиление урона в шаги расчёта (для отображения в логе боя)
