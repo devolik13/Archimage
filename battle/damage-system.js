@@ -266,11 +266,13 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
 
     // Запоминаем урон до бонусов для логирования
     const damageBeforeBonuses = finalDamage;
+    let damageMultiplier = 1.0;
 
     // Применяем бонус от Башни магов
     if (typeof window.getWizardTowerDamageBonus === 'function') {
         const towerBonus = window.getWizardTowerDamageBonus();
         if (towerBonus > 1.0) {
+            damageMultiplier *= towerBonus;
             finalDamage = Math.floor(finalDamage * towerBonus);
             console.log(`🏰 Башня магов: урон ×${towerBonus}`);
         }
@@ -279,6 +281,9 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
     // Применяем бонус урона от уровня мага
     if (typeof window.getDamageBonusFromLevel === 'function') {
         const levelBonus = window.getDamageBonusFromLevel(caster);
+        if (levelBonus > 1.0) {
+            damageMultiplier *= levelBonus;
+        }
         finalDamage = Math.floor(finalDamage * levelBonus);
         if (levelBonus > 1.0) {
             console.log(`⭐ Бонус уровня ${caster.level}: урон ×${levelBonus.toFixed(2)}`);
@@ -290,6 +295,7 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
         const guildBonuses = window.guildManager.getGuildBonuses();
         if (guildBonuses && guildBonuses.damageBonus > 0) {
             const guildDamageMultiplier = 1 + (guildBonuses.damageBonus / 100);
+            damageMultiplier *= guildDamageMultiplier;
             finalDamage = Math.floor(finalDamage * guildDamageMultiplier);
             console.log(`🏰 Гильдия: урон +${guildBonuses.damageBonus}%`);
         }
@@ -297,7 +303,7 @@ function applyFinalDamage(caster, target, baseDamage, spellId, armorIgnorePercen
 
     // Логируем усиление урона в шаги расчёта (для отображения в логе боя)
     if (target && finalDamage > damageBeforeBonuses) {
-        const boostPercent = Math.round((finalDamage / damageBeforeBonuses - 1) * 100);
+        const boostPercent = Math.round((damageMultiplier - 1) * 100);
         if (!target._lastDamageSteps) target._lastDamageSteps = [];
         target._lastDamageSteps.push(`⚔️ Усиление урона: ${damageBeforeBonuses} → ${finalDamage} (+${boostPercent}%)`);
     }
