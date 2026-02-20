@@ -54,6 +54,7 @@ const ADS_TASKS = [
     { id: 'labirintkrypty', category: 'crypto', icon: '📢', name: 'Лабиринт Крипты', reward: '+100 BPM + ⏰ 2ч', taskKey: 'labirintkrypty', action: 'window.openLabirintKrypty()', btnLabel: 'Подписаться', btnGradient: ['#ec4899', '#db2777'], btnTextColor: '#fff' },
     { id: 'cryptocompas', category: 'crypto', icon: '🧭', name: 'Компас В TONe', reward: '+100 BPM + ⏰ 2ч', taskKey: 'cryptocompas', action: 'window.openCryptoCompas()', btnLabel: 'Подписаться', btnGradient: ['#0ea5e9', '#0284c7'], btnTextColor: '#fff' },
     // --- Игры ---
+    { id: 'gemifaucet', category: 'games', icon: '🪙', name: 'GemiFaucet', reward: '+100 BPM + ⏰ 2ч', taskKey: 'gemifaucet', action: 'window.openGemiFaucet()', btnLabel: 'Играть', btnGradient: ['#facc15', '#ca8a04'], btnTextColor: '#000' },
     { id: 'creaky-tasks', category: 'games', icon: '📋', name: 'Creaky Tasks', reward: '+100 BPM + ⏰ 2ч', taskKey: 'creaky_tasks', action: 'window.openCreakyTasks()', btnLabel: 'Выполнить', btnGradient: ['#60a5fa', '#3b82f6'], btnTextColor: '#fff' },
     { id: 'money-mining', category: 'games', icon: '⛏️', name: 'Money Mining', reward: '+100 BPM + ⏰ 2ч', taskKey: 'money_mining', action: 'window.openMoneyMining()', btnLabel: 'Играть', btnGradient: ['#facc15', '#eab308'], btnTextColor: '#000' },
     { id: 'pandafit', category: 'games', icon: '🐼', name: 'PandaFiT', reward: '+100 BPM + ⏰ 2ч', taskKey: 'pandafit', action: 'window.openPandaFit()', btnLabel: 'Играть', btnGradient: ['#4ade80', '#22c55e'], btnTextColor: '#fff' },
@@ -63,7 +64,6 @@ const ADS_TASKS = [
     { id: 'tinlake', category: 'games', icon: '📚', name: 'Tinlake', reward: '+100 BPM + ⏰ 2ч', taskKey: 'tinlake', action: 'window.openTinlake()', btnLabel: 'Начать', btnGradient: ['#38bdf8', '#0284c7'], btnTextColor: '#fff' },
     { id: 'star-industry', category: 'games', icon: '⭐', name: 'Star Industry', reward: '+100 BPM + ⏰ 2ч', taskKey: 'star_industry', action: 'window.openStarIndustry()', btnLabel: 'Играть', btnGradient: ['#facc15', '#ca8a04'], btnTextColor: '#000' },
     { id: 'diamond-dynasty', category: 'games', icon: '💎', name: 'Diamond Dynasty', reward: '+100 BPM + ⏰ 2ч', taskKey: 'diamond_dynasty', action: 'window.openDiamondDynasty()', btnLabel: 'Играть', btnGradient: ['#facc15', '#ca8a04'], btnTextColor: '#000' },
-    { id: 'gemifaucet', category: 'games', icon: '🪙', name: 'gemifaucet', reward: '+100 BPM + ⏰ 2ч', taskKey: 'gemifaucet', action: 'window.openGemiFaucet()', btnLabel: 'Играть', btnGradient: ['#facc15', '#ca8a04'], btnTextColor: '#000' },
     // --- Каналы 18+ ---
     { id: 'dreamdares', category: 'adult', icon: '🔥', name: 'dreamdares 18+', reward: '+100 BPM + ⏰ 2ч', taskKey: 'dreamdares', action: 'window.openDreamdares()', btnLabel: 'Подписаться', btnGradient: ['#f43f5e', '#e11d48'], btnTextColor: '#fff' },
 ];
