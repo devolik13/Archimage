@@ -63,6 +63,7 @@ const ADS_TASKS = [
     { id: 'tinlake', category: 'games', icon: '📚', name: 'Tinlake', reward: '+100 BPM + ⏰ 2ч', taskKey: 'tinlake', action: 'window.openTinlake()', btnLabel: 'Начать', btnGradient: ['#38bdf8', '#0284c7'], btnTextColor: '#fff' },
     { id: 'star-industry', category: 'games', icon: '⭐', name: 'Star Industry', reward: '+100 BPM + ⏰ 2ч', taskKey: 'star_industry', action: 'window.openStarIndustry()', btnLabel: 'Играть', btnGradient: ['#facc15', '#ca8a04'], btnTextColor: '#000' },
     { id: 'diamond-dynasty', category: 'games', icon: '💎', name: 'Diamond Dynasty', reward: '+100 BPM + ⏰ 2ч', taskKey: 'diamond_dynasty', action: 'window.openDiamondDynasty()', btnLabel: 'Играть', btnGradient: ['#facc15', '#ca8a04'], btnTextColor: '#000' },
+    { id: 'gemifaucet', category: 'games', icon: '🪙', name: 'gemifaucet', reward: '+100 BPM + ⏰ 2ч', taskKey: 'gemifaucet', action: 'window.openGemiFaucet()', btnLabel: 'Играть', btnGradient: ['#facc15', '#ca8a04'], btnTextColor: '#000' },
     // --- Каналы 18+ ---
     { id: 'dreamdares', category: 'adult', icon: '🔥', name: 'dreamdares 18+', reward: '+100 BPM + ⏰ 2ч', taskKey: 'dreamdares', action: 'window.openDreamdares()', btnLabel: 'Подписаться', btnGradient: ['#f43f5e', '#e11d48'], btnTextColor: '#fff' },
 ];

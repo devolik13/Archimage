@@ -989,6 +989,12 @@ function openDiamondDynasty() {
     setTimeout(() => claimTaskReward('diamond_dynasty', 'Diamond Dynasty'), 2000);
 }
 
+function openGemiFaucet() {
+    if (window.userData?.completed_tasks?.gemifaucet) return;
+    window.open('https://t.me/gemifaucet_bot/gemifaucet', '_blank');
+    setTimeout(() => claimTaskReward('gemifaucet', 'gemifaucet'), 2000);
+}
+
 function openCryptoCyeta() {
     if (window.userData?.completed_tasks?.cryptocyeta) return;
     window.open('https://t.me/CryptoCyetaUa', '_blank');
