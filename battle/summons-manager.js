@@ -1017,6 +1017,43 @@ window.cleanupDeadSummons = function() {
 };
 
 // ========================================
+// БОНУС ХП ДЛЯ ПРИЗВАННЫХ СУЩЕСТВ
+// ========================================
+
+// Рассчитывает множитель ХП для призванных существ (те же бонусы, что и к урону)
+function getSummonHPMultiplier(wizard, casterType) {
+    let multiplier = 1.0;
+
+    // Бонус от уровня мага (+1% за уровень, +40% на 40)
+    if (typeof window.getDamageBonusFromLevel === 'function') {
+        const levelBonus = window.getDamageBonusFromLevel(wizard);
+        if (levelBonus > 1.0) {
+            multiplier *= levelBonus;
+        }
+    }
+
+    const isPlayer = casterType === 'player';
+
+    // Бонус от Башни магов (только для игрока)
+    if (isPlayer && typeof window.getWizardTowerDamageBonus === 'function') {
+        const towerBonus = window.getWizardTowerDamageBonus();
+        if (towerBonus > 1.0) {
+            multiplier *= towerBonus;
+        }
+    }
+
+    // Бонус от гильдии (только для игрока, не в дуэлях)
+    if (isPlayer && window.guildManager?.currentGuild && !window.isDuelBattle) {
+        const guildBonuses = window.guildManager.getGuildBonuses();
+        if (guildBonuses && guildBonuses.damageBonus > 0) {
+            multiplier *= 1 + (guildBonuses.damageBonus / 100);
+        }
+    }
+
+    return multiplier;
+}
+
+// ========================================
 // АДАПТЕРЫ ДЛЯ ВОЛКОВ
 // ========================================
 
@@ -1031,16 +1068,22 @@ window.createWolfSummon = function(wizard, casterType, position, level) {
     ];
     
     const stats = wolfStats[Math.min(level, 5) - 1] || wolfStats[0];
-    
+
+    // Применяем бонус ХП от усиления мага (уровень, башня, гильдия)
+    const hpMultiplier = getSummonHPMultiplier(wizard, casterType);
+    const boostedHP = Math.floor(stats.hp * hpMultiplier);
+
     // Проверяем, есть ли уже волк
     const existingWolf = window.summonsManager.hasSummonOfType(
-        wizard.id, 
-        'nature_wolf', 
+        wizard.id,
+        'nature_wolf',
         position
     );
-    
+
     if (existingWolf) {
-        // Восстанавливаем существующего
+        // Обновляем maxHP на случай изменения бонусов и восстанавливаем
+        existingWolf.maxHP = boostedHP;
+        existingWolf.hp = boostedHP;
         window.summonsManager.restoreSummon(existingWolf.id);
         return existingWolf;
     } else {
@@ -1050,8 +1093,8 @@ window.createWolfSummon = function(wizard, casterType, position, level) {
             casterType: casterType,
             position: position,
             level: level,
-            hp: stats.hp,
-            maxHP: stats.hp,
+            hp: boostedHP,
+            maxHP: boostedHP,
             damage: stats.damage
         });
     }
@@ -1069,6 +1112,10 @@ window.createSkeletonSummon = function(wizard, casterType, position, level) {
 
     const stats = skeletonStats[Math.min(level, 5) - 1] || skeletonStats[0];
 
+    // Применяем бонус ХП от усиления мага (уровень, башня, гильдия)
+    const hpMultiplier = getSummonHPMultiplier(wizard, casterType);
+    const boostedHP = Math.floor(stats.hp * hpMultiplier);
+
     // Проверяем, есть ли уже скелет
     const existingSkeleton = window.summonsManager.hasSummonOfType(
         wizard.id,
@@ -1077,6 +1124,9 @@ window.createSkeletonSummon = function(wizard, casterType, position, level) {
     );
 
     if (existingSkeleton) {
+        // Обновляем maxHP на случай изменения бонусов и восстанавливаем
+        existingSkeleton.maxHP = boostedHP;
+        existingSkeleton.hp = boostedHP;
         window.summonsManager.restoreSummon(existingSkeleton.id);
         return existingSkeleton;
     } else {
@@ -1085,8 +1135,8 @@ window.createSkeletonSummon = function(wizard, casterType, position, level) {
             casterType: casterType,
             position: position,
             level: level,
-            hp: stats.hp,
-            maxHP: stats.hp,
+            hp: boostedHP,
+            maxHP: boostedHP,
             damage: stats.damage
         });
     }
