@@ -1632,6 +1632,7 @@ window.openCryptoSock = openCryptoSock;
 window.openCryptoBudni = openCryptoBudni;
 window.openLabirintKrypty = openLabirintKrypty;
 window.openCryptoCompas = openCryptoCompas;
+window.openGemiFaucet = openGemiFaucet;
 
 /**
  * Добавить очки airdrop игроку
