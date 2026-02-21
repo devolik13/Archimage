@@ -250,9 +250,9 @@ async function initGameWithDatabase() {
             await window.initPlayerAvatar(window.userData);
         }
 
-        // Проверка ежедневной награды
+        // Проверка ежедневной награды (await — ждём сохранения daily_login в БД)
         if (typeof window.checkDailyLoginReward === 'function') {
-            window.checkDailyLoginReward();
+            await window.checkDailyLoginReward();
         }
 
         // Проверка награды за испытание прошлой недели
