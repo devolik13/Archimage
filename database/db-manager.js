@@ -119,7 +119,14 @@ class DatabaseManager {
             };
 
             // Формируем данные для RPC
-            const rawTimeCurrency = playerData.time_currency_base ?? playerData.timeCurrency ?? playerData.time_currency ?? 0;
+            // time_currency_base передаётся только если явно указан в playerData
+            // (auto-save и beforeunload НЕ передают — эти поля управляются через RPC)
+            const hasTimeCurrency = playerData.time_currency_base !== undefined
+                || playerData.timeCurrency !== undefined
+                || playerData.time_currency !== undefined;
+            const rawTimeCurrency = hasTimeCurrency
+                ? (playerData.time_currency_base ?? playerData.timeCurrency ?? playerData.time_currency ?? 0)
+                : null;
 
             // Стрипаем runtime-поля благословений и нормализуем HP перед сохранением.
             // В БД всегда должен быть "чистый" max_hp = base(100) * levelBonus.
@@ -159,9 +166,13 @@ class DatabaseManager {
             });
 
             const rpcData = {
-                time_currency: Math.floor(rawTimeCurrency),
-                time_currency_base: Math.floor(rawTimeCurrency),
-                time_currency_updated_at: playerData.time_currency_updated_at || new Date().toISOString(),
+                // time_currency поля включаются ТОЛЬКО при явной передаче (не из auto-save)
+                // Если отсутствуют — SQL сохранит текущее серверное значение (ELSE time_currency_base)
+                ...(hasTimeCurrency ? {
+                    time_currency: Math.floor(rawTimeCurrency),
+                    time_currency_base: Math.floor(rawTimeCurrency),
+                    time_currency_updated_at: playerData.time_currency_updated_at || new Date().toISOString(),
+                } : {}),
                 level: playerData.level || 1,
                 experience: playerData.experience || 0,
                 faction: playerData.faction || null,
@@ -388,9 +399,10 @@ class DatabaseManager {
         this.autoSaveInterval = setInterval(async () => {
             if (this.hasUnsavedChanges && window.userData) {
                 const playerData = {
-                    time_currency_base: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
-                    time_currency_updated_at: window.userData.time_currency_updated_at || new Date().toISOString(),
-                    timeCurrency: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
+                    // time_currency_base, time_currency_updated_at НЕ отправляем в auto-save!
+                    // Эти поля управляются ТОЛЬКО через RPC: add/spend/snapshot_time_currency.
+                    // Иначе auto-save перезаписывает серверное значение старыми клиентскими данными,
+                    // что приводит к потере наград или откату трат.
                     level: window.userData.level,
                     experience: window.userData.experience,
                     faction: window.userData.faction,
@@ -445,9 +457,7 @@ class DatabaseManager {
         window.addEventListener('beforeunload', async () => {
             if (this.hasUnsavedChanges && window.userData) {
                 const playerData = {
-                    time_currency_base: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
-                    time_currency_updated_at: window.userData.time_currency_updated_at || new Date().toISOString(),
-                    timeCurrency: window.userData.time_currency_base ?? Math.floor(window.userData.time_currency || 0),
+                    // time_currency_base НЕ отправляем — управляется через RPC
                     level: window.userData.level,
                     experience: window.userData.experience,
                     faction: window.userData.faction,
