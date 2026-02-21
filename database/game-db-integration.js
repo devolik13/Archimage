@@ -2,6 +2,27 @@
 
 // Инициализация при загрузке игры
 async function initGameWithDatabase() {
+    // Защита от двойного вызова (auto-init + loadUserData)
+    if (window._initGameRunning) {
+        console.log('⚠️ initGameWithDatabase уже выполняется, ожидаем...');
+        // Ждём завершения предыдущего вызова
+        return window._initGamePromise;
+    }
+    if (window._initGameDone) {
+        console.log('✅ initGameWithDatabase уже завершена, пропускаем');
+        return;
+    }
+    window._initGameRunning = true;
+    window._initGamePromise = _doInitGameWithDatabase();
+    try {
+        await window._initGamePromise;
+        window._initGameDone = true;
+    } finally {
+        window._initGameRunning = false;
+    }
+}
+
+async function _doInitGameWithDatabase() {
     
     // КРИТИЧНО: Сразу скрываем ОБЕ зоны чтобы не мелькали
     const factionSelection = document.getElementById('faction-selection');
