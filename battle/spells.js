@@ -96,6 +96,10 @@ async function useWizardSpellsForBoss(wizard, position, casterType, maxSpells = 
 
 // Вспомогательная функция задержки
 function delay(ms) {
+    // При быстрой симуляции — без задержек
+    if (window.fastSimulation) {
+        return Promise.resolve();
+    }
     return new Promise(resolve => (window.battleTimeout || setTimeout)(resolve, ms));
 }
 
@@ -317,7 +321,9 @@ function executeSpellEffect(wizard, spellId, spellData, position, casterType) {
 function castSpell(wizard, spellId, position, casterType) {
     return new Promise((resolve) => {
         // Таймаут на случай если анимация не завершится (спрайт уничтожен, PIXI остановлен)
-        const timeout = (window.battleTimeout || setTimeout)(() => {
+        // При быстрой симуляции используем setTimeout напрямую (battleTimeout может быть подавлен сменой поколения)
+        const timeoutFn = window.fastSimulation ? setTimeout : (window.battleTimeout || setTimeout);
+        const timeout = timeoutFn(() => {
             resolved = true;
             resolve();
         }, window.fastSimulation ? 50 : 3000);

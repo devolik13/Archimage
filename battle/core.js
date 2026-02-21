@@ -707,9 +707,10 @@ async function executeBattlePhase() {
         return; // Выходим, чтобы не выполнять обычную логику
     }
 
-    // ТРЕНИРОВОЧНЫЙ МАНЕКЕН: Враг не атакует
+    // ТРЕНИРОВОЧНЫЙ ГОЛЕМ: boss-like система ходов
     if (window.isTrainingDummyBattle && typeof window.executeDummyBattlePhase === 'function') {
         await window.executeDummyBattlePhase();
+        window.globalTurnCounter++;
         return; // Выходим, чтобы не выполнять обычную логику
     }
 
@@ -1052,7 +1053,14 @@ async function executeSingleMageAttack(wizard, position, casterType) {
 
     // 📊 Ожидаем завершения всего отложенного урона (AOE-заклинания с setTimeout)
     if (window.pendingSpellDamage && window.pendingSpellDamage.length > 0) {
-        await Promise.all(window.pendingSpellDamage);
+        if (window.fastSimulation) {
+            await Promise.race([
+                Promise.all(window.pendingSpellDamage),
+                new Promise(resolve => setTimeout(resolve, 2000))
+            ]);
+        } else {
+            await Promise.all(window.pendingSpellDamage);
+        }
         window.pendingSpellDamage = [];
     }
 
@@ -1286,7 +1294,14 @@ async function executeBossBattlePhase() {
 
             // 📊 Ожидаем завершения всего отложенного урона (AOE-заклинания с setTimeout)
             if (window.pendingSpellDamage && window.pendingSpellDamage.length > 0) {
-                await Promise.all(window.pendingSpellDamage);
+                if (window.fastSimulation) {
+                    await Promise.race([
+                        Promise.all(window.pendingSpellDamage),
+                        new Promise(resolve => setTimeout(resolve, 2000))
+                    ]);
+                } else {
+                    await Promise.all(window.pendingSpellDamage);
+                }
                 window.pendingSpellDamage = [];
             }
 
@@ -2203,6 +2218,7 @@ window.executeBattlePhase = executeBattlePhase;
 window.executePlayerPhase = executePlayerPhase;
 window.executeEnemyPhase = executeEnemyPhase;
 window.checkBattleEnd = checkBattleEnd;
+window.processMagePreTurnEffects = processMagePreTurnEffects;
 window.findSpellInUserData = findSpellInUserData;
 window.applyLeafCanopyEffect = applyLeafCanopyEffect;
 window.executeSingleMageAttack = executeSingleMageAttack;

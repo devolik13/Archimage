@@ -115,8 +115,10 @@ function deductTrialAttempt() {
 }
 
 /**
- * Специальная фаза боя для манекена
- * Раунд = все маги игрока атакуют по очереди
+ * Специальная фаза боя для голема (boss-like turn system)
+ * Чётный ход (0, 2, 4...) = фаза игрока (все маги по 2 заклинания)
+ * Нечётный ход (1, 3, 5...) = фаза голема (эффекты + 1 урон)
+ * 1 раунд = 1 фаза игрока + 1 фаза голема
  */
 async function executeDummyBattlePhase() {
     if (!dummyBattleState.active) return;
@@ -127,93 +129,241 @@ async function executeDummyBattlePhase() {
         return;
     }
 
-    // Логируем раунд (пропускаем при быстрой симуляции)
-    if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`\n━━━ Раунд ${dummyBattleState.currentRound}/${window.DUMMY_CONFIG.MAX_ROUNDS} ━━━`);
-    }
-
-    // Сохраняем HP манекена до раунда
     const dummy = window.enemyFormation.find(e => e && e.isTrainingDummy);
-    const hpBefore = dummy ? dummy.hp : 0;
+    const isPlayerTurn = window.globalTurnCounter % 2 === 0;
 
-    // Все маги игрока атакуют (как в обычном бою)
-    const alivePlayers = [];
-    for (let pos = 0; pos < 5; pos++) {
-        const wizardId = window.playerFormation[pos];
-        if (wizardId) {
-            const wizard = window.playerWizards.find(w => w.id === wizardId);
-            if (wizard && wizard.hp > 0) {
-                alivePlayers.push({ wizard, position: pos });
-            }
+    if (isPlayerTurn) {
+        // ═══════════════════════════════════════════
+        // ФАЗА ИГРОКА: Все живые маги атакуют (по 2 заклинания каждый)
+        // ═══════════════════════════════════════════
+
+        // Пауза перед ходом игрока для завершения анимаций голема
+        if (!window.fastSimulation && window.globalTurnCounter > 0) {
+            const delay = (window.battleSpeed || 2000) * 0.4;
+            await new Promise(resolve => (window.battleTimeout || setTimeout)(resolve, delay));
         }
-    }
 
-    // Каждый маг использует заклинания по очереди
-    for (const mageData of alivePlayers) {
-        if (mageData.wizard.hp <= 0) continue;
+        // Сохраняем HP голема до хода для подсчёта урона
+        dummyBattleState._hpBeforePlayerPhase = dummy ? dummy.hp : 0;
 
-        // Проверяем не умер ли манекен
-        if (dummy && dummy.hp <= 0) break;
-
-        // Используем заклинания - ждём завершения всех кастов
-        if (typeof window.useWizardSpells === 'function') {
-            await window.useWizardSpells(mageData.wizard, mageData.position, 'player');
+        if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`\n━━━ Раунд ${dummyBattleState.currentRound}/${window.DUMMY_CONFIG.MAX_ROUNDS} — Ход игрока ━━━`);
         }
-    }
 
-    // Ждём пока все снаряды долетят (пропускаем при быстрой симуляции)
-    if (!window.fastSimulation) {
-        // Используем 75% от текущей скорости боя для задержки между раундами
-        const delay = (window.battleSpeed || 2000) * 0.75;
-        await new Promise(resolve => setTimeout(resolve, delay));
-    }
+        // Проверка на Чуму для магов игрока
+        if (typeof window.processPlagueEffects === 'function') {
+            window.processPlagueEffects('player');
+        }
 
-    // ═══ ХОД МАНЕКЕНА: наносит 1 урон случайному живому магу ═══
-    if (dummy && dummy.hp > 0) {
-        const aliveTargets = [];
+        // Собираем живых магов
+        const alivePlayers = [];
         for (let pos = 0; pos < 5; pos++) {
             const wizardId = window.playerFormation[pos];
             if (wizardId) {
                 const wizard = window.playerWizards.find(w => w.id === wizardId);
                 if (wizard && wizard.hp > 0) {
-                    aliveTargets.push(wizard);
+                    alivePlayers.push({ wizard, position: pos });
                 }
             }
         }
 
-        if (aliveTargets.length > 0) {
-            const target = aliveTargets[Math.floor(Math.random() * aliveTargets.length)];
-            target.hp = Math.max(0, target.hp - 1);
+        // Каждый маг использует 2 заклинания (как в босс-бою)
+        for (const mageData of alivePlayers) {
+            if (mageData.wizard.hp <= 0) continue;
+            if (dummy && dummy.hp <= 0) break;
 
-            if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
-                window.addToBattleLog(`🎯 Манекен бьёт ${target.name} на 1 урон`);
+            // Обработка эффектов перед ходом мага (яд, горение и т.д.)
+            if (typeof window.processMagePreTurnEffects === 'function') {
+                await window.processMagePreTurnEffects(mageData.wizard, mageData.position, 'player');
+            }
+            if (mageData.wizard.hp <= 0) continue;
+
+            // Проверка на оглушение
+            if (mageData.wizard.isStunned && mageData.wizard.stunTurns > 0) {
+                if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
+                    window.addToBattleLog(`😵 ${mageData.wizard.name} оглушён и пропускает ход`);
+                }
+                mageData.wizard.stunTurns--;
+                if (mageData.wizard.stunTurns <= 0) mageData.wizard.isStunned = false;
+                continue;
             }
 
+            // Сбрасываем очередь отложенного урона
+            window.pendingSpellDamage = [];
+
+            // Сохраняем HP врагов ДО хода для подсчёта опыта
+            const enemyHpBefore = {};
+            const allyHpBefore = {};
+            if (window.enemyFormation) {
+                window.enemyFormation.forEach(enemy => {
+                    if (enemy && enemy.id) enemyHpBefore[enemy.id] = enemy.hp || 0;
+                });
+            }
+            if (window.playerWizards) {
+                window.playerWizards.forEach(ally => {
+                    if (ally && ally.id) allyHpBefore[ally.id] = ally.hp || 0;
+                });
+            }
+
+            // Маг использует 2 заклинания (как в босс-бою)
+            if (typeof window.useWizardSpellsForBoss === 'function') {
+                await window.useWizardSpellsForBoss(mageData.wizard, mageData.position, 'player', 2);
+            } else if (typeof window.useWizardSpells === 'function') {
+                await window.useWizardSpells(mageData.wizard, mageData.position, 'player');
+            }
+
+            // Ожидаем завершения отложенного урона (AOE-заклинания)
+            // При fastSimulation — таймаут 2с чтобы не зависнуть на мёртвых PIXI callbacks
+            if (window.pendingSpellDamage && window.pendingSpellDamage.length > 0) {
+                if (window.fastSimulation) {
+                    await Promise.race([
+                        Promise.all(window.pendingSpellDamage),
+                        new Promise(resolve => setTimeout(resolve, 2000))
+                    ]);
+                } else {
+                    await Promise.all(window.pendingSpellDamage);
+                }
+                window.pendingSpellDamage = [];
+            }
+
+            // Подсчёт урона для опыта
+            if (typeof window.trackDamageExp === 'function') {
+                let totalDamageDealt = 0;
+                if (window.enemyFormation) {
+                    window.enemyFormation.forEach(enemy => {
+                        if (enemy && enemy.id && enemyHpBefore[enemy.id] !== undefined) {
+                            const hpLost = enemyHpBefore[enemy.id] - (enemy.hp || 0);
+                            if (hpLost > 0) totalDamageDealt += hpLost;
+                        }
+                    });
+                }
+                if (totalDamageDealt > 0) {
+                    window.trackDamageExp(mageData.wizard, totalDamageDealt);
+                }
+            }
+
+            // Подсчёт лечения для опыта
+            if (typeof window.trackHealExp === 'function') {
+                let totalHealingDone = 0;
+                if (window.playerWizards) {
+                    window.playerWizards.forEach(ally => {
+                        if (ally && ally.id && allyHpBefore[ally.id] !== undefined) {
+                            const hpGained = (ally.hp || 0) - allyHpBefore[ally.id];
+                            if (hpGained > 0) totalHealingDone += hpGained;
+                        }
+                    });
+                }
+                if (totalHealingDone > 0) {
+                    window.trackHealExp(mageData.wizard, totalHealingDone);
+                }
+            }
+
+            // Проверяем смерть голема после хода мага
+            if (dummy && dummy.hp <= 0) break;
+
+            // Обновляем UI после хода каждого мага
             if (!window.fastSimulation && typeof window.updateBattleField === 'function') {
                 window.updateBattleField();
             }
+
+            // Пауза между магами
+            if (!window.fastSimulation) {
+                const delay = (window.battleSpeed || 2000) * 0.25;
+                await new Promise(resolve => (window.battleTimeout || setTimeout)(resolve, delay));
+            }
+        }
+
+        // Проверка на Метеокинез
+        if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
+            window.checkMeteorokinesisCasterAlive();
+        }
+
+    } else {
+        // ═══════════════════════════════════════════
+        // ФАЗА ГОЛЕМА: обработка эффектов + удар на 1 урон
+        // ═══════════════════════════════════════════
+
+        // Пауза перед ходом голема
+        if (!window.fastSimulation) {
+            const delay = (window.battleSpeed || 2000) * 0.4;
+            await new Promise(resolve => (window.battleTimeout || setTimeout)(resolve, delay));
+        }
+
+        if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`━━━ Ход голема ━━━`);
+        }
+
+        // Проверка на Чуму для голема
+        if (typeof window.processPlagueEffects === 'function') {
+            window.processPlagueEffects('enemy');
+        }
+
+        if (dummy && dummy.hp > 0) {
+            const dummyPosition = window.enemyFormation.findIndex(w => w && w.id === dummy.id);
+
+            // Обработка эффектов перед ходом голема (яд, горение, заморозка и т.д.)
+            if (typeof window.processMagePreTurnEffects === 'function') {
+                await window.processMagePreTurnEffects(dummy, dummyPosition, 'enemy');
+            }
+
+            if (dummy.hp > 0) {
+                // Проверка на оглушение голема
+                if (dummy.isStunned && dummy.stunTurns > 0) {
+                    if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
+                        window.addToBattleLog(`😵 ${dummy.name} оглушён и пропускает ход`);
+                    }
+                    dummy.stunTurns--;
+                    if (dummy.stunTurns <= 0) dummy.isStunned = false;
+                } else {
+                    // Голем бьёт случайного живого мага на 1 урон
+                    const aliveTargets = [];
+                    for (let pos = 0; pos < 5; pos++) {
+                        const wizardId = window.playerFormation[pos];
+                        if (wizardId) {
+                            const wizard = window.playerWizards.find(w => w.id === wizardId);
+                            if (wizard && wizard.hp > 0) {
+                                aliveTargets.push(wizard);
+                            }
+                        }
+                    }
+
+                    if (aliveTargets.length > 0) {
+                        const target = aliveTargets[Math.floor(Math.random() * aliveTargets.length)];
+                        target.hp = Math.max(0, target.hp - 1);
+
+                        if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
+                            window.addToBattleLog(`🎯 ${dummy.name} бьёт ${target.name} на 1 урон`);
+                        }
+                    }
+                }
+            }
+
+            // Проверка на Метеокинез
+            if (typeof window.checkMeteorokinesisCasterAlive === 'function') {
+                window.checkMeteorokinesisCasterAlive();
+            }
+        }
+
+        // После хода голема — подсчитываем урон за раунд и обновляем счётчики
+        const hpAfter = dummy ? Math.max(0, dummy.hp) : 0;
+        const hpBefore = dummyBattleState._hpBeforePlayerPhase || 0;
+        const damageThisRound = Math.max(0, hpBefore - hpAfter);
+        dummyBattleState.totalDamage += damageThisRound;
+
+        dummyBattleState.roundsRemaining--;
+        dummyBattleState.currentRound++;
+
+        // Логируем урон за раунд
+        if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
+            window.addToBattleLog(`\n⚔️ Урон за раунд: ${damageThisRound.toLocaleString()}`);
+            window.addToBattleLog(`📊 Всего урона: ${dummyBattleState.totalDamage.toLocaleString()}`);
+            if (dummyBattleState.roundsRemaining > 0 && (!dummy || dummy.hp > 0)) {
+                window.addToBattleLog(`🔄 Осталось раундов: ${dummyBattleState.roundsRemaining}`);
+            }
         }
     }
 
-    // Подсчитываем нанесённый урон за раунд
-    const hpAfter = dummy ? Math.max(0, dummy.hp) : 0;
-    const damageThisRound = Math.max(0, hpBefore - hpAfter);
-    dummyBattleState.totalDamage += damageThisRound;
-
-    // Переходим к следующему раунду
-    dummyBattleState.roundsRemaining--;
-    dummyBattleState.currentRound++;
-
-    // Логируем урон за раунд (пропускаем при быстрой симуляции)
-    if (!window.fastSimulation && typeof window.addToBattleLog === 'function') {
-        window.addToBattleLog(`\n⚔️ Урон за раунд: ${damageThisRound.toLocaleString()}`);
-        window.addToBattleLog(`📊 Всего урона: ${dummyBattleState.totalDamage.toLocaleString()}`);
-        if (dummyBattleState.roundsRemaining > 0 && (!dummy || dummy.hp > 0)) {
-            window.addToBattleLog(`🔄 Осталось раундов: ${dummyBattleState.roundsRemaining}`);
-        }
-    }
-
-    // Обновляем поле боя (пропускаем при быстрой симуляции)
+    // Обновляем поле боя
     if (!window.fastSimulation && typeof window.updateBattleField === 'function') {
         window.updateBattleField();
     }
