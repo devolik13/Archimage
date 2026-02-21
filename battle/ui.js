@@ -8,6 +8,11 @@ window.battleSpeedMode = 'normal'; // 'normal' или 'fast'
 window._battleGeneration = 0;
 window._battleTimeouts = [];
 window.battleTimeout = function(fn, delay) {
+    // При быстрой симуляции — вызываем без задержки и без проверки поколения
+    if (window.fastSimulation) {
+        const id = setTimeout(fn, 0);
+        return id;
+    }
     const gen = window._battleGeneration;
     const id = setTimeout(() => {
         if (window._battleGeneration === gen) fn();
@@ -431,8 +436,21 @@ async function closeBattleFieldModal() {
             const pixiContainer = document.getElementById("pixi-battle-container");
             if (pixiContainer) pixiContainer.remove();
 
+            // Очищаем все боевые таймауты от предыдущего боя
+            if (typeof window.clearAllBattleTimeouts === 'function') {
+                window.clearAllBattleTimeouts();
+            }
+            // Очищаем зависшие pendingSpellDamage от предыдущего боя
+            window.pendingSpellDamage = [];
+
             // Флаг быстрой симуляции (отключает задержки)
             window.fastSimulation = true;
+
+            // Утилита: Promise с таймаутом (защита от зависания)
+            const withTimeout = (promise, ms) => Promise.race([
+                promise,
+                new Promise(resolve => setTimeout(resolve, ms))
+            ]);
 
             // Быстрая симуляция оставшихся раундов
             const simulateTrialToEnd = async () => {
@@ -448,7 +466,8 @@ async function closeBattleFieldModal() {
 
                     // Выполняем фазу боя для голема (с пропуском задержек благодаря fastSimulation)
                     if (typeof window.executeDummyBattlePhase === 'function') {
-                        await window.executeDummyBattlePhase();
+                        // Таймаут 3с на фазу — защита от зависания pendingSpellDamage
+                        await withTimeout(window.executeDummyBattlePhase(), 3000);
                         window.globalTurnCounter++; // Инкрементируем как в executeBattlePhase
                     } else {
                         // Fallback - просто уменьшаем счётчик раундов
@@ -456,13 +475,16 @@ async function closeBattleFieldModal() {
                         dummyState.currentRound++;
                     }
 
+                    // Принудительно очищаем зависшие pendingSpellDamage
+                    window.pendingSpellDamage = [];
+
                     turnCount++;
-                    // Минимальная задержка чтобы асинхронный урон от заклинаний успел примениться
-                    await new Promise(resolve => (window.battleTimeout || setTimeout)(resolve, 10));
+                    // Минимальная задержка (используем setTimeout напрямую, не battleTimeout)
+                    await new Promise(resolve => setTimeout(resolve, 5));
                 }
 
-                // Дополнительная задержка для завершения всех асинхронных операций урона
-                await new Promise(resolve => (window.battleTimeout || setTimeout)(resolve, 100));
+                // Небольшая задержка для завершения асинхронных операций
+                await new Promise(resolve => setTimeout(resolve, 50));
 
                 // Подсчитываем финальный урон
                 const dummy = window.enemyFormation?.find(e => e && e.isTrainingDummy);
@@ -485,14 +507,14 @@ async function closeBattleFieldModal() {
                     window.showPvPArenaModalBg();
                 }
 
-                // Показываем результат с небольшой задержкой
-                (window.battleTimeout || setTimeout)(() => {
+                // ВАЖНО: используем setTimeout (не battleTimeout) чтобы generation не блокировала
+                setTimeout(() => {
                     if (progress && typeof window.showDummyResult === 'function') {
                         window.showDummyResult(dummyState.totalDamage, progress);
                     } else if (typeof window.showTrialMenuInArena === 'function') {
                         window.showTrialMenuInArena();
                     }
-                }, 100);
+                }, 150);
             } catch (error) {
                 console.error('❌ Ошибка симуляции:', error);
                 // Записываем текущий урон
@@ -505,11 +527,11 @@ async function closeBattleFieldModal() {
                 if (typeof window.showPvPArenaModalBg === 'function') {
                     window.showPvPArenaModalBg();
                 }
-                (window.battleTimeout || setTimeout)(() => {
+                setTimeout(() => {
                     if (typeof window.showTrialMenuInArena === 'function') {
                         window.showTrialMenuInArena();
                     }
-                }, 100);
+                }, 150);
             } finally {
                 window.fastSimulation = false;
                 window.isTrainingDummyBattle = false;
@@ -615,10 +637,22 @@ async function closeBattleFieldModal() {
         }
 
 
+        // Очищаем все боевые таймауты от предыдущего боя
+        if (typeof window.clearAllBattleTimeouts === 'function') {
+            window.clearAllBattleTimeouts();
+        }
+        // Очищаем зависшие pendingSpellDamage от предыдущего боя
+        window.pendingSpellDamage = [];
+
         // Устанавливаем флаги досрочного выхода и быстрой симуляции
         window.battleEarlyExit = true;
         window.fastSimulation = true; // КРИТИЧНО: отключает setTimeout в фазах боя
 
+        // Утилита: Promise с таймаутом (защита от зависания)
+        const withTimeout = (promise, ms) => Promise.race([
+            promise,
+            new Promise(resolve => setTimeout(resolve, ms))
+        ]);
 
         // Функция быстрой симуляции боя до конца
         const simulateBattleToEnd = async () => {
@@ -665,10 +699,13 @@ async function closeBattleFieldModal() {
                     lastEnemyHP = enemyHP;
                 }
 
-                // Выполняем фазу боя без задержек
+                // Выполняем фазу боя без задержек (таймаут 3с — защита от зависания)
                 if (typeof window.executeBattlePhase === 'function') {
-                    await window.executeBattlePhase();
+                    await withTimeout(window.executeBattlePhase(), 3000);
                 }
+
+                // Принудительно очищаем зависшие pendingSpellDamage
+                window.pendingSpellDamage = [];
 
                 turnCount++;
 
@@ -701,7 +738,8 @@ async function closeBattleFieldModal() {
         // После симуляции checkBattleEnd уже вызвал onBattleCompleted и showBattleResult
         // Но нужно добавить earlyExit флаг к уже показанному результату
         // Подождем немного и если результат не показался, покажем вручную
-        (window.battleTimeout || setTimeout)(() => {
+        // ВАЖНО: используем setTimeout (не battleTimeout) чтобы generation не блокировала
+        setTimeout(() => {
             // Проверяем флаги и элементы - результат мог быть показан через showArenaResult
             const resultModal = document.getElementById('battle-result-modal') || document.getElementById('pvp-arena-screen');
             const resultAlreadyShown = window.arenaResultShown || window.battleResultShown;

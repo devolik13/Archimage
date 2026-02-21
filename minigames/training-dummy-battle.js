@@ -213,8 +213,16 @@ async function executeDummyBattlePhase() {
             }
 
             // Ожидаем завершения отложенного урона (AOE-заклинания)
+            // При fastSimulation — таймаут 2с чтобы не зависнуть на мёртвых PIXI callbacks
             if (window.pendingSpellDamage && window.pendingSpellDamage.length > 0) {
-                await Promise.all(window.pendingSpellDamage);
+                if (window.fastSimulation) {
+                    await Promise.race([
+                        Promise.all(window.pendingSpellDamage),
+                        new Promise(resolve => setTimeout(resolve, 2000))
+                    ]);
+                } else {
+                    await Promise.all(window.pendingSpellDamage);
+                }
                 window.pendingSpellDamage = [];
             }
 

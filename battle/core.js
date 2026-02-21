@@ -1053,7 +1053,14 @@ async function executeSingleMageAttack(wizard, position, casterType) {
 
     // 📊 Ожидаем завершения всего отложенного урона (AOE-заклинания с setTimeout)
     if (window.pendingSpellDamage && window.pendingSpellDamage.length > 0) {
-        await Promise.all(window.pendingSpellDamage);
+        if (window.fastSimulation) {
+            await Promise.race([
+                Promise.all(window.pendingSpellDamage),
+                new Promise(resolve => setTimeout(resolve, 2000))
+            ]);
+        } else {
+            await Promise.all(window.pendingSpellDamage);
+        }
         window.pendingSpellDamage = [];
     }
 
@@ -1287,7 +1294,14 @@ async function executeBossBattlePhase() {
 
             // 📊 Ожидаем завершения всего отложенного урона (AOE-заклинания с setTimeout)
             if (window.pendingSpellDamage && window.pendingSpellDamage.length > 0) {
-                await Promise.all(window.pendingSpellDamage);
+                if (window.fastSimulation) {
+                    await Promise.race([
+                        Promise.all(window.pendingSpellDamage),
+                        new Promise(resolve => setTimeout(resolve, 2000))
+                    ]);
+                } else {
+                    await Promise.all(window.pendingSpellDamage);
+                }
                 window.pendingSpellDamage = [];
             }
 
