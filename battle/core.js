@@ -707,9 +707,10 @@ async function executeBattlePhase() {
         return; // Выходим, чтобы не выполнять обычную логику
     }
 
-    // ТРЕНИРОВОЧНЫЙ МАНЕКЕН: Враг не атакует
+    // ТРЕНИРОВОЧНЫЙ ГОЛЕМ: boss-like система ходов
     if (window.isTrainingDummyBattle && typeof window.executeDummyBattlePhase === 'function') {
         await window.executeDummyBattlePhase();
+        window.globalTurnCounter++;
         return; // Выходим, чтобы не выполнять обычную логику
     }
 
@@ -2203,6 +2204,7 @@ window.executeBattlePhase = executeBattlePhase;
 window.executePlayerPhase = executePlayerPhase;
 window.executeEnemyPhase = executeEnemyPhase;
 window.checkBattleEnd = checkBattleEnd;
+window.processMagePreTurnEffects = processMagePreTurnEffects;
 window.findSpellInUserData = findSpellInUserData;
 window.applyLeafCanopyEffect = applyLeafCanopyEffect;
 window.executeSingleMageAttack = executeSingleMageAttack;

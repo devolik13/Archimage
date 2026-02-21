@@ -546,9 +546,10 @@ function createDummyEnemy() {
         armor: DUMMY_CONFIG.ARMOR,
         max_armor: DUMMY_CONFIG.ARMOR,
         faction: 'neutral',
-        spells: [], // Манекен не атакует
+        spells: [], // Голем бьёт вручную на 1 урон (не через спеллы)
         isTrainingDummy: true,
         isDummy: true,
+        effects: {},   // Для отслеживания яда, горения, заморозки и т.д.
         magicResistance: config.resistances,
         description: config.description,
         spriteSheet: 'training_dummy' // Спрайт пугала

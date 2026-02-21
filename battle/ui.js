@@ -437,21 +437,26 @@ async function closeBattleFieldModal() {
             // Быстрая симуляция оставшихся раундов
             const simulateTrialToEnd = async () => {
                 const MAX_ROUNDS = window.DUMMY_CONFIG?.MAX_ROUNDS || 10;
+                // Защита от бесконечного цикла (макс ходов = раундов * 2 фазы + запас)
+                const MAX_TURNS = MAX_ROUNDS * 2 + 10;
+                let turnCount = 0;
 
-                // Симулируем оставшиеся раунды используя executeDummyBattlePhase
-                while (dummyState.roundsRemaining > 0) {
+                // Симулируем оставшиеся ходы (2 хода = 1 раунд: фаза игрока + фаза голема)
+                while (dummyState.roundsRemaining > 0 && turnCount < MAX_TURNS) {
                     const dummy = window.enemyFormation?.find(e => e && e.isTrainingDummy);
                     if (!dummy || dummy.hp <= 0) break;
 
-                    // Выполняем фазу боя для манекена (с пропуском задержек благодаря fastSimulation)
+                    // Выполняем фазу боя для голема (с пропуском задержек благодаря fastSimulation)
                     if (typeof window.executeDummyBattlePhase === 'function') {
                         await window.executeDummyBattlePhase();
+                        window.globalTurnCounter++; // Инкрементируем как в executeBattlePhase
                     } else {
                         // Fallback - просто уменьшаем счётчик раундов
                         dummyState.roundsRemaining--;
                         dummyState.currentRound++;
                     }
 
+                    turnCount++;
                     // Минимальная задержка чтобы асинхронный урон от заклинаний успел примениться
                     await new Promise(resolve => (window.battleTimeout || setTimeout)(resolve, 10));
                 }
